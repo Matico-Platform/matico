@@ -1,0 +1,19 @@
+[package]
+name = "simple_map_server"
+version = "0.1.0"
+authors = ["Stuart Lynn <stuart.lynn@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-multipart = "0.3"
+actix-web = "3"
+futures = "0.3.1"
+sanitize-filename = "0.2"
+gdal="0.7.0"
+config = "0.10"
+serde = { version = "1.0.104", features = ["derive"] }
+derive_more = "0.99.2"
+diesel = { version = "^1.1.0", features = ["postgres", "r2d2"] }
+r2d2 = "0.8"
