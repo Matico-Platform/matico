@@ -1,5 +1,5 @@
 use crate::db::DbPool;
-use actix_web::{web, HttpResponse, Error};
+use actix_web::{web,get, HttpResponse, Error};
 use diesel::sql_query;
 use diesel::sql_types::{BigInt, Bytea, Integer,Text};
 use crate::diesel::RunQueryDsl;
@@ -43,7 +43,8 @@ pub fn run_tile_query(conn: &diesel::pg::PgConnection, query: &str)->Result<MVTT
     sql_query(query).get_result(conn)
 }
 
-pub async fn get_tile(pool: web::Data<DbPool>, tile_id : web::Path<TileID>)->Result<HttpResponse,Error>{
+#[get("/{z}/{x}/{y}")]
+async fn get_tile(pool: web::Data<DbPool>, tile_id : web::Path<TileID>)->Result<HttpResponse,Error>{
     let bbox  = bbox(&tile_id);
     let query = format!(include_str!("tile_query.sql"), tile_table="gz_2010_us_outline_20m",
         x_min=bbox[0],
@@ -56,4 +57,8 @@ pub async fn get_tile(pool: web::Data<DbPool>, tile_id : web::Path<TileID>)->Res
        run_tile_query(&conn, &query) 
     ).await?;
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
+}
+
+pub fn init_routes(cfg: &mut web::ServiceConfig){
+    cfg.service(get_tile);
 }

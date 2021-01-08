@@ -1,7 +1,7 @@
 SELECT ST_AsMVT(q, '{tile_table}', 4096, 'mvt_geom') as mvt 
     FROM (
       SELECT
-          *,
+        --   *,
         --   ogc_fid::INTEGER as id,
           ST_AsMVTGeom(
               geom,

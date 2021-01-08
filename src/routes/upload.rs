@@ -1,4 +1,4 @@
-use actix_web::{Responder, HttpResponse,Error, web};
+use actix_web::{get,post,HttpResponse,Error, web};
 use std::io::Write;
 use actix_multipart::Multipart;
 use futures::{StreamExt,TryStreamExt};
@@ -15,6 +15,7 @@ fn guess_geo_format(content_type:&str, filename: &str){
 
 }
 
+#[get("/")]
 pub async fn simple_upload_form()->HttpResponse{
     let html = r#"<html>
         <head><title>Upload test</title></head>
@@ -55,13 +56,14 @@ pub fn injest_file_to_pg(filepath: &str)-> Result<(),GdalError>{
    Ok(())
 }
 
+#[post("/")]
 pub async fn upload_geo_file(mut payload: Multipart)-> Result<HttpResponse,Error>{
     while let Ok(Some(mut field)) = payload.try_next().await{
         let content_type = field.content_disposition().unwrap();
         let filename = content_type.get_filename().unwrap();
         println!("filename {} content_type {}",filename, content_type);
 
-        let filepath= format!("./tmp/{}", sanitize_filename::sanitize((&filename)));
+        let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
 
         let mut f = web::block(move ||{
             std::fs::create_dir_all("./tmp").expect("was unable to create dir");
@@ -75,14 +77,14 @@ pub async fn upload_geo_file(mut payload: Multipart)-> Result<HttpResponse,Error
             f = web::block(move || f.write_all(&data).map(|_| f)).await?;
         }
 
-        let filepath= format!("./tmp/{}", sanitize_filename::sanitize((&filename)));
+        let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
 
         let fileinfo = web::block(move ||{
             get_file_info(&filepath.clone())
         }).await?;
         println!("file info is {:?}", fileinfo);
 
-        let filepath= format!("./tmp/{}", sanitize_filename::sanitize((&filename)));
+        let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
 
 
         println!("Attempting to load to DB");
@@ -90,10 +92,16 @@ pub async fn upload_geo_file(mut payload: Multipart)-> Result<HttpResponse,Error
             injest_file_to_pg(&filepath)
         }).await?;
 
-        let filepath= format!("./tmp/{}", sanitize_filename::sanitize((&filename)));
+        let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
         web::block(move||{
             std::fs::remove_file(filepath)
         }).await?
     }
     Ok(HttpResponse::Ok().body("Uploaded"))
+}
+
+
+pub fn init_routes(cfg: &mut web::ServiceConfig){
+    cfg.service(simple_upload_form);
+    cfg.service(upload_geo_file);
 }

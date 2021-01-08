@@ -1,3 +1,3 @@
 pub mod tiler;
 
-pub use tiler::get_tile;
+pub use tiler::init_routes;
