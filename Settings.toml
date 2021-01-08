@@ -1,0 +1,2 @@
+server_addr="127.0.0.1:8080"
+db_string ="postgresql://stuart@localhost:5432/stuart"
