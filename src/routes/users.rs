@@ -8,6 +8,7 @@ use crate::auth::AuthService;
 #[derive(Debug,Serialize,Deserialize)]
 pub struct InputUser{
     username: String,
+    password: String
 }
 #[get("/restricted")]
 async fn res(auth:AuthService)->HttpResponse{
@@ -29,12 +30,14 @@ async fn get_user(
         .map_err(|_| HttpResponse::InternalServerError())?
     )
 }
+
 #[post("/")]
 async fn create_user(db: web::Data<DbPool>, input_user: web::Json<InputUser>)->Result<HttpResponse,Error>{
     Ok(
         web::block(move ||{
             let user = NewUser{
                 username: &input_user.username,
+                password: &input_user.password,
                 created_at: chrono::Local::now().naive_local()
             };
             users::create_user(db,&user)

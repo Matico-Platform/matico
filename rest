@@ -1,0 +1,3 @@
+GET https://example.com/comments
+    ?page=2
+    &pageSize=10
