@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate diesel;
 
+extern crate argon2;
+
 use actix_web::{web,App,HttpServer,Responder, middleware, Error};
 use actix_web::dev::ServiceRequest;
 use diesel::r2d2::{self,ConnectionManager};
@@ -58,6 +60,7 @@ async fn main() -> std::io::Result<()> {
         .service(web::scope("/tile").configure(tiler::init_routes))
         .service(web::scope("/upload").configure(routes::upload::init_routes))
         .service(web::scope("/users").configure(routes::users::init_routes))
+        .service(web::scope("/auth").configure(routes::auth::init_routes))
     })
     .bind(config.server_addr.clone())?
     .run();

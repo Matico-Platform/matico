@@ -32,9 +32,6 @@ pub fn validate_token(token:&str)-> Result<bool,ServiceError>{
 
     let res = validate(token,jwk,validations);
     println!("Res is ok {}", res.is_ok());
-    match res.is_ok(){
-        true=> 
-    }
     Ok(res.is_ok())
 }
 

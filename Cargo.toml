@@ -15,7 +15,7 @@ gdal="0.7.0"
 config = "0.10"
 serde = { version = "1.0.104", features = ["derive"] }
 derive_more = "0.99.2"
-diesel = { version = "^1.1.0", features = ["postgres", "r2d2","chrono"] }
+diesel = { version = "^1.1.0", features = ["postgres", "r2d2","chrono", "uuid"] }
 r2d2 = "0.8"
 chrono = { version = "0.4.10", features = ["serde"] }
 diesel_geometry = "1.2.2"
@@ -24,4 +24,6 @@ alcoholic_jwt = "1.0.0"
 reqwest = "0.9.22"
 actix-rt = "1.0.0"
 jsonwebtoken= "7"
-bcrypt = "0.8"
+rust-argon2="0.8"
+rand = "0.7"
+uuid = { version = "0.6", features = ["serde", "v4"] }
