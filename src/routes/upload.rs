@@ -97,7 +97,7 @@ pub async fn upload_geo_file(mut payload: Multipart)-> Result<HttpResponse,Error
             std::fs::remove_file(filepath)
         }).await?
     }
-    Ok(HttpResponse::Ok().body("Uploaded"))
+    Ok(HttpResponse::Created().body("Uploaded"))
 }
 
 

@@ -10,6 +10,12 @@ pub enum ServiceError{
     #[display(fmt="Had Request:{}", _0)]
     BadRequest(String),
 
+    #[display(fmt="Signup Failed")]
+    SignUpFailed(String),
+
+    #[display(fmt="User Not found Error")]
+    UserNotFound,
+
     #[display(fmt="JWKSFetchError")]
     JWKSFetchError
 }
@@ -23,6 +29,12 @@ impl ResponseError for ServiceError{
             ServiceError::BadRequest(ref message)=> HttpResponse::BadRequest().json(message),
             ServiceError::JWKSFetchError=>{
                 HttpResponse::InternalServerError().json("Could not fetch JWKS")
+            }
+            ServiceError::UserNotFound=>{
+                HttpResponse::NotFound().json("User could not be found")
+            }
+            ServiceError::SignUpFailed(failed_reason)=>{
+                HttpResponse::BadRequest().json(failed_reason)
             }
         }
     }

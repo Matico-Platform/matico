@@ -18,7 +18,7 @@ async fn get_user(
     user_id: web::Path<Uuid>
 ) -> Result<HttpResponse, Error>{
     let user = User::find_by_id(db.get_ref(), user_id.into_inner())?;
-    Ok(HttpResponse::Ok().json(user))
+    Ok(HttpResponse::Found().json(user))
 }
 
 

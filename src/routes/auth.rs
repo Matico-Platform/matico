@@ -16,7 +16,7 @@ async fn login(db: web::Data<DbPool>, login_details: web::Json<UserDTO>)->Result
 async fn register(db: web::Data<DbPool>, user: web::Json<UserDTO>)->Result<HttpResponse, ServiceError>{
     println!("HERE");
     let user = User::create(db.get_ref(), user.into_inner())?;
-    Ok(HttpResponse::Ok().json(user))
+    Ok(HttpResponse::Created().json(user))
 }
 
 
