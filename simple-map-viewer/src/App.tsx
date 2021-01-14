@@ -1,5 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
+import {LoginSignup} from './components/LoginSignup/LoginSignup'
+
 import {useAuth0} from "@auth0/auth0-react"
 
 import './App.css';
@@ -25,9 +27,10 @@ function App() {
           <button onClick={()=>logout()}>Logout</button>:
           <button onClick={()=>loginWithRedirect()}>Login</button>
         }
+      <LoginSignup/>
       </header>
       <main>
-            <form target="http://localhost:8080/upload" method="post" enctype="multipart/form-data">
+            <form target="http://localhost:8080/upload" method="post" encType="multipart/form-data">
             <input type="file" multiple name="file" />
             <button type="submit">Submit</button>
             </form>
