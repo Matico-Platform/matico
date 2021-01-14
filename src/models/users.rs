@@ -80,9 +80,10 @@ impl User{
         Ok(user)
     }
 
-    pub fn verify(pool: &DbPool, user: UserDTO)->Result<User,ServiceError>{
-        let user = User::find_by_username(pool, user.username)?;
-        let ok = user.verify_password(&user.password)?;
+    pub fn verify(pool: &DbPool, login_details: UserDTO)->Result<User,ServiceError>{
+        let user = User::find_by_username(pool, login_details.username)?;
+        let ok = user.verify_password(&login_details.password)?;
+        println!("Test is {}",ok);
         match ok{
             true => Ok(user),
             false=> Err(ServiceError::BadRequest("Incorrect Password".into()))
@@ -90,6 +91,7 @@ impl User{
     }
 
     fn verify_password(&self, password: &String)->Result<bool,ServiceError>{
+        println!("Verifying password {}", password);
         argon2::verify_encoded(&self.password, (*password).as_bytes())
         .map_err(|e| ServiceError::BadRequest("Failed to verify password".into()))
     }
