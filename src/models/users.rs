@@ -7,6 +7,9 @@ use argon2::{self, Config};
 use uuid::Uuid;
 use rand::Rng;
 use diesel::prelude::*;
+use jsonwebtoken::{EncodingKey,Header};
+
+static ONE_WEEK: i64 = 60*60*24*7;
 
 
 #[derive(Debug,Serialize,Deserialize,Queryable,Insertable)]
@@ -24,10 +27,11 @@ pub struct User{
 
 #[derive(Serialize, Deserialize, AsChangeset)]
 #[table_name = "users"]
-pub struct UserDTO{
+pub struct SignupDTO{
     pub username: String,
     pub password: String
 }
+
 
 #[derive(Debug,Serialize,Deserialize)]
 struct Claims{
@@ -37,8 +41,8 @@ struct Claims{
     image_url: String
 }
 
-impl From<UserDTO> for User{
-    fn from(user: UserDTO)->Self{
+impl From<SignupDTO> for User{
+    fn from(user: SignupDTO)->Self{
         User{
             id: Uuid::new_v4(),
             username: user.username,
@@ -49,8 +53,47 @@ impl From<UserDTO> for User{
     }
 }
 
+#[derive(Serialize,Deserialize)]
+pub struct LoginDTO{
+    username: String,
+    password: String
+}
+
+#[derive(Serialize,Deserialize)]
+pub struct LoginResponseDTO{
+    pub user:User,
+    pub token: String 
+}
+
+
+#[derive(Serialize, Deserialize)]
+struct UserToken{
+    iat: i64,
+    exp: i64,
+    username: String,
+    id: Uuid 
+}
+
+impl From<&User> for UserToken{
+    fn from(user: &User)->Self{
+        let now = chrono::Utc::now().timestamp_nanos() / 1_000_000_000;
+        Self{
+            iat: now,
+            exp: now + ONE_WEEK,
+            username : user.username.clone(),
+            id: user.id.clone()
+        }
+    }
+}
+
+impl UserToken{
+    pub fn token(&self)->String{
+        jsonwebtoken::encode(&Header::default(), self, &EncodingKey::from_secret("secret".as_ref())).unwrap()
+    }
+}
+
 impl User{
-    pub fn create(pool: &DbPool,user: UserDTO)->Result<User,ServiceError>{
+    pub fn create(pool: &DbPool,user: SignupDTO)->Result<User,ServiceError>{
         let conn = pool.get().unwrap();
 
         let mut user = User::from(user);
@@ -80,7 +123,7 @@ impl User{
         Ok(user)
     }
 
-    pub fn verify(pool: &DbPool, login_details: UserDTO)->Result<User,ServiceError>{
+    pub fn verify(pool: &DbPool, login_details: LoginDTO)->Result<User,ServiceError>{
         let user = User::find_by_username(pool, login_details.username)?;
         let ok = user.verify_password(&login_details.password)?;
         println!("Test is {}",ok);
@@ -102,5 +145,10 @@ impl User{
         self.password = argon2::hash_encoded(self.password.as_bytes(), &salt, &config)
         .map_err(|e| ServiceError::InternalServerError(format!("Failed to hash passowrd {}", e)))?;
         Ok(())
+    }
+
+    pub fn generate_token(&self)->String{        
+        let ut: UserToken = UserToken::from(self);
+        ut.token()
     }
 }

@@ -1,3 +1,3 @@
 mod users;
 
-pub use users::{User,UserDTO};
+pub use users::{User,SignupDTO,LoginDTO,LoginResponseDTO};
