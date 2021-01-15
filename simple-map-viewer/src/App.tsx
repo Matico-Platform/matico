@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import {LoginSignup} from './components/LoginSignup/LoginSignup'
+import {UploadForm} from './components/UploadForm/UploadForm'
 
 import {useAuth0} from "@auth0/auth0-react"
 
@@ -12,29 +13,10 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        {isLoading && 
-        <p>loading...</p>}
-        {isAuthenticated &&
-        <div className='profile'>
-          <h1>{user.nickname}</h1>
-          <p>{user.email}</p>
-          <img src={user.picture}/>
-        </div>
-        }
-        
-        {user ? 
-          <button onClick={()=>logout()}>Logout</button>:
-          <button onClick={()=>loginWithRedirect()}>Login</button>
-        }
-      <LoginSignup/>
-      </header>
       <main>
-            <form target="http://localhost:8080/upload" method="post" encType="multipart/form-data">
-            <input type="file" multiple name="file" />
-            <button type="submit">Submit</button>
-            </form>
-        </main>
+          <LoginSignup/>
+          <UploadForm/>
+      </main>
     </div>
   );
 }

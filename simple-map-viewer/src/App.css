@@ -1,5 +1,18 @@
 .App {
   text-align: center;
+  background-color: #282c34;
+  color:white;
+  height:100vh;
+  width:100vw;
+}
+
+main{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width:100%;
+  height:100%;
 }
 
 .App-logo {
@@ -35,4 +48,26 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.login-signup{
+  box-sizing: border-box;
+  padding:20px;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+}
+
+.tabs{
+  display:flex;
+  justify-content: space-around;
+  box-sizing: border-box;
+  padding:10px 20px;
+}
+
+.login form ,.signup form{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-row-gap: 10px;
+  grid-column-gap: 10px;
 }

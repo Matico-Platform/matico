@@ -30,7 +30,7 @@ export function useLoginSignup(){
 
     const attemptLogin = async (email:String,password:String)=>{
         setLoading(true)
-        let result = await fetch(`${process.env.REACT_API_SERVER}/auth/login`,{
+        let result = await fetch(`${process.env.REACT_APP_SERVER}auth/login`,{
             method:"POST",
 
             body:JSON.stringify({
@@ -48,7 +48,7 @@ export function useLoginSignup(){
 
     const attemptSignup = async (email:string,password:string,username: string)=>{
         setLoading(true);
-        const result = await fetch(`${process.env.REACT_API_SERVER}/auth/login`,{
+        const result = await fetch(`${process.env.REACT_APP_SERVER}auth/signup`,{
             method:"POST",
             body:JSON.stringify({
                 username,

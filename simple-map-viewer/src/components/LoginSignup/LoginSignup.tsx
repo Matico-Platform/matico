@@ -18,16 +18,18 @@ export function LoginSignup(props:Props){
     const [email, setEmail] = useState<string>("")
     const {attemptSignup,attemptLogin,loggedIn,error,loading} = useLoginSignup();
 
-    const login = ()=>{
+    const login = (e: React.FormEvent<HTMLFormElement>)=>{
+        e.preventDefault();
         attemptLogin(email,password)
     }
 
-    const signup =()=>{
+    const signup =(e: React.FormEvent<HTMLFormElement>)=>{
+        e.preventDefault();
         attemptSignup(email,password,username)
     }
     
     return(
-        <div>
+        <div className="login-siginup">
             <div className="tabs">
                 <span onClick={()=>setPane(Panel.Login)}>Login</span>
                 <span onClick={()=>setPane(Panel.Signup)}>Signup</span>

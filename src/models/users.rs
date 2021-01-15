@@ -17,6 +17,7 @@ static ONE_WEEK: i64 = 60*60*24*7;
 pub struct User{
     pub id: Uuid,
     pub username: String,
+    pub email:String,
     #[serde(skip_serializing)]
     pub password: String,
     pub created_at: NaiveDateTime,
@@ -29,7 +30,8 @@ pub struct User{
 #[table_name = "users"]
 pub struct SignupDTO{
     pub username: String,
-    pub password: String
+    pub password: String,
+    pub email: String
 }
 
 
@@ -45,6 +47,7 @@ impl From<SignupDTO> for User{
     fn from(user: SignupDTO)->Self{
         User{
             id: Uuid::new_v4(),
+            email: user.email,
             username: user.username,
             password: user.password,
             created_at: Utc::now().naive_utc(),
@@ -55,7 +58,7 @@ impl From<SignupDTO> for User{
 
 #[derive(Serialize,Deserialize)]
 pub struct LoginDTO{
-    username: String,
+    email: String,
     password: String
 }
 
@@ -106,10 +109,19 @@ impl User{
         Ok(user)
     }
 
-    pub fn find_by_username(pool: &DbPool, email:String)-> Result<Self,ServiceError>{
+    pub fn find_by_username(pool: &DbPool, username:String)-> Result<Self,ServiceError>{
         let conn = pool.get().unwrap();
 
-        let user = users::table.filter(users::username.eq(email))
+        let user = users::table.filter(users::username.eq(username))
+            .first(&conn)
+            .map_err(|e| ServiceError::BadRequest("No user with that name".into()))?;
+        Ok(user)
+    }
+
+    pub fn find_by_email(pool: &DbPool, email:String)-> Result<Self,ServiceError>{
+        let conn = pool.get().unwrap();
+
+        let user = users::table.filter(users::email.eq(email))
             .first(&conn)
             .map_err(|e| ServiceError::BadRequest("No user with that name".into()))?;
         Ok(user)
@@ -124,7 +136,7 @@ impl User{
     }
 
     pub fn verify(pool: &DbPool, login_details: LoginDTO)->Result<User,ServiceError>{
-        let user = User::find_by_username(pool, login_details.username)?;
+        let user = User::find_by_email(pool, login_details.email)?;
         let ok = user.verify_password(&login_details.password)?;
         println!("Test is {}",ok);
         match ok{

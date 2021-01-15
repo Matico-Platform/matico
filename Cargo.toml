@@ -27,3 +27,4 @@ jsonwebtoken= "7"
 rust-argon2="0.8"
 rand = "0.7"
 uuid = { version = "0.6", features = ["serde", "v4"] }
+actix-cors ="0.5.4"
