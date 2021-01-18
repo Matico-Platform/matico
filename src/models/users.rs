@@ -69,8 +69,8 @@ pub struct LoginResponseDTO{
 }
 
 
-#[derive(Serialize, Deserialize)]
-struct UserToken{
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UserToken{
     iat: i64,
     exp: i64,
     username: String,

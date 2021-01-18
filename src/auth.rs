@@ -1,10 +1,13 @@
 use crate::errors::ServiceError;
+use crate::models::UserToken;
 use serde::{Deserialize,Serialize};
 use alcoholic_jwt::{token_kid, validate, Validation, JWKS};
 use std::error::Error;
 use std::str::FromStr;
 use actix_web::{FromRequest, HttpRequest,dev::Payload, error::ErrorUnauthorized};
 use futures::future::{err,ok,Ready};
+use log::{info};
+use jsonwebtoken::{decode,  DecodingKey};
 
 #[derive(Debug,Serialize,Deserialize)]
 struct Claims{
@@ -13,7 +16,7 @@ struct Claims{
     exp: usize
 }
 
-pub fn validate_token(token:&str)-> Result<bool,ServiceError>{
+pub fn validate_token_auth0(token:&str)-> Result<bool,ServiceError>{
     // let authority = std::env::var("AUTHORITY").expect("AUTHORITY must be set");
     let authority = String::from("https://dc-scout.us.auth0.com/");
 
@@ -35,9 +38,16 @@ pub fn validate_token(token:&str)-> Result<bool,ServiceError>{
     Ok(res.is_ok())
 }
 
+pub fn validate_token(token: &str)->Result<UserToken,ServiceError>{
+    let t = decode::<UserToken>(token, &DecodingKey::from_secret("secret".as_ref()), &jsonwebtoken::Validation::default())
+    .map_err(|e| { ServiceError::InvalidToken})?;
+    Ok(t.claims)
+}
+
 // Extracts the token from the request
 fn extract_token_from_req(req: &HttpRequest)->Option<&str>{
     let auth = req.headers().get("Authorization");
+    println!("auth is {:?}", auth);
     match auth{
         Some(auth_str)=>{
             let auth_str = auth_str.to_str().unwrap();
@@ -60,7 +70,7 @@ fn fetch_jwks(uri:&str)->Result<JWKS,Box<dyn Error>>{
 }
 
 pub struct AuthService{
-    pub user: Option<String>
+    pub user: Option<UserToken>
 }
 
 // impl FromStr for AuthService{
@@ -77,11 +87,15 @@ impl FromRequest for AuthService{
     type Config = ();
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload)->Self::Future{
+       info!("Extracting token");
        let token = extract_token_from_req(req);
        match token{
            Some(t)=>{
                let valid = validate_token(token.unwrap());
-               ok(AuthService{user:Some(String::from(t))})
+               match valid{
+                   Ok(token)=>ok(AuthService{user:Some(token)}),
+                   Err(e)=>err(e.into())
+               }
            }
            None => ok(AuthService{user:None}) 
        }

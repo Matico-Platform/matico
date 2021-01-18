@@ -17,7 +17,10 @@ pub enum ServiceError{
     UserNotFound,
 
     #[display(fmt="JWKSFetchError")]
-    JWKSFetchError
+    JWKSFetchError,
+
+    #[display(fmt="Invalid Token")]
+    InvalidToken
 }
 
 impl ResponseError for ServiceError{
@@ -35,6 +38,9 @@ impl ResponseError for ServiceError{
             }
             ServiceError::SignUpFailed(failed_reason)=>{
                 HttpResponse::BadRequest().json(failed_reason)
+            }
+            ServiceError::InvalidToken=>{
+                HttpResponse::Unauthorized().json("Invalid Token")
             }
         }
     }
