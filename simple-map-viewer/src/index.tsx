@@ -3,17 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {Auth0Provider} from "@auth0/auth0-react"
+import {ThemeProvider} from 'styled-components'
+import {Theme, GloablStyle} from './theme'
 
 ReactDOM.render(
   <React.StrictMode>
-    <Auth0Provider
-    domain ="dc-scout.us.auth0.com"
-    clientId="wtH5Q0oso4gPlV2vfrp67DhYVWD2oZha"
-    redirectUri={window.location.origin}
-    >
-      <App />
-    </Auth0Provider>
+      <ThemeProvider theme={Theme}>
+        <GloablStyle />
+        <App />
+      </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

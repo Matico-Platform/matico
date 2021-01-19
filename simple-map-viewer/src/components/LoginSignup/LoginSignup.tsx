@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react'
 import {useLoginSignup} from '../../hooks/useLoginSignup'
-
+import {Card} from '../Card/Card'
 
 type Props={
 
@@ -29,7 +29,7 @@ export function LoginSignup(props:Props){
     }
     
     return(
-        <div className="login-siginup">
+        <Card>
             <div className="tabs">
                 <span onClick={()=>setPane(Panel.Login)}>Login</span>
                 <span onClick={()=>setPane(Panel.Signup)}>Signup</span>
@@ -58,6 +58,6 @@ export function LoginSignup(props:Props){
                     </form>
                 </div>
             }
-        </div>
+        </Card>
     )
 }

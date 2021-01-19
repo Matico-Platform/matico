@@ -30,9 +30,11 @@ export function useLoginSignup(){
 
     const attemptLogin = async (email:String,password:String)=>{
         setLoading(true)
-        let result = await fetch(`${process.env.REACT_APP_SERVER}auth/login`,{
+        let result = await fetch(`${process.env.REACT_APP_SERVER}/auth/login`,{
             method:"POST",
-
+            headers:{
+                "Content-Type": "application/json",
+            },
             body:JSON.stringify({
                 email,
                 password
@@ -41,15 +43,18 @@ export function useLoginSignup(){
         setLoading(false);
         if(result.status===200){
             let response: LoginResponse = await result.json()
-            localStorage.setToken(response.token)
+            localStorage.setItem("token",response.token)
             setTokenString(response.token)
         }
     };
 
     const attemptSignup = async (email:string,password:string,username: string)=>{
         setLoading(true);
-        const result = await fetch(`${process.env.REACT_APP_SERVER}auth/signup`,{
+        const result = await fetch(`${process.env.REACT_APP_SERVER}/auth/signup`,{
             method:"POST",
+            headers:{
+                "Content-Type": "application/json",
+            },
             body:JSON.stringify({
                 username,
                 password,
