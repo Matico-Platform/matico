@@ -1,4 +1,21 @@
 table! {
+    datasets (id) {
+        id -> Uuid,
+        owner_id -> Uuid,
+        name -> Text,
+        original_filename -> Text,
+        original_type -> Text,
+        sync_dataset -> Bool,
+        sync_url -> Text,
+        sync_frequency_seconds -> Nullable<Int8>,
+        post_import_script -> Nullable<Text>,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+
+table! {
     spatial_ref_sys (srid) {
         srid -> Int4,
         auth_name -> Nullable<Varchar>,
@@ -19,7 +36,10 @@ table! {
     }
 }
 
+joinable!(datasets -> users (owner_id));
+
 allow_tables_to_appear_in_same_query!(
+    datasets,
     spatial_ref_sys,
     users,
 );
