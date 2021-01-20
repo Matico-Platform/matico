@@ -15,7 +15,7 @@ fn guess_geo_format(content_type:&str, filename: &str){
 
 }
 
-#[get("/")]
+#[get("")]
 pub async fn simple_upload_form()->HttpResponse{
     let html = r#"<html>
         <head><title>Upload test</title></head>
@@ -56,7 +56,7 @@ pub fn injest_file_to_pg(filepath: &str)-> Result<(),GdalError>{
    Ok(())
 }
 
-#[post("/")]
+#[post("")]
 pub async fn upload_geo_file(mut payload: Multipart)-> Result<HttpResponse,Error>{
     while let Ok(Some(mut field)) = payload.try_next().await{
         let content_type = field.content_disposition().unwrap();
@@ -84,18 +84,18 @@ pub async fn upload_geo_file(mut payload: Multipart)-> Result<HttpResponse,Error
         }).await?;
         println!("file info is {:?}", fileinfo);
 
-        let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
+        // let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
 
 
-        println!("Attempting to load to DB");
-        web::block(move||{
-            injest_file_to_pg(&filepath)
-        }).await?;
+        // println!("Attempting to load to DB");
+        // web::block(move||{
+        //     injest_file_to_pg(&filepath)
+        // }).await?;
 
-        let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
-        web::block(move||{
-            std::fs::remove_file(filepath)
-        }).await?
+        // let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
+        // web::block(move||{
+        //     std::fs::remove_file(filepath)
+        // }).await?
     }
     Ok(HttpResponse::Created().body("Uploaded"))
 }
