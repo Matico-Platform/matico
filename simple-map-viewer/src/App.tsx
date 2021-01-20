@@ -1,19 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
-import { LoginSignup } from './components/LoginSignup/LoginSignup';
-import { UploadForm } from './components/UploadForm/UploadForm';
-import { useProfile } from './hooks/useProfile';
+import { LoginSignup } from './Components/LoginSignup/LoginSignup';
+import { UploadForm } from './Components/UploadForm/UploadForm';
+import { useProfile } from './Hooks/useProfile';
 import {
     AppLayout,
     NavArea,
     DetailsArea,
     MainArea,
-} from './components/Layout/Layout';
+} from './Components/Layout/Layout';
 import {
     NavBar,
     NavBarButton,
     NavBarSpacer,
-} from './components/NavBar/NavBar';
+} from './Components/NavBar/NavBar';
 import {
     BrowserRouter as Router,
     Switch,
@@ -22,9 +21,9 @@ import {
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { HomePage } from './components/HomePage/HomePage';
+import { HomePage } from './Pages/HomePage/HomePage';
 
-import { Dashboard } from './components/Dashboard/Dashboard';
+import { Dashboard } from './Components/Dashboard/Dashboard';
 
 import {
     faMap,

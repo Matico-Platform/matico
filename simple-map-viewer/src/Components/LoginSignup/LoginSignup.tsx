@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLoginSignup } from '../../hooks/useLoginSignup';
+import { useLoginSignup } from '../../Hooks/useLoginSignup';
 import { Card } from '../Card/Card';
 import { Tabs, Tab } from '../Tabs/Tabs';
 import { Styles } from './LoginSignupStyles';
