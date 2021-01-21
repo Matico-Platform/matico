@@ -38,4 +38,15 @@ export function uploadFile(
     });
 }
 
+type CreateSyncDataset = {
+    name: string;
+    url: string;
+    description: string;
+    refreshInterval: number;
+};
+
+export function createSyncDataset(syncDetails: CreateSyncDataset) {
+    return a.post('/datasets', syncDetails);
+}
+
 export default a;
