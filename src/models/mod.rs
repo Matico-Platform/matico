@@ -1,5 +1,5 @@
-mod users;
 mod datasets;
+mod users;
 
-pub use users::{User,SignupDTO,LoginDTO,LoginResponseDTO, UserToken};
-pub use datasets::{Dataset};
+pub use datasets::{CreateDatasetDTO, Dataset, DatasetSearch, SyncDatasetDTO};
+pub use users::{LoginDTO, LoginResponseDTO, SignupDTO, User, UserToken};

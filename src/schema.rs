@@ -6,14 +6,14 @@ table! {
         original_filename -> Text,
         original_type -> Text,
         sync_dataset -> Bool,
-        sync_url -> Text,
+        sync_url -> Nullable<Text>,
         sync_frequency_seconds -> Nullable<Int8>,
         post_import_script -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        public -> Bool,
     }
 }
-
 
 table! {
     spatial_ref_sys (srid) {
