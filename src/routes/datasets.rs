@@ -3,7 +3,7 @@ use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::{CreateDatasetDTO, Dataset, DatasetSearch, SyncDatasetDTO};
 use actix_multipart::Multipart;
-use actix_web::{get, post, web, Error, HttpResponse};
+use actix_web::{get, post, web,guard, Error, HttpResponse};
 use chrono::{NaiveDateTime, Utc};
 use futures::{StreamExt, TryStreamExt};
 use serde::{Deserialize, Serialize};
@@ -27,7 +27,7 @@ async fn get_dataset(
     Ok(HttpResponse::Ok().json(dataset))
 }
 
-#[post("")]
+// This maps to "/" when content type is multipart/form-data
 async fn create_dataset(
     db: web::Data<DbPool>,
     mut payload: Multipart,
@@ -49,28 +49,30 @@ async fn create_dataset(
             None => println!("NO file name"),
         };
     }
-    Ok(HttpResponse::Ok().json("Created"))
+    Ok(HttpResponse::Ok().json("Created dataset"))
 }
 
-#[post("")]
-async fn sync_dataset(
+// This maps to "/" when content type is application/json
+async fn create_sync_dataset(
     db: web::Data<DbPool>,
-    sync_details: web::Json<SyncDatasetDTO>,
-    logged_in_user: AuthService,
-) -> Result<HttpResponse, ServiceError> {
-    println!("GOT THE SYNC REQUEST");
-
-    match logged_in_user.user {
-        Some(u) => println!("Got user {:?}", u),
-        None => println!("NO logged in user"),
-    }
-
-    Ok(HttpResponse::Ok().json("Created"))
+    logged_in_user : AuthService,
+    sync_details : web::Json<SyncDatasetDTO>
+) -> Result<HttpResponse,ServiceError>{
+    println!("HITTING SYNC ENDPOINT");
+    Ok(HttpResponse::Ok().json("SYNC ENDPOINT"))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_datasets);
     cfg.service(get_dataset);
-    cfg.service(create_dataset);
-    cfg.service(sync_dataset);
+    cfg.service(web::resource("").route(
+        web::post().guard(guard::Header(
+            "content-type",
+            "application/json"
+        ))
+        .to(create_sync_dataset)
+    ).route(
+        web::post()
+        .to(create_dataset)
+    ));
 }
