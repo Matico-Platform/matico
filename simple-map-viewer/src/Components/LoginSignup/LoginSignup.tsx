@@ -3,6 +3,7 @@ import { useLoginSignup } from '../../Hooks/useLoginSignup';
 import { Card } from '../Card/Card';
 import { Tabs, Tab } from '../Tabs/Tabs';
 import { Styles } from './LoginSignupStyles';
+import { Form } from '../Forms/Forms';
 
 type Props = {};
 
@@ -32,7 +33,7 @@ export function LoginSignup(props: Props) {
         <Card>
             <Tabs>
                 <Tab name="login">
-                    <Styles.Form onSubmit={login}>
+                    <Form onSubmit={login}>
                         <label>email</label>
                         <input
                             value={email}
@@ -50,10 +51,10 @@ export function LoginSignup(props: Props) {
                             placeholder="password"
                         />
                         <button type="submit">Login</button>
-                    </Styles.Form>
+                    </Form>
                 </Tab>
                 <Tab name="signup">
-                    <Styles.Form onSubmit={signup}>
+                    <Form onSubmit={signup}>
                         <label>username</label>
                         <input
                             value={username}
@@ -80,7 +81,7 @@ export function LoginSignup(props: Props) {
                             placeholder="password"
                         />
                         <button type="submit">Signup</button>
-                    </Styles.Form>
+                    </Form>
                 </Tab>
             </Tabs>
         </Card>
