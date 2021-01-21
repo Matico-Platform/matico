@@ -31,7 +31,7 @@ export const UploadForm: React.FC<Props> = ({}: Props) => {
                                     {startUpload ? (
                                         <Uploader
                                             key={f.name}
-                                            url="/upload"
+                                            url="/datasets"
                                             file={f}
                                         />
                                     ) : (
