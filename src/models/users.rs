@@ -71,10 +71,10 @@ pub struct LoginResponseDTO{
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserToken{
-    iat: i64,
-    exp: i64,
-    username: String,
-    id: Uuid 
+    pub iat: i64,
+    pub exp: i64,
+    pub username: String,
+    pub id: Uuid 
 }
 
 impl From<&User> for UserToken{

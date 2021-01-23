@@ -1,13 +1,18 @@
 use crate::auth::AuthService;
 use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::{CreateDatasetDTO, Dataset, DatasetSearch, SyncDatasetDTO};
-use actix_multipart::Multipart;
+use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
+
+use crate::models::{ UserToken, Dataset, DatasetSearch, CreateDatasetDTO, CreateSyncDatasetDTO};
+use actix_multipart::{Multipart, Field};
 use actix_web::{get, post, web,guard, Error, HttpResponse};
 use chrono::{NaiveDateTime, Utc};
 use futures::{StreamExt, TryStreamExt};
 use serde::{Deserialize, Serialize};
+use std::convert::TryInto;
 use uuid::Uuid;
+use log::{warn, info};
+use std::io::Write;
 
 #[get("")]
 async fn get_datasets(
@@ -27,36 +32,105 @@ async fn get_dataset(
     Ok(HttpResponse::Ok().json(dataset))
 }
 
+async fn upload_dataset_to_tmp_file(mut field: Field, filename: &str)-> Result<String,Error>{
+
+  let filepath = format!("./tmp{}", sanitize_filename::sanitize(filename));
+  let mut file = web::block(move || {
+      std::fs::create_dir_all("./tmp").expect("was unable to create dir");
+      std::fs::File::create(&filepath.clone())
+  }).await.unwrap();
+
+  while let Some(chunk)= field.next().await{
+        let data  = chunk.unwrap();
+        file = web::block(move || file.write_all(&data).map(|_| file)).await?;
+  };
+  let filepath = format!("./tmp{}", sanitize_filename::sanitize(filename));
+  Ok(filepath) 
+}
+
+async fn parse_dataset_metadata(mut field:Field) -> Result<CreateDatasetDTO, ServiceError>{
+    info!("Parsing metadata");
+    let field_content = field.next()
+        .await
+        .unwrap()
+        .map_err(|_| 
+            ServiceError::InternalServerError(String::from("Failed to read metadata from mutlipart from"))
+    )?;
+
+    let metadata_str = std::str::from_utf8(&field_content)
+    .map_err(|_| ServiceError::InternalServerError("Failed to parse file metadata".into()))?;
+    
+    let metadata : CreateDatasetDTO = serde_json::from_str(metadata_str).map_err(|_| ServiceError::BadRequest(
+        String::from("Failed to parse metadata, needs a name and description field")
+    ))?;
+    info!("GOT METADATA AS STRING {:?}", metadata);
+    Ok(metadata)
+}
+
 // This maps to "/" when content type is multipart/form-data
 async fn create_dataset(
     db: web::Data<DbPool>,
     mut payload: Multipart,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-    println!("GOT THE REQUEST");
 
-    match logged_in_user.user {
-        Some(u) => println!("Got user {:?}", u),
-        None => println!("NO logged in user"),
-    }
+    let user : UserToken = logged_in_user.user.ok_or(ServiceError::Unauthorized)?;
 
-    while let Ok(Some(mut field)) = payload.try_next().await {
+    let mut file : Option<String> = None;
+    let mut metadata : Option<CreateDatasetDTO> = None;
+
+    while let Ok(Some(field)) = payload.try_next().await {
         let content_type = field.content_disposition().unwrap();
         let name = content_type.get_name().unwrap();
-        println!("Content type name: {} deets: {}", name, content_type);
-        match content_type.get_filename() {
-            Some(f) => println!("File name is {}", f),
-            None => println!("NO file name"),
-        };
+        match name{
+            "file" => {
+                file = Some(upload_dataset_to_tmp_file(field,&name).await.
+                map_err(|_| ServiceError::UploadFailed)?);
+                info!("Uploaded file");
+            },
+            "metadata"=>{
+                metadata = Some(parse_dataset_metadata(field).await?);
+            },
+            _=>warn!("Unexpected form type in upload")
+        }
     }
-    Ok(HttpResponse::Ok().json("Created dataset"))
+
+    let filepath= file.unwrap();
+    let metadata = metadata.unwrap();
+    let table_name = metadata.name.clone();
+
+    
+    let file_info = get_file_info(&filepath).map_err(|_| ServiceError::BadRequest("Failed to extract column info from file".into()))?;
+
+    //Figure out how to not need this clone
+    load_dataset_to_db(filepath.clone(), table_name).await?;
+
+    let now = chrono::Utc::now().timestamp_nanos() / 1_000_000_000;
+    let dataset = Dataset{
+        id: Uuid::new_v4(),
+        owner_id: user.id ,
+        name: metadata.name.clone(),
+        description: metadata.description,
+        original_filename: filepath.clone(),
+        original_type: "json".into(),
+        sync_dataset: false,
+        sync_url : None,
+        sync_frequency_seconds:None,
+        post_import_script: None,
+        created_at: Utc::now().naive_utc(),
+        updated_at: Utc::now().naive_utc(),
+        public:false
+    };
+    dataset.create_or_update(db.get_ref());
+
+    Ok(HttpResponse::Ok().json(file_info))
 }
 
 // This maps to "/" when content type is application/json
 async fn create_sync_dataset(
     db: web::Data<DbPool>,
     logged_in_user : AuthService,
-    sync_details : web::Json<SyncDatasetDTO>
+    sync_details : web::Json<CreateSyncDatasetDTO>
 ) -> Result<HttpResponse,ServiceError>{
     println!("HITTING SYNC ENDPOINT");
     Ok(HttpResponse::Ok().json("SYNC ENDPOINT"))

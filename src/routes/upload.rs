@@ -11,34 +11,7 @@ use gdal::{Dataset, Driver};
 use std::io::Write;
 use std::path::Path;
 
-fn guess_geo_format(content_type: &str, filename: &str) {}
 
-#[get("")]
-pub async fn simple_upload_form() -> HttpResponse {
-    let html = r#"<html>
-        <head><title>Upload test</title></head>
-        <body>
-            <form target="/datasets" action="/datasets" method="post" enctype="multipart/form-data">
-                <input type='text' id='name' name='name placeholder='name'/>
-                <input type='text' id='description' name='description' placeholder='description'/>
-                <input type="file" multiple name="file">
-                <button type="submit">Submit</button>
-            </form>
-        </body>
-    </html>"#;
-    HttpResponse::Ok().body(html)
-}
-
-fn get_file_info(filepath: &str) -> Result<Vec<(String, u32, i32)>, GdalError> {
-    let mut dataset = Dataset::open(Path::new(filepath))?;
-    let layer = dataset.layer(0)?;
-    let fields = layer
-        .defn()
-        .fields()
-        .map(|field| (field.name(), field.field_type(), field.width()))
-        .collect::<Vec<_>>();
-    Ok(fields)
-}
 
 pub fn injest_file_to_pg(filepath: &str) -> Result<(), GdalError> {
     let mut dataset = Dataset::open(Path::new(filepath))?;
@@ -62,50 +35,4 @@ pub fn injest_file_to_pg(filepath: &str) -> Result<(), GdalError> {
             .collect::<Vec<_>>();
     }
     Ok(())
-}
-
-#[post("")]
-pub async fn upload_geo_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
-    while let Ok(Some(mut field)) = payload.try_next().await {
-        let content_type = field.content_disposition().unwrap();
-        let filename = content_type.get_filename().unwrap();
-        println!("filename {} content_type {}", filename, content_type);
-
-        let filepath = format!("./tmp/{}", sanitize_filename::sanitize(&filename));
-
-        let mut f = web::block(move || {
-            std::fs::create_dir_all("./tmp").expect("was unable to create dir");
-            std::fs::File::create(&filepath.clone())
-        })
-        .await
-        .unwrap();
-
-        while let Some(chunk) = field.next().await {
-            let data = chunk.unwrap();
-            f = web::block(move || f.write_all(&data).map(|_| f)).await?;
-        }
-
-        let filepath = format!("./tmp/{}", sanitize_filename::sanitize(&filename));
-
-        let fileinfo = web::block(move || get_file_info(&filepath.clone())).await?;
-        println!("file info is {:?}", fileinfo);
-
-        // let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
-
-        // println!("Attempting to load to DB");
-        // web::block(move||{
-        //     injest_file_to_pg(&filepath)
-        // }).await?;
-
-        // let filepath= format!("./tmp/{}", sanitize_filename::sanitize(&filename));
-        // web::block(move||{
-        //     std::fs::remove_file(filepath)
-        // }).await?
-    }
-    Ok(HttpResponse::Created().body("Uploaded"))
-}
-
-pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(simple_upload_form);
-    cfg.service(upload_geo_file);
 }
