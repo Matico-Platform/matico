@@ -12,8 +12,10 @@ table! {
         created_at -> Timestamp,
         updated_at -> Timestamp,
         public -> Bool,
+        description -> Text,
     }
 }
+
 
 table! {
     spatial_ref_sys (srid) {
@@ -41,5 +43,5 @@ joinable!(datasets -> users (owner_id));
 allow_tables_to_appear_in_same_query!(
     datasets,
     spatial_ref_sys,
-    users,
+    users
 );

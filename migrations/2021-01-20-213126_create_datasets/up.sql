@@ -11,6 +11,7 @@ CREATE TABLE datasets(
     created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
     updated_at TIMESTAMP NOT NULL,
     public BOOLEAN NOT NULL DEFAULT false,
+    description TEXT NOT NULL DEFAULT '',
     CONSTRAINT fk_user
     FOREIGN KEY(owner_id)
     REFERENCES users(id)
