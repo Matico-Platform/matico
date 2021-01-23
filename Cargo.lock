@@ -2551,6 +2551,7 @@ dependencies = [
  "rust-argon2",
  "sanitize-filename",
  "serde 1.0.119",
+ "serde_json",
  "uuid 0.6.5",
 ]
 
