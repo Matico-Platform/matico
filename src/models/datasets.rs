@@ -3,6 +3,7 @@ use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use std::default::Default;
 
 use crate::db::DbPool;
 use crate::errors::ServiceError;
@@ -16,7 +17,7 @@ pub struct DatasetSearch {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CreateDatasetDTO {
+pub struct CreateSyncDatasetDTO {
     name: String,
     sync_url: Option<String>,
     sync_frequency_seconds: Option<i64>,
@@ -24,36 +25,38 @@ pub struct CreateDatasetDTO {
     public: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Associations)]
+#[derive(Debug, Serialize, Deserialize,Insertable, AsChangeset, Queryable, Associations)]
 #[belongs_to(parent = "User", foreign_key = "owner_id")]
 #[table_name = "datasets"]
 pub struct Dataset {
     pub id: Uuid,
-    owner_id: Uuid,
-    name: String,
-    original_filename: String,
-    original_type: String,
-    sync_dataset: bool,
-    sync_url: Option<String>,
-    sync_frequency_seconds: Option<i64>,
-    post_import_script: Option<String>,
+    pub owner_id: Uuid,
+    pub name: String,
+    pub original_filename: String,
+    pub original_type: String,
+    pub sync_dataset: bool,
+    pub sync_url: Option<String>,
+    pub sync_frequency_seconds: Option<i64>,
+    pub post_import_script: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub public: bool,
+    pub description: String
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct SyncDatasetDTO {
-    name: String,
-    description: String,
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CreateDatasetDTO{
+    pub name: String,
+    pub description: String,
 }
 
 impl Dataset {
-    pub fn search(pool: &DbPool, search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> {
+    pub fn search(pool: &DbPool, _search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> { //     let conn = pool.get().unwrap();
         let conn = pool.get().unwrap();
         let results: Vec<Dataset> = datasets
             .get_results(&conn)
-            .map_err(|e| ServiceError::InternalServerError("Failed to retrive datasets".into()))?;
+            .map_err(|_| ServiceError::InternalServerError("Failed to retrive datasets".into()))?;
         Ok(results)
         // Ok(datasets)
     }
@@ -63,7 +66,18 @@ impl Dataset {
         let dataset = datasets::table
             .filter(datasets::id.eq(dataset_id))
             .first(&conn)
-            .map_err(|e| ServiceError::DatasetNotFound)?;
+            .map_err(|_| ServiceError::DatasetNotFound)?;
         Ok(dataset)
+    }
+
+    pub fn create_or_update(&self, pool: &DbPool)->Result<Dataset,ServiceError>{
+        let conn = pool.get().unwrap();
+        diesel::insert_into(datasets)
+        .values(self)
+        .on_conflict(datasets::id)
+        .do_update()
+        .set(self)
+        .get_result(&conn)
+        .map_err(|e| ServiceError::BadRequest("Failed to create or update dataset".into()))
     }
 }
