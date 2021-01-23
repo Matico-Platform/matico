@@ -22,6 +22,7 @@ mod models;
 mod routes;
 mod schema;
 mod tiler;
+mod utils;
 
 async fn home() -> impl Responder {
     format!("Hey buddy!")
@@ -69,10 +70,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .data(pool.clone())
             .wrap(middleware::Logger::default())
-            .wrap(middleware::Logger::new("%{Authorization}i"))
+            .wrap(middleware::Logger::new("%{Content-Type}i"))
             .route("/", web::get().to(home))
             .service(web::scope("/tile").configure(tiler::init_routes))
-            .service(web::scope("/upload").configure(routes::upload::init_routes))
             .service(web::scope("/users").configure(routes::users::init_routes))
             .service(web::scope("/auth").configure(routes::auth::init_routes))
             .service(web::scope("/datasets").configure(routes::datasets::init_routes))
