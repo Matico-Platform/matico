@@ -1,4 +1,24 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+
+export interface User {
+    id: string;
+    username: string;
+    email: string;
+    created_at: Date;
+    updated_at: Date;
+}
+
+// export interface Token {
+//     iat: number;
+//     exp: number;
+//     username: string;
+//     id: string;
+// }
+
+export interface LoginResponse {
+    user: User;
+    token: string;
+}
 
 let a = axios.create({
     baseURL: 'http://localhost:8080',
@@ -21,13 +41,17 @@ a.interceptors.request.use(
 export function uploadFile(
     file: File,
     url: string,
-    onProgress: (progress: number) => void,
+    metadata?: any,
+    onProgress?: (progress: number) => void,
 ) {
     let formData = new FormData();
+    formData.append('metadata', JSON.stringify(metadata));
     formData.append('file', file);
 
     const progress = (e: any) => {
-        onProgress(Math.round((100 * e.loaded) / e.total));
+        if (onProgress) {
+            onProgress(Math.round((100 * e.loaded) / e.total));
+        }
     };
 
     return a.post(url, formData, {
@@ -47,6 +71,21 @@ type CreateSyncDataset = {
 
 export function createSyncDataset(syncDetails: CreateSyncDataset) {
     return a.post('/datasets', syncDetails);
+}
+
+export async function login(
+    email: String,
+    password: String,
+): Promise<AxiosResponse<LoginResponse>> {
+    return a.post('/auth/login', { email, password });
+}
+
+export async function signup(
+    username: String,
+    password: String,
+    email: String,
+): Promise<AxiosResponse<User>> {
+    return a.post('/auth/signup', { email, password, username });
 }
 
 export default a;
