@@ -8,6 +8,7 @@ type Props = {
     url: string;
     onDone?: () => void;
     onFail?: (e: Error) => void;
+    metadata?: any;
 };
 
 enum UploadState {
@@ -19,6 +20,7 @@ enum UploadState {
 export const Uploader: React.FC<Props> = ({
     file,
     url,
+    metadata,
     onDone,
     onFail,
 }) => {
@@ -28,7 +30,7 @@ export const Uploader: React.FC<Props> = ({
         UploadState.PENDING,
     );
     useEffect(() => {
-        uploadFile(file, url, setProgress)
+        uploadFile(file, url, metadata, setProgress)
             .then(() => setState(UploadState.DONE))
             .catch((error: any) => {
                 setError(error);

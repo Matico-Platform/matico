@@ -1,67 +1,55 @@
-import {useState,useEffect} from 'react'
-import {useJwt} from 'react-jwt'
+import { AxiosResponse } from 'axios';
+import { useState, useEffect } from 'react';
+import { useJwt } from 'react-jwt';
+import { login, LoginResponse, User, signup } from '../api';
 
-export type User ={
-    username: string,
-    password: string,
-    email: string
-}
+export function useLoginSignup() {
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [tokenString, setTokenString] = useState<string | null>(
+        null,
+    );
+    const { decodedToken, isExpired } = useJwt(
+        tokenString ? tokenString : '',
+    );
 
-export type LoginResponse={
-    user: User,
-    token:string
-}
-
-export function useLoginSignup(){
-    const [error, setError] = useState<string|null>(null)
-    const [loading, setLoading] = useState(false)
-    const [tokenString, setTokenString] = useState<string| null>(null)
-    const {decodedToken, isExpired} = useJwt(tokenString ? tokenString : '');
-
-    console.log("Token is ",decodedToken)
-    useEffect(()=>{
+    console.log('Token is ', decodedToken);
+    useEffect(() => {
         const ts = localStorage.getItem('token');
-        if(ts){
-            setTokenString(ts)
+        if (ts) {
+            setTokenString(ts);
         }
-    },[])
+    }, []);
 
     const loggedIn = tokenString && !isExpired;
 
-    const attemptLogin = async (email:String,password:String)=>{
-        setLoading(true)
-        let result = await fetch(`${process.env.REACT_APP_SERVER}auth/login`,{
-            method:"POST",
-            body:JSON.stringify({
-                email,
-                password
-            }),
-            headers:{
-                'Content-Type': 'application/json'
-            },
-        })
+    const attemptLogin = async (email: String, password: String) => {
+        setLoading(true);
+        let reply = await login(email, password);
         setLoading(false);
-        if(result.status===200){
-            let response: LoginResponse = await result.json()
-            localStorage.setItem("token",response.token)
-            setTokenString(response.token)
+        if (reply.status === 200) {
+            let response = reply.data;
+            localStorage.setItem(
+                'token',
+                JSON.stringify(response.token),
+            );
+            setTokenString(response.token);
         }
     };
 
-    const attemptSignup = async (email:string,password:string,username: string)=>{
+    const attemptSignup = async (
+        email: string,
+        password: string,
+        username: string,
+    ) => {
         setLoading(true);
-        const result = await fetch(`${process.env.REACT_APP_SERVER}auth/signup`,{
-            method:"POST",
-            headers:{
-                'Content-Type': 'application/json'
-            },
-            body:JSON.stringify({
-                username,
-                password,
-                email
-            })
-        })
-    }
+        let reply = await signup(username, password, email);
+        if ((reply.status = 200)) {
+            return reply.data;
+        } else {
+            throw Error('Signup failed');
+        }
+    };
 
-    return {loggedIn,attemptLogin, attemptSignup, loading,error}
+    return { loggedIn, attemptLogin, attemptSignup, loading, error };
 }

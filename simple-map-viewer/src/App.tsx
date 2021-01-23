@@ -1,6 +1,6 @@
 import React from 'react';
 import { LoginSignup } from './Components/LoginSignup/LoginSignup';
-import { UploadForm } from './Components/UploadForm/UploadForm';
+import { DatasetPage } from './Pages/DatasetPage/DatasetPage';
 import { useProfile } from './Hooks/useProfile';
 import {
     AppLayout,
@@ -21,7 +21,7 @@ import {
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { HomePage } from './Pages/HomePage/HomePage';
+import { HomePage } from './Pages/HomePage/HomePage/HomePage';
 
 import { Dashboard } from './Components/Dashboard/Dashboard';
 
@@ -83,7 +83,7 @@ function App() {
                             <LoginSignup />
                         </Route>
                         <Route exact={true} path="/datasets">
-                            <UploadForm />
+                            <DatasetPage />
                         </Route>
                         <Route exact={true} path="/info">
                             <h1>Info</h1>
