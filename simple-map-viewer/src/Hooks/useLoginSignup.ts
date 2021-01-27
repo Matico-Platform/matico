@@ -31,7 +31,7 @@ export function useLoginSignup() {
             let response = reply.data;
             localStorage.setItem(
                 'token',
-                JSON.stringify(response.token),
+                response.token,
             );
             setTokenString(response.token);
         }

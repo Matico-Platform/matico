@@ -55,6 +55,7 @@ export const Tabs: React.FC<TabsProps> = ({
     let selectedTab = activeTab ? activeTab : internalActiveTab;
     let headers = children?.map((c) => (
         <TabHeader
+            key={c.props.name}
             onSelect={selected}
             active={c.props.name === selectedTab}
             name={c.props.name}

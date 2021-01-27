@@ -19,6 +19,7 @@ export function LoginSignup(props: Props) {
         loading,
     } = useLoginSignup();
 
+
     const login = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         attemptLogin(email, password);
@@ -28,7 +29,6 @@ export function LoginSignup(props: Props) {
         e.preventDefault();
         attemptSignup(email, password, username);
     };
-
     return (
         <Card>
             <Tabs>

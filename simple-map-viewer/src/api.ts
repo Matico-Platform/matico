@@ -1,11 +1,23 @@
 import axios, { AxiosResponse } from 'axios';
 
+export interface Dataset{
+    name:string,
+    description: string,
+    id: string,
+    create_at: Date
+}
+
 export interface User {
     id: string;
     username: string;
     email: string;
     created_at: Date;
     updated_at: Date;
+}
+
+export interface Page{
+    limit: number,
+    offset: number
 }
 
 // export interface Token {
@@ -88,4 +100,17 @@ export async function signup(
     return a.post('/auth/signup', { email, password, username });
 }
 
+export async  function getDatasets(
+
+): Promise<AxiosResponse<Dataset[]>>{
+    return a.get('/datasets')
+}
+
+export async function getDataset(id:string): Promise<AxiosResponse<Dataset>>{
+    return a.get(`datasets/${id}`)
+}
+
+export async function getPagedDatasetData(id:string, page:Page): Promise<AxiosResponse<any>>{
+    return a.get(`datasets/${id}/query`, {params: page })
+}
 export default a;
