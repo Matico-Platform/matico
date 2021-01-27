@@ -1,0 +1,23 @@
+use serde::{Deserialize, Serialize};
+use std::fmt;
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PaginationParams {
+    limit: Option<usize>,
+    offset: Option<usize>,
+}
+
+impl fmt::Display for PaginationParams {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let offset = match self.offset {
+            Some(o) => format!("OFFSET {}", o),
+            None => format!(""),
+        };
+
+        let limit = match self.limit {
+            Some(l) => format!("LIMIT {}", l),
+            None => format! {""},
+        };
+        write!(f, "{} {}", limit, offset)
+    }
+}
