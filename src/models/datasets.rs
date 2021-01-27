@@ -1,13 +1,22 @@
 use crate::models::User;
-use chrono::{NaiveDateTime, Utc};
+use actix_web::web;
+use chrono::NaiveDateTime;
 use diesel::prelude::*;
+use diesel::sql_types::Text;
+use log::info;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use std::default::Default;
 
 use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::schema::datasets::{self, dsl::*};
+use crate::utils::PaginationParams;
+
+#[derive(Serialize, Deserialize, QueryableByName, PartialEq, Debug)]
+pub struct JsonQueryResult {
+    #[sql_type = "Text"]
+    res: String,
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct DatasetSearch {
@@ -25,7 +34,7 @@ pub struct CreateSyncDatasetDTO {
     public: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize,Insertable, AsChangeset, Queryable, Associations)]
+#[derive(Debug, Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
 #[belongs_to(parent = "User", foreign_key = "owner_id")]
 #[table_name = "datasets"]
 pub struct Dataset {
@@ -41,18 +50,18 @@ pub struct Dataset {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub public: bool,
-    pub description: String
+    pub description: String,
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CreateDatasetDTO{
+pub struct CreateDatasetDTO {
     pub name: String,
     pub description: String,
 }
 
 impl Dataset {
-    pub fn search(pool: &DbPool, _search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> { //     let conn = pool.get().unwrap();
+    pub fn search(pool: &DbPool, _search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> {
+        //     let conn = pool.get().unwrap();
         let conn = pool.get().unwrap();
         let results: Vec<Dataset> = datasets
             .get_results(&conn)
@@ -70,14 +79,46 @@ impl Dataset {
         Ok(dataset)
     }
 
-    pub fn create_or_update(&self, pool: &DbPool)->Result<Dataset,ServiceError>{
+    pub async fn query(
+        &self,
+        pool: &DbPool,
+        query: Option<String>,
+        page: PaginationParams,
+    ) -> Result<String, ServiceError> {
         let conn = pool.get().unwrap();
+
+        let sub_query = match query {
+            Some(q) => q,
+            None => format!("select * from {name} {page}", name = self.name, page = page),
+        };
+        let full_query = format!(
+            "with q as ( select * from  ({sub_query}) as a {page} ) select json_agg(q) as res from q",
+            sub_query = sub_query,
+            page = page
+        );
+        let full_query2 = full_query.clone();
+
+        let result: Result<JsonQueryResult, ServiceError> =
+            web::block(move || diesel::sql_query(&full_query).get_result(&conn))
+                .await
+                .map_err(|e| {
+                    ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, full_query2))
+                });
+        Ok(result?.res)
+    }
+
+    pub fn create_or_update(&self, pool: &DbPool) -> Result<Dataset, ServiceError> {
+        let conn = pool.get().unwrap();
+        info!("attempting to save {:?}", self);
+
         diesel::insert_into(datasets)
-        .values(self)
-        .on_conflict(datasets::id)
-        .do_update()
-        .set(self)
-        .get_result(&conn)
-        .map_err(|e| ServiceError::BadRequest("Failed to create or update dataset".into()))
+            .values(self)
+            .on_conflict(datasets::id)
+            .do_update()
+            .set(self)
+            .get_result(&conn)
+            .map_err(|e| {
+                ServiceError::BadRequest(format!("Failed to create or update dataset, {}", e))
+            })
     }
 }

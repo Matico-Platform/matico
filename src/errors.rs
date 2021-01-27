@@ -24,11 +24,17 @@ pub enum ServiceError {
     #[display(fmt = "Invalid Token")]
     InvalidToken,
 
-    #[display(fmt= "Unauthorized")]
+    #[display(fmt = "Unauthorized")]
     Unauthorized,
 
-    #[display(fmt="Upload Failed")]
-    UploadFailed
+    #[display(fmt = "Upload Failed")]
+    UploadFailed,
+
+    #[display(fmt = "Query Required")]
+    QueryRequired,
+
+    #[display(fmt = "Query failed")]
+    QueryFailed(String),
 }
 
 impl ResponseError for ServiceError {
@@ -49,8 +55,16 @@ impl ResponseError for ServiceError {
                 HttpResponse::BadRequest().json(failed_reason)
             }
             ServiceError::InvalidToken => HttpResponse::Unauthorized().json("Invalid Token"),
-            ServiceError::Unauthorized=> HttpResponse::Unauthorized().json("Your are not authorized to take that action"),
-            ServiceError::UploadFailed=> HttpResponse::InternalServerError().json("Your upload failed"),
+            ServiceError::Unauthorized => {
+                HttpResponse::Unauthorized().json("Your are not authorized to take that action")
+            }
+            ServiceError::UploadFailed => {
+                HttpResponse::InternalServerError().json("Your upload failed")
+            }
+            ServiceError::QueryFailed(reason) => {
+                HttpResponse::BadRequest().json(format!("Query failed {}", reason))
+            }
+            ServiceError::QueryRequired => HttpResponse::BadRequest().json(format!("{}", self)),
         }
     }
 }

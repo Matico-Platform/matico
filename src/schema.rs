@@ -16,7 +16,6 @@ table! {
     }
 }
 
-
 table! {
     spatial_ref_sys (srid) {
         srid -> Int4,
@@ -40,8 +39,4 @@ table! {
 
 joinable!(datasets -> users (owner_id));
 
-allow_tables_to_appear_in_same_query!(
-    datasets,
-    spatial_ref_sys,
-    users
-);
+allow_tables_to_appear_in_same_query!(datasets, spatial_ref_sys, users,);
