@@ -1,8 +1,8 @@
-import React  from 'react';
+import React from 'react';
 import { LoginSignup } from './Components/LoginSignup/LoginSignup';
 import { DatasetsPage } from './Pages/DatasetsPage/DatasetsPage';
-import { DatasetViewPage} from './Pages/DatasetViewPage/DatasetViewPage'
-import { ProfilePage} from './Pages/ProfilePage/ProfilePage';
+import { DatasetViewPage } from './Pages/DatasetViewPage/DatasetViewPage';
+import { ProfilePage } from './Pages/ProfilePage/ProfilePage';
 import { useProfile } from './Hooks/useProfile';
 
 import {
@@ -40,7 +40,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './App.css';
 
 function App() {
-    const {profile,loading} = useProfile();
+    const { profile, loading } = useProfile();
 
     return (
         <Router>
@@ -63,46 +63,47 @@ function App() {
                                 <FontAwesomeIcon icon={faInfo} />
                             </NavLink>
                         </NavBarButton>
-                        {profile ? 
-                        <NavBarButton>
-                            <NavLink to="/profile">
-                                <FontAwesomeIcon icon={faUser} />
-                                <p>{profile.username}</p>
-                            </NavLink>
-                        </NavBarButton>
-                        :
-                        <NavBarButton>
-                            <NavLink to="/login">
-                                <FontAwesomeIcon icon={faUser} />
-                            </NavLink>
-                        </NavBarButton>
-                        }
+                        {profile ? (
+                            <NavBarButton>
+                                <NavLink to="/profile">
+                                    <FontAwesomeIcon icon={faUser} />
+                                    <p>{profile.username}</p>
+                                </NavLink>
+                            </NavBarButton>
+                        ) : (
+                            <NavBarButton>
+                                <NavLink to="/login">
+                                    <FontAwesomeIcon icon={faUser} />
+                                </NavLink>
+                            </NavBarButton>
+                        )}
                     </NavBar>
                 </NavArea>
-                <DetailsArea />
-                <MainArea>
-                    <Switch>
-                        <Route exact={true} path="/">
-                            <HomePage />
-                        </Route>
-                        <Route exact={true} path="/login">
-                            <LoginSignup />
-                        </Route>
-                        <Route exact={true} path="/profile">
-                            <ProfilePage />
-                        </Route>
-                        <Route exact={true} path="/datasets">
-                            <DatasetsPage />
-                        </Route>
-                        <Route exact={true} path="/datasets/:id" component={DatasetViewPage}/>
-                        <Route exact={true} path="/info">
-                            <h1>Info</h1>
-                        </Route>
-                        <Route exact={true} path="/dashboard">
-                            <Dashboard />
-                        </Route>
-                    </Switch>
-                </MainArea>
+                <Switch>
+                    <Route exact={true} path="/">
+                        <HomePage />
+                    </Route>
+                    <Route exact={true} path="/login">
+                        <LoginSignup />
+                    </Route>
+                    <Route exact={true} path="/profile">
+                        <ProfilePage />
+                    </Route>
+                    <Route exact={true} path="/datasets">
+                        <DatasetsPage />
+                    </Route>
+                    <Route
+                        exact={true}
+                        path="/datasets/:id"
+                        component={DatasetViewPage}
+                    />
+                    <Route exact={true} path="/info">
+                        <h1>Info</h1>
+                    </Route>
+                    <Route exact={true} path="/dashboard">
+                        <Dashboard />
+                    </Route>
+                </Switch>
             </AppLayout>
         </Router>
     );
