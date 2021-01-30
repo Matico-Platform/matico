@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 
-export interface Dataset{
-    name:string,
-    description: string,
-    id: string,
-    create_at: Date
+export interface Dataset {
+    name: string;
+    description: string;
+    id: string;
+    create_at: Date;
 }
 
 export interface User {
@@ -15,9 +15,9 @@ export interface User {
     updated_at: Date;
 }
 
-export interface Page{
-    limit: number,
-    offset: number
+export interface Page {
+    limit: number;
+    offset: number;
 }
 
 // export interface Token {
@@ -33,7 +33,7 @@ export interface LoginResponse {
 }
 
 let a = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: `${window.location.origin}/api`,
     headers: { 'Content-Type': 'application/json' },
 });
 
@@ -100,17 +100,22 @@ export async function signup(
     return a.post('/auth/signup', { email, password, username });
 }
 
-export async  function getDatasets(
-
-): Promise<AxiosResponse<Dataset[]>>{
-    return a.get('/datasets')
+export async function getDatasets(): Promise<
+    AxiosResponse<Dataset[]>
+> {
+    return a.get('/datasets');
 }
 
-export async function getDataset(id:string): Promise<AxiosResponse<Dataset>>{
-    return a.get(`datasets/${id}`)
+export async function getDataset(
+    id: string,
+): Promise<AxiosResponse<Dataset>> {
+    return a.get(`datasets/${id}`);
 }
 
-export async function getPagedDatasetData(id:string, page:Page): Promise<AxiosResponse<any>>{
-    return a.get(`datasets/${id}/query`, {params: page })
+export async function getPagedDatasetData(
+    id: string,
+    page: Page,
+): Promise<AxiosResponse<any>> {
+    return a.get(`datasets/${id}/query`, { params: page });
 }
 export default a;
