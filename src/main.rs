@@ -6,8 +6,8 @@ use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
-use std::path::PathBuf;
 use dotenv;
+use std::path::PathBuf;
 
 mod app_config;
 mod auth;
@@ -28,7 +28,8 @@ async fn home() -> std::io::Result<fs::NamedFile> {
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     let config = app_config::Config::from_conf().unwrap();
-    let manager = ConnectionManager::<diesel::pg::PgConnection>::new(config.db_string);
+    let db_connection_url = config.connection_string().unwrap();
+    let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     let pool = r2d2::Pool::builder()

@@ -33,10 +33,15 @@ pub enum ServiceError {
     #[display(fmt = "Query Required")]
     QueryRequired,
 
+    #[display(fmt = "DB config error")]
+    DBConfigError(String),
+
     #[display(fmt = "Query failed")]
     QueryFailed(String),
 }
 
+// TODO refactor this at somepoint to make shorter and use the display strings
+// more
 impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
         match self {
@@ -63,6 +68,9 @@ impl ResponseError for ServiceError {
             }
             ServiceError::QueryFailed(reason) => {
                 HttpResponse::BadRequest().json(format!("Query failed {}", reason))
+            }
+            ServiceError::DBConfigError(reason) => {
+                HttpResponse::InternalServerError().json(format!("Invalid DB Config {}", reason))
             }
             ServiceError::QueryRequired => HttpResponse::BadRequest().json(format!("{}", self)),
         }

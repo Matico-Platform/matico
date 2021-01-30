@@ -1,17 +1,46 @@
+use crate::errors::ServiceError;
 pub use ::config::ConfigError;
-use std::collections::HashMap;
 use serde::Deserialize;
+use std::collections::HashMap;
 
 #[derive(Deserialize)]
-pub struct Config{
+pub struct Config {
+    pub db_host: String,
+    pub db_name: String,
+    pub db_port: Option<String>,
+    pub db_password: Option<String>,
+    pub db_username: Option<String>,
     pub server_addr: String,
-    pub db_string: String 
 }
 
-impl Config{
-    pub fn from_conf() -> Result<Self,ConfigError>{
-        let mut cfg  = ::config::Config::new();
+impl Config {
+    pub fn from_conf() -> Result<Self, ConfigError> {
+        let mut cfg = ::config::Config::new();
         cfg.merge(config::Environment::with_prefix("SMS")).unwrap();
         cfg.try_into()
+    }
+
+    pub fn connection_string(&self) -> Result<String, ServiceError> {
+        let username_password = match (&self.db_username, &self.db_password) {
+            (Some(username), Some(password)) => Ok(format!("{}:{}@", username, password)),
+            (None, None) => Ok(format!("")),
+            (Some(username), None) => Ok(format!("{}@", username)),
+            (None, Some(_)) => Err(ServiceError::DBConfigError(
+                "DB config needs a username if your specifying a password".into(),
+            )),
+        }?;
+
+        let port = match &self.db_port {
+            Some(port) => format!(":{}", port),
+            None => format!(""),
+        };
+
+        Ok(format!(
+            "postgresql://{user_pass}{host}{port}/{name}",
+            user_pass = username_password,
+            host = self.db_host,
+            port = port,
+            name = self.db_name
+        ))
     }
 }
