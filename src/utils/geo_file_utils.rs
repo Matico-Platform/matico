@@ -1,10 +1,11 @@
+use crate::app_config::Config;
 use crate::errors::ServiceError;
-use gdal::errors::GdalError;
-use gdal::{Dataset};
-use std::path::Path;
 use actix_web::web;
+use gdal::errors::GdalError;
+use gdal::Dataset;
+use log::info;
+use std::path::Path;
 use std::process::Command;
-use log::{info};
 
 pub fn get_file_info(filepath: &str) -> Result<Vec<(String, u32, i32)>, GdalError> {
     let mut dataset = Dataset::open(Path::new(filepath))?;
@@ -17,21 +18,23 @@ pub fn get_file_info(filepath: &str) -> Result<Vec<(String, u32, i32)>, GdalErro
     Ok(fields)
 }
 
+pub async fn load_dataset_to_db(filepath: String, name: String) -> Result<(), ServiceError> {
+    info!("Attempting to load file {} to table {}", filepath, name);
+    let config = Config::from_conf().unwrap();
+    let ogr_string = config.org_connection_string()?;
+    let output = web::block(move || {
+        Command::new("ogr2ogr")
+            .arg(&"-f")
+            .arg(&"PostgreSQL")
+            .arg(ogr_string)
+            .arg(&"-nln")
+            .arg(&name)
+            .arg(&filepath)
+            .output()
+    })
+    .await
+    .map_err(|_| ServiceError::UploadFailed)?;
 
-pub async fn load_dataset_to_db(filepath: String, name: String)->Result<(),ServiceError>{
-    info!("Attempting to load file {} to table {}", filepath,name);
-    
-    let output = web::block(move ||{
-       Command::new("ogr2ogr")
-       .arg(&"-f")
-       .arg(&"PostgreSQL")
-       .arg(&"PG:dbname=stuart user=stuart")
-       .arg(&"-nln")
-       .arg(&name)
-       .arg(&filepath)
-       .output()
-   }).await.map_err(|_| ServiceError::UploadFailed)?;
-
-   info!("It apparently worked {:?} ", output);
-   Ok(())
+    info!("Uploaded geo file {:?} ", output);
+    Ok(())
 }

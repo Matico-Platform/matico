@@ -1,7 +1,6 @@
 use crate::errors::ServiceError;
 pub use ::config::ConfigError;
 use serde::Deserialize;
-use std::collections::HashMap;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -41,6 +40,32 @@ impl Config {
             host = self.db_host,
             port = port,
             name = self.db_name
+        ))
+    }
+
+    pub fn org_connection_string(&self) -> Result<String, ServiceError> {
+        let db = format!("dbname={}", self.db_name);
+        let user = match &self.db_username {
+            Some(user) => format!("user={}", user),
+            None => format!(""),
+        };
+        let port = match &self.db_port {
+            Some(port) => format!("port={}", port),
+            None => format!(""),
+        };
+        let host = format!("host={}", self.db_host);
+        let password = match &self.db_password {
+            Some(password) => format!("password={}", password),
+            None => format!(""),
+        };
+
+        Ok(format!(
+            "PG:{db} {user} {host} {port} {password}",
+            db = db,
+            user = user,
+            host = host,
+            port = port,
+            password = password
         ))
     }
 }
