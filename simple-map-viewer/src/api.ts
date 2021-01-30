@@ -33,7 +33,7 @@ export interface LoginResponse {
 }
 
 let a = axios.create({
-    baseURL: `${window.location.origin}/api`,
+    baseURL:  (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') ? '/api' :`${window.location.origin}/api`,
     headers: { 'Content-Type': 'application/json' },
 });
 
