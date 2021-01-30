@@ -1,31 +1,30 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
-const DatasetViewPageContainer = styled.div`
-    display:flex;
-    flex-direction:row;
-`
-
-const DataTable= styled.table`
-    width:50%;
-    table-layout: fixed;
-    background-color:white;
-    padding:20px;
-    tr{
-        :hover{
-            background-color:grey;
-            cursor:pointer;
-        }
-    }
-`
+const Content = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+`;
 
 const Map = styled.div`
-    width:50%;
-    height:100%;
-    position:relative;
-`
+    flex: 1;
+    width: 50%;
+    height: 100%;
+    position: relative;
+    padding: 10px;
+`;
 
-export const Styles={
-    DataTable,
-    DatasetViewPageContainer,
-    Map
-}
+const Table = styled.div`
+    height: 100%;
+    max-width: 40vw;
+    overflow-x: auto;
+    padding: 10px;
+`;
+export const Styles = {
+    Content,
+    Map,
+    Table,
+};
