@@ -1,66 +1,71 @@
 {
-  "name": "simple-map-viewer",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@auth0/auth0-react": "^1.2.0",
-    "@deck.gl/carto": "^8.3.14",
-    "@fortawesome/fontawesome-svg-core": "^1.2.34",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2",
-    "@fortawesome/react-fontawesome": "^0.1.14",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.53",
-    "@types/react-dom": "^16.9.8",
-    "@types/react-map-gl": "^5.2.9",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/react-table": "7.6.3",
-    "axios": "^0.21.1",
-    "deck.gl": "^8.3.14",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-jwt": "^1.1.0",
-    "react-map-gl": "^6.0.3",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.1",
-    "react-table": "7.6.3",
-    "styled-components": "^5.2.1",
-    "styled-reset": "^4.3.4",
-    "typescript": "^4.0.3",
-    "web-vitals": "^0.2.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "resolutions": {
-    "styled-components": "^5"
-  },
-  "devDependencies": {
-    "@danmarshall/deckgl-typings": "^4.5.1",
-    "@types/styled-components": "^5.1.7"
-  }
+    "name": "simple-map-viewer",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@auth0/auth0-react": "^1.2.0",
+        "@deck.gl/carto": "^8.3.14",
+        "@fortawesome/fontawesome-svg-core": "^1.2.34",
+        "@fortawesome/free-solid-svg-icons": "^5.15.2",
+        "@fortawesome/react-fontawesome": "^0.1.14",
+        "@material-ui/core": "^4.11.3",
+        "@testing-library/jest-dom": "^5.11.4",
+        "@testing-library/react": "^11.1.0",
+        "@testing-library/user-event": "^12.1.10",
+        "axios": "^0.21.1",
+        "deck.gl": "^8.3.14",
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
+        "react-jwt": "^1.1.0",
+        "react-map-gl": "^6.0.3",
+        "react-router-dom": "^5.2.0",
+        "react-scripts": "4.0.1",
+        "react-table": "^7.6.3",
+        "styled-components": "^5.2.1",
+        "styled-reset": "^4.3.4",
+        "typescript": "^4.0.3",
+        "web-vitals": "^0.2.4"
+    },
+    "proxy": "http://localhost:8080",
+    "scripts": {
+        "start": "react-app-rewired start",
+        "build": "react-app-rewired build",
+        "test": "react-app-rewired test",
+        "eject": "react-reqired eject"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "resolutions": {
+        "styled-components": "^5"
+    },
+    "devDependencies": {
+        "@danmarshall/deckgl-typings": "^4.5.1",
+        "@types/jest": "^26.0.15",
+        "@types/node": "^12.0.0",
+        "@types/react": "^16.9.53",
+        "@types/react-dom": "^16.9.8",
+        "@types/react-map-gl": "^5.2.9",
+        "@types/react-router-dom": "^5.1.7",
+        "@types/react-table": "^7.0.26",
+        "@types/styled-components": "^5.1.7",
+        "eslint-config-react-app": "^6.0.0",
+        "react-app-rewire-styled-components": "^3.0.2",
+        "react-app-rewired": "^2.1.8"
+    }
 }
