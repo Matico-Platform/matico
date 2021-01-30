@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useParams } from 'react-router';
 import {
     useDataset,
@@ -49,7 +49,9 @@ const valueToTableEntry = (value: any) => {
 export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
     const { id } = useParams<ParamTypes>();
     const { dataset, loading, error } = useDataset(id);
+    const [selectedRow, setSelectedRow]  = useState<any>(null);
 
+    console.log('Selected row ', selectedRow);
     const layer = dataset
         ? new MVTLayer({
               data: `${window.origin}/api/tiler/${dataset.id}/{z}/{x}/{y}`,
@@ -63,6 +65,7 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
               radiusMaxPixels: 100,
               getLabel: (f: any) => f.id,
               stroked: true,
+              pickable:true
           })
         : null;
 
@@ -76,7 +79,9 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                 {dataset && (
                     <Styles.Content>
                         <Styles.Table>
-                            <DataTable dataset={dataset} />
+                            <DataTable dataset={dataset} 
+                            selectedID={selectedRow?.id}
+                            onSelect={setSelectedRow}/>
                         </Styles.Table>
                         <Styles.Map>
                             <DeckGL
@@ -85,6 +90,11 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                                 initialViewState={INITIAL_VIEW_STATE}
                                 layers={layer ? [layer] : ([] as any)}
                                 controller={true}
+                                getTooltip= {({object}: any) => {
+                                    console.log("tool tip ", object)
+                                    return object && object.message}
+                                } 
+
                             >
                                 <StaticMap
                                     mapboxApiAccessToken={TOKEN}
