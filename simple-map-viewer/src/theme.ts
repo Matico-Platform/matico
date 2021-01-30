@@ -2,21 +2,29 @@ import { DefaultTheme, createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
 export const Theme: DefaultTheme = {
-  colors: {
-    background: '#e1ecf2',
-    main: '#24305E',
-    secondary: '#F76C6C',
-    bold: '#E85A4F',
-    text: '#ffffff',
-  },
-  borderRadius: '10px',
+    colors: {
+        background: '#85DCB',
+        main: '#E27D60',
+        secondary: '#41B3A3',
+        bold: '#E85A4F',
+        text: '#ffffff',
+    },
+    borderRadius: '10px',
 };
 
 export const GloablStyle = createGlobalStyle`
     ${reset}
     html {
         box-sizing: border-box;
+        font-size: 100%;
     };
+
+    h1{
+        font-size: 3rem;
+    }
+    h2{
+        font-size: 2rem;
+    }
     body{
         font-family: 'Nunito', sans-serif;
     }
