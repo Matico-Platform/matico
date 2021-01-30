@@ -6,11 +6,13 @@ import { Dataset, Page } from '../../api';
 
 interface DataTableProps {
     dataset: Dataset;
+    onSelect?: (row:any)=>void;
+    selectedID?: any 
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ dataset }) => {
+export const DataTable: React.FC<DataTableProps> = ({ dataset, onSelect,selectedID }) => {
     const [page, setPage] = useState(0);
-    const perPage = 20;
+    const perPage = 100;
     const { loading, data, error } = useDatasetPagedResults(
         dataset.id,
         {
@@ -19,11 +21,14 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset }) => {
         },
     );
 
-    console.log('loading ', loading, data, error);
+    const selectRow = (row: any)=>{
+        console.log('row ', row)
+        if(onSelect){
+            onSelect(row)
+        }
+    }
 
     const renderCell = (props: any) => {
-        console.log(props.value);
-        console.log('type ', typeof props.value);
         if (!props.value) {
             return 'Nan';
         }
@@ -86,7 +91,7 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset }) => {
                 {rows.map((row, i) => {
                     prepareRow(row);
                     return (
-                        <tr {...row.getRowProps()}>
+                        <Styles.TableRow selected={row.id === selectedID} onClick={()=>selectRow(row)} {...row.getRowProps()}>
                             {row.cells.map((cell) => {
                                 return (
                                     <td {...cell.getCellProps()}>
@@ -94,7 +99,7 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset }) => {
                                     </td>
                                 );
                             })}
-                        </tr>
+                        </Styles.TableRow>
                     );
                 })}
             </tbody>
