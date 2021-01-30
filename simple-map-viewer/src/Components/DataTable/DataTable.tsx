@@ -1,42 +1,103 @@
-import React, {useState} from 'react'
-import {useDatasetPagedResults} from '../../Hooks/useDataset'
-import ReactTable from "react-table";
-import "react-table/react-table.css";
-import {Styles} from './DataTableStyles'
-import {Dataset, Page} from '../../api'
+import React, { useState, useMemo } from 'react';
+import { useDatasetPagedResults } from '../../Hooks/useDataset';
+import { useTable } from 'react-table';
+import { Styles } from './DataTableStyles';
+import { Dataset, Page } from '../../api';
 
-interface DataTableProps{
-    dataset: Dataset
+interface DataTableProps {
+    dataset: Dataset;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({dataset})=>{
+export const DataTable: React.FC<DataTableProps> = ({ dataset }) => {
     const [page, setPage] = useState(0);
     const perPage = 20;
-    const {loading, data,error} = useDatasetPagedResults(dataset.id,{
-        limit:perPage,
-        offset:page*perPage
-    })
+    const { loading, data, error } = useDatasetPagedResults(
+        dataset.id,
+        {
+            limit: perPage,
+            offset: page * perPage,
+        },
+    );
 
-    const columns = Object.keys(data[0]).map(c=> ({Header: c, accessor: c}))
+    console.log('loading ', loading, data, error);
+
+    const renderCell = (props: any) => {
+        console.log(props.value);
+        console.log('type ', typeof props.value);
+        if (!props.value) {
+            return 'Nan';
+        }
+        switch (typeof props.value) {
+            case 'undefined':
+                return 'NAN';
+            case 'object':
+                return props.value.type;
+            default:
+                return props.value;
+        }
+        return 'data';
+    };
+
+    const columns = useMemo(
+        () =>
+            data
+                ? Object.keys(data[0]).map((c) => ({
+                      Header: c,
+                      accessor: c,
+                      Cell: renderCell,
+                  }))
+                : [],
+        [data],
+    );
+
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow,
+    } = useTable({
+        columns,
+        data,
+    });
+
+    if (!data) {
+        return <h2>Loading</h2>;
+    }
+    if (error) {
+        return <h2>Error :-(</h2>;
+    }
 
     return (
-        <Styles.DataTable>
-            <ReactTable 
-                data={data}
-                       pages={100}
-                       columns={columns}
-                     defaultPageSize={perPage}
-                     className="-striped -highlight"
-                     loading={loading}
-                     showPagination={true}
-                     showPaginationTop={false}
-                     showPaginationBottom={true}
-                     pageSizeOptions={[20]}
-                     manual // this would indicate that server side pagination has been enabled 
-                     onFetchData={(state: any, instance: any) => {
-                            setPage(state.page)
-                     }}
-            />
-        </Styles.DataTable>
-    )
-}
+        // <Styles.DataTable>
+        <Styles.Table {...getTableProps()}>
+            <thead>
+                {headerGroups.map((headerGroup) => (
+                    <tr {...headerGroup.getHeaderGroupProps()}>
+                        {headerGroup.headers.map((column) => (
+                            <th {...column.getHeaderProps()}>
+                                {column.render('Header')}
+                            </th>
+                        ))}
+                    </tr>
+                ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+                {rows.map((row, i) => {
+                    prepareRow(row);
+                    return (
+                        <tr {...row.getRowProps()}>
+                            {row.cells.map((cell) => {
+                                return (
+                                    <td {...cell.getCellProps()}>
+                                        {cell.render('Cell')}
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </Styles.Table>
+    );
+};
