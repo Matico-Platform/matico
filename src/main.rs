@@ -7,6 +7,7 @@ use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use std::path::PathBuf;
+use dotenv;
 
 mod app_config;
 mod auth;
@@ -25,6 +26,7 @@ async fn home() -> std::io::Result<fs::NamedFile> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
     let config = app_config::Config::from_conf().unwrap();
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(config.db_string);
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
@@ -45,12 +47,17 @@ async fn main() -> std::io::Result<()> {
             .data(pool.clone())
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
-            .route("/", web::get().to(home))
-            .service(web::scope("/tiler").configure(tiler::init_routes))
-            .service(web::scope("/users").configure(routes::users::init_routes))
-            .service(web::scope("/auth").configure(routes::auth::init_routes))
-            .service(web::scope("/datasets").configure(routes::datasets::init_routes))
-            .service(fs::Files::new("/", "static").show_files_listing())
+            // .wrap(middleware::NormalizePath::default())
+            .service(web::scope("/api/tiler").configure(tiler::init_routes))
+            .service(web::scope("/api/users").configure(routes::users::init_routes))
+            .service(web::scope("/api/auth").configure(routes::auth::init_routes))
+            .service(web::scope("/api/datasets").configure(routes::datasets::init_routes))
+            // .service(web::scope("/api/tiler").configure(tiler::init_routes))
+            // .service(web::scope("/api/users").configure(routes::users::init_routes))
+            // .service(web::scope("/api/auth").configure(routes::auth::init_routes))
+            // .service(web::scope("/api/datasets").configure(routes::datasets::init_routes))
+            .service(fs::Files::new("/", "static").index_file("index.html"))
+            .default_service(web::get().to(home))
     })
     .bind(config.server_addr.clone())?
     .run();
