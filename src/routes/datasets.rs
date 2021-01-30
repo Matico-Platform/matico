@@ -154,9 +154,9 @@ async fn create_dataset(
 
 // This maps to "/" when content type is application/json
 async fn create_sync_dataset(
-    db: web::Data<DbPool>,
-    logged_in_user: AuthService,
-    sync_details: web::Json<CreateSyncDatasetDTO>,
+    _db: web::Data<DbPool>,
+    _logged_in_user: AuthService,
+    _sync_details: web::Json<CreateSyncDatasetDTO>,
 ) -> Result<HttpResponse, ServiceError> {
     println!("HITTING SYNC ENDPOINT");
     Ok(HttpResponse::Ok().json("SYNC ENDPOINT"))
