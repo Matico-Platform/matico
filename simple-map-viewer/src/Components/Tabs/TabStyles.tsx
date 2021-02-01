@@ -24,11 +24,15 @@ const TabContent = styled.div``;
 
 const Tab = styled.li`
     border-bottom: ${({ active }: TabHeadProps) =>
-        active ? '2px solid white' : 'none'};
+        active ? '2px solid' : 'none'};
     color: white;
     cursor: pointer;
-    font-weight: ${({ active }: TabHeadProps) =>
-        active ? 'bold' : 'regular'};
+    background-color: ${({active})=> active ? "#c38d9e" : "#eddde2"};
+    font-weight: bold;
+    flex:1;
+    text-align:center;
+    padding: 10px;
+    font-size:15px;
 `;
 
 export const Styles = {
