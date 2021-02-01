@@ -1,16 +1,14 @@
 import styled from 'styled-components';
 
+
 const DataTable = styled.div`
-    flex: 1;
-    width: 100%;
-    height: 100%;
-     text-align: left;
-  position: relative;
-  border-collapse: collapse; 
-  table-layout:fixed;
-
-`;
-
+    height:100%;
+    width:100%;
+    flex:1;
+    overflow:auto;
+    position:relative;
+    max-height:50vh;
+`
 interface TableRowProps{
     selected? : boolean,
     theme?: any
@@ -26,8 +24,10 @@ const TableRow = styled.tr<TableRowProps>`
 
 const Table = styled.table`
     background-color: white;
-    flex: 1;
-    height: 100%;
+    border-collapse: collapse; 
+    table-layout:fixed;
+    text-align: left;
+    position: relative;
     th {
         background-color: ${({ theme }) => theme.colors.main};
         color:white;
@@ -49,11 +49,10 @@ const Table = styled.table`
         height:20px;
     }
     tbody {
-        overflow-y: auto;
     }
 `;
 export const Styles = {
-    DataTable,
     Table,
-    TableRow
+    TableRow,
+    DataTable
 };

@@ -74,35 +74,36 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset, onSelect,selected
     }
 
     return (
-        // <Styles.DataTable>
-        <Styles.Table {...getTableProps()}>
-            <thead>
-                {headerGroups.map((headerGroup) => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map((column) => (
-                            <th {...column.getHeaderProps()}>
-                                {column.render('Header')}
-                            </th>
-                        ))}
-                    </tr>
-                ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-                {rows.map((row, i) => {
-                    prepareRow(row);
-                    return (
-                        <Styles.TableRow selected={row.id === selectedID} onClick={()=>selectRow(row)} {...row.getRowProps()}>
-                            {row.cells.map((cell) => {
-                                return (
-                                    <td {...cell.getCellProps()}>
-                                        {cell.render('Cell')}
-                                    </td>
-                                );
-                            })}
-                        </Styles.TableRow>
-                    );
-                })}
-            </tbody>
-        </Styles.Table>
+        <Styles.DataTable>
+            <Styles.Table {...getTableProps()}>
+                <thead>
+                    {headerGroups.map((headerGroup) => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map((column) => (
+                                <th {...column.getHeaderProps()}>
+                                    {column.render('Header')}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {rows.map((row, i) => {
+                        prepareRow(row);
+                        return (
+                            <Styles.TableRow selected={row.id === selectedID} onClick={()=>selectRow(row)} {...row.getRowProps()}>
+                                {row.cells.map((cell) => {
+                                    return (
+                                        <td {...cell.getCellProps()}>
+                                            {cell.render('Cell')}
+                                        </td>
+                                    );
+                                })}
+                            </Styles.TableRow>
+                        );
+                    })}
+                </tbody>
+            </Styles.Table>
+        </Styles.DataTable>
     );
 };
