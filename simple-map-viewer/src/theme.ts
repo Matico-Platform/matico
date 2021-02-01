@@ -3,7 +3,7 @@ import reset from 'styled-reset';
 
 export const Theme: DefaultTheme = {
     colors: {
-        background: '#85DCB',
+        background: '#eef8f7',
         main: '#E27D60',
         secondaryLight: '#b4e3dd',
         secondary: '#41B3A3',
