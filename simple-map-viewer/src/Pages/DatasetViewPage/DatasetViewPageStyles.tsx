@@ -18,10 +18,11 @@ const Map = styled.div`
 `;
 
 const Table = styled.div`
-    height: 100%;
+    height: 97vh;
     max-width: 40vw;
-    overflow-x: auto;
-    padding: 10px;
+    overflow: auto;
+    padding: 0px 0px;
+    margin-right: 20px;
 `;
 export const Styles = {
     Content,
