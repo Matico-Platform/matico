@@ -9,6 +9,10 @@ export const AppLayout = styled.div`
     grid-template-areas: 'nav main';
 `;
 
+export const FlexSeperator = styled.div`
+ flex:1;
+`
+
 export const NavArea = styled.nav`
     width: 100%;
     height: 100%;
@@ -34,6 +38,8 @@ export const DetailsArea = styled.div`
     height: 100%;
     color: white;
     padding: 20px;
+    display:flex;
+    flex-direction:column;
     background-color: ${({ theme }) => theme.colors.secondary};
 `;
 

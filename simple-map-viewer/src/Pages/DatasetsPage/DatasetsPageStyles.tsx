@@ -1,12 +1,15 @@
 import styled from 'styled-components';
-const DatasetPage = styled.div`
+import {PageContent} from '../../Components/Layout/Layout'
+
+const DatasetsPage = styled(PageContent)`
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    align-items: flex-start;
+    align-items: center;
     flex: 1;
+    padding:20px;
 `;
 
 export const Styles = {
-    DatasetPage,
+    DatasetsPage,
 };
