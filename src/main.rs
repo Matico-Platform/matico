@@ -2,6 +2,7 @@
 extern crate diesel;
 extern crate argon2;
 
+use crate::models::queries::CreateQueryDTO;
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
@@ -52,12 +53,14 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
             .service(web::scope("/api/auth").configure(routes::auth::init_routes))
+            .service(web::scope("/api/queries").configure(routes::queries::init_routes))
             .service(web::scope("/api/datasets").configure(routes::datasets::init_routes))
             .service(fs::Files::new("/", "static").index_file("index.html"))
             .default_service(web::get().to(home))
     })
     .bind(config.server_addr.clone())?
     .run();
+
     println!("Server running at http://{}/", config.server_addr);
     server.await
 }
