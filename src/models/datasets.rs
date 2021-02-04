@@ -25,6 +25,7 @@ pub struct DatasetSearch {
     date_start: Option<NaiveDateTime>,
 }
 
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateSyncDatasetDTO {
     name: String,
@@ -59,6 +60,14 @@ pub struct CreateDatasetDTO {
     pub description: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, AsChangeset)]
+#[table_name = "datasets"]
+pub struct UpdateDatasetDTO{
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub public: Option<bool>,
+}
+
 impl Dataset {
     pub fn search(pool: &DbPool, _search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> {
         //     let conn = pool.get().unwrap();
@@ -77,6 +86,12 @@ impl Dataset {
             .first(&conn)
             .map_err(|_| ServiceError::DatasetNotFound)?;
         Ok(dataset)
+    }
+
+    pub fn delete(pool: &DbPool, dataset_id:Uuid)->Result<(), ServiceError>{
+        let conn = pool.get().unwrap();
+        diesel::delete(datasets::table.filter(datasets::id.eq(dataset_id))).execute(&conn).map_err(|_| ServiceError::BadRequest(format!("Failed to delete dataset {}",dataset_id)))?;
+        Ok(())
     }
 
     pub async fn query(
@@ -105,6 +120,16 @@ impl Dataset {
                     ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, full_query2))
                 });
         Ok(result?.res)
+    }
+
+    pub fn update(pool:&DbPool, dataset_id: Uuid, updates: UpdateDatasetDTO)-> Result<Dataset,ServiceError>{
+        let conn = pool.get().unwrap();
+        let updated_dataset = diesel::update(datasets::table.filter(datasets::id.eq(dataset_id)))
+        .set(updates)
+        .get_result(&conn)
+        .map_err(|e| ServiceError::BadRequest(format!("Failed to update dataset {} {}", dataset_id, e)))?;
+        
+        Ok(updated_dataset)
     }
 
     pub fn create_or_update(&self, pool: &DbPool) -> Result<Dataset, ServiceError> {

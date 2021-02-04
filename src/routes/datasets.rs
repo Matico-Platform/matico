@@ -3,10 +3,10 @@ use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
 
-use crate::models::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, DatasetSearch, UserToken};
+use crate::models::{datasets::{CreateDatasetDTO, UpdateDatasetDTO, CreateSyncDatasetDTO, Dataset}, DatasetSearch, UserToken};
 use crate::utils::PaginationParams;
 use actix_multipart::{Field, Multipart};
-use actix_web::{get, guard, web, Error, HttpResponse};
+use actix_web::{get,put,guard,delete,web,Error,HttpResponse};
 use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
 use log::{info, warn};
@@ -162,11 +162,31 @@ async fn create_sync_dataset(
     Ok(HttpResponse::Ok().json("SYNC ENDPOINT"))
 }
 
+#[put("{id}")]
+async fn update_dataset(
+    db: web::Data<DbPool>,
+    web::Path(id) : web::Path<Uuid>,
+    web::Json(updates): web::Json<UpdateDatasetDTO>
+) -> Result<HttpResponse, ServiceError>{
+    let result = Dataset::update(db.get_ref(), id, updates)?;
+    Ok(HttpResponse::Ok().json(result))
+}
+
+#[delete("{id}")]
+async fn delete_dataset(
+    db: web::Data<DbPool>,
+    web::Path(id) : web::Path<Uuid>
+)-> Result<HttpResponse,ServiceError>{
+    Dataset::delete(db.get_ref(), id)?;
+    Ok(HttpResponse::Ok().json(format!("Deleted dataset {}",id)))
+}
+
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(query_dataset);
     cfg.service(get_dataset);
     cfg.service(get_datasets);
-
+    cfg.service(delete_dataset);
+    cfg.service(update_dataset);
     cfg.service(
         web::resource("")
             .route(
