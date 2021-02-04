@@ -3,7 +3,7 @@ CREATE TABLE queries(
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     sql TEXT NOT NULL,
-    parameters JSONB,
+    parameters JSONB NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
     updated_at TIMESTAMP NOT NULL
 );
