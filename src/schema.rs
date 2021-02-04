@@ -17,6 +17,18 @@ table! {
 }
 
 table! {
+    queries (id) {
+        id -> Uuid,
+        name -> Text,
+        description -> Text,
+        sql -> Text,
+        parameters -> Jsonb,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+table! {
     spatial_ref_sys (srid) {
         srid -> Int4,
         auth_name -> Nullable<Varchar>,
@@ -39,4 +51,4 @@ table! {
 
 joinable!(datasets -> users (owner_id));
 
-allow_tables_to_appear_in_same_query!(datasets, spatial_ref_sys, users,);
+allow_tables_to_appear_in_same_query!(datasets, queries, spatial_ref_sys, users,);
