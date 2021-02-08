@@ -11,7 +11,7 @@ use std::convert::From;
 use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum ValueType {
     Numeric(f32),
     Categorical(String),
@@ -33,7 +33,7 @@ pub struct UpdateQueryDTO {
     pub name: Option<String>,
     pub description: Option<String>,
     pub sql: Option<String>,
-    pub parameters: Option<Params>,
+    pub parameters: Option<Vec<QueryParam>>,
 }
 
 impl Display for ValueType {
@@ -62,7 +62,7 @@ trait QueryParameter {
     fn default_value(&self) -> &ValueType;
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct NumericQueryParameter {
     pub name: String,
     pub description: String,
@@ -96,14 +96,10 @@ impl QueryParameter for NumericQueryParameter {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, AsJsonb)]
+#[serde(tag = "type")]
 pub enum QueryParam {
     Numerical(NumericQueryParameter),
-}
-
-#[derive(AsJsonb, AsExpression, Debug, Serialize, Deserialize)]
-pub struct Params {
-    pub params: Vec<QueryParam>,
 }
 
 #[derive(Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
@@ -113,22 +109,25 @@ pub struct Query {
     pub name: String,
     pub description: String,
     pub sql: String,
-    pub parameters: Params,
+    pub parameters: Vec<QueryParam>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
 
 impl From<CreateQueryDTO> for Query {
     fn from(user: CreateQueryDTO) -> Self {
-        let parameters = Params {
-            params: user.parameters,
-        };
+        let parameters = user.parameters;
         Self::new(user.name, user.description, user.sql, parameters)
     }
 }
 
 impl Query {
-    pub fn new(name: String, description: String, sql: String, parameters: Params) -> Self {
+    pub fn new(
+        name: String,
+        description: String,
+        sql: String,
+        parameters: Vec<QueryParam>,
+    ) -> Self {
         Self {
             id: Uuid::new_v4(),
             name,
@@ -194,9 +193,9 @@ impl Query {
 
     pub fn search(pool: &DbPool, page: PaginationParams) -> Result<Vec<Self>, ServiceError> {
         let conn = pool.get().unwrap();
-        let results = dsl::queries
-            .get_results(&conn)
-            .map_err(|_| ServiceError::InternalServerError("Failed to get queries".into()))?;
+        let results = dsl::queries.get_results(&conn).map_err(|e| {
+            ServiceError::InternalServerError(format!("Failed to get queries {}", e))
+        })?;
         Ok(results)
     }
 }

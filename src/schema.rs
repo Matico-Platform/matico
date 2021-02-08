@@ -24,7 +24,7 @@ table! {
         name -> Text,
         description -> Text,
         sql -> Text,
-        parameters -> Jsonb,
+        parameters -> Array<Jsonb>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
@@ -53,9 +53,4 @@ table! {
 
 joinable!(datasets -> users (owner_id));
 
-allow_tables_to_appear_in_same_query!(
-    datasets,
-    queries,
-    spatial_ref_sys,
-    users,
-);
+allow_tables_to_appear_in_same_query!(datasets, queries, spatial_ref_sys, users,);

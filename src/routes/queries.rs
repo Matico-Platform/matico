@@ -1,8 +1,9 @@
 use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::queries::{CreateQueryDTO, Params, Query, UpdateQueryDTO};
+use crate::models::queries::{CreateQueryDTO, Query, UpdateQueryDTO};
 use crate::utils::PaginationParams;
 use serde::{Serialize,Deserialize};
+use std::collections::HashMap;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use log::info;
@@ -62,6 +63,17 @@ async fn create_query(
     Ok(HttpResponse::Ok().json(result))
 }
 
+#[get("/run/{query_id}")]
+async fn run_query(
+    db: web::Data<DbPool>,
+    web::Path(query_id): web::Path<Uuid>,
+    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+) -> Result<HttpResponse, ServiceError> {
+    let query = Query::find(db.get_ref(), query_id)?;
+    query.run(params);
+    Ok(HttpResponse::Ok().json("ran query"))
+}
+
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_queries);
     cfg.service(get_query);
@@ -69,5 +81,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(update_query);
     cfg.service(create_query);
     cfg.service(update_query);
+    cfg.service(run_query);
     // cfg.service(run_query);
 }
