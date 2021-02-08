@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import {
     useDataset,
@@ -11,7 +11,7 @@ import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { DataTable } from '../../Components/DataTable/DataTable';
-import {DataSetViewDetails} from '../../Components/DatasetViewDetails/DatasetViewDetails'
+import { DataSetViewDetails } from '../../Components/DatasetViewDetails/DatasetViewDetails';
 
 // import * as d3 from 'd3';
 
@@ -19,6 +19,7 @@ import {
     Page,
     PageContent,
     DetailsArea,
+    FlexSeperator,
 } from '../../Components/Layout/Layout';
 
 const TOKEN =
@@ -51,7 +52,7 @@ const valueToTableEntry = (value: any) => {
 export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
     const { id } = useParams<ParamTypes>();
     const { dataset, loading, error } = useDataset(id);
-    const [selectedRow, setSelectedRow]  = useState<any>(null);
+    const [selectedRow, setSelectedRow] = useState<any>(null);
 
     console.log('Selected row ', selectedRow);
     const layer = dataset
@@ -67,7 +68,7 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
               radiusMaxPixels: 100,
               getLabel: (f: any) => f.id,
               stroked: true,
-              pickable:true
+              pickable: true,
           })
         : null;
 
@@ -76,14 +77,23 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
             <DetailsArea>
                 <h2>{loading ? id : dataset?.name}</h2>
                 <p>{dataset?.description}</p>
+
+                <p>Id column :{dataset?.id_col} </p>
+                <p>Geom column : {dataset?.geom_col}</p>
+
+                <FlexSeperator />
+                <p>Created at: {dataset?.created_at}</p>
+                <p>Updated at: {dataset?.updated_at}</p>
             </DetailsArea>
             <PageContent>
                 {dataset && (
                     <Styles.Content>
                         <Styles.Table>
-                            <DataTable dataset={dataset} 
-                            selectedID={selectedRow?.id}
-                            onSelect={setSelectedRow}/>
+                            <DataTable
+                                dataset={dataset}
+                                selectedID={selectedRow?.id}
+                                onSelect={setSelectedRow}
+                            />
                         </Styles.Table>
                         <Styles.Map>
                             <DeckGL
@@ -92,11 +102,10 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                                 initialViewState={INITIAL_VIEW_STATE}
                                 layers={layer ? [layer] : ([] as any)}
                                 controller={true}
-                                getTooltip= {({object}: any) => {
-                                    console.log("tool tip ", object)
-                                    return object && object.message}
-                                } 
-
+                                getTooltip={({ object }: any) => {
+                                    console.log('tool tip ', object);
+                                    return object && object.message;
+                                }}
                             >
                                 <StaticMap
                                     mapboxApiAccessToken={TOKEN}
@@ -110,7 +119,7 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                         </Styles.Map>
 
                         <Styles.Details>
-                            <DataSetViewDetails/>
+                            <DataSetViewDetails />
                         </Styles.Details>
                     </Styles.Content>
                 )}

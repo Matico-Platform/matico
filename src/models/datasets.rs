@@ -3,7 +3,7 @@ use actix_web::web;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel::sql_types::Text;
-use log::info;
+use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -52,12 +52,16 @@ pub struct Dataset {
     pub updated_at: NaiveDateTime,
     pub public: bool,
     pub description: String,
+    pub geom_col:String,
+    pub id_col: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateDatasetDTO {
     pub name: String,
     pub description: String,
+    pub geom_col : String,
+    pub id_col : String
 }
 
 #[derive(Serialize, Deserialize, Debug, AsChangeset)]
@@ -66,6 +70,8 @@ pub struct UpdateDatasetDTO{
     pub name: Option<String>,
     pub description: Option<String>,
     pub public: Option<bool>,
+    pub geom_col : Option<String>,
+    pub id_col: Option<String>
 }
 
 impl Dataset {
@@ -98,25 +104,32 @@ impl Dataset {
         &self,
         pool: &DbPool,
         query: Option<String>,
-        page: PaginationParams,
+        page: Option<PaginationParams>,
     ) -> Result<String, ServiceError> {
         let conn = pool.get().unwrap();
 
         let sub_query = match query {
             Some(q) => q,
-            None => format!("select * from {name} {page}", name = self.name, page = page),
+            None => format!("select * from {name} ", name = self.name ),
         };
+        let page_str = match page{
+            Some(page)=> page.to_string(),
+            None => String::from("")
+        };
+
         let full_query = format!(
             "with q as ( select * from  ({sub_query}) as a {page} ) select json_agg(q) as res from q",
             sub_query = sub_query,
-            page = page
+            page = page_str
         );
+
         let full_query2 = full_query.clone();
 
         let result: Result<JsonQueryResult, ServiceError> =
             web::block(move || diesel::sql_query(&full_query).get_result(&conn))
                 .await
                 .map_err(|e| {
+                    warn!("SQL Query failed: {} {}",e,full_query2);
                     ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, full_query2))
                 });
         Ok(result?.res)
@@ -145,5 +158,31 @@ impl Dataset {
             .map_err(|e| {
                 ServiceError::BadRequest(format!("Failed to create or update dataset, {}", e))
             })
+    }
+
+    pub async fn update_feature(&self,pool: &DbPool, feature_id: String, update:serde_json::Value)->Result<(),ServiceError>{
+        let conn = pool.get().unwrap();
+        let obj = update.as_object().unwrap();
+        let mut key_vals : Vec<String> = vec![];
+
+        for(key,value) in &*obj{
+            info!("{} : {}",key,value);
+            // TODO FIX THIS!
+            key_vals.push(format!("{} = {}",key,value).replace("\"","'"));
+        }
+        let set_statement = key_vals.join(",");
+        let query = format!("
+        UPDATE {}
+        SET {}
+        WHERE {} = {}", self.name, set_statement, self.id_col, feature_id );
+        info!("Update query is {}",query.clone()); 
+        let query2 = query.clone();
+        web::block(move || diesel::sql_query(&query).execute(&conn))
+                .await
+                .map_err(|e| {
+                    warn!("SQL Query failed: {} {}",e,query2);
+                    ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query2))
+                })?;
+        Ok(())
     }
 }

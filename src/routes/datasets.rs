@@ -10,14 +10,9 @@ use actix_web::{get,put,guard,delete,web,Error,HttpResponse};
 use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
 use log::{info, warn};
-use serde::{Deserialize, Serialize};
 use std::io::Write;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize)]
-struct Query {
-    q: Option<String>,
-}
 
 #[get("")]
 async fn get_datasets(
@@ -35,23 +30,6 @@ async fn get_dataset(
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(db.get_ref(), id.into_inner())?;
     Ok(HttpResponse::Ok().json(dataset))
-}
-
-#[get("/{id}/query")]
-async fn query_dataset(
-    db: web::Data<DbPool>,
-    page: web::Query<PaginationParams>,
-    query: web::Query<Query>,
-    id: web::Path<Uuid>,
-) -> Result<HttpResponse, ServiceError> {
-    let dataset = Dataset::find(db.get_ref(), id.into_inner())?;
-    let result = dataset
-        .query(db.get_ref(), query.q.clone(), page.into_inner())
-        .await?;
-    // Ok(HttpResponse::Ok().json(dataset))
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .body(result))
 }
 
 async fn upload_dataset_to_tmp_file(mut field: Field, filename: &str) -> Result<String, Error> {
@@ -144,6 +122,8 @@ async fn create_dataset(
         post_import_script: None,
         created_at: Utc::now().naive_utc(),
         updated_at: Utc::now().naive_utc(),
+        geom_col: metadata.geom_col,
+        id_col: metadata.id_col,
         public: false,
     };
 
@@ -182,7 +162,6 @@ async fn delete_dataset(
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(query_dataset);
     cfg.service(get_dataset);
     cfg.service(get_datasets);
     cfg.service(delete_dataset);

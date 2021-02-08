@@ -2,10 +2,18 @@ use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::queries::{CreateQueryDTO, Params, Query, UpdateQueryDTO};
 use crate::utils::PaginationParams;
+use serde::{Serialize,Deserialize};
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use log::info;
 use uuid::Uuid;
+
+
+#[derive(Serialize, Deserialize)]
+struct QueryString {
+    q: Option<String>,
+}
+
 
 #[get("/{id}")]
 async fn get_query(

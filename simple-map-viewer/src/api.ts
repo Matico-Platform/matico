@@ -4,7 +4,10 @@ export interface Dataset {
     name: string;
     description: string;
     id: string;
-    create_at: Date;
+    created_at: Date;
+    updated_at: Date;
+    geom_col: string;
+    id_col: string;
 }
 
 export interface User {
@@ -33,7 +36,11 @@ export interface LoginResponse {
 }
 
 let a = axios.create({
-    baseURL:  (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') ? '/api' :`${window.location.origin}/api`,
+    baseURL:
+        !process.env.NODE_ENV ||
+        process.env.NODE_ENV === 'development'
+            ? '/api'
+            : `${window.location.origin}/api`,
     headers: { 'Content-Type': 'application/json' },
 });
 
@@ -116,6 +123,6 @@ export async function getPagedDatasetData(
     id: string,
     page: Page,
 ): Promise<AxiosResponse<any>> {
-    return a.get(`datasets/${id}/query`, { params: page });
+    return a.get(`datasets/${id}/data`, { params: page });
 }
 export default a;
