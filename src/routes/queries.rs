@@ -1,20 +1,12 @@
 use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::queries::{CreateQueryDTO, Query, UpdateQueryDTO};
+use crate::models::queries::{AnnonQuery, CreateQueryDTO, Query, UpdateQueryDTO};
 use crate::utils::PaginationParams;
-use serde::{Serialize,Deserialize};
 use std::collections::HashMap;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use log::info;
 use uuid::Uuid;
-
-
-#[derive(Serialize, Deserialize)]
-struct QueryString {
-    q: Option<String>,
-}
-
 
 #[get("/{id}")]
 async fn get_query(
@@ -63,18 +55,34 @@ async fn create_query(
     Ok(HttpResponse::Ok().json(result))
 }
 
-#[get("/run/{query_id}")]
+#[get("/run")]
+async fn run_annon_query(
+    db: web::Data<DbPool>,
+    web::Query(query): web::Query<AnnonQuery>,
+) -> Result<HttpResponse, ServiceError> {
+    info!("HERERE!!!");
+    let result = Query::run_raw(db.get_ref(), query.q).await?;
+    // let result = "{\"test\":\"test\"}";
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(result))
+}
+
+#[get("/{query_id}/run")]
 async fn run_query(
     db: web::Data<DbPool>,
     web::Path(query_id): web::Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
 ) -> Result<HttpResponse, ServiceError> {
     let query = Query::find(db.get_ref(), query_id)?;
-    query.run(params);
-    Ok(HttpResponse::Ok().json("ran query"))
+    let result = query.run(db.get_ref(), params).await?;
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(run_annon_query);
     cfg.service(get_queries);
     cfg.service(get_query);
     cfg.service(delete_query);

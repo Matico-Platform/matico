@@ -10,13 +10,7 @@ use uuid::Uuid;
 use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::schema::datasets::{self, dsl::*};
-use crate::utils::PaginationParams;
-
-#[derive(Serialize, Deserialize, QueryableByName, PartialEq, Debug)]
-pub struct JsonQueryResult {
-    #[sql_type = "Text"]
-    res: String,
-}
+use crate::utils::{JsonQueryResult, PaginationParams};
 
 #[derive(Serialize, Deserialize)]
 pub struct DatasetSearch {
@@ -24,7 +18,6 @@ pub struct DatasetSearch {
     live: Option<bool>,
     date_start: Option<NaiveDateTime>,
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateSyncDatasetDTO {
@@ -52,26 +45,26 @@ pub struct Dataset {
     pub updated_at: NaiveDateTime,
     pub public: bool,
     pub description: String,
-    pub geom_col:String,
-    pub id_col: String
+    pub geom_col: String,
+    pub id_col: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateDatasetDTO {
     pub name: String,
     pub description: String,
-    pub geom_col : String,
-    pub id_col : String
+    pub geom_col: String,
+    pub id_col: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, AsChangeset)]
 #[table_name = "datasets"]
-pub struct UpdateDatasetDTO{
+pub struct UpdateDatasetDTO {
     pub name: Option<String>,
     pub description: Option<String>,
     pub public: Option<bool>,
-    pub geom_col : Option<String>,
-    pub id_col: Option<String>
+    pub geom_col: Option<String>,
+    pub id_col: Option<String>,
 }
 
 impl Dataset {
@@ -94,9 +87,13 @@ impl Dataset {
         Ok(dataset)
     }
 
-    pub fn delete(pool: &DbPool, dataset_id:Uuid)->Result<(), ServiceError>{
+    pub fn delete(pool: &DbPool, dataset_id: Uuid) -> Result<(), ServiceError> {
         let conn = pool.get().unwrap();
-        diesel::delete(datasets::table.filter(datasets::id.eq(dataset_id))).execute(&conn).map_err(|_| ServiceError::BadRequest(format!("Failed to delete dataset {}",dataset_id)))?;
+        diesel::delete(datasets::table.filter(datasets::id.eq(dataset_id)))
+            .execute(&conn)
+            .map_err(|_| {
+                ServiceError::BadRequest(format!("Failed to delete dataset {}", dataset_id))
+            })?;
         Ok(())
     }
 
@@ -110,11 +107,11 @@ impl Dataset {
 
         let sub_query = match query {
             Some(q) => q,
-            None => format!("select * from {name} ", name = self.name ),
+            None => format!("select * from {name} ", name = self.name),
         };
-        let page_str = match page{
-            Some(page)=> page.to_string(),
-            None => String::from("")
+        let page_str = match page {
+            Some(page) => page.to_string(),
+            None => String::from(""),
         };
 
         let full_query = format!(
@@ -129,19 +126,24 @@ impl Dataset {
             web::block(move || diesel::sql_query(&full_query).get_result(&conn))
                 .await
                 .map_err(|e| {
-                    warn!("SQL Query failed: {} {}",e,full_query2);
+                    warn!("SQL Query failed: {} {}", e, full_query2);
                     ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, full_query2))
                 });
         Ok(result?.res)
     }
 
-    pub fn update(pool:&DbPool, dataset_id: Uuid, updates: UpdateDatasetDTO)-> Result<Dataset,ServiceError>{
+    pub fn update(
+        pool: &DbPool,
+        dataset_id: Uuid,
+        updates: UpdateDatasetDTO,
+    ) -> Result<Dataset, ServiceError> {
         let conn = pool.get().unwrap();
         let updated_dataset = diesel::update(datasets::table.filter(datasets::id.eq(dataset_id)))
-        .set(updates)
-        .get_result(&conn)
-        .map_err(|e| ServiceError::BadRequest(format!("Failed to update dataset {} {}", dataset_id, e)))?;
-        
+            .set(updates)
+            .get_result(&conn)
+            .map_err(|e| {
+                ServiceError::BadRequest(format!("Failed to update dataset {} {}", dataset_id, e))
+            })?;
         Ok(updated_dataset)
     }
 
@@ -160,29 +162,37 @@ impl Dataset {
             })
     }
 
-    pub async fn update_feature(&self,pool: &DbPool, feature_id: String, update:serde_json::Value)->Result<(),ServiceError>{
+    pub async fn update_feature(
+        &self,
+        pool: &DbPool,
+        feature_id: String,
+        update: serde_json::Value,
+    ) -> Result<(), ServiceError> {
         let conn = pool.get().unwrap();
         let obj = update.as_object().unwrap();
-        let mut key_vals : Vec<String> = vec![];
+        let mut key_vals: Vec<String> = vec![];
 
-        for(key,value) in &*obj{
-            info!("{} : {}",key,value);
+        for (key, value) in &*obj {
+            info!("{} : {}", key, value);
             // TODO FIX THIS!
-            key_vals.push(format!("{} = {}",key,value).replace("\"","'"));
+            key_vals.push(format!("{} = {}", key, value).replace("\"", "'"));
         }
         let set_statement = key_vals.join(",");
-        let query = format!("
+        let query = format!(
+            "
         UPDATE {}
         SET {}
-        WHERE {} = {}", self.name, set_statement, self.id_col, feature_id );
-        info!("Update query is {}",query.clone()); 
+        WHERE {} = {}",
+            self.name, set_statement, self.id_col, feature_id
+        );
+        info!("Update query is {}", query.clone());
         let query2 = query.clone();
         web::block(move || diesel::sql_query(&query).execute(&conn))
-                .await
-                .map_err(|e| {
-                    warn!("SQL Query failed: {} {}",e,query2);
-                    ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query2))
-                })?;
+            .await
+            .map_err(|e| {
+                warn!("SQL Query failed: {} {}", e, query2);
+                ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query2))
+            })?;
         Ok(())
     }
 }

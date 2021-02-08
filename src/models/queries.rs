@@ -1,22 +1,29 @@
 use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
-use crate::utils::PaginationParams;
+use crate::utils::{JsonQueryResult, PaginationParams};
+use actix_web::web;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
-use log::info;
+use log::{info, warn};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::convert::From;
 use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum ValueType {
-    Numeric(f32),
+    Numeric(f64),
     Categorical(String),
     Text(String),
     Dataset(Uuid),
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AnnonQuery {
+    pub q: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -56,7 +63,7 @@ impl Display for ValueType {
 }
 
 trait QueryParameter {
-    fn modify_sql(&mut self, sql: String, value: ValueType) -> Result<String, ServiceError>;
+    fn modify_sql(&self, sql: String, value: ValueType) -> Result<String, ServiceError>;
     fn name(&self) -> &String;
     fn description(&self) -> &String;
     fn default_value(&self) -> &ValueType;
@@ -82,7 +89,7 @@ impl QueryParameter for NumericQueryParameter {
         &self.default_value
     }
 
-    fn modify_sql(&mut self, sql: String, value: ValueType) -> Result<String, ServiceError> {
+    fn modify_sql(&self, sql: String, value: ValueType) -> Result<String, ServiceError> {
         match value {
             ValueType::Numeric(val) => {
                 let target = &format!("${{{}}}", self.name());
@@ -197,5 +204,70 @@ impl Query {
             ServiceError::InternalServerError(format!("Failed to get queries {}", e))
         })?;
         Ok(results)
+    }
+
+    pub fn construct_query(
+        &self,
+        params: HashMap<String, serde_json::Value>,
+    ) -> Result<String, ServiceError> {
+        let mut query = self.sql.clone();
+
+        for q_param in self.parameters.clone() {
+            match q_param {
+                QueryParam::Numerical(param) => {
+                    let input =
+                        params
+                            .get(param.name())
+                            .ok_or(ServiceError::QueryFailed(format!(
+                                "missing param {}",
+                                param.name()
+                            )))?;
+                    info!("parsing parameter for {}, {}", param.name(), input);
+                    let input_val_str = input.as_str().ok_or(ServiceError::QueryFailed(
+                        format!("Failed to parse value for {},{:?} ", param.name(), input),
+                    ))?;
+                    let input_val: f64 = input_val_str.parse().map_err(|_| {
+                        ServiceError::QueryFailed("Failed to parse parameter".into())
+                    })?;
+
+                    query = param.modify_sql(query, ValueType::Numeric(input_val))?;
+                    info!("current query is {}", query);
+                }
+                _ => {
+                    return Err(ServiceError::QueryFailed(
+                        "Failed to construct query".into(),
+                    ))
+                }
+            }
+        }
+        Ok(query)
+    }
+
+    pub async fn run_raw(pool: &DbPool, query: String) -> Result<String, ServiceError> {
+        let conn = pool.get().unwrap();
+        let full_query = format!(
+            "
+            with q as (select * from ({sub_query}) as a) select json_agg(q) as res from q;
+        ",
+            sub_query = query
+        );
+        info!("Running raw query {}", full_query);
+        let result: Result<JsonQueryResult, ServiceError> =
+            web::block(move || diesel::sql_query(&full_query).get_result(&conn))
+                .await
+                .map_err(|e| {
+                    warn!("Query failed");
+                    ServiceError::QueryFailed(format!("Query failed with error {}", e))
+                });
+        Ok(result?.res)
+    }
+
+    pub async fn run(
+        &self,
+        pool: &DbPool,
+        params: HashMap<String, serde_json::Value>,
+    ) -> Result<String, ServiceError> {
+        let query = self.construct_query(params)?;
+        Self::run_raw(pool, query).await
     }
 }
