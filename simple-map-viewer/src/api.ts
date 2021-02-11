@@ -268,4 +268,8 @@ export async function createDashboard(newDashboard: CreateDashboardDTO){
 export async function updateDashboard(dataset_id:string, update: UpdateDashboardDTO): Promise<AxiosResponse<Dashboard>>{
     return a.put(`/dashboards/${dataset_id}`, update)
 }
+
+export async function updateFeature(dataset_id:string, feature_id: string,  update:any){
+    return a.put(`dataset/${dataset_id}/data/${feature_id}`, update)
+}
 export default a;

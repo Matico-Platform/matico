@@ -24,7 +24,7 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset, onSelect,selected
     const selectRow = (row: any)=>{
         console.log('row ', row)
         if(onSelect){
-            onSelect(row)
+            onSelect(row.values)
         }
     }
 
