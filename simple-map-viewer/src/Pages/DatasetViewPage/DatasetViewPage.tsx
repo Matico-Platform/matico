@@ -9,6 +9,7 @@ import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { DataTable } from '../../Components/DataTable/DataTable';
 import { DataSetViewDetails } from '../../Components/DatasetViewDetails/DatasetViewDetails';
+import {updateFeature} from '../../api'
 
 // import * as d3 from 'd3';
 
@@ -69,6 +70,11 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
           })
         : null;
 
+    //TODO implement this
+    const updateSelectedFeature = (update:any)=>{
+        // updateFeature(id, update)
+    }
+
     return (
         <Page>
             <DetailsArea>
@@ -116,7 +122,7 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                         </Styles.Map>
 
                         <Styles.Details>
-                            <DataSetViewDetails />
+                            <DataSetViewDetails onUpdate={updateSelectedFeature} feature={selectedRow} />
                         </Styles.Details>
                     </Styles.Content>
                 )}
