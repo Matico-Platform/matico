@@ -1,4 +1,17 @@
 table! {
+    dashboards (id) {
+        id -> Uuid,
+        name -> Text,
+        owner_id -> Uuid,
+        description -> Text,
+        map_style -> Jsonb,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+        public -> Bool,
+    }
+}
+
+table! {
     datasets (id) {
         id -> Uuid,
         owner_id -> Uuid,
@@ -17,7 +30,6 @@ table! {
         id_col -> Text,
     }
 }
-
 table! {
     queries (id) {
         id -> Uuid,
@@ -51,6 +63,4 @@ table! {
     }
 }
 
-joinable!(datasets -> users (owner_id));
-
-allow_tables_to_appear_in_same_query!(datasets, queries, spatial_ref_sys, users,);
+allow_tables_to_appear_in_same_query!(dashboards, datasets, queries, spatial_ref_sys, users,);

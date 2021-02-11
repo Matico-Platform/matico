@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import {
     useDataset,
-    useDatasetPagedResults,
 } from '../../Hooks/useDataset';
 import { Styles } from './DatasetViewPageStyles';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
@@ -22,8 +19,8 @@ import {
     FlexSeperator,
 } from '../../Components/Layout/Layout';
 
-const TOKEN =
-    'pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiM2Q4ODllNmRkZDQ4Yzc3NTBhN2UyNDE0MWY2OTRiZWIifQ.8OEKvgZBCCtDFUXkjt66Pw';
+const TOKEN = process.env.MAPBOX_TOKEN;
+
 
 interface DatasetViewPageProps {}
 

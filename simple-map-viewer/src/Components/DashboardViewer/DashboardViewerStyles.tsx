@@ -13,6 +13,7 @@ const Stats = styled.div`
 const DashboardOuter = styled.div`
     width:100%;
     height:100%;
+    position: relative;
 `
 
 export const Styles ={

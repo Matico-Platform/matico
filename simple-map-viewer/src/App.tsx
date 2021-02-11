@@ -1,7 +1,12 @@
 import React from 'react';
-import { LoginSignup } from './Components/LoginSignup/LoginSignup';
+import { LoginSignupPage } from './Pages/LoginSignupPage/LoginSignupPage';
 import { DatasetsPage } from './Pages/DatasetsPage/DatasetsPage';
+import { DashboardsPage } from './Pages/DashboardsPage/DashboardsPage';
 import { DatasetViewPage } from './Pages/DatasetViewPage/DatasetViewPage';
+import { DashboardBuilderPage} from './Pages/DashboardBuilderPage/DashboardBuilderPage';
+import { ModalContainer } from 'react-router-modal';
+
+// import { DashboardViewPage } from './Pages/DashboardViewPage/DashboardViewPage';
 import { ProfilePage } from './Pages/ProfilePage/ProfilePage';
 import { useProfile } from './Hooks/useProfile';
 
@@ -22,15 +27,12 @@ import {
     Route,
     NavLink,
 } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { HomePage } from './Pages/HomePage/HomePage/HomePage';
 
-import { Dashboard } from './Components/Dashboard/Dashboard';
-
 import {
     faMap,
-    faUpload,
     faUser,
     faInfo,
     faDatabase,
@@ -38,6 +40,8 @@ import {
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './App.css';
+import 'react-router-modal/css/react-router-modal.css'
+
 
 function App() {
     const { profile, loading } = useProfile();
@@ -48,7 +52,7 @@ function App() {
                 <NavArea>
                     <NavBar>
                         <NavBarButton>
-                            <NavLink to="/dashboard">
+                            <NavLink to="/dashboards">
                                 <FontAwesomeIcon icon={faMap} />
                             </NavLink>
                         </NavBarButton>
@@ -84,7 +88,7 @@ function App() {
                         <HomePage />
                     </Route>
                     <Route exact={true} path="/login">
-                        <LoginSignup />
+                        <LoginSignupPage/>
                     </Route>
                     <Route exact={true} path="/profile">
                         <ProfilePage />
@@ -92,19 +96,26 @@ function App() {
                     <Route exact={true} path="/datasets">
                         <DatasetsPage />
                     </Route>
+                    <Route exact={true} path="/dashboards">
+                        <DashboardsPage />
+                    </Route>
                     <Route
                         exact={true}
                         path="/datasets/:id"
                         component={DatasetViewPage}
                     />
+                    <Route
+                        exact={false}
+                        path="/dashboard/:dashboard_id"
+                        component={DashboardBuilderPage}
+                    />
                     <Route exact={true} path="/info">
                         <h1>Info</h1>
                     </Route>
-                    <Route exact={true} path="/dashboard">
-                        <Dashboard />
-                    </Route>
                 </Switch>
+
             </AppLayout>
+            <ModalContainer/>
         </Router>
     );
 }

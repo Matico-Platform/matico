@@ -10,11 +10,12 @@ export const useDatasets =()=>{
         setLoading(true)
         getDatasets().then((result)=>{
             setDatasets(result.data)
-            setLoading(false)
         })
         .catch((e)=>{
-            setLoading(false)
             setError(e.toString())
+        })
+        .finally(()=>{
+            setLoading(false)
         })
     },[])
 

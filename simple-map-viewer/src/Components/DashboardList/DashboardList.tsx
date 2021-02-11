@@ -1,26 +1,26 @@
 import React from 'react';
-import { useDatasets } from '../../Hooks/useDatasets';
-import { Styles } from './DatasetListStyles';
+import { useDashboards} from '../../Hooks/useDashboards';
+import { Styles } from './DashboardListStyles';
 import {List,Row} from '../List/List'
 
 import { Button, ButtonType } from '../Button/Button';
 import { Link } from 'react-router-dom';
 
-interface DatasetListProps {}
+interface DashboardListProps{}
 
-export const DatasetList: React.FC<DatasetListProps> = ({}) => {
-    const { datasets, loading } = useDatasets();
+export const DashboardList: React.FC<DashboardListProps> = ({}) => {
+    const { dashboards, loading } = useDashboards();
 
     return (
         <List loading ={loading}>
-            {datasets.map((dataset) => (
+            {dashboards.map((dashboard) => (
                 <Row>
                     <div>
-                        <h3>{dataset.name}</h3>
-                        <p>{dataset.description}</p>
+                        <h3>{dashboard.name}</h3>
+                        <p>{dashboard.description}</p>
                     </div>
                     <div>
-                        <Link to={`/datasets/${dataset.id}`}>
+                        <Link to={`/dashboard/${dashboard.id}`}>
                             <Button
                                 kind={ButtonType.Secondary}
                             >
@@ -28,7 +28,7 @@ export const DatasetList: React.FC<DatasetListProps> = ({}) => {
                             </Button>
                         </Link>
 
-                        <Link to={`/datasets/${dataset.id}`}>
+                        <Link to={`/datasets/${dashboard.id}`}>
                             <Button kind={ButtonType.Primary}>
                                 delete
                             </Button>
