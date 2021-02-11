@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLoginSignup } from '../../Hooks/useLoginSignup';
 import { Card } from '../Card/Card';
 import { Tabs, Tab } from '../Tabs/Tabs';
+import {Button, ButtonType} from '../Button/Button'
 import { Styles } from './LoginSignupStyles';
 import { Form } from '../Forms/Forms';
 
@@ -50,7 +51,7 @@ export function LoginSignup(props: Props) {
                             type="password"
                             placeholder="password"
                         />
-                        <button type="submit">Login</button>
+                        <Button kind={ButtonType.Primary} type='submit'>Login</Button>
                     </Form>
                 </Tab>
                 <Tab name="signup">
@@ -80,7 +81,7 @@ export function LoginSignup(props: Props) {
                             type="password"
                             placeholder="password"
                         />
-                        <button type="submit">Signup</button>
+                        <Button kind={ButtonType.Primary} type='submit'>Signup</Button>
                     </Form>
                 </Tab>
             </Tabs>
