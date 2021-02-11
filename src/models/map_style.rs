@@ -6,6 +6,8 @@ use uuid::Uuid;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum BaseMap {
     CartoDBPositron,
+    CartoDBVoyager,
+    CartoDBDarkMatter,
     Custom(String),
 }
 
@@ -26,14 +28,16 @@ pub enum LayerStyle {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Layer {
-    source: LayerSource,
-    style: LayerStyle,
+    pub source: LayerSource,
+    pub style: LayerStyle,
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, AsJsonb)]
 pub struct MapStyle {
-    base_map: BaseMap,
-    center: [f64; 2],
-    zoom: f64,
-    layers: Vec<Layer>,
+    pub base_map: BaseMap,
+    pub center: [f64; 2],
+    pub zoom: f64,
+    pub layers: Vec<Layer>,
 }

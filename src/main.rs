@@ -54,8 +54,12 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("/api/users").configure(routes::users::init_routes))
             .service(web::scope("/api/auth").configure(routes::auth::init_routes))
             .service(web::scope("/api/queries").configure(routes::queries::init_routes))
-            .service(web::scope("/api/datasets").configure(routes::data::init_routes)
-                                                .configure(routes::datasets::init_routes))
+            .service(web::scope("/api/dashboards").configure(routes::dashboards::init_routes))
+            .service(
+                web::scope("/api/datasets")
+                    .configure(routes::data::init_routes)
+                    .configure(routes::datasets::init_routes),
+            )
             .service(fs::Files::new("/", "static").index_file("index.html"))
             .default_service(web::get().to(home))
     })

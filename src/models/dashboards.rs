@@ -38,7 +38,7 @@ pub struct UpdateDashboardDTO {
     pub name: Option<String>,
     pub description: Option<String>,
     pub map_style: Option<MapStyle>,
-    pub public: bool,
+    pub public: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -135,5 +135,14 @@ impl Dashboard {
             .execute(&conn)
             .map_err(|e| ServiceError::BadRequest(format!("Failed to delete dataset {}", e)))?;
         Ok(())
+    }
+
+    pub fn find(pool: &DbPool, id: Uuid) -> Result<Dashboard, ServiceError> {
+        let conn = pool.get().unwrap();
+        let dashboard = dashboards::table
+            .filter(dashboards::id.eq(id))
+            .first(&conn)
+            .map_err(|e| ServiceError::BadRequest(format!("failed to find dataset {} ", e)))?;
+        Ok(dashboard)
     }
 }
