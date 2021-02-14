@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useLoginSignup } from '../../Hooks/useLoginSignup';
+import {useUser} from '../../Contexts/UserContext'
 import { Card } from '../Card/Card';
+import {Redirect} from 'react-router'
+
 import { Tabs, Tab } from '../Tabs/Tabs';
 import {Button, ButtonType} from '../Button/Button'
 import { Styles } from './LoginSignupStyles';
@@ -13,28 +15,34 @@ export function LoginSignup(props: Props) {
     const [password, setPassword] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const {
-        attemptSignup,
-        attemptLogin,
-        loggedIn,
-        error,
-        loading,
-    } = useLoginSignup();
+        user,
+        errors,
+        attempting_signin,
+        attempting_signup,
+        login,
+        signup
+    } = useUser();
 
 
-    const login = (e: React.FormEvent<HTMLFormElement>) => {
+    const tryLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        attemptLogin(email, password);
+        login(email, password);
     };
 
-    const signup = (e: React.FormEvent<HTMLFormElement>) => {
+    const trySignup = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        attemptSignup(email, password, username);
+        signup(email, password, username);
     };
+
+    if(user){
+        return <Redirect to ='/profile' />
+    }
+
     return (
         <Card>
             <Tabs>
                 <Tab name="login">
-                    <Form onSubmit={login}>
+                    <Form onSubmit={tryLogin}>
                         <label>email</label>
                         <input
                             value={email}
@@ -55,7 +63,7 @@ export function LoginSignup(props: Props) {
                     </Form>
                 </Tab>
                 <Tab name="signup">
-                    <Form onSubmit={signup}>
+                    <Form onSubmit={trySignup}>
                         <label>username</label>
                         <input
                             value={username}
