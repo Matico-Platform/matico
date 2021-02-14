@@ -1,6 +1,6 @@
 use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::{LoginDTO, LoginResponseDTO, SignupDTO, User};
+use crate::models::users::{LoginDTO, LoginResponseDTO, SignupDTO, SignupResponseDTO, User};
 use actix_web::{post, web, HttpResponse};
 
 #[post("/login")]
@@ -19,9 +19,11 @@ async fn register(
     db: web::Data<DbPool>,
     user: web::Json<SignupDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    println!("HERE");
     let user = User::create(db.get_ref(), user.into_inner())?;
-    Ok(HttpResponse::Created().json(user))
+    let token = user.generate_token();
+
+    let response = SignupResponseDTO { user, token };
+    Ok(HttpResponse::Created().json(response))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

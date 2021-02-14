@@ -5,6 +5,8 @@ import { DashboardsPage } from './Pages/DashboardsPage/DashboardsPage';
 import { DatasetViewPage } from './Pages/DatasetViewPage/DatasetViewPage';
 import { DashboardBuilderPage} from './Pages/DashboardBuilderPage/DashboardBuilderPage';
 import { ModalContainer } from 'react-router-modal';
+import {useUser} from "./Contexts/UserContext"
+
 
 // import { DashboardViewPage } from './Pages/DashboardViewPage/DashboardViewPage';
 import { ProfilePage } from './Pages/ProfilePage/ProfilePage';
@@ -44,79 +46,78 @@ import 'react-router-modal/css/react-router-modal.css'
 
 
 function App() {
-    const { profile, loading } = useProfile();
-
+    const { user } = useUser();
     return (
-        <Router>
-            <AppLayout>
-                <NavArea>
-                    <NavBar>
-                        <NavBarButton>
-                            <NavLink to="/dashboards">
-                                <FontAwesomeIcon icon={faMap} />
-                            </NavLink>
-                        </NavBarButton>
-                        <NavBarButton>
-                            <NavLink to="/datasets">
-                                <FontAwesomeIcon icon={faDatabase} />
-                            </NavLink>
-                        </NavBarButton>
-                        <NavBarSpacer />
-                        <NavBarButton>
-                            <NavLink to="/info">
-                                <FontAwesomeIcon icon={faInfo} />
-                            </NavLink>
-                        </NavBarButton>
-                        {profile ? (
+            <Router>
+                <AppLayout>
+                    <NavArea>
+                        <NavBar>
                             <NavBarButton>
-                                <NavLink to="/profile">
-                                    <FontAwesomeIcon icon={faUser} />
-                                    <p>{profile.username}</p>
+                                <NavLink to="/dashboards">
+                                    <FontAwesomeIcon icon={faMap} />
                                 </NavLink>
                             </NavBarButton>
-                        ) : (
                             <NavBarButton>
-                                <NavLink to="/login">
-                                    <FontAwesomeIcon icon={faUser} />
+                                <NavLink to="/datasets">
+                                    <FontAwesomeIcon icon={faDatabase} />
                                 </NavLink>
                             </NavBarButton>
-                        )}
-                    </NavBar>
-                </NavArea>
-                <Switch>
-                    <Route exact={true} path="/">
-                        <HomePage />
-                    </Route>
-                    <Route exact={true} path="/login">
-                        <LoginSignupPage/>
-                    </Route>
-                    <Route exact={true} path="/profile">
-                        <ProfilePage />
-                    </Route>
-                    <Route exact={true} path="/datasets">
-                        <DatasetsPage />
-                    </Route>
-                    <Route exact={true} path="/dashboards">
-                        <DashboardsPage />
-                    </Route>
-                    <Route
-                        exact={true}
-                        path="/datasets/:id"
-                        component={DatasetViewPage}
-                    />
-                    <Route
-                        exact={false}
-                        path="/dashboard/:dashboard_id"
-                        component={DashboardBuilderPage}
-                    />
-                    <Route exact={true} path="/info">
-                        <h1>Info</h1>
-                    </Route>
-                </Switch>
+                            <NavBarSpacer />
+                            <NavBarButton>
+                                <NavLink to="/info">
+                                    <FontAwesomeIcon icon={faInfo} />
+                                </NavLink>
+                            </NavBarButton>
+                            {user ? (
+                                <NavBarButton>
+                                    <NavLink to="/profile">
+                                        <FontAwesomeIcon icon={faUser} />
+                                        <p>{user.username}</p>
+                                    </NavLink>
+                                </NavBarButton>
+                            ) : (
+                                <NavBarButton>
+                                    <NavLink to="/login">
+                                        <FontAwesomeIcon icon={faUser} />
+                                    </NavLink>
+                                </NavBarButton>
+                            )}
+                        </NavBar>
+                    </NavArea>
+                    <Switch>
+                        <Route exact={true} path="/">
+                            <HomePage />
+                        </Route>
+                        <Route exact={true} path="/login">
+                            <LoginSignupPage/>
+                        </Route>
+                        <Route exact={true} path="/profile">
+                            <ProfilePage />
+                        </Route>
+                        <Route exact={true} path="/datasets">
+                            <DatasetsPage />
+                        </Route>
+                        <Route exact={true} path="/dashboards">
+                            <DashboardsPage />
+                        </Route>
+                        <Route
+                            exact={true}
+                            path="/datasets/:id"
+                            component={DatasetViewPage}
+                        />
+                        <Route
+                            exact={false}
+                            path="/dashboard/:dashboard_id"
+                            component={DashboardBuilderPage}
+                        />
+                        <Route exact={true} path="/info">
+                            <h1>Info</h1>
+                        </Route>
+                    </Switch>
 
-            </AppLayout>
-            <ModalContainer/>
-        </Router>
+                </AppLayout>
+                <ModalContainer/>
+            </Router>
     );
 }
 

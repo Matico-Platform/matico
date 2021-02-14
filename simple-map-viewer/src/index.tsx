@@ -5,13 +5,16 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {ThemeProvider} from 'styled-components'
 import {Theme, GloablStyle} from './theme'
+import {UserProvider} from "./Contexts/UserContext"
 
 ReactDOM.render(
   <React.StrictMode>
-      <ThemeProvider theme={Theme}>
-        <GloablStyle />
-        <App />
-      </ThemeProvider>
+      <UserProvider>
+        <ThemeProvider theme={Theme}>
+          <GloablStyle />
+          <App />
+        </ThemeProvider>
+      </UserProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

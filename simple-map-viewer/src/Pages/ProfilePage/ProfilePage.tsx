@@ -1,19 +1,23 @@
 import React from 'react'
-import {useProfile} from "../../Hooks/useProfile"
+import {useUser} from "../../Contexts/UserContext"
 import {Redirect} from 'react-router'
+import {Button} from '../../Components/Button/Button'
 
 interface ProfilePageProps{
 
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({})=>{
-    const {profile,loading} = useProfile();
+    const {user,attempting_signin,signout} = useUser();
 
-    if(!profile && !loading){
+    if(!user && !attempting_signin){
         return <Redirect to="/login"/>
     }
 
     return (
-        <h1>Hi {profile?.username}</h1>
+        <div>
+            <h1>Hi {user?.username}</h1>
+            <Button onClick={signout} >Signout</Button>
+        </div>
     )
 }

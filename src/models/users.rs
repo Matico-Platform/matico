@@ -64,6 +64,12 @@ pub struct LoginResponseDTO {
     pub token: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SignupResponseDTO {
+    pub user: User,
+    pub token: String,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserToken {
     pub iat: i64,

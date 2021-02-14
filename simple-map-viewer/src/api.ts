@@ -164,6 +164,11 @@ export interface LoginResponse {
     token: string;
 }
 
+export interface SignupResponse{
+    user: User,
+    token: string,
+}
+
 let a = axios.create({
     baseURL: 'http://localhost:8000/api',
     // !process.env.NODE_ENV ||
@@ -224,6 +229,11 @@ export function createSyncDataset(syncDetails: CreateSyncDataset) {
     return a.post('/datasets', syncDetails);
 }
 
+
+export async function getProfile(): Promise<AxiosResponse<User>>{
+    return a.get('/users/profile');
+}
+
 export async function login(
     email: String,
     password: String,
@@ -235,7 +245,7 @@ export async function signup(
     username: String,
     password: String,
     email: String,
-): Promise<AxiosResponse<User>> {
+): Promise<AxiosResponse<SignupResponse>> {
     return a.post('/auth/signup', { email, password, username });
 }
 
