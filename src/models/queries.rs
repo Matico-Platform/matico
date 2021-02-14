@@ -104,7 +104,6 @@ impl QueryParameter for NumericQueryParameter {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, AsJsonb)]
-#[serde(tag = "type")]
 pub enum QueryParam {
     Numerical(NumericQueryParameter),
 }
