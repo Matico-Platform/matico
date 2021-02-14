@@ -12,6 +12,8 @@ export const FileUploadDetails: React.FC<FileUploadDetails> = ({
 }) => {
     const [name, setName] = useState(file.name.split('.')[0]);
     const [description, setDescription] = useState('');
+    const [idCol, setIdCol] = useState('id');
+    const [geomCol, setGeomCol] = useState('wkb_geometry');
     const [startUpload, setStartUpload] = useState<boolean>(false);
 
     const upload = () => {
@@ -21,7 +23,10 @@ export const FileUploadDetails: React.FC<FileUploadDetails> = ({
     const metadata = {
         name,
         description,
+        id_col: idCol,
+        geom_col: geomCol,
     };
+
     return (
         <div>
             {startUpload ? (
@@ -47,6 +52,20 @@ export const FileUploadDetails: React.FC<FileUploadDetails> = ({
                         onChange={(e) =>
                             setDescription(e.target.value)
                         }
+                        placeholder="Description"
+                    />
+                    <label>Id Column</label>
+                    <input
+                        type="textarea"
+                        value={idCol}
+                        onChange={(e) => setIdCol(e.target.value)}
+                        placeholder="Id column"
+                    />
+                    <label>Geom Column</label>
+                    <input
+                        type="textarea"
+                        value={geomCol}
+                        onChange={(e) => setGeomCol(e.target.value)}
                         placeholder="Description"
                     />
                     <label>Size</label>
