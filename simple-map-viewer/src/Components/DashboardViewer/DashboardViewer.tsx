@@ -49,7 +49,10 @@ function constructLayer(layer:Layer){
             break
     }
 
+    console.log("Layer name is ", layer.name)
+
     return new MVTLayer({
+        id:layer.name,
         data: `${window.origin}/api/tiler/${source_id}/{z}/{x}/{y}`,
         ...style
     })

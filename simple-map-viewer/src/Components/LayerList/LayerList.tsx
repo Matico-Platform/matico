@@ -15,7 +15,7 @@ export const LayerList: React.FC<LayerListProps>= ({})=>{
         <Styles.LayerList>
             {layers.map((layer)=>(
                 <>
-                    <LayerControlls layer={layer}/>
+                    <LayerControlls key={layer.name} layer={layer}/>
                 </>
             ))}
 
