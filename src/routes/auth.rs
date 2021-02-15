@@ -1,3 +1,4 @@
+use crate::app_state::State;
 use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::users::{LoginDTO, LoginResponseDTO, SignupDTO, SignupResponseDTO, User};
@@ -5,10 +6,10 @@ use actix_web::{post, web, HttpResponse};
 
 #[post("/login")]
 async fn login(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     login_details: web::Json<LoginDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    let user = User::verify(db.get_ref(), login_details.into_inner())?;
+    let user = User::verify(&state.db, login_details.into_inner())?;
     let token = user.generate_token();
 
     Ok(HttpResponse::Ok().json(LoginResponseDTO { user, token }))
@@ -16,10 +17,10 @@ async fn login(
 
 #[post("/signup")]
 async fn register(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     user: web::Json<SignupDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    let user = User::create(db.get_ref(), user.into_inner())?;
+    let user = User::create(&state.db, user.into_inner())?;
     let token = user.generate_token();
 
     let response = SignupResponseDTO { user, token };
