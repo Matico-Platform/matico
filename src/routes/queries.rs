@@ -1,5 +1,5 @@
 use crate::app_state::State;
-use crate::db::DbPool;
+use crate::db::Bounds;
 use crate::errors::ServiceError;
 use crate::models::queries::{AnnonQuery, CreateQueryDTO, Query, UpdateQueryDTO};
 use crate::utils::PaginationParams;
@@ -60,9 +60,10 @@ async fn create_query(
 async fn run_annon_query(
     state: web::Data<State>,
     web::Query(query): web::Query<AnnonQuery>,
+    web::Query(page): web::Query<PaginationParams>,
+    web::Query(bounds): web::Query<Bounds>,
 ) -> Result<HttpResponse, ServiceError> {
-    info!("HERERE!!!");
-    let result = Query::run_raw(&state.db, query.q).await?;
+    let result = Query::run_raw(&state.data_db, query.q, Some(page), None).await?;
     // let result = "{\"test\":\"test\"}";
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -74,9 +75,11 @@ async fn run_query(
     state: web::Data<State>,
     web::Path(query_id): web::Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+    web::Query(page): web::Query<PaginationParams>,
+    web::Query(bounds): web::Query<Bounds>,
 ) -> Result<HttpResponse, ServiceError> {
     let query = Query::find(&state.db, query_id)?;
-    let result = query.run(&state.db, params).await?;
+    let result = query.run(&state.data_db, params, Some(page), None).await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(result))

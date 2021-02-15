@@ -1,7 +1,7 @@
-use crate::db::DbPool;
+use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
-use crate::utils::{JsonQueryResult, PaginationParams};
+use crate::utils::PaginationParams;
 use actix_web::web;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
@@ -242,31 +242,34 @@ impl Query {
         Ok(query)
     }
 
-    pub async fn run_raw(pool: &DbPool, query: String) -> Result<String, ServiceError> {
-        let conn = pool.get().unwrap();
-        let full_query = format!(
-            "
-            with q as (select * from ({sub_query}) as a) select json_agg(q) as res from q;
-        ",
-            sub_query = query
-        );
-        info!("Running raw query {}", full_query);
-        let result: Result<JsonQueryResult, ServiceError> =
-            web::block(move || diesel::sql_query(&full_query).get_result(&conn))
-                .await
-                .map_err(|e| {
-                    warn!("Query failed");
-                    ServiceError::QueryFailed(format!("Query failed with error {}", e))
-                });
-        Ok(result?.res)
+    pub async fn run_raw(
+        pool: &DataDbPool,
+        query: String,
+        page: Option<PaginationParams>,
+        format: Option<String>,
+    ) -> Result<String, ServiceError> {
+        let f = match format {
+            Some(format) => format,
+            None => "geojson".into(),
+        };
+        let result = PostgisQueryRunner::run_query(pool, &query, page, &f).await?;
+        Ok(result.to_string())
     }
 
     pub async fn run(
         &self,
-        pool: &DbPool,
+        pool: &DataDbPool,
         params: HashMap<String, serde_json::Value>,
+        page: Option<PaginationParams>,
+        format: Option<String>,
     ) -> Result<String, ServiceError> {
+        let f = match format {
+            Some(format) => format,
+            None => "geojson".into(),
+        };
+
         let query = self.construct_query(params)?;
-        Self::run_raw(pool, query).await
+        let result = PostgisQueryRunner::run_query(pool, &query, page, &f).await?;
+        Ok(result.to_string())
     }
 }

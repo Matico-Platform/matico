@@ -2,15 +2,15 @@ use crate::models::User;
 use actix_web::web;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use diesel::sql_types::Text;
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::db::DbPool;
+use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
+use crate::models::columns::{Column, ColumnType};
 use crate::schema::datasets::{self, dsl::*};
-use crate::utils::{JsonQueryResult, PaginationParams};
+use crate::utils::PaginationParams;
 
 #[derive(Serialize, Deserialize)]
 pub struct DatasetSearch {
@@ -99,37 +99,24 @@ impl Dataset {
 
     pub async fn query(
         &self,
-        pool: &DbPool,
+        pool: &DataDbPool,
         query: Option<String>,
         page: Option<PaginationParams>,
+        format: Option<String>,
     ) -> Result<String, ServiceError> {
-        let conn = pool.get().unwrap();
-
-        let sub_query = match query {
-            Some(q) => q,
-            None => format!("select * from {name} ", name = self.name),
-        };
-        let page_str = match page {
-            Some(page) => page.to_string(),
-            None => String::from(""),
+        let q = match query {
+            Some(query) => query,
+            None => format!("select * from {}", self.name),
         };
 
-        let full_query = format!(
-            "with q as ( select * from  ({sub_query}) as a {page} ) select json_agg(q) as res from q",
-            sub_query = sub_query,
-            page = page_str
-        );
+        let f = match format {
+            Some(format) => format,
+            None => "geojson".into(),
+        };
 
-        let full_query2 = full_query.clone();
+        let result = PostgisQueryRunner::run_query(pool, &q, page, &f).await?;
 
-        let result: Result<JsonQueryResult, ServiceError> =
-            web::block(move || diesel::sql_query(&full_query).get_result(&conn))
-                .await
-                .map_err(|e| {
-                    warn!("SQL Query failed: {} {}", e, full_query2);
-                    ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, full_query2))
-                });
-        Ok(result?.res)
+        Ok(result.to_string())
     }
 
     pub fn update(
@@ -194,5 +181,9 @@ impl Dataset {
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query2))
             })?;
         Ok(())
+    }
+
+    pub fn columns(&self) -> Vec<Column> {
+        vec![]
     }
 }

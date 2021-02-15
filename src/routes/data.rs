@@ -1,5 +1,5 @@
 use crate::app_state::State;
-use crate::db::DbPool;
+use crate::db::Bounds;
 use crate::errors::ServiceError;
 use crate::models::Dataset;
 use crate::utils::PaginationParams;
@@ -7,19 +7,6 @@ use actix_web::{get, put, web, HttpResponse};
 use log::info;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-
-#[derive(Serialize, Deserialize)]
-struct BBox {
-    x_min: f32,
-    x_max: f32,
-    y_min: f32,
-    y_max: f32,
-}
-
-#[derive(Serialize, Deserialize)]
-struct Bounds {
-    bounds: Option<BBox>,
-}
 
 #[get("{dataset_id}/data")]
 async fn get_data(
@@ -29,7 +16,9 @@ async fn get_data(
     web::Query(bounds): web::Query<Bounds>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
-    let result = dataset.query(&state.db, None, Some(page)).await?;
+    let result = dataset
+        .query(&state.data_db, None, Some(page), Some("csv".into()))
+        .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(result))
@@ -51,7 +40,9 @@ async fn get_feature(
         feature_id = feature_id
     );
 
-    let result = dataset.query(&state.db, Some(query), None).await?;
+    let result = dataset
+        .query(&state.data_db, Some(query), None, Some("csv".into()))
+        .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(result))
