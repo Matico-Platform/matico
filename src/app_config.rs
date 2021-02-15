@@ -9,6 +9,12 @@ pub struct Config {
     pub db_port: Option<String>,
     pub db_password: Option<String>,
     pub db_username: Option<String>,
+
+    pub data_db_host: String,
+    pub data_db_name: String,
+    pub data_db_port: Option<u16>,
+    pub data_db_username: String,
+    pub data_db_password: Option<String>,
     pub server_addr: String,
 }
 
@@ -41,6 +47,22 @@ impl Config {
             port = port,
             name = self.db_name
         ))
+    }
+
+    pub fn data_db_config(&self) -> tokio_postgres::Config {
+        let mut pg_config = tokio_postgres::Config::new();
+        pg_config.host(&self.data_db_host);
+        pg_config.dbname(&self.data_db_name);
+        pg_config.user(&self.data_db_username);
+
+        if let Some(password) = &self.data_db_password {
+            pg_config.password(&password);
+        }
+
+        if let Some(port) = self.data_db_port {
+            pg_config.port(port);
+        }
+        pg_config
     }
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
