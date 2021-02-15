@@ -1,3 +1,4 @@
+use crate::app_state::State;
 use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::Dataset;
@@ -22,13 +23,13 @@ struct Bounds {
 
 #[get("{dataset_id}/data")]
 async fn get_data(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     web::Path(dataset_id): web::Path<Uuid>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(bounds): web::Query<Bounds>,
 ) -> Result<HttpResponse, ServiceError> {
-    let dataset = Dataset::find(db.get_ref(), dataset_id)?;
-    let result = dataset.query(db.get_ref(), None, Some(page)).await?;
+    let dataset = Dataset::find(&state.db, dataset_id)?;
+    let result = dataset.query(&state.db, None, Some(page)).await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(result))
@@ -36,10 +37,10 @@ async fn get_data(
 
 #[get("{dataset_id}/data/{feature_id}")]
 async fn get_feature(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     web::Path((dataset_id, feature_id)): web::Path<(Uuid, String)>,
 ) -> Result<HttpResponse, ServiceError> {
-    let dataset = Dataset::find(db.get_ref(), dataset_id)?;
+    let dataset = Dataset::find(&state.db, dataset_id)?;
 
     let id_col = &dataset.id_col;
     let table = &dataset.name;
@@ -50,7 +51,7 @@ async fn get_feature(
         feature_id = feature_id
     );
 
-    let result = dataset.query(db.get_ref(), Some(query), None).await?;
+    let result = dataset.query(&state.db, Some(query), None).await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(result))
@@ -58,13 +59,13 @@ async fn get_feature(
 
 #[put("{dataset_id}/data/{feature_id}")]
 async fn update_feature(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     web::Path((dataset_id, feature_id)): web::Path<(Uuid, String)>,
     web::Json(update): web::Json<serde_json::Value>,
 ) -> Result<HttpResponse, ServiceError> {
-    let dataset = Dataset::find(db.get_ref(), dataset_id)?;
+    let dataset = Dataset::find(&state.db, dataset_id)?;
     let result = dataset
-        .update_feature(db.get_ref(), feature_id, update)
+        .update_feature(&state.db, feature_id, update)
         .await?;
     Ok(HttpResponse::Ok().json(result))
 }

@@ -1,34 +1,37 @@
+use crate::app_state::State;
 use crate::auth::AuthService;
 use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
 
-use crate::models::{datasets::{CreateDatasetDTO, UpdateDatasetDTO, CreateSyncDatasetDTO, Dataset}, DatasetSearch, UserToken};
+use crate::models::{
+    datasets::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, UpdateDatasetDTO},
+    DatasetSearch, UserToken,
+};
 use crate::utils::PaginationParams;
 use actix_multipart::{Field, Multipart};
-use actix_web::{get,put,guard,delete,web,Error,HttpResponse};
+use actix_web::{delete, get, guard, put, web, Error, HttpResponse};
 use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
 use log::{info, warn};
 use std::io::Write;
 use uuid::Uuid;
 
-
 #[get("")]
 async fn get_datasets(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     search_criteria: web::Query<DatasetSearch>,
 ) -> Result<HttpResponse, ServiceError> {
-    let datasets = Dataset::search(db.get_ref(), search_criteria.into_inner())?;
+    let datasets = Dataset::search(&state.db, search_criteria.into_inner())?;
     Ok(HttpResponse::Ok().json(datasets))
 }
 
 #[get("/{id}")]
 async fn get_dataset(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
-    let dataset = Dataset::find(db.get_ref(), id.into_inner())?;
+    let dataset = Dataset::find(&state.db, id.into_inner())?;
     Ok(HttpResponse::Ok().json(dataset))
 }
 
@@ -71,7 +74,7 @@ async fn parse_dataset_metadata(mut field: Field) -> Result<CreateDatasetDTO, Se
 
 // This maps to "/" when content type is multipart/form-data
 async fn create_dataset(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     mut payload: Multipart,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
@@ -127,14 +130,14 @@ async fn create_dataset(
         public: false,
     };
 
-    dataset.create_or_update(db.get_ref())?;
+    dataset.create_or_update(&state.db)?;
 
     Ok(HttpResponse::Ok().json(file_info))
 }
 
 // This maps to "/" when content type is application/json
 async fn create_sync_dataset(
-    _db: web::Data<DbPool>,
+    _state: web::Data<State>,
     _logged_in_user: AuthService,
     _sync_details: web::Json<CreateSyncDatasetDTO>,
 ) -> Result<HttpResponse, ServiceError> {
@@ -144,21 +147,21 @@ async fn create_sync_dataset(
 
 #[put("{id}")]
 async fn update_dataset(
-    db: web::Data<DbPool>,
-    web::Path(id) : web::Path<Uuid>,
-    web::Json(updates): web::Json<UpdateDatasetDTO>
-) -> Result<HttpResponse, ServiceError>{
-    let result = Dataset::update(db.get_ref(), id, updates)?;
+    state: web::Data<State>,
+    web::Path(id): web::Path<Uuid>,
+    web::Json(updates): web::Json<UpdateDatasetDTO>,
+) -> Result<HttpResponse, ServiceError> {
+    let result = Dataset::update(&state.db, id, updates)?;
     Ok(HttpResponse::Ok().json(result))
 }
 
 #[delete("{id}")]
 async fn delete_dataset(
-    db: web::Data<DbPool>,
-    web::Path(id) : web::Path<Uuid>
-)-> Result<HttpResponse,ServiceError>{
-    Dataset::delete(db.get_ref(), id)?;
-    Ok(HttpResponse::Ok().json(format!("Deleted dataset {}",id)))
+    state: web::Data<State>,
+    web::Path(id): web::Path<Uuid>,
+) -> Result<HttpResponse, ServiceError> {
+    Dataset::delete(&state.db, id)?;
+    Ok(HttpResponse::Ok().json(format!("Deleted dataset {}", id)))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

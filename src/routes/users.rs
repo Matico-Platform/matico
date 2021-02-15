@@ -1,10 +1,10 @@
+use crate::app_state::State;
 use crate::auth::AuthService;
 use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::User;
 use actix_web::{get, web, Error, HttpResponse};
 use serde::{Deserialize, Serialize};
-
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -15,12 +15,12 @@ pub struct InputUser {
 
 #[get("/profile")]
 async fn profile(
-    db: web::Data<DbPool>,
+    state: web::Data<State>,
     auth_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     match auth_user.user {
         Some(u) => {
-            let user = User::find_by_id(db.get_ref(), u.id)?;
+            let user = User::find_by_id(&state.db, u.id)?;
             Ok(HttpResponse::Ok().json(user))
         }
         None => Err(ServiceError::UserNotFound),
@@ -28,8 +28,11 @@ async fn profile(
 }
 
 #[get("/{id}")]
-async fn get_user(db: web::Data<DbPool>, user_id: web::Path<Uuid>) -> Result<HttpResponse, Error> {
-    let user = User::find_by_id(db.get_ref(), user_id.into_inner())?;
+async fn get_user(
+    state: web::Data<State>,
+    user_id: web::Path<Uuid>,
+) -> Result<HttpResponse, Error> {
+    let user = User::find_by_id(&state.db, user_id.into_inner())?;
     Ok(HttpResponse::Found().json(user))
 }
 

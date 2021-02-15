@@ -2,17 +2,16 @@
 extern crate diesel;
 extern crate argon2;
 
-use crate::db::{DataDbPool, DbPool};
-use crate::models::queries::CreateQueryDTO;
+use crate::app_state::State;
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
-use deadpool_postgres::Client;
 use diesel::r2d2::{self, ConnectionManager};
 use dotenv;
 use std::path::PathBuf;
 
 mod app_config;
+mod app_state;
 mod auth;
 mod db;
 mod errors;
@@ -25,11 +24,6 @@ mod utils;
 async fn home() -> std::io::Result<fs::NamedFile> {
     let path: PathBuf = "./static/index.html".parse().unwrap();
     Ok(fs::NamedFile::open(path)?)
-}
-
-struct State {
-    db: DbPool,
-    data_db: DataDbPool,
 }
 
 #[actix_web::main]
@@ -60,10 +54,10 @@ async fn main() -> std::io::Result<()> {
 
     // Create app state
 
-    let app_state = State {
-        db: pool.clone(),
-        data_db: data_pool,
-    };
+    // let app_state = State {
+    //     db: pool.clone(),
+    //     data_db: data_pool,
+    // };
 
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
@@ -74,21 +68,24 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .wrap(cors)
-            .data(pool.clone())
+            .data(State {
+                db: pool.clone(),
+                data_db: data_pool.clone(),
+            })
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
             // .wrap(middleware::NormalizePath::default())
-            .service(web::scope("/api/tiler").configure(tiler::init_routes))
-            .service(web::scope("/api/users").configure(routes::users::init_routes))
-            .service(web::scope("/api/auth").configure(routes::auth::init_routes))
-            .service(web::scope("/api/queries").configure(routes::queries::init_routes))
+            // .service(web::scope("/api/tiler").configure(tiler::init_routes))
+            // .service(web::scope("/api/users").configure(routes::users::init_routes))
+            // .service(web::scope("/api/auth").configure(routes::auth::init_routes))
+            // .service(web::scope("/api/queries").configure(routes::queries::init_routes))
             .service(web::scope("/api/dashboards").configure(routes::dashboards::init_routes))
-            .service(
-                web::scope("/api/datasets")
-                    .configure(routes::data::init_routes)
-                    .configure(routes::columns::init_routes)
-                    .configure(routes::datasets::init_routes),
-            )
+            // .service(
+            //     web::scope("/api/datasets")
+            //         .configure(routes::data::init_routes)
+            //         .configure(routes::columns::init_routes)
+            //         .configure(routes::datasets::init_routes),
+            // )
             .service(fs::Files::new("/", "static").index_file("index.html"))
             .default_service(web::get().to(home))
     })
