@@ -13,7 +13,7 @@ pub struct Config {
     pub data_db_host: String,
     pub data_db_name: String,
     pub data_db_port: Option<u16>,
-    pub data_db_username: String,
+    pub data_db_username: Option<String>,
     pub data_db_password: Option<String>,
     pub server_addr: String,
 }
@@ -53,7 +53,10 @@ impl Config {
         let mut pg_config = tokio_postgres::Config::new();
         pg_config.host(&self.data_db_host);
         pg_config.dbname(&self.data_db_name);
-        pg_config.user(&self.data_db_username);
+
+        if let Some(username) = &self.data_db_username {
+            pg_config.user(&username);
+        }
 
         if let Some(password) = &self.data_db_password {
             pg_config.password(&password);
@@ -66,17 +69,17 @@ impl Config {
     }
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
-        let db = format!("dbname={}", self.db_name);
-        let user = match &self.db_username {
+        let db = format!("dbname={}", self.data_db_name);
+        let user = match &self.data_db_username {
             Some(user) => format!("user={}", user),
             None => format!(""),
         };
-        let port = match &self.db_port {
+        let port = match &self.data_db_port {
             Some(port) => format!("port={}", port),
             None => format!(""),
         };
         let host = format!("host={}", self.db_host);
-        let password = match &self.db_password {
+        let password = match &self.data_db_password {
             Some(password) => format!("password={}", password),
             None => format!(""),
         };
