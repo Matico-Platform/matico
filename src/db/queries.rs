@@ -1,6 +1,7 @@
+use crate::db::formatters::*;
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
-use crate::models::formatters::*;
+use crate::models::Column;
 use crate::utils::PaginationParams;
 use log::info;
 use log::warn;
@@ -59,6 +60,18 @@ pub struct MVTTile {
 pub struct PostgisQueryRunner;
 
 impl PostgisQueryRunner {
+    pub fn paginate_query(query: &str, page: Option<PaginationParams>) -> String {
+        let page_str = match page {
+            Some(page) => page.to_string(),
+            None => String::from(""),
+        };
+        format!(
+            "select * from ({sub_query}) as a {page}",
+            sub_query = query,
+            page = page_str
+        )
+    }
+
     pub async fn run_query(
         pool: &DataDbPool,
         query: &str,
@@ -67,16 +80,7 @@ impl PostgisQueryRunner {
     ) -> Result<serde_json::Value, ServiceError> {
         let conn = pool.get().await.expect("Pool Error!");
 
-        let page_str = match page {
-            Some(page) => page.to_string(),
-            None => String::from(""),
-        };
-
-        let paged_query = format!(
-            "select * from ({sub_query}) as a {page}",
-            sub_query = query,
-            page = page_str
-        );
+        let paged_query = Self::paginate_query(query, page);
 
         let formatted_query = match format {
             "csv" => Ok(csv_format(&paged_query)),
@@ -99,6 +103,38 @@ impl PostgisQueryRunner {
             })?
             .get("res");
         Ok(result)
+    }
+
+    pub async fn get_query_column_details(
+        pool: &DataDbPool,
+        query: &str,
+    ) -> Result<Vec<Column>, ServiceError> {
+        let conn = pool.get().await.expect("Pool Error!");
+        let page = PaginationParams {
+            limit: Some(1),
+            offset: Some(9),
+        };
+
+        let paged_query = Self::paginate_query(&query, Some(page));
+        let result = conn
+            .query_one(paged_query.as_str(), &[])
+            .await
+            .map_err(|e| {
+                warn!("SQL Query failed: {} {}", e, paged_query);
+                ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, paged_query))
+            })?;
+
+        let columns: Vec<Column> = result
+            .columns()
+            .iter()
+            .map(|col| Column {
+                name: col.name().into(),
+                col_type: col.type_().name().into(),
+                source_query: query.clone().into(),
+            })
+            .collect();
+
+        Ok(columns)
     }
 
     pub async fn run_tile_query(

@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
-use crate::models::columns::{Column, ColumnType};
+use crate::models::columns::Column;
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::PaginationParams;
 
@@ -183,7 +183,29 @@ impl Dataset {
         Ok(())
     }
 
-    pub fn columns(&self) -> Vec<Column> {
-        vec![]
+    pub async fn get_column(
+        &self,
+        db: &DataDbPool,
+        col_name: String,
+    ) -> Result<Column, ServiceError> {
+        let cols = self.columns(&db).await?;
+
+        let result =
+            cols.iter()
+                .find(|col| col.name == col_name)
+                .ok_or(ServiceError::BadRequest(format!(
+                    "No columns by the name of {} on table {}",
+                    col_name, self.name
+                )))?;
+        Ok((*result).clone())
+    }
+
+    pub async fn columns(&self, db: &DataDbPool) -> Result<Vec<Column>, ServiceError> {
+        let columns = PostgisQueryRunner::get_query_column_details(
+            &db,
+            &format!("select * from {}", self.name),
+        )
+        .await?;
+        Ok(columns)
     }
 }

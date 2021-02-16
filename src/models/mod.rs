@@ -1,7 +1,6 @@
 pub mod columns;
 pub mod dashboards;
 pub mod datasets;
-pub mod formatters;
 pub mod map_style;
 pub mod queries;
 pub mod styles;
