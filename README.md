@@ -1,4 +1,4 @@
-# Simple map server 
+# Modest Map Maker
 
 This repo contains an API server and a front end that should make it easy to manage and build geospatial applications.
 
