@@ -3,8 +3,8 @@ use std::fmt;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PaginationParams {
-    limit: Option<usize>,
-    offset: Option<usize>,
+    pub limit: Option<usize>,
+    pub offset: Option<usize>,
 }
 
 impl fmt::Display for PaginationParams {
