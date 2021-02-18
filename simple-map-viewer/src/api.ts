@@ -299,4 +299,13 @@ export async function updateFeature(
 ) {
     return a.put(`dataset/${dataset_id}/data/${feature_id}`, update);
 }
+
+// not sure if run is the right verb here, but
+// this endpoint isn't restful anyway
+export async function runQuery(
+    sql: string,
+): Promise<AxiosResponse<Dataset>> {
+    return a.get(`queries/run?q=${sql}`);
+}
+
 export default a;

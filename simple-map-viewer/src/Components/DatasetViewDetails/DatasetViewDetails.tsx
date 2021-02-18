@@ -9,7 +9,7 @@ interface DatasetViewDetailsProps{
     onUpdate?: (update:any)=>void
 }
 
-export const DataSetViewDetails : React.FC<DatasetViewDetailsProps>= ({feature, onUpdate})=>{
+export const DataSetViewDetails : React.FC<DatasetViewDetailsProps>= ({feature, onUpdate, children})=>{
     const [editFeature,updateEditFeature] = useState<any>(null);
     const [dirty, setDirty] = useState(false)
 
@@ -43,7 +43,7 @@ export const DataSetViewDetails : React.FC<DatasetViewDetailsProps>= ({feature, 
         <Styles.DatasetViewDetails>
             <Tabs>
                 <Tab name='Query'>
-                    <QueryPane />
+                    {children}
                 </Tab>
                 <Tab name='Feature'>
                     <h2>Feature details</h2>

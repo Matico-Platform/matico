@@ -30,6 +30,7 @@ table! {
         id_col -> Text,
     }
 }
+
 table! {
     queries (id) {
         id -> Uuid,
@@ -39,16 +40,6 @@ table! {
         parameters -> Array<Jsonb>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
-    }
-}
-
-table! {
-    spatial_ref_sys (srid) {
-        srid -> Int4,
-        auth_name -> Nullable<Varchar>,
-        auth_srid -> Nullable<Int4>,
-        srtext -> Nullable<Varchar>,
-        proj4text -> Nullable<Varchar>,
     }
 }
 
@@ -63,4 +54,9 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(dashboards, datasets, queries, spatial_ref_sys, users,);
+allow_tables_to_appear_in_same_query!(
+    dashboards,
+    datasets,
+    queries,
+    users,
+);

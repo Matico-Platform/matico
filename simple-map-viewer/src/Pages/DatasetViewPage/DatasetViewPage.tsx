@@ -7,6 +7,7 @@ import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { DataTable } from '../../Components/DataTable/DataTable';
 import { DataSetViewDetails } from '../../Components/DatasetViewDetails/DatasetViewDetails';
+import { QueryPane } from '../../Components/QueryPane/QueryPane';
 import { updateFeature } from '../../api';
 
 // import * as d3 from 'd3';
@@ -48,8 +49,8 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
     const { id } = useParams<ParamTypes>();
     const { dataset, loading, error } = useDataset(id);
     const [selectedRow, setSelectedRow] = useState<any>(null);
+    const [query, setQuery] = useState<any>(null);
 
-    console.log('Selected row ', selectedRow);
     const layer = dataset
         ? new MVTLayer({
               data: `${window.origin}/api/tiler/dataset/${dataset.id}/{z}/{x}/{y}`,
@@ -122,7 +123,12 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                             <DataSetViewDetails
                                 onUpdate={updateSelectedFeature}
                                 feature={selectedRow}
-                            />
+                            >
+                                <QueryPane
+                                    query={query}
+                                    onQuery={setQuery}
+                                />
+                            </DataSetViewDetails>
                         </Styles.Details>
                     </Styles.Content>
                 )}
