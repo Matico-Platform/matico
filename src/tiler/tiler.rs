@@ -6,6 +6,12 @@ use actix_web::{get, web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+
+#[derive(Serialize,Deserialize)]
+struct QueryParam{
+    q:String 
+}
+
 #[derive(Serialize, Deserialize)]
 struct DatasetID {
     dataset_id: Uuid,
@@ -15,17 +21,17 @@ struct DatasetID {
 async fn get_tile(
     state: web::Data<State>,
     web::Path(tile_id): web::Path<TileID>,
-    web::Query(query): web::Query<String>,
+    web::Query(query): web::Query<QueryParam>,
     web::Query(tiler_options): web::Query<TilerOptions>,
 ) -> Result<HttpResponse, ServiceError> {
     let mvt_tile: MVTTile =
-        PostgisQueryRunner::run_tile_query(&state.data_db, &query, tiler_options, tile_id).await?;
+        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query.q, tiler_options, tile_id).await?;
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
 
 //TODO Change this to use the datasets known geometry column
 //Once we can do that
-#[get("/{dataset_id}/{z}/{x}/{y}")]
+#[get("/dataset/{dataset_id}/{z}/{x}/{y}")]
 async fn get_tile_for_dataset(
     state: web::Data<State>,
     web::Path(dataset): web::Path<DatasetID>,
@@ -36,7 +42,7 @@ async fn get_tile_for_dataset(
     let query = format!("select * from {}", dataset.name);
 
     let mvt_tile =
-        PostgisQueryRunner::run_tile_query(&state.data_db, &query, tiler_options, tile_id).await?;
+        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id).await?;
 
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }

@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router';
-import {
-    useDataset,
-} from '../../Hooks/useDataset';
+import { useDataset } from '../../Hooks/useDataset';
 import { Styles } from './DatasetViewPageStyles';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { DataTable } from '../../Components/DataTable/DataTable';
 import { DataSetViewDetails } from '../../Components/DatasetViewDetails/DatasetViewDetails';
-import {updateFeature} from '../../api'
+import { updateFeature } from '../../api';
 
 // import * as d3 from 'd3';
 
@@ -21,7 +19,6 @@ import {
 } from '../../Components/Layout/Layout';
 
 const TOKEN = process.env.MAPBOX_TOKEN;
-
 
 interface DatasetViewPageProps {}
 
@@ -55,7 +52,7 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
     console.log('Selected row ', selectedRow);
     const layer = dataset
         ? new MVTLayer({
-              data: `${window.origin}/api/tiler/${dataset.id}/{z}/{x}/{y}`,
+              data: `${window.origin}/api/tiler/dataset/${dataset.id}/{z}/{x}/{y}`,
               // @ts-ignore
               getFillColor: [140, 170, 180, 90],
               getLineColor: [4, 4, 4],
@@ -71,9 +68,9 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
         : null;
 
     //TODO implement this
-    const updateSelectedFeature = (update:any)=>{
+    const updateSelectedFeature = (update: any) => {
         // updateFeature(id, update)
-    }
+    };
 
     return (
         <Page>
@@ -122,7 +119,10 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                         </Styles.Map>
 
                         <Styles.Details>
-                            <DataSetViewDetails onUpdate={updateSelectedFeature} feature={selectedRow} />
+                            <DataSetViewDetails
+                                onUpdate={updateSelectedFeature}
+                                feature={selectedRow}
+                            />
                         </Styles.Details>
                     </Styles.Content>
                 )}
