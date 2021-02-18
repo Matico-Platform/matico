@@ -20,7 +20,7 @@ export const QueryPane: React.FC<QueryPaneProps> = ({ onQuery, table })=>{
     return(
         <Styles.QueryPane>
                     <AceEditor
-                        placeholder={`select * from ${table}`}
+                        defaultValue={`select * from ${table}`}
                         mode="postgressql"
                         theme="dracula"
                         onChange={onChange}
