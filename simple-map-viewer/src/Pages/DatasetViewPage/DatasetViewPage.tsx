@@ -51,22 +51,27 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const [query, setQuery] = useState<any>(null);
 
-    const layer = dataset
-        ? new MVTLayer({
-              data: `${window.origin}/api/tiler/dataset/${dataset.id}/{z}/{x}/{y}`,
-              // @ts-ignore
-              getFillColor: [140, 170, 180, 90],
-              getLineColor: [4, 4, 4],
-              getBorderColor: [200, 200, 200],
-              getLineWidth: 10,
-              getRadius: 20,
-              radiusMinPixels: 1,
-              radiusMaxPixels: 100,
-              getLabel: (f: any) => f.id,
-              stroked: true,
-              pickable: true,
-          })
-        : null;
+    let dataLayerEndpoint;
+
+    if (dataset)
+        dataLayerEndpoint = `${window.origin}/api/tiler/${dataset.id}/{z}/{x}/{y}`;
+    if (query)
+        dataLayerEndpoint = `${window.origin}/api/tiler/{z}/{x}/{y}?q=${query}`;
+
+    const layer = new MVTLayer({
+        data: dataLayerEndpoint,
+        // @ts-ignore
+        getFillColor: [140, 170, 180, 90],
+        getLineColor: [4, 4, 4],
+        getBorderColor: [200, 200, 200],
+        getLineWidth: 10,
+        getRadius: 20,
+        radiusMinPixels: 1,
+        radiusMaxPixels: 100,
+        getLabel: (f: any) => f.id,
+        stroked: true,
+        pickable: true,
+    });
 
     //TODO implement this
     const updateSelectedFeature = (update: any) => {
