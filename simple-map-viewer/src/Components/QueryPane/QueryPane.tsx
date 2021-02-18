@@ -13,14 +13,18 @@ interface QueryPaneProps{
 
 export const QueryPane: React.FC<QueryPaneProps> = ({ onQuery, table })=>{
     const [query, onChange] = useState<any>(null);
+    const defaultQuery = `select * from ${table}`;
     const runQuery= ()=>{
         onQuery(query)
+    }
+    const clearQuery = () => {
+        onQuery(null)
     }
 
     return(
         <Styles.QueryPane>
                     <AceEditor
-                        defaultValue={`select * from ${table}`}
+                        defaultValue={defaultQuery}
                         mode="postgressql"
                         theme="dracula"
                         onChange={onChange}
@@ -30,7 +34,7 @@ export const QueryPane: React.FC<QueryPaneProps> = ({ onQuery, table })=>{
                         editorProps={{ $blockScrolling: true }}
                     />
                     <Styles.Buttons>
-                        <Button kind={ButtonType.Secondary}>
+                        <Button onClick={clearQuery} kind={ButtonType.Secondary}>
                             Clear
                         </Button>
                         <Button onClick={runQuery} kind={ButtonType.Primary}>
