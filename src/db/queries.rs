@@ -137,7 +137,7 @@ impl PostgisQueryRunner {
         Ok(columns)
     }
 
-    pub async fn run_tile_query(
+    pub async fn run_anon_tile_query(
         pool: &DataDbPool,
         query: &str,
         tiler_options: TilerOptions,
