@@ -7,11 +7,11 @@ import {Styles} from './QueryPaneStyles'
 import {Button, ButtonType} from '../Button/Button'
 
 interface QueryPaneProps{
-    query: string | null,
+    table: string | null,
     onQuery: (newQuery: any) => void,
 }
 
-export const QueryPane: React.FC<QueryPaneProps> = ({ onQuery })=>{
+export const QueryPane: React.FC<QueryPaneProps> = ({ onQuery, table })=>{
     const [query, onChange] = useState<any>(null);
     const runQuery= ()=>{
         onQuery(query)
@@ -20,6 +20,7 @@ export const QueryPane: React.FC<QueryPaneProps> = ({ onQuery })=>{
     return(
         <Styles.QueryPane>
                     <AceEditor
+                        placeholder={`select * from ${table}`}
                         mode="postgressql"
                         theme="dracula"
                         onChange={onChange}

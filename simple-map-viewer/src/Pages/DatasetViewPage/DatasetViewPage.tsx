@@ -45,33 +45,46 @@ const valueToTableEntry = (value: any) => {
     }
 };
 
+const makeMvtLayer = (data: string | null, options = {}) => {
+    if (data) {
+        return new MVTLayer({
+            data: data,
+            // @ts-ignore
+            getFillColor: [140, 170, 180, 90],
+            getLineColor: [4, 4, 4],
+            getBorderColor: [200, 200, 200],
+            getLineWidth: 10,
+            getRadius: 20,
+            radiusMinPixels: 1,
+            radiusMaxPixels: 100,
+            getLabel: (f: any) => f.id,
+            stroked: true,
+            pickable: true,
+            ...options,
+        });
+    }
+
+    return null;
+};
+
 export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
     const { id } = useParams<ParamTypes>();
+
     const { dataset, loading, error } = useDataset(id);
-    const [selectedRow, setSelectedRow] = useState<any>(null);
     const [query, setQuery] = useState<any>(null);
 
-    let dataLayerEndpoint;
+    // only usable in "dataset" mode
+    const [selectedRow, setSelectedRow] = useState<any>(null);
 
-    if (dataset)
-        dataLayerEndpoint = `${window.origin}/api/tiler/${dataset.id}/{z}/{x}/{y}`;
-    if (query)
-        dataLayerEndpoint = `${window.origin}/api/tiler/{z}/{x}/{y}?q=${query}`;
+    let layer = null;
 
-    const layer = new MVTLayer({
-        data: dataLayerEndpoint,
-        // @ts-ignore
-        getFillColor: [140, 170, 180, 90],
-        getLineColor: [4, 4, 4],
-        getBorderColor: [200, 200, 200],
-        getLineWidth: 10,
-        getRadius: 20,
-        radiusMinPixels: 1,
-        radiusMaxPixels: 100,
-        getLabel: (f: any) => f.id,
-        stroked: true,
-        pickable: true,
-    });
+    if (dataset) {
+        const dataLayerEndpoint = query
+            ? `${window.origin}/api/tiler/{z}/{x}/{y}?q=${query}`
+            : `${window.origin}/api/tiler/dataset/${dataset.id}/{z}/{x}/{y}`;
+
+        layer = makeMvtLayer(dataLayerEndpoint);
+    }
 
     //TODO implement this
     const updateSelectedFeature = (update: any) => {
@@ -130,7 +143,7 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                                 feature={selectedRow}
                             >
                                 <QueryPane
-                                    query={query}
+                                    table={dataset.name}
                                     onQuery={setQuery}
                                 />
                             </DataSetViewDetails>
