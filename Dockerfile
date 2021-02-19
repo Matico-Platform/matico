@@ -5,7 +5,6 @@ WORKDIR /app
 RUN yarn 
 RUN yarn build
 
-
 FROM osgeo/gdal:ubuntu-small-3.0.4 as rust-builder
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o install_rust.sh 
 RUN sh install_rust.sh -y
@@ -42,5 +41,7 @@ RUN groupadd $APP_USER \
 
 COPY --from=rust-builder /simple_map_server/target/release/modest_map_maker ${APP}/modest_map_maker
 COPY --from=frontend-builder /app/build ${APP}/static
+COPY static/docs ${APP}/static/docs
+
 WORKDIR ${APP}
 CMD ./modest_map_maker
