@@ -22,7 +22,10 @@ export const useDataset = (id: string) => {
     return { dataset, error, loading };
 };
 
-export const useDatasetPagedResults = (id: string | null | undefined, page: Page) => {
+export const useDatasetPagedResults = (
+    id: string | null | undefined,
+    page: Page,
+) => {
     const [data, setData] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);

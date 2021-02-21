@@ -304,7 +304,7 @@ export async function updateFeature(
 // this endpoint isn't restful anyway
 export async function runQuery(
     sql: string,
-    page: Page
+    page: Page,
 ): Promise<AxiosResponse<Dataset>> {
     return a.get(`queries/run?q=${sql}`, { params: page });
 }

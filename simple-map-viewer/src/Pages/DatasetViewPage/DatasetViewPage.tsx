@@ -84,17 +84,10 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
         error: datasetError,
     } = useDataset(id);
 
-    const dataQueryStrategy = sqlString
-        ? { sql: sqlString }
-        : { datasetId: id };
-    let { data, loading, error } = useData(dataQueryStrategy, {
-        offset: page * perPage,
-        limit: perPage,
-    });
-
-    // soon unnecessary
-    if (data?.features)
-        data = data.features.map((f: any) => f.properties);
+    const dataQueryStrategy = sqlString ?
+        { sql: sqlString } : 
+        { datasetId: id };
+    const { data, loading, error } = useData(dataQueryStrategy, { offset: page * perPage, limit: perPage });
 
     if (error) {
         return <h2>Error :-(</h2>;
