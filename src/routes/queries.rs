@@ -1,8 +1,14 @@
 use crate::app_state::State;
+use crate::auth::AuthService;
 use crate::db::Bounds;
 use crate::errors::ServiceError;
-use crate::models::queries::{AnnonQuery, CreateQueryDTO, Query, UpdateQueryDTO};
-use crate::utils::{FormatParam, PaginationParams};
+
+use crate::models::{
+    permissions::*,
+    queries::{AnnonQuery, CreateQueryDTO, Query, UpdateQueryDTO},
+    users::*,
+};
+use crate::utils::PaginationParams;
 use std::collections::HashMap;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
@@ -49,9 +55,32 @@ async fn update_query(
 async fn create_query(
     state: web::Data<State>,
     web::Json(create_query): web::Json<CreateQueryDTO>,
+    logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+<<<<<<< HEAD
     let result = Query::create(&state.db, create_query)?;
     Ok(HttpResponse::Ok().json(result))
+=======
+    let user: UserToken = logged_in_user
+        .user
+        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+    let query = Query::create(&state.db, create_query)?;
+
+    Permission::grant_permissions(
+        &state.db,
+        NewPermission {
+            user_id: user.id,
+            resource_id: query.id,
+            resource_type: ResourceType::DATASET,
+            permission: vec![
+                PermissionType::READ,
+                PermissionType::WRITE,
+                PermissionType::ADMIN,
+            ],
+        },
+    )?;
+    Ok(HttpResponse::Ok().json(query))
+>>>>>>> ed88774 (first permissions implementation on datasets)
 }
 
 #[get("/run")]

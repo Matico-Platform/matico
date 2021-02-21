@@ -1,6 +1,7 @@
 use crate::app_state::State;
 use crate::auth::AuthService;
 use crate::errors::ServiceError;
+use crate::models::permissions::*;
 use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
 
 use crate::models::{
@@ -28,8 +29,18 @@ async fn get_datasets(
 async fn get_dataset(
     state: web::Data<State>,
     id: web::Path<Uuid>,
+    logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, id.into_inner())?;
+
+    if let Some(user) = logged_in_user.user {
+        Permission::require_permissions(
+            &state.db,
+            &user.id,
+            &dataset.id,
+            vec![PermissionType::ADMIN],
+        )?;
+    }
     Ok(HttpResponse::Ok().json(dataset))
 }
 
@@ -113,6 +124,7 @@ async fn create_dataset(
     //Figure out how to not need this clone
     load_dataset_to_db(filepath.clone(), table_name).await?;
 
+    //TODO Refactor this
     let dataset = Dataset {
         id: Uuid::new_v4(),
         owner_id: user.id,
@@ -132,6 +144,20 @@ async fn create_dataset(
     };
 
     dataset.create_or_update(&state.db)?;
+
+    Permission::grant_permissions(
+        &state.db,
+        NewPermission {
+            user_id: user.id,
+            resource_id: dataset.id,
+            resource_type: ResourceType::DATASET,
+            permission: vec![
+                PermissionType::READ,
+                PermissionType::WRITE,
+                PermissionType::ADMIN,
+            ],
+        },
+    )?;
 
     Ok(HttpResponse::Ok().json(file_info))
 }
