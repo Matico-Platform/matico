@@ -1,32 +1,34 @@
 use crate::errors::ServiceError;
 pub use ::config::ConfigError;
 use serde::Deserialize;
+use std::str;
+
+#[derive(Deserialize)]
+pub struct DbConfig{
+    pub host: String,
+    pub name: String,
+    pub port: Option<String>,
+    pub password: Option<String>,
+    pub username: Option<String>,
+}
 
 #[derive(Deserialize)]
 pub struct Config {
-    pub db_host: String,
-    pub db_name: String,
-    pub db_port: Option<String>,
-    pub db_password: Option<String>,
-    pub db_username: Option<String>,
-
-    pub data_db_host: String,
-    pub data_db_name: String,
-    pub data_db_port: Option<u16>,
-    pub data_db_username: Option<String>,
-    pub data_db_password: Option<String>,
+    pub db: DbConfig, 
+    pub datadb: deadpool_postgres::Config,
     pub server_addr: String,
+    pub cert_path: Option<String>
 }
 
 impl Config {
     pub fn from_conf() -> Result<Self, ConfigError> {
         let mut cfg = ::config::Config::new();
-        cfg.merge(config::Environment::with_prefix("SMS")).unwrap();
+        cfg.merge(config::Environment::new()).unwrap();
         cfg.try_into()
     }
 
     pub fn connection_string(&self) -> Result<String, ServiceError> {
-        let username_password = match (&self.db_username, &self.db_password) {
+        let username_password = match (&self.db.username, &self.db.password) {
             (Some(username), Some(password)) => Ok(format!("{}:{}@", username, password)),
             (None, None) => Ok(format!("")),
             (Some(username), None) => Ok(format!("{}@", username)),
@@ -35,7 +37,7 @@ impl Config {
             )),
         }?;
 
-        let port = match &self.db_port {
+        let port = match &self.db.port {
             Some(port) => format!(":{}", port),
             None => format!(""),
         };
@@ -43,44 +45,33 @@ impl Config {
         Ok(format!(
             "postgresql://{user_pass}{host}{port}/{name}",
             user_pass = username_password,
-            host = self.db_host,
+            host = self.db.host,
             port = port,
-            name = self.db_name
+            name = self.db.name
         ))
     }
 
-    pub fn data_db_config(&self) -> tokio_postgres::Config {
-        let mut pg_config = tokio_postgres::Config::new();
-        pg_config.host(&self.data_db_host);
-        pg_config.dbname(&self.data_db_name);
-
-        if let Some(username) = &self.data_db_username {
-            pg_config.user(&username);
-        }
-
-        if let Some(password) = &self.data_db_password {
-            pg_config.password(&password);
-        }
-
-        if let Some(port) = self.data_db_port {
-            pg_config.port(port);
-        }
-        pg_config
-    }
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
-        let db = format!("dbname={}", self.data_db_name);
-        let user = match &self.data_db_username {
+        let pg_config = self.datadb.get_pg_config().unwrap();
+
+        let db = format!("dbname={}", pg_config.get_dbname().unwrap());
+
+        let user = match &pg_config.get_user(){
             Some(user) => format!("user={}", user),
             None => format!(""),
         };
-        let port = match &self.data_db_port {
-            Some(port) => format!("port={}", port),
-            None => format!(""),
+
+        let port = format!("port = {}", pg_config.get_ports()[0]);
+
+        let host = if let tokio_postgres::config::Host::Tcp(host) = &pg_config.get_hosts()[0]{
+            format!("host= {}",host)
+        }else{
+            String::from("")
         };
-        let host = format!("host={}", self.db_host);
-        let password = match &self.data_db_password {
-            Some(password) => format!("password={}", password),
+        
+        let password = match &pg_config.get_password() {
+            Some(password) => format!("password={}", str::from_utf8(password).unwrap()),
             None => format!(""),
         };
 

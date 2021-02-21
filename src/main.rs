@@ -9,6 +9,10 @@ use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use dotenv::dotenv;
 use std::path::PathBuf;
+use rustls::ClientConfig as RustlsClientConfig;
+use tokio_postgres_rustls::MakeRustlsConnect;
+use std::fs::File;
+use std::io::BufReader;
 
 mod app_config;
 mod app_state;
@@ -40,16 +44,19 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to connect to DB");
 
     // Set up the database pool for the data database
-    let data_db_config = config.data_db_config();
-
-    let mgr_config = deadpool_postgres::ManagerConfig {
-        recycling_method: deadpool_postgres::RecyclingMethod::Fast,
-    };
-
-    let mgr =
-        deadpool_postgres::Manager::from_config(data_db_config, tokio_postgres::NoTls, mgr_config);
-    let data_pool = deadpool_postgres::Pool::new(mgr, 16);
-
+    println!("DB POOL CONFIG {:?}", config.datadb);
+    let data_pool = if let Some(cert_path) = config.cert_path{
+        let mut tls_config = RustlsClientConfig::new();
+        let cert_file = File::open(&cert_path)?;
+        let mut buf = BufReader::new(cert_file);
+        println!("buff {:?}", buf);
+        tls_config.root_store.add_pem_file(&mut buf).expect("Failed to add cert file");
+        let tls = MakeRustlsConnect::new(tls_config);
+        config.datadb.create_pool(tls)
+    }
+    else{
+        config.datadb.create_pool(tokio_postgres::NoTls)
+    }.expect("failed to connect to data db");
     // let data_pool = deadpool_postgres::Pool::new(manager, 10);
 
     // Create app state
