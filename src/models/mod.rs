@@ -2,6 +2,7 @@ pub mod columns;
 pub mod dashboards;
 pub mod datasets;
 pub mod map_style;
+pub mod permissions;
 pub mod queries;
 pub mod styles;
 pub mod users;

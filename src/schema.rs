@@ -31,6 +31,21 @@ table! {
     }
 }
 
+<<<<<<< HEAD
+=======
+table! {
+    permissions (id) {
+        id -> Uuid,
+        user_id -> Uuid,
+        resource_id -> Uuid,
+        permission -> Text,
+        resource_type -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+>>>>>>> 9b3d2ba (Models, db and functions for permissions)
 table! {
     queries (id) {
         id -> Uuid,
@@ -57,6 +72,12 @@ table! {
 allow_tables_to_appear_in_same_query!(
     dashboards,
     datasets,
+<<<<<<< HEAD
     queries,
+=======
+    permissions,
+    queries,
+    spatial_ref_sys,
+>>>>>>> 9b3d2ba (Models, db and functions for permissions)
     users,
 );

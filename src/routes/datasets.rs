@@ -77,7 +77,9 @@ async fn create_dataset(
     mut payload: Multipart,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-    let user: UserToken = logged_in_user.user.ok_or(ServiceError::Unauthorized)?;
+    let user: UserToken = logged_in_user
+        .user
+        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
 
     let mut file: Option<String> = None;
     let mut metadata: Option<CreateDatasetDTO> = None;

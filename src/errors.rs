@@ -25,8 +25,7 @@ pub enum ServiceError {
     InvalidToken,
 
     #[display(fmt = "Unauthorized")]
-    Unauthorized,
-
+    Unauthorized(String),
     #[display(fmt = "Upload Failed")]
     UploadFailed,
 
@@ -60,9 +59,10 @@ impl ResponseError for ServiceError {
                 HttpResponse::BadRequest().json(failed_reason)
             }
             ServiceError::InvalidToken => HttpResponse::Unauthorized().json("Invalid Token"),
-            ServiceError::Unauthorized => {
-                HttpResponse::Unauthorized().json("Your are not authorized to take that action")
-            }
+            ServiceError::Unauthorized(reasion) => HttpResponse::Unauthorized().json(format!(
+                "Your are not authorized to take that action. {}",
+                reasion
+            )),
             ServiceError::UploadFailed => {
                 HttpResponse::InternalServerError().json("Your upload failed")
             }
