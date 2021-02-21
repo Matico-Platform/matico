@@ -98,7 +98,7 @@ pub struct Permission {
 
 impl Permission {
     // Check to see if a user has all the specified permissions for a particular resouce
-    fn check_all_permissions(
+    pub fn check_all_permissions(
         db: &DbPool,
         user_id: &Uuid,
         resource_id: &Uuid,
@@ -115,7 +115,7 @@ impl Permission {
         Ok(passed)
     }
     // Check permisions and throw service error if they dont match
-    fn require_permissions(
+    pub fn require_permissions(
         db: &DbPool,
         user_id: &Uuid,
         resource_id: &Uuid,
@@ -132,7 +132,7 @@ impl Permission {
     }
 
     // Check to see if a user has a specific permission for a given resource.
-    fn check_permission(
+    pub fn check_permission(
         db: &DbPool,
         user_id: &Uuid,
         resource_id: &Uuid,
@@ -142,7 +142,7 @@ impl Permission {
     }
 
     // Return the permissions a user has for a given resouce
-    fn get_permissions(
+    pub fn get_permissions(
         db: &DbPool,
         user_id: &Uuid,
         resource_id: &Uuid,
@@ -159,7 +159,7 @@ impl Permission {
     }
 
     // Grants a permission for a specific resource
-    fn grant_permissions(
+    pub fn grant_permissions(
         db: &DbPool,
         new_permission: NewPermission,
     ) -> Result<Permission, ServiceError> {
@@ -175,7 +175,7 @@ impl Permission {
     }
 
     // Revoke permission for a specific resource
-    fn revoke_permission(
+    pub fn revoke_permission(
         db: &DbPool,
         user_id: &Uuid,
         resource_id: &Uuid,
