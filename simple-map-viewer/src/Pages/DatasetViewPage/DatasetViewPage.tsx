@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router';
-import { useDataset } from '../../Hooks/useDataset';
+import {
+    useDataset,
+    useDatasetPagedResults,
+} from '../../Hooks/useDataset';
+import { useData } from '../../Hooks/useData';
 import { Styles } from './DatasetViewPageStyles';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
@@ -8,7 +12,6 @@ import { StaticMap } from 'react-map-gl';
 import { DataTable } from '../../Components/DataTable/DataTable';
 import { DataSetViewDetails } from '../../Components/DatasetViewDetails/DatasetViewDetails';
 import { QueryPane } from '../../Components/QueryPane/QueryPane';
-import { updateFeature } from '../../api';
 
 // import * as d3 from 'd3';
 
@@ -68,23 +71,43 @@ const makeMvtLayer = (data: string | null, options = {}) => {
 };
 
 export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
+    // DatasetViewPage-specific concerns
     const { id } = useParams<ParamTypes>();
+    const [sqlString, setSQLQuery] = useState<any>(null); // this should go into useDataset
+    const [selectedRow, setSelectedRow] = useState<any>(null); // this should go into useDataset
+    const [page, setPage] = useState(0);
+    const perPage = 100;
 
-    const { dataset, loading, error } = useDataset(id);
-    const [query, setQuery] = useState<any>(null);
+    const {
+        dataset,
+        loading: datasetLoading,
+        error: datasetError,
+    } = useDataset(id);
 
-    // only usable in "dataset" mode
-    const [selectedRow, setSelectedRow] = useState<any>(null);
+    const dataQueryStrategy = sqlString
+        ? { sql: sqlString }
+        : { datasetId: id };
+    let { data, loading, error } = useData(dataQueryStrategy, {
+        offset: page * perPage,
+        limit: perPage,
+    });
 
-    let layer = null;
+    // soon unnecessary
+    if (data?.features)
+        data = data.features.map((f: any) => f.properties);
 
-    if (dataset) {
-        const dataLayerEndpoint = query
-            ? `${window.origin}/api/tiler/{z}/{x}/{y}?q=${query}`
-            : `${window.origin}/api/tiler/dataset/${dataset.id}/{z}/{x}/{y}`;
-
-        layer = makeMvtLayer(dataLayerEndpoint);
+    if (error) {
+        return <h2>Error :-(</h2>;
     }
+
+    if (loading || datasetLoading) {
+        return <div>LOADING...</div>;
+    }
+
+    const dataLayerEndpoint = sqlString
+        ? `${window.origin}/api/tiler/{z}/{x}/{y}?q=${sqlString}`
+        : `${window.origin}/api/tiler/dataset/${id}/{z}/{x}/{y}`;
+    const layer = makeMvtLayer(dataLayerEndpoint);
 
     //TODO implement this
     const updateSelectedFeature = (update: any) => {
@@ -105,11 +128,11 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                 <p>Updated at: {dataset?.updated_at}</p>
             </DetailsArea>
             <PageContent>
-                {dataset && (
+                {dataset && data && (
                     <Styles.Content>
                         <Styles.Table>
                             <DataTable
-                                dataset={dataset}
+                                data={data}
                                 selectedID={selectedRow?.id}
                                 onSelect={setSelectedRow}
                             />
@@ -144,7 +167,7 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
                             >
                                 <QueryPane
                                     table={dataset.name}
-                                    onQuery={setQuery}
+                                    onQuery={setSQLQuery}
                                 />
                             </DataSetViewDetails>
                         </Styles.Details>
