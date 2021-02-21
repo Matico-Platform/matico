@@ -1,12 +1,11 @@
 use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
-use crate::utils::PaginationParams;
-use actix_web::web;
+use crate::utils::{Format, PaginationParams};
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
-use log::{info, warn};
+use log::info;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::convert::From;
@@ -174,7 +173,6 @@ impl Query {
     }
 
     pub fn create(pool: &DbPool, new_query: CreateQueryDTO) -> Result<Self, ServiceError> {
-        let conn = pool.get().unwrap();
         let query: Self = new_query.into();
         query.create_or_update(pool)
     }
@@ -246,13 +244,13 @@ impl Query {
         pool: &DataDbPool,
         query: String,
         page: Option<PaginationParams>,
-        format: Option<String>,
+        format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let f = match format {
             Some(format) => format,
-            None => "geojson".into(),
+            None => Format::JSON,
         };
-        let result = PostgisQueryRunner::run_query(pool, &query, page, &f).await?;
+        let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;
         Ok(result.to_string())
     }
 
@@ -261,15 +259,15 @@ impl Query {
         pool: &DataDbPool,
         params: HashMap<String, serde_json::Value>,
         page: Option<PaginationParams>,
-        format: Option<String>,
+        format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let f = match format {
             Some(format) => format,
-            None => "geojson".into(),
+            None => Format::JSON,
         };
 
         let query = self.construct_query(params)?;
-        let result = PostgisQueryRunner::run_query(pool, &query, page, &f).await?;
+        let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;
         Ok(result.to_string())
     }
 }

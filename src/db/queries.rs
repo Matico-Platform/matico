@@ -2,7 +2,7 @@ use crate::db::formatters::*;
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
 use crate::models::Column;
-use crate::utils::PaginationParams;
+use crate::utils::{Format, PaginationParams};
 use log::info;
 use log::warn;
 use serde::{Deserialize, Serialize};
@@ -76,20 +76,16 @@ impl PostgisQueryRunner {
         pool: &DataDbPool,
         query: &str,
         page: Option<PaginationParams>,
-        format: &str,
+        format: Format,
     ) -> Result<serde_json::Value, ServiceError> {
         let conn = pool.get().await.expect("Pool Error!");
 
         let paged_query = Self::paginate_query(query, page);
 
         let formatted_query = match format {
-            "csv" => Ok(csv_format(&paged_query)),
-            "geojson" => Ok(geo_json_format(&paged_query)),
-            "json" => Ok(json_format(&paged_query)),
-            _ => Err(ServiceError::BadRequest(format!(
-                "unrecognized format {}",
-                format
-            ))),
+            Format::CSV => Ok(csv_format(&paged_query)),
+            Format::GEOJSON => Ok(geo_json_format(&paged_query)),
+            Format::JSON => Ok(json_format(&paged_query)),
         }?;
 
         info!("running query {}", formatted_query);

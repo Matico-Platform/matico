@@ -2,7 +2,7 @@ use crate::app_state::State;
 use crate::db::Bounds;
 use crate::errors::ServiceError;
 use crate::models::Dataset;
-use crate::utils::PaginationParams;
+use crate::utils::{Format, FormatParam, PaginationParams};
 use actix_web::{get, put, web, HttpResponse};
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -14,10 +14,11 @@ async fn get_data(
     web::Path(dataset_id): web::Path<Uuid>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(bounds): web::Query<Bounds>,
+    web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
     let result = dataset
-        .query(&state.data_db, None, Some(page), Some("csv".into()))
+        .query(&state.data_db, None, Some(page), format_param.format)
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -41,7 +42,7 @@ async fn get_feature(
     );
 
     let result = dataset
-        .query(&state.data_db, Some(query), None, Some("csv".into()))
+        .query(&state.data_db, Some(query), None, Some(Format::JSON))
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")

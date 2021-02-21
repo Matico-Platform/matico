@@ -1,6 +1,7 @@
 use crate::db::queries::{Bounds, PostgisQueryRunner};
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
+use crate::utils::Format;
 use log::info;
 
 use serde::{Deserialize, Serialize};
@@ -179,7 +180,7 @@ impl Column {
             ),
         };
 
-        let json = PostgisQueryRunner::run_query(&db, &query, None, "json").await?;
+        let json = PostgisQueryRunner::run_query(&db, &query, None, Format::JSON).await?;
         let results: HistogramResults =
             serde_json::from_value(json).expect("Failed to deserialize histogram response");
         Ok(StatResults::Histogram(results))
@@ -208,7 +209,7 @@ impl Column {
             group by COALESCE({},'undefined')",
             self.name, self.source_query, self.name
         );
-        let json = PostgisQueryRunner::run_query(&db, &query, None, "json").await?;
+        let json = PostgisQueryRunner::run_query(&db, &query, None, Format::JSON).await?;
         let results: ValueCountsResults =
             serde_json::from_value(json).expect("Failed to deserialize value count response");
         Ok(StatResults::ValueCounts(results))
@@ -232,9 +233,10 @@ impl Column {
             query = self.source_query
         );
 
-        let results: Vec<BasicStatsResults> =
-            serde_json::from_value(PostgisQueryRunner::run_query(&db, &query, None, "json").await?)
-                .expect("Failed to deserialize basic results response");
+        let results: Vec<BasicStatsResults> = serde_json::from_value(
+            PostgisQueryRunner::run_query(&db, &query, None, Format::JSON).await?,
+        )
+        .expect("Failed to deserialize basic results response");
 
         let result = results
             .into_iter()
