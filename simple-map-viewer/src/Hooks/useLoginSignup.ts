@@ -29,10 +29,7 @@ export function useLoginSignup() {
         setLoading(false);
         if (reply.status === 200) {
             let response = reply.data;
-            localStorage.setItem(
-                'token',
-                response.token,
-            );
+            localStorage.setItem('token', response.token);
             setTokenString(response.token);
         }
     };

@@ -38,7 +38,8 @@
         "start": "react-app-rewired start",
         "build": "react-app-rewired build",
         "test": "react-app-rewired test",
-        "eject": "react-reqired eject"
+        "eject": "react-reqired eject",
+        "lint": "pretty-quick --staged && lint-staged"
     },
     "eslintConfig": {
         "extends": [
@@ -72,8 +73,30 @@
         "@types/react-router-dom": "^5.1.7",
         "@types/react-table": "^7.0.26",
         "@types/styled-components": "^5.1.7",
+        "@typescript-eslint/eslint-plugin": "^4.15.1",
+        "@typescript-eslint/parser": "^4.15.1",
+        "eslint": "^7.20.0",
+        "eslint-config-airbnb": "^18.2.1",
+        "eslint-config-prettier": "^7.2.0",
         "eslint-config-react-app": "^6.0.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-jsx-a11y": "^6.4.1",
+        "eslint-plugin-prettier": "^3.3.1",
+        "eslint-plugin-react": "^7.22.0",
+        "eslint-plugin-react-hooks": "^4.2.0",
+        "husky": "^5.0.9",
+        "lint-staged": "^10.5.4",
+        "prettier": "^2.2.1",
+        "pretty-quick": "^3.1.0",
         "react-app-rewire-styled-components": "^3.0.2",
         "react-app-rewired": "^2.1.8"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "yarn lint"
+        }
+    },
+    "lint-staged": {
+        "*.{ts,js}": "eslint --cache --fix"
     }
 }

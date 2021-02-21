@@ -1,15 +1,15 @@
-import {useState, useEffect} from 'react'
-import api from '../api'
+import { useState, useEffect } from 'react';
+import api from '../api';
 
-type UserProfile={
-    username:string,
-    email:string,
-    created_at: Date,
-    updated_at: Date
-}
+type UserProfile = {
+    username: string;
+    email: string;
+    created_at: Date;
+    updated_at: Date;
+};
 
-export function useProfile(){
-    const [profile,setProfile] = useState<UserProfile | null>(null);
+export function useProfile() {
+    const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [token, setToken] = useState<string | null>(null);
 
@@ -23,18 +23,17 @@ export function useProfile(){
     //     })
     // },[])
 
-    useEffect( ()=>{
-        setLoading(true)
-        api.get<UserProfile>("/users/profile")
-           .then((response)=> {
-               setProfile(response.data)
-               setLoading(false)
-           })
-           .catch(()=>{
-               console.log("Failed to get user")
-           })
-    },[token])    
+    useEffect(() => {
+        setLoading(true);
+        api.get<UserProfile>('/users/profile')
+            .then((response) => {
+                setProfile(response.data);
+                setLoading(false);
+            })
+            .catch(() => {
+                console.log('Failed to get user');
+            });
+    }, [token]);
 
-    return {profile , loading}
-
+    return { profile, loading };
 }
