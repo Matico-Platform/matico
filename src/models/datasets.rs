@@ -10,7 +10,7 @@ use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::models::columns::Column;
 use crate::schema::datasets::{self, dsl::*};
-use crate::utils::PaginationParams;
+use crate::utils::{Format, PaginationParams};
 
 #[derive(Serialize, Deserialize)]
 pub struct DatasetSearch {
@@ -102,7 +102,7 @@ impl Dataset {
         pool: &DataDbPool,
         query: Option<String>,
         page: Option<PaginationParams>,
-        format: Option<String>,
+        format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let q = match query {
             Some(query) => query,
@@ -111,10 +111,10 @@ impl Dataset {
 
         let f = match format {
             Some(format) => format,
-            None => "geojson".into(),
+            None => Format::JSON,
         };
 
-        let result = PostgisQueryRunner::run_query(pool, &q, page, &f).await?;
+        let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
 
         Ok(result.to_string())
     }

@@ -2,7 +2,7 @@ use crate::app_state::State;
 use crate::db::Bounds;
 use crate::errors::ServiceError;
 use crate::models::queries::{AnnonQuery, CreateQueryDTO, Query, UpdateQueryDTO};
-use crate::utils::PaginationParams;
+use crate::utils::{FormatParam, PaginationParams};
 use std::collections::HashMap;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
@@ -62,8 +62,9 @@ async fn run_annon_query(
     web::Query(query): web::Query<AnnonQuery>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(bounds): web::Query<Bounds>,
+    web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
-    let result = Query::run_raw(&state.data_db, query.q, Some(page), None).await?;
+    let result = Query::run_raw(&state.data_db, query.q, Some(page), format_param.format).await?;
     // let result = "{\"test\":\"test\"}";
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -77,9 +78,12 @@ async fn run_query(
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(bounds): web::Query<Bounds>,
+    web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
     let query = Query::find(&state.db, query_id)?;
-    let result = query.run(&state.data_db, params, Some(page), None).await?;
+    let result = query
+        .run(&state.data_db, params, Some(page), format_param.format)
+        .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(result))
