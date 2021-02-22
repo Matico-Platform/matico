@@ -11,9 +11,7 @@ import {
     DetailsArea,
 } from '../../Components/Layout/Layout';
 
-interface DatasetPageProps {}
-
-export const DatasetsPage: React.FC<DatasetPageProps> = ({}) => {
+export const DatasetsPage: React.FC = () => {
     return (
         <Page>
             <DetailsArea>

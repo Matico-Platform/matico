@@ -1,35 +1,34 @@
 import React from 'react';
-import {Page,  DetailsArea } from '../../Components/Layout/Layout'
-import {Styles} from './DashboardBuilderPageStyles'
+import { Page, DetailsArea } from '../../Components/Layout/Layout';
+import { Styles } from './DashboardBuilderPageStyles';
 import { useParams } from 'react-router';
-import {DashboardViewer} from '../../Components/DashboardViewer/DashboardViewer'
-import {DashboardBuilderControlls} from '../../Components/DashboardBuilderControlls/DashboardBuilderControlls'
-import {DashboardBuilderProvider, useDashboard} from '../../Contexts/DashbardBuilderContext'
+import { DashboardViewer } from '../../Components/DashboardViewer/DashboardViewer';
+import { DashboardBuilderControlls } from '../../Components/DashboardBuilderControlls/DashboardBuilderControlls';
+import {
+    DashboardBuilderProvider,
+    useDashboard,
+} from '../../Contexts/DashbardBuilderContext';
 
-interface DashboardsPageProps{
-
+interface ParamTypes {
+    dashboard_id: string;
 }
 
-interface ParamTypes{
-    dashboard_id:string
-}
+export const DashboardBuilderPage: React.FC = () => {
+    const { dashboard_id } = useParams<ParamTypes>();
+    const updateMapLoc = (update: any) => {
+        console.log(update);
+    };
 
-export const DashboardBuilderPage: React.FC<DashboardsPageProps> = ({})=>{
-    const {dashboard_id} = useParams<ParamTypes>();
-    const updateMapLoc = (update:any)=>{
-        console.log(update)
-    }
-    
-    return(
+    return (
         <DashboardBuilderProvider dashboard_id={dashboard_id}>
             <Page>
                 <DetailsArea>
-                    <DashboardBuilderControlls/>
+                    <DashboardBuilderControlls />
                 </DetailsArea>
                 <Styles.DashboardBuilderPage>
-                    <DashboardViewer/>
+                    <DashboardViewer />
                 </Styles.DashboardBuilderPage>
             </Page>
         </DashboardBuilderProvider>
-    )
-}
+    );
+};

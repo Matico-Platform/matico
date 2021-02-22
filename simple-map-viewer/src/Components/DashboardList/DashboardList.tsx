@@ -1,29 +1,25 @@
 import React from 'react';
-import { useDashboards} from '../../Hooks/useDashboards';
+import { useDashboards } from '../../Hooks/useDashboards';
 import { Styles } from './DashboardListStyles';
-import {List,Row} from '../List/List'
+import { List, Row } from '../List/List';
 
 import { Button, ButtonType } from '../Button/Button';
 import { Link } from 'react-router-dom';
 
-interface DashboardListProps{}
-
-export const DashboardList: React.FC<DashboardListProps> = ({}) => {
+export const DashboardList: React.FC = () => {
     const { dashboards, loading } = useDashboards();
 
     return (
-        <List loading ={loading}>
+        <List loading={loading}>
             {dashboards.map((dashboard) => (
-                <Row>
+                <Row key={dashboard.name}>
                     <div>
                         <h3>{dashboard.name}</h3>
                         <p>{dashboard.description}</p>
                     </div>
                     <div>
                         <Link to={`/dashboard/${dashboard.id}`}>
-                            <Button
-                                kind={ButtonType.Secondary}
-                            >
+                            <Button kind={ButtonType.Secondary}>
                                 view
                             </Button>
                         </Link>

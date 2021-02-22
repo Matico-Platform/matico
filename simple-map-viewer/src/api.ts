@@ -169,7 +169,7 @@ export interface SignupResponse {
     token: string;
 }
 
-let a = axios.create({
+const a = axios.create({
     baseURL:
         !process.env.NODE_ENV ||
         process.env.NODE_ENV === 'development'
@@ -197,7 +197,7 @@ export function uploadFile(
     metadata?: any,
     onProgress?: (progress: number) => void,
 ) {
-    let formData = new FormData();
+    const formData = new FormData();
 
     console.log('metadata is ', metadata);
 
@@ -234,16 +234,16 @@ export async function getProfile(): Promise<AxiosResponse<User>> {
 }
 
 export async function login(
-    email: String,
-    password: String,
+    email: string,
+    password: string,
 ): Promise<AxiosResponse<LoginResponse>> {
     return a.post('/auth/login', { email, password });
 }
 
 export async function signup(
-    username: String,
-    password: String,
-    email: String,
+    username: string,
+    password: string,
+    email: string,
 ): Promise<AxiosResponse<SignupResponse>> {
     return a.post('/auth/signup', { email, password, username });
 }

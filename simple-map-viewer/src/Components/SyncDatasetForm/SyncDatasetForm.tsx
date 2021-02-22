@@ -2,11 +2,7 @@ import React, { useState } from 'react';
 import { Form } from '../Forms/Forms';
 import { createSyncDataset } from '../../api';
 
-// import { createSyncDataset } from '../../api';
-
-interface SyncDatasetFormProps {}
-
-export const SyncDatasetForm: React.FC<SyncDatasetFormProps> = ({}) => {
+export const SyncDatasetForm: React.FC = () => {
     const [name, setName] = useState('');
     const [url, setURL] = useState('');
     const [description, setDescription] = useState('');

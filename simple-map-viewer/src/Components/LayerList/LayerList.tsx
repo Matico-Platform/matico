@@ -1,24 +1,20 @@
-import React from 'react'
-import {Styles} from './LayerListStyles'
-import {Button, ButtonType} from '../Button/Button'
-import {LayerControlls} from '../LayerControlls/LayerControlls'
-import {useDashboard} from '../../Contexts/DashbardBuilderContext'
-interface LayerListProps{
+import React from 'react';
+import { Styles } from './LayerListStyles';
+import { Button, ButtonType } from '../Button/Button';
+import { LayerControlls } from '../LayerControlls/LayerControlls';
+import { useDashboard } from '../../Contexts/DashbardBuilderContext';
 
-}
+export const LayerList: React.FC = () => {
+    const { dashboard } = useDashboard();
+    const layers = dashboard ? dashboard.map_style.layers : [];
 
-export const LayerList: React.FC<LayerListProps>= ({})=>{
-    const {dashboard} = useDashboard();
-    const layers = dashboard ? dashboard.map_style.layers : []
-
-    return(
+    return (
         <Styles.LayerList>
-            {layers.map((layer)=>(
+            {layers.map((layer) => (
                 <>
-                    <LayerControlls key={layer.name} layer={layer}/>
+                    <LayerControlls key={layer.name} layer={layer} />
                 </>
             ))}
-
         </Styles.LayerList>
-    )
-}
+    );
+};

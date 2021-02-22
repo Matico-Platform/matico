@@ -1,23 +1,19 @@
-import React from 'react'
-import {useUser} from "../../Contexts/UserContext"
-import {Redirect} from 'react-router'
-import {Button} from '../../Components/Button/Button'
+import React from 'react';
+import { useUser } from '../../Contexts/UserContext';
+import { Redirect } from 'react-router';
+import { Button } from '../../Components/Button/Button';
 
-interface ProfilePageProps{
+export const ProfilePage: React.FC = () => {
+    const { user, attempting_signin, signout } = useUser();
 
-}
-
-export const ProfilePage: React.FC<ProfilePageProps> = ({})=>{
-    const {user,attempting_signin,signout} = useUser();
-
-    if(!user && !attempting_signin){
-        return <Redirect to="/login"/>
+    if (!user && !attempting_signin) {
+        return <Redirect to="/login" />;
     }
 
     return (
         <div>
             <h1>Hi {user?.username}</h1>
-            <Button onClick={signout} >Signout</Button>
+            <Button onClick={signout}>Signout</Button>
         </div>
-    )
-}
+    );
+};

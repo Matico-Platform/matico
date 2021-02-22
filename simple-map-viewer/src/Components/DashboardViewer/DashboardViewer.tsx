@@ -7,8 +7,6 @@ import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { useDashboard } from '../../Contexts/DashbardBuilderContext';
 
-interface DashboardProps {}
-
 function lookupBaseMapURL(basemap: BaseMap | undefined) {
     switch (basemap) {
         case BaseMap.CartoDBPositron:
@@ -25,8 +23,8 @@ function lookupBaseMapURL(basemap: BaseMap | undefined) {
 function constructLayer(layer: Layer) {
     const source = layer.source;
     const source_id = Object.values(source)[0];
-    let styleType = Object.keys(layer.style)[0];
-    let styleSpec = Object.values(layer.style)[0];
+    const styleType = Object.keys(layer.style)[0];
+    const styleSpec = Object.values(layer.style)[0];
 
     let style = {};
     switch (styleType) {
@@ -36,6 +34,7 @@ function constructLayer(layer: Layer) {
                 getBorderColor: styleSpec.stroke,
                 stroked: true,
                 getLineWidth: styleSpec.stroke_width,
+                pickable: true,
             };
             break;
         case 'Point':
@@ -43,6 +42,7 @@ function constructLayer(layer: Layer) {
                 getFillColor: styleSpec.fill,
                 getBorderColor: styleSpec.stroke,
                 getRadius: styleSpec.size,
+                pickable: true,
             };
             break;
     }
@@ -57,7 +57,7 @@ function constructLayer(layer: Layer) {
 }
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
-export const DashboardViewer: React.FC<DashboardProps> = ({}) => {
+export const DashboardViewer: React.FC = () => {
     const { dashboard } = useDashboard();
 
     const INITIAL_VIEW_STATE = {
@@ -69,7 +69,7 @@ export const DashboardViewer: React.FC<DashboardProps> = ({}) => {
     };
 
     const mapStyle = dashboard?.map_style;
-    const layers = mapStyle
+    const layers: any = mapStyle
         ? mapStyle.layers.map(constructLayer)
         : [];
 
@@ -81,7 +81,7 @@ export const DashboardViewer: React.FC<DashboardProps> = ({}) => {
                 width={'100%'}
                 height={'100%'}
                 initialViewState={INITIAL_VIEW_STATE}
-                layers={layers as any}
+                layers={layers}
                 controller={true}
                 getTooltip={({ object }: any) => {
                     console.log('tool tip ', object);

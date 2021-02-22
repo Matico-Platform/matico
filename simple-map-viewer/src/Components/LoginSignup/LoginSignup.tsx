@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import {useUser} from '../../Contexts/UserContext'
+import { useUser } from '../../Contexts/UserContext';
 import { Card } from '../Card/Card';
-import {Redirect} from 'react-router'
+import { Redirect } from 'react-router';
 
 import { Tabs, Tab } from '../Tabs/Tabs';
-import {Button, ButtonType} from '../Button/Button'
+import { Button, ButtonType } from '../Button/Button';
 import { Styles } from './LoginSignupStyles';
 import { Form } from '../Forms/Forms';
 
-type Props = {};
-
-export function LoginSignup(props: Props) {
+export function LoginSignup() {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [email, setEmail] = useState<string>('');
@@ -20,9 +18,8 @@ export function LoginSignup(props: Props) {
         attempting_signin,
         attempting_signup,
         login,
-        signup
+        signup,
     } = useUser();
-
 
     const tryLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -34,8 +31,8 @@ export function LoginSignup(props: Props) {
         signup(email, password, username);
     };
 
-    if(user){
-        return <Redirect to ='/profile' />
+    if (user) {
+        return <Redirect to="/profile" />;
     }
 
     return (
@@ -59,7 +56,12 @@ export function LoginSignup(props: Props) {
                             type="password"
                             placeholder="password"
                         />
-                        <Button kind={ButtonType.Primary} type='submit'>Login</Button>
+                        <Button
+                            kind={ButtonType.Primary}
+                            type="submit"
+                        >
+                            Login
+                        </Button>
                     </Form>
                 </Tab>
                 <Tab name="signup">
@@ -89,7 +91,12 @@ export function LoginSignup(props: Props) {
                             type="password"
                             placeholder="password"
                         />
-                        <Button kind={ButtonType.Primary} type='submit'>Signup</Button>
+                        <Button
+                            kind={ButtonType.Primary}
+                            type="submit"
+                        >
+                            Signup
+                        </Button>
                     </Form>
                 </Tab>
             </Tabs>

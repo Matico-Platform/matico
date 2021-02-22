@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { FileUploadDetails } from './FileUploadDetails';
 import { Styles } from './FileSelectorStyles';
 
-interface FileSelectorProps {}
-
-export const FileSelector: React.FC<FileSelectorProps> = ({}) => {
+export const FileSelector: React.FC = () => {
     const [files, setFiles] = useState<FileList | null>(null);
 
     const selectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,8 +13,8 @@ export const FileSelector: React.FC<FileSelectorProps> = ({}) => {
         <div>
             {files && (
                 <ul>
-                    {Array.from(files).map((file) => (
-                        <FileUploadDetails file={file} />
+                    {Array.from(files).map((file, index) => (
+                        <FileUploadDetails key={index} file={file} />
                     ))}
                 </ul>
             )}

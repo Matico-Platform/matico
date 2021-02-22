@@ -24,8 +24,6 @@ import {
 
 const TOKEN = process.env.MAPBOX_TOKEN;
 
-interface DatasetViewPageProps {}
-
 interface ParamTypes {
     id: string;
 }
@@ -70,7 +68,7 @@ const makeMvtLayer = (data: string | null, options = {}) => {
     return null;
 };
 
-export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
+export const DatasetViewPage: React.FC = () => {
     // DatasetViewPage-specific concerns
     const { id } = useParams<ParamTypes>();
     const [sqlString, setSQLQuery] = useState<any>(null); // this should go into useDataset
@@ -84,10 +82,13 @@ export const DatasetViewPage: React.FC<DatasetViewPageProps> = ({}) => {
         error: datasetError,
     } = useDataset(id);
 
-    const dataQueryStrategy = sqlString ?
-        { sql: sqlString } : 
-        { datasetId: id };
-    const { data, loading, error } = useData(dataQueryStrategy, { offset: page * perPage, limit: perPage });
+    const dataQueryStrategy = sqlString
+        ? { sql: sqlString }
+        : { datasetId: id };
+    const { data, loading, error } = useData(dataQueryStrategy, {
+        offset: page * perPage,
+        limit: perPage,
+    });
 
     if (error) {
         return <h2>Error :-(</h2>;

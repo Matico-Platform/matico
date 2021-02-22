@@ -5,9 +5,7 @@ import { Tabs, Tab } from '../Tabs/Tabs';
 import { SyncDatasetForm } from '../SyncDatasetForm/SyncDatasetForm';
 import { FileSelector } from '../FileSelector/FileSelector';
 
-type Props = {};
-
-export const DatasetCreationForm: React.FC<Props> = ({}: Props) => {
+export const DatasetCreationForm: React.FC = () => {
     const [files, setFiles] = useState<FileList | null>(null);
     const [startUpload, setStartUpload] = useState<boolean>(false);
 

@@ -3,11 +3,11 @@ import { Uploader } from '../Uploader/Uploader';
 import { Form } from '../Forms/Forms';
 import { Styles } from './FileSelectorStyles';
 
-interface FileUploadDetails {
+interface FileUploadDetailsProps {
     file: File;
 }
 
-export const FileUploadDetails: React.FC<FileUploadDetails> = ({
+export const FileUploadDetails: React.FC<FileUploadDetailsProps> = ({
     file,
 }) => {
     const [name, setName] = useState(file.name.split('.')[0]);
