@@ -1,9 +1,8 @@
 use crate::app_state::State;
 use crate::db::queries::Bounds;
 use crate::errors::ServiceError;
-use crate::models::columns::{StatParams, ValueCountsParams};
+use crate::models::columns::{StatParams};
 use crate::models::Dataset;
-use log::info;
 use serde::{Deserialize, Serialize};
 
 use actix_web::{get, web, HttpResponse};

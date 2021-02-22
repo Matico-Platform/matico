@@ -51,7 +51,6 @@ async fn create_query(
     state: web::Data<State>,
     web::Json(create_query): web::Json<CreateQueryDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    info!("HERE!!!!");
     let result = Query::create(&state.db, create_query)?;
     Ok(HttpResponse::Ok().json(result))
 }

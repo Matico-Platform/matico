@@ -1,6 +1,5 @@
 use crate::app_state::State;
 use crate::auth::AuthService;
-use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
 
@@ -8,7 +7,6 @@ use crate::models::{
     datasets::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, UpdateDatasetDTO},
     DatasetSearch, UserToken,
 };
-use crate::utils::PaginationParams;
 use actix_multipart::{Field, Multipart};
 use actix_web::{delete, get, guard, put, web, Error, HttpResponse};
 use chrono::Utc;

@@ -4,8 +4,6 @@ use crate::errors::ServiceError;
 use crate::models::Dataset;
 use crate::utils::{Format, FormatParam, PaginationParams};
 use actix_web::{get, put, web, HttpResponse};
-use log::info;
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[get("{dataset_id}/data")]

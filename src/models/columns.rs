@@ -2,11 +2,8 @@ use crate::db::queries::{Bounds, PostgisQueryRunner};
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
 use crate::utils::Format;
-use log::info;
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::convert::From;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EqualIntervalParams {
@@ -148,7 +145,7 @@ impl Column {
         db: &DataDbPool,
         params: HistogramParams,
     ) -> Result<StatResults, ServiceError> {
-        let treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
+        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
 
         let query = match params.bin_edges {
             Some(edges) => format!("TEST"),

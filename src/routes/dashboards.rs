@@ -5,9 +5,7 @@ use crate::errors::ServiceError;
 use crate::models::{
     dashboards::{
         CreateDashboardDTO, Dashboard, DashboardOrderBy, DashboardSearch, UpdateDashboardDTO,
-    },
-    map_style::{BaseMap, Layer, LayerSource, LayerStyle, MapStyle},
-    styles::PolygonStyle,
+    }
 };
 use crate::utils::PaginationParams;
 use actix_web::{delete, get, post, put, web, HttpResponse};

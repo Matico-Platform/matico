@@ -1,5 +1,4 @@
 use crate::app_state::State;
-use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::users::{LoginDTO, LoginResponseDTO, SignupDTO, SignupResponseDTO, User};
 use actix_web::{post, web, HttpResponse};
