@@ -5,24 +5,13 @@ import { Styles } from './DataTableStyles';
 import { Dataset, Page } from '../../api';
 
 interface DataTableProps {
-    dataset: Dataset;
+    data: any[];
     onSelect?: (row:any)=>void;
     selectedID?: any 
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ dataset, onSelect,selectedID }) => {
-    const [page, setPage] = useState(0);
-    const perPage = 100;
-    const { loading, data, error } = useDatasetPagedResults(
-        dataset.id,
-        {
-            limit: perPage,
-            offset: page * perPage,
-        },
-    );
-
+export const DataTable: React.FC<DataTableProps> = ({ data, onSelect, selectedID }) => {
     const selectRow = (row: any)=>{
-        console.log('row ', row)
         if(onSelect){
             onSelect(row.values)
         }
@@ -45,7 +34,7 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset, onSelect,selected
 
     const columns = useMemo(
         () =>
-            data
+            (data.length > 0)
                 ? Object.keys(data[0]).map((c) => ({
                       Header: c,
                       accessor: c,
@@ -66,16 +55,9 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset, onSelect,selected
         data,
     });
 
-    if (!data) {
-        return <h2>Loading</h2>;
-    }
-    if (error) {
-        return <h2>Error :-(</h2>;
-    }
-
     return (
         <Styles.DataTable>
-            <Styles.Table {...getTableProps()}>
+            {(data.length > 0) ? <Styles.Table {...getTableProps()}>
                 <thead>
                     {headerGroups.map((headerGroup) => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -103,7 +85,7 @@ export const DataTable: React.FC<DataTableProps> = ({ dataset, onSelect,selected
                         );
                     })}
                 </tbody>
-            </Styles.Table>
+            </Styles.Table> : <h1>No Data</h1>}
         </Styles.DataTable>
     );
 };
