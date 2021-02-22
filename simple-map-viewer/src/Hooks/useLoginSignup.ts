@@ -23,7 +23,7 @@ export function useLoginSignup() {
 
     const loggedIn = tokenString && !isExpired;
 
-    const attemptLogin = async (email: String, password: String) => {
+    const attemptLogin = async (email: string, password: string) => {
         setLoading(true);
         let reply = await login(email, password);
         setLoading(false);

@@ -8,7 +8,7 @@ import {
 
 export const useDataset = (id: string) => {
     const [dataset, setDataset] = useState<Dataset | null>(null);
-    const [error, setError] = useState<String | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {

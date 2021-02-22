@@ -1,4 +1,4 @@
-import {
+import React, {
     createContext,
     useReducer,
     useEffect,
@@ -13,7 +13,7 @@ import {
     Layer,
     LayerStyle,
 } from '../api';
-import { useDebouncedEffect } from '../Hooks/dist/useDebounceEffect';
+import { useDebouncedEffect } from '../Hooks/useDebounceEffect';
 
 enum ActionType {
     START_LOADING,

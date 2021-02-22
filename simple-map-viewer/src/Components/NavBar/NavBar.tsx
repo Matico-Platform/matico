@@ -1,9 +1,7 @@
 import React from 'react';
 import { Styles } from './NavBarStyles';
 
-type Props = {};
-
-export const NavBar: React.FC<Props> = ({ children }) => {
+export const NavBar: React.FC = ({ children }) => {
     return <Styles.NavBarOuter>{children}</Styles.NavBarOuter>;
 };
 

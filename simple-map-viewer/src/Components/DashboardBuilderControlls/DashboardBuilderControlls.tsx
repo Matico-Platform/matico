@@ -8,9 +8,7 @@ import { Styles } from './DashboardBuilderControllsStyles';
 import { Button, ButtonType } from '../Button/Button';
 import { AddLayerModal } from '../../Components/AddLayerModal/AddLayerModal';
 
-interface DashboardBuilderControllerProps {}
-
-export const DashboardBuilderControlls: React.FC<DashboardBuilderControllerProps> = ({}) => {
+export const DashboardBuilderControlls: React.FC = () => {
     const {
         loading,
         dashboard,

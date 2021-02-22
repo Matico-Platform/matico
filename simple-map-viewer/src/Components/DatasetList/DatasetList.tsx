@@ -1,29 +1,25 @@
 import React from 'react';
 import { useDatasets } from '../../Hooks/useDatasets';
 import { Styles } from './DatasetListStyles';
-import {List,Row} from '../List/List'
+import { List, Row } from '../List/List';
 
 import { Button, ButtonType } from '../Button/Button';
 import { Link } from 'react-router-dom';
 
-interface DatasetListProps {}
-
-export const DatasetList: React.FC<DatasetListProps> = ({}) => {
+export const DatasetList: React.FC = () => {
     const { datasets, loading } = useDatasets();
 
     return (
-        <List loading ={loading}>
+        <List loading={loading}>
             {datasets.map((dataset) => (
-                <Row>
+                <Row key={dataset.name}>
                     <div>
                         <h3>{dataset.name}</h3>
                         <p>{dataset.description}</p>
                     </div>
                     <div>
                         <Link to={`/datasets/${dataset.id}`}>
-                            <Button
-                                kind={ButtonType.Secondary}
-                            >
+                            <Button kind={ButtonType.Secondary}>
                                 view
                             </Button>
                         </Link>

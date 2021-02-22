@@ -1,22 +1,16 @@
-import React from 'react'
-import {Page, Paper} from '../../Components/Layout/Layout'
-import {LoginSignup} from '../../Components/LoginSignup/LoginSignup'
-import {Styles} from './LoginSignupPageStyles'
+import React from 'react';
+import { Page, Paper } from '../../Components/Layout/Layout';
+import { LoginSignup } from '../../Components/LoginSignup/LoginSignup';
+import { Styles } from './LoginSignupPageStyles';
 
-
-interface LoginSignupPageProps{
-
-}
-
-export const LoginSignupPage: React.FC<LoginSignupPageProps> = ({})=>{
-
-    return(
+export const LoginSignupPage: React.FC = () => {
+    return (
         <Page>
             <Styles.LoginSignupPage>
                 <Paper>
-                    <LoginSignup/>
+                    <LoginSignup />
                 </Paper>
             </Styles.LoginSignupPage>
         </Page>
-    )
-}
+    );
+};
