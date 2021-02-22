@@ -1,6 +1,5 @@
 import React from 'react';
 import { Styles } from './LayerListStyles';
-import { Button, ButtonType } from '../Button/Button';
 import { LayerControlls } from '../LayerControlls/LayerControlls';
 import { useDashboard } from '../../Contexts/DashbardBuilderContext';
 

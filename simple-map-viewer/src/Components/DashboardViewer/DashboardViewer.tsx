@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import ReactMapGL from 'react-map-gl';
+import React from 'react';
 import { Styles } from './DashboardViewerStyles';
-import { Dashboard, BaseMap, Layer, DatasetSource } from '../../api';
+import { BaseMap, Layer } from '../../api';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';

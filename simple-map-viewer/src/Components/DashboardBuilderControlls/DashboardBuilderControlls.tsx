@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useDashboard } from '../../Contexts/DashbardBuilderContext';
 import { FlexSeperator } from '../Layout/Layout';
 import { BaseMapSelector } from '../BaseMapSelector/BaseMapSelector';

@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useUser } from '../../Contexts/UserContext';
 import { Card } from '../Card/Card';
 import { Redirect } from 'react-router';
 
 import { Tabs, Tab } from '../Tabs/Tabs';
 import { Button, ButtonType } from '../Button/Button';
-import { Styles } from './LoginSignupStyles';
 import { Form } from '../Forms/Forms';
 
-export function LoginSignup() {
+export const LoginSignup: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [email, setEmail] = useState<string>('');
@@ -102,4 +101,4 @@ export function LoginSignup() {
             </Tabs>
         </Card>
     );
-}
+};

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Uploader } from '../Uploader/Uploader';
 import { Form } from '../Forms/Forms';
-import { Styles } from './FileSelectorStyles';
 
 interface FileUploadDetailsProps {
     file: File;

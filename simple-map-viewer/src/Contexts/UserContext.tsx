@@ -4,7 +4,7 @@ import React, {
     useEffect,
     useContext,
 } from 'react';
-import api, { User, getProfile, login, signup } from '../api';
+import { User, getProfile, login, signup } from '../api';
 
 enum ActionType {
     ATTEMPT_LOGIN,
@@ -158,7 +158,6 @@ export const UserProvider: React.FC = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, InitalUserState);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         getProfile()
             .then((profile) => {
                 dispatch({
@@ -170,7 +169,7 @@ export const UserProvider: React.FC = ({ children }) => {
                 });
             })
             .catch((e) => {
-                console.warn('token is invalid or stale');
+                console.warn('token is invalid or stale', e);
             });
     }, []);
 

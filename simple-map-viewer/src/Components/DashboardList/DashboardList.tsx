@@ -1,6 +1,5 @@
 import React from 'react';
 import { useDashboards } from '../../Hooks/useDashboards';
-import { Styles } from './DashboardListStyles';
 import { List, Row } from '../List/List';
 
 import { Button, ButtonType } from '../Button/Button';

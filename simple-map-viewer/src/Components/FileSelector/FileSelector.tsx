@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FileUploadDetails } from './FileUploadDetails';
-import { Styles } from './FileSelectorStyles';
 
 export const FileSelector: React.FC = () => {
     const [files, setFiles] = useState<FileList | null>(null);

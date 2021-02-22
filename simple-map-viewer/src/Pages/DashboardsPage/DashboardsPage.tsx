@@ -5,7 +5,6 @@ import {
     FlexSeperator,
 } from '../../Components/Layout/Layout';
 import { DashboardList } from '../../Components/DashboardList/DashboardList';
-import { Button, ButtonType } from '../../Components/Button/Button';
 import { Styles } from './DashboardsPageStyles';
 import { NewDashboard } from '../../Components/NewDashboard/NewDashboard';
 

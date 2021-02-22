@@ -5,11 +5,7 @@ import { Styles } from './DatasetsPageStyles';
 import { FlexSeperator } from '../../Components/Layout/Layout';
 import { Button, ButtonType } from '../../Components/Button/Button';
 
-import {
-    Page,
-    PageContent,
-    DetailsArea,
-} from '../../Components/Layout/Layout';
+import { Page, DetailsArea } from '../../Components/Layout/Layout';
 
 export const DatasetsPage: React.FC = () => {
     return (

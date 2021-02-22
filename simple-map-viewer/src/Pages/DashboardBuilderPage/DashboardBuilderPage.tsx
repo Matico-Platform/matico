@@ -4,10 +4,7 @@ import { Styles } from './DashboardBuilderPageStyles';
 import { useParams } from 'react-router';
 import { DashboardViewer } from '../../Components/DashboardViewer/DashboardViewer';
 import { DashboardBuilderControlls } from '../../Components/DashboardBuilderControlls/DashboardBuilderControlls';
-import {
-    DashboardBuilderProvider,
-    useDashboard,
-} from '../../Contexts/DashbardBuilderContext';
+import { DashboardBuilderProvider } from '../../Contexts/DashbardBuilderContext';
 
 interface ParamTypes {
     dashboard_id: string;

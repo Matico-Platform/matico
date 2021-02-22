@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router';
-import {
-    useDataset,
-    useDatasetPagedResults,
-} from '../../Hooks/useDataset';
+import { useDataset } from '../../Hooks/useDataset';
 import { useData } from '../../Hooks/useData';
 import { Styles } from './DatasetViewPageStyles';
 import DeckGL from '@deck.gl/react';
@@ -34,16 +31,6 @@ const INITIAL_VIEW_STATE = {
     zoom: 10,
     pitch: 0,
     bearing: 0,
-};
-
-const valueToTableEntry = (value: any) => {
-    if (!value) {
-        return 'Null';
-    } else if (typeof value === 'object') {
-        return value.type;
-    } else {
-        return value;
-    }
 };
 
 const makeMvtLayer = (data: string | null, options = {}) => {

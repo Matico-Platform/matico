@@ -31,7 +31,7 @@ export const SyncDatasetForm: React.FC = () => {
                 setMessage('Successfully created synced dataset!');
             })
             .catch((e) => {
-                setError('Something went wrong :-(');
+                setError(`Something went wrong :-( ${e.toString()}`);
             });
     };
     return (

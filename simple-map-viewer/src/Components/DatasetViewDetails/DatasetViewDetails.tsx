@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Styles } from './DatasetViewDetailsStyles';
 import { Tabs, Tab } from '../Tabs/Tabs';
-import { QueryPane } from '../QueryPane/QueryPane';
 import { Form } from '../Forms/Forms';
 import { Button, ButtonType } from '../Button/Button';
 interface DatasetViewDetailsProps {

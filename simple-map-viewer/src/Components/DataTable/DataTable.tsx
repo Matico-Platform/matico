@@ -1,8 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { useDatasetPagedResults } from '../../Hooks/useDataset';
+import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
 import { Styles } from './DataTableStyles';
-import { Dataset, Page } from '../../api';
 
 interface DataTableProps {
     data: any[];
@@ -77,7 +75,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                         ))}
                     </thead>
                     <tbody {...getTableBodyProps()}>
-                        {rows.map((row, i) => {
+                        {rows.map((row) => {
                             prepareRow(row);
                             return (
                                 <Styles.TableRow

@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { Paper } from '../Layout/Layout';
-import { Button } from '../Button/Button';
 
 const ListOuter = styled(Paper)`
     width: 100%;
