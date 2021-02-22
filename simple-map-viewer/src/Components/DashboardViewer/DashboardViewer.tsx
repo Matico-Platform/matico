@@ -36,6 +36,7 @@ function constructLayer(layer: Layer) {
                 getBorderColor: styleSpec.stroke,
                 stroked: true,
                 getLineWidth: styleSpec.stroke_width,
+                pickable: true,
             };
             break;
         case 'Point':
@@ -43,6 +44,7 @@ function constructLayer(layer: Layer) {
                 getFillColor: styleSpec.fill,
                 getBorderColor: styleSpec.stroke,
                 getRadius: styleSpec.size,
+                pickable: true,
             };
             break;
     }
