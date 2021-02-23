@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router';
-import { useDataset } from '../../Hooks/useDataset';
-import { useData } from '../../Hooks/useData';
+import { useDataset } from 'Hooks/useDataset';
+import { useData } from 'Hooks/useData';
 import { Styles } from './DatasetViewPageStyles';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
-import { DataTable } from '../../Components/DataTable/DataTable';
-import { DataSetViewDetails } from '../../Components/DatasetViewDetails/DatasetViewDetails';
-import { QueryPane } from '../../Components/QueryPane/QueryPane';
+import { DataTable } from 'Components/DataTable/DataTable';
+import { DataSetViewDetails } from 'Components/DatasetViewDetails/DatasetViewDetails';
+import { QueryPane } from 'Components/QueryPane/QueryPane';
 
 // import * as d3 from 'd3';
 
@@ -17,7 +17,7 @@ import {
     PageContent,
     DetailsArea,
     FlexSeperator,
-} from '../../Components/Layout/Layout';
+} from 'Components/Layout/Layout';
 
 const TOKEN = process.env.MAPBOX_TOKEN;
 

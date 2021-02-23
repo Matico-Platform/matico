@@ -12,8 +12,8 @@ import {
     UpdateDashboardDTO,
     Layer,
     LayerStyle,
-} from '../api';
-import { useDebouncedEffect } from '../Hooks/useDebounceEffect';
+} from 'api';
+import { useDebouncedEffect } from 'Hooks/useDebounceEffect';
 
 enum ActionType {
     START_LOADING,

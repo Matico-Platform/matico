@@ -1,12 +1,12 @@
 import React from 'react';
-import { LoginSignupPage } from './Pages/LoginSignupPage/LoginSignupPage';
-import { DatasetsPage } from './Pages/DatasetsPage/DatasetsPage';
-import { DashboardsPage } from './Pages/DashboardsPage/DashboardsPage';
-import { DatasetViewPage } from './Pages/DatasetViewPage/DatasetViewPage';
-import { DashboardBuilderPage } from './Pages/DashboardBuilderPage/DashboardBuilderPage';
+import { LoginSignupPage } from 'Pages/LoginSignupPage/LoginSignupPage';
+import { DatasetsPage } from 'Pages/DatasetsPage/DatasetsPage';
+import { DashboardsPage } from 'Pages/DashboardsPage/DashboardsPage';
+import { DatasetViewPage } from 'Pages/DatasetViewPage/DatasetViewPage';
+import { DashboardBuilderPage } from 'Pages/DashboardBuilderPage/DashboardBuilderPage';
 import { ModalContainer } from 'react-router-modal';
-import { useUser } from './Contexts/UserContext';
-import { ProfilePage } from './Pages/ProfilePage/ProfilePage';
+import { useUser } from 'Contexts/UserContext';
+import { ProfilePage } from 'Pages/ProfilePage/ProfilePage';
 
 import { AppLayout, NavArea } from './Components/Layout/Layout';
 import {

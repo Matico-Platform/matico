@@ -3,10 +3,10 @@ import {
     Page,
     DetailsArea,
     FlexSeperator,
-} from '../../Components/Layout/Layout';
-import { DashboardList } from '../../Components/DashboardList/DashboardList';
+} from 'Components/Layout/Layout';
+import { DashboardList } from 'Components/DashboardList/DashboardList';
 import { Styles } from './DashboardsPageStyles';
-import { NewDashboard } from '../../Components/NewDashboard/NewDashboard';
+import { NewDashboard } from 'Components/NewDashboard/NewDashboard';
 
 export const DashboardsPage: React.FC = () => {
     return (

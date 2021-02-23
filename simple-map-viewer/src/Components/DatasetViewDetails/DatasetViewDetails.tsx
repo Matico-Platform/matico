@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Styles } from './DatasetViewDetailsStyles';
-import { Tabs, Tab } from '../Tabs/Tabs';
-import { Form } from '../Forms/Forms';
-import { Button, ButtonType } from '../Button/Button';
+import { Tabs, Tab } from 'Components/Tabs/Tabs';
+import { Form } from 'Components/Forms/Forms';
+import { Button, ButtonType } from 'Components/Button/Button';
 interface DatasetViewDetailsProps {
     feature?: any;
     onUpdate?: (update: any) => void;

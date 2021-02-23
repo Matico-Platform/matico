@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import {PageContent} from '../../Components/Layout/Layout'
+import styled from 'styled-components';
+import { PageContent } from 'Components/Layout/Layout';
 
 const LoginSignupPage = styled(PageContent)`
     display: flex;
@@ -7,8 +7,8 @@ const LoginSignupPage = styled(PageContent)`
     justify-content: space-around;
     align-items: center;
     flex: 1;
-    padding:20px;
-`
-export const Styles={
-    LoginSignupPage
-}
+    padding: 20px;
+`;
+export const Styles = {
+    LoginSignupPage,
+};
