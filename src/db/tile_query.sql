@@ -1,7 +1,7 @@
 SELECT ST_AsMVT(q, 'layer', 4096, 'mvt_geom') as mvt 
     FROM (
       SELECT
-        --   *,
+          {columns},
         --   ogc_fid::INTEGER as id,
           ST_AsMVTGeom(
               geom,
