@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Page, runQuery, getPagedDatasetData } from '../api';
+import { Page, runQuery, getPagedDatasetData } from 'api';
 
 interface DatasetStrategy {
     datasetId?: string;
@@ -15,15 +15,18 @@ export const useData = (
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
+        setError(null);
+        setLoading(true);
+
         if (strategy.sql) {
             runQuery(strategy.sql, pagination)
                 .then((result) => setData(result.data))
-                .catch((e) => setError(e.toString()))
+                .catch((e) => setError(e.response.data))
                 .finally(() => setLoading(false));
         } else if (strategy.datasetId) {
             getPagedDatasetData(strategy.datasetId, pagination)
                 .then((result) => setData(result.data))
-                .catch((e) => setError(e.toString()))
+                .catch((e) => setError(e.response.data))
                 .finally(() => setLoading(false));
         } else {
             setData([]);

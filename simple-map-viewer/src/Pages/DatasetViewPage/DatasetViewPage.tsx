@@ -7,8 +7,9 @@ import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { DataTable } from 'Components/DataTable/DataTable';
-import { DataSetViewDetails } from 'Components/DatasetViewDetails/DatasetViewDetails';
 import { QueryPane } from 'Components/QueryPane/QueryPane';
+import { Tabs, Tab } from 'Components/Tabs/Tabs';
+import { FeatureEditor } from 'Components/FeatureEditor/FeatureEditor';
 
 // import * as d3 from 'd3';
 
@@ -38,16 +39,15 @@ const makeMvtLayer = (data: string | null, options = {}) => {
         return new MVTLayer({
             data: data,
             // @ts-ignore
-            getFillColor: [140, 170, 180, 90],
+            getFillColor: [226, 125, 96, 200],
             getLineColor: [4, 4, 4],
             getBorderColor: [200, 200, 200],
             getLineWidth: 10,
-            getRadius: 20,
-            radiusMinPixels: 1,
-            radiusMaxPixels: 100,
-            getLabel: (f: any) => f.id,
+            getRadius: 40,
             stroked: true,
             pickable: true,
+            autoHighlight: true,
+            radiusUnits: 'pixels',
             ...options,
         });
     }
@@ -72,16 +72,13 @@ export const DatasetViewPage: React.FC = () => {
     const dataQueryStrategy = sqlString
         ? { sql: sqlString }
         : { datasetId: id };
+
     const { data, loading, error } = useData(dataQueryStrategy, {
         offset: page * perPage,
         limit: perPage,
     });
 
-    if (error) {
-        return <h2>Error :-(</h2>;
-    }
-
-    if (loading || datasetLoading) {
+    if (datasetLoading) {
         return <div>LOADING...</div>;
     }
 
@@ -142,15 +139,22 @@ export const DatasetViewPage: React.FC = () => {
                         </Styles.Map>
 
                         <Styles.Details>
-                            <DataSetViewDetails
-                                onUpdate={updateSelectedFeature}
-                                feature={selectedRow}
-                            >
-                                <QueryPane
-                                    table={dataset.name}
-                                    onQuery={setSQLQuery}
-                                />
-                            </DataSetViewDetails>
+                            <Tabs>
+                                <Tab name="Query">
+                                    <QueryPane
+                                        table={dataset.name}
+                                        onQuery={setSQLQuery}
+                                        error={error}
+                                    />
+                                </Tab>
+                                <Tab name="Feature">
+                                    <FeatureEditor
+                                        feature={selectedRow}
+                                        onSave={updateSelectedFeature}
+                                        editable={true}
+                                    />
+                                </Tab>
+                            </Tabs>
                         </Styles.Details>
                     </Styles.Content>
                 )}

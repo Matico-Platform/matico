@@ -9,11 +9,13 @@ import { Button, ButtonType } from '../Button/Button';
 interface QueryPaneProps {
     table: string | null;
     onQuery: (newQuery: any) => void;
+    error?: string | null | undefined;
 }
 
 export const QueryPane: React.FC<QueryPaneProps> = ({
     onQuery,
     table,
+    error,
 }) => {
     const [query, onChange] = useState<any>(null);
     const defaultQuery = `select * from ${table}`;
@@ -36,17 +38,23 @@ export const QueryPane: React.FC<QueryPaneProps> = ({
                 style={{ width: '100%' }}
                 editorProps={{ $blockScrolling: true }}
             />
-            <Styles.Buttons>
-                <Button
-                    onClick={clearQuery}
-                    kind={ButtonType.Secondary}
-                >
-                    Clear
-                </Button>
-                <Button onClick={runQuery} kind={ButtonType.Primary}>
-                    Run
-                </Button>
-            </Styles.Buttons>
+            <Styles.ButtonsAndErrors>
+                <Styles.Error>{error ? error : ''}</Styles.Error>
+                <Styles.Buttons>
+                    <Button
+                        onClick={clearQuery}
+                        kind={ButtonType.Secondary}
+                    >
+                        Clear
+                    </Button>
+                    <Button
+                        onClick={runQuery}
+                        kind={ButtonType.Primary}
+                    >
+                        Run
+                    </Button>
+                </Styles.Buttons>
+            </Styles.ButtonsAndErrors>
         </Styles.QueryPane>
     );
 };
