@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { useState, useEffect } from 'react';
 import { useJwt } from 'react-jwt';
-import { login, LoginResponse, User, signup } from '../api';
+import { login, LoginResponse, User, signup } from 'api';
 
 export function useLoginSignup() {
     const [error, setError] = useState<string | null>(null);

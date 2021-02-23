@@ -1,7 +1,7 @@
 import React from 'react';
-import { useUser } from '../../Contexts/UserContext';
+import { useUser } from 'Contexts/UserContext';
 import { Redirect } from 'react-router';
-import { Button } from '../../Components/Button/Button';
+import { Button } from 'Components/Button/Button';
 
 export const ProfilePage: React.FC = () => {
     const { user, attempting_signin, signout } = useUser();

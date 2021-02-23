@@ -1,10 +1,10 @@
 import React from 'react';
-import { Page, DetailsArea } from '../../Components/Layout/Layout';
+import { Page, DetailsArea } from 'Components/Layout/Layout';
 import { Styles } from './DashboardBuilderPageStyles';
 import { useParams } from 'react-router';
-import { DashboardViewer } from '../../Components/DashboardViewer/DashboardViewer';
-import { DashboardBuilderControlls } from '../../Components/DashboardBuilderControlls/DashboardBuilderControlls';
-import { DashboardBuilderProvider } from '../../Contexts/DashbardBuilderContext';
+import { DashboardViewer } from 'Components/DashboardViewer/DashboardViewer';
+import { DashboardBuilderControlls } from 'Components/DashboardBuilderControlls/DashboardBuilderControlls';
+import { DashboardBuilderProvider } from 'Contexts/DashbardBuilderContext';
 
 interface ParamTypes {
     dashboard_id: string;

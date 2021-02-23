@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import {PageContent} from '../../Components/Layout/Layout'
+import styled from 'styled-components';
+import { PageContent } from 'Components/Layout/Layout';
 
 const DashboardsPage = styled(PageContent)`
     display: flex;
@@ -7,7 +7,7 @@ const DashboardsPage = styled(PageContent)`
     justify-content: space-around;
     align-items: center;
     flex: 1;
-    padding:20px;
+    padding: 20px;
 `;
 
 export const Styles = {

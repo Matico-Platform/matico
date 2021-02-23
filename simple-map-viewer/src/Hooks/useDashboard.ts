@@ -4,7 +4,7 @@ import api, {
     UpdateDashboardDTO,
     getDashboard,
     updateDashboard,
-} from '../api';
+} from 'api';
 
 export const useDashboard = (id: string) => {
     const [dashboard, setDashboard] = useState<Dashboard | null>(

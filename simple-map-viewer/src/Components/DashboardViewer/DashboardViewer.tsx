@@ -1,10 +1,10 @@
 import React from 'react';
 import { Styles } from './DashboardViewerStyles';
-import { BaseMap, Layer } from '../../api';
+import { BaseMap, Layer } from 'api';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
-import { useDashboard } from '../../Contexts/DashbardBuilderContext';
+import { useDashboard } from 'Contexts/DashbardBuilderContext';
 
 function lookupBaseMapURL(basemap: BaseMap | undefined) {
     switch (basemap) {
