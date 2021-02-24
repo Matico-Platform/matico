@@ -140,6 +140,20 @@ impl PostgisQueryRunner {
         tile_id: TileID,
     ) -> Result<MVTTile, ServiceError> {
         let conn = pool.get().await.expect("Pool Error!");
+
+        // TODO This is an annoying and potentially non preformat 
+        // way of getting the columns names we want to include.
+        // One solution will be to require the passing of the 
+        // required columns in the query. Another might be to see
+        // if we can easily cache this call in the server. Better would 
+        // be if postgresql had an exclude keyword or if we can find some 
+        // other way to do this in the db
+        let columns = Self::get_query_column_details(&pool, query).await?;
+
+        let column_names :Vec<String> = columns.iter()
+        .filter(|col| col.col_type !="geometry").map(|col| format!("\"{}\"",col.name)).collect();
+        let select_string =  column_names.join(",");
+
         let bbox = bbox(&tile_id);
 
         let geom_column = match tiler_options.geom_column {
@@ -148,6 +162,7 @@ impl PostgisQueryRunner {
         };
         let formatted_query = format!(
             include_str!("tile_query.sql"),
+            columns= select_string,
             geom_column = geom_column,
             tile_table = query,
             x_min = bbox[0],
