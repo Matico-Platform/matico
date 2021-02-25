@@ -4,10 +4,14 @@ import {
     PolygonStyle,
     PointStyle,
     LayerStyle,
-} from '../../api';
+    LayerSource
+} from 'api';
 import { Styles } from './LayerControllsStyles';
-import { SketchPicker } from 'react-color';
-import { useDashboard } from '../../Contexts/DashbardBuilderContext';
+import { useDashboard } from 'Contexts/DashbardBuilderContext';
+import {SketchPicker} from "react-color"
+import { CategoryColorSelector } from 'Components/ColorComponents/CategoryColorSelector/CategoryColorSelector';
+import {useSourceColumns} from "Hooks/useSourceColumns"
+import {Column} from 'api'
 
 interface LayerControllProps {
     layer: Layer;
@@ -15,15 +19,21 @@ interface LayerControllProps {
 interface PolygonLayerControllsProps {
     style: PolygonStyle;
     onChange: (update: any) => void;
+    columns?: Column[];
+    source?: LayerSource;
 }
 interface PointLayerControllsProps {
     style: PointStyle;
     onChange: (update: any) => void;
+    columns?: Column[];
+    source?: LayerSource;
 }
 
 const PointLayerControlls: React.FC<PointLayerControllsProps> = ({
     onChange,
     style,
+    columns,
+    source
 }) => {
     const [showFill, setShowFill] = useState(false);
     const [showStroke, setShowStroke] = useState(false);
@@ -116,6 +126,8 @@ const PointLayerControlls: React.FC<PointLayerControllsProps> = ({
 const PolygonLayerControlls: React.FC<PolygonLayerControllsProps> = ({
     onChange,
     style,
+    columns,
+    source
 }) => {
     const [showFill, setShowFill] = useState(false);
     const [showStroke, setShowStroke] = useState(false);
@@ -181,6 +193,7 @@ const PolygonLayerControlls: React.FC<PolygonLayerControllsProps> = ({
                         color={strokeColor}
                     />
                 )}
+                <CategoryColorSelector source={source} columns={columns} />
             </section>
         </>
     );
@@ -191,24 +204,32 @@ export const LayerControlls: React.FC<LayerControllProps> = ({
 }) => {
     const sourceType = Object.keys(layer.source)[0];
     const styleType = Object.keys(layer.style)[0];
+    
+    const columns = useSourceColumns(layer.source);
+
     const { updateLayerStyle } = useDashboard();
 
     const updateStyle = (update: LayerStyle) => {
         console.log('Update style is ', update);
         updateLayerStyle(layer.name, update);
     };
+
     return (
         <Styles.LayerControlls>
             <h3>{layer.name}</h3>
             {styleType == 'Polygon' && (
                 <PolygonLayerControlls
                     onChange={updateStyle}
+                    columns={columns}
+                    source = {layer.source}
                     style={layer.style as PolygonStyle}
                 />
             )}
             {styleType == 'Point' && (
                 <PointLayerControlls
                     onChange={updateStyle}
+                    columns={columns}
+                    source= {layer.source}
                     style={layer.style as PointStyle}
                 />
             )}
