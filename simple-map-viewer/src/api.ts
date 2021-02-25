@@ -10,6 +10,12 @@ export interface Dataset {
     id_col: string;
 }
 
+export interface Column{
+    name: string,
+    col_type: string,
+    source_query: string
+}
+
 export interface User {
     id: string;
     username: string;
@@ -146,6 +152,11 @@ export interface CreateDashboardDTO {
     map_style: MapStyle;
 }
 
+export interface ValueCount{
+    name: string,
+    count: number 
+}
+
 export interface UpdateDashboardDTO {
     name?: string;
     description?: string;
@@ -273,6 +284,10 @@ export async function getDashboards(): Promise<
     return a.get('dashboards');
 }
 
+export async function getDatasetColumns(id: string):Promise<AxiosResponse<Column[]>>{
+    return a.get(`datasets/${id}/columns`)
+}
+
 export async function getDashboard(
     id: string,
 ): Promise<AxiosResponse<Dashboard>> {
@@ -297,7 +312,11 @@ export async function updateFeature(
     feature_id: string,
     update: any,
 ) {
-    return a.put(`dataset/${dataset_id}/data/${feature_id}`, update);
+    return a.put(`datasets/${dataset_id}/data/${feature_id}`, update);
+}
+
+export async function getUniqueColumnValues(dataset_id:string, column_name:string){
+    return a.get(`datasets/${dataset_id}/columns/${column_name}/stats?stat=${ JSON.stringify({ValueCounts:{}})}`)
 }
 
 // not sure if run is the right verb here, but
