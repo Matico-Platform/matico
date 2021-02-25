@@ -203,7 +203,8 @@ impl Column {
             "
             select COALESCE({},'undefined') as name, count(*) as count 
             from ({}) a
-            group by COALESCE({},'undefined')",
+            group by COALESCE({},'undefined')
+            order by count DESC",
             self.name, self.source_query, self.name
         );
         let json = PostgisQueryRunner::run_query(&db, &query, None, Format::JSON).await?;
