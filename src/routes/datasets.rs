@@ -37,7 +37,7 @@ async fn upload_dataset_to_tmp_file(mut field: Field, filename: &str) -> Result<
     let filepath = format!("./tmp{}", sanitize_filename::sanitize(filename));
     let mut file = web::block(move || {
         std::fs::create_dir_all("./tmp").expect("was unable to create dir");
-        std::fs::File::create(&filepath.clone())
+        std::fs::File::create(&filepath)
     })
     .await
     .unwrap();
@@ -46,6 +46,7 @@ async fn upload_dataset_to_tmp_file(mut field: Field, filename: &str) -> Result<
         let data = chunk.unwrap();
         file = web::block(move || file.write_all(&data).map(|_| file)).await?;
     }
+    //TODO Fix this
     let filepath = format!("./tmp{}", sanitize_filename::sanitize(filename));
     Ok(filepath)
 }

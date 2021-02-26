@@ -72,9 +72,9 @@ impl From<CreateDashboardDTO> for Dashboard {
 impl Dashboard {
     pub fn search(
         pool: &DbPool,
-        order: DashboardOrderBy,
+        _order: DashboardOrderBy,
         search: DashboardSearch,
-        page: Option<PaginationParams>,
+        _page: Option<PaginationParams>,
     ) -> Result<Vec<Dashboard>, ServiceError> {
         let conn = pool.get().unwrap();
         let mut query = dashboards::table.into_boxed();
@@ -97,7 +97,7 @@ impl Dashboard {
 
         let dashboards = query
             .load::<Dashboard>(&conn)
-            .map_err(|e| ServiceError::InternalServerError("Failed to get dashboards".into()))?;
+            .map_err(|e| ServiceError::InternalServerError( format!("Failed to get dashboards {}",e)))?;
 
         Ok(dashboards)
     }

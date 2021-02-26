@@ -6,7 +6,6 @@ use crate::utils::{FormatParam, PaginationParams};
 use std::collections::HashMap;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
-use log::info;
 use uuid::Uuid;
 
 #[get("/{id}")]
@@ -60,7 +59,7 @@ async fn run_annon_query(
     state: web::Data<State>,
     web::Query(query): web::Query<AnnonQuery>,
     web::Query(page): web::Query<PaginationParams>,
-    web::Query(bounds): web::Query<Bounds>,
+    web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
     let result = Query::run_raw(&state.data_db, query.q, Some(page), format_param.format).await?;
@@ -76,7 +75,7 @@ async fn run_query(
     web::Path(query_id): web::Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(page): web::Query<PaginationParams>,
-    web::Query(bounds): web::Query<Bounds>,
+    web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
     let query = Query::find(&state.db, query_id)?;

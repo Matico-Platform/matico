@@ -109,10 +109,7 @@ impl Dataset {
             None => format!("select * from {}", self.name),
         };
 
-        let f = match format {
-            Some(format) => format,
-            None => Format::JSON,
-        };
+        let f = format.unwrap_or_default();
 
         let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
 
@@ -154,7 +151,7 @@ impl Dataset {
         pool: &DbPool,
         feature_id: String,
         update: serde_json::Value,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<serde_json::Value, ServiceError> {
         let conn = pool.get().unwrap();
         let obj = update.as_object().unwrap();
         let mut key_vals: Vec<String> = vec![];
@@ -180,7 +177,7 @@ impl Dataset {
                 warn!("SQL Query failed: {} {}", e, query2);
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query2))
             })?;
-        Ok(())
+        Ok(update)
     }
 
     pub async fn get_column(
@@ -193,7 +190,7 @@ impl Dataset {
         let result =
             cols.iter()
                 .find(|col| col.name == col_name)
-                .ok_or(ServiceError::BadRequest(format!(
+                .ok_or_else(|| ServiceError::BadRequest(format!(
                     "No columns by the name of {} on table {}",
                     col_name, self.name
                 )))?;

@@ -1,3 +1,3 @@
-pub mod tiler;
+pub mod routes;
 
-pub use tiler::init_routes;
+pub use routes::*;

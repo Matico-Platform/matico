@@ -42,7 +42,7 @@ pub fn bbox(tile_id: &TileID) -> [f64; 4] {
     let z = tile_id.z;
 
     let max = 6378137.0 * PI;
-    let res = max * 2.0 / (2.0 as f64).powf(z as f64) as f64;
+    let res = max * 2.0 / 2.0_f64.powf(z as f64) as f64;
 
     [
         -max + (x as f64) * res,
@@ -83,9 +83,9 @@ impl PostgisQueryRunner {
         let paged_query = Self::paginate_query(query, page);
 
         let formatted_query = match format {
-            Format::CSV => Ok(csv_format(&paged_query)),
-            Format::GEOJSON => Ok(geo_json_format(&paged_query)),
-            Format::JSON => Ok(json_format(&paged_query)),
+            Format::Csv => Ok(csv_format(&paged_query)),
+            Format::Geojson=> Ok(geo_json_format(&paged_query)),
+            Format::Json=> Ok(json_format(&paged_query)),
         }?;
 
         info!("running query {}", formatted_query);
@@ -126,7 +126,7 @@ impl PostgisQueryRunner {
             .map(|col| Column {
                 name: col.name().into(),
                 col_type: col.type_().name().into(),
-                source_query: query.clone().into(),
+                source_query: query.into(),
             })
             .collect();
 

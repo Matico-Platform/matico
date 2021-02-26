@@ -1,6 +1,5 @@
 use crate::app_state::State;
 use crate::auth::AuthService;
-use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::User;
 use actix_web::{get, web, Error, HttpResponse};

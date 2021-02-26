@@ -11,7 +11,7 @@ async fn get_data(
     state: web::Data<State>,
     web::Path(dataset_id): web::Path<Uuid>,
     web::Query(page): web::Query<PaginationParams>,
-    web::Query(bounds): web::Query<Bounds>,
+    web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
@@ -40,7 +40,7 @@ async fn get_feature(
     );
 
     let result = dataset
-        .query(&state.data_db, Some(query), None, Some(Format::JSON))
+        .query(&state.data_db, Some(query), None, Some(Format::Json))
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")

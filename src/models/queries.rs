@@ -195,7 +195,7 @@ impl Query {
         Ok(())
     }
 
-    pub fn search(pool: &DbPool, page: PaginationParams) -> Result<Vec<Self>, ServiceError> {
+    pub fn search(pool: &DbPool, _page: PaginationParams) -> Result<Vec<Self>, ServiceError> {
         let conn = pool.get().unwrap();
         let results = dsl::queries.get_results(&conn).map_err(|e| {
             ServiceError::InternalServerError(format!("Failed to get queries {}", e))
@@ -215,12 +215,12 @@ impl Query {
                     let input =
                         params
                             .get(param.name())
-                            .ok_or(ServiceError::QueryFailed(format!(
+                            .ok_or_else(|| ServiceError::QueryFailed(format!(
                                 "missing param {}",
                                 param.name()
                             )))?;
                     info!("parsing parameter for {}, {}", param.name(), input);
-                    let input_val_str = input.as_str().ok_or(ServiceError::QueryFailed(
+                    let input_val_str = input.as_str().ok_or_else(|| ServiceError::QueryFailed(
                         format!("Failed to parse value for {},{:?} ", param.name(), input),
                     ))?;
                     let input_val: f64 = input_val_str.parse().map_err(|_| {
@@ -229,11 +229,6 @@ impl Query {
 
                     query = param.modify_sql(query, ValueType::Numeric(input_val))?;
                     info!("current query is {}", query);
-                }
-                _ => {
-                    return Err(ServiceError::QueryFailed(
-                        "Failed to construct query".into(),
-                    ))
                 }
             }
         }
@@ -246,10 +241,7 @@ impl Query {
         page: Option<PaginationParams>,
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
-        let f = match format {
-            Some(format) => format,
-            None => Format::JSON,
-        };
+        let f = format.unwrap_or_default();
         let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;
         Ok(result.to_string())
     }
@@ -261,10 +253,7 @@ impl Query {
         page: Option<PaginationParams>,
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
-        let f = match format {
-            Some(format) => format,
-            None => Format::JSON,
-        };
+        let f = format.unwrap_or_default();
 
         let query = self.construct_query(params)?;
         let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;

@@ -129,7 +129,7 @@ impl Column {
         &self,
         conn: &DataDbPool,
         stat_params: StatParams,
-        bounds: Option<Bounds>,
+        _bounds: Option<Bounds>,
     ) -> Result<StatResults, ServiceError> {
         match stat_params {
             // StatParams::Percentiles(params) => self.calc_percentiles(conn, params).await,
@@ -148,7 +148,7 @@ impl Column {
         let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
 
         let query = match params.bin_edges {
-            Some(edges) => format!("TEST"),
+            Some(edges) => format!("We have not yet implemented custom bin edges {:?}", edges),
             None => format!(
                 "
                 select  bin_no,
@@ -177,16 +177,16 @@ impl Column {
             ),
         };
 
-        let json = PostgisQueryRunner::run_query(&db, &query, None, Format::JSON).await?;
+        let json = PostgisQueryRunner::run_query(&db, &query, None, Format::Json).await?;
         let results: HistogramResults =
             serde_json::from_value(json).expect("Failed to deserialize histogram response");
         Ok(StatResults::Histogram(results))
     }
 
-    async fn calc_percentiles(
+    async fn _calc_percentiles(
         &self,
-        conn: &DataDbPool,
-        params: PercentilesParams,
+        _conn: &DataDbPool,
+        _params: PercentilesParams,
     ) -> Result<StatResults, ServiceError> {
         Ok(StatResults::Percentiles(PercentilesResults {
             bins: vec![],
@@ -197,7 +197,7 @@ impl Column {
     async fn calc_value_counts(
         &self,
         db: &DataDbPool,
-        params: ValueCountsParams,
+        _params: ValueCountsParams,
     ) -> Result<StatResults, ServiceError> {
         let query = format!(
             "
@@ -207,7 +207,7 @@ impl Column {
             order by count DESC",
             self.name, self.source_query, self.name
         );
-        let json = PostgisQueryRunner::run_query(&db, &query, None, Format::JSON).await?;
+        let json = PostgisQueryRunner::run_query(&db, &query, None, Format::Json).await?;
         let results: ValueCountsResults =
             serde_json::from_value(json).expect("Failed to deserialize value count response");
         Ok(StatResults::ValueCounts(results))
@@ -216,7 +216,7 @@ impl Column {
     async fn calc_basic_stats(
         &self,
         db: &DataDbPool,
-        params: BasicStatsParams,
+        _params: BasicStatsParams,
     ) -> Result<StatResults, ServiceError> {
         let query = format!(
             "select max({col}::NUMERIC) as max,
@@ -232,13 +232,13 @@ impl Column {
         );
 
         let results: Vec<BasicStatsResults> = serde_json::from_value(
-            PostgisQueryRunner::run_query(&db, &query, None, Format::JSON).await?,
+            PostgisQueryRunner::run_query(&db, &query, None, Format::Json).await?,
         )
         .expect("Failed to deserialize basic results response");
 
         let result = results
             .into_iter()
-            .nth(0)
+            .next()
             .expect("Did not get a response back from basic stats query");
 
         Ok(StatResults::BasicStats(result))
