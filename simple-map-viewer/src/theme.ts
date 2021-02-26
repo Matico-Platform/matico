@@ -47,4 +47,7 @@ export const GloablStyle = createGlobalStyle`
         padding:10px 20px;
         box-shadow:none;
     }
+    .react-dropdown-select-item{
+        color: black;
+    }
 `;
