@@ -114,10 +114,12 @@ impl Dataset {
         sort: Option<SortParams>,
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
+
         let q = match query {
             Some(query) => query,
             None => format!(r#"select * from "{}""#, self.name.to_lowercase()),
         };
+
         let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
         let f = format.unwrap_or_default();
 
@@ -202,11 +204,10 @@ impl Dataset {
     ) -> Result<Column, ServiceError> {
         let cols = self.columns(&db).await?;
 
-        let result = cols
-            .iter()
-            .find(|col| col.name == col_name)
-            .ok_or_else(|| {
-                ServiceError::BadRequest(format!(
+        let result =
+            cols.iter()
+                .find(|col| col.name == col_name)
+                .ok_or_else(|| ServiceError::BadRequest(format!(
                     "No columns by the name of {} on table {}",
                     col_name, self.name
                 ))

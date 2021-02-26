@@ -95,9 +95,9 @@ impl Dashboard {
             query = query.filter(dashboards::public.eq(public))
         }
 
-        let dashboards = query.load::<Dashboard>(&conn).map_err(|e| {
-            ServiceError::InternalServerError(format!("Failed to get dashboards {}", e))
-        })?;
+        let dashboards = query
+            .load::<Dashboard>(&conn)
+            .map_err(|e| ServiceError::InternalServerError( format!("Failed to get dashboards {}",e)))?;
 
         Ok(dashboards)
     }
