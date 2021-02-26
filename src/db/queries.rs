@@ -147,7 +147,6 @@ impl PostgisQueryRunner {
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query))
             })?;
 
-
         Ok(columns)
     }
 
