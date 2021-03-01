@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "@auth0/auth0-react": "^1.2.0",
+        "@babel/plugin-syntax-typescript": "^7.12.13",
         "@deck.gl/carto": "^8.3.14",
         "@fortawesome/fontawesome-svg-core": "^1.2.34",
         "@fortawesome/free-solid-svg-icons": "^5.15.2",
