@@ -77,9 +77,9 @@ impl Config {
         Ok(format!(
             "postgresql://{user_pass}{host}{port}/{name}",
             user_pass = username_password,
-            host = self.db.host,
+            host = self.datadb.host,
             port = port,
-            name = self.db.name
+            name = self.datadb.name
         ))
     }
 
