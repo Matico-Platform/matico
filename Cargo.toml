@@ -35,8 +35,6 @@ actix-files = "0.5.0"
 dotenv = "0.15.0"
 diesel_as_jsonb="0.1.2"
 geo-types = "^0.4.0"
-actix = "0.10.0"
-tokio-postgres = {version= "0.5.1", features=["with-geo-types-0_4", "with-serde_json-1"]}
-deadpool-postgres = "0.5.0"
-tokio-postgres-rustls = "0.4"
-rustls = "0.17"
+sqlx = { version = "0.4", features = [
+    "postgres","uuid","chrono","runtime-actix-rustls","json"
+]}

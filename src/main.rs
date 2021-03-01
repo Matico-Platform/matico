@@ -7,12 +7,10 @@ use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
-use dotenv::dotenv;
+use dotenv;
+use log::{info, warn};
+use sqlx::postgres::PgPoolOptions;
 use std::path::PathBuf;
-use rustls::ClientConfig as RustlsClientConfig;
-use tokio_postgres_rustls::MakeRustlsConnect;
-use std::fs::File;
-use std::io::BufReader;
 
 mod app_config;
 mod app_state;
@@ -32,39 +30,26 @@ async fn home() -> std::io::Result<fs::NamedFile> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok();
+    dotenv::dotenv().ok();
     let config = app_config::Config::from_conf().unwrap();
     let db_connection_url = config.connection_string().unwrap();
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     // Set up the database pool for the system metadata
+    info!("Connecting to metadata db");
     let pool = r2d2::Pool::builder()
+        .max_size(10)
         .build(manager)
         .expect("Failed to connect to DB");
+    info!("Connected to metadata db");
 
-    // Set up the database pool for the data database
-    println!("DB POOL CONFIG {:?}", config.datadb);
-    let data_pool = if let Some(cert_path) = config.cert_path{
-        let mut tls_config = RustlsClientConfig::new();
-        let cert_file = File::open(&cert_path)?;
-        let mut buf = BufReader::new(cert_file);
-        println!("buff {:?}", buf);
-        tls_config.root_store.add_pem_file(&mut buf).expect("Failed to add cert file");
-        let tls = MakeRustlsConnect::new(tls_config);
-        config.datadb.create_pool(tls)
-    }
-    else{
-        config.datadb.create_pool(tokio_postgres::NoTls)
-    }.expect("failed to connect to data db");
-    // let data_pool = deadpool_postgres::Pool::new(manager, 10);
-
-    // Create app state
-
-    // let app_state = State {
-    //     db: pool.clone(),
-    //     data_db: data_pool,
-    // };
+    let data_db_connection_url = config.data_connection_string().unwrap();
+    let data_pool = PgPoolOptions::new()
+        .max_connections(10)
+        .connect(&data_db_connection_url)
+        .await
+        .expect("FAiled to connect to DB");
 
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);

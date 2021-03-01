@@ -1,11 +1,15 @@
 use crate::db::formatters::*;
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
-use crate::models::Column;
+use crate::models::Column as DatasetColumn;
 use crate::utils::{Format, PaginationParams};
 use log::info;
 use log::warn;
 use serde::{Deserialize, Serialize};
+use sqlx::postgres::PgRow;
+use sqlx::Column;
+use sqlx::Row;
+use sqlx::TypeInfo;
 use std::convert::From;
 use std::f64::consts::PI;
 
@@ -78,57 +82,52 @@ impl PostgisQueryRunner {
         page: Option<PaginationParams>,
         format: Format,
     ) -> Result<serde_json::Value, ServiceError> {
-        let conn = pool.get().await.expect("Pool Error!");
-
         let paged_query = Self::paginate_query(query, page);
 
         let formatted_query = match format {
             Format::Csv => Ok(csv_format(&paged_query)),
-            Format::Geojson=> Ok(geo_json_format(&paged_query)),
-            Format::Json=> Ok(json_format(&paged_query)),
+            Format::Geojson => Ok(geo_json_format(&paged_query)),
+            Format::Json => Ok(json_format(&paged_query)),
         }?;
 
         info!("running query {}", formatted_query);
 
-        let result: serde_json::Value = conn
-            .query_one(formatted_query.as_str(), &[])
+        let result: String = sqlx::query(&formatted_query)
+            .map(|row: PgRow| row.get("res"))
+            .fetch_one(pool)
             .await
             .map_err(|e| {
                 warn!("SQL Query failed: {} {}", e, formatted_query);
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, formatted_query))
-            })?
-            .get("res");
-        Ok(result)
+            })?;
+        let json: serde_json::Value = serde_json::from_str(&result)
+            .map_err(|_| ServiceError::InternalServerError("failed to parse json".into()))?;
+        Ok(json)
     }
 
     pub async fn get_query_column_details(
         pool: &DataDbPool,
         query: &str,
-    ) -> Result<Vec<Column>, ServiceError> {
-        let conn = pool.get().await.expect("Pool Error!");
-        let page = PaginationParams {
-            limit: Some(1),
-            offset: Some(9),
-        };
-
-        let paged_query = Self::paginate_query(&query, Some(page));
-        let result = conn
-            .query_one(paged_query.as_str(), &[])
+    ) -> Result<Vec<DatasetColumn>, ServiceError> {
+        let columns = sqlx::query(query)
+            .map(|row: PgRow| {
+                let cols = row.columns();
+                let columns: Vec<DatasetColumn> = cols
+                    .iter()
+                    .map(|col| DatasetColumn {
+                        name: col.name().to_string(),
+                        col_type: col.type_info().name().into(),
+                        source_query: query.into(),
+                    })
+                    .collect();
+                columns
+            })
+            .fetch_one(pool)
             .await
             .map_err(|e| {
-                warn!("SQL Query failed: {} {}", e, paged_query);
-                ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, paged_query))
+                warn!("SQL Query failed: {} {}", e, query);
+                ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query))
             })?;
-
-        let columns: Vec<Column> = result
-            .columns()
-            .iter()
-            .map(|col| Column {
-                name: col.name().into(),
-                col_type: col.type_().name().into(),
-                source_query: query.into(),
-            })
-            .collect();
 
         Ok(columns)
     }
@@ -139,20 +138,21 @@ impl PostgisQueryRunner {
         tiler_options: TilerOptions,
         tile_id: TileID,
     ) -> Result<MVTTile, ServiceError> {
-        let conn = pool.get().await.expect("Pool Error!");
-
-        // TODO This is an annoying and potentially non preformat 
+        // TODO This is an annoying and potentially non preformat
         // way of getting the columns names we want to include.
-        // One solution will be to require the passing of the 
+        // One solution will be to require the passing of the
         // required columns in the query. Another might be to see
-        // if we can easily cache this call in the server. Better would 
-        // be if postgresql had an exclude keyword or if we can find some 
+        // if we can easily cache this call in the server. Better would
+        // be if postgresql had an exclude keyword or if we can find some
         // other way to do this in the db
         let columns = Self::get_query_column_details(&pool, query).await?;
 
-        let column_names :Vec<String> = columns.iter()
-        .filter(|col| col.col_type !="geometry").map(|col| format!("\"{}\"",col.name)).collect();
-        let select_string =  column_names.join(",");
+        let column_names: Vec<String> = columns
+            .iter()
+            .filter(|col| col.col_type != "geometry")
+            .map(|col| format!("\"{}\"", col.name))
+            .collect();
+        let select_string = column_names.join(",");
 
         let bbox = bbox(&tile_id);
 
@@ -162,7 +162,7 @@ impl PostgisQueryRunner {
         };
         let formatted_query = format!(
             include_str!("tile_query.sql"),
-            columns= select_string,
+            columns = select_string,
             geom_column = geom_column,
             tile_table = query,
             x_min = bbox[0],
@@ -171,14 +171,14 @@ impl PostgisQueryRunner {
             y_max = bbox[3]
         );
 
-        let result: Vec<u8> = conn
-            .query_one(formatted_query.as_str(), &[])
+        let result: Vec<u8> = sqlx::query(&formatted_query)
+            .map(|row: PgRow| row.get("mvt"))
+            .fetch_one(pool)
             .await
             .map_err(|e| {
                 warn!("SQL Query failed: {} {}", e, formatted_query);
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, formatted_query))
-            })?
-            .get("mvt");
+            })?;
 
         Ok(MVTTile { mvt: result })
     }

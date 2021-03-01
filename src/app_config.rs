@@ -4,7 +4,16 @@ use serde::Deserialize;
 use std::str;
 
 #[derive(Deserialize)]
-pub struct DbConfig{
+pub struct DbConfig {
+    pub host: String,
+    pub name: String,
+    pub port: Option<String>,
+    pub password: Option<String>,
+    pub username: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct DataDBConfig {
     pub host: String,
     pub name: String,
     pub port: Option<String>,
@@ -14,10 +23,9 @@ pub struct DbConfig{
 
 #[derive(Deserialize)]
 pub struct Config {
-    pub db: DbConfig, 
-    pub datadb: deadpool_postgres::Config,
+    pub db: DbConfig,
+    pub datadb: DataDBConfig,
     pub server_addr: String,
-    pub cert_path: Option<String>
 }
 
 impl Config {
@@ -51,28 +59,50 @@ impl Config {
         ))
     }
 
+    pub fn data_connection_string(&self) -> Result<String, ServiceError> {
+        let username_password = match (&self.datadb.username, &self.datadb.password) {
+            (Some(username), Some(password)) => Ok(format!("{}:{}@", username, password)),
+            (None, None) => Ok(format!("")),
+            (Some(username), None) => Ok(format!("{}@", username)),
+            (None, Some(_)) => Err(ServiceError::DBConfigError(
+                "DB config needs a username if your specifying a password".into(),
+            )),
+        }?;
+
+        let port = match &self.db.port {
+            Some(port) => format!(":{}", port),
+            None => format!(""),
+        };
+
+        Ok(format!(
+            "postgresql://{user_pass}{host}{port}/{name}",
+            user_pass = username_password,
+            host = self.db.host,
+            port = port,
+            name = self.db.name
+        ))
+    }
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
-        let pg_config = self.datadb.get_pg_config().unwrap();
+        let db = format!("dbname={}", self.datadb.name);
 
-        let db = format!("dbname={}", pg_config.get_dbname().unwrap());
-
-        let user = match &pg_config.get_user(){
+        let user = match &self.datadb.username {
             Some(user) => format!("user={}", user),
             None => format!(""),
         };
 
-        let port = format!("port = {}", pg_config.get_ports()[0]);
-
-        let host = if let tokio_postgres::config::Host::Tcp(host) = &pg_config.get_hosts()[0]{
-            format!("host= {}",host)
-        }else{
-            String::from("")
+        let port = if let Some(port) = &self.datadb.port {
+            format!("port = {}", port)
+        } else {
+            "".to_string()
         };
-        
-        let password = match &pg_config.get_password() {
-            Some(password) => format!("password={}", str::from_utf8(password).unwrap()),
-            None => format!(""),
+
+        let host = format!("host = {}", self.datadb.host);
+
+        let password = if let Some(pass) = &self.datadb.password {
+            format!("password={}", pass)
+        } else {
+            format!("")
         };
 
         Ok(format!(

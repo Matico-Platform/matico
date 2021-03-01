@@ -1,7 +1,7 @@
 use crate::app_state::State;
 use crate::db::queries::Bounds;
 use crate::errors::ServiceError;
-use crate::models::columns::{StatParams};
+use crate::models::columns::StatParams;
 use crate::models::Dataset;
 use serde::{Deserialize, Serialize};
 
