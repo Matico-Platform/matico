@@ -28,8 +28,8 @@ chrono = { version = "0.4.10", features = ["serde"] }
 diesel_geometry = "1.2.2"
 actix-web-httpauth = "0.5.0" #{ git = "https://github.com/actix/actix-web-httpauth" }
 alcoholic_jwt = "1.0.0"
-reqwest = "0.9.22"
-actix-rt = "1.0.0"
+reqwest = {version = "0.10.10", features=["json"]}
+actix-rt = "1.1.1"
 jsonwebtoken= "7"
 rust-argon2="0.8"
 rand = "0.7"
@@ -44,3 +44,6 @@ geo-types = "^0.4.0"
 sqlx = { version = "0.4", features = [
     "postgres","uuid","chrono","runtime-actix-rustls","json"
 ]}
+
+[dev-dependencies]
+tokio = "0.2.24"

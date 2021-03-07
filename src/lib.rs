@@ -5,6 +5,7 @@ extern crate argon2;
 use crate::app_state::State;
 use actix_cors::Cors;
 use actix_files as fs;
+use actix_web::dev::Server;
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use dotenv;
@@ -28,7 +29,7 @@ async fn home() -> std::io::Result<fs::NamedFile> {
     Ok(fs::NamedFile::open(path)?)
 }
 
-pub async fn run() -> std::io::Result<()> {
+pub async fn run() -> Result<Server, std::io::Error> {
     dotenv::dotenv().ok();
     let config = app_config::Config::from_conf().unwrap();
     let db_connection_url = config.connection_string().unwrap();
@@ -84,5 +85,5 @@ pub async fn run() -> std::io::Result<()> {
     .run();
 
     println!("Server running at http://{}/", config.server_addr);
-    server.await
+    Ok(server)
 }
