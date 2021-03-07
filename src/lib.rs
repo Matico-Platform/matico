@@ -11,6 +11,7 @@ use diesel::r2d2::{self, ConnectionManager};
 use dotenv;
 use log::{info, warn};
 use sqlx::postgres::PgPoolOptions;
+use std::net::TcpListener;
 use std::path::PathBuf;
 
 mod app_config;
@@ -29,7 +30,7 @@ async fn home() -> std::io::Result<fs::NamedFile> {
     Ok(fs::NamedFile::open(path)?)
 }
 
-pub async fn run() -> Result<Server, std::io::Error> {
+pub async fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     dotenv::dotenv().ok();
     let config = app_config::Config::from_conf().unwrap();
     let db_connection_url = config.connection_string().unwrap();
@@ -81,9 +82,8 @@ pub async fn run() -> Result<Server, std::io::Error> {
             .service(fs::Files::new("/", "static").index_file("index.html"))
             .default_service(web::get().to(home))
     })
-    .bind(config.server_addr.clone())?
+    .listen(listener)?
     .run();
 
-    println!("Server running at http://{}/", config.server_addr);
     Ok(server)
 }

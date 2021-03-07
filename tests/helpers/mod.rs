@@ -1,5 +1,6 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+use std::net::TcpListener;
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]
@@ -28,6 +29,7 @@ pub async fn signup_user(
     email: &str,
     username: &str,
     password: &str,
+    base_url: String,
 ) -> Result<SignupResponse, ()> {
     let client = reqwest::Client::new();
     let request = SignupRequest {
@@ -37,7 +39,7 @@ pub async fn signup_user(
     };
     println!("Attempting to signup user {:?}", request);
     let response = client
-        .post("http://localhost:8000/api/auth/signup")
+        .post(&format!("{}/api/auth/signup", base_url))
         .header(reqwest::header::CONTENT_TYPE, "application/json")
         .json(&request)
         .send()
@@ -57,9 +59,13 @@ pub async fn signup_user(
     }
 }
 
-pub async fn spawn_app() {
-    let server = modest_map_maker::run()
+pub async fn spawn_app() -> String {
+    let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind to random port ");
+    let port = listener.local_addr().unwrap().port();
+
+    let server = modest_map_maker::run(listener)
         .await
         .expect("failed to start server");
     let _ = tokio::spawn(server);
+    format!("http://127.0.0.1:{}", port)
 }

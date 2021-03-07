@@ -3,9 +3,9 @@ use helpers::*;
 
 #[actix_rt::test]
 async fn user_signs_up() {
-    spawn_app().await;
+    let address = spawn_app().await;
 
-    let response = signup_user("test_user@gmail.com", "test_user", "password").await;
+    let response = signup_user("test_user@gmail.com", "test_user", "password", address).await;
 
     assert!(response.is_ok());
     let response = response.unwrap();
