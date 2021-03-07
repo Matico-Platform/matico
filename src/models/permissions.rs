@@ -35,7 +35,7 @@ impl FromStr for PermissionType {
     }
 }
 
-#[derive(PartialEq, Debug, Display, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Display, Serialize, Deserialize, Clone)]
 pub enum ResourceType {
     #[display(fmt = "DATASET")]
     DATASET,
@@ -159,7 +159,7 @@ impl Permission {
     }
 
     // Grants a permission for a specific resource
-    pub fn grant_permissions(
+    pub fn grant_permission(
         db: &DbPool,
         new_permission: NewPermission,
     ) -> Result<Permission, ServiceError> {
@@ -172,6 +172,26 @@ impl Permission {
                 ServiceError::InternalServerError(format!("Failed to grant permission {}", e))
             })?;
         Ok(result)
+    }
+
+    pub fn grant_permissions(
+        db: &DbPool,
+        user_id: Uuid,
+        resource_id: Uuid,
+        resource_type: ResourceType,
+        permissions: Vec<PermissionType>,
+    ) -> Result<(), ServiceError> {
+        for permission in permissions {
+            let new_permision = NewPermission {
+                user_id: user_id.clone(),
+                resource_id: resource_id.clone(),
+                resource_type: resource_type.clone(),
+                permission: permission,
+            };
+
+            Self::grant_permission(db, new_permision)?;
+        }
+        Ok(())
     }
 
     // Revoke permission for a specific resource

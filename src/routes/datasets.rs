@@ -19,9 +19,24 @@ use uuid::Uuid;
 #[get("")]
 async fn get_datasets(
     state: web::Data<State>,
-    search_criteria: web::Query<DatasetSearch>,
+    web::Query(search_criteria): web::Query<DatasetSearch>,
+    logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-    let datasets = Dataset::search(&state.db, search_criteria.into_inner())?;
+    let mut search = search_criteria.clone();
+
+    // If no user_id is specified in the query and there is
+    // a logged in user then we will grab that user
+    // If there is no logged in user, we will return only
+    // public datasets
+    if let Some(user) = logged_in_user.user {
+        if search.user_id == None {
+            search.user_id = Some(user.id);
+        }
+    } else {
+        search.public = Some(true)
+    };
+
+    let datasets = Dataset::search(&state.db, search)?;
     Ok(HttpResponse::Ok().json(datasets))
 }
 
@@ -34,12 +49,14 @@ async fn get_dataset(
     let dataset = Dataset::find(&state.db, id.into_inner())?;
 
     if let Some(user) = logged_in_user.user {
-        Permission::require_permissions(
-            &state.db,
-            &user.id,
-            &dataset.id,
-            vec![PermissionType::ADMIN],
-        )?;
+        if !dataset.public {
+            Permission::require_permissions(
+                &state.db,
+                &user.id,
+                &dataset.id,
+                &vec![PermissionType::READ],
+            )?;
+        }
     }
     Ok(HttpResponse::Ok().json(dataset))
 }
@@ -147,16 +164,14 @@ async fn create_dataset(
 
     Permission::grant_permissions(
         &state.db,
-        NewPermission {
-            user_id: user.id,
-            resource_id: dataset.id,
-            resource_type: ResourceType::DATASET,
-            permission: vec![
-                PermissionType::READ,
-                PermissionType::WRITE,
-                PermissionType::ADMIN,
-            ],
-        },
+        user.id,
+        dataset.id,
+        ResourceType::DATASET,
+        vec![
+            PermissionType::READ,
+            PermissionType::WRITE,
+            PermissionType::ADMIN,
+        ],
     )?;
 
     Ok(HttpResponse::Ok().json(file_info))
@@ -177,7 +192,13 @@ async fn update_dataset(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
     web::Json(updates): web::Json<UpdateDatasetDTO>,
+    logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+    let user = logged_in_user
+        .user
+        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+    Permission::check_permission(&state.db, &user.id, &id, PermissionType::WRITE)?;
+
     let result = Dataset::update(&state.db, id, updates)?;
     Ok(HttpResponse::Ok().json(result))
 }
@@ -186,7 +207,13 @@ async fn update_dataset(
 async fn delete_dataset(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
+    logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+    let user = logged_in_user
+        .user
+        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+    Permission::check_permission(&state.db, &user.id, &id, PermissionType::ADMIN)?;
+
     Dataset::delete(&state.db, id)?;
     Ok(HttpResponse::Ok().json(format!("Deleted dataset {}", id)))
 }

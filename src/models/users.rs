@@ -85,7 +85,7 @@ impl From<&User> for UserToken {
             iat: now,
             exp: now + ONE_WEEK,
             username: user.username.clone(),
-            id: user.id,
+            id: user.id.clone(),
         }
     }
 }
@@ -155,7 +155,7 @@ impl User {
         }
     }
 
-    fn verify_password(&self, password: &str) -> Result<bool, ServiceError> {
+    fn verify_password(&self, password: &String) -> Result<bool, ServiceError> {
         println!("Verifying password {}", password);
         argon2::verify_encoded(&self.password, (*password).as_bytes())
             .map_err(|_| ServiceError::BadRequest("Failed to verify password".into()))

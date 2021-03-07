@@ -12,11 +12,12 @@ use crate::models::columns::Column;
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::{Format, PaginationParams};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct DatasetSearch {
-    name: Option<String>,
-    live: Option<bool>,
-    date_start: Option<NaiveDateTime>,
+    pub name: Option<String>,
+    pub public: Option<bool>,
+    pub date_start: Option<NaiveDateTime>,
+    pub user_id: Option<Uuid>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -187,13 +188,15 @@ impl Dataset {
     ) -> Result<Column, ServiceError> {
         let cols = self.columns(&db).await?;
 
-        let result =
-            cols.iter()
-                .find(|col| col.name == col_name)
-                .ok_or_else(|| ServiceError::BadRequest(format!(
+        let result = cols
+            .iter()
+            .find(|col| col.name == col_name)
+            .ok_or_else(|| {
+                ServiceError::BadRequest(format!(
                     "No columns by the name of {} on table {}",
                     col_name, self.name
-                )))?;
+                ))
+            })?;
         Ok((*result).clone())
     }
 
