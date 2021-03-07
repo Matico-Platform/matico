@@ -1,9 +1,15 @@
 [package]
-name = "simple_map_server"
+name = "modest_map_maker"
 version = "0.1.0"
 authors = ["Stuart Lynn <stuart.lynn@gmail.com>"]
 edition = "2018"
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = 'modest_map_maker'
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
