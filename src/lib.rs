@@ -8,7 +8,6 @@ use actix_files as fs;
 use actix_web::dev::Server;
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
-use dotenv;
 use log::{info, warn};
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
@@ -31,11 +30,9 @@ async fn home() -> std::io::Result<fs::NamedFile> {
 }
 
 pub async fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
-    dotenv::dotenv().ok();
     let config = app_config::Config::from_conf().unwrap();
     let db_connection_url = config.connection_string().unwrap();
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     // Set up the database pool for the system metadata
     info!("Connecting to metadata db");

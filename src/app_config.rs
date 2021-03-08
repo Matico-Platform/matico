@@ -3,7 +3,7 @@ pub use ::config::ConfigError;
 use serde::Deserialize;
 use std::str;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct DbConfig {
     pub host: String,
     pub name: String,
@@ -12,8 +12,8 @@ pub struct DbConfig {
     pub username: Option<String>,
 }
 
-#[derive(Deserialize)]
-pub struct DataDBConfig {
+#[derive(Deserialize, Clone)]
+pub struct DataDbConfig {
     pub host: String,
     pub name: String,
     pub port: Option<String>,
@@ -24,8 +24,11 @@ pub struct DataDBConfig {
 #[derive(Deserialize)]
 pub struct Config {
     pub db: DbConfig,
-    pub datadb: DataDBConfig,
+    pub datadb: DataDbConfig,
     pub server_addr: String,
+    pub test_db: Option<DbConfig>,
+    pub test_datadb: Option<DataDbConfig>,
+    pub test_env: Option<bool>,
 }
 
 impl Config {
@@ -36,7 +39,18 @@ impl Config {
     }
 
     pub fn connection_string(&self) -> Result<String, ServiceError> {
-        let username_password = match (&self.db.username, &self.db.password) {
+        let config = if Some(true) == self.test_env {
+            println!("USING TEST CONFIG");
+            self.test_db
+                .clone()
+                .ok_or(ServiceError::InternalServerError(
+                    "Failed to find test db settings".into(),
+                ))
+        } else {
+            Ok(self.db.clone())
+        }?;
+
+        let username_password = match (&config.username, &config.password) {
             (Some(username), Some(password)) => Ok(format!("{}:{}@", username, password)),
             (None, None) => Ok(format!("")),
             (Some(username), None) => Ok(format!("{}@", username)),
@@ -45,7 +59,7 @@ impl Config {
             )),
         }?;
 
-        let port = match &self.db.port {
+        let port = match &config.port {
             Some(port) => format!(":{}", port),
             None => format!(""),
         };
@@ -53,14 +67,24 @@ impl Config {
         Ok(format!(
             "postgresql://{user_pass}{host}{port}/{name}",
             user_pass = username_password,
-            host = self.db.host,
+            host = config.host,
             port = port,
-            name = self.db.name
+            name = config.name
         ))
     }
 
     pub fn data_connection_string(&self) -> Result<String, ServiceError> {
-        let username_password = match (&self.datadb.username, &self.datadb.password) {
+        let config = if Some(true) == self.test_env {
+            self.test_datadb
+                .clone()
+                .ok_or(ServiceError::InternalServerError(
+                    "Failed to find test db settings".into(),
+                ))
+        } else {
+            Ok(self.datadb.clone())
+        }?;
+
+        let username_password = match (&config.username, &config.password) {
             (Some(username), Some(password)) => Ok(format!("{}:{}@", username, password)),
             (None, None) => Ok(format!("")),
             (Some(username), None) => Ok(format!("{}@", username)),
@@ -69,7 +93,7 @@ impl Config {
             )),
         }?;
 
-        let port = match &self.db.port {
+        let port = match &config.port {
             Some(port) => format!(":{}", port),
             None => format!(""),
         };
@@ -77,29 +101,39 @@ impl Config {
         Ok(format!(
             "postgresql://{user_pass}{host}{port}/{name}",
             user_pass = username_password,
-            host = self.datadb.host,
+            host = config.host,
             port = port,
-            name = self.datadb.name
+            name = config.name
         ))
     }
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
-        let db = format!("dbname={}", self.datadb.name);
+        let config = if Some(true) == self.test_env {
+            self.test_datadb
+                .clone()
+                .ok_or(ServiceError::InternalServerError(
+                    "Failed to find test db settings".into(),
+                ))
+        } else {
+            Ok(self.datadb.clone())
+        }?;
 
-        let user = match &self.datadb.username {
+        let db = format!("dbname={}", config.name);
+
+        let user = match &config.username {
             Some(user) => format!("user={}", user),
             None => format!(""),
         };
 
-        let port = if let Some(port) = &self.datadb.port {
+        let port = if let Some(port) = &config.port {
             format!("port = {}", port)
         } else {
             "".to_string()
         };
 
-        let host = format!("host = {}", self.datadb.host);
+        let host = format!("host = {}", config.host);
 
-        let password = if let Some(pass) = &self.datadb.password {
+        let password = if let Some(pass) = &config.password {
             format!("password={}", pass)
         } else {
             format!("")
