@@ -49,7 +49,7 @@ async fn get_dataset(
     let dataset = Dataset::find(&state.db, id.into_inner())?;
 
     if let Some(user) = logged_in_user.user {
-        if !dataset.public {
+        if !dataset.public && dataset.owner_id != user.id {
             Permission::require_permissions(
                 &state.db,
                 &user.id,

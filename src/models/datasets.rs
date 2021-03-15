@@ -11,8 +11,9 @@ use crate::errors::ServiceError;
 use crate::models::columns::Column;
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::{Format, PaginationParams};
+use diesel::debug_query;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DatasetSearch {
     pub name: Option<String>,
     pub public: Option<bool>,
@@ -69,10 +70,16 @@ pub struct UpdateDatasetDTO {
 }
 
 impl Dataset {
-    pub fn search(pool: &DbPool, _search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> {
+    pub fn search(pool: &DbPool, search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> {
         //     let conn = pool.get().unwrap();
         let conn = pool.get().unwrap();
-        let results: Vec<Dataset> = datasets
+        let mut query = datasets::table.into_boxed();
+
+        if let Some(user_id) = search.user_id {
+            query = query.filter(datasets::owner_id.eq(user_id));
+        };
+
+        let results: Vec<Dataset> = query
             .get_results(&conn)
             .map_err(|_| ServiceError::InternalServerError("Failed to retrive datasets".into()))?;
         Ok(results)
