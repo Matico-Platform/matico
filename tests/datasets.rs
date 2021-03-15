@@ -3,10 +3,10 @@ use helpers::spawn_app;
 
 #[actix_rt::test]
 async fn get_datasets_logged_out() {
-    let address = spawn_app().await;
+    let test_server = spawn_app().await;
 
     let client = reqwest::Client::new();
-    let url = format!("{}/api/datasets", address);
+    let url = format!("{}/api/datasets", test_server.address);
     println!("Featching from {}", url);
     let response = client
         .get(&url)

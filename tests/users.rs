@@ -3,9 +3,15 @@ use helpers::{users::*, *};
 
 #[actix_rt::test]
 async fn user_signs_up() {
-    let address = spawn_app().await;
+    let test_server = spawn_app().await;
 
-    let response = signup_user("test_user@gmail.com", "test_user", "password", address).await;
+    let response = signup_user(
+        "test_user@gmail.com",
+        "test_user",
+        "password",
+        test_server.address,
+    )
+    .await;
 
     assert!(response.is_ok());
     let response = response.unwrap();
@@ -17,27 +23,27 @@ async fn user_signs_up() {
 
 #[actix_rt::test]
 async fn sign_up_user_without_password() {
-    let address = spawn_app().await;
+    let test_server = spawn_app().await;
 
-    let response = signup_user("test_user@gmail.com", "test_user", "", address).await;
+    let response = signup_user("test_user@gmail.com", "test_user", "", test_server.address).await;
 
     assert!(response.is_err());
 }
 
 #[actix_rt::test]
 async fn sign_up_user_without_username() {
-    let address = spawn_app().await;
+    let test_server = spawn_app().await;
 
-    let response = signup_user("test_user@gmail.com", "", "password", address).await;
+    let response = signup_user("test_user@gmail.com", "", "password", test_server.address).await;
 
     assert!(response.is_err());
 }
 
 #[actix_rt::test]
 async fn sign_up_user_without_email() {
-    let address = spawn_app().await;
+    let test_server = spawn_app().await;
 
-    let response = signup_user("", "username", "password", address).await;
+    let response = signup_user("", "username", "password", test_server.address).await;
 
     assert!(response.is_err());
 }

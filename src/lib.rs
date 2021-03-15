@@ -13,7 +13,7 @@ use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use std::path::PathBuf;
 
-mod app_config;
+pub mod app_config;
 mod app_state;
 mod auth;
 mod db;

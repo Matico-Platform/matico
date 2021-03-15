@@ -26,8 +26,8 @@ pub struct Config {
     pub db: DbConfig,
     pub datadb: DataDbConfig,
     pub server_addr: String,
-    pub test_db: Option<DbConfig>,
-    pub test_datadb: Option<DataDbConfig>,
+    pub testdb: Option<DbConfig>,
+    pub testdatadb: Option<DataDbConfig>,
     pub test_env: Option<bool>,
 }
 
@@ -41,11 +41,9 @@ impl Config {
     pub fn connection_string(&self) -> Result<String, ServiceError> {
         let config = if Some(true) == self.test_env {
             println!("USING TEST CONFIG");
-            self.test_db
-                .clone()
-                .ok_or(ServiceError::InternalServerError(
-                    "Failed to find test db settings".into(),
-                ))
+            self.testdb.clone().ok_or(ServiceError::InternalServerError(
+                "Failed to find test db settings".into(),
+            ))
         } else {
             Ok(self.db.clone())
         }?;
@@ -75,7 +73,7 @@ impl Config {
 
     pub fn data_connection_string(&self) -> Result<String, ServiceError> {
         let config = if Some(true) == self.test_env {
-            self.test_datadb
+            self.testdatadb
                 .clone()
                 .ok_or(ServiceError::InternalServerError(
                     "Failed to find test db settings".into(),
@@ -109,7 +107,7 @@ impl Config {
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
         let config = if Some(true) == self.test_env {
-            self.test_datadb
+            self.testdatadb
                 .clone()
                 .ok_or(ServiceError::InternalServerError(
                     "Failed to find test db settings".into(),
