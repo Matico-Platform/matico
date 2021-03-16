@@ -29,8 +29,10 @@ async fn home() -> std::io::Result<fs::NamedFile> {
     Ok(fs::NamedFile::open(path)?)
 }
 
-pub async fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
-    let config = app_config::Config::from_conf().unwrap();
+pub async fn run(
+    listener: TcpListener,
+    config: app_config::Config,
+) -> Result<Server, std::io::Error> {
     let db_connection_url = config.connection_string().unwrap();
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);
 
