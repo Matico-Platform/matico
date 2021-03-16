@@ -40,7 +40,7 @@ RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
     && mkdir -p ${APP}
 
-COPY --from=rust-builder /simple_map_server/target/release/simple_map_server ${APP}/simple_map_server
+COPY --from=rust-builder /simple_map_server/target/release/modest_map_maker ${APP}/modest_map_maker
 COPY --from=frontend-builder /app/build ${APP}/static
 WORKDIR ${APP}
-CMD ./simple_map_server
+CMD ./modest_map_maker

@@ -1,4 +1,5 @@
 use dotenv;
+use modest_map_maker::app_config::Config;
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 
@@ -13,7 +14,7 @@ pub struct TestApp {
 pub async fn spawn_app() -> TestApp {
     std::env::set_var("TEST_ENV", "true");
 
-    let config = modest_map_maker::app_config::Config::from_conf().unwrap();
+    let config = Config::from_conf().unwrap();
 
     //Connect to the metadata db
     let db_connection_url = config.data_connection_string().unwrap();
@@ -34,7 +35,7 @@ pub async fn spawn_app() -> TestApp {
 
     dotenv::dotenv().ok();
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    let server = modest_map_maker::run(listener)
+    let server = modest_map_maker::run(listener, config)
         .await
         .expect("failed to start server");
     let _ = tokio::spawn(server);

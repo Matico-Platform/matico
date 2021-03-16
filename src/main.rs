@@ -1,3 +1,4 @@
+use modest_map_maker::app_config::Config;
 use modest_map_maker::run;
 use std::net::TcpListener;
 
@@ -6,7 +7,8 @@ async fn main() -> std::io::Result<()> {
     use dotenv;
     dotenv::dotenv().ok();
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    let listener = TcpListener::bind("127.0.0.1:8000").expect("Failed to bind to address");
-    println!("Server runnning at 127.0.0.1:8000");
-    run(listener).await?.await
+    let config = Config::from_conf().unwrap();
+    let listener = TcpListener::bind(&config.server_addr).expect("Failed to bind to address");
+    println!("Server runnning at {}", &config.server_addr);
+    run(listener, config).await?.await
 }
