@@ -11,6 +11,7 @@ const TabHeader = styled.ul`
 const TabContainer = styled.div`
     display: flex;
     flex-direction: column;
+    flex:1;
 `;
 export interface TabProps {
     name: string;
