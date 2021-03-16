@@ -88,7 +88,7 @@ pub async fn get_dashboard(
 ) -> Result<HttpResponse, ServiceError> {
     let dashboard = Dashboard::find(&state.db, dashboard_id)?;
     if let Some(user) = logged_in_user.user {
-        if !dashboard.public {
+        if !dashboard.public && user.id != dashboard.owner_id {
             Permission::require_permissions(
                 &state.db,
                 &user.id,
