@@ -8,6 +8,10 @@ pub enum BaseMap {
     CartoDBPositron,
     CartoDBVoyager,
     CartoDBDarkMatter,
+    Light,
+    Satelite,
+    Terrain,
+    Streets,
     Custom(String),
 }
 
