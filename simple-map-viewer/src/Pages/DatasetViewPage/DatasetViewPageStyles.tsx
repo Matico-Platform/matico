@@ -4,7 +4,7 @@ import { Paper } from 'Components/Layout/Layout';
 const Content = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 0.8fr;
+    grid-template-rows: 1fr 1fr;
     grid-row-gap: 20px;
     grid-column-gap: 20px;
     grid-template-areas:
@@ -31,6 +31,7 @@ const Table = styled(Paper)`
 
 const Details = styled(Paper)`
     grid-area: details;
+    display:flex;
 `;
 
 export const Styles = {

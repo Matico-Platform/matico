@@ -20,7 +20,7 @@ import {
     FlexSeperator,
 } from 'Components/Layout/Layout';
 
-const TOKEN = process.env.MAPBOX_TOKEN;
+const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 interface ParamTypes {
     id: string;
@@ -131,9 +131,7 @@ export const DatasetViewPage: React.FC = () => {
                                     mapboxApiAccessToken={TOKEN}
                                     width={'100%'}
                                     height={'100%'}
-                                    mapStyle={
-                                        'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
-                                    }
+                                    mapStyle='mapbox://styles/mapbox/dark-v10'
                                 />
                             </DeckGL>
                         </Styles.Map>

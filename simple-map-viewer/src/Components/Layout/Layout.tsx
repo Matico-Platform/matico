@@ -30,12 +30,12 @@ export const Page = styled.div`
 export const PageContent = styled.div`
     flex: 1;
     width:100%;
-    height:100%;
+    height:100vh;
 `;
 
 export const DetailsArea = styled.div`
     width: 300px;
-    height: 100%;
+    height: 100vh;
     color: white;
     padding: 20px;
     display:flex;
@@ -46,7 +46,7 @@ export const DetailsArea = styled.div`
 export const MainArea = styled.div`
     padding: 20px;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;

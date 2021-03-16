@@ -4,10 +4,8 @@ import styled from 'styled-components';
 const DataTable = styled.div`
     height:100%;
     width:100%;
-    flex:1;
     overflow:auto;
     position:relative;
-    max-height:50vh;
 `
 interface TableRowProps{
     selected? : boolean,
