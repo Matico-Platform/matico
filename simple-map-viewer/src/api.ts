@@ -29,7 +29,13 @@ export interface Page {
     offset: number;
 }
 
-export enum BaseMap {
+
+export enum BaseMap{
+    Light= "Light",
+    Dark= "Dark",
+    Satelite="Satelite",
+    Terrain= "Terrain",
+    Streets= "Streets",
     CartoDBPositron = 'CartoDBPositron',
     CartoDBVoyager = 'CartoDBVoyager',
     CartoDBDarkMatter = 'CartoDBDarkMatter',
@@ -130,7 +136,7 @@ export interface MapStyle {
 export const DefaultMapStyle: MapStyle = {
     center: [-74.006, 40.7128],
     zoom: 13,
-    base_map: BaseMap.CartoDBVoyager,
+    base_map: BaseMap.Light,
     layers: [],
 };
 

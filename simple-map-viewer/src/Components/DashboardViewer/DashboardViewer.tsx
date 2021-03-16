@@ -14,6 +14,16 @@ function lookupBaseMapURL(basemap: BaseMap | undefined) {
             return 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
         case BaseMap.CartoDBDarkMatter:
             return 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+        case BaseMap.Light:
+            return "mapbox://styles/mapbox/light-v10";
+        case BaseMap.Dark:
+            return  "mapbox://styles/mapbox/dark-v10";
+        case BaseMap.Satelite:
+            return "mapbox://styles/mapbox/satellite-v9"
+        case BaseMap.Terrain:
+            return "mapbox://styles/mapbox/outdoors-v11";
+        case BaseMap.Streets:
+            return "mapbox://styles/mapbox/streets-v11";
         default:
             return 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
     }
@@ -73,6 +83,7 @@ export const DashboardViewer: React.FC = () => {
         : [];
 
     const baseMap = lookupBaseMapURL(mapStyle?.base_map);
+    console.log("Base map ", baseMap);
 
     return (
         <Styles.DashboardOuter>
