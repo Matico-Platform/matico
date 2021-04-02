@@ -26,7 +26,7 @@ const TabHeader: React.FC<TabHeadProps> = ({
 };
 
 export const Tab: React.FC<TabProps> = ({ children, name }) => (
-    <div key={name}>{children}</div>
+    <Styles.TabContent key={name}>{children}</Styles.TabContent>
 );
 
 export const Tabs: React.FC<TabsProps> = ({
@@ -65,7 +65,6 @@ export const Tabs: React.FC<TabsProps> = ({
     const activeChild = children?.find(
         (c) => c.props.name === selectedTab,
     );
-    console.log('active child is ', activeChild);
 
     return (
         <Styles.TabContainer>

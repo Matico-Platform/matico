@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-const QueryPane = styled.div``;
+const QueryPane = styled.div`
+    flex:1;
+`;
 
 const Buttons = styled.div`
     display: flex;

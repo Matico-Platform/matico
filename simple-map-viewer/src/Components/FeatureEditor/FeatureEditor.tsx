@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Form } from 'Components/Forms/Forms';
 import { Button, ButtonType } from 'Components/Button/Button';
 import { Styles } from './FeatureEditorStyles';
 
@@ -43,9 +42,13 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
             });
         };
     };
+    
+    if(!feature){
+        return <h3>Select a feature to view and edit</h3>
+    }
 
     return (
-        <Form>
+        <Styles.FeatureEditor>
             {Object.entries(
                 editableFeature ? editableFeature : feature,
             ).map(([name, value]) => (
@@ -63,7 +66,7 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
                 </Styles.FormEntry>
             ))}
             {dirty && (
-                <>
+                <Styles.Buttons>
                     <Button type="submit" onClick={save}>
                         Save
                     </Button>
@@ -74,8 +77,8 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
                     >
                         Discard
                     </Button>
-                </>
+                </Styles.Buttons>
             )}
-        </Form>
+        </Styles.FeatureEditor>
     );
 };

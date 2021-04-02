@@ -6,12 +6,14 @@ interface DataTableProps {
     data: any[];
     onSelect?: (row: any) => void;
     selectedID?: any;
+    idCol:string;
 }
 
 export const DataTable: React.FC<DataTableProps> = ({
     data,
     onSelect,
     selectedID,
+    idCol
 }) => {
     const selectRow = (row: any) => {
         if (onSelect) {
@@ -79,7 +81,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                             prepareRow(row);
                             return (
                                 <Styles.TableRow
-                                    selected={row.id === selectedID}
+                                    selected={row.original[idCol] === selectedID}
                                     onClick={() => selectRow(row)}
                                     {...row.getRowProps()}
                                 >

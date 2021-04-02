@@ -21,7 +21,11 @@ interface TabHeadProps {
     active: boolean;
 }
 
-const TabContent = styled.div``;
+const TabContent = styled.div`
+    overflow-y:hidden;
+    flex:1;
+    display:flex;
+`;
 
 const Tab = styled.li`
     border-bottom: ${({ active }: TabHeadProps) =>
