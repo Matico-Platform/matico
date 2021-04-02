@@ -29,7 +29,6 @@ export interface Page {
     offset: number;
 }
 
-
 export enum BaseMap{
     Light= "Light",
     Dark= "Dark",
@@ -244,6 +243,14 @@ type CreateSyncDataset = {
 
 export function createSyncDataset(syncDetails: CreateSyncDataset) {
     return a.post('/datasets', syncDetails);
+}
+
+export function deleteDashboard(dashboard_id:string){
+    return a.delete(`/dashboards/${dashboard_id}`)
+}
+
+export function deleteDataset(dataset_id:string){
+    return a.delete(`/datasets/${dataset_id}`)
 }
 
 export async function getProfile(): Promise<AxiosResponse<User>> {
