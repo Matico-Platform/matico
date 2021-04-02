@@ -1,12 +1,15 @@
 import React from 'react';
-import { useDatasets } from '../../Hooks/useDatasets';
 import { List, Row } from '../List/List';
-
 import { Button, ButtonType } from '../Button/Button';
 import { Link } from 'react-router-dom';
+import {Dataset} from 'api'
 
-export const DatasetList: React.FC = () => {
-    const { datasets, loading } = useDatasets();
+interface DatasetListProps{
+    datasets: Dataset[],
+    loading: boolean
+}
+
+export const DatasetList: React.FC<DatasetListProps> = ({datasets,loading}) => {
 
     return (
         <List loading={loading}>

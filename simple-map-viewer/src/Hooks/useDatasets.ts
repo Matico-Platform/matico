@@ -6,8 +6,9 @@ export const useDatasets = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const refreshDatasets = ()=>{
         setLoading(true);
+        console.log('refreshing in hook ')
         getDatasets()
             .then((result) => {
                 setDatasets(result.data);
@@ -18,7 +19,7 @@ export const useDatasets = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }, []);
-
-    return { datasets, error, loading };
+    } ;
+    useEffect(()=> refreshDatasets(), [])
+    return { datasets, error, loading, refreshDatasets };
 };
