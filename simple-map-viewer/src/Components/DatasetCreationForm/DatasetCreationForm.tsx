@@ -4,12 +4,15 @@ import { Tabs, Tab } from '../Tabs/Tabs';
 import { SyncDatasetForm } from '../SyncDatasetForm/SyncDatasetForm';
 import { FileSelector } from '../FileSelector/FileSelector';
 
-export const DatasetCreationForm: React.FC = () => {
+interface DatasetCreationFormProps{
+    onCreated: ()=>void
+}
+export const DatasetCreationForm: React.FC<DatasetCreationFormProps> = ({onCreated}) => {
     return (
         <Card>
             <Tabs>
                 <Tab name="Upload Files">
-                    <FileSelector />
+                    <FileSelector onDone={onCreated} />
                 </Tab>
                 <Tab name="Link Url">
                     <SyncDatasetForm />

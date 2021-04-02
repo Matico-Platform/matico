@@ -11,13 +11,11 @@ import {
 import { useForm } from 'react-hook-form';
 
 interface NewDashboardProps {
-    onSubmit?: () => void;
-    onCancel?: () => void;
+    onCreated?: () => void;
 }
 
 export const NewDashboard: React.FC<NewDashboardProps> = ({
-    onSubmit,
-    onCancel,
+    onCreated
 }) => {
     const { register, handleSubmit, errors } = useForm();
 
@@ -28,6 +26,10 @@ export const NewDashboard: React.FC<NewDashboardProps> = ({
         console.log(newDashboard);
         createDashboard(newDashboard)
             .then((result) => {
+                if(onCreated){
+                    console.log("running on created")
+                    onCreated()
+                }
                 console.log('Gor dashboard ', result.data);
             })
             .catch((e) => {

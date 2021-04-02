@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { getDashboards, Dashboard } from '../api';
+import { getDashboards, Dashboard, deleteDashboard } from '../api';
 
 export function useDashboards() {
     const [loading, setLoading] = useState(false);
     const [dashboards, setDashboards] = useState<Dashboard[]>([]);
     const [error, setError] = useState<string | null>(null);
 
-    const refreshDashboards = () => {
+    const refreshDashboards =  ()=> {
         setLoading(true);
         getDashboards()
             .then((dashboards) => {
@@ -15,13 +15,15 @@ export function useDashboards() {
             .catch((e) => setError(e.toString()))
             .finally(() => setLoading(false));
     };
-    useEffect(() => {
-        const interval = setInterval(refreshDashboards, 5000);
-        refreshDashboards();
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
 
-    return { loading, dashboards, error };
+    const deleteDash =(dashboard_id: string)=>{
+        deleteDashboard(dashboard_id).then(()=>{
+            refreshDashboards();
+        })
+        .catch(e=> setError(e.toString()))
+    }
+
+    useEffect(()=> refreshDashboards(), [])
+
+    return { loading, dashboards, error, refreshDashboards, deleteDashboard:deleteDash};
 }
