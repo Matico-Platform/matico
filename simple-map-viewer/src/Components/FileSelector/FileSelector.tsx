@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { FileUploadDetails } from './FileUploadDetails';
 
-export const FileSelector: React.FC = () => {
+interface FileSelectorProps{
+    onDone : ()=>void
+}
+
+export const FileSelector: React.FC<FileSelectorProps> = ({onDone}) => {
     const [files, setFiles] = useState<FileList | null>(null);
 
     const selectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -13,7 +17,7 @@ export const FileSelector: React.FC = () => {
             {files && (
                 <ul>
                     {Array.from(files).map((file, index) => (
-                        <FileUploadDetails key={index} file={file} />
+                        <FileUploadDetails onDone={onDone} key={index} file={file} />
                     ))}
                 </ul>
             )}

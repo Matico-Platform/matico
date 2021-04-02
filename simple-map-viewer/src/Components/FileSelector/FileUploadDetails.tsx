@@ -4,14 +4,16 @@ import { Form } from '../Forms/Forms';
 
 interface FileUploadDetailsProps {
     file: File;
+    onDone: ()=>void
 }
 
 export const FileUploadDetails: React.FC<FileUploadDetailsProps> = ({
     file,
+    onDone
 }) => {
     const [name, setName] = useState(file.name.split('.')[0]);
     const [description, setDescription] = useState('');
-    const [idCol, setIdCol] = useState('id');
+    const [idCol, setIdCol] = useState('ogc_fid');
     const [geomCol, setGeomCol] = useState('wkb_geometry');
     const [startUpload, setStartUpload] = useState<boolean>(false);
 
@@ -33,6 +35,7 @@ export const FileUploadDetails: React.FC<FileUploadDetailsProps> = ({
                     url="/datasets"
                     file={file}
                     metadata={metadata}
+                    onDone={onDone}
                 />
             ) : (
                 <Form>
