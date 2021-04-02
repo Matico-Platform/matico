@@ -21,3 +21,8 @@ impl fmt::Display for PaginationParams {
         write!(f, "{} {}", limit, offset)
     }
 }
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, sqlx::FromRow)]
+pub struct QueryMetadata {
+    pub total: i64,
+}

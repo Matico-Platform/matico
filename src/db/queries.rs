@@ -2,7 +2,7 @@ use crate::db::formatters::*;
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
 use crate::models::Column as DatasetColumn;
-use crate::utils::{Format, PaginationParams};
+use crate::utils::{Format, PaginationParams, QueryMetadata};
 use log::info;
 use log::warn;
 use serde::{Deserialize, Serialize};
@@ -74,6 +74,24 @@ impl PostgisQueryRunner {
             sub_query = query,
             page = page_str
         )
+    }
+
+    pub async fn run_query_meta(
+        pool: &DataDbPool,
+        query: &str,
+    ) -> Result<QueryMetadata, ServiceError> {
+        let result = sqlx::query(&format!("SElECT count(*) as total from ({}) a ", query))
+            .map(|row: PgRow| QueryMetadata {
+                total: row.get("total"),
+            })
+            .fetch_one(pool)
+            .await
+            .map_err(|e| {
+                warn!("Failed to get metadata for query, {}", e);
+                ServiceError::QueryFailed(format!("SQL Error: {} Query was  {}", e, query))
+            })?;
+
+        return Ok(result);
     }
 
     pub async fn run_query(

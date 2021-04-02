@@ -4,8 +4,9 @@ use crate::db::Bounds;
 use crate::errors::ServiceError;
 use crate::models::permissions::*;
 use crate::models::Dataset;
+use log::info;
 
-use crate::utils::{Format, FormatParam, PaginationParams};
+use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
 use actix_web::{get, put, web, HttpResponse};
 use uuid::Uuid;
 
@@ -16,19 +17,30 @@ async fn get_data(
     web::Query(page): web::Query<PaginationParams>,
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
+    web::Query(sort): web::Query<SortParams>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
 
-    if !dataset.public {
-        let user = logged_in_user.user.ok_or(ServiceError::Unauthorized(
-            "You dont have permission to view this dataset".into(),
-        ))?;
-        Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::READ)?;
+    if let Some(user) = logged_in_user.user {
+        if !dataset.public && user.id != dataset.owner_id {
+            Permission::require_permissions(
+                &state.db,
+                &user.id,
+                &dataset.id,
+                &vec![PermissionType::READ],
+            )?;
+        }
     }
 
     let result = dataset
-        .query(&state.data_db, None, Some(page), format_param.format)
+        .query(
+            &state.data_db,
+            None,
+            Some(page),
+            Some(sort),
+            format_param.format,
+        )
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -60,7 +72,7 @@ async fn get_feature(
     );
 
     let result = dataset
-        .query(&state.data_db, Some(query), None, Some(Format::Json))
+        .query(&state.data_db, Some(query), None, None, Some(Format::Json))
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")

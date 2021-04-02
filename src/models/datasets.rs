@@ -4,13 +4,14 @@ use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use uuid::Uuid;
 
 use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::models::columns::Column;
 use crate::schema::datasets::{self, dsl::*};
-use crate::utils::{Format, PaginationParams};
+use crate::utils::{Format, PaginationParams, SortParams};
 use diesel::debug_query;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -110,18 +111,24 @@ impl Dataset {
         pool: &DataDbPool,
         query: Option<String>,
         page: Option<PaginationParams>,
+        sort: Option<SortParams>,
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let q = match query {
             Some(query) => query,
             None => format!("select * from {}", self.name),
         };
-
+        let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
         let f = format.unwrap_or_default();
 
         let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
-
-        Ok(result.to_string())
+        let result_with_metadata = json!({
+            "data": result,
+            "metadata": {
+                "total": metadata.total
+            }
+        });
+        Ok(result_with_metadata.to_string())
     }
 
     pub fn update(
