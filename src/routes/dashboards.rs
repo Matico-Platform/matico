@@ -56,10 +56,15 @@ pub async fn delete_dashboard(
     web::Path(dashboard_id): web::Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+    let dashboard = Dashboard::find(&state.db, dashboard_id)?;
+
     let user = logged_in_user
         .user
         .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    Permission::check_permission(&state.db, &user.id, &dashboard_id, PermissionType::WRITE)?;
+
+    if user.id != dashboard.owner_id {
+        Permission::check_permission(&state.db, &user.id, &dashboard_id, PermissionType::WRITE)?;
+    }
 
     Dashboard::delete(&state.db, dashboard_id)?;
     Ok(HttpResponse::Ok().json(json!({ "deleted": dashboard_id })))
