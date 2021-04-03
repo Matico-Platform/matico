@@ -116,7 +116,7 @@ impl Dataset {
     ) -> Result<String, ServiceError> {
         let q = match query {
             Some(query) => query,
-            None => format!("select * from {}", self.name),
+            None => format!(r#"select * from "{}""#, self.name.to_lowercase()),
         };
         let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
         let f = format.unwrap_or_default();

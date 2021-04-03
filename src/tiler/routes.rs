@@ -39,7 +39,7 @@ async fn get_tile_for_dataset(
     web::Path(tiler_options): web::Path<TilerOptions>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset.dataset_id)?;
-    let query = format!("select * from {}", dataset.name);
+    let query = format!(r#"select * from "{}""#, dataset.name.to_lowercase());
 
     let mvt_tile =
         PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id).await?;

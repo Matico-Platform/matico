@@ -65,7 +65,7 @@ async fn get_feature(
     let id_col = &dataset.id_col;
     let table = &dataset.name;
     let query = format!(
-        "Select * from {table} where {id_col} ={feature_id}",
+        "Select * from \"{table}\" where {id_col} ={feature_id}",
         table = table,
         id_col = id_col,
         feature_id = feature_id
