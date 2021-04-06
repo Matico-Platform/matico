@@ -10,10 +10,10 @@ export interface Dataset {
     id_col: string;
 }
 
-export interface Column{
-    name: string,
-    col_type: string,
-    source_query: string
+export interface Column {
+    name: string;
+    col_type: string;
+    source_query: string;
 }
 
 export interface User {
@@ -29,70 +29,109 @@ export interface Page {
     offset: number;
 }
 
-export enum BaseMap{
-    Light= "Light",
-    Dark= "Dark",
-    Satelite="Satelite",
-    Terrain= "Terrain",
-    Streets= "Streets",
+export type Color = [number, number, number, number];
+
+export interface SingleColorSpecification {
+    color: Color;
+}
+
+export interface CategoryColorSpecification {
+    column: string;
+    categories: Array<string | number>;
+    colors: Array<Color>;
+}
+
+export enum NumericalCategorizationMethod {
+    Quantiles = 'quantiles',
+    EqualInterval = 'equal_interval',
+    Scaled = 'scaled',
+    Custom = 'custom',
+}
+
+export interface ValueSpecification {
+    column: string;
+    method: NumericalCategorizationMethod;
+    bins: number[];
+}
+
+export interface ValueColorSpecification {
+    values: ValueSpecification;
+    colors: Color[];
+}
+
+export interface ColorSpecification {
+    single_color?: SingleColorSpecification;
+    category_color?: CategoryColorSpecification;
+}
+
+export const DefaultFillColor: Color = [140, 170, 180, 90];
+export const DefaultStrokeColor: Color = [200, 200, 200, 90];
+
+export enum BaseMap {
+    Light = 'Light',
+    Dark = 'Dark',
+    Satelite = 'Satelite',
+    Terrain = 'Terrain',
+    Streets = 'Streets',
     CartoDBPositron = 'CartoDBPositron',
     CartoDBVoyager = 'CartoDBVoyager',
     CartoDBDarkMatter = 'CartoDBDarkMatter',
     Custom = 'Custom',
 }
 
+export enum Unit {
+    Pixels = 'pixels',
+    Meters = 'meters',
+}
+
 export const DefaultPolyonStyle: PolygonStyle = {
-    Polygon: {
-        fill: [140, 170, 180, 90],
-        stroke: [200, 200, 200, 90],
-        stroke_width: 3,
-        opacity: 1,
-    },
+    fill: { single_color: { color: DefaultFillColor } },
+    stroke: { single_color: { color: DefaultStrokeColor } },
+    stroke_width: 3,
+    opacity: 1,
+    stroke_units: Unit.Pixels,
+    elevation: null,
 };
 
 export const DefaultPointStyle: PointStyle = {
-    Point: {
-        fill: [140, 170, 180, 90],
-        size: 20,
-        stroke: [200, 200, 200, 90],
-        stroke_width: 3,
-        opacity: 1,
-    },
+    fill: { single_color: { color: DefaultFillColor } },
+    size: 20,
+    stroke: { single_color: { color: DefaultStrokeColor } },
+    stroke_width: 3,
+    opacity: 1,
+    stroke_units: Unit.Pixels,
+    size_units: Unit.Pixels,
 };
 
 export const DefaultLineStyle: LineStyle = {
-    Line: {
-        stroke: [200, 200, 200, 90],
-        stroke_width: 3,
-        opacity: 1,
-    },
+    stroke: { single_color: { color: DefaultStrokeColor } },
+    stroke_width: 3,
+    opacity: 1,
 };
 
 export interface PointStyle {
-    Point: {
-        fill: number[];
-        size: number;
-        stroke: number[];
-        stroke_width: number;
-        opacity: number;
-    };
+    fill: ColorSpecification;
+    size: number;
+    stroke: ColorSpecification;
+    stroke_width: number;
+    opacity: number;
+    size_units: Unit;
+    stroke_units: Unit;
 }
 
 export interface PolygonStyle {
-    Polygon: {
-        fill: number[];
-        stroke: number[];
-        stroke_width: number;
-        opacity: number;
-    };
+    fill: ColorSpecification;
+    stroke: ColorSpecification;
+    stroke_width: number;
+    opacity: number;
+    stroke_units: Unit;
+    elevation: ValueSpecification | null;
 }
 
 export interface LineStyle {
-    Line: {
-        stroke: number[];
-        stroke_width: number;
-        opacity: number;
-    };
+    stroke: ColorSpecification;
+    stroke_width: number;
+    opacity: number;
 }
 
 export interface QuerySource {
@@ -116,7 +155,11 @@ export type LayerSource =
     | RawQuerySource
     | GeoJSONSource;
 
-export type LayerStyle = PointStyle | PolygonStyle | LineStyle;
+export type LayerStyle = {
+    Point?: PointStyle;
+    Polygon?: PolygonStyle;
+    Line?: LineStyle;
+};
 
 export interface Layer {
     source: LayerSource;
@@ -157,9 +200,9 @@ export interface CreateDashboardDTO {
     map_style: MapStyle;
 }
 
-export interface ValueCount{
-    name: string,
-    count: number 
+export interface ValueCount {
+    name: string;
+    count: number;
 }
 
 export interface UpdateDashboardDTO {
@@ -245,12 +288,12 @@ export function createSyncDataset(syncDetails: CreateSyncDataset) {
     return a.post('/datasets', syncDetails);
 }
 
-export function deleteDashboard(dashboard_id:string){
-    return a.delete(`/dashboards/${dashboard_id}`)
+export function deleteDashboard(dashboard_id: string) {
+    return a.delete(`/dashboards/${dashboard_id}`);
 }
 
-export function deleteDataset(dataset_id:string){
-    return a.delete(`/datasets/${dataset_id}`)
+export function deleteDataset(dataset_id: string) {
+    return a.delete(`/datasets/${dataset_id}`);
 }
 
 export async function getProfile(): Promise<AxiosResponse<User>> {
@@ -297,8 +340,10 @@ export async function getDashboards(): Promise<
     return a.get('dashboards');
 }
 
-export async function getDatasetColumns(id: string):Promise<AxiosResponse<Column[]>>{
-    return a.get(`datasets/${id}/columns`)
+export async function getDatasetColumns(
+    id: string,
+): Promise<AxiosResponse<Column[]>> {
+    return a.get(`datasets/${id}/columns`);
 }
 
 export async function getDashboard(
@@ -328,8 +373,58 @@ export async function updateFeature(
     return a.put(`datasets/${dataset_id}/data/${feature_id}`, update);
 }
 
-export async function getUniqueColumnValues(dataset_id:string, column_name:string){
-    return a.get(`datasets/${dataset_id}/columns/${column_name}/stats?stat=${ JSON.stringify({ValueCounts:{}})}`)
+export async function getColumnStats(
+    source: LayerSource,
+    column: Column,
+) {
+    if (Object.keys(source)[0] === 'Dataset') {
+        const datasetSource = source as DatasetSource;
+        return a.get(
+            `datasets/${datasetSource.Dataset}/columns/${
+                column.name
+            }/stats?stat=${JSON.stringify({
+                BasicStats: {
+                    no_bins: 20,
+                },
+            })}`,
+        );
+    } else {
+        throw Error(
+            'Layer source does not implement this functionality yet',
+        );
+    }
+}
+export async function getUniqueColumnValues(
+    dataset_id: string,
+    column_name: string,
+) {
+    return a.get(
+        `datasets/${dataset_id}/columns/${column_name}/stats?stat=${JSON.stringify(
+            { ValueCounts: {} },
+        )}`,
+    );
+}
+export async function getColumnHistogram(
+    column: Column,
+    source: LayerSource,
+    bins: number,
+) {
+    if (Object.keys(source)[0] === 'Dataset') {
+        const datasetSource = source as DatasetSource;
+        return a.get(
+            `datasets/${datasetSource.Dataset}/columns/${
+                column.name
+            }/stats?stat=${JSON.stringify({
+                Histogram: {
+                    no_bins: 20,
+                },
+            })}`,
+        );
+    } else {
+        throw Error(
+            'Layer source does not implement this functionality yet',
+        );
+    }
 }
 
 // not sure if run is the right verb here, but
