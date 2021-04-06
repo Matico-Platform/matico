@@ -201,9 +201,9 @@ impl Column {
     ) -> Result<StatResults, ServiceError> {
         let query = format!(
             "
-            select COALESCE({},'undefined') as name, count(*) as count 
+            select COALESCE({}::TEXT,'undefined') as name, count(*) as count 
             from ({}) a
-            group by COALESCE({},'undefined')
+            group by COALESCE({}::TEXT,'undefined')
             order by count DESC",
             self.name, self.source_query, self.name
         );
