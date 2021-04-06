@@ -60,7 +60,7 @@ export const DashboardBuilderControlls: React.FC = () => {
                 </>
             )}
             <FlexSeperator />
-            {errors && <p>{errors.join(',')}</p>}
+            {errors && <p>{errors.slice(0, 2).join(',')}</p>}
             {saving && <p>Saving...</p>}
 
             {newLayerModalVisible && (
