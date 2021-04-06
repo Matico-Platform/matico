@@ -19,7 +19,7 @@ export const DashboardBuilderPage: React.FC = () => {
     return (
         <DashboardBuilderProvider dashboard_id={dashboard_id}>
             <Page>
-                <DetailsArea>
+                <DetailsArea size="large">
                     <DashboardBuilderControlls />
                 </DetailsArea>
                 <Styles.DashboardBuilderPage>
