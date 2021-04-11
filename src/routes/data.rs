@@ -72,7 +72,7 @@ async fn get_feature(
     );
 
     let result = dataset
-        .query(&state.data_db, Some(query), None, Some(Format::Json))
+        .query(&state.data_db, Some(query), None, None, Some(Format::Json))
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")

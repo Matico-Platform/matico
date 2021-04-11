@@ -104,8 +104,8 @@ impl PostgisQueryRunner {
 
         let formatted_query = match format {
             Format::Csv => Ok(csv_format(&paged_query)),
-            Format::Geojson=> Ok(geo_json_format(&paged_query)),
-            Format::Json=> Ok(json_format(&paged_query)),
+            Format::Geojson => Ok(geo_json_format(&paged_query)),
+            Format::Json => Ok(json_format(&paged_query)),
         }?;
 
         info!("running query {}", formatted_query);
