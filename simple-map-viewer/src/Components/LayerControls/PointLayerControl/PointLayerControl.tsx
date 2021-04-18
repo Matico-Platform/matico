@@ -5,7 +5,7 @@ import {
     ColorSelector,
     ColorMappingTypes,
 } from 'Components/ColorComponents/ColorSelector/ColorSelector';
-import { UnitSwitch } from 'Components/UnitSwitch/UnitSwitch';
+import { SimpleSwitch } from 'Components/SimpleSwitch/SimpleSwitch';
 
 interface PointLayerControlProps {
     style: PointStyle;
@@ -48,6 +48,7 @@ export const PointLayerControl: React.FC<PointLayerControlProps> = ({
     };
 
     const updateStrokeUnit = (unit: Unit) => {
+        debugger 
         onChange({
             ...style,
             stroke_units: unit,
@@ -96,9 +97,10 @@ export const PointLayerControl: React.FC<PointLayerControlProps> = ({
                         updateStrokeWidth(parseFloat(e.target.value))
                     }
                 />
-                <UnitSwitch
-                    selected={style.stroke_units}
-                    onChange={(unit) => updateStrokeUnit(unit)}
+                <SimpleSwitch
+                    options={Object.keys(Unit)}
+                    selected={style.stroke_units as string}
+                    onChange={(unit: string) => updateStrokeUnit(unit as Unit)}
                 />
             </section>
 
@@ -111,9 +113,10 @@ export const PointLayerControl: React.FC<PointLayerControlProps> = ({
                         updateSize(parseFloat(e.target.value))
                     }
                 />
-                <UnitSwitch
-                    selected={style.size_units}
-                    onChange={(unit) => updateSizeUnit(unit)}
+                <SimpleSwitch
+                    options={Object.keys(Unit)}
+                    selected={style.size_units as string}
+                    onChange={(unit: string) => updateSizeUnit(unit as Unit)}
                 />
             </section>
         </>

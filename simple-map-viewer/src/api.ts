@@ -48,10 +48,35 @@ export enum NumericalCategorizationMethod {
     Custom = 'custom',
 }
 
+export interface DiscreteQuantizer{
+    method: NumericalCategorizationMethod,
+    breaks?: number[],
+    no_breaks: number
+}
+
+export interface ContinuiousQuantizer{
+    log: boolean,
+    sqrt: boolean,
+    maxVal: number,
+    minVal: number
+}
+
+export interface ContinuiousRange{
+    min: number,
+    max: number
+}
+
+export interface DiscreteRange{
+    values: number[]
+}
+
 export interface ValueSpecification {
     column: string;
-    method: NumericalCategorizationMethod;
-    bins: number[];
+    simpleValue?: number;
+    discreteQuantizer?: DiscreteQuantizer;
+    continuiousQuantizer?: ContinuiousQuantizer;
+    continuiousRange?: ContinuiousRange;
+    // discreteRange?: DiscreteRange; 
 }
 
 export interface ValueColorSpecification {
@@ -62,6 +87,12 @@ export interface ValueColorSpecification {
 export interface ColorSpecification {
     single_color?: SingleColorSpecification;
     category_color?: CategoryColorSpecification;
+}
+
+export enum ScaleFunc{
+    Linear = <any>'linear',
+    Sqrt = <any>"sqrt",
+    log = <any>"log"
 }
 
 export const DefaultFillColor: Color = [140, 170, 180, 90];
@@ -80,8 +111,8 @@ export enum BaseMap {
 }
 
 export enum Unit {
-    Pixels = 'pixels',
-    Meters = 'meters',
+    pixels = 'pixels',
+    meters = 'meters',
 }
 
 export const DefaultPolyonStyle: PolygonStyle = {
@@ -89,7 +120,7 @@ export const DefaultPolyonStyle: PolygonStyle = {
     stroke: { single_color: { color: DefaultStrokeColor } },
     stroke_width: 3,
     opacity: 1,
-    stroke_units: Unit.Pixels,
+    stroke_units: Unit.pixels,
     elevation: null,
 };
 
@@ -99,8 +130,8 @@ export const DefaultPointStyle: PointStyle = {
     stroke: { single_color: { color: DefaultStrokeColor } },
     stroke_width: 3,
     opacity: 1,
-    stroke_units: Unit.Pixels,
-    size_units: Unit.Pixels,
+    stroke_units: Unit.pixels,
+    size_units: Unit.pixels,
 };
 
 export const DefaultLineStyle: LineStyle = {

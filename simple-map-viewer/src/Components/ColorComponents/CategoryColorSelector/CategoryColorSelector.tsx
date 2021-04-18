@@ -60,6 +60,7 @@ export const CategoryColorSelector: React.FC<CategoryColorSelectorProps> = ({
             });
         }
     }, [columnValues, reversed, colorPalette, selectedColumn]);
+    
     const colors = getColors(colorPalette, reversed);
 
     return (

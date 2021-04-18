@@ -6,7 +6,7 @@ import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { useDashboard } from 'Contexts/DashbardBuilderContext';
 import { ColorSpecification } from 'api';
-import { LayerControlls } from 'Components/LayerControls/dist/LayerControlls';
+import { LayerControls } from 'Components/LayerControls/LayerControls';
 
 function lookupBaseMapURL(basemap: BaseMap | undefined) {
     switch (basemap) {
@@ -74,7 +74,7 @@ function constructLayer(layer: Layer) {
                 pickable: true,
             };
             break;
-        case 'Point':
+        case     'Point':
             console.log('size units ', layer.style.Point!.size_units);
             style = {
                 getFillColor: colorSpecificationToGLSpec(

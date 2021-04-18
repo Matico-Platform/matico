@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const UnitSwitch = styled.div`
+const SimpleSwitch = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -15,6 +15,6 @@ const Option = styled.button<{ selected: boolean }>`
     cursor: pointer;
 `;
 export const Styles = {
-    UnitSwitch,
+    SimpleSwitch,
     Option,
 };

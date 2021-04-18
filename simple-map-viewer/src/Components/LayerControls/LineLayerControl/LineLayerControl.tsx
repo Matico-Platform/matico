@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Styles } from './LineLayerControlStyles';
 import { Column, LineStyle, LayerSource } from 'api';
 import { ColorSpecification } from 'api';
-import { UnitSwitch } from 'Components/UnitSwitch/UnitSwitch';
+import { SimpleSwitch } from 'Components/SimpleSwitch/SimpleSwitch';
 
 import {
     ColorSelector,

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Styles } from './NumericalSelectorStyles';
 import { Categorizer } from 'Components/NumericalComponents/Categorizer/Categorizer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faCalculator,
+} from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 
 import {
@@ -10,6 +14,12 @@ import {
     ValueSpecification,
 } from 'api';
 
+
+export enum ValueMappingTypes{
+    Value = 'value',
+    Simple = 'manual'
+}
+
 interface NumericalSelectorProps {
     columns: Column[];
     source: LayerSource;
@@ -17,6 +27,7 @@ interface NumericalSelectorProps {
     valueSpecification?: ValueSpecification | null;
     onUpdate: (value: ValueSpecification) => void;
 }
+
 
 export const NumericalSelector: React.FC<NumericalSelectorProps> = ({
     columns,
@@ -48,10 +59,42 @@ export const NumericalSelector: React.FC<NumericalSelectorProps> = ({
     const selectColumn = (column: Column | null) => {
         setSelectedColumn(column);
     };
-    console.log('columns are ', columns, selectedColumn);
+
+    const [activeMode, setActiveMode] = useState<ValueMappingTypes>(
+        ValueMappingTypes.Simple
+    )
+
     return (
-        <div>
-            <label>{name}</label>
+        <section>
+            <Styles.Header>
+                <label>{name}</label>
+                <Styles.Modes>
+                    <p className='icon' 
+                        onClick={() => setActiveMode(ValueMappingTypes.Simple)}
+                        style={{
+                            cursor: 'pointer',
+                            color:
+                                activeMode == ValueMappingTypes.Simple
+                                    ? 'white'
+                                    : 'grey',
+                        }}
+                    >
+                        3
+                    </p>
+                    <FontAwesomeIcon
+                        className="icon"
+                        style={{
+                            cursor: 'pointer',
+                            color:
+                                activeMode == ValueMappingTypes.Value
+                                    ? 'white'
+                                    : 'grey',
+                        }}
+                        icon={faCalculator}
+                        onClick={() => setActiveMode(ValueMappingTypes.Value)}
+                    />
+                </Styles.Modes>
+            </Styles.Header>
             <label>Column</label>
             {columns && (
                 <Select
@@ -77,13 +120,26 @@ export const NumericalSelector: React.FC<NumericalSelectorProps> = ({
                 />
             )}
             {selectedColumn && (
+                <>
+                {ValueMappingTypes.Simple && 
+                    <div>
+                        <input
+                            value={valueSpecificiation.simpleValue!}
+                            type="number"
+                            onChange={(e) =>
+                                onUpdate({simpleValue: parseFloat(e.target.value)}))
+                            }
+                        />
+                    </div>
+                }
                 <Categorizer
                     column={selectedColumn}
                     source={source}
                     method={method}
                     onUpdate={setMethod}
                 />
+                </>
             )}
-        </div>
+        </section>
     );
 };

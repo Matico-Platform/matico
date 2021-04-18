@@ -1,6 +1,6 @@
 import React from 'react';
 import { Styles } from './PolygonLayerControlStyles';
-import { UnitSwitch } from 'Components/UnitSwitch/UnitSwitch';
+import { SimpleSwitch } from 'Components/SimpleSwitch/SimpleSwitch';
 
 import {
     PolygonStyle,
@@ -101,9 +101,11 @@ export const PolygonLayerControl: React.FC<PolygonLayerControlProps> = ({
                         updateStrokeWidth(parseFloat(e.target.value))
                     }
                 />
-                <UnitSwitch
-                    selected={style.stroke_units}
-                    onChange={(unit) => updateStrokeUnits(unit)}
+
+                <SimpleSwitch
+                    options={Object.keys(Unit)}
+                    selected={style.stroke_units as string}
+                    onChange={(unit: string) => updateStrokeUnits(unit as Unit)}
                 />
             </section>
 

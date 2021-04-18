@@ -19,10 +19,10 @@ import {
     faChevronDown,
 } from '@fortawesome/free-solid-svg-icons';
 
-interface LayerControllProps {
+interface LayerControlProps {
     layer: Layer;
 }
-export const LayerControlls: React.FC<LayerControllProps> = ({
+export const LayerControls: React.FC<LayerControlProps> = ({
     layer,
 }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true);
@@ -39,7 +39,7 @@ export const LayerControlls: React.FC<LayerControllProps> = ({
     };
 
     return (
-        <Styles.LayerControlls>
+        <Styles.LayerControls>
             <h3 onClick={() => setCollapsed(!collapsed)}>
                 <FontAwesomeIcon
                     icon={collapsed ? faChevronDown : faChevronRight}
@@ -78,6 +78,6 @@ export const LayerControlls: React.FC<LayerControllProps> = ({
                     />
                 )}
             </div>
-        </Styles.LayerControlls>
+        </Styles.LayerControls>
     );
 };

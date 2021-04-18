@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const LayerControlls = styled.div`
+const LayerControls = styled.div`
     h3 {
         font-size: 20px;
         /* text-decoration:underline; */
@@ -15,5 +15,5 @@ const LayerControlls = styled.div`
 `;
 
 export const Styles = {
-    LayerControlls,
+    LayerControls,
 };
