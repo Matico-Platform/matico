@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Dataset, getDataset, Page, getPagedDatasetData } from 'api';
+import { getDataset, getPagedDatasetData } from 'api';
+import {Dataset,Page} from 'types'
 
 export const useDataset = (id: string) => {
     const [dataset, setDataset] = useState<Dataset | null>(null);

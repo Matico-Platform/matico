@@ -4,7 +4,8 @@ import React, {
     useEffect,
     useContext,
 } from 'react';
-import { User, getProfile, login, signup } from 'api';
+import { getProfile, login, signup } from 'api';
+import {User} from 'types'
 
 enum ActionType {
     ATTEMPT_LOGIN,

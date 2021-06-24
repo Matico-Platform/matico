@@ -7,7 +7,7 @@ import {
     faAlignJustify,
     faCalculator,
 } from '@fortawesome/free-solid-svg-icons';
-import { Column, LayerSource, ColorSpecification } from 'api';
+import { Column, LayerSource, ColorSpecification } from 'types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export enum ColorMappingTypes {

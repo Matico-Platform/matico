@@ -4,15 +4,21 @@ import React, {
     useEffect,
     useContext,
 } from 'react';
+
 import {
-    Dashboard,
     getDashboard,
-    BaseMap,
     updateDashboard,
+} from 'api';
+
+import{
+
+    Dashboard,
+    BaseMap,
     UpdateDashboardDTO,
     Layer,
     LayerStyle,
-} from 'api';
+} from 'types'
+
 import { useDebouncedEffect } from 'Hooks/useDebounceEffect';
 
 enum ActionType {

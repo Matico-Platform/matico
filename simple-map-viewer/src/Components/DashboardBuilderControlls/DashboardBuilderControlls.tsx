@@ -2,7 +2,7 @@ import React from 'react';
 import { useDashboard } from '../../Contexts/DashbardBuilderContext';
 import { FlexSeperator } from '../Layout/Layout';
 import { BaseMapSelector } from '../BaseMapSelector/BaseMapSelector';
-import { BaseMap } from '../../api';
+import { BaseMap } from 'types';
 import { LayerList } from '../LayerList/LayerList';
 import { Styles } from './DashboardBuilderControllsStyles';
 import { Button, ButtonType } from '../Button/Button';

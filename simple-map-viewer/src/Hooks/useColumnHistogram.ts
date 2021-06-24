@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Column, LayerSource, getColumnHistogram } from 'api';
+import {getColumnHistogram } from 'api';
+import { Column, LayerSource, } from 'types'
 
 export const useColumnHistogram = (
     column: Column,

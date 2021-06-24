@@ -1,7 +1,7 @@
 import { Checkbox } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import Select from 'react-dropdown-select';
-import { Column, LayerSource, CategoryColorSpecification } from 'api';
+import { Column, LayerSource, CategoryColorSpecification } from 'types';
 import { useUniqueColumnValues } from 'Hooks/useUniqueColumnValues';
 import { ColorPaletteSelector } from 'Components/ColorComponents/ColorPaletteSelector/ColorPaletteSelector';
 import { getColors } from 'Components/ColorComponents/ColorUtils';

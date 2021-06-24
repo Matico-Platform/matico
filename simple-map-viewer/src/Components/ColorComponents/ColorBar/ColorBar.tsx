@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Color } from 'api';
+import { Color } from 'types';
 
 interface ColorBarProps {
     col: Color;

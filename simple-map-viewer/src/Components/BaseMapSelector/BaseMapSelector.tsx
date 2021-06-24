@@ -1,7 +1,7 @@
 import React from 'react';
 import { Styles } from './BaseMapSelectorStyles';
 import Select from 'react-dropdown-select';
-import { BaseMap } from '../../api';
+import { BaseMap } from 'types'
 
 interface BaseMapSelectorProps {
     baseMap: BaseMap;

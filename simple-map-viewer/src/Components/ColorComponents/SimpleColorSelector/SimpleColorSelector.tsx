@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SketchPicker } from 'react-color';
 import { ColorBar } from 'Components/ColorComponents/ColorBar/ColorBar';
 import { Styles } from './SimpleColorSelectorStyles';
-import { SingleColorSpecification, DefaultFillColor } from 'api';
+import { SingleColorSpecification, DefaultFillColor } from 'types';
 
 interface SimpleColorSelector {
     spec: SingleColorSpecification;

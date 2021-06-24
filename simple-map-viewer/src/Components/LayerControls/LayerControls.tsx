@@ -6,7 +6,7 @@ import {
     LayerStyle,
     LineStyle,
     LayerSource,
-} from 'api';
+} from 'types';
 import { Styles } from './LayerControlsStyles';
 import { useDashboard } from 'Contexts/DashbardBuilderContext';
 import { useSourceColumns } from 'Hooks/useSourceColumns';

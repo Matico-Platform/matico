@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import api, {
-    Dashboard,
-    UpdateDashboardDTO,
     getDashboard,
     updateDashboard,
 } from 'api';
+import {
+    Dashboard,
+    UpdateDashboardDTO,
+} from 'types'
 
 export const useDashboard = (id: string) => {
     const [dashboard, setDashboard] = useState<Dashboard | null>(
         null,
     );
-    const [error, setError] = useState<String | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [saving, setSaving] = useState<boolean>(false);
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import {ScaleFunc} from 'api'
+import {ScaleFunc} from 'types'
 import {Styles} from './ContinuousQuantizerStyles'
 import {SimpleSwitch} from 'Components/SimpleSwitch/SimpleSwitch'
 
@@ -7,6 +7,7 @@ interface ContinuousQuantizerProps{
     scaleFunc: ScaleFunc,
     onScaleFuncChanged: (scale: ScaleFunc)=>void
 }
+
 export const ContinuousQuantizer: React.FC<ContinuousQuantizerProps> = ({scaleFunc, onScaleFuncChanged})=>{
 
     //@ts-ignore

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getDatasets, Dataset } from 'api';
+import { getDatasets} from 'api';
+import {Dataset} from 'types'
 
 export const useDatasets = () => {
     const [datasets, setDatasets] = useState<Dataset[]>([]);

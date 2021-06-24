@@ -7,7 +7,7 @@ import {
     DefaultPointStyle,
     DefaultLineStyle,
     DatasetSource,
-} from '../../api';
+} from 'types'
 import { useDatasets } from '../../Hooks/useDatasets';
 import Select from 'react-dropdown-select';
 import { Form } from '../Forms/Forms';

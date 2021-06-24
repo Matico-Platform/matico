@@ -1,12 +1,10 @@
 import React from 'react';
 import { Styles } from './DashboardViewerStyles';
-import { BaseMap, Layer } from 'api';
+import { BaseMap, Dashboard, Layer, ColorSpecification} from 'types';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { useDashboard } from 'Contexts/DashbardBuilderContext';
-import { ColorSpecification } from 'api';
-import { LayerControls } from 'Components/LayerControls/LayerControls';
 
 function lookupBaseMapURL(basemap: BaseMap | undefined) {
     switch (basemap) {
@@ -74,7 +72,7 @@ function constructLayer(layer: Layer) {
                 pickable: true,
             };
             break;
-        case     'Point':
+        case 'Point':
             console.log('size units ', layer.style.Point!.size_units);
             style = {
                 getFillColor: colorSpecificationToGLSpec(
@@ -117,8 +115,16 @@ function constructLayer(layer: Layer) {
 }
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
-export const DashboardViewer: React.FC = () => {
-    const { dashboard } = useDashboard();
+interface DashboardViewerProps {
+    dashboard?: Dashboard;
+}
+export const DashboardViewer: React.FC<DashboardViewerProps> = ({
+    dashboard: inputDashboard,
+}) => {
+    const { dashboard: providerDashboard } = useDashboard();
+    const dashboard = inputDashboard
+        ? inputDashboard
+        : providerDashboard;
 
     const INITIAL_VIEW_STATE = {
         longitude: -74.006,

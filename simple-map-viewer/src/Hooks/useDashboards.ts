@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getDashboards, Dashboard, deleteDashboard } from '../api';
+import { getDashboards,  deleteDashboard } from 'api';
+import {Dashboard} from 'types'
 
 export function useDashboards() {
     const [loading, setLoading] = useState(false);

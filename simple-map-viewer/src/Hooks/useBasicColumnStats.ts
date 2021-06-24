@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import {
-    Column,
     getColumnStats,
+} from 'api';
+
+import{
+    Column,
     LayerSource,
     DatasetSource,
-} from 'api';
+} from 'types'
 
 export function useBasicColumnStats(
     column?: Column,

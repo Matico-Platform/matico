@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Styles } from './LineLayerControlStyles';
-import { Column, LineStyle, LayerSource } from 'api';
-import { ColorSpecification } from 'api';
+import { ColorSpecification, Column, LineStyle, LayerSource } from 'types';
 import { SimpleSwitch } from 'Components/SimpleSwitch/SimpleSwitch';
 
 import {

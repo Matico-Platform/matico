@@ -9,7 +9,7 @@ import {
     ColorSpecification,
     Unit,
     ValueSpecification,
-} from 'api';
+} from 'types';
 
 import {
     ColorSelector,

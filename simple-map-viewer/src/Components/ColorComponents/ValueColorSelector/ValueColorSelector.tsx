@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Column, LayerSource, ValueColorSpecification } from 'api';
+import { Column, LayerSource, ValueColorSpecification } from 'types';
 
 interface ValueColorSelectorProps {
     onUpdate: (spec: ValueColorSpecification) => void;

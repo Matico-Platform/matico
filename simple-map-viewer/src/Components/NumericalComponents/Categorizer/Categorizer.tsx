@@ -6,7 +6,7 @@ import {
     NumericalCategorizationMethod,
     LayerSource,
     Color,
-} from 'api';
+} from 'types';
 
 import { useBasicColumnStats } from 'Hooks/useBasicColumnStats';
 import { useColumnHistogram } from 'Hooks/useColumnHistogram';

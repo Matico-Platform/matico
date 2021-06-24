@@ -5,6 +5,8 @@ import 'brace/mode/sql';
 import 'brace/theme/dracula';
 import { Styles } from './QueryPaneStyles';
 import { Button, ButtonType } from '../Button/Button';
+import { QueryBrowser } from 'Components/QueryBrowser/QueryBrowser';
+import { Query } from 'types';
 
 interface QueryPaneProps {
     table: string | null;

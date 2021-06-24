@@ -1,6 +1,7 @@
 import React from 'react';
 import { Styles } from './LayerListStyles';
 import { LayerControls } from '../LayerControls/LayerControls';
+import {Layer} from 'types'
 import { useDashboard } from '../../Contexts/DashbardBuilderContext';
 
 export const LayerList: React.FC = () => {
@@ -9,7 +10,7 @@ export const LayerList: React.FC = () => {
 
     return (
         <Styles.LayerList>
-            {layers.map((layer) => (
+            {layers.map((layer :Layer) => (
                 <LayerControls key={layer.name} layer={layer} />
             ))}
         </Styles.LayerList>

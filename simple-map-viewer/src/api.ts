@@ -1,247 +1,13 @@
 import axios, { AxiosResponse } from 'axios';
+import {User,LoginResponse, SignupResponse} from 'types/Users'
+import {Dashboard, CreateDashboardDTO, UpdateDashboardDTO} from 'types/DashboardSpecification'
+import {LayerSource} from 'types/LayerSpecification'
+import {DatasetSource} from 'types/Sources'
+import {Dataset, Column} from 'types/Dataset'
+import {Query,QueryParameter, ValueCount} from 'types/Query'
+import {Page, } from 'types/Pagination'
 
-export interface Dataset {
-    name: string;
-    description: string;
-    id: string;
-    created_at: Date;
-    updated_at: Date;
-    geom_col: string;
-    id_col: string;
-}
 
-export interface Column {
-    name: string;
-    col_type: string;
-    source_query: string;
-}
-
-export interface User {
-    id: string;
-    username: string;
-    email: string;
-    created_at: Date;
-    updated_at: Date;
-}
-
-export interface Page {
-    limit: number;
-    offset: number;
-}
-
-export type Color = [number, number, number, number];
-
-export interface SingleColorSpecification {
-    color: Color;
-}
-
-export interface CategoryColorSpecification {
-    column: string;
-    categories: Array<string | number>;
-    colors: Array<Color>;
-}
-
-export enum NumericalCategorizationMethod {
-    Quantiles = 'quantiles',
-    EqualInterval = 'equal_interval',
-    Scaled = 'scaled',
-    Custom = 'custom',
-}
-
-export interface DiscreteQuantizer{
-    method: NumericalCategorizationMethod,
-    breaks?: number[],
-    no_breaks: number
-}
-
-export interface ContinuiousQuantizer{
-    log: boolean,
-    sqrt: boolean,
-    maxVal: number,
-    minVal: number
-}
-
-export interface ContinuiousRange{
-    min: number,
-    max: number
-}
-
-export interface DiscreteRange{
-    values: number[]
-}
-
-export interface ValueSpecification {
-    column: string;
-    simpleValue?: number;
-    discreteQuantizer?: DiscreteQuantizer;
-    continuiousQuantizer?: ContinuiousQuantizer;
-    continuiousRange?: ContinuiousRange;
-    // discreteRange?: DiscreteRange; 
-}
-
-export interface ValueColorSpecification {
-    values: ValueSpecification;
-    colors: Color[];
-}
-
-export interface ColorSpecification {
-    single_color?: SingleColorSpecification;
-    category_color?: CategoryColorSpecification;
-}
-
-export enum ScaleFunc{
-    Linear = <any>'linear',
-    Sqrt = <any>"sqrt",
-    log = <any>"log"
-}
-
-export const DefaultFillColor: Color = [140, 170, 180, 90];
-export const DefaultStrokeColor: Color = [200, 200, 200, 90];
-
-export enum BaseMap {
-    Light = 'Light',
-    Dark = 'Dark',
-    Satelite = 'Satelite',
-    Terrain = 'Terrain',
-    Streets = 'Streets',
-    CartoDBPositron = 'CartoDBPositron',
-    CartoDBVoyager = 'CartoDBVoyager',
-    CartoDBDarkMatter = 'CartoDBDarkMatter',
-    Custom = 'Custom',
-}
-
-export enum Unit {
-    pixels = 'pixels',
-    meters = 'meters',
-}
-
-export const DefaultPolyonStyle: PolygonStyle = {
-    fill: { single_color: { color: DefaultFillColor } },
-    stroke: { single_color: { color: DefaultStrokeColor } },
-    stroke_width: 3,
-    opacity: 1,
-    stroke_units: Unit.pixels,
-    elevation: null,
-};
-
-export const DefaultPointStyle: PointStyle = {
-    fill: { single_color: { color: DefaultFillColor } },
-    size: 20,
-    stroke: { single_color: { color: DefaultStrokeColor } },
-    stroke_width: 3,
-    opacity: 1,
-    stroke_units: Unit.pixels,
-    size_units: Unit.pixels,
-};
-
-export const DefaultLineStyle: LineStyle = {
-    stroke: { single_color: { color: DefaultStrokeColor } },
-    stroke_width: 3,
-    opacity: 1,
-};
-
-export interface PointStyle {
-    fill: ColorSpecification;
-    size: number;
-    stroke: ColorSpecification;
-    stroke_width: number;
-    opacity: number;
-    size_units: Unit;
-    stroke_units: Unit;
-}
-
-export interface PolygonStyle {
-    fill: ColorSpecification;
-    stroke: ColorSpecification;
-    stroke_width: number;
-    opacity: number;
-    stroke_units: Unit;
-    elevation: ValueSpecification | null;
-}
-
-export interface LineStyle {
-    stroke: ColorSpecification;
-    stroke_width: number;
-    opacity: number;
-}
-
-export interface QuerySource {
-    Query: string;
-}
-
-export interface DatasetSource {
-    Dataset: string;
-}
-
-export interface RawQuerySource {
-    RawQuery: string;
-}
-export interface GeoJSONSource {
-    url: string;
-}
-
-export type LayerSource =
-    | QuerySource
-    | DatasetSource
-    | RawQuerySource
-    | GeoJSONSource;
-
-export type LayerStyle = {
-    Point?: PointStyle;
-    Polygon?: PolygonStyle;
-    Line?: LineStyle;
-};
-
-export interface Layer {
-    source: LayerSource;
-    style: LayerStyle;
-    name: string;
-    description: string;
-}
-
-export interface MapStyle {
-    layers: Layer[];
-    center: number[];
-    zoom: number;
-    base_map: BaseMap;
-}
-
-export const DefaultMapStyle: MapStyle = {
-    center: [-74.006, 40.7128],
-    zoom: 13,
-    base_map: BaseMap.Light,
-    layers: [],
-};
-
-export interface Dashboard {
-    name: string;
-    id: string;
-    description: string;
-    owner_id: string;
-    public: boolean;
-    map_style: MapStyle;
-    created_at: Date;
-    updated_at: Date;
-}
-
-export interface CreateDashboardDTO {
-    name: string;
-    description: string;
-    public: boolean;
-    map_style: MapStyle;
-}
-
-export interface ValueCount {
-    name: string;
-    count: number;
-}
-
-export interface UpdateDashboardDTO {
-    name?: string;
-    description?: string;
-    public?: boolean;
-    map_style?: MapStyle;
-}
 // export interface Token {
 //     iat: number;
 //     exp: number;
@@ -249,15 +15,6 @@ export interface UpdateDashboardDTO {
 //     id: string;
 // }
 
-export interface LoginResponse {
-    user: User;
-    token: string;
-}
-
-export interface SignupResponse {
-    user: User;
-    token: string;
-}
 
 const a = axios.create({
     baseURL:
@@ -435,6 +192,11 @@ export async function getUniqueColumnValues(
         )}`,
     );
 }
+
+export async function getQueries() {
+    return a.get('/queries');
+}
+
 export async function getColumnHistogram(
     column: Column,
     source: LayerSource,

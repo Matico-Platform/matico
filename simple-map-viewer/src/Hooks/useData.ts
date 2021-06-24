@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Page, runQuery, getPagedDatasetData } from 'api';
+import { Page,} from 'types';
+import {runQuery, getPagedDatasetData} from 'api' 
 
 interface DatasetStrategy {
     datasetId?: string;

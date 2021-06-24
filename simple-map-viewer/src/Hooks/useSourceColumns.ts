@@ -1,5 +1,6 @@
 import React, {useState,useEffect} from 'react'
-import {Column, getDatasetColumns, LayerSource, DatasetSource} from 'api'
+import {Column,  LayerSource, DatasetSource} from 'types'
+import {getDatasetColumns} from 'api'
 
 export const  useSourceColumns = (source: LayerSource)=> {
     const [columns, setColumns] = useState<undefined|Column[]>(undefined);

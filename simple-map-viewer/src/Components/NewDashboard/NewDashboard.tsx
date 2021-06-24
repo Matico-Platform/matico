@@ -2,12 +2,12 @@ import React from 'react';
 import { Paper } from '../Layout/Layout';
 import { Form } from '../Forms/Forms';
 import { Button, ButtonType } from '../Button/Button';
+import {createDashboard} from 'api'
 
 import {
-    createDashboard,
     CreateDashboardDTO,
     DefaultMapStyle,
-} from '../../api';
+} from 'types';
 import { useForm } from 'react-hook-form';
 
 interface NewDashboardProps {
@@ -25,14 +25,14 @@ export const NewDashboard: React.FC<NewDashboardProps> = ({
         newDashboard.map_style = DefaultMapStyle;
         console.log(newDashboard);
         createDashboard(newDashboard)
-            .then((result) => {
+            .then((result :any) => {
                 if(onCreated){
                     console.log("running on created")
                     onCreated()
                 }
                 console.log('Gor dashboard ', result.data);
             })
-            .catch((e) => {
+            .catch((e : Error) => {
                 console.log('Failed to create dashboard ', e);
             });
     };

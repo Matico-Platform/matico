@@ -1,7 +1,8 @@
 import { AxiosResponse } from 'axios';
 import { useState, useEffect } from 'react';
 import { useJwt } from 'react-jwt';
-import { login, LoginResponse, User, signup } from 'api';
+import { login,  signup } from 'api';
+import {LoginResponse, User} from 'types'
 
 export function useLoginSignup() {
     const [error, setError] = useState<string | null>(null);
@@ -25,10 +26,10 @@ export function useLoginSignup() {
 
     const attemptLogin = async (email: string, password: string) => {
         setLoading(true);
-        let reply = await login(email, password);
+        const reply = await login(email, password);
         setLoading(false);
         if (reply.status === 200) {
-            let response = reply.data;
+            const response = reply.data;
             localStorage.setItem('token', response.token);
             setTokenString(response.token);
         }
@@ -40,8 +41,8 @@ export function useLoginSignup() {
         username: string,
     ) => {
         setLoading(true);
-        let reply = await signup(username, password, email);
-        if ((reply.status = 200)) {
+        const reply = await signup(username, password, email);
+        if ((reply.status == 200)) {
             return reply.data;
         } else {
             throw Error('Signup failed');

@@ -1,5 +1,6 @@
 import {useState,useEffect} from 'react'
-import {getUniqueColumnValues, ValueCount, LayerSource, DatasetSource} from 'api'
+import {getUniqueColumnValues, } from 'api'
+import {ValueCount, LayerSource, DatasetSource} from 'types'
 
 export function useUniqueColumnValues(source?: LayerSource, column_name?: string){
     const [columnValues, setColumnValues] = useState<undefined | ValueCount[]>(undefined)

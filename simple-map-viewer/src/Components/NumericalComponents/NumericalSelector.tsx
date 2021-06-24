@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Styles } from './NumericalSelectorStyles';
 import { Categorizer } from 'Components/NumericalComponents/Categorizer/Categorizer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCalculator,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 
 import {
@@ -12,22 +10,20 @@ import {
     LayerSource,
     NumericalCategorizationMethod,
     ValueSpecification,
-} from 'api';
+} from 'types';
 
-
-export enum ValueMappingTypes{
+export enum ValueMappingTypes {
     Value = 'value',
-    Simple = 'manual'
+    Simple = 'manual',
 }
 
 interface NumericalSelectorProps {
     columns: Column[];
     source: LayerSource;
     name: string;
-    valueSpecification?: ValueSpecification | null;
+    valueSpecification?: ValueSpecification | null | undefined;
     onUpdate: (value: ValueSpecification) => void;
 }
-
 
 export const NumericalSelector: React.FC<NumericalSelectorProps> = ({
     columns,

@@ -2,7 +2,7 @@ import React from 'react';
 import { List, Row } from '../List/List';
 import { Button, ButtonType } from '../Button/Button';
 import { Link } from 'react-router-dom';
-import {Dataset} from 'api'
+import {Dataset} from 'types'
 
 interface DatasetListProps{
     datasets: Dataset[],

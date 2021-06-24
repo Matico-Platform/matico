@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Column, PointStyle, Layer, LayerSource } from 'api';
-import { ColorSpecification, Unit } from 'api';
+import { Column, PointStyle, Layer, LayerSource } from 'types';
+import { ColorSpecification, Unit } from 'types';
 import {
     ColorSelector,
     ColorMappingTypes,

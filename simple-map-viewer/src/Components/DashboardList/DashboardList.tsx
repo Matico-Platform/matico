@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDashboards } from '../../Hooks/useDashboards';
 import { List, Row } from '../List/List';
-import {Dashboard} from 'api'
+import {Dashboard} from 'types'
 import { Button, ButtonType } from '../Button/Button';
 import { Link } from 'react-router-dom';
 
