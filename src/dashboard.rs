@@ -2,6 +2,7 @@ use wasm_bindgen::prelude::*;
 use serde::{Serialize,Deserialize};
 use validator::{Validate,ValidationError, ValidationErrors};
 use chrono::{DateTime, Utc};
+use toml;
 use crate::{Section, ValidationResult};
 
 #[wasm_bindgen]
@@ -9,6 +10,7 @@ use crate::{Section, ValidationResult};
 pub struct Dashboard{
     name: String,
     created_at: DateTime::<Utc>,
+
     #[validate]
     sections: Vec<Section>
 }
@@ -62,11 +64,20 @@ impl Dashboard{
             Ok(_)=> ValidationResult{ is_valid: true, errors:None}, 
             Err(errors)=> ValidationResult{ is_valid:false, errors: Some(errors)}
         };
-        return JsValue::from_serde(&error_object).unwrap()
+        JsValue::from_serde(&error_object).unwrap()
     }
 
     pub fn to_js(&self)->JsValue{
        JsValue::from_serde(self).unwrap() 
+    }
+
+    pub fn to_toml(&self)->String{
+        let toml_str = toml::to_string(&self);
+        let res = match toml_str{
+            Ok(s)=> s,
+            Err(e)=> format!("{}",e) 
+        };
+        res.into() 
     }
 }
 
@@ -75,14 +86,8 @@ mod tests{
     use super::*;
     use crate::{PanePosition,LngLat,ChartPane,MapPane,Pane};
 
-    #[test]
-    fn test_create_dashboard(){
-        let dash = Dashboard::new_dash();
-        assert!(true)
-    }
 
-    #[test]
-    fn serialize(){
+    fn test_dash_builder()->Dashboard{
         let map_pane = MapPane{
             position: PanePosition{ width: 10, height:20, layer:1, float:false},
             inital_lng_lat: LngLat{ lng: 0.0, lat:0.0},
@@ -102,6 +107,23 @@ mod tests{
             created_at: chrono::Utc::now(),
             sections : vec![section]
         };
+        dash 
+    }
+
+    #[test]
+    fn test_create_dashboard(){
+        let dash = test_dash_builder();
+        assert!(true)
+    }
+
+    #[test]
+    fn test_toml_generation(){
+        let dash = test_dash_builder();
+        print!("{}", dash.to_toml())
+    }
+
+    #[test]
+    fn serialize(){
         assert!(true," succesfully generated json");
     }
 }

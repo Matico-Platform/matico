@@ -15,3 +15,4 @@ serde = {version = "^1.0.130", features=["derive"]}
 validator = {version="0.12", features=["derive"]}
 wasm-bindgen = {version = "0.2.77", features = ['serde-serialize']}
 serde_json = "1.0.59"
+toml = "0.5.8"

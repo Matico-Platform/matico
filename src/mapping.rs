@@ -4,10 +4,9 @@ use wasm_bindgen::prelude::*;
 use crate::PanePosition;
 
 
-#[derive(Debug, Serialize,Deserialize)]
-pub struct Layer{
-    name: String
-}
+// pub struct Layer{
+//     name: String
+// }
 
 #[wasm_bindgen]
 #[derive(Serialize,Deserialize,Validate,Debug,Copy,Clone)]
@@ -24,8 +23,8 @@ pub struct MapPane{
     #[validate]
     pub position: PanePosition,
     #[validate]
-    pub inital_lng_lat: LngLat,
-    pub layers: Vec<Layer>
+    pub inital_lng_lat: LngLat
+    // pub layers: Vec<Layer>
 }
 
 #[cfg(test)]

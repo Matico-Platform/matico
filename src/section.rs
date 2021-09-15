@@ -6,10 +6,13 @@ use crate::{Pane};
 #[wasm_bindgen]
 #[derive(Serialize,Deserialize,Validate,Debug)]
 pub struct Section{
-    name: String,
+    #[wasm_bindgen(skip)]
+    pub name: String,
     pub order: usize,
+
+    #[wasm_bindgen(skip)]
     #[validate]
-    panes: Vec<Pane>
+    pub panes: Vec<Pane>
 }
 
 #[wasm_bindgen]
