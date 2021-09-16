@@ -9,7 +9,6 @@ pub enum Pane{
     Chart(ChartPane) 
 }
 
-
 impl Validate for Pane{
     fn validate(&self)-> ::std::result::Result<(), ValidationErrors>{
         println!("HERE!!!!!");

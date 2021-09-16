@@ -4,15 +4,28 @@ use validator::{Validate,ValidationError, ValidationErrors};
 use chrono::{DateTime, Utc};
 use toml;
 use crate::{Section, ValidationResult};
+use matico_spec_derive::AutoComplete;
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug)]
+#[derive(Serialize,Deserialize,Validate, AutoComplete,Debug)]
 pub struct Dashboard{
     name: String,
     created_at: DateTime::<Utc>,
 
     #[validate]
     sections: Vec<Section>
+}
+
+
+
+impl Default for Dashboard{
+    fn default()->Self{
+        Self{
+            name: "New Dashboard".into(),
+            created_at: Utc::now(),
+            sections: vec![]
+        }
+    }
 }
 
 #[wasm_bindgen]
@@ -86,12 +99,9 @@ mod tests{
     use super::*;
     use crate::{PanePosition,LngLat,ChartPane,MapPane,Pane};
 
-
     fn test_dash_builder()->Dashboard{
-        let map_pane = MapPane{
-            position: PanePosition{ width: 10, height:20, layer:1, float:false},
-            inital_lng_lat: LngLat{ lng: 0.0, lat:0.0},
-        };
+        let map_pane: MapPane = Default::default();
+
         let chart_pane = ChartPane{
             position: PanePosition{ width: 20, height:30, layer:1, float:false}
         };

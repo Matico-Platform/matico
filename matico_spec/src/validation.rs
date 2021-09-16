@@ -28,8 +28,11 @@ mod tests{
                         "order": 1,
                         "panes":[
                             {"Map":{
+                                "base_map":{
+                                },
                                 "position": { "width": 20, "height":20, "layer":1, "float":false},
-                                "inital_lng_lat": {"lat":0, "lng":0}
+                                "inital_lng_lat": {"lat":0, "lng":0},
+                                "layers":[]
                             }
                             }
                         ]

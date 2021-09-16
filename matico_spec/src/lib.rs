@@ -12,7 +12,8 @@ use mapping::*;
 use section::*;
 use charts::*;
 
-
+#[macro_use]
+extern crate matico_spec_derive;
 
 #[cfg(test)]
 mod tests{
