@@ -6,15 +6,15 @@ use proc_macro::TokenStream;
 
 use syn::{parse_macro_input,DeriveInput};
 
-#[proc_macro_derive(AutoComplete)]
+#[proc_macro_derive(AutoCompleteMe)]
 pub fn derive_auto_complete(input:TokenStream)->TokenStream{
     let ast = parse_macro_input!(input as DeriveInput);
    
     let name = &ast.ident;
 
     let result = quote!{
-        impl #name{
-            pub fn autocomplete_json()->String{
+        impl AutoComplete for #name{
+            fn autocomplete_json()->String{
                 let default: Self = Default::default();
                 serde_json::to_string(&default).unwrap() 
             }
@@ -23,3 +23,4 @@ pub fn derive_auto_complete(input:TokenStream)->TokenStream{
 
     TokenStream::from(result) 
 } 
+
