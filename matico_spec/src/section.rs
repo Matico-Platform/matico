@@ -1,10 +1,11 @@
 use validator::{Validate,ValidationError, ValidationErrors};
 use wasm_bindgen::prelude::*;
 use serde::{Serialize,Deserialize};
-use crate::{Pane};
+use crate::{Pane, AutoComplete};
+use matico_spec_derive::AutoCompleteMe;
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug, Default, AutoComplete)]
+#[derive(Serialize,Deserialize,Validate,Debug, Default, AutoCompleteMe)]
 pub struct Section{
     #[wasm_bindgen(skip)]
     pub name: String,

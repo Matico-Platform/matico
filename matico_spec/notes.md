@@ -6,6 +6,6 @@ not sure why but something seems to require copy to be present prob pub on wasm_
 Getting enaums working with serde and toml https://github.com/serde-rs/serde/issues/725
 
 
-
+# Implement a type <T> for autocomplete to return either a String or JsValue
 
 

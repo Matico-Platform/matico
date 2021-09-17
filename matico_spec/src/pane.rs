@@ -1,9 +1,10 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize,Deserialize};
 use validator::{Validate,ValidationError, ValidationErrors};
-use crate::{MapPane,ChartPane};
+use crate::{MapPane,ChartPane, AutoComplete};
+use matico_spec_derive::AutoCompleteMe;
 
-#[derive(Serialize,Deserialize,Debug, AutoComplete)]
+#[derive(Serialize,Deserialize,Debug, AutoCompleteMe)]
 pub enum Pane{
     Map(MapPane),
     Chart(ChartPane) 
@@ -36,7 +37,7 @@ impl Validate for Pane{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug, Copy, Clone, AutoComplete,Default)]
+#[derive(Serialize,Deserialize,Validate,Debug, Copy, Clone, AutoCompleteMe,Default)]
 pub struct PanePosition{
    #[validate(range(min=0,max=100))]
    pub width: usize,

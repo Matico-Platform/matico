@@ -1,5 +1,9 @@
 use crate::*;
 
+pub trait AutoComplete{
+    fn autocomplete_json()->String;
+}
+
 pub fn autocomplete(expression: &str)->Option<String>{
     match expression{
         "Dashboard"=> Some(Dashboard::autocomplete_json()),
@@ -15,7 +19,7 @@ pub fn autocomplete(expression: &str)->Option<String>{
 
 #[cfg(test)]
 mod tests{
-    use super::*;
+    use crate::*;
 
     #[test]
     fn test_autocomplete(){

@@ -3,11 +3,11 @@ use serde::{Serialize,Deserialize};
 use validator::{Validate,ValidationError, ValidationErrors};
 use chrono::{DateTime, Utc};
 use toml;
-use crate::{Section, ValidationResult};
-use matico_spec_derive::AutoComplete;
+use crate::{Section, ValidationResult, AutoComplete};
+use matico_spec_derive::AutoCompleteMe;
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,AutoComplete,Debug)]
+#[derive(Serialize,Deserialize,Validate,AutoCompleteMe,Debug)]
 pub struct Dashboard{
     name: String,
     created_at: DateTime::<Utc>,

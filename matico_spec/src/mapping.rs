@@ -1,8 +1,9 @@
 use serde::{Serialize,Deserialize};
 use validator::{Validate,ValidationError, ValidationErrors};
 use wasm_bindgen::prelude::*;
-use crate::PanePosition;
+use crate::{PanePosition, AutoComplete};
 use palette::Srgb;
+use matico_spec_derive::AutoCompleteMe;
 
 
 #[derive(Serialize,Deserialize,Debug)]
@@ -31,7 +32,7 @@ impl Default for BaseMap{
 }
 
 
-#[derive(Serialize,Deserialize,Validate,Debug,Default,AutoComplete)]
+#[derive(Serialize,Deserialize,Validate,Debug,Default,AutoCompleteMe)]
 pub struct Layer{
     name: String,
     source_name: String,
@@ -39,7 +40,7 @@ pub struct Layer{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug,Copy,Clone, Default,AutoComplete)]
+#[derive(Serialize,Deserialize,Validate,Debug,Copy,Clone, Default,AutoCompleteMe)]
 pub struct LngLat{
     #[validate(range(min=-90.0,max=90.0, message="lat needs to be between -90 and 90"))]
     pub lat: f32,
@@ -48,7 +49,7 @@ pub struct LngLat{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug, AutoComplete)]
+#[derive(Serialize,Deserialize,Validate,Debug, AutoCompleteMe)]
 pub struct MapPane{
     #[validate]
     pub position: PanePosition,
