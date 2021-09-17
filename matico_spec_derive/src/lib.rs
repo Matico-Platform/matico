@@ -14,9 +14,9 @@ pub fn derive_auto_complete(input:TokenStream)->TokenStream{
 
     let result = quote!{
         impl #name{
-            fn auto_complete_json(&self)->String{
-                let defualt: Self = Default::default();
-                serde_json::to_string(&self).unwrap() 
+            pub fn autocomplete_json()->String{
+                let default: Self = Default::default();
+                serde_json::to_string(&default).unwrap() 
             }
         }
     };
