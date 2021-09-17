@@ -3,10 +3,16 @@ use serde::{Serialize,Deserialize};
 use validator::{Validate,ValidationError, ValidationErrors};
 use crate::{MapPane,ChartPane};
 
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(Serialize,Deserialize,Debug, AutoComplete)]
 pub enum Pane{
     Map(MapPane),
     Chart(ChartPane) 
+}
+
+impl Default for Pane{
+    fn default()->Self{
+        Self::Map(MapPane::default())
+    }
 }
 
 impl Validate for Pane{
@@ -30,7 +36,7 @@ impl Validate for Pane{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug, Copy, Clone)]
+#[derive(Serialize,Deserialize,Validate,Debug, Copy, Clone, AutoComplete,Default)]
 pub struct PanePosition{
    #[validate(range(min=0,max=100))]
    pub width: usize,

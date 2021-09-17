@@ -7,7 +7,7 @@ use crate::{Section, ValidationResult};
 use matico_spec_derive::AutoComplete;
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate, AutoComplete,Debug)]
+#[derive(Serialize,Deserialize,Validate,AutoComplete,Debug)]
 pub struct Dashboard{
     name: String,
     created_at: DateTime::<Utc>,
@@ -15,7 +15,6 @@ pub struct Dashboard{
     #[validate]
     sections: Vec<Section>
 }
-
 
 
 impl Default for Dashboard{
@@ -134,6 +133,13 @@ mod tests{
 
     #[test]
     fn serialize(){
-        assert!(true," succesfully generated json");
+        assert!(true,"successfully generated json");
+    }
+
+    #[test]
+    fn test_autocomplete(){
+        let autocomplete = Dashboard::autocomplete_json();
+        println!("autocomplete result {}", autocomplete);
+        assert!(true, "successfully automated")
     }
 }

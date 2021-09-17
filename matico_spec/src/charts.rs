@@ -1,12 +1,13 @@
 use serde::{Serialize,Deserialize};
-use validator::{Validate,ValidationError, ValidationErrors};
+use validator::{Validate};
 use wasm_bindgen::prelude::*;
 use crate::PanePosition;
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug, Copy,Clone)]
+#[derive(Default,Serialize,Deserialize,Validate,Debug, Copy,Clone, AutoComplete)]
 pub struct ChartPane{
     #[validate]
     pub position: PanePosition,
 }
+
 

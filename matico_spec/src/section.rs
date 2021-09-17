@@ -4,7 +4,7 @@ use serde::{Serialize,Deserialize};
 use crate::{Pane};
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug)]
+#[derive(Serialize,Deserialize,Validate,Debug, Default, AutoComplete)]
 pub struct Section{
     #[wasm_bindgen(skip)]
     pub name: String,

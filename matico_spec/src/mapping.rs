@@ -13,18 +13,25 @@ enum LayerContentType{
 
 #[derive(Serialize,Deserialize,Debug)]
 struct TiledLayer{
-    urlTemplate: String,
-    LayerContentType: LayerContentType
+    url_template: String,
+    layer_content_type: LayerContentType
 }
 
-
+#[derive(Debug,Serialize,Deserialize)]
 pub enum BaseMap{
     Color(Srgb),
     TiledLayer(TiledLayer),
-    Image(String)
+    Image(String),
 }
 
-#[derive(Serialize,Deserialize,Validate,Debug)]
+impl Default for BaseMap{
+    fn default()->Self{
+        Self::Color(Srgb::new(0.0,0.0,0.0))
+    }
+}
+
+
+#[derive(Serialize,Deserialize,Validate,Debug,Default,AutoComplete)]
 pub struct Layer{
     name: String,
     source_name: String,
@@ -32,7 +39,7 @@ pub struct Layer{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug,Copy,Clone)]
+#[derive(Serialize,Deserialize,Validate,Debug,Copy,Clone, Default,AutoComplete)]
 pub struct LngLat{
     #[validate(range(min=-90.0,max=90.0, message="lat needs to be between -90 and 90"))]
     pub lat: f32,
@@ -41,7 +48,7 @@ pub struct LngLat{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize,Deserialize,Validate,Debug)]
+#[derive(Serialize,Deserialize,Validate,Debug, AutoComplete)]
 pub struct MapPane{
     #[validate]
     pub position: PanePosition,
@@ -50,7 +57,9 @@ pub struct MapPane{
     pub inital_lng_lat: LngLat,
 
     #[wasm_bindgen(skip)]
-    pub layers: Vec<Layer>
+    pub layers: Vec<Layer>,
+
+    // pub base_map: Option<BaseMap>
 }
 
 impl Default for MapPane{
@@ -64,6 +73,7 @@ impl Default for MapPane{
             },
             inital_lng_lat:LngLat{lng:0.0, lat:0.0},
             layers:vec![]
+            // base_map: Some(BaseMap::default())
         }
     }
 }
