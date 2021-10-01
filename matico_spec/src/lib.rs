@@ -1,23 +1,23 @@
+mod autocomplete;
+mod charts;
 mod dashboard;
+mod mapping;
 mod pane;
 mod section;
 mod validation;
-mod mapping;
-mod charts;
-mod autocomplete;
 
-use dashboard::*;
-use pane::*;
-use validation::*;
-use mapping::*;
-use section::*;
-use charts::*;
 use autocomplete::*;
+use charts::*;
+use dashboard::*;
+use mapping::*;
+use pane::*;
+use section::*;
+use validation::*;
 
 #[macro_use]
 extern crate matico_spec_derive;
 
 #[cfg(test)]
-mod tests{
+mod tests {
     use super::*;
 }

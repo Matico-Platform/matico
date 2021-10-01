@@ -1,23 +1,22 @@
+use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationErrors};
 use wasm_bindgen::prelude::*;
-use serde::{Serialize,Deserialize};
 
 #[wasm_bindgen]
 #[derive(Serialize)]
-pub struct ValidationResult{
-    pub is_valid:bool,
+pub struct ValidationResult {
+    pub is_valid: bool,
     #[wasm_bindgen(skip)]
-    pub errors: Option<ValidationErrors> 
+    pub errors: Option<ValidationErrors>,
 }
 
-
 #[cfg(test)]
-mod tests{
+mod tests {
     use super::*;
     use crate::Dashboard;
 
     #[test]
-    fn test_validation(){
+    fn test_validation() {
         let test_str = r#"
             {
                 "name": "Stuarts Dash",
@@ -39,9 +38,9 @@ mod tests{
                     }
                 ]
             }
-        "#; 
-        let dash : Result<Dashboard,_> = serde_json::from_str(test_str);
-        
+        "#;
+        let dash: Result<Dashboard, _> = serde_json::from_str(test_str);
+
         assert!(dash.is_ok(), "Failed to parse json");
         let dash = dash.unwrap();
         assert!(dash.validate().is_ok(), "Specification was invalid");
