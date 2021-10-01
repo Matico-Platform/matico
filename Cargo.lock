@@ -150,6 +150,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
+name = "matico_spec"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "matico_spec_derive",
+ "palette",
+ "serde",
+ "serde_json",
+ "toml",
+ "url",
+ "validator",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "matico_spec_derive"
 version = "0.1.0"
 dependencies = [
@@ -368,21 +383,6 @@ name = "regex-syntax"
 version = "0.6.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
-
-[[package]]
-name = "rust_to_typescript_test"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "matico_spec_derive",
- "palette",
- "serde",
- "serde_json",
- "toml",
- "url",
- "validator",
- "wasm-bindgen",
-]
 
 [[package]]
 name = "ryu"

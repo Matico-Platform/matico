@@ -1,5 +1,5 @@
 [package]
-name = "rust_to_typescript_test"
+name = "matico_spec"
 version = "0.1.0"
 authors = ["Stuart Lynn <stuart.lynn@gmail.com>"]
 edition = "2018"
