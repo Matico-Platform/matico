@@ -30,7 +30,7 @@ impl Default for BaseMap {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate. AutoComplete)]
+#[derive(Debug, Default,Serialize, Deserialize, Validate, AutoCompleteMe)]
 pub struct LayerStyle{
     
 }
