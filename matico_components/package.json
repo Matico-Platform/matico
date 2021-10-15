@@ -1,0 +1,25 @@
+{
+  "name": "matico_components",
+  "version": "1.0.0",
+  "description": "Components for Matico Apps ",
+  "main": "./dist/main.js",
+  "author": "Stuart Lynn",
+  "license": "MIT",
+  "source": "./src/index.ts",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0"
+  },
+  "dependencies": {
+    "@parcel/transformer-react-refresh-wrap": "^2.0.0",
+    "matico_spec": "workspace:matico_spec/pkg",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}

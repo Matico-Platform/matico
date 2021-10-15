@@ -1,0 +1,26 @@
+{
+  "name": "matico",
+  "version": "1.0.0",
+  "description": "Matico monorepo of parts",
+  "main": "index.js",
+  "repository": "git@github.com:stuartlynn/matico_spec_test.git",
+  "author": "Stuart Lynn <stuart.lynn@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "./maticojs",
+    "./matico_spec/pkg/",
+    "./matico_components",
+    "./editor"
+  ],
+  "scripts": {
+    "start": "concurrently \"cd matico_components && yarn watch\" \"cd editor && yarn start\" "
+  },
+  "devDependencies": {
+    "concurrently": "^6.3.0"
+  },
+  "packageManager": "yarn@3.0.2",
+  "dependencies": {
+    "@parcel/transformer-react-refresh-wrap": "^2.0.0"
+  }
+}

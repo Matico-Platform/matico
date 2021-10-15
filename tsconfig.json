@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true,
+    "jsx": "react",
+    "baseUrl":"./src",
+    "esModuleInterop":true
+  },
+
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

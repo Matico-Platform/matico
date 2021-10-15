@@ -1,0 +1,27 @@
+{
+  "name": "maticojs",
+  "version": "1.0.0",
+  "description": "Matico javascript library ",
+  "author": "Stuart Lynn",
+  "source": "./src/index.ts",
+  "main": "./dist/main.js",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@parcel/packager-ts": "^2.0.0",
+    "@parcel/transformer-typescript-types": "^2.0.0",
+    "parcel": "^2.0.0",
+    "typescript": ">=3.0.0"
+  },
+  "dependencies": {
+    "matico_components": "workspace:matico_components",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}

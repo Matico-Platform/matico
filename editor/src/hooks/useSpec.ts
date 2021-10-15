@@ -7,7 +7,7 @@ export const useSpec =()=>{
   useEffect(() => {
     let f = async () => {
       try {
-        const wasm = await import("rust_to_typescript_test");
+        const wasm = await import("matico_spec");
         setSpec(wasm)
         setReady(true)
       } catch (err) {
