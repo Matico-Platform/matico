@@ -44,6 +44,7 @@ function App() {
       try {
         const dash = spec.Dashboard.from_json(code);
         setParseResult(dash.is_valid());
+        setDashboard(dash)
         setValidJSON(true);
         setJsonError(null);
       } catch (e) {
@@ -120,8 +121,8 @@ function App() {
           enableSnippets: true,
         }}
       />
-      <div style={{ gridArea: "result" }}>
-        {dashboard && <MaticoApp spec={dashboard} />}
+      <div style={{ gridArea: "result", width:"100%", height:"100%" }}>
+        {dashboard && <MaticoApp spec={dashboard.to_js()} />}
       </div>
       <div style={{ gridArea: "errors" }}>
         {validJSON
