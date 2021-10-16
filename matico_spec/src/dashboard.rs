@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Section, ValidationResult};
+use crate::{AutoComplete, Page, Section, ValidationResult};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -14,6 +14,8 @@ pub struct Dashboard {
 
     #[validate]
     sections: Vec<Section>,
+
+    pages: Vec<Page>
 }
 
 impl Default for Dashboard {
@@ -22,6 +24,7 @@ impl Default for Dashboard {
             name: "New Dashboard".into(),
             created_at: Utc::now(),
             sections: vec![],
+            pages: vec![]
         }
     }
 }
@@ -30,11 +33,18 @@ impl Default for Dashboard {
 impl Dashboard {
     #[wasm_bindgen(constructor)]
     pub fn new_dash() -> Self {
-        Dashboard {
-            name: "New Dash".into(),
-            created_at: chrono::Utc::now(),
-            sections: vec![],
-        }
+        Default::default()
+    }
+
+    #[wasm_bindgen(getter=pages)]
+    pub fn get_pages(&self)-> JsValue{
+        JsValue::from_serde(&self.pages).unwrap()
+    }
+
+    #[wasm_bindgen(setter=pages)]
+    pub fn set_pages(&mut self, pages: JsValue) {
+        let pages_real = pages.into_serde().unwrap();
+        self.pages = pages_real; 
     }
 
     #[wasm_bindgen(getter = name)]
