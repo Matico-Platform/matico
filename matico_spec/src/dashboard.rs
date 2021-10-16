@@ -47,6 +47,17 @@ impl Dashboard {
         self.pages = pages_real; 
     }
 
+    #[wasm_bindgen(getter=sections)]
+    pub fn get_sections(&self)-> JsValue{
+        JsValue::from_serde(&self.sections).unwrap()
+    }
+
+    #[wasm_bindgen(setter=sections)]
+    pub fn set_sections(&mut self, sections: JsValue) {
+        let sections_real = sections.into_serde().unwrap();
+        self.sections = sections_real; 
+    }
+
     #[wasm_bindgen(getter = name)]
     pub fn get_name(&self) -> String {
         self.name.clone()

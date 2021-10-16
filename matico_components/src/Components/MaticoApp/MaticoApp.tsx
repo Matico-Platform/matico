@@ -4,6 +4,9 @@ import { Styles } from "./MaticoAppStyles";
 import * as Icons from "grommet-icons";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
+import { MaticoSection } from "../MaticoSection/MaticoSection";
+import {MaticoFreeLayout} from '../Layouts/MaticoFreeLayout/MaticoFreeLayout'
+import {MaticoMapPane} from '../Panes/MaticoMapPane/MaticoMapPane'
 
 import {
   Grommet,
@@ -62,8 +65,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({ spec }) => {
           <Main gridArea="main">
             <Switch>
               <Route path="/" exact={true}>
-                <Heading>{spec.name}</Heading>
-                <Paragraph>Welcome to the matico spec demo</Paragraph>
+                <MaticoSection section ={spec.sections[0]} />
               </Route>
               {spec.pages.map((page) => (
                 <Route path={`/${page.name}`} exact={true} >

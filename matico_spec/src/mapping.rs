@@ -74,6 +74,8 @@ impl Default for MapPane {
                 height: 100,
                 float: false,
                 layer: 1,
+                x:Some(0.0),
+                y:Some(0.0)
             },
             inital_lng_lat: LngLat { lng: 0.0, lat: 0.0 },
             layers: vec![], // base_map: Some(BaseMap::default())

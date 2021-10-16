@@ -41,4 +41,6 @@ pub struct PanePosition {
     pub height: usize,
     pub layer: usize,
     pub float: bool,
+    pub x: Option<f32>,
+    pub y: Option<f32>
 }
