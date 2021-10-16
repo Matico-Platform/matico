@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@danmarshall/deckgl-typings": "^4.9.7",
+    "@deck.gl/react": "^8.6.0",
     "@parcel/transformer-react-refresh-wrap": "^2.0.0",
     "@swc/helpers": "^0.2.13",
     "deck.gl": "^8.6.0",

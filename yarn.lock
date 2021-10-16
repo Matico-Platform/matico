@@ -1848,7 +1848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/react@npm:8.6.0":
+"@deck.gl/react@npm:8.6.0, @deck.gl/react@npm:^8.6.0":
   version: 8.6.0
   resolution: "@deck.gl/react@npm:8.6.0"
   dependencies:
@@ -12870,6 +12870,7 @@ fsevents@^1.2.7:
   resolution: "matico_components@workspace:matico_components"
   dependencies:
     "@danmarshall/deckgl-typings": ^4.9.7
+    "@deck.gl/react": ^8.6.0
     "@parcel/transformer-react-refresh-wrap": ^2.0.0
     "@swc/helpers": ^0.2.13
     "@types/react": ^17.0.30
