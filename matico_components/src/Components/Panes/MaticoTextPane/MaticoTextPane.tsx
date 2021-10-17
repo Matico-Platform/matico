@@ -17,7 +17,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
 }) => {
   const backgroundColor = background
     ? background
-    : { dark: "light-2", light: "dark-2" };
+    : { dark: "dark-2", light: "light-2" };
   return (
     <Box background={backgroundColor} elevation={"large"} fill={true} overflow={{vertical:'auto'}}>
       <MarkdownContnet>{content}</MarkdownContnet>
