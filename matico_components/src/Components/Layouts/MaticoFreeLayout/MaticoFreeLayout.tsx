@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {Box} from 'grommet'
 import { PanePosition} from 'matico_spec'
+import Draggable from "react-draggable";
 
 const FreeArea = styled.div`
   position: relative;
@@ -17,23 +18,29 @@ const FreePane = styled.div<{pane:PanePosition}>`
   z-index:${({pane})=> `${pane.layer}`};
   left:${({pane})=> `${pane.x}%`};
   bottom:${({pane})=>`${pane.y}%`};
+  cursor:${({pane})=> pane.float ? 'grab' : 'pointer'};
   background: blue;
+
 `
 
 interface MaticoFreeLayoutInterface{
 
 }
 
-
-
 export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> =({children})=>{
   return <FreeArea>
-    {React.Children.map(children, child=>(
+    {React.Children.map(children, child=>{
       //@ts-ignore
-      //Make this properly typed 
-      <FreePane pane={child.props.position} className="FreePane">
+      //TODO Make this properly typed. Properly check to ensure that the child nodes implement MaticoPaneInterface 
+      const pane  =(<FreePane pane={child.props.position} className="FreePane">
         {child}
-      </FreePane>
-    ))}
+        </FreePane>)
+
+        //@ts-ignore
+        console.log("pane is draggable ? ", child.props.float)
+        //@ts-ignore
+        return  child.props.float ? <Draggable>{pane}</Draggable> : pane
+        
+    })}
   </FreeArea>
 }

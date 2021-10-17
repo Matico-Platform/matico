@@ -3,11 +3,11 @@ import {Section} from 'matico_spec'
 import {Box} from 'grommet'
 import {MaticoFreeLayout} from '../Layouts/MaticoFreeLayout/MaticoFreeLayout'
 import {MaticoMapPane} from '../Panes/MaticoMapPane/MaticoMapPane'
+import {MaticoTextPane} from '../Panes/MaticoTextPane/MaticoTextPane'
 
 interface MaticoSectionInterface{
   section: Section
 }
-
 
 function selectLayout(layout_name: string){
   switch(layout_name){
@@ -22,6 +22,8 @@ function selectPane(pane:any){
   switch(Object.keys(pane)[0]){
     case "Map":
       return <MaticoMapPane {...pane.Map} />
+    case "Text":
+      return <MaticoTextPane {...pane.Text} />
     default:
       return null
   }

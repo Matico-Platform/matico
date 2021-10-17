@@ -27,9 +27,7 @@ interface MaticoAppInterface {
 }
 
 const NamedButton : React.FC<{name: string}> = ({name})=>{
-  console.log("getting icon for ", name)
   const NamedIcon = Icons[name] ? Icons[name] : Icons.Document;
-  console.log(NamedIcon)
   return (
     <NamedIcon />
   )

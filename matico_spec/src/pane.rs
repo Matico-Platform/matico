@@ -8,6 +8,7 @@ use wasm_bindgen::prelude::*;
 pub enum Pane {
     Map(MapPane),
     Chart(ChartPane),
+    Text(TextPane)
 }
 
 impl Default for Pane {
@@ -28,9 +29,62 @@ impl Validate for Pane {
         match self {
             Self::Map(map) => ValidationErrors::merge(result, "MapPane", map.validate()),
             Self::Chart(chart) => ValidationErrors::merge(result, "ChartPane", chart.validate()),
+            Self::Text(text) => ValidationErrors::merge(result, "TextPane", text.validate())
         }
     }
 }
+
+
+#[wasm_bindgen]
+#[derive(Serialize,Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+pub struct TextPane{
+    #[validate]
+    pub position: PanePosition,
+
+    #[wasm_bindgen(skip)]
+    pub content: String,
+    
+    #[wasm_bindgen(skip)]
+    pub font: Option<String>,
+
+    #[wasm_bindgen(skip)]
+    pub background: Option<String>
+
+}
+
+#[wasm_bindgen]
+impl TextPane{
+    #[wasm_bindgen(getter = content)]
+    pub fn get_content(&self) ->String{
+        self.content.clone()
+    }
+
+    #[wasm_bindgen(setter = content)]
+    pub fn set_content(&mut self, content:String){
+        self.content = content; 
+    }
+
+    #[wasm_bindgen(getter = font)]
+    pub fn get_font(&self) ->Option<String>{
+        self.font.clone()
+    }
+
+    #[wasm_bindgen(setter = font)]
+    pub fn set_font(&mut self, font:String){
+        self.font= Some(font); 
+    }
+
+    #[wasm_bindgen(getter = background)]
+    pub fn get_background(&self) ->Option<String>{
+        self.background.clone()
+    }
+
+    #[wasm_bindgen(setter = background)]
+    pub fn set_background(&mut self, background:String){
+        self.background= Some(background); 
+    }
+} 
+
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe, Default)]
