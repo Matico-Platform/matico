@@ -115,7 +115,7 @@
                   "x": 60,
                   "y": 0
                 },
-                "content": "This is some sidebar linke content"
+                "content": "This is some sidebar like content \n\n trying some math \n\n $ y =  \\frac{x^2}{2} \\sin(2t)$ "
               }
             }
           ]

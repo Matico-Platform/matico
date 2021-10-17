@@ -12385,7 +12385,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"katex@npm:^0.13.0":
+"katex@npm:^0.13.0, katex@npm:^0.13.18":
   version: 0.13.18
   resolution: "katex@npm:0.13.18"
   dependencies:
@@ -12969,6 +12969,7 @@ fsevents@^1.2.7:
     deck.gl: ^8.6.0
     grommet: ^2.18.0
     grommet-icons: ^4.6.2
+    katex: ^0.13.18
     matico_spec: "workspace:matico_spec/pkg"
     parcel: ^2.0.0
     polished: ^4.1.3
