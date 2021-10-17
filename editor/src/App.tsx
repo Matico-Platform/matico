@@ -45,6 +45,9 @@ function App() {
         const dash = spec.Dashboard.from_json(code);
         setParseResult(dash.is_valid());
         setDashboard(dash)
+        if(dash.is_valid()){
+          console.log(dash.to_yaml());
+        }
         setValidJSON(true);
         setJsonError(null);
       } catch (e) {
@@ -85,6 +88,7 @@ function App() {
     const newDash = new spec.Dashboard();
     setCode(JSON.stringify(newDash.to_js(), null, 2));
   };
+
   const pretty = () => {
     const newCode = JSON.stringify(JSON.parse(code), null, 2);
     setCode(newCode);

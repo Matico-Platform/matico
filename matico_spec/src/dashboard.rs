@@ -101,6 +101,15 @@ impl Dashboard {
         };
         res.into()
     }
+    
+    pub fn to_yaml(&self) -> String {
+        let yaml_str = serde_yaml::to_string(&self);
+        let res = match yaml_str{
+            Ok(s) => s,
+            Err(e) => format!("{}", e),
+        };
+        res.into()
+    }
 }
 
 #[cfg(test)]
