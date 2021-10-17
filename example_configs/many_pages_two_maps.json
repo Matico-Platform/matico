@@ -26,6 +26,9 @@
                   "lat": 50,
                   "lng": 60
                 },
+                "base_map":{
+                    "Named":"Satelite"
+                },
                 "layers": []
               }
             },
@@ -52,7 +55,7 @@
                   "x": 63,
                   "y": 1
                 },
-                "content": "This map is boring \n\n ![puppycat](https://static.wikia.nocookie.net/beeandpuppycat/images/c/c9/Puppycat.png)"
+                "content": "This map is boring :-( \n\n ![puppycat](https://static.wikia.nocookie.net/beeandpuppycat/images/c/c9/Puppycat.png)"
               }
             },
             {
@@ -101,6 +104,9 @@
                   "lat": 40.7128,
                   "lng": -74.006,
                   "zoom": 7
+                },
+                "base_map":{
+                    "Named":"Terrain"
                 },
                 "layers": []
               }

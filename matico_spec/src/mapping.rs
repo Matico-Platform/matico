@@ -5,23 +5,25 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError, ValidationErrors};
 use wasm_bindgen::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug)]
-enum LayerContentType {
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub enum LayerContentType {
     Vector,
     Raster,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct TiledLayer {
+#[derive(Serialize, Clone, Deserialize, Debug)]
+pub struct TiledLayer {
     url_template: String,
     layer_content_type: LayerContentType,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum BaseMap {
     Color(Srgb),
     TiledLayer(TiledLayer),
     Image(String),
+    Named(String),
+    StileJSON(String)
 }
 
 impl Default for BaseMap {
@@ -63,7 +65,9 @@ pub struct MapPane {
 
     #[wasm_bindgen(skip)]
     pub layers: Vec<Layer>,
-    // pub base_map: Option<BaseMap>
+
+    #[wasm_bindgen(skip)]
+    pub base_map: Option<BaseMap>
 }
 
 impl Default for MapPane {
@@ -78,7 +82,8 @@ impl Default for MapPane {
                 y:Some(0.0)
             },
             inital_lng_lat: LngLat { lng: 0.0, lat: 0.0 },
-            layers: vec![], // base_map: Some(BaseMap::default())
+            layers: vec![], 
+            base_map: Some(BaseMap::default())
         }
     }
 }
