@@ -5,7 +5,7 @@ use validator::{Validate, ValidationError, ValidationErrors};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug,  AutoCompleteMe)]
+#[derive(Serialize, Deserialize, Validate, Debug,  AutoCompleteMe, Clone)]
 pub struct Section{ 
     #[wasm_bindgen(skip)]
     pub name: String,

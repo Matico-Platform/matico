@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError, ValidationErrors};
 use wasm_bindgen::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug, AutoCompleteMe)]
+#[derive(Serialize, Deserialize,Clone, Debug, AutoCompleteMe)]
 pub enum Pane {
     Map(MapPane),
     Chart(ChartPane),

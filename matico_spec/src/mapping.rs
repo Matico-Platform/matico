@@ -30,12 +30,12 @@ impl Default for BaseMap {
     }
 }
 
-#[derive(Debug, Default,Serialize, Deserialize, Validate, AutoCompleteMe)]
+#[derive(Debug, Default, Clone,Serialize, Deserialize, Validate, AutoCompleteMe)]
 pub struct LayerStyle{
     
 }
 
-#[derive(Serialize, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
 pub struct Layer {
     name: String,
     source_name: String,
@@ -53,7 +53,7 @@ pub struct LngLat {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug, AutoCompleteMe)]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe)]
 pub struct MapPane {
     #[validate]
     pub position: PanePosition,

@@ -2,14 +2,18 @@ use wasm_bindgen::prelude::*;
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+use crate::{Section};
 
 #[wasm_bindgen]
 #[derive(Default, Debug, Validate,Serialize,Deserialize, Clone)]
 pub struct Page{
     name : String,
     icon : Option<String>,
-    content: String,
-    order: usize
+    content: Option<String>,
+    #[validate]
+    sections: Option<Vec<Section>>,
+    order: usize,
+    path: Option<String>
 }
 
 #[wasm_bindgen]
@@ -24,6 +28,16 @@ impl Page{
     pub fn set_name(&mut self, name: String) {
         self.name = name;
     }
+    
+    #[wasm_bindgen(getter = path)]
+    pub fn get_path(&self) -> Option<String> {
+        self.path.clone()
+    }
+
+    #[wasm_bindgen(setter= path)]
+    pub fn set_path(&mut self, path: String) {
+        self.path = Some(path);
+    }
 
     #[wasm_bindgen(getter = icon)]
     pub fn get_icon(&self) -> Option<String>{
@@ -36,13 +50,24 @@ impl Page{
     }
 
     #[wasm_bindgen(getter = content)]
-    pub fn get_content(&self) -> String {
+    pub fn get_content(&self) -> Option<String> {
         self.content.clone()
     }
 
     #[wasm_bindgen(setter= content)]
     pub fn set_content(&mut self, content: String) {
-        self.content = content;
+        self.content = Some(content);
+    }
+
+    #[wasm_bindgen(getter=sections)]
+    pub fn get_sections(&self)-> JsValue{
+        JsValue::from_serde(&self.sections).unwrap()
+    }
+
+    #[wasm_bindgen(setter=sections)]
+    pub fn set_sections(&mut self, sections: JsValue) {
+        let sections_real = sections.into_serde().unwrap();
+        self.sections = sections_real; 
     }
 
 }

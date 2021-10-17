@@ -11,10 +11,6 @@ use wasm_bindgen::prelude::*;
 pub struct Dashboard {
     name: String,
     created_at: DateTime<Utc>,
-
-    #[validate]
-    sections: Vec<Section>,
-
     pages: Vec<Page>
 }
 
@@ -23,7 +19,6 @@ impl Default for Dashboard {
         Self {
             name: "New Dashboard".into(),
             created_at: Utc::now(),
-            sections: vec![],
             pages: vec![]
         }
     }
@@ -47,16 +42,6 @@ impl Dashboard {
         self.pages = pages_real; 
     }
 
-    #[wasm_bindgen(getter=sections)]
-    pub fn get_sections(&self)-> JsValue{
-        JsValue::from_serde(&self.sections).unwrap()
-    }
-
-    #[wasm_bindgen(setter=sections)]
-    pub fn set_sections(&mut self, sections: JsValue) {
-        let sections_real = sections.into_serde().unwrap();
-        self.sections = sections_real; 
-    }
 
     #[wasm_bindgen(getter = name)]
     pub fn get_name(&self) -> String {
@@ -126,25 +111,11 @@ mod tests {
     fn test_dash_builder() -> Dashboard {
         let map_pane: MapPane = Default::default();
 
-        let chart_pane = ChartPane {
-            position: PanePosition {
-                width: 20,
-                height: 30,
-                layer: 1,
-                float: false,
-            },
-        };
-
-        let section = Section {
-            name: "Test Section".into(),
-            order: 1,
-            panes: vec![Pane::Map(map_pane), Pane::Chart(chart_pane)],
-        };
 
         let dash = Dashboard {
             name: "Test Dash".into(),
             created_at: chrono::Utc::now(),
-            sections: vec![section],
+            pages: vec![]
         };
         dash
     }
