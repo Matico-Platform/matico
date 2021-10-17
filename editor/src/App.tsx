@@ -95,14 +95,13 @@ function App() {
       className="App"
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
+        gridTemplateColumns: "min-content 1fr",
         gridTemplateRows: "1fr 100px",
         gridTemplateAreas: `
         "code result"
         "errors actions"`,
         alignItems:"center",
         justifyContent:"stretch",
-
         height: "100%",
         width: "100%",
       }}
@@ -114,7 +113,7 @@ function App() {
         value={code}
         fontSize={20}
         annotations={annotations}
-        style={{ gridArea: "code", width:"100%", height:"100%"}}
+        style={{ gridArea: "code", width:"100%", minWidth:"500px",height:"100%",resize: "horizontal"}}
         setOptions={{
           enableBasicAutocompletion: true,
           enableLiveAutocompletion: true,
