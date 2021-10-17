@@ -1,0 +1,138 @@
+{
+  "name": "New Dashboard",
+  "created_at": "2021-10-16T13:36:36.249Z",
+  "pages": [
+    {
+      "name": "home",
+      "order": 1,
+      "icon": "Home",
+      "path": "/",
+      "sections": [
+        {
+          "name": "simple_map",
+          "order": 1,
+          "panes": [
+            {
+              "Map": {
+                "position": {
+                  "width": 45,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 50,
+                  "y": 0
+                },
+                "inital_lng_lat": {
+                  "lat": 50,
+                  "lng": 60
+                },
+                "layers": []
+              }
+            },
+            {
+              "Text": {
+                "position": {
+                  "width": 30,
+                  "height": 36,
+                  "layer": 2,
+                  "float": true,
+                  "x": 8,
+                  "y": 59
+                },
+                "content": "This map shows some cool stats \n\n ![puppycat](https://media4.giphy.com/media/5DgjxCBHRfaFO/giphy.gif)"
+              }
+            },
+            {
+              "Text": {
+                "position": {
+                  "width": 20,
+                  "height": 30,
+                  "layer": 2,
+                  "float": false,
+                  "x": 63,
+                  "y": 1
+                },
+                "content": "This map is boring \n\n ![puppycat](https://static.wikia.nocookie.net/beeandpuppycat/images/c/c9/Puppycat.png)"
+              }
+            },
+            {
+              "Map": {
+                "position": {
+                  "width": 45,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "inital_lng_lat": {
+                  "lat": 0,
+                  "lng": 100
+                },
+                "layers": []
+              }
+            }
+          ],
+          "layout": "free"
+        }
+      ]
+    },
+    {
+      "name": "About",
+      "order": 1,
+      "icon": "Book",
+      "sections": [
+        {
+          "name": "main",
+          "order": 1,
+          "layout": "free",
+          "panes": [
+            {
+              "Map": {
+                "position": {
+                  "width": 80,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "inital_lng_lat": {
+                  "lat": 40.7128,
+                  "lng": -74.006,
+                  "zoom": 7
+                },
+                "layers": []
+              }
+            },
+            {
+              "Text": {
+                "position": {
+                  "width": 40,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 60,
+                  "y": 0
+                },
+                "content": "This is some sidebar linke content"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scinece",
+      "order": 1,
+      "icon": "Gremlin",
+      "content": "# Science rules \n For all of the science nerds \n\n ![puppycat](https://static.wikia.nocookie.net/beeandpuppycat/images/c/c9/Puppycat.png)"
+    },
+    {
+      "name": "goober",
+      "order": 1,
+      "icon": "Globe",
+      "content": "# Science rules \n For all of the science nerds \n\n ![puppycat](https://media4.giphy.com/media/5DgjxCBHRfaFO/giphy.gif)"
+    }
+  ]
+}
