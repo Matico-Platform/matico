@@ -8,7 +8,8 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import { useSpec } from "./hooks/useSpec";
 import { ValidationResult, Dashboard } from "matico_spec";
-import { MaticoApp } from "matico_components";
+import { MaticoApp , MaticoVariableState } from "matico_components";
+import ReactJson from 'react-json-view'
 
 function json_error_to_annotation(error: string) {
   const rg = /(.*)at line (\d+) column (\d+)/;
@@ -34,6 +35,8 @@ function App() {
   const [parseResult, setParseResult] = useState<ValidationResult | null>(null);
   const [validJSON, setValidJSON] = useState<boolean>(true);
   const [jsonError, setJsonError] = useState<any | null>(null);
+  const [appState, setAppState] = useState<MaticoVariableState | null>(null)
+  const [tab, setTab] = useState<string>('spec');
 
   const annotations: Ace.Annotation[] = jsonError
     ? json_error_to_annotation(jsonError)
@@ -110,22 +113,35 @@ function App() {
         width: "100%",
       }}
     >
-      <AceEditor
-        mode={"json"}
-        theme="github"
-        onChange={(changes: any) => setCode(changes)}
-        value={code}
-        fontSize={20}
-        annotations={annotations}
-        style={{ gridArea: "code", width:"100%", minWidth:"500px",height:"100%",resize: "horizontal"}}
-        setOptions={{
-          enableBasicAutocompletion: true,
-          enableLiveAutocompletion: true,
-          enableSnippets: true,
-        }}
-      />
-      <div style={{ gridArea: "result", width:"100%", height:"100%" }}>
-        {dashboard && <MaticoApp spec={dashboard.to_js()} />}
+      <div style={{gridArea:"code", width:"100%", height:"100%", minWidth:"500px", resize:"horizontal", display: 'flex', flexDirection:'column'}}>
+        <div style={{display:"flex", justifyContent:'space-around', padding:"10px 0px", borderBottom:'solid 1px grey'}}>
+          <span onClick={()=>setTab('spec')} style={{cursor:'pointer',fontWeight: tab==='spec' ? 'bold' : 'normal'}}>Show Spec</span> 
+          <span onClick={()=>setTab('state')} style={{cursor:'pointer',fontWeight: tab==='state' ? 'bold' : 'normal'}}>Show State</span> 
+        </div>
+        { tab==='spec' && 
+        <AceEditor
+          mode={"json"}
+          theme="github"
+          onChange={(changes: any) => setCode(changes)}
+          value={code}
+          fontSize={20}
+          annotations={annotations}
+          style={{  width:"100%",height:"100%", flex:1, resize:'horizontal'}}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+          }}
+          />}
+
+          { (tab==='state' && appState) && 
+            <div style={{width:"100%", height:"100%", flex:1,  textAlign:'left'}}>
+              <ReactJson  src={appState} />
+            </div>
+          }
+      </div>
+      <div style={{ gridArea: "result", width:"100%", height:"100%", overflowY:'auto' }}>
+        {dashboard && <MaticoApp onStateChange={setAppState} spec={dashboard.to_js()} />}
       </div>
       <div style={{ gridArea: "errors" }}>
         {validJSON
