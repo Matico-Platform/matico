@@ -5,8 +5,8 @@ use validator::{Validate, ValidationError, ValidationErrors};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug,  AutoCompleteMe, Clone)]
-pub struct Section{ 
+#[derive(Serialize, Deserialize, Validate, Debug, AutoCompleteMe, Clone)]
+pub struct Section {
     #[wasm_bindgen(skip)]
     pub name: String,
     pub order: usize,
@@ -18,16 +18,16 @@ pub struct Section{
     pub panes: Vec<Pane>,
 }
 
-impl Default for Section{
-    fn default()->Self{
-        Self{
-            name:"Section".into(),
-            order:1,
+impl Default for Section {
+    fn default() -> Self {
+        Self {
+            name: "Section".into(),
+            order: 1,
             layout: "free".into(),
-            panes:vec![]
+            panes: vec![],
         }
     }
-} 
+}
 
 #[wasm_bindgen]
 impl Section {
@@ -43,12 +43,12 @@ impl Section {
     }
 
     #[wasm_bindgen(getter=layout)]
-    pub fn get_layout(&self) -> String{
+    pub fn get_layout(&self) -> String {
         self.layout.clone()
     }
 
     #[wasm_bindgen(setter=layout)]
     pub fn set_layout(&mut self, layout: String) {
-        self.layout= layout;
+        self.layout = layout;
     }
 }

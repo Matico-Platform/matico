@@ -11,7 +11,7 @@ use wasm_bindgen::prelude::*;
 pub struct Dashboard {
     name: String,
     created_at: DateTime<Utc>,
-    pages: Vec<Page>
+    pages: Vec<Page>,
 }
 
 impl Default for Dashboard {
@@ -19,7 +19,7 @@ impl Default for Dashboard {
         Self {
             name: "New Dashboard".into(),
             created_at: Utc::now(),
-            pages: vec![]
+            pages: vec![],
         }
     }
 }
@@ -32,16 +32,15 @@ impl Dashboard {
     }
 
     #[wasm_bindgen(getter=pages)]
-    pub fn get_pages(&self)-> JsValue{
+    pub fn get_pages(&self) -> JsValue {
         JsValue::from_serde(&self.pages).unwrap()
     }
 
     #[wasm_bindgen(setter=pages)]
     pub fn set_pages(&mut self, pages: JsValue) {
         let pages_real = pages.into_serde().unwrap();
-        self.pages = pages_real; 
+        self.pages = pages_real;
     }
-
 
     #[wasm_bindgen(getter = name)]
     pub fn get_name(&self) -> String {
@@ -101,10 +100,10 @@ impl Dashboard {
         };
         res.into()
     }
-    
+
     pub fn to_yaml(&self) -> String {
         let yaml_str = serde_yaml::to_string(&self);
-        let res = match yaml_str{
+        let res = match yaml_str {
             Ok(s) => s,
             Err(e) => format!("{}", e),
         };
@@ -115,16 +114,15 @@ impl Dashboard {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ChartPane, LngLat, MapPane, Pane, PanePosition};
+    use crate::{ChartPane, View, MapPane, Pane, PanePosition};
 
     fn test_dash_builder() -> Dashboard {
         let map_pane: MapPane = Default::default();
 
-
         let dash = Dashboard {
             name: "Test Dash".into(),
             created_at: chrono::Utc::now(),
-            pages: vec![]
+            pages: vec![],
         };
         dash
     }

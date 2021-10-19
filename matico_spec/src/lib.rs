@@ -2,19 +2,21 @@ mod autocomplete;
 mod charts;
 mod dashboard;
 mod mapping;
+mod page;
 mod pane;
 mod section;
 mod validation;
-mod page;
+mod variables;
 
 use autocomplete::*;
 use charts::*;
 use dashboard::*;
 use mapping::*;
+use page::*;
 use pane::*;
 use section::*;
 use validation::*;
-use page::*;
+use variables::*;
 
 #[macro_use]
 extern crate matico_spec_derive;
