@@ -21,9 +21,9 @@ function selectLayout(layout_name: string){
 function selectPane(pane:any){
   switch(Object.keys(pane)[0]){
     case "Map":
-      return <MaticoMapPane {...pane.Map} />
+      return <MaticoMapPane key={pane.name} {...pane.Map} />
     case "Text":
-      return <MaticoTextPane {...pane.Text} />
+      return <MaticoTextPane  key={pane.name} {...pane.Text} />
     default:
       return null
   }

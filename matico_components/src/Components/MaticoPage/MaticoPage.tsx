@@ -20,7 +20,7 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ page }) => {
     return(
     <Box fill={true}>
       {page.sections.map(section =>(
-        <MaticoSection section={section}/>
+        <MaticoSection key={section.name} section={section}/>
       ))}
     </Box>
     )

@@ -1,13 +1,15 @@
-import React from "react";
-import { MapPane, LngLat} from "matico_spec";
+import React, {useEffect,useContext} from "react";
+import { MapPane, View} from "matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
 import { StaticMap } from "react-map-gl";
+import {MaticoStateContext,MaticoStateActionType} from '../../../Contexts/MaticoStateContext/MaticoStateContext'
 import DeckGL from "@deck.gl/react";
 import { Box } from "grommet";
 import ReactMapGL from "react-map-gl";
+import {MapLocVar} from "../../../Contexts/MaticoStateContext/VariableTypes";
 
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
-  inital_lng_lat: LngLat;
+  view: View;
   //TODO WE should properly type this from the matico_spec library. Need to figure out the Typescript integration better or witx
   base_map? :any;
 }
@@ -38,11 +40,58 @@ function getNamedStyleJSON(style: string) {
 
 
 export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
-  inital_lng_lat,
-  base_map 
+  view,
+  base_map,
+  name
 }) => {
 
+  const {state,dispatch} = useContext(MaticoStateContext)
+
+  useEffect(()=>{
+    //TODO: OBS fix this... not sure how to properly do this union
+    //@ts-ignore
+    console.log('dispatch ', view, view.var===undefined)
+    //@ts-ignore
+    if(view.var === undefined){
+    console.log("dispatching map state")
+      dispatch({
+        type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
+        payload: {
+          type:"mapLocVar",
+          name: `${name}_map_loc`,
+          value: view
+        }
+      })  
+    }
+  },[])
+
+  //TODO clean this up and properly type
+  const updateViewState = (viewStateUpdate: any)=>{
+    const viewState = viewStateUpdate.viewState
+    dispatch({
+      type: MaticoStateActionType.UPDATE_VARIABLE,
+      payload: {
+        type:"mapLocVar",
+        name: `${name}_map_loc`,
+        value:{
+          lat: viewState.latitude,
+          lng: viewState.longitude,
+          zoom: viewState.zoom,
+          pitch:viewState.pitch,
+          bearing:viewState.bearing
+        } 
+      }
+    })  
+  }
+
   let styleJSON = null;
+  //@ts-ignore
+  let variableName = view.var;
+
+  const inputView = [...state.autoVariables, ...state.declaredVariables].find(v=>v.name === variableName) as MapLocVar ;  
+  const actualView = inputView ? inputView.value : view
+
+  console.log("input view is ",variableName,inputView, actualView)
 
   if(base_map){
     if(base_map.Named){
@@ -53,19 +102,18 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     }
   }
 
-
-
   return (
     <Box fill={true}>
       <DeckGL
         width={"100%"}
         height={"100%"}
-        initialViewState={{
-          longitude: inital_lng_lat.lng,
-          latitude: inital_lng_lat.lat,
-          zoom: 7,
-        }}
+        initialViewState={{ 
+        latitude: actualView.lat ? actualView.lat : 0,
+        longitude: actualView.lng ? actualView.lng : 0,
+        zoom: actualView.zoom ? actualView.zoom : 7,
+        ...actualView}}
         controller={true}
+        onViewStateChange={updateViewState}
       >
         <StaticMap
           mapboxApiAccessToken={
