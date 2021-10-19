@@ -14,6 +14,7 @@
           "panes": [
             {
               "Map": {
+                "name": "simple_map",
                 "position": {
                   "width": 45,
                   "height": 100,
@@ -22,18 +23,18 @@
                   "x": 50,
                   "y": 0
                 },
-                "inital_lng_lat": {
-                  "lat": 50,
-                  "lng": 60
+                "view": {
+                  "var": "boring_map_map_loc"
                 },
-                "base_map":{
-                    "Named":"Satelite"
+                "base_map": {
+                  "Named": "Satelite"
                 },
                 "layers": []
               }
             },
             {
               "Text": {
+                "name": "Text_1",
                 "position": {
                   "width": 30,
                   "height": 36,
@@ -47,6 +48,7 @@
             },
             {
               "Text": {
+                "name": "Text_2",
                 "position": {
                   "width": 20,
                   "height": 30,
@@ -60,23 +62,120 @@
             },
             {
               "Map": {
+                "name": "boring_map",
                 "position": {
-                  "width": 45,
+                  "width": 50,
                   "height": 100,
                   "layer": 0,
                   "float": false,
                   "x": 0,
                   "y": 0
                 },
-                "inital_lng_lat": {
+                "view": {
                   "lat": 0,
-                  "lng": 100
+                  "lng": 10,
+                  "zoom": 9,
+                  "bearing": 0,
+                  "pitch": 0
                 },
                 "layers": []
               }
             }
           ],
           "layout": "free"
+        }
+      ]
+    },
+    {
+      "name": "four_up",
+      "order": 3,
+      "icon": "Grid",
+      "sections": [
+        {
+          "name": "main",
+          "order": 1,
+          "layout": "free",
+          "panes": [
+            {
+              "Map": {
+                "name": "map_one",
+                "position": {
+                  "width": 50,
+                  "height": 50,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "view": {
+                  "lat": 0,
+                  "lng": 10,
+                  "zoom": 9,
+                  "bearing": 0,
+                  "pitch": 0
+                },
+                "base_map":{"Named":"Satelite"},
+                "layers": []
+              }
+            },
+            {
+              "Map": {
+                "name": "map_two",
+                "position": {
+                  "width": 50,
+                  "height": 50,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 50
+                },
+                "view": {
+                  "var":"map_one_map_loc"
+                },
+                "base_map":{"Named":"CartoDBVoyager"},
+
+                "layers": []
+              }
+            },
+            {
+              "Map": {
+                "name": "map_three",
+                "position": {
+                  "width": 50,
+                  "height": 50,
+                  "layer": 0,
+                  "float": false,
+                  "x": 50,
+                  "y": 0
+                },
+                 "view": {
+                  "var":"map_one_map_loc"
+                },
+                "base_map":{"Named":"Terrain"},
+
+                "layers": []
+              }
+            },
+            {
+              "Map": {
+                "name": "map_four",
+                "position": {
+                  "width": 50,
+                  "height": 50,
+                  "layer": 0,
+                  "float": false,
+                  "x": 50,
+                  "y": 50
+                },
+                 "view": {
+                  "var":"map_one_map_loc"
+                },
+               "base_map":{"Named":"Streets"},
+
+                "layers": []
+              }
+            }
+          ]
         }
       ]
     },
@@ -92,6 +191,7 @@
           "panes": [
             {
               "Map": {
+                "name": "big_map",
                 "position": {
                   "width": 80,
                   "height": 100,
@@ -100,19 +200,22 @@
                   "x": 0,
                   "y": 0
                 },
-                "inital_lng_lat": {
+                "view": {
                   "lat": 40.7128,
                   "lng": -74.006,
-                  "zoom": 7
+                  "zoom": 7,
+                  "bearing": 0,
+                  "pitch": 0
                 },
-                "base_map":{
-                    "Named":"Terrain"
+                "base_map": {
+                  "Named": "Terrain"
                 },
                 "layers": []
               }
             },
             {
               "Text": {
+                "name": "sidebar",
                 "position": {
                   "width": 40,
                   "height": 100,
@@ -132,13 +235,15 @@
       "name": "Scinece",
       "order": 1,
       "icon": "Gremlin",
-      "content": "# Science rules \n For all of the science nerds \n\n ![puppycat](https://static.wikia.nocookie.net/beeandpuppycat/images/c/c9/Puppycat.png)"
+      "content": "# Science rules \n For all of the science nerds \n\n ![puppycat](https://static.wikia.nocookie.net/beeandpuppycat/images/c/c9/Puppycat.png)",
+      "path": "/science"
     },
     {
       "name": "goober",
       "order": 1,
       "icon": "Globe",
-      "content": "# Science rules \n For all of the science nerds \n\n ![puppycat](https://media4.giphy.com/media/5DgjxCBHRfaFO/giphy.gif)"
+      "content": "# Science rules \n For all of the science nerds \n\n ![puppycat](https://media4.giphy.com/media/5DgjxCBHRfaFO/giphy.gif)",
+      "path": "/goober"
     }
   ]
 }
