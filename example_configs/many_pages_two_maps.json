@@ -1,6 +1,14 @@
 {
   "name": "New Dashboard",
   "created_at": "2021-10-16T13:36:36.249Z",
+  "datasets": [
+    {
+      "GeoJSON": {
+        "name": "test",
+        "url": "https://data.cityofnewyork.us/api/geospatial/vfnx-vebw?method=export&format=GeoJSON"
+      }
+    }
+  ],
   "pages": [
     {
       "name": "home",
@@ -29,7 +37,15 @@
                 "base_map": {
                   "Named": "Satelite"
                 },
-                "layers": []
+                "layers": [{
+                    "name":"layer1",
+                    "source_name":"test",
+                    "order":1,
+                    "style":{
+                        "size":20,
+                        "color":"#222222"
+                    }
+                }]
               }
             },
             {
@@ -72,9 +88,10 @@
                   "y": 0
                 },
                 "view": {
-                  "lat": 0,
-                  "lng": 10,
-                  "zoom": 9,
+                  "lat": 40.79498338990195,
+                  "lng": -73.96771951293968,
+                  "zoom": 13
+                  ,
                   "bearing": 0,
                   "pitch": 0
                 },
@@ -114,7 +131,9 @@
                   "bearing": 0,
                   "pitch": 0
                 },
-                "base_map":{"Named":"Satelite"},
+                "base_map": {
+                  "Named": "Satelite"
+                },
                 "layers": []
               }
             },
@@ -130,10 +149,11 @@
                   "y": 50
                 },
                 "view": {
-                  "var":"map_one_map_loc"
+                  "var": "map_one_map_loc"
                 },
-                "base_map":{"Named":"CartoDBVoyager"},
-
+                "base_map": {
+                  "Named": "CartoDBVoyager"
+                },
                 "layers": []
               }
             },
@@ -148,11 +168,12 @@
                   "x": 50,
                   "y": 0
                 },
-                 "view": {
-                  "var":"map_one_map_loc"
+                "view": {
+                  "var": "map_one_map_loc"
                 },
-                "base_map":{"Named":"Terrain"},
-
+                "base_map": {
+                  "Named": "Terrain"
+                },
                 "layers": []
               }
             },
@@ -167,11 +188,12 @@
                   "x": 50,
                   "y": 50
                 },
-                 "view": {
-                  "var":"map_one_map_loc"
+                "view": {
+                  "var": "map_one_map_loc"
                 },
-               "base_map":{"Named":"Streets"},
-
+                "base_map": {
+                  "Named": "Streets"
+                },
                 "layers": []
               }
             }

@@ -1,0 +1,121 @@
+{
+  "name": "New Dashboard",
+  "created_at": "2021-10-16T13:36:36.249Z",
+  "datasets": [
+    {
+      "GeoJSON": {
+        "name": "test",
+        "url": "https://data.cityofnewyork.us/api/geospatial/vfnx-vebw?method=export&format=GeoJSON"
+      }
+    },
+    {
+      "GeoJSON": {
+        "name": "districts",
+        "url": "https://data-beta-nyc-files.s3.amazonaws.com/resources/808dd602-ccde-47f2-8b25-d740e5feaddd/729dfdb2ffc941c085d48c20407d4f21nycstateassemblydistricts2013.geojson?Signature=uyvLHCXqcGzHwyDhTReSyznF6y0%3D&Expires=1634913737&AWSAccessKeyId=AKIAWM5UKMRH2KITC3QA"
+      }
+    },
+    {
+        "GeoJSON":{
+            "name":"health",
+            "url":"https://data-beta-nyc-files.s3.amazonaws.com/resources/5966677d-43f2-409a-b0df-45b54c922fd2/2aa9c8d0687c4fa3835879b5e741f859nychealthareadistricts.geojson?Signature=ETpMWR4bXGa7oQ707RiQuII6lqk%3D&Expires=1634916119&AWSAccessKeyId=AKIAWM5UKMRH2KITC3QA"
+        }
+    }
+  ],
+  "pages": [
+    {
+      "name": "home",
+      "order": 1,
+      "icon": "Home",
+      "path": "/",
+      "sections": [
+        {
+          "name": "simple_map",
+          "order": 1,
+          "panes": [
+            
+            {
+              "Map": {
+                "name": "map_with_data",
+                "position": {
+                  "width": 50,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "view": {
+                  "lat": 40.79498338990195,
+                  "lng": -73.96771951293968,
+                  "zoom": 13
+                  ,
+                  "bearing": 0,
+                  "pitch": 0
+                },
+                "layers": [{
+                    "source_name":"test",
+                    "name":"sq",
+                    "order":2,
+                    "style":{
+                        "color":[55,44,255,255]
+                    }
+                },
+                {
+                    "source_name":"districts",
+                    "name":"districts",
+                    "order":1,
+                    "style":{
+                        "color":[66,44,33,100]
+                    }
+                }]
+              }
+            },
+            {
+                "Text":{
+                    "position": {
+                  "width": 20,
+                  "height": 4,
+                  "layer": 3,
+                  "float": false,
+                  "x": 15,
+                  "y": 95
+                },
+                "name":"text_label",
+                "content":"Squirles and districts"
+                    
+                }
+            },
+            {
+              "Map": {
+                "name": "health",
+                "position": {
+                  "width": 50,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 50,
+                  "y": 0
+                },
+                "view": {
+                  "var":"map_with_data_map_loc"
+                },
+                "base_map":{
+                    "Named":"Satelite"
+                },
+                "layers": [{
+                    "source_name":"health",
+                    "name":"health",
+                    "order":1,
+                    "style":{
+                        "color":[0,255,33,150]
+                    }
+                }]
+              }
+            }
+          ],
+          "layout": "free"
+        }
+      ]
+    }
+  ]
+}
