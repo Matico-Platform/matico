@@ -33,7 +33,10 @@ impl Default for BaseMap {
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe)]
-pub struct LayerStyle {}
+pub struct LayerStyle {
+    size: Option<f32>,
+    color:Option<[f32;4]>,
+}
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
 pub struct Layer {
