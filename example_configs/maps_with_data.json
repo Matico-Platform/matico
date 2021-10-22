@@ -4,21 +4,21 @@
   "datasets": [
     {
       "GeoJSON": {
-        "name": "test",
+        "name": "squirrels",
         "url": "https://data.cityofnewyork.us/api/geospatial/vfnx-vebw?method=export&format=GeoJSON"
       }
     },
     {
       "GeoJSON": {
         "name": "districts",
-        "url": "https://data-beta-nyc-files.s3.amazonaws.com/resources/808dd602-ccde-47f2-8b25-d740e5feaddd/729dfdb2ffc941c085d48c20407d4f21nycstateassemblydistricts2013.geojson?Signature=uyvLHCXqcGzHwyDhTReSyznF6y0%3D&Expires=1634913737&AWSAccessKeyId=AKIAWM5UKMRH2KITC3QA"
+        "url": "https://data.cityofnewyork.us/api/geospatial/h4i2-acfi?method=export&format=GeoJSON"
       }
     },
     {
-        "GeoJSON":{
-            "name":"health",
-            "url":"https://data-beta-nyc-files.s3.amazonaws.com/resources/5966677d-43f2-409a-b0df-45b54c922fd2/2aa9c8d0687c4fa3835879b5e741f859nychealthareadistricts.geojson?Signature=ETpMWR4bXGa7oQ707RiQuII6lqk%3D&Expires=1634916119&AWSAccessKeyId=AKIAWM5UKMRH2KITC3QA"
-        }
+      "GeoJSON": {
+        "name": "health",
+        "url": "https://data.cityofnewyork.us/api/geospatial/b55q-34ps?method=export&format=GeoJSON"
+      }
     }
   ],
   "pages": [
@@ -32,7 +32,6 @@
           "name": "simple_map",
           "order": 1,
           "panes": [
-            
             {
               "Map": {
                 "name": "map_with_data",
@@ -47,32 +46,44 @@
                 "view": {
                   "lat": 40.79498338990195,
                   "lng": -73.96771951293968,
-                  "zoom": 13
-                  ,
+                  "zoom": 13,
                   "bearing": 0,
                   "pitch": 0
                 },
-                "layers": [{
-                    "source_name":"test",
-                    "name":"sq",
-                    "order":2,
-                    "style":{
-                        "color":[55,44,255,255]
+                "layers": [
+                  {
+                    "source_name": "squirrels",
+                    "name": "squirrels",
+                    "order": 10,
+                    "style": {
+                      "color": [
+                        55,
+                        44,
+                        255,
+                        255
+                      ],
+                      "size": 10
                     }
-                },
-                {
-                    "source_name":"districts",
-                    "name":"districts",
-                    "order":1,
-                    "style":{
-                        "color":[66,44,33,100]
+                  },
+                  {
+                    "source_name": "districts",
+                    "name": "districts",
+                    "order": 1,
+                    "style": {
+                      "color": [
+                        66,
+                        44,
+                        33,
+                        100
+                      ]
                     }
-                }]
+                  }
+                ]
               }
             },
             {
-                "Text":{
-                    "position": {
+              "Text": {
+                "position": {
                   "width": 20,
                   "height": 4,
                   "layer": 3,
@@ -80,10 +91,23 @@
                   "x": 15,
                   "y": 95
                 },
-                "name":"text_label",
-                "content":"Squirles and districts"
-                    
-                }
+                "name": "text_label",
+                "content": "Squirles and districts"
+              }
+            },
+            {
+              "Text": {
+                "position": {
+                  "width": 30,
+                  "height": 30,
+                  "layer": 3,
+                  "float": false,
+                  "x": 10,
+                  "y": 10
+                },
+                "name": "text_label",
+                "content": "fur color: #{map_with_data_map_squirrels_hover.properties.primary_fur_color} \n\n  ![sq](https://c.tenor.com/09uldTF_OnIAAAAM/squirrel-dancing-squirrel.gif) \n\n #{map_with_data_map_loc.lat}"
+              }
             },
             {
               "Map": {
@@ -97,19 +121,26 @@
                   "y": 0
                 },
                 "view": {
-                  "var":"map_with_data_map_loc"
+                  "var": "map_with_data_map_loc"
                 },
-                "base_map":{
-                    "Named":"Satelite"
+                "base_map": {
+                  "Named": "Satelite"
                 },
-                "layers": [{
-                    "source_name":"health",
-                    "name":"health",
-                    "order":1,
-                    "style":{
-                        "color":[0,255,33,150]
+                "layers": [
+                  {
+                    "source_name": "health",
+                    "name": "health",
+                    "order": 1,
+                    "style": {
+                      "color": [
+                        0,
+                        255,
+                        33,
+                        150
+                      ]
                     }
-                }]
+                  }
+                ]
               }
             }
           ],
