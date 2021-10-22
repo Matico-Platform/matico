@@ -13,11 +13,16 @@
     "./matico_components",
     "./editor"
   ],
+  "homepage": "https://stuartlynn.github.io/matico_spec_test",
   "scripts": {
-    "start": "concurrently \"cd matico_components && yarn watch\" \"cd editor && yarn start\" "
+    "predeploy": "yarn run build",
+    "start": "concurrently \"cd matico_components && yarn watch\" \"cd editor && yarn start\" ",
+    "build": " (cd matico_spec && wasm-pack build) && yarn workspace matico_components build && yarn workspace editor build",
+    "deploy": "gh-pages -d editor/build"
   },
   "devDependencies": {
-    "concurrently": "^6.3.0"
+    "concurrently": "^6.3.0",
+    "gh-pages": "^3.2.3"
   },
   "packageManager": "yarn@3.0.2",
   "dependencies": {
