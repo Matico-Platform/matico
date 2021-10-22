@@ -10,14 +10,14 @@ import DeckGL from "@deck.gl/react";
 import { Box } from "grommet";
 import ReactMapGL from "react-map-gl";
 import { MapLocVar } from "../../../Contexts/MaticoStateContext/VariableTypes";
-import {MaticoDataContext} from "../../../Contexts/MaticoDataContext/MaticoDataContext";
-import {GeoJsonLayer} from '@deck.gl/layers';
+import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
+import { GeoJsonLayer } from "@deck.gl/layers";
 
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
   //TODO WE should properly type this from the matico_spec library. Need to figure out the Typescript integration better or witx
   base_map?: any;
-  layers?: Array<any>
+  layers?: Array<any>;
 }
 
 function getNamedStyleJSON(style: string) {
@@ -48,42 +48,61 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   view,
   base_map,
   name,
-  layers
+  layers,
 }) => {
   const { state, dispatch } = useContext(MaticoStateContext);
-  const { state: dataState} = useContext(MaticoDataContext);
+  const { state: dataState } = useContext(MaticoDataContext);
 
-  const mapLayers = layers.sort((a,b)=> a.order - b.order).map((layer)=>{
+  const mapLayers = layers
+    .sort((a, b) => a.order - b.order)
+    .map((layer) => {
+      const dataset = dataState.datasets.find((d) => {
+        console.log("in find ", d.name, layer.source_name);
+        return d.name === layer.source_name;
+      });
 
-    const dataset  = dataState.datasets.find(d=> {
-      console.log("in find ", d.name, layer.source_name)
-      return d.name === layer.source_name
+      console.log("Doing layer ", layer, dataset);
+      if (!dataset || !dataset.isReady()) {
+        return;
+      }
+      console.log("generating layer from dataset ", dataset, dataset.getData());
+      return new GeoJsonLayer({
+        id: layer.name,
+        data: dataset.getData(),
+        filled: true,
+        getFillColor: layer.style.color ? layer.style.color : [255, 0, 0, 100],
+        pointRadiusUnits: "pixels",
+        getPointRadius: layer.style.size ? layer.style.size : 20,
+        getBorderColor: [0, 255, 0, 100],
+        stroked: true,
+        getLineWidth: 10,
+        pickable: true,
+        onHover: (hoverTarget) =>
+          dispatch({
+            type: MaticoStateActionType.UPDATE_VARIABLE,
+            payload: {
+              name: `${name}_map_${layer.name}_hover`,
+              type: "any",
+              value: hoverTarget.object,
+            },
+          }),
+        onClick: (clickTarget) =>
+          dispatch({
+            type: MaticoStateActionType.UPDATE_VARIABLE,
+            payload: {
+              name: `${name}_map_${layer.name}_click`,
+              type: "any",
+              value: clickTarget.object,
+            },
+          }),
+      });
     })
-    
-    console.log("Doing layer ", layer,dataset)
-    if(!dataset || !dataset.isReady()) {return }
-    console.log('generating layer from dataset ', dataset, dataset.getData()) 
-    return new GeoJsonLayer({
-      id: layer.name,
-      data: dataset.getData(),
-      filled: true,
-      getFillColor: layer.style.color? layer.style.color : [255,0,0,100],
-      pointRadiusUnits:'pixels',
-      getPointRadius:layer.style.size ? layer.style.size : 20,
-      getBorderColor: [0,255,0,100],
-      stroked: true,
-      getLineWidth: 10,
-      pickable: true,
-    })
-  }).filter(l=>l)
+    .filter((l) => l);
 
-
-  console.log("Map layers are ", mapLayers, dataState, layers)
+  console.log("Map layers are ", mapLayers, dataState, layers);
 
   useEffect(() => {
     //TODO: OBS fix this... not sure how to properly do this union
-    //@ts-ignore
-    console.log("dispatch ", view, view.var === undefined);
     //@ts-ignore
     if (view.var === undefined) {
       if (state.autoVariables.find((v) => v.name === `${name}_map_loc`)) {
@@ -99,6 +118,40 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
       });
     }
   }, []);
+
+  useEffect(() => {
+    layers.forEach((layer) => {
+      if (
+        !state.autoVariables.find(
+          (v) => v.name === `${name}_map_${layer.name}_hover`
+        )
+      ) {
+        dispatch({
+          type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
+          payload: {
+            type: "any",
+            name: `${name}_map_${layer.name}_hover`,
+            value: null,
+          },
+        });
+      }
+
+      if (
+        !state.autoVariables.find(
+          (v) => v.name === `${name}_map_${layer.name}_select`
+        )
+      ) {
+        dispatch({
+          type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
+          payload: {
+            type: "any",
+            name: `${name}_map_${layer.name}_select`,
+            value: null,
+          },
+        });
+      }
+    });
+  }, [layers]);
 
   //TODO clean this up and properly type
   const updateViewState = (viewStateUpdate: any) => {
@@ -136,8 +189,6 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     }
   }
 
-  
-
   return (
     <Box fill={true}>
       <DeckGL
@@ -146,7 +197,9 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
         initialViewState={{
           latitude: actualView.lat ? actualView.lat : 0,
           longitude: actualView.lng ? actualView.lng : 0,
-          zoom: actualView.zoom ? actualView.zoom : 7, ...actualView, }}
+          zoom: actualView.zoom ? actualView.zoom : 7,
+          ...actualView,
+        }}
         controller={true}
         onViewStateChange={updateViewState}
         layers={mapLayers}

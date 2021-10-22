@@ -11,6 +11,12 @@ export type NumberVar ={
     value: number
 }
 
+export type AnyVar={
+  type:'any',
+  name:string,
+  value: any
+}
+
 export type MapLocVar={
     type: 'mapLocVar',
     name: string,
@@ -23,4 +29,4 @@ export type MapLocVar={
     } 
 }
 
-export type MaticoStateVariable = StringVar | NumberVar | MapLocVar;
+export type MaticoStateVariable = StringVar | NumberVar | MapLocVar | AnyVar;
