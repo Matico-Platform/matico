@@ -5,11 +5,12 @@ import AceEditor from "react-ace";
 import ace, { Ace } from "ace-builds";
 
 import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-github";
 import { useSpec } from "./hooks/useSpec";
 import { ValidationResult, Dashboard } from "matico_spec";
-import { MaticoApp , MaticoVariableState } from "matico_components";
-import ReactJson from 'react-json-view'
+import { MaticoApp, MaticoVariableState, MaticoDataState } from "matico_components";
+import ReactJson from "react-json-view";
 
 function json_error_to_annotation(error: string) {
   const rg = /(.*)at line (\d+) column (\d+)/;
@@ -35,8 +36,9 @@ function App() {
   const [parseResult, setParseResult] = useState<ValidationResult | null>(null);
   const [validJSON, setValidJSON] = useState<boolean>(true);
   const [jsonError, setJsonError] = useState<any | null>(null);
-  const [appState, setAppState] = useState<MaticoVariableState | null>(null)
-  const [tab, setTab] = useState<string>('spec');
+  const [appState, setAppState] = useState<MaticoVariableState | null>(null);
+  const [datasetState, setDatasetState] = useState<MaticoDataState| null>(null);
+  const [tab, setTab] = useState<"spec" | "state" | "data"  | "yaml">("spec");
 
   const annotations: Ace.Annotation[] = jsonError
     ? json_error_to_annotation(jsonError)
@@ -47,10 +49,7 @@ function App() {
       try {
         const dash = spec.Dashboard.from_json(code);
         setParseResult(dash.is_valid());
-        setDashboard(dash)
-        if(dash.is_valid()){
-          console.log(dash.to_yaml());
-        }
+        setDashboard(dash);
         setValidJSON(true);
         setJsonError(null);
       } catch (e) {
@@ -64,24 +63,22 @@ function App() {
   useEffect(() => {
     if (spec && isReady) {
       const storedCode = window.localStorage.getItem("code");
-      if (storedCode && storedCode!=="{}") {
+      if (storedCode && storedCode !== "{}") {
         setCode(storedCode);
-        try{
+        try {
           const dash = spec.Dashboard.from_json(storedCode);
-          setDashboard(dash)
-        }
-        catch{
-        }
+          setDashboard(dash);
+        } catch {}
       } else {
-      const newDash = new spec.Dashboard();
-      setDashboard(newDash);
-      setCode(JSON.stringify(newDash.to_js(), null, 2));
+        const newDash = new spec.Dashboard();
+        setDashboard(newDash);
+        setCode(JSON.stringify(newDash.to_js(), null, 2));
       }
     }
   }, [spec, isReady]);
 
   useEffect(() => {
-    if(code !=="{}"){
+    if (code !== "{}") {
       console.log("updating local storage");
       window.localStorage.setItem("code", code);
     }
@@ -107,41 +104,157 @@ function App() {
         gridTemplateAreas: `
         "code result"
         "errors actions"`,
-        alignItems:"center",
-        justifyContent:"stretch",
+        alignItems: "center",
+        justifyContent: "stretch",
         height: "100%",
         width: "100%",
       }}
     >
-      <div style={{gridArea:"code", width:"100%", height:"100%", minWidth:"500px", resize:"horizontal", display: 'flex', flexDirection:'column'}}>
-        <div style={{display:"flex", justifyContent:'space-around', padding:"10px 0px", borderBottom:'solid 1px grey'}}>
-          <span onClick={()=>setTab('spec')} style={{cursor:'pointer',fontWeight: tab==='spec' ? 'bold' : 'normal'}}>Show Spec</span> 
-          <span onClick={()=>setTab('state')} style={{cursor:'pointer',fontWeight: tab==='state' ? 'bold' : 'normal'}}>Show State</span> 
-        </div>
-        { tab==='spec' && 
-        <AceEditor
-          mode={"json"}
-          theme="github"
-          onChange={(changes: any) => setCode(changes)}
-          value={code}
-          fontSize={20}
-          annotations={annotations}
-          style={{  width:"100%",height:"100%", flex:1, resize:'horizontal'}}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
+      <div
+        style={{
+          gridArea: "code",
+          width: "100%",
+          height: "100%",
+          minWidth: "500px",
+          resize: "horizontal",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            padding: "10px 0px",
+            borderBottom: "solid 1px grey",
           }}
-          />}
+        >
+          <span
+            onClick={() => setTab("spec")}
+            style={{
+              cursor: "pointer",
+              fontWeight: tab === "spec" ? "bold" : "normal",
+            }}
+          >
+            Spec
+          </span>
+          <span
+            onClick={() => setTab("state")}
+            style={{
+              cursor: "pointer",
+              fontWeight: tab === "state" ? "bold" : "normal",
+            }}
+          >
+            State
+          </span>
+          <span
+            onClick={() => setTab("data")}
+            style={{
+              cursor: "pointer",
+              fontWeight: tab === "data" ? "bold" : "normal",
+            }}
+          >
+            Datasets 
+          </span>
+          <span
+            onClick={() => setTab("yaml")}
+            style={{
+              cursor: "pointer",
+              fontWeight: tab === "yaml" ? "bold" : "normal",
+            }}
+          >
+            YAML 
+          </span>
+        </div>
+        {tab === "spec" && (
+          <AceEditor
+            mode={"json"}
+            theme="github"
+            onChange={(changes: any) => setCode(changes)}
+            value={code}
+            fontSize={20}
+            annotations={annotations}
+            style={{
+              width: "100%",
+              height: "100%",
+              flex: 1,
+              resize: "horizontal",
+            }}
+            setOptions={{
+              enableBasicAutocompletion: true,
+              enableLiveAutocompletion: true,
+              enableSnippets: true,
+            }}
+          />
+        )}
 
-          { (tab==='state' && appState) && 
-            <div style={{width:"100%", height:"100%", flex:1,  textAlign:'left'}}>
-              <ReactJson  src={appState} />
-            </div>
-          }
+        {tab === "state" && appState && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              flex: 1,
+              textAlign: "left",
+              overflowY:'auto'
+            }}
+          >
+            <ReactJson style={{fontSize:15}} src={appState} />
+          </div>
+        )}
+
+        {tab === "data" && datasetState && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              flex: 1,
+              textAlign: "left",
+              overflowY:'auto'
+            }}
+          >
+            <ReactJson style={{fontSize:15, maxHeight:"1300px", overflowY:'auto'}} src={datasetState} />
+          </div>
+        )}
+        {tab === "yaml" && appState && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              flex: 1,
+              textAlign: "left",
+            }}
+          >
+            <AceEditor
+              mode={"yaml"}
+              theme="github"
+              value={dashboard?.to_yaml()}
+              fontSize={20}
+              style={{
+                width: "100%",
+                height: "100%",
+                flex: 1,
+                resize: "horizontal",
+              }}
+            />
+          </div>
+        )}
       </div>
-      <div style={{ gridArea: "result", width:"100%", height:"100%", overflowY:'auto' }}>
-        {dashboard && <MaticoApp onStateChange={setAppState} spec={dashboard.to_js()} />}
+      <div
+        style={{
+          gridArea: "result",
+          width: "100%",
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
+        {dashboard && (
+          <MaticoApp
+            basename={process.env.PUBLIC_URL}
+            onStateChange={setAppState}
+            onDataChange= {setDatasetState}
+            spec={dashboard.to_js()}
+          />
+        )}
       </div>
       <div style={{ gridArea: "errors" }}>
         {validJSON
