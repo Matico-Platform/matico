@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@danmarshall/deckgl-typings": "^4.9.7",
+    "@deck.gl/layers": "^8.6.0",
     "@deck.gl/react": "^8.6.0",
     "@parcel/transformer-react-refresh-wrap": "^2.0.0",
     "@swc/helpers": "^0.2.13",
@@ -40,7 +41,8 @@
     "rehype-katex": "^6.0.1",
     "remark-gfm": "^3.0.0",
     "remark-math": "^5.1.0",
-    "styled-components": "^5.3.1"
+    "styled-components": "^5.3.1",
+    "traverse": "^0.6.6"
   },
   "peerDependencies": {
     "react": "^17.0.2",
