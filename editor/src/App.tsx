@@ -212,7 +212,7 @@ function App() {
               overflowY:'auto'
             }}
           >
-            <ReactJson style={{fontSize:15, maxHeight:"1300px", overflowY:'auto'}} src={datasetState} />
+            <ReactJson style={{fontSize:15, maxHeight:"1300px", overflowY:'auto'}} collapsed={3} src={datasetState} />
           </div>
         )}
         {tab === "yaml" && appState && (

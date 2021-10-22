@@ -35,8 +35,6 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> =({children})
         </FreePane>)
 
         //@ts-ignore
-        console.log("pane is draggable ? ", child.props.float)
-        //@ts-ignore
         return  child.props.float ? <Draggable>{pane}</Draggable> : pane
         
     })}

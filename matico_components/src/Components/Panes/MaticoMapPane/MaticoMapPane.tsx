@@ -21,7 +21,6 @@ interface MaicoMapPaneInterface extends MaticoPaneInterface {
 }
 
 function getNamedStyleJSON(style: string) {
-  console.log("Getting style json for ", style);
   switch (style) {
     case "CartoDBPositron":
       return "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
@@ -57,15 +56,12 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     .sort((a, b) => a.order - b.order)
     .map((layer) => {
       const dataset = dataState.datasets.find((d) => {
-        console.log("in find ", d.name, layer.source_name);
         return d.name === layer.source_name;
       });
 
-      console.log("Doing layer ", layer, dataset);
       if (!dataset || !dataset.isReady()) {
         return;
       }
-      console.log("generating layer from dataset ", dataset, dataset.getData());
       return new GeoJsonLayer({
         id: layer.name,
         data: dataset.getData(),
@@ -98,8 +94,6 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
       });
     })
     .filter((l) => l);
-
-  console.log("Map layers are ", mapLayers, dataState, layers);
 
   useEffect(() => {
     //TODO: OBS fix this... not sure how to properly do this union
