@@ -75,7 +75,7 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({
                 )}
                 {activeMode === ColorMappingTypes.Category && (
                     <CategoryColorSelector
-                        spec={colorSpecification.category_color!}
+                        spec={colorSpecification.color_by_value!}
                         onUpdate={(spec) =>
                             onUpdate({ category_color: spec })
                         }

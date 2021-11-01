@@ -20,6 +20,8 @@ export const QueryPane: React.FC<QueryPaneProps> = ({
     error,
 }) => {
     const [query, onChange] = useState<any>(null);
+    const [selectedQuery, onSelectedQueryChange] =
+        useState<Query | null>(null);
     const defaultQuery = `select * from ${table}`;
     const runQuery = () => {
         onQuery(query);
@@ -30,6 +32,11 @@ export const QueryPane: React.FC<QueryPaneProps> = ({
 
     return (
         <Styles.QueryPane>
+            <QueryBrowser
+                selectedQuery={selectedQuery}
+                onSelectQuery={onSelectedQueryChange}
+            />
+
             <AceEditor
                 defaultValue={defaultQuery}
                 mode="postgressql"
@@ -37,7 +44,7 @@ export const QueryPane: React.FC<QueryPaneProps> = ({
                 onChange={onChange}
                 name="sql"
                 fontSize="25px"
-                style={{ width: '100%' }}
+                style={{ width: '100%', flex: 1 }}
                 editorProps={{ $blockScrolling: true }}
             />
             <Styles.ButtonsAndErrors>

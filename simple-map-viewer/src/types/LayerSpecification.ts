@@ -1,4 +1,4 @@
-import {DiscreteQuantizer,ContinuiousQuantizer,ContinuiousRange} from './Quantizers'
+import {EqualIntervalQuantizer, QuantileQuantizer, CategoryQuantizer} from './Quantizers'
 import {QuerySource,DatasetSource,RawQuerySource,GeoJSONSource} from './Sources'
 
 export const DefaultFillColor: Color = [140, 170, 180, 90];
@@ -10,21 +10,44 @@ export enum Unit {
 
 export interface ValueSpecification {
     column?: string;
-    simpleValue?: number;
-    discreteQuantizer?: DiscreteQuantizer;
-    continuiousQuantizer?: ContinuiousQuantizer;
-    continuiousRange?: ContinuiousRange;
+    categories: CategoryQuantizer; 
+    custom_bins?: number[];
+    quantiles?: QuantileQuantizer;
+    equal_interval?: EqualIntervalQuantizer;
+    custom?: (value: number)=> number;
     // discreteRange?: DiscreteRange;
+}
+
+//Placeholder
+export interface ValueMapper{
+  mapping_type: string 
+}
+
+export interface ColorPallet{
+    name: string,
+}
+
+export interface ColorRange{
+  colors: Color[];
+  padding?: number[];
+}
+
+export interface ColorSpecification{
+  custom?: Color[];
+  range?: ColorRange; 
+  pallet?: ColorPallet;
+  
 }
 
 export interface ValueColorSpecification {
     values: ValueSpecification;
-    colors: Color[];
+    colors: ColorSpecification;
 }
 
-export interface ColorSpecification {
+
+export interface ColorMapper{
     single_color?: SingleColorSpecification;
-    category_color?: CategoryColorSpecification;
+    color_by_value?: ValueColorSpecification;
 }
 
 export enum ScaleFunc {
@@ -119,9 +142,9 @@ export type LayerSource =
 
 
 export interface PointStyle {
-    fill: ColorSpecification;
+    fill: ColorMapper;
     size: number;
-    stroke: ColorSpecification;
+    stroke: ColorMapper;
     stroke_width: number;
     opacity: number;
     size_units: Unit;
@@ -129,8 +152,8 @@ export interface PointStyle {
 }
 
 export interface PolygonStyle {
-    fill: ColorSpecification;
-    stroke: ColorSpecification;
+    fill: ColorMapper;
+    stroke: ColorMapper;
     stroke_width: number;
     opacity: number;
     stroke_units: Unit;
@@ -138,9 +161,7 @@ export interface PolygonStyle {
 }
 
 export interface LineStyle {
-    stroke: ColorSpecification;
+    stroke: ColorMapper;
     stroke_width: number;
     opacity: number;
 }
-
-

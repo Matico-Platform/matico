@@ -1,6 +1,6 @@
 import React from 'react';
 import { Styles } from './DashboardViewerStyles';
-import { BaseMap, Dashboard, Layer, ColorSpecification} from 'types';
+import { BaseMap, Dashboard, Layer, ColorMapper} from 'types';
 import DeckGL from '@deck.gl/react';
 import { MVTLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
@@ -29,21 +29,25 @@ function lookupBaseMapURL(basemap: BaseMap | undefined) {
     }
 }
 
-function colorSpecificationToGLSpec(color: ColorSpecification) {
+function colorSpecificationToGLSpec(color: ColorMapper) {
     if (color.single_color) {
         return color.single_color.color;
-    } else if (color.category_color) {
-        const spec = color.category_color;
-        const colorSelector = (f: any) => {
-            const cat = `${f.properties[spec.column]}`;
-            const index = spec.categories.findIndex((c) => c === cat);
-            if (index >= 0) {
-                return spec.colors[index];
-            } else {
-                return spec.colors[spec.colors.length - 1];
-            }
-        };
+    } else if (color.color_by_value) {
+
+        const spec = color.color_by_value;
+
+        if(spec.values.categories){
+          const colorSelector = (f: any) => {
+              const cat = `${f.properties[spec.column]}`;
+              const index = spec.categories.findIndex((c) => c === cat);
+              if (index >= 0) {
+                  return spec.colors[index];
+              } else {
+                  return spec.colors[spec.colors.length - 1];
+              }
+          };
         return colorSelector;
+        } 
     }
 }
 

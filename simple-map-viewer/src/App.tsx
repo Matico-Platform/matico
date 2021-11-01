@@ -7,7 +7,7 @@ import { DashboardBuilderPage } from 'Pages/DashboardBuilderPage/DashboardBuilde
 import { ModalContainer } from 'react-router-modal';
 import { useUser } from 'Contexts/UserContext';
 import { ProfilePage } from 'Pages/ProfilePage/ProfilePage';
-
+import { Playground } from 'Pages/Playground/Playground';
 import { AppLayout, NavArea } from './Components/Layout/Layout';
 import {
     NavBar,
@@ -89,6 +89,9 @@ export const App: React.FC = () => {
                     </Route>
                     <Route exact={true} path="/dashboards">
                         <DashboardsPage />
+                    </Route>
+                    <Route exact={true} path="/playground">
+                        <Playground />
                     </Route>
                     <Route
                         exact={true}

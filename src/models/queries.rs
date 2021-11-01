@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::convert::From;
 use std::fmt::{Display, Formatter};
+use serde_json::json;
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -242,8 +243,21 @@ impl Query {
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let f = format.unwrap_or_default();
+
+        //TODO Move this to PostgisQueryRunner
+        let metadata = PostgisQueryRunner::run_query_meta(pool, &query).await?;
+
+
         let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;
-        Ok(result.to_string())
+
+        let result_with_metadata = json!({
+            "data":result,
+            "metadata":{
+                "total": metadata.total
+            }
+        });
+
+        Ok(result_with_metadata.to_string())
     }
 
     pub async fn run(

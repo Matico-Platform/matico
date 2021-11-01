@@ -57,16 +57,19 @@ export const NumericalSelector: React.FC<NumericalSelectorProps> = ({
     };
 
     const [activeMode, setActiveMode] = useState<ValueMappingTypes>(
-        ValueMappingTypes.Simple
-    )
+        ValueMappingTypes.Simple,
+    );
 
     return (
         <section>
             <Styles.Header>
                 <label>{name}</label>
                 <Styles.Modes>
-                    <p className='icon' 
-                        onClick={() => setActiveMode(ValueMappingTypes.Simple)}
+                    <p
+                        className="icon"
+                        onClick={() =>
+                            setActiveMode(ValueMappingTypes.Simple)
+                        }
                         style={{
                             cursor: 'pointer',
                             color:
@@ -87,7 +90,9 @@ export const NumericalSelector: React.FC<NumericalSelectorProps> = ({
                                     : 'grey',
                         }}
                         icon={faCalculator}
-                        onClick={() => setActiveMode(ValueMappingTypes.Value)}
+                        onClick={() =>
+                            setActiveMode(ValueMappingTypes.Value)
+                        }
                     />
                 </Styles.Modes>
             </Styles.Header>
@@ -115,25 +120,31 @@ export const NumericalSelector: React.FC<NumericalSelectorProps> = ({
                     }}
                 />
             )}
-            {selectedColumn && (
+            {selectedColumn && valueSpecification && (
                 <>
-                {ValueMappingTypes.Simple && 
-                    <div>
-                        <input
-                            value={valueSpecificiation.simpleValue!}
-                            type="number"
-                            onChange={(e) =>
-                                onUpdate({simpleValue: parseFloat(e.target.value)}))
-                            }
-                        />
-                    </div>
-                }
-                <Categorizer
-                    column={selectedColumn}
-                    source={source}
-                    method={method}
-                    onUpdate={setMethod}
-                />
+                    {ValueMappingTypes.Simple && (
+                        <div>
+                            <input
+                                value={
+                                    valueSpecification.simpleValue!
+                                }
+                                type="number"
+                                onChange={(e) =>
+                                    onUpdate({
+                                        simpleValue: parseFloat(
+                                            e.target.value,
+                                        ),
+                                    })
+                                }
+                            />
+                        </div>
+                    )}
+                    <Categorizer
+                        column={selectedColumn}
+                        source={source}
+                        method={method}
+                        onUpdate={setMethod}
+                    />
                 </>
             )}
         </section>

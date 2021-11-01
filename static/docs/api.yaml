@@ -1,15 +1,15 @@
 swagger: "2.0"
 info:
-  description: "Modest Map Maker is a server for persisting geospatial(and non-geospatial) data for use in building dashboards, visuzlisations, apps and API's"
+  description: "Matico is a server for persisting geospatial(and non-geospatial) data for use in building dashboards, visuzlisations, apps and API's"
   version: "1.0.0"
-  title: "Modest Map Maker"
+  title: "Matico"
   termsOfService: "http://www.wtfpl.net/"
   contact:
     email: "stuart.lynn@gmail.com"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "modestmapmaker.com"
+host: "matico.com"
 basePath: "/api"
 tags:
   - name: "datasets"
@@ -244,6 +244,141 @@ paths:
         200:
           description: Successfully deleted
 
+  /datasets/{dataset_id}/columns/:
+    get:
+      tags:
+        - "datasets"
+        - "columns"
+      description: Endpoint to get metadata about the columns contained in a dataset 
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+      responses:
+        200:
+          description: The column metadata 
+
+  /datasets/{dataset_id}/columns/{column_id}:
+    get:
+      tags:
+        - "datasets"
+        - "columns"
+      description: Endpoint to interact with columns 
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+        - in: path
+          name: column_id 
+          type: string
+          required: true
+          description: The id of the column to interact with.
+      responses:
+        200:
+          description: Column metdata
+    delete:
+      tags:
+        - datasets
+        - columns 
+      description: Remove the column from the dataset  
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: column_id 
+          type: string
+          format: uuid
+          required: true
+          description: The id of the column to delete. 
+      responses:
+        200:
+          description: Successfully deleted
+
+  /datasets/{dataset_id}/columns/{column_id}/stats:
+    get:
+      tags:
+        - "datasets"
+        - "data"
+      description: Endpoint to get an specific row of a dataset based on id_col
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+        - in: path
+          name: feature_id
+          type: string
+          required: true
+          description: The id of the row to fetch. This should match with the id_col specified by the dataset
+        - in: query
+          name: "format"
+          type: string
+          description: the format to return the data in (NOT CURRENTLY IMPLEMENTED)
+          enum:
+            - GeoJson
+            - Json
+            - csv
+      responses:
+        200:
+          description: The requested data in the requested format
+    post:
+      tags:
+        - datasets
+        - data
+      description: Update the row specified by feature_id
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: feature_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the feature to update. Should match the id_col specified in the dataset
+        - in: body
+          name: updates
+          schema:
+            type: object
+      responses:
+        204:
+          description: "successfully updated"
+    delete:
+      tags:
+        - datasets
+        - data
+      description: Delete the row specified by feature_id
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: feature_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the feature to update. Should match the id_col specified in the dataset
+      responses:
+        200:
+          description: Successfully deleted
 definitions:
   Dataset:
     type: "object"
