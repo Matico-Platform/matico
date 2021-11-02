@@ -15,13 +15,13 @@ import _ from "lodash";
 // );
 
 interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
-  datasource: Dataset;
-  column: Column;
+  datasource: string;
+  column: string;
 }
 
 export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   datasource,
-  column,
+  column="",
 }) => {
   const [view, setView] = useState<View | null>(null);
   // const chartRef = useRef();
@@ -221,7 +221,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         orient: "bottom",
         scale: "xscale",
         zindex: 1,
-        title: column.name,
+        title: column,
       },
       {
         orient: "left",
@@ -233,21 +233,21 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     ],
 
     marks: [
-      {
-        type: "rect",
-        from: { data: "binned" },
-        clip: true,
-        encode: {
-          update: {
-            x: { scale: "xscale", field: "bin0" },
-            x2: { scale: "xscale", field: "bin1" },
-            y: { scale: "yscale", signal: "max[1]" },
-            y2: { scale: "yscale", value: 0 },
-            fill: { value: "#00000000" },
-          },
-          hover: { fill: { value: "#00000055" } },
-        },
-      },
+      // {
+      //   type: "rect",
+      //   from: { data: "binned" },
+      //   clip: true,
+      //   encode: {
+      //     update: {
+      //       x: { scale: "xscale", field: "bin0" },
+      //       x2: { scale: "xscale", field: "bin1" },
+      //       y: { scale: "yscale", signal: "max[1]" },
+      //       y2: { scale: "yscale", value: 0 },
+      //       fill: { value: "#00000000" },
+      //     },
+      //     hover: { fill: { value: "#00000055" } },
+      //   },
+      // },
       {
         type: "rect",
         interactive: false,
@@ -262,20 +262,20 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
           },
         },
       },
-      {
-        type: "rect",
-        interactive: false,
-        from: { data: "activeBinned" },
-        encode: {
-          update: {
-            x: { scale: "xscale", field: "bin0", offset: 4 },
-            x2: { scale: "xscale", field: "bin1", offset: -4 },
-            y: { scale: "yscaleActive", field: "count" },
-            y2: { scale: "yscaleActive", value: 0 },
-            fill: { value: "black" },
-          },
-        },
-      },
+      // {
+      //   type: "rect",
+      //   interactive: false,
+      //   from: { data: "activeBinned" },
+      //   encode: {
+      //     update: {
+      //       x: { scale: "xscale", field: "bin0", offset: 4 },
+      //       x2: { scale: "xscale", field: "bin1", offset: -4 },
+      //       y: { scale: "yscaleActive", field: "count" },
+      //       y2: { scale: "yscaleActive", value: 0 },
+      //       fill: { value: "black" },
+      //     },
+      //   },
+      // },
       {
         type: "rect",
         interactive: false,
@@ -303,20 +303,20 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
           },
         },
       },
-      {
-        type: "rect",
-        interactive: false,
-        from: { data: "activeBinned" },
-        encode: {
-          update: {
-            x: { scale: "xscale", field: "bin0", offset: 4 },
-            x2: { scale: "xscale", field: "bin1", offset: -4 },
-            y: { scale: "yscaleActive", field: "count" },
-            y2: { scale: "yscaleActive", value: 0 },
-            fill: { value: "black" },
-          },
-        },
-      },
+      // {
+      //   type: "rect",
+      //   interactive: false,
+      //   from: { data: "activeBinned" },
+      //   encode: {
+      //     update: {
+      //       x: { scale: "xscale", field: "bin0", offset: 4 },
+      //       x2: { scale: "xscale", field: "bin1", offset: -4 },
+      //       y: { scale: "yscaleActive", field: "count" },
+      //       y2: { scale: "yscaleActive", value: 0 },
+      //       fill: { value: "black" },
+      //     },
+      //   },
+      // },
     ],
   };
   // const handleDrag = (e,target) => {
@@ -355,7 +355,9 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   <Vega
   //@ts-ignore
     spec={spec}
-    data={chartData}
+    data={{
+      table: chartData,
+    }}
     signalListeners={signalListeners}
     onNewView={(view: View) => setView(view)}
   />

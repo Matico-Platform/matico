@@ -1,0 +1,176 @@
+{
+  "name": "New Dashboard",
+  "created_at": "2021-10-16T13:36:36.249Z",
+  "datasets": [
+    {
+      "GeoJSON": {
+        "name": "squirrels",
+        "url": "https://data.cityofnewyork.us/api/geospatial/vfnx-vebw?method=export&format=GeoJSON"
+      }
+    },
+    {
+      "GeoJSON": {
+        "name": "districts",
+        "url": "https://data.cityofnewyork.us/api/geospatial/h4i2-acfi?method=export&format=GeoJSON"
+      }
+    },
+    {
+      "GeoJSON": {
+        "name": "health",
+        "url": "https://data.cityofnewyork.us/api/geospatial/b55q-34ps?method=export&format=GeoJSON"
+      }
+    },
+    {
+      "GeoJSON": {
+        "name": "atlas",
+        "url":"https://uscovidatlas.org/geojson/county_nyt.geojson"
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "home",
+      "order": 1,
+      "icon": "Home",
+      "path": "/",
+      "sections": [
+        {
+          "name": "simple_map",
+          "order": 1,
+          "panes": [
+            {
+              "Scatterplot": {
+                "name": "bedsvpop",
+                "dataset":"atlas",
+                "position": {
+                  "width": 25,
+                  "height": 25,
+                  "layer": 10,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "x_column":"population",
+                "y_column":"beds",
+                "dot_color":"teal",
+                "dot_size":6
+              }
+            },
+            {
+              "Map": {
+                "name": "map_with_data",
+                "position": {
+                  "width": 50,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "view": {
+                  "lat": 40.79498338990195,
+                  "lng": -73.96771951293968,
+                  "zoom": 13,
+                  "bearing": 0,
+                  "pitch": 0
+                },
+                "layers": [
+                  {
+                    "source_name": "squirrels",
+                    "name": "squirrels",
+                    "order": 10,
+                    "style": {
+                      "color": [
+                        55,
+                        44,
+                        255,
+                        255
+                      ],
+                      "size": 10
+                    }
+                  },
+                  {
+                    "source_name": "districts",
+                    "name": "districts",
+                    "order": 1,
+                    "style": {
+                      "color": [
+                        66,
+                        44,
+                        33,
+                        100
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Text": {
+                "position": {
+                  "width": 20,
+                  "height": 4,
+                  "layer": 3,
+                  "float": false,
+                  "x": 15,
+                  "y": 95
+                },
+                "name": "text_label",
+                "content": "Squirles and districts"
+              }
+            },
+            {
+              "Text": {
+                "position": {
+                  "width": 30,
+                  "height": 30,
+                  "layer": 3,
+                  "float": false,
+                  "x": 10,
+                  "y": 10
+                },
+                "name": "text_label",
+                "content": "fur color: #{map_with_data_map_squirrels_hover.properties.primary_fur_color} \n\n  ![sq](https://c.tenor.com/09uldTF_OnIAAAAM/squirrel-dancing-squirrel.gif) \n\n #{map_with_data_map_loc.lat}"
+              }
+            },
+            {
+              "Map": {
+                "name": "health",
+                "position": {
+                  "width": 50,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 50,
+                  "y": 0
+                },
+                "view": {
+                  "var": "map_with_data_map_loc"
+                },
+                "base_map": {
+                  "Named": "Satelite"
+                },
+                "layers": [
+                  {
+                    "source_name": "health",
+                    "name": "health",
+                    "order": 1,
+                    "style": {
+                      "color": [
+                        0,
+                        255,
+                        33,
+                        150
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "layout": "free"
+        }
+      ]
+    }
+  ]
+}
