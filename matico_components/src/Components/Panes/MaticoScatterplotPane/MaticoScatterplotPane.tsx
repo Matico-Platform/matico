@@ -10,6 +10,7 @@ import {useContext, useEffect, useState, useRef, useMemo} from 'react';
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
 import { Box } from "grommet";
+import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
 // import usePanMap from '@webgeoda/hooks/usePanMap';
@@ -48,6 +49,8 @@ interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
     dot_size?: number;
 }
   
+
+
 export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = ({
     dataset='',
     x_column='',
@@ -58,60 +61,44 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
     // options={},
     // id=null
 }) => {
+
+    
     const { state: dataState } = useContext(MaticoDataContext);
     const { state, dispatch } = useContext(MaticoStateContext);
+    const [view, setView] = useState({});
+    const chartRef = useRef();
+
+    const [ 
+        xFilter,
+        updateXFilter,
+          //@ts-ignore
+    ] = useAutoVariable(
+        `${x_column}_range`, 
+        "NoSelection", 
+        {
+            type:"NoSelection"
+        }
+    )
+
+    const [ 
+        yFilter,
+        updateYFilter,
+          //@ts-ignore
+    ] = useAutoVariable(
+        `${y_column}_range`, 
+        "NoSelection", 
+        {
+            type:"NoSelection"
+        }
+    )
 
     const foundDataset = dataState.datasets.find((d) => {
         return d.name === dataset;
     });
     
-    if (foundDataset === undefined || !foundDataset || !foundDataset.isReady()) {
-        return <div>{foundDataset.name} not found!</div>
-    }
-
     // @ts-ignore
-    const chartData = foundDataset.getData().features.map(f => f.properties); // todo: centralized data model 
+    const chartData = foundDataset && foundDataset.isReady() ? foundDataset.getData().features.map(f => f.properties) : []; // todo: centralized data model 
     
-    // const boxFilterGeoids = useSelector((state) => state.boxFilterGeoids);
-    const [view, setView] = useState({});
-    // const dispatch = useDispatch();
-    const chartRef = useRef();
-    // const panToGeoid = usePanMap();
-    // const mapFilters = useSelector((state) => state.mapFilters);
-    // const currFilters = mapFilters.filter(f => f.source === config.id);
-    // const {
-    //     chartData
-    // } = useGetScatterData({
-    //     config: config,
-    //     options: options,
-    //     id: id
-    // })
-
-    // useEffect(() => {
-    //     if (!(chartData.length)) return;
-    //     function updateGraph() {
-    //         const cs = vega
-    //             .changeset()
-    //             .remove(() => true)
-    //             .insert(chartData.filter(t => boxFilterGeoids.includes(t.id)));
-    //         view.change('active', cs).run();
-    //     }
-    //     Object.keys(view).length && updateGraph();
-    // }, [view, boxFilterGeoids]);
-
-
-    // useEffect(() => {
-    //     // if (currFilters.length === 1) return;
-    //     function updateExtent() {
-    //         const cs = vega
-    //             .changeset()
-    //             .remove(() => true)
-    //             .insert(parseFilters(currFilters));
-    //         view.change('filterExtent', cs).run();
-    //     }
-    //     Object.keys(view).length && updateExtent();
-    //     // view && updateGraph();
-    // }, [view, currFilters]);
     const spec = {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
         "width": 300,
@@ -558,59 +545,85 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
             // } : {"type": "line"},
         ]
     }
-    
+
     function handleDragEnd(e, result){
         if (isNaN(result[1][0])||isNaN(result[1][1])) return
-        console.log(result)
-        // dispatch({
-        //     type: "SET_MAP_FILTER",
-        //     payload: {   
-        //         widgetIndex: config.id, 
-        //         filterId: `${config.id}-x`,
-        //         filter: {
-        //         type: "range",
-        //         field: config.xVariable,
-        //         from: Math.min(result[0][0], result[1][0]),
-        //         to: Math.max(result[0][0], result[1][0])
-        //         }
-        //     }
-        // });
-        // dispatch({
-        //     type: "SET_MAP_FILTER",
-        //     payload: {    
-        //         widgetIndex: config.id, 
-        //         filterId: `${config.id}-y`,
-        //         filter: {
-        //         type: "range",
-        //         field: config.yVariable,
-        //         from: Math.min(result[0][1], result[1][1]),
-        //         to: Math.max(result[0][1], result[1][1])
-        //         }
-        //     }
-        // });
+
+        updateXFilter({
+            type:"SelectionRange",
+            variable: x_column,
+            min: Math.min(result[0][0], result[1][0]),
+            max: Math.max(result[0][0], result[1][0])
+        })
+        updateYFilter({
+            type:"SelectionRange",
+            variable: y_column,
+            min: Math.min(result[0][1], result[1][1]),
+            max: Math.max(result[0][1], result[1][1])
+
+        })
     }
     
-    // function handleClick(e, target){
-    //     try {
-    //         panToGeoid(target.datum.id, 500)
-    //     } catch(e){
-    //         console.log(e)
-    //     }
-    // }
 
     const signalListeners = { 
         endDrag: handleDragEnd,
         // click: handleClick,
         // tempDrag: (e, target) => console.log(e, target)
     };
-    
+
     const vegaChart = useMemo(() => renderVega(
         chartRef,
         spec,
         {table: chartData}, // vega needs datasets as an object
         signalListeners,
         setView
-    ), [chartData.length, x_column, y_column, dot_color, dot_size])
+    ), [chartData.length, x_column, y_column, dot_color, dot_size, foundDataset.isReady()])
+    
+    
+    //
+    if (foundDataset === undefined || !foundDataset || !foundDataset.isReady()) {
+        return <div>{foundDataset.name} not found!</div>
+    }
+
+    
+    // const boxFilterGeoids = useSelector((state) => state.boxFilterGeoids);
+    // const panToGeoid = usePanMap();
+    // const mapFilters = useSelector((state) => state.mapFilters);
+    // const currFilters = mapFilters.filter(f => f.source === config.id);
+    // const {
+    //     chartData
+    // } = useGetScatterData({
+    //     config: config,
+    //     options: options,
+    //     id: id
+    // })
+
+    // useEffect(() => {
+    //     if (!(chartData.length)) return;
+    //     function updateGraph() {
+    //         const cs = vega
+    //             .changeset()
+    //             .remove(() => true)
+    //             .insert(chartData.filter(t => boxFilterGeoids.includes(t.id)));
+    //         view.change('active', cs).run();
+    //     }
+    //     Object.keys(view).length && updateGraph();
+    // }, [view, boxFilterGeoids]);
+
+
+    // useEffect(() => {
+    //     // if (currFilters.length === 1) return;
+    //     function updateExtent() {
+    //         const cs = vega
+    //             .changeset()
+    //             .remove(() => true)
+    //             .insert(parseFilters(currFilters));
+    //         view.change('filterExtent', cs).run();
+    //     }
+    //     Object.keys(view).length && updateExtent();
+    //     // view && updateGraph();
+    // }, [view, currFilters]);
+    
     
     return (
         <Box background={backgroundColor} elevation={"large"} fill={true} overflow={{vertical:'auto'}}>

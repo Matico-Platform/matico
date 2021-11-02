@@ -73,7 +73,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
         stroked: true,
         getLineWidth: 10,
         pickable: true,
-        onHover: (hoverTarget) =>
+        onHover: (hoverTarget) => // TODO: Refactor layers to work better with useAutoVariable hook
           dispatch({
             type: MaticoStateActionType.UPDATE_VARIABLE,
             payload: {
@@ -100,59 +100,6 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     updateView
       //@ts-ignore
   ] = useAutoVariable(view.var ? view.var : `${name}_map_loc`, view.var ?  undefined : "mapLocVar" , view.var ? undefined : view)
-
-  // useEffect(() => {
-  //   //TODO: OBS fix this... not sure how to properly do this union
-  //   //@ts-ignore
-  //   if (view.var === undefined) {
-  //     if (state.autoVariables.find((v) => v.name === `${name}_map_loc`)) {
-  //       return;
-  //     }
-  //     dispatch({
-  //       type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
-  //       payload: {
-  //         type: "mapLocVar",
-  //         name: `${name}_map_loc`,
-  //         value: view,
-  //       },
-  //     });
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   layers.forEach((layer) => {
-  //     if (
-  //       !state.autoVariables.find(
-  //         (v) => v.name === `${name}_map_${layer.name}_hover`
-  //       )
-  //     ) {
-  //       dispatch({
-  //         type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
-  //         payload: {
-  //           type: "any",
-  //           name: `${name}_map_${layer.name}_hover`,
-  //           value: null,
-  //         },
-  //       });
-  //     }
-
-  //     if (
-  //       !state.autoVariables.find(
-  //         (v) => v.name === `${name}_map_${layer.name}_select`
-  //       )
-  //     ) {
-  //       dispatch({
-  //         type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
-  //         payload: {
-  //           type: "any",
-  //           name: `${name}_map_${layer.name}_select`,
-  //           value: null,
-  //         },
-  //       });
-  //     }
-  //   });
-  // }, [layers]);
-
   //TODO clean this up and properly type
   const updateViewState = (viewStateUpdate: any) => {
     const viewState = viewStateUpdate.viewState;
@@ -166,13 +113,6 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   };
 
   let styleJSON = null;
-  //@ts-ignore
-  let variableName = view.var;
-
-  const inputView = [...state.autoVariables, ...state.declaredVariables].find(
-    (v) => v.name === variableName
-  ) as MapLocVar;
-  const actualView = inputView ? inputView.value : view;
 
   if (base_map) {
     if (base_map.Named) {
@@ -188,10 +128,10 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
         width={"100%"}
         height={"100%"}
         initialViewState={{
-          latitude: actualView.lat ? actualView.lat : 0,
-          longitude: actualView.lng ? actualView.lng : 0,
-          zoom: actualView.zoom ? actualView.zoom : 7,
-          ...actualView,
+          latitude: currentView?.lat ? currentView.lat : 0,
+          longitude: currentView?.lng ? currentView.lng : 0,
+          zoom: currentView?.zoom ? currentView.zoom : 7,
+          ...currentView,
         }}
         controller={true}
         onViewStateChange={updateViewState}

@@ -29,4 +29,16 @@ export type MapLocVar={
     } 
 }
 
-export type MaticoStateVariable = StringVar | NumberVar | MapLocVar | AnyVar;
+interface SelectionRange {
+  type: "SelectionRange",
+  variable: string;
+  min: number;
+  max: number;
+}
+interface NoSelection{
+  type:"NoSelection"
+}
+
+type Selection = SelectionRange | NoSelection;
+
+export type MaticoStateVariable = StringVar | NumberVar | MapLocVar | AnyVar | Selection;
