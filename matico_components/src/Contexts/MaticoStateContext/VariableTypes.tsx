@@ -12,7 +12,7 @@ export type NumberVar ={
 }
 
 export type AnyVar={
-  type:'any',
+  type:any,
   name:string,
   value: any
 }

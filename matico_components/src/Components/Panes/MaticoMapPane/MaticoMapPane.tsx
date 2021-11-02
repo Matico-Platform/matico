@@ -12,7 +12,7 @@ import ReactMapGL from "react-map-gl";
 import { MapLocVar } from "../../../Contexts/MaticoStateContext/VariableTypes";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { GeoJsonLayer } from "@deck.gl/layers";
-
+import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
   //TODO WE should properly type this from the matico_spec library. Need to figure out the Typescript integration better or witx
@@ -95,75 +95,74 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     })
     .filter((l) => l);
 
-  useEffect(() => {
-    //TODO: OBS fix this... not sure how to properly do this union
-    //@ts-ignore
-    if (view.var === undefined) {
-      if (state.autoVariables.find((v) => v.name === `${name}_map_loc`)) {
-        return;
-      }
-      dispatch({
-        type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
-        payload: {
-          type: "mapLocVar",
-          name: `${name}_map_loc`,
-          value: view,
-        },
-      });
-    }
-  }, []);
+  const [ 
+    currentView,
+    updateView
+      //@ts-ignore
+  ] = useAutoVariable(view.var ? view.var : `${name}_map_loc`, view.var ?  undefined : "mapLocVar" , view.var ? undefined : view)
 
-  useEffect(() => {
-    layers.forEach((layer) => {
-      if (
-        !state.autoVariables.find(
-          (v) => v.name === `${name}_map_${layer.name}_hover`
-        )
-      ) {
-        dispatch({
-          type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
-          payload: {
-            type: "any",
-            name: `${name}_map_${layer.name}_hover`,
-            value: null,
-          },
-        });
-      }
+  // useEffect(() => {
+  //   //TODO: OBS fix this... not sure how to properly do this union
+  //   //@ts-ignore
+  //   if (view.var === undefined) {
+  //     if (state.autoVariables.find((v) => v.name === `${name}_map_loc`)) {
+  //       return;
+  //     }
+  //     dispatch({
+  //       type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
+  //       payload: {
+  //         type: "mapLocVar",
+  //         name: `${name}_map_loc`,
+  //         value: view,
+  //       },
+  //     });
+  //   }
+  // }, []);
 
-      if (
-        !state.autoVariables.find(
-          (v) => v.name === `${name}_map_${layer.name}_select`
-        )
-      ) {
-        dispatch({
-          type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
-          payload: {
-            type: "any",
-            name: `${name}_map_${layer.name}_select`,
-            value: null,
-          },
-        });
-      }
-    });
-  }, [layers]);
+  // useEffect(() => {
+  //   layers.forEach((layer) => {
+  //     if (
+  //       !state.autoVariables.find(
+  //         (v) => v.name === `${name}_map_${layer.name}_hover`
+  //       )
+  //     ) {
+  //       dispatch({
+  //         type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
+  //         payload: {
+  //           type: "any",
+  //           name: `${name}_map_${layer.name}_hover`,
+  //           value: null,
+  //         },
+  //       });
+  //     }
+
+  //     if (
+  //       !state.autoVariables.find(
+  //         (v) => v.name === `${name}_map_${layer.name}_select`
+  //       )
+  //     ) {
+  //       dispatch({
+  //         type: MaticoStateActionType.REGISTER_AUTO_VARIABLE,
+  //         payload: {
+  //           type: "any",
+  //           name: `${name}_map_${layer.name}_select`,
+  //           value: null,
+  //         },
+  //       });
+  //     }
+  //   });
+  // }, [layers]);
 
   //TODO clean this up and properly type
   const updateViewState = (viewStateUpdate: any) => {
     const viewState = viewStateUpdate.viewState;
-    dispatch({
-      type: MaticoStateActionType.UPDATE_VARIABLE,
-      payload: {
-        type: "mapLocVar",
-        name: `${name}_map_loc`,
-        value: {
-          lat: viewState.latitude,
-          lng: viewState.longitude,
-          zoom: viewState.zoom,
-          pitch: viewState.pitch,
-          bearing: viewState.bearing,
-        },
-      },
-    });
+    updateView({
+      lat: viewState.latitude,
+      lng: viewState.longitude,
+      zoom: viewState.zoom,
+      pitch: viewState.pitch,
+      bearing: viewState.bearing,
+    })
   };
 
   let styleJSON = null;

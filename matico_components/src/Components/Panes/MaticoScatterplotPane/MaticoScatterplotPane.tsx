@@ -1,6 +1,10 @@
 import React from 'react';
 import { Vega } from 'react-vega';
 import * as vega from 'vega';
+import {
+  MaticoStateContext,
+  MaticoStateActionType,
+} from "../../../Contexts/MaticoStateContext/MaticoStateContext";
 // import { useSelector, useDispatch } from 'react-redux';
 import {useContext, useEffect, useState, useRef, useMemo} from 'react';
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
@@ -55,6 +59,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
     // id=null
 }) => {
     const { state: dataState } = useContext(MaticoDataContext);
+    const { state, dispatch } = useContext(MaticoStateContext);
 
     const foundDataset = dataState.datasets.find((d) => {
         return d.name === dataset;
@@ -157,10 +162,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
             { "name": "ycur", "value": null, "update": "slice(ydom)"}, 
             {
                 "name": "startDrag", "value": null,
-                // "on": [
-                //     {"events": "mouseup, touchend", "update": "0"},
-                //     {"events": "mousedown, touchstart", "update": "1"},
-                // ]
+                "on": [
+                    {"events": "mouseup, touchend", "update": "0"},
+                    {"events": "mousedown, touchstart", "update": "1"},
+                ]
             }, 
             {
                 "name": "startDragCoords", "value": null,
@@ -170,20 +175,20 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
             },   
             {
                 "name": "dragBox", "value": null,
-                // on: [{
-                //         "events": {"signal": "startDragCoords"},
-                //         "force": true,
-                //         "update":"[[startDragCoords[0], startDragCoords[1]],[]]"
-                //     },
-                //     {   
-                //         "events": "mousemove, touchmove", "update": "startDrag ? [dragBox[0],[invert('xscale', x()),invert('yscale', y())]] : dragBox"
-                //     }]
+                on: [{
+                        "events": {"signal": "startDragCoords"},
+                        "force": true,
+                        "update":"[[startDragCoords[0], startDragCoords[1]],[]]"
+                    },
+                    {   
+                        "events": "mousemove, touchmove", "update": "startDrag ? [dragBox[0],[invert('xscale', x()),invert('yscale', y())]] : dragBox"
+                    }]
             }, 
             {
                 "name": "endDrag", "value": null,
-                // "on": [
-                //     {"events": "mouseup, touchend", "update": "dragBox"},
-                // ]
+                "on": [
+                    {"events": "mouseup, touchend", "update": "dragBox"},
+                ]
             },
             {
                 "name": "anchor", "value": [0, 0],
@@ -407,21 +412,21 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
         ],
     
         "marks": [
-            // {
-            //     "type": "rect",
-            //     "encode": {
-            //         "enter": {
-            //             "fill": {"value": "#0099FF55"},
-            //             "stroke": {"value": "#0099FF"}
-            //         },
-            //         "update": {
-            //             "x": {"scale":"xscale", "signal": "startDrag ? dragBox[0][0] : 0"},
-            //             "x2": {"scale":"xscale", "signal": "startDrag ? dragBox[1][0] : 0"},
-            //             "y": {"scale":"yscale", "signal": "startDrag ? dragBox[0][1] : 0"},
-            //             "y2": {"scale":"yscale", "signal": "startDrag ? dragBox[1][1] : 0"}
-            //         }
-            //     }
-            // },
+            {
+                "type": "rect",
+                "encode": {
+                    "enter": {
+                        "fill": {"value": "#0099FF55"},
+                        "stroke": {"value": "#0099FF"}
+                    },
+                    "update": {
+                        "x": {"scale":"xscale", "signal": "startDrag ? dragBox[0][0] : 0"},
+                        "x2": {"scale":"xscale", "signal": "startDrag ? dragBox[1][0] : 0"},
+                        "y": {"scale":"yscale", "signal": "startDrag ? dragBox[0][1] : 0"},
+                        "y2": {"scale":"yscale", "signal": "startDrag ? dragBox[1][1] : 0"}
+                    }
+                }
+            },
             // {
             //     "type": "rect",
             //     "from": {"data":"filterExtent"},
@@ -554,35 +559,36 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
         ]
     }
     
-    // function handleDragEnd(e, result){
-    //     if (isNaN(result[1][0])||isNaN(result[1][1])) return
-    //     dispatch({
-    //         type: "SET_MAP_FILTER",
-    //         payload: {   
-    //             widgetIndex: config.id, 
-    //             filterId: `${config.id}-x`,
-    //             filter: {
-    //             type: "range",
-    //             field: config.xVariable,
-    //             from: Math.min(result[0][0], result[1][0]),
-    //             to: Math.max(result[0][0], result[1][0])
-    //             }
-    //         }
-    //     });
-    //     dispatch({
-    //         type: "SET_MAP_FILTER",
-    //         payload: {    
-    //             widgetIndex: config.id, 
-    //             filterId: `${config.id}-y`,
-    //             filter: {
-    //             type: "range",
-    //             field: config.yVariable,
-    //             from: Math.min(result[0][1], result[1][1]),
-    //             to: Math.max(result[0][1], result[1][1])
-    //             }
-    //         }
-    //     });
-    // }
+    function handleDragEnd(e, result){
+        if (isNaN(result[1][0])||isNaN(result[1][1])) return
+        console.log(result)
+        // dispatch({
+        //     type: "SET_MAP_FILTER",
+        //     payload: {   
+        //         widgetIndex: config.id, 
+        //         filterId: `${config.id}-x`,
+        //         filter: {
+        //         type: "range",
+        //         field: config.xVariable,
+        //         from: Math.min(result[0][0], result[1][0]),
+        //         to: Math.max(result[0][0], result[1][0])
+        //         }
+        //     }
+        // });
+        // dispatch({
+        //     type: "SET_MAP_FILTER",
+        //     payload: {    
+        //         widgetIndex: config.id, 
+        //         filterId: `${config.id}-y`,
+        //         filter: {
+        //         type: "range",
+        //         field: config.yVariable,
+        //         from: Math.min(result[0][1], result[1][1]),
+        //         to: Math.max(result[0][1], result[1][1])
+        //         }
+        //     }
+        // });
+    }
     
     // function handleClick(e, target){
     //     try {
@@ -593,17 +599,15 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
     // }
 
     const signalListeners = { 
+        endDrag: handleDragEnd,
         // click: handleClick,
-        // endDrag: handleDragEnd,
         // tempDrag: (e, target) => console.log(e, target)
     };
     
     const vegaChart = useMemo(() => renderVega(
         chartRef,
         spec,
-        {
-            table: chartData
-        },
+        {table: chartData}, // vega needs datasets as an object
         signalListeners,
         setView
     ), [chartData.length, x_column, y_column, dot_color, dot_size])
