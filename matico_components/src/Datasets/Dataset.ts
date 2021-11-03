@@ -1,8 +1,4 @@
 
-export interface FilterOptions{
-  
-}
-
 export interface Column{
     name: string,
     type : string
@@ -17,10 +13,19 @@ export enum GeomType{
 export interface Datum{
 }
 
+
+export interface RangeFilter{
+    variable: string,
+    min?: number,
+    max?: number
+}
+
+export type Filter = RangeFilter
+
 export interface Dataset{
   name: string,
   columns: ()=>Column[],
-  getData:() =>Datum[],
+  getData:(filters?: Array<Filter>) =>Datum[],
   tiled:()=>boolean,
   isReady:()=>boolean,
   geometryType:()=> GeomType,
