@@ -73,7 +73,9 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
         updateXFilter,
           //@ts-ignore
     ] = useAutoVariable(
+          //@ts-ignore
         `${x_column}_range`, 
+          //@ts-ignore
         "NoSelection", 
         {
             type:"NoSelection"
@@ -86,6 +88,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
           //@ts-ignore
     ] = useAutoVariable(
         `${y_column}_range`, 
+          //@ts-ignore
         "NoSelection", 
         {
             type:"NoSelection"
