@@ -26,6 +26,7 @@ pub enum BaseMap {
     StileJSON(String),
 }
 
+
 impl Default for BaseMap {
     fn default() -> Self {
         Self::Color(Srgb::new(0.0, 0.0, 0.0))
@@ -42,8 +43,8 @@ pub struct LayerStyle {
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
 pub struct RangeFilter{
     variable: String,
-    min:f32,
-    max:f32
+    min:Option<f32>,
+    max:Option<f32>
 }
 
 
