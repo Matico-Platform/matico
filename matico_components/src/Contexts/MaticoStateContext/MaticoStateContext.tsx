@@ -5,11 +5,23 @@ export enum MaticoStateActionType {
   UPDATE_VARIABLE,
   REGISTER_AUTO_VARIABLE,
   REGISTER_DECLARED_VARIABLE,
+  UNREGISTER_AUTO_VARIABLE,
+  SET_AUTO_VARIABLE
 }
 
 type UpdateVariableAction={
   type: MaticoStateActionType.UPDATE_VARIABLE,
   payload: MaticoStateVariable
+}
+
+type SetAutoVariableAction={
+  type: MaticoStateActionType.SET_AUTO_VARIABLE,
+  payload: MaticoStateVariable
+}
+
+type UnregisterAutoVariable={
+  type: MaticoStateActionType.UNREGISTER_AUTO_VARIABLE,
+  payload: string  
 }
 
 type RegisterAutoVariableAction={
@@ -21,7 +33,7 @@ type RegisterDeclaredVariableAction={
   type: MaticoStateActionType.REGISTER_DECLARED_VARIABLE,
   payload: MaticoStateVariable,
 }
-export type MaticoStateAction = UpdateVariableAction | RegisterAutoVariableAction | RegisterDeclaredVariableAction
+export type MaticoStateAction = SetAutoVariableAction | UpdateVariableAction | RegisterAutoVariableAction | RegisterDeclaredVariableAction | UnregisterAutoVariable
 
 export interface MaticoVariableState{
   autoVariables : Array<MaticoStateVariable>,
@@ -43,17 +55,25 @@ export const MaticoStateContext = createContext<{
 });
 
 function reducer(state: MaticoVariableState, action: MaticoStateAction): MaticoVariableState{
-    const {type,payload} = action
+    const {type} = action
 
     switch(type){
+      case MaticoStateActionType.SET_AUTO_VARIABLE:
+        if (state.autoVariables.find(v => v.name === action.payload.name)){
+          return {...state, autoVariables: state.autoVariables.map(av => av.name === action.payload.name ? action.payload : av)}
+        } else {
+          return {...state, autoVariables: [...state.autoVariables, action.payload]}
+        }
       case MaticoStateActionType.REGISTER_AUTO_VARIABLE:
-        return {...state, autoVariables: [...state.autoVariables, payload ]}
+        return {...state, autoVariables: [...state.autoVariables, action.payload ]}
       case  MaticoStateActionType.REGISTER_DECLARED_VARIABLE :
-        return {...state, declaredVariables: [...state.declaredVariables, payload] }
+        return {...state, declaredVariables: [...state.declaredVariables, action.payload] }
+      case MaticoStateActionType.UNREGISTER_AUTO_VARIABLE:
+        return {...state, autoVariables: state.autoVariables.filter(v => v.name !== action.payload)}
       case  MaticoStateActionType.UPDATE_VARIABLE:
         return {...state, 
-          autoVariables: state.autoVariables.map(av => av.name === payload.name ? payload : av),
-          declaredVariables : state.declaredVariables.map(dv=> dv.name===payload.name ? payload: dv)
+          autoVariables: state.autoVariables.map(av => av.name === action.payload.name ? action.payload : av),
+          declaredVariables : state.declaredVariables.map(dv=> dv.name===action.payload.name ? action.payload: dv)
          }
 
       default:

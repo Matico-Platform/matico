@@ -4,6 +4,8 @@ import {Box} from 'grommet'
 import {MaticoFreeLayout} from '../Layouts/MaticoFreeLayout/MaticoFreeLayout'
 import {MaticoMapPane} from '../Panes/MaticoMapPane/MaticoMapPane'
 import {MaticoTextPane} from '../Panes/MaticoTextPane/MaticoTextPane'
+import { MaticoHistogramPane } from '../Panes/MaticoHistogramPane/MaticoHistogramPane'
+import { MaticoScatterplotPane } from '../Panes/MaticoScatterplotPane/MaticoScatterplotPane'
 
 interface MaticoSectionInterface{
   section: Section
@@ -24,6 +26,10 @@ function selectPane(pane:any){
       return <MaticoMapPane key={pane.name} {...pane.Map} />
     case "Text":
       return <MaticoTextPane  key={pane.name} {...pane.Text} />
+    case "Histogram":
+      return <MaticoHistogramPane key={pane.name} {...pane.Histogram} />
+    case "Scatterplot":
+      return <MaticoScatterplotPane key={pane.name} {...pane.Scatterplot} />
     default:
       return null
   }
