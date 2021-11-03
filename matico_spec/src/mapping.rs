@@ -38,10 +38,37 @@ pub struct LayerStyle {
     color:Option<[f32;4]>,
 }
 
+
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+pub struct RangeFilter{
+    variable: String,
+    min:f32,
+    max:f32
+}
+
+
+#[derive(Serialize, Clone, Deserialize, Debug,  AutoCompleteMe)]
+pub enum Filter{
+    NoFilter,
+    Range(RangeFilter)
+}
+
+impl Default for Filter{
+    fn default()->Self{
+        Self::NoFilter
+    }
+}
+
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+pub struct DatasetRef{
+    name: String,
+    filters: Option<Vec<Filter>>
+}
+
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
 pub struct Layer {
     name: String,
-    source_name: String,
+    source: DatasetRef,
     order: usize,
     style: LayerStyle,
 }

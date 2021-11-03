@@ -39,7 +39,7 @@
                 },
                 "layers": [{
                     "name":"layer1",
-                    "source_name":"test",
+                    "source":{"name" :"test"},
                     "order":1,
                     "style":{
                         "size":20,
