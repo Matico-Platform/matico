@@ -12,7 +12,10 @@ import ReactMapGL from "react-map-gl";
 import { MapLocVar } from "../../../Contexts/MaticoStateContext/VariableTypes";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { GeoJsonLayer } from "@deck.gl/layers";
-import { useAutoVariable } from "../../../Hooks/useAutoVariable";
+import {
+  useAutoVariable,
+  useAutoVariables,
+} from "../../../Hooks/useAutoVariable";
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
   //TODO WE should properly type this from the matico_spec library. Need to figure out the Typescript integration better or witx
@@ -52,11 +55,27 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   const { state, dispatch } = useContext(MaticoStateContext);
   const { state: dataState } = useContext(MaticoDataContext);
 
+  const hoverVarConfig = layers.map((layer) => ({
+    name: `${name}_map_${layer.name}_hover`,
+    type: "any",
+    value: null,
+  }));
+
+  const clickVarConfig = layers.map((layer) => ({
+    name: `${name}_map_${layer.name}_click`,
+    type: "any",
+    value: null,
+  }));
+
+  const autoVarConfig = [...hoverVarConfig, ...clickVarConfig];
+
+  const layerVariables = useAutoVariables(autoVarConfig);
+
   const mapLayers = layers
     .sort((a, b) => a.order - b.order)
     .map((layer) => {
       const dataset = dataState.datasets.find((d) => {
-        return d.name === layer.source_name;
+        return d.name === layer.source.name;
       });
 
       if (!dataset || !dataset.isReady()) {
@@ -73,33 +92,28 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
         stroked: true,
         getLineWidth: 10,
         pickable: true,
-        onHover: (hoverTarget) => // TODO: Refactor layers to work better with useAutoVariable hook
-          dispatch({
-            type: MaticoStateActionType.UPDATE_VARIABLE,
-            payload: {
-              name: `${name}_map_${layer.name}_hover`,
-              type: "any",
-              value: hoverTarget.object,
-            },
-          }),
+        onHover: (
+          hoverTarget // TODO: Refactor layers to work better with useAutoVariable hook
+        ) =>
+          layerVariables[`${name}_map_${layer.name}_hover`].update(
+            hoverTarget.object
+          ),
         onClick: (clickTarget) =>
-          dispatch({
-            type: MaticoStateActionType.UPDATE_VARIABLE,
-            payload: {
-              name: `${name}_map_${layer.name}_click`,
-              type: "any",
-              value: clickTarget.object,
-            },
-          }),
+          layerVariables[`${name}_map_${layer.name}_click`].update(
+            clickTarget.object
+          ),
       });
     })
     .filter((l) => l);
 
-  const [ 
-    currentView,
-    updateView
-      //@ts-ignore
-  ] = useAutoVariable(view.var ? view.var : `${name}_map_loc`, view.var ?  undefined : "mapLocVar" , view.var ? undefined : view)
+  const [currentView, updateView] = useAutoVariable(
+    //@ts-ignore
+    view.var ? view.var : `${name}_map_loc`,
+    //@ts-ignore
+    view.var ? undefined : "mapLocVar",
+    //@ts-ignore
+    view.var ? undefined : view
+  );
   //TODO clean this up and properly type
   const updateViewState = (viewStateUpdate: any) => {
     const viewState = viewStateUpdate.viewState;
@@ -109,7 +123,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
       zoom: viewState.zoom,
       pitch: viewState.pitch,
       bearing: viewState.bearing,
-    })
+    });
   };
 
   let styleJSON = null;
