@@ -30,13 +30,20 @@ export type MapLocVar={
 }
 
 interface SelectionRange {
+  name: string,
   type: "SelectionRange",
-  variable: string;
-  min: number;
-  max: number;
+  value:{
+    variable: string;
+    min: number;
+    max: number;
+  }
 }
 interface NoSelection{
+  name: string,
   type:"NoSelection"
+  value:{
+    variable:string
+  }
 }
 
 type Selection = SelectionRange | NoSelection;
