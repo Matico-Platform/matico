@@ -5,6 +5,7 @@ import {
   GeomType,
   Filter,
   RangeFilter,
+  DatasetState,
 } from "./Dataset";
 import traverse from "traverse";
 
@@ -14,9 +15,11 @@ export class GeoJSONDataset implements Dataset {
   private _data: any;
   private _columns: Column[];
   private _geometryType;
+
   GeomType;
 
-  constructor(public name: string, public url: string) {
+  constructor(public name: string, public url: string, onStateChange?: (state:DatasetState)=>void) {
+    onStateChange(DatasetState.LOADING)
     this._isReady = false;
     fetch(url)
       .then((r) => r.json())
@@ -25,6 +28,7 @@ export class GeoJSONDataset implements Dataset {
         this._columns = this._extractColumns();
         this._geometryType = this._extractGeomType();
         this._isReady = true;
+        onStateChange(DatasetState.READY)
       });
   }
 
@@ -67,10 +71,8 @@ export class GeoJSONDataset implements Dataset {
             (filter.max !== undefined ? feature.properties[filter.variable] <= filter.max : true)
         )
       );
-      console.log("WE JUST FILTERED ", features.length)
       return {...this._data, features}
     } else {
-      console.log("WE JUST DIDNT FILTERED ", this._data.features.length)
       return this._data;
     }
   }

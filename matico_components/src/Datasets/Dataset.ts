@@ -1,4 +1,9 @@
 
+export enum DatasetState{
+  LOADING,
+  ERROR,
+  READY 
+}
 export interface Column{
     name: string,
     type : string
@@ -29,4 +34,5 @@ export interface Dataset{
   tiled:()=>boolean,
   isReady:()=>boolean,
   geometryType:()=> GeomType,
+  onStateChange?:( (state: DatasetState)=>void)
 }
