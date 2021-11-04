@@ -15,6 +15,7 @@ import { GeoJsonLayer } from "@deck.gl/layers";
 import {
   useAutoVariable,
   useAutoVariables,
+  AutoVariableInterface
 } from "../../../Hooks/useAutoVariable";
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
@@ -58,18 +59,31 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   const hoverVarConfig = layers.map((layer) => ({
     name: `${name}_map_${layer.name}_hover`,
     type: "any",
-    value: null,
-  }));
+    initialValue: null,
+    bind: true
+  } as AutoVariableInterface));
 
   const clickVarConfig = layers.map((layer) => ({
     name: `${name}_map_${layer.name}_click`,
     type: "any",
-    value: null,
-  }));
+    initialValue: null,
+    bind: true
+  } as AutoVariableInterface));
 
   const autoVarConfig = [...hoverVarConfig, ...clickVarConfig];
 
   const layerVariables = useAutoVariables(autoVarConfig);
+
+  const [currentView, updateView] = useAutoVariable({
+    //@ts-ignore
+    name: view.var ? view.var : `${name}_map_loc`,
+    //@ts-ignore
+    type: view.var ? undefined : "mapLocVar",
+    //@ts-ignore
+    initialValue:view.var ? undefined : view,
+    //@ts-ignore
+    bind: view.var ? view.bind : true
+  });
 
   const mapLayers = layers
     .sort((a, b) => a.order - b.order)
@@ -81,10 +95,10 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
       if (!dataset || !dataset.isReady()) {
         return;
       }
-      console.log(layer)
+
       return new GeoJsonLayer({
         id: layer.name,
-        data: dataset.getData(layer.source.filters?.map(f=>f.Range)),
+        data: dataset.getData(layer.source.filters?.map((f) => f.Range)),
         filled: true,
         getFillColor: layer.style.color ? layer.style.color : [255, 0, 0, 100],
         pointRadiusUnits: "pixels",
@@ -107,14 +121,6 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     })
     .filter((l) => l);
 
-  const [currentView, updateView] = useAutoVariable(
-    //@ts-ignore
-    view.var ? view.var : `${name}_map_loc`,
-    //@ts-ignore
-    view.var ? undefined : "mapLocVar",
-    //@ts-ignore
-    view.var ? undefined : view
-  );
   //TODO clean this up and properly type
   const updateViewState = (viewStateUpdate: any) => {
     const viewState = viewStateUpdate.viewState;
@@ -137,34 +143,39 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     }
   }
 
+  console.log(`Map named ${name} has current view ${currentView}`)
+
+
   return (
     <Box fill={true}>
-      <DeckGL
-        width={"100%"}
-        height={"100%"}
-        initialViewState={{
-          latitude: currentView?.lat ? currentView.lat : 0,
-          longitude: currentView?.lng ? currentView.lng : 0,
-          zoom: currentView?.zoom ? currentView.zoom : 7,
-          ...currentView,
-        }}
-        controller={true}
-        onViewStateChange={updateViewState}
-        layers={mapLayers}
-      >
-        <StaticMap
-          mapboxApiAccessToken={
-            "pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
-          }
-          mapStyle={
-            styleJSON
-              ? styleJSON
-              : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
-          }
+       {currentView &&
+        <DeckGL
           width={"100%"}
           height={"100%"}
-        />
-      </DeckGL>
+          initialViewState={{
+            latitude: currentView.lat,
+            longitude: currentView.lng,
+            zoom: currentView.zoom,
+            ...currentView,
+          }}
+          controller={true}
+          onViewStateChange={updateViewState}
+          layers={mapLayers}
+        >
+          <StaticMap
+            mapboxApiAccessToken={
+              "pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
+            }
+            mapStyle={
+              styleJSON
+                ? styleJSON
+                : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+            }
+            width={"100%"}
+            height={"100%"}
+          />
+        </DeckGL>
+       }
     </Box>
   );
 };

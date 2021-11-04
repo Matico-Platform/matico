@@ -4,6 +4,7 @@ use validator::{Validate, ValidationErrors};
 #[derive(Serialize, Deserialize, Debug, Clone, Validate)]
 pub struct Variable {
     var: String,
+    bind: Option<bool> 
 }
 
 #[derive(Serialize, Debug, Deserialize, Clone)]
