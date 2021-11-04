@@ -63,8 +63,8 @@ export class GeoJSONDataset implements Dataset {
       const features  = this._data.features.filter((feature) =>
         filters.every(
           (filter) =>
-            (filter.min ? feature.properties[filter.variable] >= filter.min : true) &&
-            (filter.max ? feature.properties[filter.variable] <= filter.max : true)
+            (filter.min !== undefined ? feature.properties[filter.variable] >= filter.min : true) &&
+            (filter.max !== undefined ? feature.properties[filter.variable] <= filter.max : true)
         )
       );
       console.log("WE JUST FILTERED ", features.length)
