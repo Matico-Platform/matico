@@ -35,4 +35,5 @@ export interface Dataset{
   isReady:()=>boolean,
   geometryType:()=> GeomType,
   onStateChange?:( (state: DatasetState)=>void)
+  uniqueForColumn?: (columnName:string)=>Array<string>
 }

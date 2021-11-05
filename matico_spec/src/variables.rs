@@ -10,8 +10,6 @@ pub struct Variable {
 #[derive(Serialize, Debug, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum VarOr<T>
-where
-    T: Validate,
 {
     Var(Variable),
     Value(T),

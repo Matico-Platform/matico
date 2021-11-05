@@ -1,4 +1,4 @@
-use crate::{AutoComplete, PanePosition, VarOr, Variable};
+use crate::{AutoComplete, PanePosition, VarOr, Variable, Filter};
 use matico_spec_derive::AutoCompleteMe;
 use palette::Srgb;
 use serde::{Deserialize, Serialize};
@@ -40,25 +40,6 @@ pub struct LayerStyle {
 }
 
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
-pub struct RangeFilter{
-    variable: String,
-    min:Option<f32>,
-    max:Option<f32>
-}
-
-
-#[derive(Serialize, Clone, Deserialize, Debug,  AutoCompleteMe)]
-pub enum Filter{
-    NoFilter,
-    Range(RangeFilter)
-}
-
-impl Default for Filter{
-    fn default()->Self{
-        Self::NoFilter
-    }
-}
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
 pub struct DatasetRef{
