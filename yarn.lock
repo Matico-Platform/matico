@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 4
+  version: 5
   cacheKey: 8
 
 "@babel/code-frame@npm:7.10.4":
@@ -79,7 +79,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.15.8, @babel/core@npm:^7.0.0-beta.39, @babel/core@npm:^7.1.0, @babel/core@npm:^7.12.0, @babel/core@npm:^7.12.10, @babel/core@npm:^7.12.3, @babel/core@npm:^7.7.5, @babel/core@npm:^7.8.4":
+"@babel/core@npm:^7.0.0-beta.39, @babel/core@npm:^7.1.0, @babel/core@npm:^7.12.0, @babel/core@npm:^7.12.10, @babel/core@npm:^7.12.3, @babel/core@npm:^7.7.5, @babel/core@npm:^7.8.4":
   version: 7.15.8
   resolution: "@babel/core@npm:7.15.8"
   dependencies:
@@ -102,7 +102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.16.0, @babel/core@npm:^7.11.4":
+"@babel/core@npm:^7.11.4":
   version: 7.16.0
   resolution: "@babel/core@npm:7.16.0"
   dependencies:
@@ -3619,15 +3619,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/mapbox-gl-supported@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "@mapbox/mapbox-gl-supported@npm:1.5.0"
-  peerDependencies:
-    mapbox-gl: ">=0.32.1 <2.0.0"
-  checksum: 0861f89e2a1e116a8731242fe049e6ad398ff3ac1481b87df9b042daa8ad76f5f6e1f60acc37d2bd483546817280259bde57e1aa51e46d1bef9efcecd4884efe
-  languageName: node
-  linkType: hard
-
 "@mapbox/mapbox-gl-supported@npm:^2.0.0":
   version: 2.0.0
   resolution: "@mapbox/mapbox-gl-supported@npm:2.0.0"
@@ -3668,7 +3659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/tiny-sdf@npm:^1.1.0, @mapbox/tiny-sdf@npm:^1.1.1":
+"@mapbox/tiny-sdf@npm:^1.1.0":
   version: 1.2.5
   resolution: "@mapbox/tiny-sdf@npm:1.2.5"
   checksum: d4cfd700c8ccd8b9183da78a943e314cada4184966a52758857cc7141391829a2da31b733046ee0a57e169396314533ffbde8445ce3476a193c6aefcc7bc883a
@@ -3940,7 +3931,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-darwin-arm64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: c16ef0515b6a76ef843c8c636b1830a9e185bd621694e8aa8d81b52800842dc30728be0dab56e8771f03205d8ffcf30a90cda61cd5cd4e501447cccebebb7c2e
+  conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
@@ -3949,7 +3940,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-darwin-x64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: bdabd9363809514ce962a3c733c9647b84fd8e1492a585b9c543dffa4a1b5fdcee373d6101eb76f75fe06a97056cf44f32c323127013d0eccd02851dad969113
+  conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
@@ -3958,7 +3949,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-freebsd-arm64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: 2d26c384abfe6cb79395e12286f228a6d3b0ebd1011bdf5536226a253aa9143f6a5659dbb87955fbf4136b3705514d23b76a9a7ae2a7b257eb6e077ded8f5e2a
+  conditions: os=freebsd & cpu=arm64
   languageName: node
   linkType: hard
 
@@ -3967,7 +3958,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-freebsd-x64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: c385cb5c1cbe76f402fade270afe890fed483d8ea37c3492788d776748659ae3982405e86e1338dc1bd122735b8f9e435be7c43568741c686bbd3ffdde3220a5
+  conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
 
@@ -3976,7 +3967,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-linux-arm64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: ea820c0bab67880633c3b118f9b7d339220dab77970f7465dc53495433e9414991457914897c83eb0e6aa8265923559645c37ede8d9cf6ce729bcd9624ab0761
+  conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
@@ -3985,7 +3976,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-linux-arm@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: d5c79a5843d19f65ce2dc210613c561ed2cb9344beed5077150919b640d5266c421cbdcf707572e9e1450c96e09baca2ead16ef9dad9e2d48d0690a5f632203a
+  conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
@@ -3994,7 +3985,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-linux-ia32@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: c3566ccd8336f34e94fdc4409a33e9b79951cf6e5c6d0594e7d5f76f4f710c78a5756eafc645213e8bae471f335fe7c2ae0ea6907a38312b73d5466b1a461eae
+  conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
 
@@ -4003,7 +3994,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-linux-ppc64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: c37e5113a52230ef6492e73770ddb54803dc2e7bc4638bb658a89b50f9dfbd6bb07eac9c97db03d92dc9fd987b1a2660b3ccc775ddce63ced91165ebf4c48924
+  conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
 
@@ -4012,7 +4003,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-linux-x64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: 925de3eb054363bd95787bed1a60ffc6cc809dab90701abc43c450baf7a42c45c0a5b7ecc6c5dbe070def049072f48d8ad1449bb2452a183530a1c4f94489dca
+  conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
@@ -4021,7 +4012,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-openbsd-x64@npm:1.1.1"
   bin:
     local-functions-proxy: bin/local-functions-proxy
-  checksum: 183250189606740bf580ee1c3a394f2384bf3fea0b8c6c01dd31c324d364d2e131be89a7c7b44b25d82d3a49c27bfd30e02e8da52283c4dceb792053599a7df9
+  conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
 
@@ -4030,7 +4021,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-win32-ia32@npm:1.1.1"
   bin:
     local-functions-proxy.exe: bin/local-functions-proxy.exe
-  checksum: 501ecf6396ea537790cdfaf08fbbf2c1e80c780b3702166bdb374d76f1976822fcf94ee8fcccadc044b6d617c14c770cf5a380a0008cb79552026378bda37cfb
+  conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
@@ -4039,7 +4030,7 @@ __metadata:
   resolution: "@netlify/local-functions-proxy-win32-x64@npm:1.1.1"
   bin:
     local-functions-proxy.exe: bin/local-functions-proxy.exe
-  checksum: 2502eb51e9eb4a84953a145eab24d7545d9e074fe97c4284dd1eb7a8ba9394c266f1c48e338a59ab82ca9f6589c7708da957dc9e38e13b03f6e3695d6115683f
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -4133,28 +4124,28 @@ __metadata:
 "@netlify/routing-local-proxy-darwin-arm64@npm:^0.34.1":
   version: 0.34.1
   resolution: "@netlify/routing-local-proxy-darwin-arm64@npm:0.34.1"
-  checksum: 43c38d75497c09598ed1127d5d52ad107a3ea3a21c5de2b181ac976bf082d6eb051d13e3975fb67d8510f4fea4a7ccdb6b2a48657e17cbb608083a397cb63f01
+  conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
 "@netlify/routing-local-proxy-darwin-x64@npm:^0.34.1":
   version: 0.34.1
   resolution: "@netlify/routing-local-proxy-darwin-x64@npm:0.34.1"
-  checksum: b9adc65595475db3ccaf8b3f61c8f20ac15bfcff87b6021c3d27e5698ba47ee325950702c40b16f78e26b5cbb5e4d2d798a203caca3726c649f27d53a7f27578
+  conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
 "@netlify/routing-local-proxy-linux-x64@npm:^0.34.1":
   version: 0.34.1
   resolution: "@netlify/routing-local-proxy-linux-x64@npm:0.34.1"
-  checksum: dd16ba8f8c12a107e6ea12d140a53f715535190f8df90eeb7581ad4efdf2cc183e6e815247fbcf485063a30afeddc99fa7d944c455177d0e531ae1eb000ed524
+  conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
 "@netlify/routing-local-proxy-win32-x64@npm:^0.34.1":
   version: 0.34.1
   resolution: "@netlify/routing-local-proxy-win32-x64@npm:0.34.1"
-  checksum: 8bc14e65ae133ab9f27b78cb16dd187e963356edeedc0f43c40c44aa946bc8f8768cf3b825937c086779a32723508d857266ba3970fe6bc072d2555ea95223b8
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -4661,7 +4652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parcel/core@npm:2.0.0, @parcel/core@npm:^2.0.0":
+"@parcel/core@npm:^2.0.0":
   version: 2.0.0
   resolution: "@parcel/core@npm:2.0.0"
   dependencies:
@@ -11826,7 +11817,6 @@ __metadata:
     "@types/react-dom": ^17.0.0
     "@wasm-tool/wasm-pack-plugin": ^1.5.0
     ace-builds: ^1.4.12
-    mapbox-gl: ^2.5.1
     matico_components: "workspace:matico_components"
     matico_spec: "workspace:matico_spec/pkg"
     react: ^17.0.2
@@ -13676,6 +13666,7 @@ fsevents@^1.2.7:
     bindings: ^1.5.0
     nan: ^2.12.1
   checksum: ae855aa737aaa2f9167e9f70417cf6e45a5cd11918e1fee9923709a0149be52416d765433b4aeff56c789b1152e718cd1b13ddec6043b78cdda68260d86383c1
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -13685,25 +13676,26 @@ fsevents@^1.2.7:
   dependencies:
     node-gyp: latest
   checksum: 97ade64e75091afee5265e6956cb72ba34db7819b4c3e94c431d4be2b19b8bb7a2d4116da417950c3425f17c8fe693d25e20212cac583ac1521ad066b77ae31f
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
 "fsevents@patch:fsevents@^1.2.7#~builtin<compat/fsevents>":
   version: 1.2.13
-  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=1cc4b2"
+  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7"
   dependencies:
     bindings: ^1.5.0
     nan: ^2.12.1
-  checksum: b264407498db2cfdcc2a05287334a4160c985a88e4a989e2f2f8dcc6afc8b04a4fcd82c797266442452e11c1fb07d7747d138b078fe4bb1f8f4fd2a6f2484d7e
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
 "fsevents@patch:fsevents@^2.1.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.1.3#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=1cc4b2"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
   dependencies:
     node-gyp: latest
-  checksum: 78db9daf1f6526a49cefee3917cc988f62dc7f25b5dd80ad6de4ffc4af7f0cab7491ac737626ff53e482a111bc53aac9e411fe3602458eca36f6a003ecf69c16
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -13939,7 +13931,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.2.1, gl-matrix@npm:^3.3.0":
+"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.3.0":
   version: 3.4.3
   resolution: "gl-matrix@npm:3.4.3"
   checksum: c47830ba727f3d0fab635c48135af96aef66274079a3e0afd6f68b68c98eae9fc1bcfdc7312fe2301e4fd22dd24c5e0f1b5d025960a208e50d07101ed8d940f9
@@ -16592,7 +16584,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-resolve@npm:26.6.2, jest-resolve@npm:^26.6.2":
+"jest-resolve@npm:^26.6.2":
   version: 26.6.2
   resolution: "jest-resolve@npm:26.6.2"
   dependencies:
@@ -17388,7 +17380,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"listr@npm:0.14.3, listr@npm:^0.14.3":
+"listr@npm:^0.14.3":
   version: 0.14.3
   resolution: "listr@npm:0.14.3"
   dependencies:
@@ -17965,38 +17957,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"mapbox-gl@npm:1.13.2, mapbox-gl@npm:^1.0.0":
-  version: 1.13.2
-  resolution: "mapbox-gl@npm:1.13.2"
-  dependencies:
-    "@mapbox/geojson-rewind": ^0.5.0
-    "@mapbox/geojson-types": ^1.0.2
-    "@mapbox/jsonlint-lines-primitives": ^2.0.2
-    "@mapbox/mapbox-gl-supported": ^1.5.0
-    "@mapbox/point-geometry": ^0.1.0
-    "@mapbox/tiny-sdf": ^1.1.1
-    "@mapbox/unitbezier": ^0.0.0
-    "@mapbox/vector-tile": ^1.3.1
-    "@mapbox/whoots-js": ^3.1.0
-    csscolorparser: ~1.0.3
-    earcut: ^2.2.2
-    geojson-vt: ^3.2.1
-    gl-matrix: ^3.2.1
-    grid-index: ^1.1.0
-    minimist: ^1.2.5
-    murmurhash-js: ^1.0.0
-    pbf: ^3.2.1
-    potpack: ^1.0.1
-    quickselect: ^2.0.0
-    rw: ^1.3.3
-    supercluster: ^7.1.0
-    tinyqueue: ^2.0.3
-    vt-pbf: ^3.1.1
-  checksum: ea87bbab1b5d2a4597a3170769295dd80b73c06782051d82f9fd9f2839cfc60f56b9043dd707bdac0f9b4a60c087440cc9d215d693cb545b2e446d7c08175458
-  languageName: node
-  linkType: hard
-
-"mapbox-gl@npm:^2.5.1":
+"mapbox-gl@npm:^2.3.0":
   version: 2.5.1
   resolution: "mapbox-gl@npm:2.5.1"
   dependencies:
@@ -18078,13 +18039,12 @@ fsevents@^1.2.7:
     grommet-icons: ^4.6.2
     katex: ^0.13.18
     lodash: ^4.17.21
-    mapbox-gl: ^2.5.1
     matico_spec: "workspace:matico_spec/pkg"
     microbundle: ^0.14.1
     parcel: ^2.0.0
     polished: ^4.1.3
     react-draggable: ^4.4.4
-    react-map-gl: ^5.2.11
+    react-map-gl: ^6.1.17
     react-markdown: ^7.0.1
     react-router: ^5.2.1
     react-router-dom: ^5.3.0
@@ -23256,21 +23216,21 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-map-gl@npm:^5.2.11":
-  version: 5.3.17
-  resolution: "react-map-gl@npm:5.3.17"
+"react-map-gl@npm:^6.1.17":
+  version: 6.1.17
+  resolution: "react-map-gl@npm:6.1.17"
   dependencies:
     "@babel/runtime": ^7.0.0
     "@types/geojson": ^7946.0.7
     "@types/mapbox-gl": ^2.0.3
-    mapbox-gl: ^1.0.0
+    mapbox-gl: ^2.3.0
     mjolnir.js: ^2.5.0
     prop-types: ^15.7.2
     resize-observer-polyfill: ^1.5.1
     viewport-mercator-project: ^7.0.4
   peerDependencies:
     react: ">=16.3.0"
-  checksum: e478e2165a0950e0a72cddf04f1e6a0fe998e20395623bb2e0f27234378b2189cee0d07581416e1cb94124601e12a7134986bf3ae46c391581bde0f1e2b4ff45
+  checksum: 679cfdf236c18e18ba06f1f93b65dee1fd9cd729bec48363e5064a6c66629125888f6f9f6ae615c548dfd62d178716b0f7bacaeaf1fced5ea5f202f4f5e75a7f
   languageName: node
   linkType: hard
 
@@ -24042,40 +24002,40 @@ resolve@1.18.1:
 
 "resolve@patch:resolve@1.17.0#~builtin<compat/resolve>":
   version: 1.17.0
-  resolution: "resolve@patch:resolve@npm%3A1.17.0#~builtin<compat/resolve>::version=1.17.0&hash=00b1ff"
+  resolution: "resolve@patch:resolve@npm%3A1.17.0#~builtin<compat/resolve>::version=1.17.0&hash=07638b"
   dependencies:
     path-parse: ^1.0.6
-  checksum: a3606308046ca75c0a6350c26df636b64a71904a8e00f3181fd838b46b4fc303c32ae3e694c156eae5d9102cbe194c444f85822d8e6ce30cf7c510e412029908
+  checksum: 6fd799f282ddf078c4bc20ce863e3af01fa8cb218f0658d9162c57161a2dbafe092b13015b9a4c58d0e1e801cf7aa7a4f13115fea9db98c3f9a0c43e429bad6f
   languageName: node
   linkType: hard
 
 "resolve@patch:resolve@1.18.1#~builtin<compat/resolve>":
   version: 1.18.1
-  resolution: "resolve@patch:resolve@npm%3A1.18.1#~builtin<compat/resolve>::version=1.18.1&hash=00b1ff"
+  resolution: "resolve@patch:resolve@npm%3A1.18.1#~builtin<compat/resolve>::version=1.18.1&hash=07638b"
   dependencies:
     is-core-module: ^2.0.0
     path-parse: ^1.0.6
-  checksum: 3a5051499a570cf94d74353d494cacadbfa489107def201f87e26cabd80d000bd8abccbe247783b86b06d86ce2c646eee5c55900c71cbf1ad2043a67a92b0242
+  checksum: 7439c8f3d8fa00c9dc800ef3c8ed0bd8e8772823e6e4948b1a77487759e0fb905381808caae96398d135619af90654d8e74cac778e5b8c9d7138f2dd52bb2bba
   languageName: node
   linkType: hard
 
 "resolve@patch:resolve@^1.1.10#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#~builtin<compat/resolve>":
   version: 1.20.0
-  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=00b1ff"
+  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=07638b"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
-  checksum: bed00be983cd20a8af0e7840664f655c4b269786dbd9595c5f156cd9d8a0050e65cdbbbdafc30ee9b6245b230c78a2c8ab6447a52545b582f476c29adb188cc5
+  checksum: a0dd7d16a8e47af23afa9386df2dff10e3e0debb2c7299a42e581d9d9b04d7ad5d2c53f24f1e043f7b3c250cbdc71150063e53d0b6559683d37f790b7c8c3cd5
   languageName: node
   linkType: hard
 
 "resolve@patch:resolve@^2.0.0-next.1#~builtin<compat/resolve>, resolve@patch:resolve@^2.0.0-next.3#~builtin<compat/resolve>":
   version: 2.0.0-next.3
-  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.3#~builtin<compat/resolve>::version=2.0.0-next.3&hash=00b1ff"
+  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.3#~builtin<compat/resolve>::version=2.0.0-next.3&hash=07638b"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
-  checksum: eb88c5e53843bc022215744307a5f5664446c0fdb8f43c33456dce98d5ee6b3162d0cd0a177bb6f1c3d5c8bf01391ac7ab2de0e936e35318725fb40ba7efdaf6
+  checksum: 21684b4d99a4877337cdbd5484311c811b3e8910edb5d868eec85c6e6550b0f570d911f9a384f9e176172d6713f2715bd0b0887fa512cb8c6aeece018de6a9f8
   languageName: node
   linkType: hard
 
@@ -25794,7 +25754,7 @@ resolve@1.18.1:
   languageName: node
   linkType: hard
 
-"supercluster@npm:^7.1.0, supercluster@npm:^7.1.3":
+"supercluster@npm:^7.1.3":
   version: 7.1.4
   resolution: "supercluster@npm:7.1.4"
   dependencies:
@@ -26810,21 +26770,21 @@ typescript@^3.9.7:
 
 "typescript@patch:typescript@>=3.0.0#~builtin<compat/typescript>, typescript@patch:typescript@^4.1.2#~builtin<compat/typescript>, typescript@patch:typescript@^4.1.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.1.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>":
   version: 4.4.4
-  resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=32657b"
+  resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: c97c33903f1eb4f9e178649befdfc859d93157db1eccd1e521e84976ec6861db53412d8018e5e4c5d09268771c65498d42caa64bd881878346c3644f6b7cd202
+  checksum: bd629ad0da4a15d79aaad56baf3ee7d96f6a181760d430ae77f8c5325df7bffd9edee57544a3970e3651e8b796fe03a5838a7eb39c6d46cc3866c0b23d36a0dd
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^3.9.7#~builtin<compat/typescript>":
   version: 3.9.10
-  resolution: "typescript@patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=32657b"
+  resolution: "typescript@patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=ddd1e8"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 8dcd46a8a2cb81198497f00c7721a34c914bf6b3241bf9687b868bdec9e59f1f44da41e7917cfc1dcabee4595229c73bab047f2d85c1aedacc0d1b526cc81534
+  checksum: dc7141ab555b23a8650a6787f98845fc11692063d02b75ff49433091b3af2fe3d773650dea18389d7c21f47d620fb3b110ea363dab4ab039417a6ccbbaf96fc2
   languageName: node
   linkType: hard
 

@@ -20,12 +20,18 @@ export interface Datum{
 
 
 export interface RangeFilter{
-    variable: string,
-    min?: number,
-    max?: number
+  variable: string,
+  min?: number,
+  max?: number
 }
 
-export type Filter = RangeFilter
+export interface CategoryFilter{
+    variable: string,
+    is_one_of?: Array<string>,
+    is_not_one_of?: Array<string>
+}
+
+export type Filter = RangeFilter | CategoryFilter
 
 export interface Dataset{
   name: string,

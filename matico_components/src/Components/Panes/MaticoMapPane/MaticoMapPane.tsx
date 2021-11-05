@@ -98,7 +98,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
 
       return new GeoJsonLayer({
         id: layer.name,
-        data: dataset.getData(layer.source.filters?.map((f) => f.Range)),
+        data: dataset.getData(layer.source.filters),
         filled: true,
         getFillColor: layer.style.color ? layer.style.color : [255, 0, 0, 100],
         pointRadiusUnits: "pixels",

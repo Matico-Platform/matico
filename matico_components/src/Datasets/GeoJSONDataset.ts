@@ -4,6 +4,7 @@ import {
   Datum,
   GeomType,
   Filter,
+  CategoryFilter,
   RangeFilter,
   DatasetState,
 } from "./Dataset";
@@ -77,15 +78,27 @@ export class GeoJSONDataset implements Dataset {
   getData(filters?: Array<Filter>) {
     if (filters && filters.length) {
       const features = this._data.features.filter((feature) =>
-        filters.every(
-          (filter) =>
-            (filter.min !== undefined
-              ? feature.properties[filter.variable] >= filter.min
-              : true) &&
-            (filter.max !== undefined
-              ? feature.properties[filter.variable] <= filter.max
-              : true)
-        )
+      filters.every(
+          (filterOuter) => {
+            const [type, filter] = Object.entries(filterOuter)[0];
+            switch (type) {
+              case "Range":
+                const rangeFilter = filter as RangeFilter;
+                return ((rangeFilter.min !== undefined
+                  ? feature.properties[rangeFilter.variable] >= rangeFilter.min
+                  : true) &&
+                (rangeFilter.max !== undefined
+                  ? feature.properties[rangeFilter.variable] <= rangeFilter.max
+                  : true))
+              case "Category":
+                const categoryFilter = filter as CategoryFilter;
+                return ((categoryFilter.is_one_of !== undefined
+                  ? categoryFilter.is_one_of.includes(feature.properties[categoryFilter.variable])
+                  : true))
+              default:
+                return true;
+            }
+          })
       );
       return { ...this._data, features };
     } else {
