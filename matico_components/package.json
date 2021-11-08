@@ -27,6 +27,7 @@
     "@deck.gl/react": "^8.6.0",
     "@parcel/transformer-react-refresh-wrap": "^2.0.0",
     "@swc/helpers": "^0.2.13",
+    "apache-arrow": "^6.0.0",
     "deck.gl": "^8.6.0",
     "grommet": "^2.18.0",
     "grommet-icons": "^4.6.2",

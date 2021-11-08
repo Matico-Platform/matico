@@ -95,6 +95,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
       if (!dataset || !dataset.isReady()) {
         return;
       }
+      
 
       return new GeoJsonLayer({
         id: layer.name,
@@ -142,9 +143,6 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
       styleJSON = base_map.StyleJSON;
     }
   }
-
-  console.log(`Map named ${name} has current view ${currentView}`)
-
 
   return (
     <Box fill={true}>

@@ -6252,6 +6252,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^16.4.0":
+  version: 16.11.6
+  resolution: "@types/node@npm:16.11.6"
+  checksum: 6e19634766ff589d3d2f361c2196b671f8f133cdadc5ad347a621c360d8994b6c4fbccfb2ad9c60c588c593831a96497c9c6b77d2b7e91be723384b94f6368e7
+  languageName: node
+  linkType: hard
+
 "@types/normalize-package-data@npm:^2.4.0":
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
@@ -7301,6 +7308,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"apache-arrow@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "apache-arrow@npm:6.0.0"
+  dependencies:
+    "@types/flatbuffers": ^1.10.0
+    "@types/node": ^16.4.0
+    command-line-args: 5.1.3
+    command-line-usage: 6.1.1
+    flatbuffers: 1.12.0
+    json-bignum: ^0.0.3
+    pad-left: ^2.1.0
+    tslib: ^2.3.0
+  bin:
+    arrow2csv: bin/arrow2csv.js
+  checksum: 16194b168029ad2a1ef23e68be46be62263de70ff16a4b6f37bad9f1683a53b7da8ef34f236958f31da21923d00a7708de65b1b7cb07015e4cdf50ad37a984fb
+  languageName: node
+  linkType: hard
+
 "aproba@npm:^1.0.3 || ^2.0.0":
   version: 2.0.0
   resolution: "aproba@npm:2.0.0"
@@ -7438,7 +7463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-back@npm:^3.0.1":
+"array-back@npm:^3.0.1, array-back@npm:^3.1.0":
   version: 3.1.0
   resolution: "array-back@npm:3.1.0"
   checksum: 7205004fcd0f9edd926db921af901b083094608d5b265738d0290092f9822f73accb468e677db74c7c94ef432d39e5ed75a7b1786701e182efb25bbba9734209
@@ -9579,6 +9604,18 @@ __metadata:
     lodash.camelcase: ^4.3.0
     typical: ^4.0.0
   checksum: ea02272e4bc8f433ab6d0ffaab5aafd8ad5b9fc39013996a14d8ac02309592745a239ae1ab82843932cb5747e1e5a576de79fcb0d7608e8d88087172fbcafe3a
+  languageName: node
+  linkType: hard
+
+"command-line-args@npm:5.1.3":
+  version: 5.1.3
+  resolution: "command-line-args@npm:5.1.3"
+  dependencies:
+    array-back: ^3.1.0
+    find-replace: ^3.0.0
+    lodash.camelcase: ^4.3.0
+    typical: ^4.0.0
+  checksum: 24d8199cc7157889c071d3fb14140ebc967d7752bedadf2929b5ee2ae4ad451fdab5524ee89ebf1dd85914eae48c3677e16ca32aeecc85f8621231de4c260fea
   languageName: node
   linkType: hard
 
@@ -18034,6 +18071,7 @@ fsevents@^1.2.7:
     "@swc/helpers": ^0.2.13
     "@types/react": ^17.0.30
     "@types/react-dom": ^17.0.9
+    apache-arrow: ^6.0.0
     deck.gl: ^8.6.0
     grommet: ^2.18.0
     grommet-icons: ^4.6.2
@@ -26586,7 +26624,7 @@ resolve@1.18.1:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2, tslib@npm:^2.0.0, tslib@npm:^2.0.3, tslib@npm:^2.2.0, tslib@npm:^2.3.1, tslib@npm:~2.3.1":
+"tslib@npm:^2, tslib@npm:^2.0.0, tslib@npm:^2.0.3, tslib@npm:^2.2.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:~2.3.1":
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
   checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
