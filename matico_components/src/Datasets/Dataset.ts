@@ -37,6 +37,7 @@ export interface Dataset{
   name: string,
   columns: ()=>Column[],
   getData:(filters?: Array<Filter>) =>Datum[],
+  getDataWithGeo:(filters?: Array<Filter>) =>Datum[],
   tiled:()=>boolean,
   isReady:()=>boolean,
   geometryType:()=> GeomType,

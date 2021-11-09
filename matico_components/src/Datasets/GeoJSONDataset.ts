@@ -75,7 +75,11 @@ export class GeoJSONDataset implements Dataset {
     return Array.from(unique) as Array<string> 
   }
 
-  getData(filters?: Array<Filter>) {
+  getData(filters?: Array<Filter>){
+    return this.getDataWithGeo(filters).features.map(f=>f.properties)
+  }
+
+  getDataWithGeo(filters?: Array<Filter>) {
     if (filters && filters.length) {
       const features = this._data.features.filter((feature) =>
       filters.every(

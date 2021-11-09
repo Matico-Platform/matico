@@ -1,14 +1,12 @@
 import React, {useReducer, createContext, useEffect} from 'react'
 import {Dataset,DatasetState} from '../../Datasets/Dataset'
 import {GeoJSONDataset} from '../../Datasets/GeoJSONDataset'
-
-
+import {CSVDataset} from '../../Datasets/CSVDataset'
 
 export enum MaticoDataActionType{
   REGISTER_DATASET,
   UPDATE_DATASET_STATE
 }
-
 
 type RegisterDataset={
   type: MaticoDataActionType.REGISTER_DATASET,
@@ -76,7 +74,7 @@ export const MaticoDataProvider: React.FC<{onStateChange?: (state: MaticoDataSta
   }
 
   datasets.forEach((dataset)=> {
-    if(state.datasets.find(d=>d.name === dataset.GeoJSON.name)){
+    if(state.datasets.find(d=>d.name === (Object.values(dataset)[0] as Dataset).name)){
       return 
     }
     if(dataset.GeoJSON){
@@ -87,6 +85,21 @@ export const MaticoDataProvider: React.FC<{onStateChange?: (state: MaticoDataSta
           dispatch({
             type:MaticoDataActionType.UPDATE_DATASET_STATE,
             payload: {datasetName: dataset.GeoJSON.name, state} 
+          })  
+        } 
+      ))
+    }
+    else if(dataset.CSV){
+      registerDataset(new CSVDataset(
+        dataset.CSV.name,
+        dataset.CSV.url,
+        dataset.CSV.lat_col,
+        dataset.CSV.lng_col,
+        dataset.CSV.id_col,
+        (state)=>{
+          dispatch({
+            type:MaticoDataActionType.UPDATE_DATASET_STATE,
+            payload: {datasetName: dataset.CSV.name, state} 
           })  
         } 
       ))

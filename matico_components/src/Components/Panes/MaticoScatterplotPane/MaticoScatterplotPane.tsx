@@ -100,7 +100,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
     });
     
     // @ts-ignore
-    const chartData = foundDataset && foundDataset.isReady() ? foundDataset.getData().features.map(f => f.properties) : []; // todo: centralized data model 
+    const chartData = foundDataset && foundDataset.isReady() ? foundDataset.getData() : []; // todo: centralized data model 
     
     const spec = {
         "$schema": "https://vega.github.io/schema/vega/v5.json",

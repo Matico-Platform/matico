@@ -30,7 +30,7 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> =({children})
     {React.Children.map(children, child=>{
       //@ts-ignore
       //TODO Make this properly typed. Properly check to ensure that the child nodes implement MaticoPaneInterface 
-      const pane  =(<FreePane pane={child.props.position} className="FreePane">
+      const pane  =(<FreePane key={child.props.name} pane={child.props.position} className="FreePane">
         {child}
         </FreePane>)
 

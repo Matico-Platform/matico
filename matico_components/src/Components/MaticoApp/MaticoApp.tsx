@@ -81,6 +81,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                     <Route
                       path={page.path ? page.path : `/${page.name}`}
                       exact={true}
+                      key={page.path}
                     >
                       <MaticoPage page={page} />
                     </Route>

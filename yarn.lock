@@ -5,6 +5,24 @@ __metadata:
   version: 5
   cacheKey: 8
 
+"@apache-arrow/es5-cjs@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@apache-arrow/es5-cjs@npm:6.0.0"
+  dependencies:
+    "@types/flatbuffers": ^1.10.0
+    "@types/node": ^16.4.0
+    command-line-args: 5.1.3
+    command-line-usage: 6.1.1
+    flatbuffers: 1.12.0
+    json-bignum: ^0.0.3
+    pad-left: ^2.1.0
+    tslib: ^2.3.0
+  bin:
+    arrow2csv: bin/arrow2csv.js
+  checksum: 8cfd680abbd807cff43eb976576f750e0c1c5a6b661471108ecfc1e3e0237e16021a48c7bc64adbf4f41b9aae5f412be1f55b94c640a05d77683c473704e17ff
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:7.10.4":
   version: 7.10.4
   resolution: "@babel/code-frame@npm:7.10.4"
@@ -6253,9 +6271,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^16.4.0":
-  version: 16.11.6
-  resolution: "@types/node@npm:16.11.6"
-  checksum: 6e19634766ff589d3d2f361c2196b671f8f133cdadc5ad347a621c360d8994b6c4fbccfb2ad9c60c588c593831a96497c9c6b77d2b7e91be723384b94f6368e7
+  version: 16.11.7
+  resolution: "@types/node@npm:16.11.7"
+  checksum: 2706403e6efc4aa40fdce8f0b5d9884d5600c3c8610aedc7fa5e7e298d30366f7e8b7296028d52898dca3edef4c3e827b03bf20952c4780f13fa4e79864f7a86
   languageName: node
   linkType: hard
 
@@ -7305,24 +7323,6 @@ __metadata:
   bin:
     arrow2csv: bin/arrow2csv.js
   checksum: 774892398e6961c5f13e814cba2d96dca6563a8305c5ec6014c94668150f938a3efd96de0077a2ff721ddc9fe5254410714408a2ea8d44123ba82064bdf67ef0
-  languageName: node
-  linkType: hard
-
-"apache-arrow@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "apache-arrow@npm:6.0.0"
-  dependencies:
-    "@types/flatbuffers": ^1.10.0
-    "@types/node": ^16.4.0
-    command-line-args: 5.1.3
-    command-line-usage: 6.1.1
-    flatbuffers: 1.12.0
-    json-bignum: ^0.0.3
-    pad-left: ^2.1.0
-    tslib: ^2.3.0
-  bin:
-    arrow2csv: bin/arrow2csv.js
-  checksum: 16194b168029ad2a1ef23e68be46be62263de70ff16a4b6f37bad9f1683a53b7da8ef34f236958f31da21923d00a7708de65b1b7cb07015e4cdf50ad37a984fb
   languageName: node
   linkType: hard
 
@@ -18064,6 +18064,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "matico_components@workspace:matico_components"
   dependencies:
+    "@apache-arrow/es5-cjs": ^6.0.0
     "@danmarshall/deckgl-typings": ^4.9.7
     "@deck.gl/layers": ^8.6.0
     "@deck.gl/react": ^8.6.0
@@ -18071,7 +18072,6 @@ fsevents@^1.2.7:
     "@swc/helpers": ^0.2.13
     "@types/react": ^17.0.30
     "@types/react-dom": ^17.0.9
-    apache-arrow: ^6.0.0
     deck.gl: ^8.6.0
     grommet: ^2.18.0
     grommet-icons: ^4.6.2
@@ -18079,6 +18079,7 @@ fsevents@^1.2.7:
     lodash: ^4.17.21
     matico_spec: "workspace:matico_spec/pkg"
     microbundle: ^0.14.1
+    papaparse: ^5.3.1
     parcel: ^2.0.0
     polished: ^4.1.3
     react-draggable: ^4.4.4
@@ -20670,6 +20671,13 @@ fsevents@^1.2.7:
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 1be2bfa1f807608c7538afa15d6f25baa523c30ec870a3228a89579e474a4d992f4293859524e46d5d87fd30fa17c5edf34dbef0671251d9749820b488660b16
+  languageName: node
+  linkType: hard
+
+"papaparse@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "papaparse@npm:5.3.1"
+  checksum: 3431917bb46f8952e49ca64ecc9107ddf05291573ef666c8fac4e172b57780d131f1af925b47841039bd5ae0ceadc2eafbcb8183c092307442f85eed11f82b69
   languageName: node
   linkType: hard
 
