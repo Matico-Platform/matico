@@ -46,7 +46,7 @@
             {
               "Scatterplot": {
                 "name": "bedsvpop",
-                "dataset":"atlas",
+                "dataset":{"name":"atlas"},
                 "position": {
                   "width": 25,
                   "height": 25,
@@ -64,7 +64,15 @@
             {
               "Scatterplot": {
                 "name": "arrow_scatter",
-                "dataset":"csv_test",
+                "dataset": { "name" :"csv_test",
+                    "filters":[
+                        {"Range":{
+                         "variable": "DesignPercentComplete",
+                         "max":70
+                        }   
+                        }
+                    ]
+                },
                 "position": {
                   "width": 25,
                   "height": 25,
@@ -195,3 +203,4 @@
     }
   ]
 }
+

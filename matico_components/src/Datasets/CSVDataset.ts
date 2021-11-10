@@ -18,7 +18,9 @@ import {
   Float32,
   Struct,
   Builder,
-} from '@apache-arrow/es5-cjs'
+  predicate,
+  DataFrame,
+} from "@apache-arrow/es5-cjs";
 
 import Papa from "papaparse";
 
@@ -40,7 +42,7 @@ export class CSVDataset implements Dataset {
   ) {
     this._isReady = false;
     onStateChange(DatasetState.LOADING);
-    const columns : Column[] = [];
+    const columns: Column[] = [];
     Papa.parse(url, {
       preview: 1,
       dynamicTyping: true,
@@ -52,42 +54,43 @@ export class CSVDataset implements Dataset {
           let field = null;
           if (typeof value === "string") {
             fields.push(new Field(name, new Utf8(), true));
-            columns.push({name, type:"string"})
+            columns.push({ name, type: "string" });
           } else if ((value as number) % 1 === 0) {
             fields.push(new Field(name, new Int32(), true));
-            columns.push({name, type:"number"})
+            columns.push({ name, type: "number" });
           } else {
             fields.push(new Field(name, new Float32(), true));
-            columns.push({name, type:"number"})
+            columns.push({ name, type: "number" });
           }
         });
-        this._columns = columns
+        this._columns = columns;
 
         const struct = new Struct(fields);
-        const builder = Builder.new({ type: struct ,  nullValues: [null, 'n/a'] });
+        const builder = Builder.new({
+          type: struct,
+          nullValues: [null, "n/a"],
+        });
 
-        let isHeader = true 
+        let isHeader = true;
         Papa.parse(url, {
           dynamicTyping: true,
           download: true,
           step: (row) => {
-            if (!isHeader){
-              try{
-               builder.append(row.data);
+            if (!isHeader) {
+              try {
+                builder.append(row.data);
+              } catch (e) {
+                console.log("issue with datum ", row.data, e);
               }
-              catch(e){
-                console.log("issue with datum ", row.data, e)
-              }
-            }
-            else{
-              isHeader = false
+            } else {
+              isHeader = false;
             }
           },
           complete: () => {
             builder.finish();
-            this._data = Table.fromStruct(builder.toVector());
-            this._isReady = true
-            onStateChange(DatasetState.READY)
+            this._data = new DataFrame(Table.fromStruct(builder.toVector()));
+            this._isReady = true;
+            onStateChange(DatasetState.READY);
           },
         });
       },
@@ -95,17 +98,11 @@ export class CSVDataset implements Dataset {
   }
 
   private _extractGeomType() {
-    return GeomType.Point;
-  }
-
-  private _extractColumns() {
-    let a = traverse(this._data.features).reduce(function (acc, node) {
-      if (this.key === "properties") {
-        this.keys.forEach((k) => (acc[k] = { name: k, type: typeof k }));
-      }
-      return acc;
-    }, {});
-    return Object.values(a) as Column[];
+    if (this.lat_col && this.lng_col) {
+      return GeomType.Point;
+    } else {
+      return GeomType.None;
+    }
   }
 
   isReady() {
@@ -124,12 +121,59 @@ export class CSVDataset implements Dataset {
     return this._columns;
   }
 
-  getDataWithGeo(filters?: Array<Filter>){
+  getDataWithGeo(filters?: Array<Filter>) {
     return this._data.toArray();
   }
 
   getData(filters?: Array<Filter>) {
+    if (filters && filters.length) {
+      let filterState = null;
+      filters.forEach((filterOuter) => {
+        const [type, filter] = Object.entries(filterOuter)[0];
+        switch (type) {
+          case "Range":
+            const rangeFilter = filter as RangeFilter;
+            const { min, max, variable } = rangeFilter;
+            if (min) {
+              const mf = predicate.col(variable).gt(min);
+              filterState = filterState ? filterState.and(mf) : mf;
+            }
+            if (max) {
+              const mf = predicate.col(variable).lt(max);
+              filterState = filterState ? filterState.and(mf) : mf;
+            }
+          case "Category":
+          default:
+            return;
+        }
+      });
+
+      const vars = {}
+      let results = [];
+
+      const filterResults = this._data.filter(filterState);
+
+      filterResults.scan(
+        (index) => {
+          results.push(
+            Object.entries(vars).reduce((agg, [name, values]) => { 
+              return {
+              ...agg,
+              //@ts-ignore
+              [name]: values(index),
+            }}),
+            {}
+          );
+        },
+        (batch) => {
+          this.columns().forEach((col) => {
+            vars[col.name] = predicate.col(col.name).bind(batch);
+          });
+        }
+      );
+
+      return results;
+    }
     return this._data.toArray();
   }
-
 }

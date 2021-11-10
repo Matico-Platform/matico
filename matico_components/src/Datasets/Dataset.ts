@@ -12,7 +12,8 @@ export interface Column{
 export enum GeomType{
   Point,
   Polygon,
-  Line
+  Line,
+  None
 }
 
 export interface Datum{

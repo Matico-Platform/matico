@@ -1,4 +1,4 @@
-use crate::{AutoComplete, PanePosition};
+use crate::{AutoComplete, PanePosition, DatasetRef};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
@@ -23,7 +23,7 @@ pub struct ScatterplotPane {
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]
-    pub dataset: String,
+    pub dataset: DatasetRef,
     #[wasm_bindgen(skip)]
     pub x_column: String,
     #[wasm_bindgen(skip)]
