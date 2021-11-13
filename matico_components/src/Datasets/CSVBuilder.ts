@@ -13,13 +13,18 @@ import {
 import Papa from "papaparse";
 
 export class CSVBuilder {
+  private _isReady: boolean;
   //TODO find a way to make this a more general expression
   private _data: any;
+  private _columns: Column[];
+  private _geometryType;
+  private _filterCache: any;
+  GeomType;
 
   constructor(
     public name: string,
     public url: string,
-    onDone: (ld :LocalDataset) => void,
+    onDone: (LocalDataset) => void,
     public lat_col?: string,
     public lng_col?: string,
     public id_col?: string

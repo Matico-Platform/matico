@@ -99,6 +99,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
     const foundDataset = dataState.datasets.find((d) => {
         return d.name === dataset.name;
     });
+
+    if(!foundDataset){
+      return<div>Loading</div>
+    }
     
     // @ts-ignore
     const chartData = foundDataset && foundDataset.isReady() ? foundDataset.getData(dataset.filters) : []; // todo: centralized data model 
@@ -581,7 +585,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
         {table: chartData}, // vega needs datasets as an object
         signalListeners,
         setView
-    ), [chartData.length, x_column, y_column, dot_color, dot_size, foundDataset.isReady()])
+    ), [chartData.length, x_column, y_column, dot_color, dot_size, foundDataset?.isReady()])
     
     
     //

@@ -1,7 +1,6 @@
 import React from "react";
 import { Dashboard } from "matico_spec";
 import * as Icons from "grommet-icons";
-import { GeoJSONDataset } from "../../Datasets/GeoJSONDataset";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
 import {

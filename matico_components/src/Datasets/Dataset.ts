@@ -10,10 +10,10 @@ export interface Column{
 }
 
 export enum GeomType{
-  Point,
-  Polygon,
-  Line,
-  None
+  Point = "Point",
+  Polygon = "Polygon",
+  Line = "Line",
+  None = "None"
 }
 
 export interface Datum{
@@ -37,8 +37,9 @@ export type Filter = RangeFilter | CategoryFilter
 export interface Dataset{
   name: string,
   columns: ()=>Column[],
-  getData:(filters?: Array<Filter>) =>Datum[],
-  getDataWithGeo:(filters?: Array<Filter>) =>Datum[],
+  getData:(filters?: Array<Filter>, columns?: Array<string>) =>Datum[],
+  getDataWithGeo:(filters?: Array<Filter>, columns?:Array<string>) =>Datum[],
+  local:()=>boolean,
   tiled:()=>boolean,
   isReady:()=>boolean,
   geometryType:()=> GeomType,
