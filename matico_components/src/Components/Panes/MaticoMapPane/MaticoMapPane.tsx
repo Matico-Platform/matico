@@ -3,14 +3,9 @@ import { MapPane, View } from "matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
 import { GeomType } from "../../../Datasets/Dataset";
 import { StaticMap } from "react-map-gl";
-import {
-  MaticoStateContext,
-  MaticoStateActionType,
-} from "../../../Contexts/MaticoStateContext/MaticoStateContext";
 import DeckGL from "@deck.gl/react";
 import { Box } from "grommet";
 import ReactMapGL from "react-map-gl";
-import { MapLocVar } from "../../../Contexts/MaticoStateContext/VariableTypes";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { PolygonLayer, PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { WKBLoader } from "@loaders.gl/wkt";
@@ -71,7 +66,6 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   name,
   layers,
 }) => {
-  const { state, dispatch } = useContext(MaticoStateContext);
   const { state: dataState } = useContext(MaticoDataContext);
 
   const hoverVarConfig = layers.map(
@@ -149,10 +143,9 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
             getPosition: (d) => parseSync(d.geom, WKBLoader).positions.value,
           });
         case GeomType.Polygon:
-          const data = dataset.getDataWithGeo(layer.source.filters);
           return new PolygonLayer({
             id: layer.name,
-            data,
+            data:dataset.getDataWithGeo(layer.source.filters) ,
             filled: true,
             getFillColor: layer.style.color
               ? layer.style.color
@@ -175,13 +168,12 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
               getPolygon: (d) =>{  
                 //@ts-ignore
                 const geom = wkx.Geometry.parse(Buffer.from(d.geom)) 
-                console.log(geom)
                 //@ts-ignore
                 return [ mapCoords(geom.polygons[0].exteriorRing),
                 //@ts-ignore
                   ...geom.polygons[0].interiorRings.map(mapCoords)
                 ]
-              } 
+              }
           });
 
         case GeomType.Line:

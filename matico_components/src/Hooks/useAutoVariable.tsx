@@ -1,8 +1,10 @@
 import React, { useEffect, useContext } from "react";
+import { useVariableDispatch, useVariableSelector } from "./redux";
+
 import {
-  MaticoStateActionType,
-  MaticoStateContext,
-} from "../Contexts/MaticoStateContext/MaticoStateContext";
+  setAutoVariable,
+  unregisterAutoVariable,
+} from "../Stores/MaticoVariableSlice";
 
 export type AutoVariableInterface = {
   name: string;
@@ -12,57 +14,43 @@ export type AutoVariableInterface = {
 };
 
 export const useAutoVariables = (variables: Array<AutoVariableInterface>) => {
-  const { dispatch } = useContext(MaticoStateContext);
-  const { state } = useContext(MaticoStateContext);
-  const variableNames = variables.map((v) => v.name);
-  const currentValues = state.autoVariables.filter((v) =>
-    variableNames.includes(v.name)
-  );
-
+  const dispatch = useVariableDispatch();
+  const autoVariables = useVariableSelector((state) => state.variables.autoVariables);
 
   useEffect(() => {
     variables.forEach((v) => {
       const { name, type, initialValue, bind } = v;
       if (type !== undefined && initialValue !== undefined) {
-        //TODO: OBS fix this... not sure how to properly do this union
-        //@ts-ignore
-        dispatch({
-          type: MaticoStateActionType.SET_AUTO_VARIABLE,
-          payload: {
+        dispatch(
+          setAutoVariable({
             type,
             name,
             value: initialValue,
-          },
-        });
+          })
+        );
       }
     });
 
     return () => {
       variables.forEach((v) => {
         //@ts-ignore
-        dispatch({
-          type: MaticoStateActionType.UNREGISTER_AUTO_VARIABLE,
-          payload: v.name,
-        });
+        dispatch(unregisterAutoVariable(v.name));
       });
     };
   }, [JSON.stringify(variables)]);
 
   const currentState = variables.reduce((agg, variable) => {
     const { type, name, bind } = variable;
-    const currentValue = state.autoVariables.find(
-      (v) => v.name === name
-    )?.value;
+    const currentValue = autoVariables[name]?.value;
     const updateFunc = (value) => {
       if (bind) {
-        dispatch({
-          type: MaticoStateActionType.SET_AUTO_VARIABLE,
-          payload: {
+        dispatch(
+          setAutoVariable({
             type,
             name,
             value,
-          },
-        });
+          })
+        );
       } else {
         console.info(`Not updating variable ${name} because bind is not set`);
       }
@@ -81,46 +69,37 @@ export const useAutoVariable = ({
   initialValue,
   bind,
 }: AutoVariableInterface) => {
-  const { dispatch } = useContext(MaticoStateContext);
-  const { state } = useContext(MaticoStateContext);
-  const currentValue = state.autoVariables.find((v) => v.name === name)?.value;
+
+  const dispatch = useVariableDispatch();
+  const autoVariables = useVariableSelector((state) => state.variables.autoVariables);
+  const currentValue = autoVariables[name]?.value;
 
   useEffect(() => {
     if (type !== undefined && initialValue !== undefined) {
-      //TODO: OBS fix this... not sure how to properly do this union
-      //@ts-ignore
-      dispatch({
-        type: MaticoStateActionType.SET_AUTO_VARIABLE,
-        payload: {
+      dispatch(
+        setAutoVariable({
           type,
           name,
           value: initialValue,
-        },
-      });
+        }))
     }
 
     return () => {
       //@ts-ignore
-      dispatch({
-        type: MaticoStateActionType.UNREGISTER_AUTO_VARIABLE,
-        payload: name,
-      });
+      dispatch(unregisterAutoVariable(name));
     };
   }, [type, name, JSON.stringify(initialValue)]);
 
   const updateVariable = (value: any) => {
     if (bind) {
-      dispatch({
-        type: MaticoStateActionType.SET_AUTO_VARIABLE,
-        payload: {
+      dispatch(setAutoVariable({
           type,
           name,
           value,
-        },
-      });
-     } else {
-       console.info(`Not updating variable ${name} because bind is not set`);
-     }
+        }));
+    } else {
+      console.info(`Not updating variable ${name} because bind is not set`);
+    }
   };
 
   return [currentValue, updateVariable];
