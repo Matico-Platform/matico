@@ -6,6 +6,7 @@ import {MaticoMapPane} from '../Panes/MaticoMapPane/MaticoMapPane'
 import {MaticoTextPane} from '../Panes/MaticoTextPane/MaticoTextPane'
 import { MaticoHistogramPane } from '../Panes/MaticoHistogramPane/MaticoHistogramPane'
 import { MaticoScatterplotPane } from '../Panes/MaticoScatterplotPane/MaticoScatterplotPane'
+import {MaticoControlsPane} from '../Panes/MaticoControlsPane/MaticoControlsPane'
 
 interface MaticoSectionInterface{
   section: Section
@@ -30,6 +31,8 @@ function selectPane(pane:any){
       return <MaticoHistogramPane key={pane.name} {...pane.Histogram} />
     case "Scatterplot":
       return <MaticoScatterplotPane key={pane.name} {...pane.Scatterplot} />
+    case "Controls":
+      return <MaticoControlsPane key={pane.name} {...pane.Controls} />
     default:
       return null
   }

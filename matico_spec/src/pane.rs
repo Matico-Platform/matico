@@ -10,7 +10,8 @@ pub enum Pane {
     Chart(ChartPane),
     Text(TextPane),
     Histogram(HistogramPane),
-    Scatterplot(ScatterplotPane)
+    Scatterplot(ScatterplotPane),
+    Controls(ControlsPane)
 }
 
 impl Default for Pane {
@@ -32,10 +33,21 @@ impl Validate for Pane {
             Self::Map(map) => ValidationErrors::merge(result, "MapPane", map.validate()),
             Self::Chart(chart) => ValidationErrors::merge(result, "ChartPane", chart.validate()),
             Self::Text(text) => ValidationErrors::merge(result, "TextPane", text.validate()),
-            Self::Histogram(text) => ValidationErrors::merge(result, "HistogramPane", text.validate()),
-            Self::Scatterplot(text) => ValidationErrors::merge(result, "ScatterplotPane", text.validate()),
+            Self::Histogram(histogram) => ValidationErrors::merge(result, "HistogramPane", histogram.validate()),
+            Self::Scatterplot(scatter) => ValidationErrors::merge(result, "ScatterplotPane", scatter.validate()),
+            Self::Controls(controls) => ValidationErrors::merge(result, "ScatterplotPane", controls.validate()),
         }
     }
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+pub struct ControlsPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[validate]
+    pub position: PanePosition,
 }
 
 #[wasm_bindgen]
