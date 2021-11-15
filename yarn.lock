@@ -2898,6 +2898,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@deck.gl/core@npm:^8.6.3":
+  version: 8.6.3
+  resolution: "@deck.gl/core@npm:8.6.3"
+  dependencies:
+    "@loaders.gl/core": ^3.0.8
+    "@loaders.gl/images": ^3.0.8
+    "@luma.gl/core": ^8.5.10
+    "@math.gl/web-mercator": ^3.5.4
+    gl-matrix: ^3.0.0
+    math.gl: ^3.5.4
+    mjolnir.js: ^2.5.0
+    probe.gl: ^3.4.0
+  checksum: bd810918726172ec8cc8a0906ad6cf95ab881529e346d4d0ce41c3bf96c6d267e8d900fe9be8f7c9227c5920d72285990e2d15e06197da45c97e47ffa2e4420d
+  languageName: node
+  linkType: hard
+
 "@deck.gl/extensions@npm:8.6.0":
   version: 8.6.0
   resolution: "@deck.gl/extensions@npm:8.6.0"
@@ -3384,7 +3400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@loaders.gl/core@npm:3.0.12, @loaders.gl/core@npm:^3.0.8":
+"@loaders.gl/core@npm:3.0.12, @loaders.gl/core@npm:^3.0.12, @loaders.gl/core@npm:^3.0.8":
   version: 3.0.12
   resolution: "@loaders.gl/core@npm:3.0.12"
   dependencies:
@@ -3515,6 +3531,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@loaders.gl/wkt@npm:^3.0.12":
+  version: 3.0.12
+  resolution: "@loaders.gl/wkt@npm:3.0.12"
+  dependencies:
+    "@loaders.gl/loader-utils": 3.0.12
+    "@loaders.gl/schema": 3.0.12
+  checksum: 36b88205a27ce19527fc4a518584e442196c0b64b7aa1866b4a9d552ffad1327fd9f68ae8c29be136f1acc4630fa3edc3fd9626fa738c79e2025e480e3a3f937
+  languageName: node
+  linkType: hard
+
 "@loaders.gl/worker-utils@npm:3.0.12":
   version: 3.0.12
   resolution: "@loaders.gl/worker-utils@npm:3.0.12"
@@ -3531,7 +3557,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/core@npm:^8.5.10":
+"@luma.gl/core@npm:*, @luma.gl/core@npm:^8.5.10":
   version: 8.5.10
   resolution: "@luma.gl/core@npm:8.5.10"
   dependencies:
@@ -3755,7 +3781,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@math.gl/web-mercator@npm:^3.5.1, @math.gl/web-mercator@npm:^3.5.4, @math.gl/web-mercator@npm:^3.5.5":
+"@math.gl/web-mercator@npm:*, @math.gl/web-mercator@npm:^3.5.1, @math.gl/web-mercator@npm:^3.5.4, @math.gl/web-mercator@npm:^3.5.5":
   version: 3.5.6
   resolution: "@math.gl/web-mercator@npm:3.5.6"
   dependencies:
@@ -11854,6 +11880,7 @@ __metadata:
     "@types/react-dom": ^17.0.0
     "@wasm-tool/wasm-pack-plugin": ^1.5.0
     ace-builds: ^1.4.12
+    eslint-config-react-app: ^6.0.0
     matico_components: "workspace:matico_components"
     matico_spec: "workspace:matico_spec/pkg"
     react: ^17.0.2
@@ -18041,7 +18068,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"math.gl@npm:^3.5.4":
+"math.gl@npm:*, math.gl@npm:^3.5.4":
   version: 3.5.6
   resolution: "math.gl@npm:3.5.6"
   dependencies:
@@ -18066,8 +18093,12 @@ fsevents@^1.2.7:
   dependencies:
     "@apache-arrow/es5-cjs": ^6.0.0
     "@danmarshall/deckgl-typings": ^4.9.7
+    "@deck.gl/core": ^8.6.3
     "@deck.gl/layers": ^8.6.0
     "@deck.gl/react": ^8.6.0
+    "@loaders.gl/core": ^3.0.12
+    "@loaders.gl/wkt": ^3.0.12
+    "@luma.gl/core": ^8.5.10
     "@parcel/transformer-react-refresh-wrap": ^2.0.0
     "@swc/helpers": ^0.2.13
     "@types/react": ^17.0.30
@@ -18095,6 +18126,7 @@ fsevents@^1.2.7:
     traverse: ^0.6.6
     vega: ^5.21.0
     vega-lite: ^5.1.1
+    wkx: ^0.5.0
   peerDependencies:
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -22764,7 +22796,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.0.0, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
+"prop-types@npm:*, prop-types@npm:^15.0.0, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
   dependencies:
@@ -23226,17 +23258,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-is@npm:*, react-is@npm:^17.0.0, react-is@npm:^17.0.1":
+  version: 17.0.2
+  resolution: "react-is@npm:17.0.2"
+  checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.12.0, react-is@npm:^16.6.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
-  languageName: node
-  linkType: hard
-
-"react-is@npm:^17.0.0, react-is@npm:^17.0.1":
-  version: 17.0.2
-  resolution: "react-is@npm:17.0.2"
-  checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
   languageName: node
   linkType: hard
 
@@ -28553,6 +28585,15 @@ typescript@^3.9.7:
     triple-beam: ^1.3.0
     winston-transport: ^4.4.0
   checksum: 89a0a8db4e577d0df2bee8af67a751663fb80aaa782750b5a0a151a6bf97074dd0eb7c81780e196197735b851c12ea9c176952128fc51fae07a8a5ddba82913a
+  languageName: node
+  linkType: hard
+
+"wkx@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "wkx@npm:0.5.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: 47b27387de81fbd077528c1c11be996bf5a6dbeb94858ea0e2fa6619c2af626aa2f127f6fee1b4b57057a7cbef8a810b39a67815f2eb54ed33b1790e29db86ee
   languageName: node
   linkType: hard
 

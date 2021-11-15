@@ -24,10 +24,12 @@
   "dependencies": {
     "@apache-arrow/es5-cjs": "^6.0.0",
     "@danmarshall/deckgl-typings": "^4.9.7",
+    "@deck.gl/core": "^8.6.3",
     "@deck.gl/layers": "^8.6.0",
     "@deck.gl/react": "^8.6.0",
     "@loaders.gl/core": "^3.0.12",
     "@loaders.gl/wkt": "^3.0.12",
+    "@luma.gl/core": "^8.5.10",
     "@parcel/transformer-react-refresh-wrap": "^2.0.0",
     "@swc/helpers": "^0.2.13",
     "deck.gl": "^8.6.0",

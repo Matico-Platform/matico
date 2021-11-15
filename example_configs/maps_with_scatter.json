@@ -23,13 +23,14 @@
     {
       "GeoJSON": {
         "name": "atlas",
-        "url":"https://uscovidatlas.org/geojson/county_nyt.geojson"
+        "url": "https://uscovidatlas.org/geojson/county_nyt.geojson"
       }
     },
-    {"CSV":{
-        "name":"csv_test",
-        "url":"https://allofthedata.s3.us-west-2.amazonaws.com/Capital_Projects_Tracker.csv"
-    }
+    {
+      "CSV": {
+        "name": "csv_test",
+        "url": "https://allofthedata.s3.us-west-2.amazonaws.com/Capital_Projects_Tracker.csv"
+      }
     }
   ],
   "pages": [
@@ -46,7 +47,7 @@
             {
               "Scatterplot": {
                 "name": "bedsvpop",
-                "dataset":{"name":"atlas"},
+                "dataset": { "name": "atlas" },
                 "position": {
                   "width": 25,
                   "height": 25,
@@ -55,24 +56,16 @@
                   "x": 70,
                   "y": 60
                 },
-                "x_column":"population",
-                "y_column":"beds",
-                "dot_color":"red",
-                "dot_size":10
+                "x_column": "population",
+                "y_column": "beds",
+                "dot_color": "red",
+                "dot_size": 10
               }
             },
             {
               "Scatterplot": {
                 "name": "arrow_scatter",
-                "dataset": { "name" :"csv_test",
-                    "filters":[
-                        {"Range":{
-                         "variable": "DesignPercentComplete",
-                         "max":70
-                        }   
-                        }
-                    ]
-                },
+                "dataset": { "name": "csv_test" },
                 "position": {
                   "width": 25,
                   "height": 25,
@@ -81,10 +74,10 @@
                   "x": 20,
                   "y": 60
                 },
-                "x_column":"DesignPercentComplete",
-                "y_column":"ProcurementPercentComplete",
-                "dot_color":"purple",
-                "dot_size":20
+                "x_column": "DesignPercentComplete",
+                "y_column": "ProcurementPercentComplete",
+                "dot_color": "purple",
+                "dot_size": 20
               }
             },
             {
@@ -108,40 +101,22 @@
                 "layers": [
                   {
                     "source": {
-                        "name": "squirrels",
-                        "filters":[
-                            {
-                            "Range":{
-                                "variable": "x",
-                                "min":-1000,
-                                "max":1000
-                            }
-                            }
-                        ]
+                      "name": "squirrels"
                     },
+
                     "name": "squirrels",
                     "order": 10,
                     "style": {
-                      "color": [
-                        55,
-                        44,
-                        255,
-                        255
-                      ],
+                      "color": [55, 44, 255, 255],
                       "size": 4
                     }
                   },
                   {
-                    "source": {"name": "districts"},
+                    "source": { "name": "districts" },
                     "name": "districts",
                     "order": 1,
                     "style": {
-                      "color": [
-                        66,
-                        44,
-                        33,
-                        100
-                      ]
+                      "color": [66, 44, 33, 100]
                     }
                   }
                 ]
@@ -174,23 +149,18 @@
                 },
                 "view": {
                   "var": "map_with_data_map_loc",
-                  "bind":true
+                  "bind": true
                 },
                 "base_map": {
                   "Named": "Satelite"
                 },
                 "layers": [
                   {
-                    "source": {"name" :"health"},
+                    "source": { "name": "health" },
                     "name": "health",
                     "order": 1,
                     "style": {
-                      "color": [
-                        0,
-                        255,
-                        33,
-                        150
-                      ]
+                      "color": [0, 255, 33, 150]
                     }
                   }
                 ]
@@ -203,4 +173,3 @@
     }
   ]
 }
-
