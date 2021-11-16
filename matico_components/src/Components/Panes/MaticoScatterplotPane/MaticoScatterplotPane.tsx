@@ -1,10 +1,6 @@
 import React from 'react';
 import { Vega } from 'react-vega';
 import * as vega from 'vega';
-import {
-  MaticoStateContext,
-  MaticoStateActionType,
-} from "../../../Contexts/MaticoStateContext/MaticoStateContext";
 // import { useSelector, useDispatch } from 'react-redux';
 import {useContext, useEffect, useState, useRef, useMemo} from 'react';
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
@@ -65,7 +61,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
 
     
     const { state: dataState } = useContext(MaticoDataContext);
-    const { state, dispatch } = useContext(MaticoStateContext);
     const [view, setView] = useState({});
     const chartRef = useRef();
 

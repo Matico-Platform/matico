@@ -3,11 +3,9 @@ import { Dashboard } from "matico_spec";
 import * as Icons from "grommet-icons";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
-import {
-  MaticoStateProvider,
-  MaticoVariableState,
-} from "../../Contexts/MaticoStateContext/MaticoStateContext";
-
+import { Provider } from "react-redux";
+import { store } from "../../Stores/MaticoStateStore";
+import { VariableState } from "../../Stores/MaticoStateStore";
 import {
   Grommet,
   Box,
@@ -18,12 +16,16 @@ import {
   Nav,
   Main,
 } from "grommet";
-import { MaticoDataProvider, MaticoDataState } from "../../Contexts/MaticoDataContext/MaticoDataContext";
+import {
+  MaticoDataProvider,
+  MaticoDataState,
+} from "../../Contexts/MaticoDataContext/MaticoDataContext";
+import { useVariableSelector } from "../../Hooks/redux";
 
 interface MaticoAppInterface {
   spec: Dashboard;
-  onStateChange?: (state: MaticoVariableState) => void;
-  onDataChange?: (data:MaticoDataState)=>void;
+  onStateChange?: (state: VariableState) => void;
+  onDataChange?: (data: MaticoDataState) => void;
   basename?: string;
 }
 
@@ -32,14 +34,23 @@ const NamedButton: React.FC<{ name: string }> = ({ name }) => {
   return <NamedIcon />;
 };
 
+const StateReporter: React.FC<{onStateChange: (state:VariableState)=>void}> = ({onStateChange})=>{
+  const state = useVariableSelector((state) => state);
+  onStateChange(state)
+  return <></>
+}
+
 export const MaticoApp: React.FC<MaticoAppInterface> = ({
   spec,
   onStateChange,
   basename,
-  onDataChange
+  onDataChange,
 }) => {
   return (
-    <MaticoStateProvider onStateChange={onStateChange}>
+    <Provider store={store}>
+      {/*onStateChange &&
+        <StateReporter onStateChange={onStateChange}/>
+        */}
       <MaticoDataProvider onStateChange={onDataChange} datasets={spec.datasets}>
         <Grommet style={{ width: "100%", height: "100%" }}>
           <Router basename={basename}>
@@ -82,7 +93,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                       exact={true}
                       key={page.path}
                     >
-                      <MaticoPage page={page} />
+                      <MaticoPage key={page.path} page={page} />
                     </Route>
                   ))}
                 </Switch>
@@ -91,6 +102,6 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
           </Router>
         </Grommet>
       </MaticoDataProvider>
-    </MaticoStateProvider>
+    </Provider>
   );
 };

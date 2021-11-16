@@ -9,7 +9,7 @@ import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-github";
 import { useSpec } from "./hooks/useSpec";
 import { ValidationResult, Dashboard } from "matico_spec";
-import { MaticoApp, MaticoVariableState, MaticoDataState } from "matico_components";
+import { MaticoApp, VariableState, MaticoDataState } from "matico_components";
 import ReactJson from "react-json-view";
 
 function json_error_to_annotation(error: string) {
@@ -36,7 +36,7 @@ function App() {
   const [parseResult, setParseResult] = useState<ValidationResult | null>(null);
   const [validJSON, setValidJSON] = useState<boolean>(true);
   const [jsonError, setJsonError] = useState<any | null>(null);
-  const [appState, setAppState] = useState<MaticoVariableState | null>(null);
+  const [appState, setAppState] = useState<VariableState | null>(null);
   const [datasetState, setDatasetState] = useState<MaticoDataState| null>(null);
   const [tab, setTab] = useState<"spec" | "state" | "data"  | "yaml">("spec");
 
@@ -198,7 +198,7 @@ function App() {
               overflowY:'auto'
             }}
           >
-            <ReactJson style={{fontSize:15,  maxHeight:"1300px"}} src={appState} />
+            <ReactJson style={{fontSize:15,  maxHeight:"1300px", overflowY:'auto'}} collapsed={3} src={appState} />
           </div>
         )}
 
