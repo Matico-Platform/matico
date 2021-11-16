@@ -1,7 +1,6 @@
 import React from "react";
 import { Dashboard } from "matico_spec";
 import * as Icons from "grommet-icons";
-import { GeoJSONDataset } from "../../Datasets/GeoJSONDataset";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
 import {
@@ -81,6 +80,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                     <Route
                       path={page.path ? page.path : `/${page.name}`}
                       exact={true}
+                      key={page.path}
                     >
                       <MaticoPage page={page} />
                     </Route>

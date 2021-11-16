@@ -11,6 +11,7 @@ import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDat
 import { MaticoPaneInterface } from "../Pane";
 import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
+import {Filter} from '../../../Datasets/Dataset';
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
 // import usePanMap from '@webgeoda/hooks/usePanMap';
@@ -41,7 +42,7 @@ const renderVega = (
 const backgroundColor="#fff" //todo hoist to pane spec
 
 interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
-    dataset: string;
+    dataset: {name: string, filters: Array<Filter>};
     x_column: string;
     y_column: string;
     dot_color?: string;
@@ -52,7 +53,7 @@ interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
 
 
 export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = ({
-    dataset='',
+    dataset={},
     x_column='',
     y_column='',
     dot_color='#ff0000',
@@ -73,7 +74,9 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
         updateXFilter,
           //@ts-ignore
     ] = useAutoVariable(
+          //@ts-ignore
         `${x_column}_range`, 
+          //@ts-ignore
         "NoSelection", 
         {
             type:"NoSelection"
@@ -86,6 +89,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
           //@ts-ignore
     ] = useAutoVariable(
         `${y_column}_range`, 
+          //@ts-ignore
         "NoSelection", 
         {
             type:"NoSelection"
@@ -93,11 +97,15 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
     )
 
     const foundDataset = dataState.datasets.find((d) => {
-        return d.name === dataset;
+        return d.name === dataset.name;
     });
+
+    if(!foundDataset){
+      return<div>Loading</div>
+    }
     
     // @ts-ignore
-    const chartData = foundDataset && foundDataset.isReady() ? foundDataset.getData().features.map(f => f.properties) : []; // todo: centralized data model 
+    const chartData = foundDataset && foundDataset.isReady() ? foundDataset.getData(dataset.filters) : []; // todo: centralized data model 
     
     const spec = {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
@@ -577,7 +585,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> = (
         {table: chartData}, // vega needs datasets as an object
         signalListeners,
         setView
-    ), [chartData.length, x_column, y_column, dot_color, dot_size, foundDataset.isReady()])
+    ), [chartData.length, x_column, y_column, dot_color, dot_size, foundDataset?.isReady()])
     
     
     //

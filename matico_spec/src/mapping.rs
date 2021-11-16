@@ -1,4 +1,4 @@
-use crate::{AutoComplete, PanePosition, VarOr, Variable};
+use crate::{AutoComplete, PanePosition, VarOr, Variable, Filter};
 use matico_spec_derive::AutoCompleteMe;
 use palette::Srgb;
 use serde::{Deserialize, Serialize};
@@ -26,6 +26,7 @@ pub enum BaseMap {
     StileJSON(String),
 }
 
+
 impl Default for BaseMap {
     fn default() -> Self {
         Self::Color(Srgb::new(0.0, 0.0, 0.0))
@@ -38,10 +39,18 @@ pub struct LayerStyle {
     color:Option<[f32;4]>,
 }
 
+
+
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+pub struct DatasetRef{
+    name: String,
+    filters: Option<Vec<Filter>>
+}
+
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
 pub struct Layer {
     name: String,
-    source_name: String,
+    source: DatasetRef,
     order: usize,
     style: LayerStyle,
 }

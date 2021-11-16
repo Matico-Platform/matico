@@ -4,13 +4,12 @@ use validator::{Validate, ValidationErrors};
 #[derive(Serialize, Deserialize, Debug, Clone, Validate)]
 pub struct Variable {
     var: String,
+    bind: Option<bool> 
 }
 
 #[derive(Serialize, Debug, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum VarOr<T>
-where
-    T: Validate,
 {
     Var(Variable),
     Value(T),

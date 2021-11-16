@@ -8,6 +8,7 @@ mod section;
 mod validation;
 mod variables;
 mod datasets;
+mod filters;
 
 use autocomplete::*;
 use charts::*;
@@ -19,6 +20,7 @@ use section::*;
 use validation::*;
 use variables::*;
 use datasets::*;
+use filters::*;
 
 #[macro_use]
 extern crate matico_spec_derive;
