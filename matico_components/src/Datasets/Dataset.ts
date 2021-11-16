@@ -16,8 +16,8 @@ export enum GeomType{
   None = "None"
 }
 
-export interface Datum{
-}
+//TODO Explicitly type this at some point
+export type Datum = any;
 
 
 export interface RangeFilter{
