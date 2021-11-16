@@ -198,7 +198,7 @@ function App() {
               overflowY:'auto'
             }}
           >
-            <ReactJson style={{fontSize:15,  maxHeight:"1300px"}} src={appState} />
+            <ReactJson style={{fontSize:15,  maxHeight:"1300px", overflowY:'auto'}} collapsed={3} src={appState} />
           </div>
         )}
 
