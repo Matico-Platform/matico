@@ -39,11 +39,13 @@
                 },
                 "layers": [{
                     "name":"layer1",
-                    "source_name":"test",
+                    "source":{
+                        "name":"test"
+                    },
                     "order":1,
                     "style":{
                         "size":20,
-                        "color":"#222222"
+                        "color":[120,120,120,120]
                     }
                 }]
               }
@@ -152,7 +154,7 @@
                   "var": "map_one_map_loc"
                 },
                 "base_map": {
-                  "Named": "CartoDBVoyager"
+                  "Named": "Satelite"
                 },
                 "layers": []
               }
@@ -172,7 +174,7 @@
                   "var": "map_one_map_loc"
                 },
                 "base_map": {
-                  "Named": "Terrain"
+                  "Named": "Satelite"
                 },
                 "layers": []
               }
@@ -192,7 +194,7 @@
                   "var": "map_one_map_loc"
                 },
                 "base_map": {
-                  "Named": "Streets"
+                  "Named": "Satelite"
                 },
                 "layers": []
               }
