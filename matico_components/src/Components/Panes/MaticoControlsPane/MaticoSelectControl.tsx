@@ -12,7 +12,7 @@ interface MaticoSelectControlInterface{
 export const MaticoSelectControl : React.FC<MaticoSelectControlInterface> = ({options, name, default_value})=>{
   const [value, updateValue] = useAutoVariable({name:`select_control_${name}`, type:'any', initialValue:default_value, bind:true})
   return (
-    <Box>
+    <Box flex='grow'>
       <Select value={value} options={options} onChange={({option})=> updateValue(option)} />
     </Box>
   )

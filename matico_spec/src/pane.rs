@@ -46,6 +46,9 @@ pub struct ControlsPane {
     #[wasm_bindgen(skip)]
     pub name: String,
 
+    #[wasm_bindgen(skip)]
+    pub title: String,
+
     #[validate]
     pub position: PanePosition,
     

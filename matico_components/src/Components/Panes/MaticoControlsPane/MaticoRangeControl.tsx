@@ -12,11 +12,9 @@ interface MaticoRangeControlInterface{
 export const MaticoRangeControl : React.FC<MaticoRangeControlInterface> = ({min,max,step,name})=>{
 
   const [value, updateValue] = useAutoVariable({name:`range_control_${name}`, type:'any', initialValue:[min,max], bind:true})
-
   return (
-    <Box>
+    <Box flex={'grow'}>
       <RangeSelector values={value} min={min} max={max} step={step} onChange={(val)=> updateValue(val)}/>
     </Box>
   )
-
 }
