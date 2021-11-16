@@ -48,9 +48,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 }) => {
   return (
     <Provider store={store}>
-      {/*onStateChange &&
+      {onStateChange &&
         <StateReporter onStateChange={onStateChange}/>
-        */}
+      }
       <MaticoDataProvider onStateChange={onDataChange} datasets={spec.datasets}>
         <Grommet style={{ width: "100%", height: "100%" }}>
           <Router basename={basename}>

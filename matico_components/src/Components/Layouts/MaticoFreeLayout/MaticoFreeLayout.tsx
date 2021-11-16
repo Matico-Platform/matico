@@ -19,6 +19,7 @@ const FreePane = styled.div<{pane:PanePosition}>`
   left:${({pane})=> `${pane.x}%`};
   bottom:${({pane})=>`${pane.y}%`};
   cursor:${({pane})=> pane.float ? 'grab' : 'pointer'};
+  background:${({pane})=> pane.background ? pane.background : 'white'};
 `
 
 interface MaticoFreeLayoutInterface{

@@ -1,4 +1,4 @@
-use crate::{AutoComplete, ChartPane, MapPane, HistogramPane, ScatterplotPane};
+use crate::{AutoComplete, ChartPane, MapPane, HistogramPane, ScatterplotPane, Control};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError, ValidationErrors};
@@ -48,6 +48,9 @@ pub struct ControlsPane {
 
     #[validate]
     pub position: PanePosition,
+    
+    #[wasm_bindgen(skip)]
+    pub controls: Vec<Control>
 }
 
 #[wasm_bindgen]
