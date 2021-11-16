@@ -9,7 +9,7 @@ import {
 } from "../../../Hooks/useAutoVariable";
 import wkx from "wkx";
 import { ScatterplotLayer, PathLayer, PolygonLayer } from "@deck.gl/layers";
-import { convertPoint, convertPoly, convertLine } from "./LayerUtils";
+import { convertPoint, convertPoly, convertLine,expandMultiAndConvertPoly } from "./LayerUtils";
 
 interface MaticoLayerInterface {
   name: string;
@@ -58,7 +58,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       case GeomType.Point:
         return data.map((d) => ({ ...d, geom: convertPoint(d.geom) }));
       case GeomType.Polygon:
-        return data.map((d) => ({ ...d, geom: convertPoly(d.geom) }));
+        return expandMultiAndConvertPoly(data);
       case GeomType.Line:
         return data.map((d) => ({ ...d, geom: convertLine(d.geom) }));
     }

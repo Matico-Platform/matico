@@ -21,12 +21,23 @@ export function convertPoint(wkbGeom: any) {
   return parseSync(wkbGeom, WKBLoader).positions.value;
 }
 
-export function convertPoly(wkbGeom: any) {
-  const geom: any = wkx.Geometry.parse(Buffer.from(wkbGeom));
+export function convertPoly(poly: any) {
   return [
-    mapCoords(geom.polygons[0].exteriorRing),
-    ...geom.polygons[0].interiorRings.map(mapCoords),
+    mapCoords(poly.exteriorRing),
+    ...poly.interiorRings.map(mapCoords),
   ];
+}
+
+export function expandMultiAndConvertPoly(data:any){
+  const result = data.map(d=> ({...d, geom:wkx.Geometry.parse(Buffer.from(d.geom))})) 
+  const expanded = result.reduce((agg,d)=>{
+    d.geom.polygons.forEach((poly)=>{
+      agg.push({...d, geom: convertPoly(poly)})
+    }) 
+    return agg 
+  },[])
+
+  return expanded
 }
 
 export function convertLine(wkbGeom: any) {
