@@ -39,13 +39,6 @@ export class GeoJSONBuilder {
         this._columns = this._extractColumns(result);
         this._geometryType = this._extractGeomType(result);
         this._data = this._buildDataTable(result);
-        console.log(
-          "building geojson ",
-          name,
-          this._columns,
-          this._data,
-          this._geometryType
-        );
         onDone(
           new LocalDataset(name, this._columns, this._data, this._geometryType)
         );
@@ -85,8 +78,6 @@ export class GeoJSONBuilder {
     const type = Object.entries(geomTypeCounts).reduce((max, pair) =>
       pair[1] > max[1] ? pair : max
     )[0];
-
-    console.log("type ", type, ' type conts ', geomTypeCounts)
 
     switch (type) {
       case "Polygon":

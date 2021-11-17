@@ -14,7 +14,6 @@ export const MaticoControlsPane :React.FC<MaticoControlPaneInterface> = ({
   controls,
   title
 })=>{
-    console.log("Controls ", controls )
     return <Box pad={'small'} gap={'medium'} style={{textAlign:'left', width:'100%', height:'100%'}}>
       <h2>{title}</h2>
       {controls.map(controlSpec=>{

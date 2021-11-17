@@ -88,11 +88,9 @@ export class LocalDataset implements Dataset {
   getData(filters?: Array<Filter>, columns?: Array<string>) {
     const cacheKey = JSON.stringify([filters, columns]);
     if (this._filterCache[cacheKey]) {
-      console.log("USING cahced filter ")
       return this._filterCache[cacheKey];
     }
     if (filters && filters.length) {
-      console.log("USING computed filter ")
       const predicate = this._constructPredicate(filters);
       const vars = {};
       let results = [];

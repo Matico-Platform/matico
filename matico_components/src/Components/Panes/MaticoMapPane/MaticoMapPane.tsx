@@ -47,8 +47,8 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   const [mapLayers, setMapLayers] = useState([]);
 
   const updateLayer = (layer) => {
-    if (mapLayers.map((l) => l.name).includes(layer.name)) {
-      setMapLayers(mapLayers.map((l) => (l.name === layer.name ? layer : l)));
+    if (mapLayers.map((l) => l.id).includes(layer.id)) {
+      setMapLayers(mapLayers.map((l) => (l.id=== layer.id? layer : l)));
     } else {
       setMapLayers([...mapLayers, layer]);
     }

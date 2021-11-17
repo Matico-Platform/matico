@@ -94,12 +94,14 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           ...common,
           //@ts-ignore
         });
+        break
       case GeomType.Line:
         layer = new PathLayer({
           getColor: [0, 255, 0, 100],
           getPath: (d) => d.geom,
           ...common,
         });
+        break
       case GeomType.Polygon:
         layer = new PolygonLayer({
           getPolygon: (d) => d.geom,
@@ -110,9 +112,9 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           getLineWidth: 10,
           ...common,
         });
+        break
     }
 
-    console.log('returning layer ',layer)
     onUpdate(layer); 
   }, [
     name,
