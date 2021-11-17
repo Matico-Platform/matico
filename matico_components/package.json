@@ -39,6 +39,7 @@
     "grommet-icons": "^4.6.2",
     "katex": "^0.13.18",
     "lodash": "^4.17.21",
+    "matico_buffer_analysis": "workspace:matico_buffer_analysis/pkg",
     "matico_spec": "workspace:matico_spec/pkg",
     "papaparse": "^5.3.1",
     "polished": "^4.1.3",

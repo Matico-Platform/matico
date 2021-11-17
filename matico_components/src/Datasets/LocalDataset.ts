@@ -1,14 +1,13 @@
 import {
   Dataset,
   Column,
-  Datum,
   GeomType,
   Filter,
   RangeFilter,
   DatasetState,
 } from "./Dataset";
 
-import { predicate, DataFrame } from "@apache-arrow/es5-cjs";
+import { predicate, DataFrame} from "@apache-arrow/es5-cjs";
 
 export class LocalDataset implements Dataset {
   private _isReady: boolean;
@@ -44,6 +43,10 @@ export class LocalDataset implements Dataset {
 
   columns() {
     return this._columns;
+  }
+
+  getArrow(){
+    return this._data.serialize() 
   }
 
   getDataWithGeo(filters?: Array<Filter>) {
