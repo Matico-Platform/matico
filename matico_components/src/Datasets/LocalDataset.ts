@@ -93,34 +93,41 @@ export class LocalDataset implements Dataset {
   }
 
   _getResultsFromPredicate(filterPredicate: any, columns?: Array<string>){
-      const vars = {};
-      let results = [];
-
       const filterResults = this._data.filter(filterPredicate);
-      let selectColumns = columns ? columns : this.columns().map((c) => c.name);
 
-      selectColumns = [...selectColumns, "geom"];
+      try{
+        const vars = {};
+        let results = [];
 
-      filterResults.scan(
-        (index) => {
-          results.push(
-            Object.entries(vars).reduce((agg, [name, values]) => {
-              return {
-                ...agg,
-                //@ts-ignore
-                [name]: values(index),
-              };
-            }),
-            {}
-          );
-        },
-        (batch) => {
-          selectColumns.forEach((col) => {
-            vars[col] = predicate.col(col).bind(batch);
-          });
-        }
-      );
-    return results
+        let selectColumns = columns ? columns : this.columns().map((c) => c.name);
+
+        selectColumns = [...selectColumns, "geom"];
+
+        filterResults.scan(
+          (index) => {
+            results.push(
+              selectColumns.reduce((agg, col) => {
+                return {
+                  ...agg,
+                  //@ts-ignore
+                  [col]: vars[col](index),
+                };
+              },
+              {}
+            ))
+          },
+          (batch) => {
+            selectColumns.forEach((col) => {
+              vars[col] = predicate.col(col).bind(batch);
+            });
+          }
+        );
+      return results
+      }
+      catch{
+        console.warn("something went wrong applying filters cowardly returning empty array")
+        return []
+      }
   }
 
   getData(filters?: Array<Filter>, columns?: Array<string>) {
@@ -133,7 +140,6 @@ export class LocalDataset implements Dataset {
       const results  = this._getResultsFromPredicate(predicate)
 
       this._filterCache[JSON.stringify(filters)] = results;
-      console.log("returning results ", results,' for dataset ', this.name)
       return results;
     }
     return this._data.toArray();

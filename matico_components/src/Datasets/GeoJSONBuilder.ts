@@ -112,7 +112,6 @@ export class GeoJSONBuilder {
     }, {});
     let cols  = Object.values(a) as Column[];
     if(this.idCol ){
-      console.log("ADDING COLUMN ID AS ",this.idCol)
       cols.push({name:'id',type: 'string'})
     }
     return cols

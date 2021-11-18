@@ -83,8 +83,6 @@ export class CSVBuilder {
                   datum.push(id) 
                   id++
                 }
-                console.log("fields size ", fields.length , " Datum size ", datum.length)
-
                 //@ts-ignore
                 builder.append(datum);
               } catch (e) {
