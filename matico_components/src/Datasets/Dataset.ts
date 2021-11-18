@@ -36,13 +36,15 @@ export type Filter = RangeFilter | CategoryFilter
 
 export interface Dataset{
   name: string,
+  idCol: string,
   columns: ()=>Column[],
   getData:(filters?: Array<Filter>, columns?: Array<string>) =>Datum[],
   getDataWithGeo:(filters?: Array<Filter>, columns?:Array<string>) =>Datum[],
+  getFeature:(feature_id: string) => Datum | undefined,
   local:()=>boolean,
   tiled:()=>boolean,
   isReady:()=>boolean,
   geometryType:()=> GeomType,
-  onStateChange?:( (state: DatasetState)=>void)
-  uniqueForColumn?: (columnName:string)=>Array<string>
+  onStateChange?:( (state: DatasetState)=>void),
+  // metricForColumn?: (columnName:string, metric: DatasetMetric)=> any
 }

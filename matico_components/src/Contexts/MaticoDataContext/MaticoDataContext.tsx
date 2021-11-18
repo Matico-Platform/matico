@@ -83,6 +83,7 @@ export const MaticoDataProvider: React.FC<{
     });
   };
 
+
   datasets.forEach((dataset) => {
     if (
       Object.keys(state.datasetStates).find(
@@ -108,13 +109,14 @@ export const MaticoDataProvider: React.FC<{
             type: MaticoDataActionType.UPDATE_DATASET_STATE,
             payload: { datasetName: dataset.name, state: DatasetState.READY },
           });
-        }
+        },
+        dataset.GeoJSON.id_col
       );
     } else if (dataset.CSV) {
       const { name, url, lat_col, lng_col, id_col } = dataset.CSV;
       dispatch({
         type: MaticoDataActionType.UPDATE_DATASET_STATE,
-        payload: { datasetName: dataset.name, state: DatasetState.LOADING },
+        payload: { datasetName: dataset.CSV.name, state: DatasetState.LOADING },
       });
       new CSVBuilder(
         name,
@@ -123,7 +125,7 @@ export const MaticoDataProvider: React.FC<{
           registerDataset(dataset);
           dispatch({
             type: MaticoDataActionType.UPDATE_DATASET_STATE,
-            payload: { datasetName: name, state: DatasetState.READY },
+            payload: { datasetName: dataset.name, state: DatasetState.READY },
           });
         },
         lat_col,

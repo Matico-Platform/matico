@@ -16,6 +16,7 @@ export class LocalDataset implements Dataset {
 
   constructor(
     public name: string,
+    public idCol: string,
     private _columns: Array<Column>,
     public _data: DataFrame,
     public _geometryType: GeomType,
@@ -43,6 +44,12 @@ export class LocalDataset implements Dataset {
 
   columns() {
     return this._columns;
+  }
+
+  getFeature(feature_id: string){
+    const selectPredicate = predicate.col(this.idCol).eq(feature_id)   
+    const results = this._getResultsFromPredicate(selectPredicate)
+    return results
   }
 
   getArrow(){
@@ -85,17 +92,11 @@ export class LocalDataset implements Dataset {
     return combinedPredicate;
   }
 
-  getData(filters?: Array<Filter>, columns?: Array<string>) {
-    const cacheKey = JSON.stringify([filters, columns]);
-    if (this._filterCache[cacheKey]) {
-      return this._filterCache[cacheKey];
-    }
-    if (filters && filters.length) {
-      const predicate = this._constructPredicate(filters);
+  _getResultsFromPredicate(filterPredicate: any, columns?: Array<string>){
       const vars = {};
       let results = [];
 
-      const filterResults = this._data.filter(predicate);
+      const filterResults = this._data.filter(filterPredicate);
       let selectColumns = columns ? columns : this.columns().map((c) => c.name);
 
       selectColumns = [...selectColumns, "geom"];
@@ -119,9 +120,20 @@ export class LocalDataset implements Dataset {
           });
         }
       );
+    return results
+  }
+
+  getData(filters?: Array<Filter>, columns?: Array<string>) {
+    const cacheKey = JSON.stringify([filters, columns]);
+    if (this._filterCache[cacheKey]) {
+      return this._filterCache[cacheKey];
+    }
+    if (filters && filters.length) {
+      const predicate = this._constructPredicate(filters);
+      const results  = this._getResultsFromPredicate(predicate)
 
       this._filterCache[JSON.stringify(filters)] = results;
-
+      console.log("returning results ", results,' for dataset ', this.name)
       return results;
     }
     return this._data.toArray();
