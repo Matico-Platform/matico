@@ -3,11 +3,9 @@
   "created_at": "2021-10-16T13:36:36.249Z",
   "datasets": [
     {
-      "CSV": {
-        "name": "csv_test",
-        "url": "https://allofthedata.s3.us-west-2.amazonaws.com/Capital_Projects_Tracker.csv",
-        "lat_col":"Latitude",
-        "lng_col":"Longitude"
+      "GeoJSON": {
+        "name": "census",
+        "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Census_Tracts_for_2020_US_Census/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
       }
     }
   ],
@@ -23,10 +21,28 @@
           "order": 1,
           "panes": [
             {
-              "Map": {
-                "name": "map_with_data",
+              "Scatterplot": {
+                "name": "scatter",
+                "dataset": { "name": "census" },
                 "position": {
-                  "width": 50,
+                  "width": 25,
+                  "height": 25,
+                  "layer": 10,
+                  "float": false,
+                  "x": 70,
+                  "y": 60
+                },
+                "x_column": "Shape__Area",
+                "y_column": "Shape__Length",
+                "dot_color": "red",
+                "dot_size": 10
+              }
+            },
+            {
+              "Map": {
+                "name": "census_map",
+                "position": {
+                  "width": 10,
                   "height": 100,
                   "layer": 0,
                   "float": false,
@@ -43,19 +59,10 @@
                 "layers": [
                   {
                     "source": {
-                      "name": "csv_test",
-                      "filters":[
-                        {
-                        "Range":{
-                          "variable":"DesignAdjustedCompletion",
-                          "min" : 0,
-                          "max": 100
-                        }
-                        }
-                      ]
+                      "name": "census"
                     },
-                    "name": "csv_text",
-                    "order": 10,
+                    "name": "census",
+                    "order": 1,
                     "style": {
                       "color": [55, 44, 255, 255],
                       "size": 4

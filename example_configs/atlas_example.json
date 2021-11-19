@@ -1,0 +1,143 @@
+{
+  "name": "New Dashboard",
+  "created_at": "2021-10-16T13:36:36.249Z",
+  "datasets": [
+    {
+      "GeoJSON": {
+        "name": "atlas",
+        "url": "https://uscovidatlas.org/geojson/county_nyt.geojson"
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "home",
+      "order": 1,
+      "icon": "Home",
+      "path": "/",
+      "sections": [
+        
+        {
+          "name": "simple_map",
+          "order": 1,
+          "panes": [
+                {
+              "Controls":{
+                  "name":"atlas_controls",
+                  "title":"Covid Atlas",
+                  "position": {
+                      "width": 25,
+                      "height": 25,
+                      "layer": 11,
+                      "float": false,
+                      "x": 70,
+                  "y": 20
+                },
+                "controls":[{
+                    "Range":{
+                        "name":"beds",
+                        "max":20000,
+                        "min":0,
+                        "step":1000,
+                        "default_value":2
+                    }
+                },
+                {
+                    "Range":{
+                        "name":"pop",
+                        "max":4000000,
+                        "min":0,
+                        "step":1000000,
+                        "default_value":2
+                    }
+                }
+                ]
+              }
+          },
+            {
+              "Scatterplot": {
+                "name": "scatter",
+                "dataset": {
+                  "name": "atlas",
+                  "filters":[
+                        {"Range":{
+                            "variable":"beds",
+                            "max":{"var":"range_control_pop.1"},
+                            "min":{"var":"range_control_pop.0"}
+                        }  
+                        }
+                    ]
+                },
+                "position": {
+                  "width": 25,
+                  "height": 25,
+                  "layer": 10,
+                  "float": false,
+                  "x": 70,
+                  "y": 60
+                },
+                "x_column": "population",
+                "y_column": "beds",
+                "dot_color": "red",
+                "dot_size": 10
+              }
+            },
+            {
+              "Map": {
+                "name": "atlas_map",
+                "position": {
+                  "width": 100,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "view": {
+                  "lat": 48.342673708488334,
+                  "lng": -93.40119290325764,
+                  "zoom": 3.6616998969061285,
+                  "pitch": 0,
+                  "bearing": 0
+                },
+                "layers": [
+                  {
+                    "source": {
+                      "name": "atlas",
+                           "filters":[
+                        {"Range":{
+                            "variable":"beds",
+                            "max":{"var":"beds_range.max"},
+                            "min":{"var":"beds_range.min"}
+                        } 
+                        },
+                        {"Range":{
+                            "variable":"population",
+                            "max":{"var":"population_range.max"},
+                            "min":{"var":"population_range.min"}
+                        } 
+                        }
+                    ]
+                },
+                    "name": "atals",
+                    "order": 1,
+                    "style": {
+                      "color": [
+                        55,
+                        44,
+                        255,
+                        255
+                      ],
+                      "size": 4
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "layout": "free"
+        }
+      ]
+    }
+  ]
+}

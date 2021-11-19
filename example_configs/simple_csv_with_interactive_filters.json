@@ -21,12 +21,33 @@
         {
           "name": "simple_map",
           "order": 1,
-          "panes": [
+          "panes": [{
+            "Controls":{
+                "name":"controls",
+                "position": {
+                  "width": 40,
+                  "height": 30,
+                  "layer": 2,
+                  "float": false,
+                  "x": 0,
+                  "y": 70
+                },
+                "title":"CONTROLS!",
+                "controls":[{"Range":{
+                    "name":"interaction_test",
+                    "min":0,
+                    "max":100,
+                    "step":1,
+                    "default_value":50
+                    
+                }}]
+            }
+          },
             {
               "Map": {
                 "name": "map_with_data",
                 "position": {
-                  "width": 50,
+                  "width": 100,
                   "height": 100,
                   "layer": 0,
                   "float": false,
@@ -47,9 +68,9 @@
                       "filters":[
                         {
                         "Range":{
-                          "variable":"DesignAdjustedCompletion",
-                          "min" : 0,
-                          "max": 100
+                          "variable":"ConstructionPercentComplete",
+                          "min" : {"var":"interaction_test.0"},
+                          "max": {"var":"interaction_test.1"}
                         }
                         }
                       ]
