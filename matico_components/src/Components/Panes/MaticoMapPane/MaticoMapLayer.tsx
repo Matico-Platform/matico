@@ -2,6 +2,7 @@ import { parseSync } from "@loaders.gl/core";
 import { WKBLoader } from "@loaders.gl/wkt";
 import React, { useContext, useEffect, useMemo } from "react";
 import { GeomType } from "../../../Datasets/Dataset";
+import traverse from 'traverse'
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import {
   AutoVariableInterface,
@@ -10,6 +11,8 @@ import {
 import wkx from "wkx";
 import { ScatterplotLayer, PathLayer, PolygonLayer } from "@deck.gl/layers";
 import { convertPoint, convertPoly, convertLine,expandMultiAndConvertPoly } from "./LayerUtils";
+import {useVariableSelector} from "../../../Hooks/redux";
+import _ from 'lodash'
 
 interface MaticoLayerInterface {
   name: string;
@@ -48,12 +51,32 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
 
   const datasetReady = dataset ? dataset.isReady() : false
 
+  const state = useVariableSelector((state)=>state.variables.autoVariables) 
+
+  const mappedFilters = traverse(source.filters).map(function(node){
+    if(node && node.var){
+      const variableName = node.var.split(".")[0]
+      const path = node.var.split(".").slice(1).join(".")
+      const variable = state[variableName]
+      if(variable=== null || variable===undefined){
+        console.warn("failed to find variable", variableName)
+        return 
+      }
+      const value  = _.at(variable.value,path)[0]
+      this.update(value)
+    }
+  })
+
+
+
   const preparedData = useMemo(() => {
     if (!datasetReady) {
       return [];
     }
 
-    const data = dataset.getDataWithGeo(source.filters);
+
+    const data = dataset.getDataWithGeo(mappedFilters);
+
     switch (dataset.geometryType()) {
       case GeomType.Point:
         return data.map((d) => ({ ...d, geom: convertPoint(d.geom) }));
@@ -62,7 +85,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       case GeomType.Line:
         return data.map((d) => ({ ...d, geom: convertLine(d.geom) }));
     }
-  }, [JSON.stringify(source), datasetReady]);
+  }, [source.name, datasetReady, JSON.stringify(mappedFilters)]);
+
 
   useEffect(() => {
     if(!dataset || !dataset.isReady()){
@@ -107,9 +131,10 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           getPolygon: (d) => d.geom,
           filled: true,
           getFillColor: style.color ? style.color : [255, 0, 0, 100],
-          getLineColor: [0, 255, 0, 100],
+          getLineColor: [255, 255, 255, 100],
           stroked: true,
-          getLineWidth: 10,
+          getLineWidth: 1,
+          lineWidthMinPixels: 1,
           ...common,
         });
         break
@@ -119,7 +144,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
   }, [
     name,
     JSON.stringify(style),
-    datasetReady 
+    datasetReady,
+    preparedData
   ]);
 
   return <></>;
