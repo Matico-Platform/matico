@@ -31,9 +31,14 @@ export function convertPoly(poly: any) {
 export function expandMultiAndConvertPoly(data:any){
   const result = data.map(d=> ({...d, geom:wkx.Geometry.parse(Buffer.from(d.geom))})) 
   const expanded = result.reduce((agg,d)=>{
-    d.geom.polygons.forEach((poly)=>{
-      agg.push({...d, geom: convertPoly(poly)})
-    }) 
+    if(d.geom.polygons){
+      d.geom.polygons.forEach((poly)=>{
+        agg.push({...d, geom: convertPoly(poly)})
+      }) 
+    }
+    else{
+      agg.push({...d, geom: convertPoly(d.geom)})
+    }
     return agg 
   },[])
 
