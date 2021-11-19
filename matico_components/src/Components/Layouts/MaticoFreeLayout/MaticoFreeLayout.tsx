@@ -11,7 +11,7 @@ const FreeArea = styled.div`
   flex:1;
 `
 
-const FreePane = styled.div<{pane:PanePosition}>`
+const FreePane = styled(Box)<{pane:PanePosition}>`
   position: absolute;
   width:${({pane})=> `${pane.width}%`};
   height:${({pane})=> `${pane.height}%`};
@@ -31,7 +31,7 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> =({children})
     {React.Children.map(children, child=>{
       //@ts-ignore
       //TODO Make this properly typed. Properly check to ensure that the child nodes implement MaticoPaneInterface 
-      const pane  =(<FreePane key={child.props.name} pane={child.props.position} className="FreePane">
+      const pane  =(<FreePane elevation={'medium'}  key={child.props.name} pane={child.props.position} className="FreePane">
         {child}
         </FreePane>)
 
