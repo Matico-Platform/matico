@@ -39,7 +39,6 @@ export class GeoJSONBuilder {
     fetch(url)
       .then((r) => r.json())
       .then((result: any) => {
-        this._columns = this._extractColumns(result);
         this._geometryType = this._extractGeomType(result);
         this._data = this._buildDataTable(result);
         onDone(
@@ -51,7 +50,7 @@ export class GeoJSONBuilder {
   private _buildDataTable(geoJSON: any) {
     const props = geoJSON.features[0].properties;
     const { columns, fields } = constructColumnListFromSample(props);
-
+    this._columns = columns
     fields.push(new Field("geom", new Binary(),true));
     if(!this.idCol){
       fields.push(new Field("id", new Int32(),false));
@@ -64,7 +63,7 @@ export class GeoJSONBuilder {
     geoJSON.features.forEach((feature,id) => {
       const geom = wkx.Geometry.parseGeoJSON(feature.geometry).toWkb();
       //@ts-ignore
-      const values = columns.map((c) => feature.properties[c]);
+      const values = columns.map((c) => feature.properties[c.name]);
       let datum = [...values,geom]
       if(!this.idCol){
         datum.push(id)
