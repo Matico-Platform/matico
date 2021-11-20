@@ -1,4 +1,5 @@
 import React from "react";
+import useResizeObserver from '@react-hook/resize-observer'
 import { Vega } from "react-vega";
 import * as vega from "vega";
 // import { useSelector, useDispatch } from 'react-redux';
@@ -11,20 +12,14 @@ import { Filter } from "../../../Datasets/Dataset";
 import { useVariableSelector } from "../../../Hooks/redux";
 import _ from "lodash";
 import traverse from "traverse";
+import { PADDING } from "apache-arrow/ipc/message";
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
 // import usePanMap from '@webgeoda/hooks/usePanMap';
 // import Loader from '@components/layout/Loade r';
 
-const renderVega = (chartRef, spec, scatterData, signalListeners, setView) => (
-  <Vega
-    ref={chartRef}
-    spec={spec}
-    data={scatterData}
-    signalListeners={signalListeners}
-    onNewView={(view) => setView(view)}
-  />
-);
+// const renderVega = (chartRef, spec, scatterData, signalListeners, setView) => (
+// );
 
 
 function updateFilterExtent({
@@ -38,7 +33,7 @@ function updateFilterExtent({
         .remove(() => true)
         .insert({ xmin: xFilter.min, xmax: xFilter.max, ymax: yFilter.max, ymin: yFilter.min });
     // @ts-ignore
-    view.change(dataset, cs).run();
+    view.change(dataset, cs).runAsync();
 }
 
 
@@ -54,7 +49,7 @@ function updateActiveDataset({
         .remove(() => true)
         .insert(chartData.filter(filter));
     // @ts-ignore
-    view.change(dataset, cs).run();
+    view.change(dataset, cs).runAsync();
 }
 // const parseFilters = (filters) => {
 //     let returnObj = {}
@@ -75,6 +70,24 @@ interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dot_size?: number;
 }
 
+// react.d.ts
+type RefObject<T> = {
+    readonly current: T | null
+}
+
+const useSize = (target: RefObject<{}>) => {
+    const [size, setSize] = React.useState({ width: 0, height: 0 });
+  
+    React.useLayoutEffect(() => {
+        //@ts-ignore
+      setSize(target.current.getBoundingClientRect())
+    }, [target])
+  
+    //@ts-ignore
+    useResizeObserver(target, (entry) => setSize(entry.contentRect))
+    return size
+}
+
 export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
   ({
     dataset = {},
@@ -89,7 +102,14 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const { state: dataState } = useContext(MaticoDataContext);
     const [view, setView] = useState({});
     const chartRef = useRef();
-
+    const containerRef = useRef();
+    const dims = useSize(containerRef);
+    const padding = {
+      top: 25,
+      left: 40,
+      bottom: 30,
+      right: 10,
+    }
 
     const [
       xFilter,
@@ -153,14 +173,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
 
     const spec = {
       $schema: "https://vega.github.io/schema/vega/v5.json",
-      width: 300,
-      height: 160,
-      padding: {
-        top: 10,
-        left: 40,
-        bottom: 30,
-        right: 10,
-      },
+      width: dims.width - padding.left - padding.right,
+      height: dims.height - padding.top - padding.bottom,
+      padding: padding,
+      title: `${dataset.name}: ${x_column} vs ${y_column}` ,
       autosize: "none",
       config: {
         axis: {
@@ -170,7 +186,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           labelFont: "Monaco, Courier New",
         },
       },
-
       signals: [
         { name: "chartWidth", value: 300 },
         { name: "chartHeight", value: 160 },
@@ -649,24 +664,24 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       // tempDrag: (e, target) => console.log(e, target)
     };
 
-    const vegaChart = useMemo(
-      () =>
-        renderVega(
-          chartRef,
-          spec,
-          { table: chartData }, // vega needs datasets as an object
-          signalListeners,
-          setView
-        ),
-      [
-        chartData.length,
-        x_column,
-        y_column,
-        dot_color,
-        dot_size,
-        foundDataset?.isReady(),
-      ]
-    );
+    // const vegaChart = useMemo(
+    //   () =>
+    //     renderVega(
+    //       chartRef,
+    //       spec,
+    //       { table: chartData }, // vega needs datasets as an object
+    //       signalListeners,
+    //       setView
+    //     ),
+    //   [
+    //     chartData.length,
+    //     x_column,
+    //     y_column,
+    //     dot_color,
+    //     dot_size,
+    //     foundDataset?.isReady(),
+    //   ]
+    // );
 
     useEffect(() => {
         if (xFilter && yFilter && view && Object.keys(view).length) {
@@ -694,47 +709,23 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       return <div>{dataset.name} not found!</div>;
     }
 
-    // const boxFilterGeoids = useSelector((state) => state.boxFilterGeoids);
-    // const panToGeoid = usePanMap();
-    // const mapFilters = useSelector((state) => state.mapFilters);
-    // const currFilters = mapFilters.filter(f => f.source === config.id);
-    // const {
-    //     chartData
-    // } = useGetScatterData({
-    //     config: config,
-    //     options: options,
-    //     id: id
-    // })
-
-    // useEffect(() => {
-    //     if (!(chartData.length)) return;
-    //     function updateGraph() {
-    //         const cs = vega
-    //             .changeset()
-    //             .remove(() => true)
-    //             .insert(chartData.filter(t => boxFilterGeoids.includes(t.id)));
-    //         view.change('active', cs).run();
-    //     }
-    //     Object.keys(view).length && updateGraph();
-    // }, [view, boxFilterGeoids]);
-
-
     return (
       <Box
         background={backgroundColor}
         elevation={"large"}
         fill={true}
-        overflow={{ vertical: "auto" }}
+        ref={containerRef}
+        pad="small"
       >
-        {chartData.length ? vegaChart : null}
+       
+        <Vega
+            ref={chartRef}
+            data={{ table: chartData }}
+            signalListeners={signalListeners}
+            onNewView={(view) => setView(view)}
+            // @ts-ignore
+            spec={spec}
+        />
       </Box>
     );
-  };
-
-// ScatterWidget.propTypes = {
-//   options: PropTypes.object.isRequired,
-//   data: PropTypes.object.isRequired,
-//   id: PropTypes.number.isRequired,
-//   config: PropTypes.object.isRequired,
-//   activeFilters: PropTypes.array.isRequired
-// };
+};
