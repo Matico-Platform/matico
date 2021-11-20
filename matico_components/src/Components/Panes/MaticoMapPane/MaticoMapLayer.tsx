@@ -114,6 +114,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           getLineColor: [0, 255, 0, 100],
           stroked: true,
           getLineWidth: 10,
+          //@ts-ignore
           getPosition: (d) => d.geom,
           ...common,
           //@ts-ignore
@@ -128,6 +129,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         break
       case GeomType.Polygon:
         layer = new PolygonLayer({
+          //@ts-ignore
           getPolygon: (d) => d.geom,
           filled: true,
           getFillColor: style.color ? style.color : [255, 0, 0, 100],
