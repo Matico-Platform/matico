@@ -75,13 +75,13 @@ type RefObject<T> = {
     readonly current: T | null
 }
 
-const useSize = (target: RefObject<{}>) => {
+const useSize = (target: RefObject<{}>, datasetReady: boolean) => {
     const [size, setSize] = React.useState({ width: 0, height: 0 });
   
     React.useLayoutEffect(() => {
         //@ts-ignore
-      setSize(target.current.getBoundingClientRect())
-    }, [target])
+      if (datasetReady && target && target.current) setSize(target.current.getBoundingClientRect())
+    }, [target, datasetReady])
   
     //@ts-ignore
     useResizeObserver(target, (entry) => setSize(entry.contentRect))
@@ -103,13 +103,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const [view, setView] = useState({});
     const chartRef = useRef();
     const containerRef = useRef();
-    const dims = useSize(containerRef);
-    const padding = {
-      top: 25,
-      left: 40,
-      bottom: 30,
-      right: 10,
-    }
 
     const [
       xFilter,
@@ -144,6 +137,14 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       return d.name === dataset.name;
     });
     const datasetReady = foundDataset && foundDataset.isReady();
+
+    const dims = useSize(containerRef, datasetReady);
+    const padding = {
+      top: 25,
+      left: 40,
+      bottom: 30,
+      right: 10,
+    }
 
     const state = useVariableSelector((state) => state.variables.autoVariables);
 
