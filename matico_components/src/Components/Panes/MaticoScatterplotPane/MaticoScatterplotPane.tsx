@@ -9,9 +9,7 @@ import { MaticoPaneInterface } from "../Pane";
 import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
-import { useVariableSelector } from "../../../Hooks/redux";
-import _ from "lodash";
-import traverse from "traverse";
+import {useSubVariables} from '../../../Hooks/useSubVariables'
 
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
@@ -142,27 +140,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       right: 10,
     };
 
-    const state = useVariableSelector((state) => state.variables.autoVariables);
+    const mappedFilters = useSubVariables(dataset.filters)
 
-    const mappedFilters =
-      datasetReady && dataset.filters
-        ? traverse(dataset.filters).map(function (node) {
-            if (node && node.var) {
-              const variableName = node.var.split(".")[0];
-              const path = node.var.split(".").slice(1).join(".");
-              const variable = state[variableName];
-              if (variable === null || variable === undefined) {
-                console.warn("failed to find variable", variableName);
-                return;
-                // throw Error("")
-              }
-              const value = _.at(variable.value, path)[0];
-              this.update(value);
-            }
-          })
-        : [];
-
-    console.log("mappedFilters ", mappedFilters);
     // @ts-ignore
     const chartData = useMemo(() => {
       return datasetReady
