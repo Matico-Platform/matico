@@ -1,8 +1,10 @@
+cargo-features = ["edition2021"]
+
 [package]
 name = "matico_spec"
 version = "0.1.0"
 authors = ["Stuart Lynn <stuart.lynn@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
@@ -20,3 +22,4 @@ toml = "0.5.8"
 url = {version = "2.2.2", features=["serde"]} 
 palette = {version="0.6.0", features=["serializing","libm"]} 
 matico_spec_derive = {path = "../matico_spec_derive"}
+
