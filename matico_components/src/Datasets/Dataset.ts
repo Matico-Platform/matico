@@ -46,5 +46,9 @@ export interface Dataset{
   isReady:()=>boolean,
   geometryType:()=> GeomType,
   onStateChange?:( (state: DatasetState)=>void),
+  getColumnMax: (columns: string) => number,
+  getColumnMin: (columns: string) => number,
+  getColumnSum: (columns: string) => number
+
   // metricForColumn?: (columnName:string, metric: DatasetMetric)=> any
 }

@@ -16,57 +16,78 @@
       "icon": "Home",
       "path": "/",
       "sections": [
-        
         {
           "name": "simple_map",
           "order": 1,
           "panes": [
-                {
-              "Controls":{
-                  "name":"atlas_controls",
-                  "title":"Covid Atlas",
-                  "position": {
-                      "width": 25,
-                      "height": 25,
-                      "layer": 11,
-                      "float": false,
-                      "x": 70,
+            {
+              "Controls": {
+                "name": "atlas_controls",
+                "title": "Covid Atlas",
+                "position": {
+                  "width": 25,
+                  "height": 25,
+                  "layer": 11,
+                  "float": false,
+                  "x": 70,
                   "y": 20
                 },
-                "controls":[{
-                    "Range":{
-                        "name":"beds",
-                        "max":20000,
-                        "min":0,
-                        "step":1000,
-                        "default_value":2
+                "controls": [
+                  {
+                    "Range": {
+                      "name": "beds",
+                      "max":{
+                          "dataset":"atlas",
+                          "metric":"Max",
+                          "column":"beds"
+                      },
+                      "min":{
+                          "dataset":"atlas",
+                          "metric":"Min",
+                          "column":"beds"
+                      },
+                      "step": 1000,
+                      "default_value": 2
                     }
-                },
-                {
-                    "Range":{
-                        "name":"pop",
-                        "max":4000000,
-                        "min":0,
-                        "step":1000000,
-                        "default_value":2
+                  },
+                  {
+                    "Range": {
+                      "name": "pop",
+                      "max": {
+                          "dataset":"atlas",
+                          "metric":"Max",
+                          "column":"population"
+                      },
+                      "min": {
+                          "dataset":"atlas",
+                          "metric":"Min",
+                          "column":"population"
+                      },
+                      "step": 10000,
+                      "default_value": 2
                     }
-                }
+                  }
                 ]
               }
-          },
+            },
             {
               "Scatterplot": {
                 "name": "scatter",
                 "dataset": {
                   "name": "atlas",
-                  "filters":[
-                        {"Range":{
-                            "variable":"beds",
-                            "max":{"var":"range_control_pop.1"},
-                            "min":{"var":"range_control_pop.0"}
-                        }  
+                  "filters": [
+                    {
+                      "Range": {
+                        "variable": "beds",
+                        "max": {
+                          "var": "range_control_pop.1"
+                        },
+                        "min": {
+                          "var": "range_control_pop.0"
                         }
-                    ]
+                      }
+                    }
+                  ]
                 },
                 "position": {
                   "width": 25,
@@ -104,21 +125,31 @@
                   {
                     "source": {
                       "name": "atlas",
-                           "filters":[
-                        {"Range":{
-                            "variable":"beds",
-                            "max":{"var":"beds_range.max"},
-                            "min":{"var":"beds_range.min"}
-                        } 
+                      "filters": [
+                        {
+                          "Range": {
+                            "variable": "beds",
+                            "max": {
+                              "var": "beds_range.max"
+                            },
+                            "min": {
+                              "var": "beds_range.min"
+                            }
+                          }
                         },
-                        {"Range":{
-                            "variable":"population",
-                            "max":{"var":"population_range.max"},
-                            "min":{"var":"population_range.min"}
-                        } 
+                        {
+                          "Range": {
+                            "variable": "population",
+                            "max": {
+                              "var": "population_range.max"
+                            },
+                            "min": {
+                              "var": "population_range.min"
+                            }
+                          }
                         }
-                    ]
-                },
+                      ]
+                    },
                     "name": "atals",
                     "order": 1,
                     "style": {

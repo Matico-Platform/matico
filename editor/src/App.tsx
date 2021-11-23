@@ -4,6 +4,7 @@ import "./App.css";
 import AceEditor from "react-ace";
 import ace, { Ace } from "ace-builds";
 import examples from './example_configs'
+import ErrorBoundary from "./ErrorBoundary";
 
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/mode-yaml";
@@ -47,7 +48,6 @@ function App() {
 
 
   const setExample  = (example:any)=>{
-      console.log("Setting example ", example)
       setCode(JSON.stringify(example,null , 2))
       setTab("spec")
   }
@@ -107,6 +107,7 @@ function App() {
   };
 
   return (
+    <ErrorBoundary>
     <div
       className="App"
       style={{
@@ -304,6 +305,7 @@ function App() {
         <button onClick={pretty}>Make Pretty</button>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }
 

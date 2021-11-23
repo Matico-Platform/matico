@@ -1,18 +1,13 @@
-import { parseSync } from "@loaders.gl/core";
-import { WKBLoader } from "@loaders.gl/wkt";
 import React, { useContext, useEffect, useMemo } from "react";
 import { GeomType } from "../../../Datasets/Dataset";
-import traverse from 'traverse'
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import {
   AutoVariableInterface,
   useAutoVariable,
 } from "../../../Hooks/useAutoVariable";
-import wkx from "wkx";
 import { ScatterplotLayer, PathLayer, PolygonLayer } from "@deck.gl/layers";
-import { convertPoint, convertPoly, convertLine,expandMultiAndConvertPoly } from "./LayerUtils";
-import {useVariableSelector} from "../../../Hooks/redux";
-import _ from 'lodash'
+import { convertPoint,  convertLine,expandMultiAndConvertPoly } from "./LayerUtils";
+import {useSubVariables} from "../../../Hooks/useSubVariables";
 
 interface MaticoLayerInterface {
   name: string;
@@ -51,22 +46,9 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
 
   const datasetReady = dataset ? dataset.isReady() : false
 
-  const state = useVariableSelector((state)=>state.variables.autoVariables) 
 
-  const mappedFilters = traverse(source.filters).map(function(node){
-    if(node && node.var){
-      const variableName = node.var.split(".")[0]
-      const path = node.var.split(".").slice(1).join(".")
-      const variable = state[variableName]
-      if(variable=== null || variable===undefined){
-        console.warn("failed to find variable", variableName)
-        return 
-      }
-      const value  = _.at(variable.value,path)[0]
-      this.update(value)
-    }
-  })
-
+  const mappedFilters = useSubVariables(source.filters) 
+  if(!mappedFilters) return null
 
 
   const preparedData = useMemo(() => {
