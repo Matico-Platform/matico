@@ -72,7 +72,7 @@ const useSize = (target: RefObject<{}>, datasetReady: boolean) => {
 
   React.useLayoutEffect(() => {
     if (datasetReady && target && target.current)
-    //@ts-ignore
+      //@ts-ignore
       setSize(target.current.getBoundingClientRect());
   }, [target, datasetReady]);
 
@@ -162,14 +162,14 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           })
         : [];
 
+    console.log("mappedFilters ", mappedFilters);
     // @ts-ignore
-    const chartData = useMemo(
-      () =>
-        foundDataset && foundDataset.isReady()
-          ? foundDataset.getData(mappedFilters)
-          : [],
-      [JSON.stringify(mappedFilters), foundDataset.isReady()]
-    );
+    const chartData = useMemo(() => {
+      return datasetReady
+        ? foundDataset.getData(mappedFilters)
+        : [];
+    }, [JSON.stringify(mappedFilters), datasetReady, ]);
+    
 
     const spec = {
       $schema: "https://vega.github.io/schema/vega/v5.json",
