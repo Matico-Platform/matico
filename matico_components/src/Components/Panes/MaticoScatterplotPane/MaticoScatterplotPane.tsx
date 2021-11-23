@@ -1,5 +1,5 @@
 import React from "react";
-import useResizeObserver from '@react-hook/resize-observer'
+import useResizeObserver from "@react-hook/resize-observer";
 import { Vega } from "react-vega";
 import * as vega from "vega";
 // import { useSelector, useDispatch } from 'react-redux';
@@ -21,35 +21,27 @@ import { PADDING } from "apache-arrow/ipc/message";
 // const renderVega = (chartRef, spec, scatterData, signalListeners, setView) => (
 // );
 
-
-function updateFilterExtent({
-    view,
-    xFilter,
-    yFilter,
-    dataset=""
-}) {
-    const cs = vega
-        .changeset()
-        .remove(() => true)
-        .insert({ xmin: xFilter.min, xmax: xFilter.max, ymax: yFilter.max, ymin: yFilter.min });
-    // @ts-ignore
-    view.change(dataset, cs).runAsync();
+function updateFilterExtent({ view, xFilter, yFilter, dataset = "" }) {
+  const cs = vega
+    .changeset()
+    .remove(() => true)
+    .insert({
+      xmin: xFilter.min,
+      xmax: xFilter.max,
+      ymax: yFilter.max,
+      ymin: yFilter.min,
+    });
+  // @ts-ignore
+  view.change(dataset, cs).runAsync();
 }
 
-
-
-function updateActiveDataset({
-    view,
-    chartData,
-    filter,
-    dataset
-}) {
-    const cs = vega
-        .changeset()
-        .remove(() => true)
-        .insert(chartData.filter(filter));
-    // @ts-ignore
-    view.change(dataset, cs).runAsync();
+function updateActiveDataset({ view, chartData, filter, dataset }) {
+  const cs = vega
+    .changeset()
+    .remove(() => true)
+    .insert(chartData.filter(filter));
+  // @ts-ignore
+  view.change(dataset, cs).runAsync();
 }
 // const parseFilters = (filters) => {
 //     let returnObj = {}
@@ -72,21 +64,22 @@ interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
 
 // react.d.ts
 type RefObject<T> = {
-    readonly current: T | null
-}
+  readonly current: T | null;
+};
 
 const useSize = (target: RefObject<{}>, datasetReady: boolean) => {
-    const [size, setSize] = React.useState({ width: 0, height: 0 });
-  
-    React.useLayoutEffect(() => {
-        //@ts-ignore
-      if (datasetReady && target && target.current) setSize(target.current.getBoundingClientRect())
-    }, [target, datasetReady])
-  
+  const [size, setSize] = React.useState({ width: 0, height: 0 });
+
+  React.useLayoutEffect(() => {
+    if (datasetReady && target && target.current)
     //@ts-ignore
-    useResizeObserver(target, (entry) => setSize(entry.contentRect))
-    return size
-}
+      setSize(target.current.getBoundingClientRect());
+  }, [target, datasetReady]);
+
+  //@ts-ignore
+  useResizeObserver(target, (entry) => setSize(entry.contentRect));
+  return size;
+};
 
 export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
   ({
@@ -103,6 +96,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const [view, setView] = useState({});
     const chartRef = useRef();
     const containerRef = useRef();
+    console.log("rednering scatter plot");
 
     const [
       xFilter,
@@ -134,8 +128,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     });
 
     const foundDataset = dataState.datasets.find((d) => {
+      console.log("getting data ");
       return d.name === dataset.name;
     });
+
     const datasetReady = foundDataset && foundDataset.isReady();
 
     const dims = useSize(containerRef, datasetReady);
@@ -144,7 +140,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       left: 40,
       bottom: 30,
       right: 10,
-    }
+    };
 
     const state = useVariableSelector((state) => state.variables.autoVariables);
 
@@ -167,17 +163,20 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         : [];
 
     // @ts-ignore
-    const chartData =
-      foundDataset && foundDataset.isReady()
-        ? foundDataset.getData(mappedFilters)
-        : []; // todo: centralized data model
+    const chartData = useMemo(
+      () =>
+        foundDataset && foundDataset.isReady()
+          ? foundDataset.getData(mappedFilters)
+          : [],
+      [JSON.stringify(mappedFilters), foundDataset.isReady()]
+    );
 
     const spec = {
       $schema: "https://vega.github.io/schema/vega/v5.json",
       width: dims.width - padding.left - padding.right,
       height: dims.height - padding.top - padding.bottom,
       padding: padding,
-      title: `${dataset.name}: ${x_column} vs ${y_column}` ,
+      title: `${dataset.name}: ${x_column} vs ${y_column}`,
       autosize: "none",
       config: {
         axis: {
@@ -340,10 +339,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           ],
         },
         {
-            "name":"filterExtent"
+          name: "filterExtent",
         },
         {
-            "name": "active",
+          name: "active",
         },
         // config.aggregate !== undefined?
         //     {
@@ -487,7 +486,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           encode: {
             enter: {
               fill: { value: dot_color },
-              opacity: { value: 0.25 }
+              opacity: { value: 0.25 },
             },
             update: {
               x: { scale: "xscale", signal: "startDrag ? dragBox[0][0] : 0" },
@@ -498,20 +497,20 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           },
         },
         {
-            "type": "rect",
-            "from": {"data":"filterExtent"},
-            "encode": {
-                "enter": {
-                    fill: { value: dot_color },
-                    opacity: { value: 0.25 }
-                },
-                "update": {
-                    "x": {"scale": "xscale", "field": "xmin"},
-                    "x2": {"scale": "xscale", "field": "xmax"},
-                    "y": {"scale": "yscale", "field": "ymin"},
-                    "y2": {"scale": "yscale", "field": "ymax"},
-                }
-            }
+          type: "rect",
+          from: { data: "filterExtent" },
+          encode: {
+            enter: {
+              fill: { value: dot_color },
+              opacity: { value: 0.25 },
+            },
+            update: {
+              x: { scale: "xscale", field: "xmin" },
+              x2: { scale: "xscale", field: "xmax" },
+              y: { scale: "yscale", field: "ymin" },
+              y2: { scale: "yscale", field: "ymax" },
+            },
+          },
         },
         // config.aggregate === 'scale' ? {
         //     "type": "symbol",
@@ -540,36 +539,36 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         //   }
         // } :
         {
-            type: "symbol",
-            from: { data: "table" },
-            clip: true,
-            encode: {
-              enter: {
-                fillOpacity: { value: 0.6 },
-                fill: { value: dot_color },
-                size: { value: dot_size },
-              },
-              update: {
-                x: { scale: "xscale", field: x_column }, 
-                y: { scale: "yscale", field: y_column }
-              },
-            },
-        },
-        {
-        type: "symbol",
-        from: { data: "active" },
-        clip: true,
-        encode: {
+          type: "symbol",
+          from: { data: "table" },
+          clip: true,
+          encode: {
             enter: {
-                fillOpacity: { value: 1 },
-                fill: { value: dot_color },
-                size: { value: dot_size * 2.5 },
+              fillOpacity: { value: 0.6 },
+              fill: { value: dot_color },
+              size: { value: dot_size },
             },
             update: {
-                x: { scale: "xscale", field: x_column },
-                y: { scale: "yscale", field: y_column }
+              x: { scale: "xscale", field: x_column },
+              y: { scale: "yscale", field: y_column },
             },
+          },
         },
+        {
+          type: "symbol",
+          from: { data: "active" },
+          clip: true,
+          encode: {
+            enter: {
+              fillOpacity: { value: 1 },
+              fill: { value: dot_color },
+              size: { value: dot_size * 2.5 },
+            },
+            update: {
+              x: { scale: "xscale", field: x_column },
+              y: { scale: "yscale", field: y_column },
+            },
+          },
         },
         // config.aggregate === 'scale' ? {
         //     "type": "symbol",
@@ -685,26 +684,29 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     // );
 
     useEffect(() => {
-        if (xFilter && yFilter && view && Object.keys(view).length) {
-            if (xFilter.min && yFilter.min) {
-                updateFilterExtent({
-                    view,
-                    xFilter,
-                    yFilter,
-                    dataset: "filterExtent"
-                });
-            }
-            if (chartData.length) {
-                updateActiveDataset({
-                    view,
-                    chartData,
-                    filter: (data) => data[x_column] >= xFilter.min && data[x_column] <= xFilter.max && data[y_column] >= yFilter.min && data[y_column] <= yFilter.max,
-                    dataset: "active"
-                })
-            }
+      if (xFilter && yFilter && view && Object.keys(view).length) {
+        if (xFilter.min && yFilter.min) {
+          updateFilterExtent({
+            view,
+            xFilter,
+            yFilter,
+            dataset: "filterExtent",
+          });
         }
+        if (chartData.length) {
+          updateActiveDataset({
+            view,
+            chartData,
+            filter: (data) =>
+              data[x_column] >= xFilter.min &&
+              data[x_column] <= xFilter.max &&
+              data[y_column] >= yFilter.min &&
+              data[y_column] <= yFilter.max,
+            dataset: "active",
+          });
+        }
+      }
     }, [view, JSON.stringify(xFilter), JSON.stringify(yFilter)]);
-
 
     if (!datasetReady) {
       return <div>{dataset.name} not found!</div>;
@@ -718,15 +720,15 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         ref={containerRef}
         pad="small"
       >
-       
         <Vega
-            ref={chartRef}
-            data={{ table: chartData }}
-            signalListeners={signalListeners}
-            onNewView={(view) => setView(view)}
-            // @ts-ignore
-            spec={spec}
+          ref={chartRef}
+          data={{ table: chartData }}
+          signalListeners={signalListeners}
+          onNewView={(view) => setView(view)}
+          // @ts-ignore
+          spec={spec}
         />
       </Box>
     );
-};
+  };
+
