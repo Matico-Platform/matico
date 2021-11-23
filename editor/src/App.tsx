@@ -3,6 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import AceEditor from "react-ace";
 import ace, { Ace } from "ace-builds";
+import examples from './example_configs'
 
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/mode-yaml";
@@ -37,8 +38,19 @@ function App() {
   const [validJSON, setValidJSON] = useState<boolean>(true);
   const [jsonError, setJsonError] = useState<any | null>(null);
   const [appState, setAppState] = useState<VariableState | null>(null);
-  const [datasetState, setDatasetState] = useState<MaticoDataState| null>(null);
-  const [tab, setTab] = useState<"spec" | "state" | "data"  | "yaml">("spec");
+  const [datasetState, setDatasetState] = useState<MaticoDataState | null>(
+    null
+  );
+  const [tab, setTab] = useState<
+    "examples" | "spec" | "state" | "data" | "yaml"
+  >("spec");
+
+
+  const setExample  = (example:any)=>{
+      console.log("Setting example ", example)
+      setCode(JSON.stringify(example,null , 2))
+      setTab("spec")
+  }
 
   const annotations: Ace.Annotation[] = jsonError
     ? json_error_to_annotation(jsonError)
@@ -130,6 +142,15 @@ function App() {
           }}
         >
           <span
+            onClick={() => setTab("examples")}
+            style={{
+              cursor: "pointer",
+              fontWeight: tab === "examples" ? "bold" : "normal",
+            }}
+          >
+            Examples
+          </span>
+          <span
             onClick={() => setTab("spec")}
             style={{
               cursor: "pointer",
@@ -154,7 +175,7 @@ function App() {
               fontWeight: tab === "data" ? "bold" : "normal",
             }}
           >
-            Datasets 
+            Datasets
           </span>
           <span
             onClick={() => setTab("yaml")}
@@ -163,7 +184,7 @@ function App() {
               fontWeight: tab === "yaml" ? "bold" : "normal",
             }}
           >
-            YAML 
+            YAML
           </span>
         </div>
         {tab === "spec" && (
@@ -188,6 +209,15 @@ function App() {
           />
         )}
 
+
+        {tab === "examples" &&(
+          <ul className='examples'>
+            {Object.entries(examples).map( ([name,exampleSpec])=>(
+              <li onClick={()=>setExample(exampleSpec)}>{name}</li>
+            ))}
+          </ul>
+        )}
+
         {tab === "state" && appState && (
           <div
             style={{
@@ -195,10 +225,14 @@ function App() {
               height: "100%",
               flex: 1,
               textAlign: "left",
-              overflowY:'auto'
+              overflowY: "auto",
             }}
           >
-            <ReactJson style={{fontSize:15,  maxHeight:"1300px", overflowY:'auto'}} collapsed={3} src={appState} />
+            <ReactJson
+              style={{ fontSize: 15, maxHeight: "1300px", overflowY: "auto" }}
+              collapsed={3}
+              src={appState}
+            />
           </div>
         )}
 
@@ -209,10 +243,14 @@ function App() {
               height: "100%",
               flex: 1,
               textAlign: "left",
-              overflowY:'auto'
+              overflowY: "auto",
             }}
           >
-            <ReactJson style={{fontSize:15, maxHeight:"1300px", overflowY:'auto'}} collapsed={3} src={datasetState} />
+            <ReactJson
+              style={{ fontSize: 15, maxHeight: "1300px", overflowY: "auto" }}
+              collapsed={3}
+              src={datasetState}
+            />
           </div>
         )}
         {tab === "yaml" && appState && (
@@ -251,7 +289,7 @@ function App() {
           <MaticoApp
             basename={process.env.PUBLIC_URL}
             onStateChange={setAppState}
-            onDataChange= {setDatasetState}
+            onDataChange={setDatasetState}
             spec={dashboard.to_js()}
           />
         )}
