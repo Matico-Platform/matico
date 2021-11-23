@@ -12,7 +12,7 @@ import { Filter } from "../../../Datasets/Dataset";
 import { useVariableSelector } from "../../../Hooks/redux";
 import _ from "lodash";
 import traverse from "traverse";
-import { PADDING } from "apache-arrow/ipc/message";
+
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
 // import usePanMap from '@webgeoda/hooks/usePanMap';
@@ -730,5 +730,4 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         />
       </Box>
     );
-  };
-
+};
