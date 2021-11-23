@@ -11,10 +11,18 @@ pub struct ChartPane {
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe)]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
 pub struct HistogramPane {
     #[validate]
     pub position: PanePosition,
+    #[wasm_bindgen(skip)]
+    pub dataset: DatasetRef,
+    #[wasm_bindgen(skip)]
+    pub column: String,
+    #[wasm_bindgen(skip)]
+    pub color: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub step: Option<i64>
 }
 
 #[wasm_bindgen]

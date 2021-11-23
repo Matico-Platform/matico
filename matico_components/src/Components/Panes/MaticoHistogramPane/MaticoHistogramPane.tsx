@@ -1,367 +1,266 @@
-import React from "react";
-import { Vega, View } from "react-vega";
-import * as vega from "vega";
+import React, { useContext } from "react";
+import { Vega } from "react-vega";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Column, Dataset } from "../../../Datasets/Dataset";
+import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
+import { Box } from "grommet";
+import { useAutoVariable } from "../../../Hooks/useAutoVariable";
+import { Filter } from "../../../Datasets/Dataset";
+import { useVariableSelector } from "../../../Hooks/redux";
+import { Column, Dataset } from "../../../Datasets/Dataset";
 import _ from "lodash";
-
-// const Chart: React.FC<{
-//   spec: any;
-//   data: any;
-//   signalListeners: any;
-//   setView: (v: View) => void;
-// }> = ({ spec, data, signalListeners, setView }) => (
-// );
+import traverse from "traverse";
+import {useSize} from '../../../Hooks/useSize';
+import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
 
 interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
-  datasource: string;
+  dataset: { name: string; filters: Array<Filter> };
   column: string;
+  color?: string;
+  step?: number;
 }
 
-export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
-  datasource,
-  column="",
-}) => {
-  const [view, setView] = useState<View | null>(null);
-  // const chartRef = useRef();
+const backgroundColor = "#fff"
 
-  const chartData = _.range(200).map((a) => ({ id: a, value: Math.random() }));
-  console.log("chart Data is ", chartData);
-  const histogramData = {
-    table: chartData,
+
+export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
+  dataset,
+  column="",
+  color,
+  step
+}) => {
+  const { state: dataState } = useContext(MaticoDataContext);
+  const [view, setView] = useState({});
+  const chartRef = useRef();
+  const containerRef = useRef();
+  console.log(color)
+  console.log(step)
+  const [
+    columnFilter,
+    updateFilter,
+    //@ts-ignore
+  ] = useAutoVariable({
+    //@ts-ignore
+    name: `${column}_range`,
+    //@ts-ignore
+    type: "NoSelection",
+    initialValue: {
+      type: "NoSelection",
+    },
+    bind: true,
+  });
+
+  const foundDataset = dataState.datasets.find((d) => {
+    console.log("getting data ");
+    return d.name === dataset.name;
+  });
+
+  const datasetReady = foundDataset && foundDataset.isReady();
+
+  const dims = useSize(containerRef, datasetReady);
+  const padding = {
+    top: 25,
+    left: 40,
+    bottom: 120,
+    right: 10,
   };
 
-  useEffect(() => {
-    if (!view ) return;
-    function updateGraph() {
-      const cs = vega
-        .changeset()
-        .remove(() => true)
-        .insert(chartData);
-      view.change("active", cs).run();
-    }
-    Object.keys(view).length && updateGraph();
-  }, [view]);
+  const state = useVariableSelector((state) => state.variables.autoVariables);
+
+  const mappedFilters =
+    datasetReady && dataset.filters
+      ? traverse(dataset.filters).map(function (node) {
+          if (node && node.var) {
+            const variableName = node.var.split(".")[0];
+            const path = node.var.split(".").slice(1).join(".");
+            const variable = state[variableName];
+            if (variable === null || variable === undefined) {
+              console.warn("failed to find variable", variableName);
+              return;
+              // throw Error("")
+            }
+            const value = _.at(variable.value, path)[0];
+            this.update(value);
+          }
+        })
+      : [];
+
+  // @ts-ignore
+  const chartData = useMemo(() => {
+    return datasetReady
+      ? foundDataset.getData(mappedFilters)
+      : [];
+  }, [JSON.stringify(mappedFilters), datasetReady, ]);
+  
+  const spec = {
+    $schema: "https://vega.github.io/schema/vega/v5.json",
+    width: dims.width - padding.left - padding.right,
+    height: dims.height - padding.top - padding.bottom,
+    padding: padding,
+    autosize: "none",
+    config: {
+      axis: {
+        domain: false,
+        tickSize: 3,
+        tickColor: "#888",
+        labelFont: "Monaco, Courier New",
+      },
+    },
+    title: `Distribution of ${column}`,
+    "signals": [
+      { "name": "binOffset", "value": 0 },
+      { "name": "binStep", "value": step}
+    ],
+  
+    "data": [
+      {
+        "name": "table",
+        "transform": [
+          { "type": "extent", "field": column, "signal": "xext" }
+        ]
+      },
+      {
+        "name": "binned",
+        "source": "table",
+        "transform": [
+          {
+            "type": "bin", "field": column,
+            "extent": {"signal": "xext"},
+            "anchor": {"signal": "binOffset"},
+            "step": {"signal": "binStep"},
+            "nice": false
+          },
+          {
+            "type": "aggregate",
+            "key": "bin0", "groupby": ["bin0", "bin1"],
+            "fields": ["bin0"], "ops": ["count"], "as": ["count"]
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "xscale",
+        "type": "linear",
+        "range": "width",
+        "domain": {"signal": "xext"}
+      },
+      {
+        "name": "yscale",
+        "type": "linear",
+        "range": "height", 
+        "round": true,
+        "domain": {"data": "binned", "field": "count"},
+        "zero": true, "nice": true
+      }
+    ],
+  
+    "axes": [
+      {"orient": "bottom", "scale": "xscale", "zindex": 1},
+      {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1}
+    ],
+  
+    "marks": [
+      {
+        "type": "rect",
+        "from": {"data": "binned"},
+        "encode": {
+          "update": {
+            "x": {"scale": "xscale", "field": "bin0"},
+            "x2": {"scale": "xscale", "field": "bin1",
+                   "offset": {"signal": "binStep > 0.02 ? -0.5 : 0"}},
+            "y": {"scale": "yscale", "field": "count"},
+            "y2": {"scale": "yscale", "value": 0},
+            "fill": {"value": color}
+          },
+          "hover": { "fill": {"value": "firebrick"} }
+        }
+      },
+      {
+        "type": "rect",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": column},
+            "width": {"value": 1},
+            "y": {"value": 25, "offset": {"value": dims.height - padding.bottom - padding.top}},
+            "height": {"value": 5},
+            "fill": {"value": color},
+            "fillOpacity": {"value": 0.4}
+          }
+        }
+      }
+    ]
+  };
+
+  // function handleDragEnd(e, result) {
+  //   if (isNaN(result[1][0]) || isNaN(result[1][1])) return;
+
+  //   updateXFilter({
+  //     type: "SelectionRange",
+  //     variable: x_column,
+  //     min: Math.min(result[0][0], result[1][0]),
+  //     max: Math.max(result[0][0], result[1][0]),
+  //   });
+  //   updateYFilter({
+  //     type: "SelectionRange",
+  //     variable: y_column,
+  //     min: Math.min(result[0][1], result[1][1]),
+  //     max: Math.max(result[0][1], result[1][1]),
+  //   });
+  // }
+
+  const signalListeners = {
+    // xext: (e,v) => console.log(v)
+    // click: handleClick,
+    // tempDrag: (e, target) => console.log(e, target)
+  };
 
   // useEffect(() => {
-  //     function updateExtent() {
-  //         const cs = vega
-  //             .changeset()
-  //             .remove(() => true)
-  //             .insert(currFilters.length
-  //                 ? {'bin0':currFilters[0].from, 'bin1':currFilters[0].to}
-  //                 : {}
-  //             );
-  //         view.change('filterExtent', cs).run();
+  //   if (xFilter && yFilter && view && Object.keys(view).length) {
+  //     if (xFilter.min && yFilter.min) {
+  //       updateFilterExtent({
+  //         view,
+  //         xFilter,
+  //         yFilter,
+  //         dataset: "filterExtent",
+  //       });
   //     }
-  //     Object.keys(view).length && updateExtent();
-  // }, [view, currFilters]);
+  //     if (chartData.length) {
+  //       updateActiveDataset({
+  //         view,
+  //         chartData,
+  //         filter: (data) =>
+  //           data[x_column] >= xFilter.min &&
+  //           data[x_column] <= xFilter.max &&
+  //           data[y_column] >= yFilter.min &&
+  //           data[y_column] <= yFilter.max,
+  //         dataset: "active",
+  //       });
+  //     }
+  //   }
+  // }, [view, JSON.stringify(xFilter), JSON.stringify(yFilter)]);
 
-  const spec = {
-    width: 300,
-    height: 150,
-    padding: 5,
-    data: [
-      {
-        name: "table",
-        transform: [{ type: "extent", field: "value", signal: "ext" }],
-      },
-      {
-        name: "active",
-      },
-      {
-        name: "filterExtent",
-      },
-      {
-        name: "binned",
-        source: "table",
-        transform: [
-          {
-            type: "bin",
-            field: "value",
-            extent: { signal: "ext" },
-            maxbins: 40,
-            nice: false,
-          },
-          {
-            type: "aggregate",
-            key: "bin0",
-            groupby: ["bin0", "bin1"],
-            fields: ["bin0"],
-            ops: ["count"],
-            as: ["count"],
-          },
-          { type: "extent", field: "count", signal: "max" },
-        ],
-      },
-      {
-        name: "activeBinned",
-        source: "active",
-        transform: [
-          {
-            type: "bin",
-            field: "value",
-            extent: { signal: "ext" },
-            maxbins: 40,
-            nice: false,
-          },
-          {
-            type: "aggregate",
-            key: "bin0",
-            groupby: ["bin0", "bin1"],
-            fields: ["bin0"],
-            ops: ["count"],
-            as: ["count"],
-          },
-        ],
-      },
-    ],
-    signals: [
-      {
-        name: "click",
-        on: [{ events: "*:click", encode: "click" }],
-      },
-      {
-        name: "startDrag",
-        value: null,
-        on: [
-          { events: "mouseup, touchend", update: "0" },
-          { events: "mousedown, touchstart", update: "1" },
-        ],
-      },
-      {
-        name: "startDragCoords",
-        value: null,
-        on: [
-          {
-            events: "mousedown, touchstart",
-            update: "[datum.bin0,datum.bin1]",
-          },
-        ],
-      },
-      {
-        name: "dragBox",
-        value: null,
-        on: [
-          {
-            events: { signal: "startDragCoords" },
-            force: true,
-            update: "startDragCoords",
-          },
-          {
-            events: "mousemove, touchmove",
-            update:
-              "startDrag ? [min(datum.bin0,dragBox[0]),max(datum.bin1,dragBox[1])] : dragBox",
-          },
-        ],
-      },
-      {
-        name: "endDrag",
-        value: null,
-        on: [{ events: "mouseup, touchend", update: "dragBox" }],
-      },
-    ],
-    scales: [
-      {
-        name: "xscale",
-        type: "linear",
-        range: "width",
-        domain: { signal: "ext" },
-        padding: 0,
-      },
-      {
-        name: "yscale",
-        type: "linear",
-        range: "height",
-        round: true,
-        domain: { data: "binned", field: "count" },
-        zero: true,
-        nice: true,
-      },
-      {
-        name: "yscaleActive",
-        type: "linear",
-        range: "height",
-        round: true,
-        domain: { data: "activeBinned", field: "count" },
-        zero: true,
-        nice: true,
-      },
-    ],
-
-    //     "axes": [
-    //         {
-    //             "scale": "xscale",
-    //             "orient": "top",
-    //             "offset": {"signal": "xoffset+10"},
-    //             "labelOverlap": false,
-    //             "grid":true,
-    //             "format": ".2s",
-    //             "title":props.config.xVariable,
-    //             "tickCount":5,
-    //             "tickColor":"#fff",
-    //             "titleY":10
-    //         },
-    //         {
-    //             "scale": "yscale",
-    //             "orient": "right",
-    //             "offset": {"signal": "yoffset+10"},
-    //             "title":props.config.yVariable,
-    //             "labelOverlap": false,
-    //             "grid":true,
-    //             "format": ".2s",
-    //             "tickCount":3,
-    //             "tickColor":"#fff",
-    //             "titleX":-10
-    //         }
-    // ],
-    axes: [
-      {
-        orient: "bottom",
-        scale: "xscale",
-        zindex: 1,
-        title: column,
-      },
-      {
-        orient: "left",
-        scale: "yscale",
-        tickCount: 5,
-        zindex: 1,
-        title: "Count of Geographies",
-      },
-    ],
-
-    marks: [
-      // {
-      //   type: "rect",
-      //   from: { data: "binned" },
-      //   clip: true,
-      //   encode: {
-      //     update: {
-      //       x: { scale: "xscale", field: "bin0" },
-      //       x2: { scale: "xscale", field: "bin1" },
-      //       y: { scale: "yscale", signal: "max[1]" },
-      //       y2: { scale: "yscale", value: 0 },
-      //       fill: { value: "#00000000" },
-      //     },
-      //     hover: { fill: { value: "#00000055" } },
-      //   },
-      // },
-      {
-        type: "rect",
-        interactive: false,
-        from: { data: "binned" },
-        encode: {
-          update: {
-            x: { scale: "xscale", field: "bin0", offset: 1 },
-            x2: { scale: "xscale", field: "bin1", offset: -1 },
-            y: { scale: "yscale", field: "count" },
-            y2: { scale: "yscale", value: 0 },
-            fill: { value: "steelblue" },
-          },
-        },
-      },
-      // {
-      //   type: "rect",
-      //   interactive: false,
-      //   from: { data: "activeBinned" },
-      //   encode: {
-      //     update: {
-      //       x: { scale: "xscale", field: "bin0", offset: 4 },
-      //       x2: { scale: "xscale", field: "bin1", offset: -4 },
-      //       y: { scale: "yscaleActive", field: "count" },
-      //       y2: { scale: "yscaleActive", value: 0 },
-      //       fill: { value: "black" },
-      //     },
-      //   },
-      // },
-      {
-        type: "rect",
-        interactive: false,
-        encode: {
-          update: {
-            x: { scale: "xscale", signal: "startDrag ? dragBox[0] : 0" },
-            x2: { scale: "xscale", signal: "startDrag ? dragBox[1] : 0" },
-            y: { scale: "yscale", signal: "max[1]" },
-            y2: { scale: "yscale", value: 0 },
-            fill: { value: "#ffff0077" },
-          },
-        },
-      },
-      {
-        type: "rect",
-        interactive: false,
-        from: { data: "filterExtent" },
-        encode: {
-          update: {
-            x: { scale: "xscale", field: "bin0" },
-            x2: { scale: "xscale", field: "bin1" },
-            y: { scale: "yscale", signal: "max[1]" },
-            y2: { scale: "yscale", value: 0 },
-            fill: { value: "#ffff0077" },
-          },
-        },
-      },
-      // {
-      //   type: "rect",
-      //   interactive: false,
-      //   from: { data: "activeBinned" },
-      //   encode: {
-      //     update: {
-      //       x: { scale: "xscale", field: "bin0", offset: 4 },
-      //       x2: { scale: "xscale", field: "bin1", offset: -4 },
-      //       y: { scale: "yscaleActive", field: "count" },
-      //       y2: { scale: "yscaleActive", value: 0 },
-      //       fill: { value: "black" },
-      //     },
-      //   },
-      // },
-    ],
-  };
-  // const handleDrag = (e,target) => {
-  //     dispatch({
-  //         type: "SET_MAP_FILTER",
-  //         payload: {
-  //             widgetIndex: props.config.id,
-  //             filterId: `${props.config.id}`,
-  //             filter: {
-  //             type: "range",
-  //             field: props.config.variable,
-  //             from: target[0],
-  //             to: target[1]
-  //             }
-  //         }
-  //     });
-  // }
-  const signalListeners = {};
-  // const signalListeners = {
-  //     endDrag: handleDrag
-  // };
-
-  // const VegaChart = useMemo(() =>     , [chartData.length])
+  if (!datasetReady) {
+    return <div>{dataset.name} not found!</div>;
+  }
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        flex: 1,
-        backgroundColor: "red",
-        position: "relative",
-      }}
+    <Box
+      background={backgroundColor}
+      elevation={"large"}
+      fill={true}
+      ref={containerRef}
+      pad="small"
     >
-      {chartData.length && (
-  <Vega
-  //@ts-ignore
-    spec={spec}
-    data={{
-      table: chartData,
-    }}
-    signalListeners={signalListeners}
-    onNewView={(view: View) => setView(view)}
-  />
-      )}
-    </div>
+      <Vega
+        ref={chartRef}
+        data={{ table: chartData }}
+        signalListeners={signalListeners}
+        onNewView={(view) => setView(view)}
+        // @ts-ignore
+        spec={spec}
+      />
+    </Box>
   );
 };

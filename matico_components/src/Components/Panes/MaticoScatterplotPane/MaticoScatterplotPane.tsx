@@ -1,5 +1,4 @@
 import React from "react";
-import useResizeObserver from "@react-hook/resize-observer";
 import { Vega } from "react-vega";
 import * as vega from "vega";
 // import { useSelector, useDispatch } from 'react-redux';
@@ -12,6 +11,8 @@ import { Filter } from "../../../Datasets/Dataset";
 import { useVariableSelector } from "../../../Hooks/redux";
 import _ from "lodash";
 import traverse from "traverse";
+import {useSize} from '../../../Hooks/useSize';
+import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
 
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
@@ -21,28 +22,6 @@ import traverse from "traverse";
 // const renderVega = (chartRef, spec, scatterData, signalListeners, setView) => (
 // );
 
-function updateFilterExtent({ view, xFilter, yFilter, dataset = "" }) {
-  const cs = vega
-    .changeset()
-    .remove(() => true)
-    .insert({
-      xmin: xFilter.min,
-      xmax: xFilter.max,
-      ymax: yFilter.max,
-      ymin: yFilter.min,
-    });
-  // @ts-ignore
-  view.change(dataset, cs).runAsync();
-}
-
-function updateActiveDataset({ view, chartData, filter, dataset }) {
-  const cs = vega
-    .changeset()
-    .remove(() => true)
-    .insert(chartData.filter(filter));
-  // @ts-ignore
-  view.change(dataset, cs).runAsync();
-}
 // const parseFilters = (filters) => {
 //     let returnObj = {}
 //     for (let i=0; i<filters.length; i++){
@@ -61,25 +40,6 @@ interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   // backgroundColor: string;
   dot_size?: number;
 }
-
-// react.d.ts
-type RefObject<T> = {
-  readonly current: T | null;
-};
-
-const useSize = (target: RefObject<{}>, datasetReady: boolean) => {
-  const [size, setSize] = React.useState({ width: 0, height: 0 });
-
-  React.useLayoutEffect(() => {
-    if (datasetReady && target && target.current)
-      //@ts-ignore
-      setSize(target.current.getBoundingClientRect());
-  }, [target, datasetReady]);
-
-  //@ts-ignore
-  useResizeObserver(target, (entry) => setSize(entry.contentRect));
-  return size;
-};
 
 export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
   ({
