@@ -94,7 +94,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const [view, setView] = useState({});
     const chartRef = useRef();
     const containerRef = useRef();
-    console.log("rednering scatter plot");
 
     const [
       xFilter,
@@ -126,7 +125,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     });
 
     const foundDataset = dataState.datasets.find((d) => {
-      console.log("getting data ");
       return d.name === dataset.name;
     });
 
@@ -141,6 +139,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     };
 
     const mappedFilters = useSubVariables(dataset.filters)
+    if(!mappedFilters) return <h1>Loading</h1>
 
     // @ts-ignore
     const chartData = useMemo(() => {

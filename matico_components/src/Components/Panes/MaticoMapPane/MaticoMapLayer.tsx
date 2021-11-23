@@ -48,6 +48,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
 
 
   const mappedFilters = useSubVariables(source.filters) 
+  if(!mappedFilters) return null
 
 
   const preparedData = useMemo(() => {

@@ -48,7 +48,6 @@ function App() {
 
 
   const setExample  = (example:any)=>{
-      console.log("Setting example ", example)
       setCode(JSON.stringify(example,null , 2))
       setTab("spec")
   }

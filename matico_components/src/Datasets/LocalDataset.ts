@@ -72,36 +72,47 @@ export class LocalDataset implements Dataset {
     } else {
       base = this._data;
     }
-    let columnVals = [];
-    let agg: number | null = null;
+    let columnVals;
+    let agg: number | null = 0;
+
     base.scan(
       (index) => {
-        agg = aggFunc(agg, columnVals[index]);
+        const aggResult = aggFunc(agg, columnVals(index));
+        // console.log("agg ", agg, " agg result ", aggResult, columnVals(index))
+        agg=aggResult
       },
       (batch) => {
-        //@ts-ignore
         columnVals = predicate.col(column).bind(batch);
       }
     );
+    // console.log("returning ", agg, "for ", column);
     return agg;
   }
 
   getColumnMax(column: string, filters?: Array<Filter>) {
-    return this._applyAggregateFunction(column, (agg,val)=>
-      val > agg ? val : agg
-    , filters)
+    console.log("CALCULATING MAX")
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) =>val > agg ? val : agg,
+      filters
+    );
   }
 
   getColumnMin(column: string, filters?: Array<Filter>) {
-    return this._applyAggregateFunction(column, (agg,val)=>
-      val < agg ? val : agg
-    , filters)
+    console.log("CALCULATING MIN")
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) => val < agg ? val : agg,
+      filters
+    );
   }
 
   getColumnSum(column: string, filters?: Array<Filter>) {
-    return this._applyAggregateFunction(column, (agg,val)=>
-      agg+=val 
-    , filters)
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) => (agg += val),
+      filters
+    );
   }
 
   _constructPredicate(filters?: Array<Filter>) {
@@ -175,7 +186,6 @@ export class LocalDataset implements Dataset {
   }
 
   getData(filters?: Array<Filter>, columns?: Array<string>) {
-    console.log("filters are ", filters);
     const cacheKey = JSON.stringify([filters, columns]);
     if (this._filterCache[cacheKey]) {
       return this._filterCache[cacheKey];

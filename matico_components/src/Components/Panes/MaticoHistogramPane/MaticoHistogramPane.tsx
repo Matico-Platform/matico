@@ -27,7 +27,6 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   // const chartRef = useRef();
 
   const chartData = _.range(200).map((a) => ({ id: a, value: Math.random() }));
-  console.log("chart Data is ", chartData);
   const histogramData = {
     table: chartData,
   };
