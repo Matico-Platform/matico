@@ -119,6 +119,18 @@ export class LocalDataset implements Dataset {
     );
   }
 
+  getCategoryCounts(column: string, filters?: Array<Filter>) {
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) => {
+        agg[val] = agg[val] ? agg[val] + 1 : 1;
+        return agg;
+      },
+      {},
+      filters
+    );
+  }
+
   getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
     const range = this._applyAggregateFunction(
       column,
@@ -127,17 +139,19 @@ export class LocalDataset implements Dataset {
       filters
     );
 
-    return [...Array(bins)].map((_,i)=> range[0] + (range[1]-range[0])*i/bins)
+    return [...Array(bins)].map(
+      (_, i) => range[0] + ((range[1] - range[0]) * i) / bins
+    );
   }
 
   getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
-    throw Error("function not implemented")
+    throw Error("function not implemented");
     return [];
   }
 
   getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
-    throw Error("function not implemented")
-     return [1, 23, 4, 5, 6];
+    throw Error("function not implemented");
+    return [1, 23, 4, 5, 6];
   }
 
   _constructPredicate(filters?: Array<Filter>) {

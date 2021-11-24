@@ -49,8 +49,9 @@ export interface Dataset{
   getColumnMax: (columns: string) => number,
   getColumnMin: (columns: string) => number,
   getColumnSum: (columns: string) => number,
+  getCategoryCounts: (columns: string) => {[entry: string| number]: number},
   getEqualIntervalBins:(column: string, bins:number, filters?: Array<Filter>)=>number[],
-  getQuantileBins:(column: string, bins:number, filters?:Array<Filters>)=>number[],
+  getQuantileBins:(column: string, bins:number, filters?:Array<Filter>)=>number[],
   getJenksBins:(column: string, bins:number, filters?: Array<Filter>)=>number[]
 
   // metricForColumn?: (columnName:string, metric: DatasetMetric)=> any
