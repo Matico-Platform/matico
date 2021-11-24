@@ -48,7 +48,10 @@ export interface Dataset{
   onStateChange?:( (state: DatasetState)=>void),
   getColumnMax: (columns: string) => number,
   getColumnMin: (columns: string) => number,
-  getColumnSum: (columns: string) => number
+  getColumnSum: (columns: string) => number,
+  getEqualIntervalBins:(column: string, bins:number, filters?: Array<Filter>)=>number[],
+  getQuantileBins:(column: string, bins:number, filters?:Array<Filters>)=>number[],
+  getJenksBins:(column: string, bins:number, filters?: Array<Filter>)=>number[]
 
   // metricForColumn?: (columnName:string, metric: DatasetMetric)=> any
 }

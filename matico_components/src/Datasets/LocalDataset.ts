@@ -60,11 +60,12 @@ export class LocalDataset implements Dataset {
     return this.getData(filters);
   }
 
-  _applyAggregateFunction(
+  _applyAggregateFunction<AggType>(
     column: string,
-    aggFunc: (agg: number, val: number) => number,
+    aggFunc: (agg: AggType, val: number) => AggType,
+    initalVal: AggType,
     filters?: Array<Filter>
-  ) {
+  ): AggType {
     let base = null;
     if (filters && filters.length) {
       const predicate = this._constructPredicate(filters);
@@ -73,13 +74,13 @@ export class LocalDataset implements Dataset {
       base = this._data;
     }
     let columnVals;
-    let agg: number | null = 0;
+    let agg: AggType = initalVal;
 
     base.scan(
       (index) => {
         const aggResult = aggFunc(agg, columnVals(index));
         // console.log("agg ", agg, " agg result ", aggResult, columnVals(index))
-        agg=aggResult
+        agg = aggResult;
       },
       (batch) => {
         columnVals = predicate.col(column).bind(batch);
@@ -90,19 +91,21 @@ export class LocalDataset implements Dataset {
   }
 
   getColumnMax(column: string, filters?: Array<Filter>) {
-    console.log("CALCULATING MAX")
+    console.log("CALCULATING MAX");
     return this._applyAggregateFunction(
       column,
-      (agg, val) =>val > agg ? val : agg,
+      (agg, val) => (val > agg ? val : agg),
+      Number.MIN_VALUE,
       filters
     );
   }
 
   getColumnMin(column: string, filters?: Array<Filter>) {
-    console.log("CALCULATING MIN")
+    console.log("CALCULATING MIN");
     return this._applyAggregateFunction(
       column,
-      (agg, val) => val < agg ? val : agg,
+      (agg, val) => (val < agg ? val : agg),
+      Number.MAX_VALUE,
       filters
     );
   }
@@ -111,8 +114,30 @@ export class LocalDataset implements Dataset {
     return this._applyAggregateFunction(
       column,
       (agg, val) => (agg += val),
+      0,
       filters
     );
+  }
+
+  getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
+    const range = this._applyAggregateFunction(
+      column,
+      (agg, val) => [val > agg[0] ? val : agg[0], val < agg[1] ? val : agg[1]],
+      [Number.MAX_VALUE, Number.MIN_VALUE],
+      filters
+    );
+
+    return [...Array(bins)].map((_,i)=> range[0] + (range[1]-range[0])*i/bins)
+  }
+
+  getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
+    throw Error("function not implemented")
+    return [];
+  }
+
+  getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
+    throw Error("function not implemented")
+     return [1, 23, 4, 5, 6];
   }
 
   _constructPredicate(filters?: Array<Filter>) {
