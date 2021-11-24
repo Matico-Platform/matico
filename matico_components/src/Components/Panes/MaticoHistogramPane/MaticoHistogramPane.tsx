@@ -1,17 +1,15 @@
 import React, { useContext } from "react";
 import { Vega } from "react-vega";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
 import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useVariableSelector } from "../../../Hooks/redux";
-import { Column, Dataset } from "../../../Datasets/Dataset";
-import _ from "lodash";
-import traverse from "traverse";
 import {useSize} from '../../../Hooks/useSize';
 import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
+import {useSubVariables} from "../../../../dist/Hooks/useSubVariables";
 
 interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -66,23 +64,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
   const state = useVariableSelector((state) => state.variables.autoVariables);
 
-  const mappedFilters =
-    datasetReady && dataset.filters
-      ? traverse(dataset.filters).map(function (node) {
-          if (node && node.var) {
-            const variableName = node.var.split(".")[0];
-            const path = node.var.split(".").slice(1).join(".");
-            const variable = state[variableName];
-            if (variable === null || variable === undefined) {
-              console.warn("failed to find variable", variableName);
-              return;
-              // throw Error("")
-            }
-            const value = _.at(variable.value, path)[0];
-            this.update(value);
-          }
-        })
-      : [];
+  const mappedFilters = useSubVariables(dataset.filters)
 
   // @ts-ignore
   const chartData = useMemo(() => {
