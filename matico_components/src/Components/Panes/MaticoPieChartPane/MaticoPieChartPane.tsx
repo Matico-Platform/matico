@@ -13,21 +13,19 @@ import traverse from "traverse";
 import {useSize} from '../../../Hooks/useSize';
 import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
 
-interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
+interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
   column: string;
-  color?: string;
-  step?: number;
+  theme?: string;
 }
 
 const backgroundColor = "#fff"
 
 
-export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
+export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   dataset,
   column="",
-  color,
-  step
+  theme
 }) => {
   const { state: dataState } = useContext(MaticoDataContext);
   const [view, setView] = useState({});
@@ -60,7 +58,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   const padding = {
     top: 25,
     left: 40,
-    bottom: 120,
+    bottom: 10,
     right: 10,
   };
 
@@ -93,104 +91,80 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   
   const spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",
-    width: dims.width - padding.left - padding.right,
-    height: dims.height - padding.top - padding.bottom,
     padding: padding,
-    autosize: "none",
-    config: {
-      axis: {
-        domain: false,
-        tickSize: 3,
-        tickColor: "#888",
-        labelFont: "Monaco, Courier New",
-      },
-    },
-    title: `Distribution of ${column}`,
-    "signals": [
-      { "name": "binOffset", "value": 0 },
-      { "name": "binStep", "value": step}
-    ],
-  
+    "width": Math.min(dims.width-padding.left-padding.right, dims.height-padding.top-padding.bottom),
+    "height": Math.min(dims.width-padding.left-padding.right, dims.height-padding.top-padding.bottom),
+    "autosize": "none",
     "data": [
-      {
-        "name": "table",
-        "transform": [
-          { "type": "extent", "field": column, "signal": "xext" }
-        ]
-      },
-      {
-        "name": "binned",
-        "source": "table",
-        "transform": [
-          {
-            "type": "bin", "field": column,
-            "extent": {"signal": "xext"},
-            "anchor": {"signal": "binOffset"},
-            "step": {"signal": "binStep"},
-            "nice": false
-          },
-          {
-            "type": "aggregate",
-            "key": "bin0", "groupby": ["bin0", "bin1"],
-            "fields": ["bin0"], "ops": ["count"], "as": ["count"]
-          }
-        ]
-      }
-    ],
-    "scales": [
-      {
-        "name": "xscale",
-        "type": "linear",
-        "range": "width",
-        "domain": {"signal": "xext"}
-      },
-      {
-        "name": "yscale",
-        "type": "linear",
-        "range": "height", 
-        "round": true,
-        "domain": {"data": "binned", "field": "count"},
-        "zero": true, "nice": true
-      }
-    ],
-  
-    "axes": [
-      {"orient": "bottom", "scale": "xscale", "zindex": 1},
-      {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1}
-    ],
-  
-    "marks": [
-      {
-        "type": "rect",
-        "from": {"data": "binned"},
-        "encode": {
-          "update": {
-            "x": {"scale": "xscale", "field": "bin0"},
-            "x2": {"scale": "xscale", "field": "bin1",
-                   "offset": {"signal": "binStep > 0.02 ? -0.5 : 0"}},
-            "y": {"scale": "yscale", "field": "count"},
-            "y2": {"scale": "yscale", "value": 0},
-            "fill": {"value": color}
-          },
-          "hover": { "fill": {"value": "firebrick"} }
+        {
+          "name": "table"
+        },
+        {
+          "name": "binned",
+          "source": "table",
+          "transform": [
+            {
+              "type": "aggregate",
+              "groupby": [column]
+            },
+            {
+              "type": "pie",
+              "field": "count",
+              "startAngle": 0,
+              "endAngle": 6.29,
+              "sort": true
+            },
+            {
+              "type": "formula",
+              "expr": `datum.${column} + ': ' + datum.count`,
+              "as": "tooltip"
+            }
+          ]
         }
-      },
-      {
-        "type": "rect",
-        "from": {"data": "table"},
+      ],
+      "scales": [{
+        "name": "color",
+        "type": "ordinal",
+        "domain": {
+          "data": "binned",
+          "field": column
+        },
+        "range": {
+          "scheme": "category20c"
+        }
+      }],
+
+      "marks": [{
+        "type": "arc",
+        "from": {
+          "data": "binned"
+        },
         "encode": {
           "enter": {
-            "x": {"scale": "xscale", "field": column},
-            "width": {"value": 1},
-            "y": {"value": 25, "offset": {"value": dims.height - padding.bottom - padding.top}},
-            "height": {"value": 5},
-            "fill": {"value": color},
-            "fillOpacity": {"value": 0.4}
+            "fill": {
+              "scale": "color",
+              "field": column
+            },
+            "x": {
+              "signal": "width / 2"
+            },
+            "y": {
+              "signal": "height / 2"
+            },
+            "startAngle": {
+              "field": "startAngle"
+            },
+            "endAngle": {
+              "field": "endAngle"
+            },
+            "outerRadius": {
+              "signal": "width / 2"
+            },
+            "tooltip": {"field": "tooltip"}
           }
         }
-      }
-    ]
-  };
+      }]
+    }
 
   // function handleDragEnd(e, result) {
   //   if (isNaN(result[1][0]) || isNaN(result[1][1])) return;
