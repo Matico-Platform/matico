@@ -1,6 +1,9 @@
-import {parseSync} from "@loaders.gl/core";
-import {WKBLoader} from "@loaders.gl/wkt";
-import wkx from 'wkx'
+import { parseSync } from "@loaders.gl/core";
+import { WKBLoader } from "@loaders.gl/wkt";
+import wkx from "wkx";
+import chroma from "chroma-js";
+import { RGBAColor } from "@deck.gl/core";
+import * as d3 from 'd3-scale'
 
 export function chunkCoords(coords: Array<Number>) {
   return coords.reduce((result, coord, index) => {
@@ -22,30 +25,61 @@ export function convertPoint(wkbGeom: any) {
 }
 
 export function convertPoly(poly: any) {
-  return [
-    mapCoords(poly.exteriorRing),
-    ...poly.interiorRings.map(mapCoords),
-  ];
+  return [mapCoords(poly.exteriorRing), ...poly.interiorRings.map(mapCoords)];
 }
 
-export function expandMultiAndConvertPoly(data:any){
-  const result = data.map(d=> ({...d, geom:wkx.Geometry.parse(Buffer.from(d.geom))})) 
-  const expanded = result.reduce((agg,d)=>{
-    if(d.geom.polygons){
-      d.geom.polygons.forEach((poly)=>{
-        agg.push({...d, geom: convertPoly(poly)})
-      }) 
+export function expandMultiAndConvertPoly(data: any) {
+  const result = data.map((d) => ({
+    ...d,
+    geom: wkx.Geometry.parse(Buffer.from(d.geom)),
+  }));
+  const expanded = result.reduce((agg, d) => {
+    if (d.geom.polygons) {
+      d.geom.polygons.forEach((poly) => {
+        agg.push({ ...d, geom: convertPoly(poly) });
+      });
+    } else {
+      agg.push({ ...d, geom: convertPoly(d.geom) });
     }
-    else{
-      agg.push({...d, geom: convertPoly(d.geom)})
-    }
-    return agg 
-  },[])
+    return agg;
+  }, []);
 
-  return expanded
+  return expanded;
 }
 
 export function convertLine(wkbGeom: any) {
   return chunkCoords(parseSync(wkbGeom, WKBLoader).positions.value);
 }
 
+type ColorReturn = RGBAColor | ((d: unknown) => RGBAColor);
+type NumberReturn = number | ((d: unknown) => number);
+
+export const generateNumericVar = (numericVar): NumberReturn=>{
+  if(!numericVar) return null 
+  if(typeof numericVar ==='number') return numericVar;
+  if(numericVar.variable){
+    const {variable,domain, range} =numericVar;
+    const ramp = d3.scaleLinear().domain(domain).range(range);
+    console.log("NUMERIC IS A THING ", variable, ramp)
+    return (d)=>ramp(d[variable])
+  }
+}
+
+export const generateColorVar = (colorVar): ColorReturn => {
+
+  if(!colorVar){ return null}
+
+  if (Array.isArray(colorVar)) {
+    return colorVar as RGBAColor;
+  }
+  if (colorVar.variable) {
+    console.log('colorVar is ',colorVar)
+    const { variable, domain, range } = colorVar;
+    const ramp = chroma
+      .scale(range.map((c) => chroma.rgb(...c)))
+      .domain(domain);
+
+    return (d) => ramp(d[variable]).rgb();
+  }
+  return null;
+};

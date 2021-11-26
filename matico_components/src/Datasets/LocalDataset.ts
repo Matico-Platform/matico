@@ -8,6 +8,8 @@ import {
 } from "./Dataset";
 
 import { predicate, DataFrame } from "@apache-arrow/es5-cjs";
+import _ from "lodash";
+import * as d3 from "d3-array";
 
 export class LocalDataset implements Dataset {
   private _isReady: boolean;
@@ -134,19 +136,22 @@ export class LocalDataset implements Dataset {
   getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
     const range = this._applyAggregateFunction(
       column,
-      (agg, val) => [val > agg[0] ? val : agg[0], val < agg[1] ? val : agg[1]],
+      (agg, val) => [val < agg[0] ? val : agg[0], val > agg[1] ? val : agg[1]],
       [Number.MAX_VALUE, Number.MIN_VALUE],
       filters
     );
 
-    return [...Array(bins)].map(
-      (_, i) => range[0] + ((range[1] - range[0]) * i) / bins
+    return _.range(bins).map(
+      (i: number) => range[0] + ((range[1] - range[0]) * i) / bins
     );
   }
 
   getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
-    throw Error("function not implemented");
-    return [];
+    const data = this.getData(filters, [column]);
+    const vals = data.map((c: any) => c[column]).sort();
+    const binSize = 1.0 / bins;
+    console.log("bind size is ", binSize)
+    return _.range(bins).map((i: number) => d3.quantile(vals, i * binSize));
   }
 
   getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
@@ -186,8 +191,10 @@ export class LocalDataset implements Dataset {
     return combinedPredicate;
   }
 
-  _getResultsFromPredicate(filterPredicate: any, columns?: Array<string>) {
-    const filterResults = this._data.filter(filterPredicate);
+  _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {
+    const filterResults = filterPredicate
+      ? this._data.filter(filterPredicate)
+      : this._data;
 
     try {
       const vars = {};
@@ -236,6 +243,7 @@ export class LocalDataset implements Dataset {
       this._filterCache[JSON.stringify(filters)] = results;
       return results;
     }
-    return this._data.toArray();
+    console.log("RETURNING BASE DATA ");
+    return this._getResultsFromPredicate();
   }
 }

@@ -62,14 +62,14 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
 
   const state = useVariableSelector((state) => state.variables.autoVariables);
 
-  const mappedFilters = useSubVariables(dataset.filters)
+  const [mappedFilters,filtersReady,_] = useSubVariables(dataset.filters)
 
   // @ts-ignore
   const chartData = useMemo(() => {
-    return datasetReady
+    return (datasetReady && filtersReady)
       ? foundDataset.getData(mappedFilters)
       : [];
-  }, [JSON.stringify(mappedFilters), datasetReady, ]);
+  }, [JSON.stringify(mappedFilters), datasetReady, filtersReady]);
   
   const spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",

@@ -4,46 +4,50 @@ use validator::{Validate, ValidationErrors};
 #[derive(Serialize, Deserialize, Debug, Clone, Validate)]
 pub struct Variable {
     var: String,
-    bind: Option<bool> 
+    bind: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone )]
-pub struct QuantileParams{
-    bins: u32
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct QuantileParams {
+    bins: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone )]
-pub struct JenksParams{
-    bins: u32
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct JenksParams {
+    bins: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone )]
-pub enum DatasetMetric{
-   Min,
-   Max,
-   Quantile(QuantileParams),
-   Jenks(JenksParams),
-   Mean,
-   Median,
-   Summary
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct EqualIntervalParams {
+    pub bins: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum DatasetMetric {
+    Min,
+    Max,
+    Quantile(QuantileParams),
+    Jenks(JenksParams),
+    EqualInterval(EqualIntervalParams),
+    Mean,
+    Median,
+    Summary,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Validate)]
-pub struct DatasetVal{
-    dataset: String,
-    column: Option<String>,
-    metric: Option<DatasetMetric>,
-    feature_id: Option<String>
+pub struct DatasetVal {
+    pub dataset: String,
+    pub column: Option<String>,
+    pub metric: Option<DatasetMetric>,
+    pub feature_id: Option<String>,
 }
-
 
 #[derive(Serialize, Debug, Deserialize, Clone)]
 #[serde(untagged)]
-pub enum VarOr<T>
-{
+pub enum VarOr<T> {
     Var(Variable),
     Value(T),
-    DVal(DatasetVal)
+    DVal(DatasetVal),
 }
 
 impl<T> Validate for VarOr<T>

@@ -1,4 +1,4 @@
-import { useMemo, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import traverse from "traverse";
 import { useVariableSelector } from "./redux";
 import _ from "lodash";
@@ -9,10 +9,14 @@ export const useSubVariables = (struct: any) => {
   const state = useVariableSelector((state) => state.variables.autoVariables);
   const { state: dataState } = useContext(MaticoDataContext);
   const { datasets, datasetStates } = dataState;
+  const [mappedStructure, setMappedStructure] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  return useMemo(() => {
+  useEffect(() => {
+    setLoading(true);
     try {
-      return traverse(struct).map(function (node) {
+      const result = traverse(struct).map(function (node) {
         if (node && node.var) {
           const variableName = node.var.split(".")[0];
           const path = node.var.split(".").slice(1).join(".");
@@ -28,8 +32,10 @@ export const useSubVariables = (struct: any) => {
           const dataset = datasets.find(
             (d: Dataset) => d.name === node.dataset
           );
+
           if (!dataset) throw Error("Dataset not found");
-          switch (node.metric) {
+          const [metric, metricArgs] = Object.entries(node.metric)[0];
+          switch (metric) {
             case "Max":
               const max = dataset.getColumnMax(node.column);
               console.log("max is ,", max);
@@ -40,15 +46,30 @@ export const useSubVariables = (struct: any) => {
               console.log("min is min ", min);
               this.update(min);
               break;
+            case "EqualInterval":
+              this.update(
+              //@ts-ignore
+                dataset.getEqualIntervalBins(node.column, metricArgs.bins)
+              );
+              break;
+            case "Quantile":
+              this.update(
+              //@ts-ignore
+                dataset.getQuantileBins(node.column, metricArgs.bins)
+              );
           }
         }
       });
-    } catch {
-      return null;
+      setMappedStructure(result);
+      setLoading(false);
+    } catch (error) {
+      console.log("was unable to find dataset ");
     }
   }, [
     JSON.stringify(struct),
     JSON.stringify(state),
     JSON.stringify(datasetStates),
   ]);
+
+  return [mappedStructure, !loading, error];
 };

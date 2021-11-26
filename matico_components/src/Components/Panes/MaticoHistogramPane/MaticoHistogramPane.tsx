@@ -7,9 +7,12 @@ import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useVariableSelector } from "../../../Hooks/redux";
-import {useSize} from '../../../Hooks/useSize';
-import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
-import {useSubVariables} from "../../../../dist/Hooks/useSubVariables";
+import { useSize } from "../../../Hooks/useSize";
+import {
+  updateFilterExtent,
+  updateActiveDataset,
+} from "../../../Utils/chartUtils";
+import { useSubVariables } from "../../../Hooks/useSubVariables";
 
 interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -18,20 +21,19 @@ interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   step?: number;
 }
 
-const backgroundColor = "#fff"
-
+const backgroundColor = "#fff";
 
 export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   dataset,
-  column="",
+  column = "",
   color,
-  step
+  step,
 }) => {
   const { state: dataState } = useContext(MaticoDataContext);
   const [view, setView] = useState({});
   const chartRef = useRef();
   const containerRef = useRef();
-  
+
   const [
     columnFilter,
     updateFilter,
@@ -64,15 +66,13 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
   const state = useVariableSelector((state) => state.variables.autoVariables);
 
-  const mappedFilters = useSubVariables(dataset.filters)
+  const [mappedFilters, filtersReady,_] = useSubVariables(dataset.filters);
 
   // @ts-ignore
   const chartData = useMemo(() => {
-    return datasetReady
-      ? foundDataset.getData(mappedFilters)
-      : [];
-  }, [JSON.stringify(mappedFilters), datasetReady, ]);
-  
+    return (datasetReady && filtersReady) ? foundDataset.getData(mappedFilters) : [];
+  }, [JSON.stringify(mappedFilters), datasetReady, filtersReady]);
+
   const spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",
     width: dims.width - padding.left - padding.right,
@@ -88,90 +88,99 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
       },
     },
     title: `Distribution of ${column}`,
-    "signals": [
-      { "name": "binOffset", "value": 0 },
-      { "name": "binStep", "value": step}
+    signals: [
+      { name: "binOffset", value: 0 },
+      { name: "binStep", value: step },
     ],
-  
-    "data": [
+
+    data: [
       {
-        "name": "table",
-        "transform": [
-          { "type": "extent", "field": column, "signal": "xext" }
-        ]
+        name: "table",
+        transform: [{ type: "extent", field: column, signal: "xext" }],
       },
       {
-        "name": "binned",
-        "source": "table",
-        "transform": [
+        name: "binned",
+        source: "table",
+        transform: [
           {
-            "type": "bin", "field": column,
-            "extent": {"signal": "xext"},
-            "anchor": {"signal": "binOffset"},
-            "step": {"signal": "binStep"},
-            "nice": false
+            type: "bin",
+            field: column,
+            extent: { signal: "xext" },
+            anchor: { signal: "binOffset" },
+            step: { signal: "binStep" },
+            nice: false,
           },
           {
-            "type": "aggregate",
-            "key": "bin0", "groupby": ["bin0", "bin1"],
-            "fields": ["bin0"], "ops": ["count"], "as": ["count"]
-          }
-        ]
-      }
-    ],
-    "scales": [
-      {
-        "name": "xscale",
-        "type": "linear",
-        "range": "width",
-        "domain": {"signal": "xext"}
-      },
-      {
-        "name": "yscale",
-        "type": "linear",
-        "range": "height", 
-        "round": true,
-        "domain": {"data": "binned", "field": "count"},
-        "zero": true, "nice": true
-      }
-    ],
-  
-    "axes": [
-      {"orient": "bottom", "scale": "xscale", "zindex": 1},
-      {"orient": "left", "scale": "yscale", "tickCount": 5, "zindex": 1}
-    ],
-  
-    "marks": [
-      {
-        "type": "rect",
-        "from": {"data": "binned"},
-        "encode": {
-          "update": {
-            "x": {"scale": "xscale", "field": "bin0"},
-            "x2": {"scale": "xscale", "field": "bin1",
-                   "offset": {"signal": "binStep > 0.02 ? -0.5 : 0"}},
-            "y": {"scale": "yscale", "field": "count"},
-            "y2": {"scale": "yscale", "value": 0},
-            "fill": {"value": color}
+            type: "aggregate",
+            key: "bin0",
+            groupby: ["bin0", "bin1"],
+            fields: ["bin0"],
+            ops: ["count"],
+            as: ["count"],
           },
-          "hover": { "fill": {"value": "firebrick"} }
-        }
+        ],
+      },
+    ],
+    scales: [
+      {
+        name: "xscale",
+        type: "linear",
+        range: "width",
+        domain: { signal: "xext" },
       },
       {
-        "type": "rect",
-        "from": {"data": "table"},
-        "encode": {
-          "enter": {
-            "x": {"scale": "xscale", "field": column},
-            "width": {"value": 1},
-            "y": {"value": 25, "offset": {"value": dims.height - padding.bottom - padding.top}},
-            "height": {"value": 5},
-            "fill": {"value": color},
-            "fillOpacity": {"value": 0.4}
-          }
-        }
-      }
-    ]
+        name: "yscale",
+        type: "linear",
+        range: "height",
+        round: true,
+        domain: { data: "binned", field: "count" },
+        zero: true,
+        nice: true,
+      },
+    ],
+
+    axes: [
+      { orient: "bottom", scale: "xscale", zindex: 1 },
+      { orient: "left", scale: "yscale", tickCount: 5, zindex: 1 },
+    ],
+
+    marks: [
+      {
+        type: "rect",
+        from: { data: "binned" },
+        encode: {
+          update: {
+            x: { scale: "xscale", field: "bin0" },
+            x2: {
+              scale: "xscale",
+              field: "bin1",
+              offset: { signal: "binStep > 0.02 ? -0.5 : 0" },
+            },
+            y: { scale: "yscale", field: "count" },
+            y2: { scale: "yscale", value: 0 },
+            fill: { value: color },
+          },
+          hover: { fill: { value: "firebrick" } },
+        },
+      },
+      {
+        type: "rect",
+        from: { data: "table" },
+        encode: {
+          enter: {
+            x: { scale: "xscale", field: column },
+            width: { value: 1 },
+            y: {
+              value: 25,
+              offset: { value: dims.height - padding.bottom - padding.top },
+            },
+            height: { value: 5 },
+            fill: { value: color },
+            fillOpacity: { value: 0.4 },
+          },
+        },
+      },
+    ],
   };
 
   // function handleDragEnd(e, result) {

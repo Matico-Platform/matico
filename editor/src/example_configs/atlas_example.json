@@ -36,15 +36,15 @@
                   {
                     "Range": {
                       "name": "beds",
-                      "max":{
-                          "dataset":"atlas",
-                          "metric":"Max",
-                          "column":"beds"
+                      "max": {
+                        "dataset": "atlas",
+                        "metric": "Max",
+                        "column": "beds"
                       },
-                      "min":{
-                          "dataset":"atlas",
-                          "metric":"Min",
-                          "column":"beds"
+                      "min": {
+                        "dataset": "atlas",
+                        "metric": "Min",
+                        "column": "beds"
                       },
                       "step": 1000,
                       "default_value": 2
@@ -54,14 +54,14 @@
                     "Range": {
                       "name": "pop",
                       "max": {
-                          "dataset":"atlas",
-                          "metric":"Max",
-                          "column":"population"
+                        "dataset": "atlas",
+                        "metric": "Max",
+                        "column": "population"
                       },
                       "min": {
-                          "dataset":"atlas",
-                          "metric":"Min",
-                          "column":"population"
+                        "dataset": "atlas",
+                        "metric": "Min",
+                        "column": "population"
                       },
                       "step": 10000,
                       "default_value": 2
@@ -124,41 +124,35 @@
                 "layers": [
                   {
                     "source": {
-                      "name": "atlas",
-                      "filters": [
-                        {
-                          "Range": {
-                            "variable": "beds",
-                            "max": {
-                              "var": "beds_range.max"
-                            },
-                            "min": {
-                              "var": "beds_range.min"
-                            }
-                          }
-                        },
-                        {
-                          "Range": {
-                            "variable": "population",
-                            "max": {
-                              "var": "population_range.max"
-                            },
-                            "min": {
-                              "var": "population_range.min"
-                            }
-                          }
-                        }
-                      ]
+                      "name": "atlas"
                     },
                     "name": "atals",
                     "order": 1,
                     "style": {
-                      "color": [
-                        55,
-                        44,
-                        255,
-                        255
-                      ],
+                      "fillColor": {
+                        "variable": "beds",
+                        "domain": [
+                          0,
+                          10,
+                          100,
+                          1000,
+                          10000
+                        ],
+                        "range": [
+                          [
+                            255,
+                            255,
+                            255,
+                            2555
+                          ],
+                          [
+                            70,
+                            0,
+                            0,
+                            255
+                          ]
+                        ]
+                      },
                       "size": 4
                     }
                   }

@@ -1,4 +1,4 @@
-use crate::{AutoComplete, PanePosition, DatasetRef};
+use crate::{AutoComplete, DatasetRef, PanePosition};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
@@ -22,7 +22,7 @@ pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub color: Option<String>,
     #[wasm_bindgen(skip)]
-    pub step: Option<i64>
+    pub step: Option<i64>,
 }
 
 #[wasm_bindgen]
@@ -38,9 +38,8 @@ pub struct ScatterplotPane {
     pub y_column: String,
     #[wasm_bindgen(skip)]
     pub dot_color: Option<String>,
-    pub dot_size: Option<u32>
+    pub dot_size: Option<u32>,
 }
-
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
@@ -52,6 +51,5 @@ pub struct PieChartPane {
     #[wasm_bindgen(skip)]
     pub column: String,
     #[wasm_bindgen(skip)]
-    pub theme: Option<String>
-    // todo: add mapping for categorical but numbered values (eg. 0,1 )
+    pub theme: Option<String>, // todo: add mapping for categorical but numbered values (eg. 0,1 )
 }

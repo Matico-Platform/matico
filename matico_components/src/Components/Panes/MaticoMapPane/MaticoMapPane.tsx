@@ -48,7 +48,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
 
   const updateLayer = (layer) => {
     if (mapLayers.map((l) => l.id).includes(layer.id)) {
-      setMapLayers(mapLayers.map((l) => (l.id=== layer.id? layer : l)));
+      setMapLayers(mapLayers.map((l) => (l.id === layer.id ? layer : l)));
     } else {
       setMapLayers([...mapLayers, layer]);
     }
@@ -102,7 +102,10 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
             }}
             controller={true}
             onViewStateChange={updateViewState}
-            layers={mapLayers}
+            layers={layers
+              .sort((a, b) => (a.order > b.order ? 1 : -1))
+              .map((l) => mapLayers.find((ml) => (ml.id === l.name)))}
+              
           >
             <StaticMap
               mapboxApiAccessToken={

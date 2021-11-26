@@ -99,8 +99,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       right: 10,
     };
 
-    const mappedFilters = useSubVariables(dataset.filters)
-    if(!mappedFilters) return <h1>Loading</h1>
+    const [mappedFilters, filtersReady, _] = useSubVariables(dataset.filters)
+    if(!filtersReady) return <h1>Loading</h1>
 
     // @ts-ignore
     const chartData = useMemo(() => {

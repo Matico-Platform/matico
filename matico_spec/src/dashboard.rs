@@ -1,9 +1,9 @@
-use crate::{AutoComplete, Page, Dataset,ValidationResult};
+use crate::{AutoComplete, Dataset, Page, ValidationResult};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use toml;
-use validator::{Validate};
+use validator::Validate;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -12,7 +12,7 @@ pub struct Dashboard {
     name: String,
     created_at: DateTime<Utc>,
     pages: Vec<Page>,
-    datasets: Vec<Dataset>
+    datasets: Vec<Dataset>,
 }
 
 impl Default for Dashboard {
@@ -21,7 +21,7 @@ impl Default for Dashboard {
             name: "New Dashboard".into(),
             created_at: Utc::now(),
             pages: vec![],
-            datasets:vec![]
+            datasets: vec![],
         }
     }
 }
@@ -43,7 +43,7 @@ impl Dashboard {
         let pages_real = pages.into_serde().unwrap();
         self.pages = pages_real;
     }
-    
+
     #[wasm_bindgen(getter=datasets)]
     pub fn get_datasets(&self) -> JsValue {
         JsValue::from_serde(&self.datasets).unwrap()
@@ -127,7 +127,7 @@ impl Dashboard {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ChartPane, View, MapPane, Pane, PanePosition};
+    use crate::{ChartPane, MapPane, Pane, PanePosition, View};
 
     fn test_dash_builder() -> Dashboard {
         let map_pane: MapPane = Default::default();
@@ -136,7 +136,7 @@ mod tests {
             name: "Test Dash".into(),
             created_at: chrono::Utc::now(),
             pages: vec![],
-            datasets:vec![]
+            datasets: vec![],
         };
         dash
     }

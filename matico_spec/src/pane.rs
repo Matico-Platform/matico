@@ -1,4 +1,6 @@
-use crate::{AutoComplete, ChartPane, MapPane, HistogramPane, ScatterplotPane, PieChartPane, Control};
+use crate::{
+    AutoComplete, ChartPane, Control, HistogramPane, MapPane, PieChartPane, ScatterplotPane,
+};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError, ValidationErrors};
@@ -12,7 +14,7 @@ pub enum Pane {
     Histogram(HistogramPane),
     Scatterplot(ScatterplotPane),
     PieChart(PieChartPane),
-    Controls(ControlsPane)
+    Controls(ControlsPane),
 }
 
 impl Default for Pane {
@@ -34,10 +36,18 @@ impl Validate for Pane {
             Self::Map(map) => ValidationErrors::merge(result, "MapPane", map.validate()),
             Self::Chart(chart) => ValidationErrors::merge(result, "ChartPane", chart.validate()),
             Self::Text(text) => ValidationErrors::merge(result, "TextPane", text.validate()),
-            Self::Histogram(histogram) => ValidationErrors::merge(result, "HistogramPane", histogram.validate()),
-            Self::Scatterplot(scatter) => ValidationErrors::merge(result, "ScatterplotPane", scatter.validate()),
-            Self::PieChart(piechart) => ValidationErrors::merge(result, "PieChartPane", piechart.validate()),
-            Self::Controls(controls) => ValidationErrors::merge(result, "ScatterplotPane", controls.validate()),
+            Self::Histogram(histogram) => {
+                ValidationErrors::merge(result, "HistogramPane", histogram.validate())
+            }
+            Self::Scatterplot(scatter) => {
+                ValidationErrors::merge(result, "ScatterplotPane", scatter.validate())
+            }
+            Self::PieChart(piechart) => {
+                ValidationErrors::merge(result, "PieChartPane", piechart.validate())
+            }
+            Self::Controls(controls) => {
+                ValidationErrors::merge(result, "ScatterplotPane", controls.validate())
+            }
         }
     }
 }
@@ -53,9 +63,9 @@ pub struct ControlsPane {
 
     #[validate]
     pub position: PanePosition,
-    
+
     #[wasm_bindgen(skip)]
-    pub controls: Vec<Control>
+    pub controls: Vec<Control>,
 }
 
 #[wasm_bindgen]

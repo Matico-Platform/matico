@@ -16,9 +16,8 @@ export const MaticoControlsPane: React.FC<MaticoControlPaneInterface> = ({
   title,
 }) => {
 
-  const mappedControls: Array<any> = useSubVariables(controls)
-  if(!mappedControls) return <h1>Loading</h1>
-  console.log("mappedControls are ",mappedControls)
+  const [mappedControls, filtersReady, _] = useSubVariables(controls)
+  if(!filtersReady) return <h1>Loading</h1>
 
   return (
     <Box

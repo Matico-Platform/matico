@@ -6,8 +6,14 @@ import {
   useAutoVariable,
 } from "../../../Hooks/useAutoVariable";
 import { ScatterplotLayer, PathLayer, PolygonLayer } from "@deck.gl/layers";
-import { convertPoint,  convertLine,expandMultiAndConvertPoly } from "./LayerUtils";
-import {useSubVariables} from "../../../Hooks/useSubVariables";
+import {
+  convertPoint,
+  convertLine,
+  expandMultiAndConvertPoly,
+  generateColorVar,
+  generateNumericVar,
+} from "./LayerUtils";
+import { useSubVariables } from "../../../Hooks/useSubVariables";
 
 interface MaticoLayerInterface {
   name: string;
@@ -25,7 +31,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
   onUpdate,
 }) => {
   const { state: dataState } = useContext(MaticoDataContext);
-
   const [hoverVariable, updateHoverVariable] = useAutoVariable({
     name: `${mapName}_map_${name}_hover`,
     type: "any",
@@ -44,18 +49,16 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     return d.name === source.name;
   });
 
-  const datasetReady = dataset ? dataset.isReady() : false
+  const datasetReady = dataset ? dataset.isReady() : false;
 
-
-  const mappedFilters = useSubVariables(source.filters) 
-  if(!mappedFilters) return null
+  const [mappedFilters, filtersReady,] = useSubVariables(source.filters);
+  const [mappedStyle, styleReady,  ]  = useSubVariables(style);
 
 
   const preparedData = useMemo(() => {
-    if (!datasetReady) {
+    if (!datasetReady || !filtersReady || !styleReady) {
       return [];
     }
-
 
     const data = dataset.getDataWithGeo(mappedFilters);
 
@@ -67,12 +70,12 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       case GeomType.Line:
         return data.map((d) => ({ ...d, geom: convertLine(d.geom) }));
     }
-  }, [source.name, datasetReady, JSON.stringify(mappedFilters)]);
+  }, [source.name, datasetReady, JSON.stringify(mappedFilters), styleReady, filtersReady]);
 
 
   useEffect(() => {
-    if(!dataset || !dataset.isReady()){
-      return
+    if (!dataset || !dataset.isReady() || !styleReady) {
+      return;
     }
     let layer = undefined;
     const common = {
@@ -81,6 +84,11 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       pickable: true,
       id: name,
       data: preparedData,
+      updateTriggers:{
+        getFillColor:[JSON.stringify(mappedStyle.fillColor)],
+        getLineColor:[JSON.stringify(mappedStyle.lineColor)],
+        getRadius: [JSON.stringify((mappedStyle.size))]
+      }
     };
 
 
@@ -88,12 +96,10 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       case GeomType.Point:
         layer = new ScatterplotLayer({
           filled: true,
-          getFillColor: style.color
-            ? style.color
-            : [255, 0, 0, 100],
+          getFillColor: generateColorVar(mappedStyle.fillColor) ?? [255, 0, 0, 100],
           radiusUnits: "pixels",
-          getRadius: style.size ? style.size : 20,
-          getLineColor: [0, 255, 0, 100],
+          getRadius: generateNumericVar(mappedStyle.size) ?? 20,
+          getLineColor: generateColorVar(mappedStyle.lineColor) ?? [0, 255, 0, 100],
           stroked: true,
           getLineWidth: 10,
           //@ts-ignore
@@ -101,36 +107,33 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           ...common,
           //@ts-ignore
         });
-        break
+        break;
       case GeomType.Line:
         layer = new PathLayer({
           getColor: [0, 255, 0, 100],
           getPath: (d) => d.geom,
           ...common,
         });
-        break
+        break;
       case GeomType.Polygon:
         layer = new PolygonLayer({
           //@ts-ignore
           getPolygon: (d) => d.geom,
           filled: true,
-          getFillColor: style.color ? style.color : [255, 0, 0, 100],
-          getLineColor: [255, 255, 255, 100],
+          //@ts-ignore
+          getFillColor: generateColorVar(mappedStyle.fillColor) ?? [255, 0, 0, 100],
+          //@ts-ignore
+          getLineColor: generateColorVar(mappedStyle.lineColor) ?? [255, 255, 255, 100],
           stroked: true,
           getLineWidth: 1,
           lineWidthMinPixels: 1,
           ...common,
         });
-        break
+        break;
     }
 
-    onUpdate(layer); 
-  }, [
-    name,
-    JSON.stringify(style),
-    datasetReady,
-    preparedData
-  ]);
+    onUpdate(layer);
+  }, [name, JSON.stringify(mappedStyle), datasetReady, preparedData, styleReady]);
 
   return <></>;
 };
