@@ -61,6 +61,13 @@ enum DomainVal {
     Value(f32),
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all="camelCase")]
+pub enum ScaleType{
+    Pixels,
+    Meters
+}
+
 #[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe)]
 #[serde(rename_all = "camelCase")]
 pub struct LayerStyle {
@@ -69,6 +76,9 @@ pub struct LayerStyle {
     opacity: Option<MappingVarOr<f32>>,
     line_color: Option<MappingVarOr<[f32; 4]>>,
     line_thickness: Option<MappingVarOr<f32>>,
+    line_units: Option<ScaleType>,
+    radius_units: Option<ScaleType>,
+    elevation: Option<MappingVarOr<f32>>
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]

@@ -5,6 +5,21 @@ import _ from "lodash";
 import { MaticoDataContext } from "../Contexts/MaticoDataContext/MaticoDataContext";
 import { Dataset } from "../Datasets/Dataset";
 
+
+const getRequiredVariableList =(struct)=>{
+  const requiredVariables = [] 
+  const requiredDatasets = []
+  traverse(struct).forEach((node:any)=>{
+    if(node && node.var){
+      requiredVariables.push(node.var.split(".")[0])
+    }
+    if(node && node.dataset){
+      requiredDatasets.push(node.dataset)
+    }
+  })
+  return {requiredVariables,requiredDatasets}
+}
+
 export const useSubVariables = (struct: any) => {
   const state = useVariableSelector((state) => state.variables.autoVariables);
   const { state: dataState } = useContext(MaticoDataContext);
@@ -12,6 +27,8 @@ export const useSubVariables = (struct: any) => {
   const [mappedStructure, setMappedStructure] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const {requiredVariables, requiredDatasets} = getRequiredVariableList(struct)
 
   useEffect(() => {
     setLoading(true);
@@ -38,12 +55,10 @@ export const useSubVariables = (struct: any) => {
           switch (metric) {
             case "Max":
               const max = dataset.getColumnMax(node.column);
-              console.log("max is ,", max);
               this.update(max);
               break;
             case "Min":
               const min = dataset.getColumnMin(node.column);
-              console.log("min is min ", min);
               this.update(min);
               break;
             case "EqualInterval":
@@ -67,8 +82,8 @@ export const useSubVariables = (struct: any) => {
     }
   }, [
     JSON.stringify(struct),
-    JSON.stringify(state),
-    JSON.stringify(datasetStates),
+    JSON.stringify(_.pick(state, requiredVariables)),
+    JSON.stringify(_.pick(datasetStates,requiredDatasets)),
   ]);
 
   return [mappedStructure, !loading, error];

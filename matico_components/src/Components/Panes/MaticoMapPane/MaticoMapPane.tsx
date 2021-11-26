@@ -88,7 +88,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   }
 
   return (
-    <Box fill={true}>
+    <Box style={{position:'relative', overflow:'hidden'}} fill={true}>
       {currentView && (
         <>
           <DeckGL

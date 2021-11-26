@@ -87,17 +87,20 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       updateTriggers:{
         getFillColor:[JSON.stringify(mappedStyle.fillColor)],
         getLineColor:[JSON.stringify(mappedStyle.lineColor)],
-        getRadius: [JSON.stringify((mappedStyle.size))]
+        getRadius: [JSON.stringify((mappedStyle.size))],
+        getElevation: [JSON.stringify((mappedStyle.elevation))]
       }
     };
 
+
+    console.log("mapped Style ",mappedStyle)
 
     switch (dataset.geometryType()) {
       case GeomType.Point:
         layer = new ScatterplotLayer({
           filled: true,
           getFillColor: generateColorVar(mappedStyle.fillColor) ?? [255, 0, 0, 100],
-          radiusUnits: "pixels",
+          radiusUnits: mappedStyle.radiusUnits ? mappedStyle.radiusUnits : 'meters',
           getRadius: generateNumericVar(mappedStyle.size) ?? 20,
           getLineColor: generateColorVar(mappedStyle.lineColor) ?? [0, 255, 0, 100],
           stroked: true,
@@ -124,9 +127,10 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           getFillColor: generateColorVar(mappedStyle.fillColor) ?? [255, 0, 0, 100],
           //@ts-ignore
           getLineColor: generateColorVar(mappedStyle.lineColor) ?? [255, 255, 255, 100],
+          getLineWidth: generateNumericVar(mappedStyle.lineWidth) ?? 1,
+          getElevation: generateNumericVar(mappedStyle.elevation) ?? 20,
+          extruded: mappedStyle.hasOwnProperty('elevation'),
           stroked: true,
-          getLineWidth: 1,
-          lineWidthMinPixels: 1,
           ...common,
         });
         break;
