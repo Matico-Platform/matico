@@ -4,6 +4,8 @@ import wkx from "wkx";
 import chroma from "chroma-js";
 import { RGBAColor } from "@deck.gl/core";
 import * as d3 from 'd3-scale'
+import {colorbrewer} from '../../../Utils/colors'
+import _ from 'lodash'
 
 export function chunkCoords(coords: Array<Number>) {
   return coords.reduce((result, coord, index) => {
@@ -80,6 +82,15 @@ export const generateColorVar = (colorVar): ColorReturn => {
       .domain(domain);
 
     return (d) => ramp(d[variable]).rgb();
+  }
+
+  if(typeof colorVar==='string'){
+    if(chroma.valid(colorVar)){
+      return chroma(colorVar).rgb()
+    }
+    if(_.at(colorbrewer, colorVar)){
+      return _.at(colorbrewer, colorVar)
+    }
   }
   return null;
 };

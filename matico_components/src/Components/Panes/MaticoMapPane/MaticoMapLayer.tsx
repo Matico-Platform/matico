@@ -92,9 +92,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       }
     };
 
-
-    console.log("mapped Style ",mappedStyle)
-
     switch (dataset.geometryType()) {
       case GeomType.Point:
         layer = new ScatterplotLayer({

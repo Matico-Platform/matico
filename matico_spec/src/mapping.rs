@@ -46,6 +46,15 @@ pub struct Mapping<D, R> {
     range: VarOr<Range<R>>,
 }
 
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all="camelCase", untagged)]
+pub enum ColorSpecification{
+    Rgba( [f32;4]),
+    Rgb( [f32;3]),
+    Name(String)
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 enum MappingVarOr<T> {
@@ -72,9 +81,9 @@ pub enum ScaleType{
 #[serde(rename_all = "camelCase")]
 pub struct LayerStyle {
     size: Option<MappingVarOr<f32>>,
-    fill_color: Option<MappingVarOr<[f32; 4]>>,
+    fill_color: Option<MappingVarOr<ColorSpecification>>,
     opacity: Option<MappingVarOr<f32>>,
-    line_color: Option<MappingVarOr<[f32; 4]>>,
+    line_color: Option<MappingVarOr<ColorSpecification>>,
     line_thickness: Option<MappingVarOr<f32>>,
     line_units: Option<ScaleType>,
     radius_units: Option<ScaleType>,
