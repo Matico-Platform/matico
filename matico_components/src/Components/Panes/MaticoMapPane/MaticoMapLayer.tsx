@@ -88,7 +88,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         getFillColor:[JSON.stringify(mappedStyle.fillColor)],
         getLineColor:[JSON.stringify(mappedStyle.lineColor)],
         getRadius: [JSON.stringify((mappedStyle.size))],
-        getElevation: [JSON.stringify((mappedStyle.elevation))]
+        getElevation: [JSON.stringify((mappedStyle.elevation))],
+        getLineWidth: [JSON.stringify((mappedStyle.lineWidth))]
       }
     };
 
@@ -116,6 +117,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         });
         break;
       case GeomType.Polygon:
+        console.log("Extuded ", mappedStyle.elevation, mappedStyle.hasOwnProperty('elevation'))
         layer = new PolygonLayer({
           //@ts-ignore
           getPolygon: (d) => d.geom,
@@ -126,7 +128,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           getLineColor: generateColorVar(mappedStyle.lineColor) ?? [255, 255, 255, 100],
           getLineWidth: generateNumericVar(mappedStyle.lineWidth) ?? 1,
           getElevation: generateNumericVar(mappedStyle.elevation) ?? 20,
-          extruded: mappedStyle.hasOwnProperty('elevation'),
+          extruded: false,// mappedStyle.hasOwnProperty('elevation'),
           stroked: true,
           ...common,
         });

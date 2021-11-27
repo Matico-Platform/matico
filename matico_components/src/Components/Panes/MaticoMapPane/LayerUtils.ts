@@ -3,9 +3,9 @@ import { WKBLoader } from "@loaders.gl/wkt";
 import wkx from "wkx";
 import chroma from "chroma-js";
 import { RGBAColor } from "@deck.gl/core";
-import * as d3 from 'd3-scale'
-import {colorbrewer} from '../../../Utils/colors'
-import _ from 'lodash'
+import * as d3 from "d3-scale";
+import { colorbrewer } from "../../../Utils/colors";
+import _ from "lodash";
 
 export function chunkCoords(coords: Array<Number>) {
   return coords.reduce((result, coord, index) => {
@@ -56,41 +56,62 @@ export function convertLine(wkbGeom: any) {
 type ColorReturn = RGBAColor | ((d: unknown) => RGBAColor);
 type NumberReturn = number | ((d: unknown) => number);
 
-export const generateNumericVar = (numericVar): NumberReturn=>{
-  if(!numericVar) return null 
-  if(typeof numericVar ==='number') return numericVar;
-  if(numericVar.variable){
-    const {variable,domain, range} =numericVar;
+export const generateNumericVar = (numericVar): NumberReturn => {
+  if (!numericVar) return null;
+  if (typeof numericVar === "number") return numericVar;
+  if (numericVar.variable) {
+    const { variable, domain, range } = numericVar;
     const ramp = d3.scaleLinear().domain(domain).range(range);
-    console.log("NUMERIC IS A THING ", variable, ramp)
-    return (d)=>ramp(d[variable])
+    console.log("NUMERIC IS A THING ", variable, ramp);
+    return (d) => ramp(d[variable]);
   }
-}
+};
 
-export const generateColorVar = (colorVar): ColorReturn => {
-
-  if(!colorVar){ return null}
-
-  if (Array.isArray(colorVar)) {
-    return colorVar as RGBAColor;
+export const generateColor = (color: any) => {
+  if (Array.isArray(color)) {
+    return chroma.rgb(...color);
   }
-  if (colorVar.variable) {
-    console.log('colorVar is ',colorVar)
-    const { variable, domain, range } = colorVar;
-    const ramp = chroma
-      .scale(range.map((c) => chroma.rgb(...c)))
-      .domain(domain);
-
-    return (d) => ramp(d[variable]).rgb();
-  }
-
-  if(typeof colorVar==='string'){
-    if(chroma.valid(colorVar)){
-      return chroma(colorVar).rgb()
-    }
-    if(_.at(colorbrewer, colorVar)){
-      return _.at(colorbrewer, colorVar)
+  if (typeof color === "string") {
+    if (chroma.valid(color)) {
+      return chroma(color).rgb();
     }
   }
   return null;
+};
+
+export const generateColorVar = (colorVar): ColorReturn => {
+  if (!colorVar) {
+    return null;
+  }
+  // If the color is data driven we compute the ramp either
+  // from an array of color values or a named pallet
+  if (colorVar.variable) {
+    const { variable, domain, range } = colorVar;
+
+    if (Array.isArray(range)) {
+      const ramp = chroma
+        .scale(range.map((c) => generateColor(c)))
+        .domain(domain);
+      return (d) => ramp(d[variable]).rgb();
+    } else if (typeof range === "string" && _.at(colorbrewer, range)[0]) {
+      let brewer = _.at(colorbrewer, range)[0];
+      if (!brewer) {
+        return null;
+      }
+
+      if (!Array.isArray(brewer)) {
+        brewer = brewer[3];
+      }
+
+      const ramp = chroma
+        .scale(brewer.map((c) => generateColor(c)))
+        .domain(domain);
+      return (d) => ramp(d[variable]).rgb();
+    } else {
+      return null;
+    }
+  }
+
+  console.log("returning generated ");
+  return generateColor(colorVar);
 };
