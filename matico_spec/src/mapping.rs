@@ -84,7 +84,7 @@ pub struct LayerStyle {
     fill_color: Option<MappingVarOr<ColorSpecification>>,
     opacity: Option<MappingVarOr<f32>>,
     line_color: Option<MappingVarOr<ColorSpecification>>,
-    line_thickness: Option<MappingVarOr<f32>>,
+    line_width: Option<MappingVarOr<f32>>,
     line_units: Option<ScaleType>,
     radius_units: Option<ScaleType>,
     elevation: Option<MappingVarOr<f32>>

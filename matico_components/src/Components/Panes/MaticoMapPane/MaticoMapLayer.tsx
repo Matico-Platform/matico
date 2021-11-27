@@ -51,9 +51,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
 
   const datasetReady = dataset ? dataset.isReady() : false;
 
-  const [mappedFilters, filtersReady,] = useSubVariables(source.filters);
-  const [mappedStyle, styleReady,  ]  = useSubVariables(style);
-
+  const [mappedFilters, filtersReady] = useSubVariables(source.filters);
+  const [mappedStyle, styleReady] = useSubVariables(style);
 
   const preparedData = useMemo(() => {
     if (!datasetReady || !filtersReady || !styleReady) {
@@ -70,39 +69,62 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       case GeomType.Line:
         return data.map((d) => ({ ...d, geom: convertLine(d.geom) }));
     }
-  }, [source.name, datasetReady, JSON.stringify(mappedFilters), styleReady, filtersReady]);
-
+  }, [
+    source.name,
+    datasetReady,
+    JSON.stringify(mappedFilters),
+    styleReady,
+    filtersReady,
+  ]);
 
   useEffect(() => {
     if (!dataset || !dataset.isReady() || !styleReady) {
       return;
     }
     let layer = undefined;
+
+    const fillColor = generateColorVar(mappedStyle.fillColor) ?? [
+      255, 0, 0, 100,
+    ];
+    const lineColor = generateColorVar(mappedStyle.lineColor) ?? [
+      0, 255, 0, 100,
+    ];
+    const lineWidth = generateNumericVar(mappedStyle.lineWidth) ?? 10;
+    console.log("line width calc ",generateNumericVar(mappedStyle.lineWidth), mappedStyle.lineWidth)
+    const elevation = generateNumericVar(mappedStyle.elevation) ?? 0;
+
+    const shouldExtrude = elevation !== null && elevation > 0;
+    const shouldStroke = lineWidth !== null && lineWidth > 0;
     const common = {
+      getFillColor: fillColor,
+      getLineColor: lineColor,
+      getLineWidth: lineWidth,
+      extruded: shouldExtrude,
+      stroked: shouldStroke,
       onHover: (hoverTarget) => updateHoverVariable(hoverTarget.object),
       onClick: (clickTarget) => updateClickVariable(clickTarget.object),
       pickable: true,
       id: name,
       data: preparedData,
-      updateTriggers:{
-        getFillColor:[JSON.stringify(mappedStyle.fillColor)],
-        getLineColor:[JSON.stringify(mappedStyle.lineColor)],
-        getRadius: [JSON.stringify((mappedStyle.size))],
-        getElevation: [JSON.stringify((mappedStyle.elevation))],
-        getLineWidth: [JSON.stringify((mappedStyle.lineWidth))]
-      }
+      updateTriggers: {
+        getFillColor: [JSON.stringify(fillColor)],
+        getLineColor: [JSON.stringify(lineColor)],
+        getRadius: [JSON.stringify(mappedStyle.size)],
+        getElevation: [JSON.stringify(elevation)],
+        getLineWidth: [JSON.stringify(lineWidth)],
+        extruded: [JSON.stringify(shouldExtrude)],
+        stroked: [JSON.stringify(shouldStroke)],
+      },
     };
 
     switch (dataset.geometryType()) {
       case GeomType.Point:
         layer = new ScatterplotLayer({
           filled: true,
-          getFillColor: generateColorVar(mappedStyle.fillColor) ?? [255, 0, 0, 100],
-          radiusUnits: mappedStyle.radiusUnits ? mappedStyle.radiusUnits : 'meters',
+          radiusUnits: mappedStyle.radiusUnits
+            ? mappedStyle.radiusUnits
+            : "meters",
           getRadius: generateNumericVar(mappedStyle.size) ?? 20,
-          getLineColor: generateColorVar(mappedStyle.lineColor) ?? [0, 255, 0, 100],
-          stroked: true,
-          getLineWidth: 10,
           //@ts-ignore
           getPosition: (d) => d.geom,
           ...common,
@@ -117,26 +139,23 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         });
         break;
       case GeomType.Polygon:
-        console.log("Extuded ", mappedStyle.elevation, mappedStyle.hasOwnProperty('elevation'))
         layer = new PolygonLayer({
           //@ts-ignore
           getPolygon: (d) => d.geom,
           filled: true,
-          //@ts-ignore
-          getFillColor: generateColorVar(mappedStyle.fillColor) ?? [255, 0, 0, 100],
-          //@ts-ignore
-          getLineColor: generateColorVar(mappedStyle.lineColor) ?? [255, 255, 255, 100],
-          getLineWidth: generateNumericVar(mappedStyle.lineWidth) ?? 1,
-          getElevation: generateNumericVar(mappedStyle.elevation) ?? 20,
-          extruded: false,// mappedStyle.hasOwnProperty('elevation'),
-          stroked: true,
           ...common,
         });
         break;
     }
 
     onUpdate(layer);
-  }, [name, JSON.stringify(mappedStyle), datasetReady, preparedData, styleReady]);
+  }, [
+    name,
+    JSON.stringify(mappedStyle),
+    datasetReady,
+    preparedData,
+    styleReady,
+  ]);
 
   return <></>;
 };
