@@ -6,6 +6,7 @@ import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { Provider } from "react-redux";
 import { store } from "../../Stores/MaticoStateStore";
 import { VariableState } from "../../Stores/MaticoStateStore";
+
 import {
   Grommet,
   Box,
@@ -48,9 +49,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 }) => {
   return (
     <Provider store={store}>
-      {/*onStateChange &&
+      {onStateChange &&
         <StateReporter onStateChange={onStateChange}/>
-        */}
+      }
       <MaticoDataProvider onStateChange={onDataChange} datasets={spec.datasets}>
         <Grommet style={{ width: "100%", height: "100%" }}>
           <Router basename={basename}>

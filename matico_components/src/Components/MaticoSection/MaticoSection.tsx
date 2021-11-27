@@ -6,6 +6,8 @@ import {MaticoMapPane} from '../Panes/MaticoMapPane/MaticoMapPane'
 import {MaticoTextPane} from '../Panes/MaticoTextPane/MaticoTextPane'
 import { MaticoHistogramPane } from '../Panes/MaticoHistogramPane/MaticoHistogramPane'
 import { MaticoScatterplotPane } from '../Panes/MaticoScatterplotPane/MaticoScatterplotPane'
+import { MaticoPieChartPane } from '../Panes/MaticoPieChartPane/MaticoPieChartPane'
+import {MaticoControlsPane} from '../Panes/MaticoControlsPane/MaticoControlsPane'
 
 interface MaticoSectionInterface{
   section: Section
@@ -20,19 +22,21 @@ function selectLayout(layout_name: string){
   }
 }
 
+const panes = {
+  "Map": MaticoMapPane,
+  "Text": MaticoTextPane,
+  "Histogram": MaticoHistogramPane,
+  "Scatterplot": MaticoScatterplotPane,
+  "PieChart": MaticoPieChartPane,
+  "Controls": MaticoControlsPane,
+}
+
 function selectPane(pane:any){
-  switch(Object.keys(pane)[0]){
-    case "Map":
-      return <MaticoMapPane key={pane.name} {...pane.Map} />
-    case "Text":
-      return <MaticoTextPane  key={pane.name} {...pane.Text} />
-    case "Histogram":
-      return <MaticoHistogramPane key={pane.name} {...pane.Histogram} />
-    case "Scatterplot":
-      return <MaticoScatterplotPane key={pane.name} {...pane.Scatterplot} />
-    default:
-      return null
-  }
+  const paneType = Object.keys(pane)[0]
+  const PaneComponent = panes[paneType]
+  
+  if (!PaneComponent) return null;
+  return <PaneComponent key={pane.name} {...pane[paneType]} />
 }
 
 export const MaticoSection: React.FC<MaticoSectionInterface> = ({section})=>{

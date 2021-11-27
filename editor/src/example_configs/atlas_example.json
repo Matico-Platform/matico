@@ -1,0 +1,78 @@
+{
+  "name": "New Dashboard",
+  "created_at": "2021-10-16T13:36:36.249Z",
+  "datasets": [
+    {
+      "GeoJSON": {
+        "name": "atlas",
+        "url": "https://uscovidatlas.org/geojson/county_nyt.geojson"
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "home",
+      "order": 1,
+      "icon": "Home",
+      "path": "/",
+      "sections": [
+        {
+          "name": "simple_map",
+          "order": 1,
+          "panes": [
+            {
+              "Map": {
+                "name": "atlas_map",
+                "position": {
+                  "width": 100,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "view": {
+                  "lat": 48.342673708488334,
+                  "lng": -93.40119290325764,
+                  "zoom": 3.6616998969061285,
+                  "pitch": 0,
+                  "bearing": 0
+                },
+                "layers": [
+                  {
+                    "source": {
+                      "name": "atlas"
+                    },
+                    "name": "atals",
+                    "order": 1,
+                    "style": {
+                      "fillColor": {
+                        "variable": "beds",
+                        "domain": {
+                          "dataset": "atlas",
+                          "metric": {
+                            "Quantile": {
+                              "bins": 5
+                            }
+                          },
+                          "column": "beds"
+                        },
+                        "range": [
+                          "red",
+                          "green",
+                          "blue"
+                        ]
+                      },
+                      "size": 4
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "layout": "free"
+        }
+      ]
+    }
+  ]
+}
