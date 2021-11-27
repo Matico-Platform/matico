@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { useVariableDispatch, useVariableSelector } from "./redux";
+import { useMaticoDispatch, useMaticoSelector } from "./redux";
 
 import {
   setAutoVariable,
@@ -14,8 +14,8 @@ export type AutoVariableInterface = {
 };
 
 export const useAutoVariables = (variables: Array<AutoVariableInterface>) => {
-  const dispatch = useVariableDispatch();
-  const autoVariables = useVariableSelector((state) => state.variables.autoVariables);
+  const dispatch = useMaticoDispatch();
+  const autoVariables = useMaticoSelector((state) => state.variables.autoVariables);
 
   useEffect(() => {
     variables.forEach((v) => {
@@ -70,8 +70,8 @@ export const useAutoVariable = ({
   bind,
 }: AutoVariableInterface) => {
 
-  const dispatch = useVariableDispatch();
-  const autoVariables = useVariableSelector((state) => state.variables.autoVariables);
+  const dispatch = useMaticoDispatch();
+  const autoVariables = useMaticoSelector((state) => state.variables.autoVariables);
   const currentValue = autoVariables[name]?.value;
 
   useEffect(() => {

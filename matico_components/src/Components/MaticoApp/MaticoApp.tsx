@@ -4,8 +4,8 @@ import * as Icons from "grommet-icons";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { Provider } from "react-redux";
-import { store } from "../../Stores/MaticoStateStore";
-import { VariableState } from "../../Stores/MaticoStateStore";
+import { store, VariableState } from "../../Stores/MaticoStore";
+import { MaticoState } from "../../Stores/MaticoStore";
 
 import {
   Grommet,
@@ -21,7 +21,7 @@ import {
   MaticoDataProvider,
   MaticoDataState,
 } from "../../Contexts/MaticoDataContext/MaticoDataContext";
-import { useVariableSelector } from "../../Hooks/redux";
+import { useMaticoSelector } from "../../Hooks/redux";
 
 interface MaticoAppInterface {
   spec: Dashboard;
@@ -35,11 +35,13 @@ const NamedButton: React.FC<{ name: string }> = ({ name }) => {
   return <NamedIcon />;
 };
 
-const StateReporter: React.FC<{onStateChange: (state:VariableState)=>void}> = ({onStateChange})=>{
-  const state = useVariableSelector((state) => state);
-  onStateChange(state)
-  return <></>
-}
+const StateReporter: React.FC<{
+  onStateChange: (state: VariableState) => void;
+}> = ({ onStateChange }) => {
+  const state = useMaticoSelector((state) => state);
+  onStateChange(state.variables);
+  return <></>;
+};
 
 export const MaticoApp: React.FC<MaticoAppInterface> = ({
   spec,
@@ -49,9 +51,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 }) => {
   return (
     <Provider store={store}>
-      {onStateChange &&
-        <StateReporter onStateChange={onStateChange}/>
-      }
+      {onStateChange && <StateReporter onStateChange={onStateChange} />}
       <MaticoDataProvider onStateChange={onDataChange} datasets={spec.datasets}>
         <Grommet style={{ width: "100%", height: "100%" }}>
           <Router basename={basename}>

@@ -1,5 +1,5 @@
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux'
-import type {VariableState, VariableDispatch} from '../Stores/MaticoStateStore'
+import type {MaticoState, MaticoDispatch} from '../Stores/MaticoStore'
 
-export const useVariableDispatch = ()=> useDispatch<VariableDispatch>()
-export const useVariableSelector : TypedUseSelectorHook<VariableState> = useSelector
+export const useMaticoDispatch = ()=> useDispatch<MaticoDispatch>()
+export const useMaticoSelector : TypedUseSelectorHook<MaticoState> = useSelector

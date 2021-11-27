@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import traverse from "traverse";
-import { useVariableSelector } from "./redux";
+import { useMaticoSelector } from "./redux";
 import _ from "lodash";
 import { MaticoDataContext } from "../Contexts/MaticoDataContext/MaticoDataContext";
 import { Dataset } from "../Datasets/Dataset";
@@ -21,7 +21,7 @@ const getRequiredVariableList =(struct)=>{
 }
 
 export const useSubVariables = (struct: any) => {
-  const state = useVariableSelector((state) => state.variables.autoVariables);
+  const state = useMaticoSelector((state) => state.variables.autoVariables);
   const { state: dataState } = useContext(MaticoDataContext);
   const { datasets, datasetStates } = dataState;
   const [mappedStructure, setMappedStructure] = useState<any | null>(null);

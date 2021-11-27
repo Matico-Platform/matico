@@ -6,7 +6,7 @@ import { MaticoPaneInterface } from "../Pane";
 import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
-import { useVariableSelector } from "../../../Hooks/redux";
+import { useMaticoSelector } from "../../../Hooks/redux";
 import {useSize} from '../../../Hooks/useSize';
 import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
 import {useSubVariables} from "../../../Hooks/useSubVariables";
@@ -60,7 +60,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     right: 10,
   };
 
-  const state = useVariableSelector((state) => state.variables.autoVariables);
+  const state = useMaticoSelector((state) => state.variables.autoVariables);
 
   const [mappedFilters,filtersReady,_] = useSubVariables(dataset.filters)
 
