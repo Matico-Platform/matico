@@ -32,7 +32,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
         <Grommet style={{ width: "100%", height: "100%" }}>
           <Grid
             fill
-            columns={["medium", "flex"]}
+            columns={["large", "flex"]}
             rows={["flex"]}
             areas={[["editor", "viewer"]]}
           >

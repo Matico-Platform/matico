@@ -1,21 +1,41 @@
-import { Avatar, Button, Nav, Sidebar } from "grommet";
+import { Avatar, Box, Text, Button, Nav, Sidebar } from "grommet";
 import { Link } from "react-router-dom";
 import { Page } from "matico_spec";
 import React from "react";
 import * as Icons from "grommet-icons";
 import { useIsEditable } from "../../Hooks/useIsEditable";
+import { useMaticoDispatch } from "../../Hooks/redux";
+import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
 }
 
-const NamedButton: React.FC<{ name: string }> = ({ name }) => {
-  const NamedIcon = Icons[name] ? Icons[name] : Icons.Document;
-  return <NamedIcon />;
-};
+const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
+  ({ name, color = "white", size = "normal" }) => {
+    const NamedIcon = Icons[name] ? Icons[name] : Icons.Document;
+    return <NamedIcon color={color} />;
+  };
 
 export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   const editable = useIsEditable();
+  const dispatch = useMaticoDispatch();
+
+  const onAddPage = () => {
+    dispatch(
+      addPage({
+        //@ts-ignore
+        page: {
+          name: "new page",
+          content: "This is a new page",
+          icon: "Page",
+          //@ts-ignore
+          order: Math.max(...pages.map((p) => p.order)) + 1,
+          sections: [],
+        },
+      })
+    );
+  };
 
   return (
     <Sidebar
@@ -27,13 +47,38 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       footer={<Button icon={<Icons.Help />} hoverIndicator />}
     >
       <Nav gap="small">
-        {pages.map((page) => (
-          <Link key={page.name} to={page.path ? page.path : `/${page.name}`}>
+        {pages.map((page, index) => (
+          <Link
+            style={{ textDecoration: "none" }}
+            key={page.name}
+            to={page.path ? page.path : `/${page.name}`}
+          >
             <Button
+              badge={
+                editable ? (
+                  <Box
+                    onClick={() =>
+                      dispatch(
+                        setCurrentEditPath({
+                          editPath: `pages.${index}`,
+                          editType: "Page",
+                        })
+                      )
+                    }
+                  >
+                    <NamedButton name={"Performance"} color="accent-4" />
+                  </Box>
+                ) : (
+                  false
+                )
+              }
               a11yTitle={page.name}
               icon={<NamedButton name={page.icon} />}
               hoverIndicator
             />
+            <Text color="white" size={"small"} style={{ textDecoration: "none" }}>
+              {page.name}
+            </Text>
           </Link>
         ))}
         {editable && (
@@ -41,6 +86,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
             a11yTitle="Add page"
             icon={<NamedButton name={"Add"} />}
             hoverIndicator
+            onClick={() => onAddPage()}
           />
         )}
       </Nav>

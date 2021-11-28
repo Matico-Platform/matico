@@ -78,10 +78,11 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
   ]);
 
   useEffect(() => {
-    if (!dataset || !dataset.isReady() || !styleReady) {
+    if (!dataset || !dataset.isReady() || !styleReady || !mappedStyle) {
       return;
     }
     let layer = undefined;
+    console.log("Mapped style is ", mappedStyle, styleReady)
 
     const fillColor = generateColorVar(mappedStyle.fillColor) ?? [
       255, 0, 0, 100,

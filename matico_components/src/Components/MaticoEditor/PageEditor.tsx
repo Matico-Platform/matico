@@ -1,0 +1,104 @@
+import React, { useState, useEffect } from "react";
+import _ from "lodash";
+import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
+import {
+  Box,
+  Button,
+  Form,
+  FormField,
+  Heading,
+  List,
+  Text,
+  TextInput,
+} from "grommet";
+import { Page } from "matico_spec";
+import {
+  deleteSpecAtPath,
+  setCurrentEditPath,
+  setSpecAtPath,
+} from "../../Stores/MaticoSpecSlice";
+import MDEditor from "@uiw/react-md-editor";
+
+export interface PageEditorProps {
+  editPath: string;
+}
+export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
+  const spec = useMaticoSelector((state) => state.spec.spec);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const dispatch = useMaticoDispatch();
+
+  const updatePage = (change: Page) => {
+    dispatch(setSpecAtPath({ editPath: editPath, update: change }));
+  };
+
+  const updateContent = (content: string) =>
+    dispatch(setSpecAtPath({ editPath: editPath, update: { content } }));
+
+  const deletePage = () => {
+    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
+    dispatch(deleteSpecAtPath({ editPath }));
+  };
+
+  const editSection = (index) => {
+    console.log("SECTION is ",index)
+    dispatch(
+      setCurrentEditPath({
+        editPath: `${editPath}.sections.${index}`,
+        editType: "Section",
+      })
+    );
+  };
+
+  const page = _.get(spec, editPath);
+
+  if (!page) {
+    return (
+      <Box>
+        <Text color="status-error">Failed to find component</Text>
+      </Box>
+    );
+  }
+  return (
+    <Box pad="medium">
+      <Form value={page} onChange={(nextVal) => updatePage(nextVal)}>
+        <FormField label="name" name="name" htmlFor={"name"}>
+          <TextInput value={page.name} name="name" id="name" />
+        </FormField>
+        <FormField label="path" name="path" htmlFor="path">
+          <TextInput value={page.path} name="path" id={"path"} />
+        </FormField>
+        <FormField label="icon" name="icon" htmlFor="icon">
+          <TextInput value={page.icon} id={"icon"} name="icon" />
+        </FormField>
+      </Form>
+      <Heading level={4}>Content</Heading>
+      <MDEditor preview="edit" value={page.content} onChange={updateContent} />
+      <Heading level={4}>Sections</Heading>
+      <List data={page.sections} pad="medium">
+        {(datum, index) => (
+          <Box direction="row" align="center" justify="between">
+            <Text>{datum.name}</Text>
+            <Button label="edit" onClick={() => editSection(index)} />
+          </Box>
+        )}
+      </List>
+      <Heading level={4}>Danger Zone</Heading>
+      {confirmDelete ? (
+        <Box direction="row">
+          <Button primary label="DO IT!" onClick={deletePage} />
+          <Button
+            secondary
+            label="Nah I changed my mind"
+            onClick={() => setConfirmDelete(false)}
+          />
+        </Box>
+      ) : (
+        <Button
+          color="neutral-4"
+          label="Delete Page"
+          onClick={() => setConfirmDelete(true)}
+        />
+      )}
+    </Box>
+  );
+};

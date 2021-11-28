@@ -53,13 +53,13 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
           </Box>
           <Main gridArea="main">
             <Switch>
-              {appSpec.pages.map((page) => (
+              {appSpec.pages.map((page,index) => (
                 <Route
                   path={page.path ? page.path : `/${page.name}`}
                   exact={true}
                   key={page.path}
                 >
-                  <MaticoPage key={page.path} page={page} />
+                  <MaticoPage key={page.path} page={page} editPath={`pages.${index}`} />
                 </Route>
               ))}
             </Switch>

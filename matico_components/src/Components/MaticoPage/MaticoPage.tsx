@@ -7,14 +7,15 @@ import { MaticoSection } from "../MaticoSection/MaticoSection";
 
 interface MaticoPageInterface {
   page: Page;
+  editPath?:string;
 }
-export const MaticoPage: React.FC<MaticoPageInterface> = ({ page }) => (
+export const MaticoPage: React.FC<MaticoPageInterface> = ({ page, editPath }) => (
   <Box fill={true}>
     {page.content && (
       <MarkdownContnet key="content">{page.content}</MarkdownContnet>
     )}
-    {page.sections.map((section) => (
-      <MaticoSection key={section.name} section={section} />
+    {page.sections.map((section, index) => (
+      <MaticoSection key={section.name} section={section} editPath={`${editPath}.sections.${index}`} />
     ))}
   </Box>
 );

@@ -10,7 +10,8 @@ import { MaticoPieChartPane } from '../Panes/MaticoPieChartPane/MaticoPieChartPa
 import {MaticoControlsPane} from '../Panes/MaticoControlsPane/MaticoControlsPane'
 
 interface MaticoSectionInterface{
-  section: Section
+  section: Section,
+  editPath?: string
 }
 
 function selectLayout(layout_name: string){
@@ -31,21 +32,21 @@ const panes = {
   "Controls": MaticoControlsPane,
 }
 
-function selectPane(pane:any){
+function selectPane(pane:any,editPath:string){
   const paneType = Object.keys(pane)[0]
   const PaneComponent = panes[paneType]
   
   if (!PaneComponent) return null;
-  return <PaneComponent key={pane.name} {...pane[paneType]} />
+  return <PaneComponent key={pane.name} {...pane[paneType]} editPath={`${editPath}`} />
 }
 
-export const MaticoSection: React.FC<MaticoSectionInterface> = ({section})=>{
+export const MaticoSection: React.FC<MaticoSectionInterface> = ({section,editPath})=>{
   let LayoutEngine = selectLayout(section.layout) 
   return (
     <Box fill={true}>
       <LayoutEngine>
-        {section.panes.map(pane =>(
-          selectPane(pane) 
+        {section.panes.map( (pane, index)=>(
+          selectPane(pane,`${editPath}.panes.${index}`) 
         ))}
       </LayoutEngine>
     </Box>

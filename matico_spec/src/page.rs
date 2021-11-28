@@ -12,7 +12,7 @@ pub struct Page {
     content: Option<String>,
     #[validate]
     sections: Option<Vec<Section>>,
-    order: usize,
+    pub order: usize,
     path: Option<String>,
 }
 
@@ -68,4 +68,5 @@ impl Page {
         let sections_real = sections.into_serde().unwrap();
         self.sections = sections_real;
     }
+
 }

@@ -22,9 +22,10 @@ export const MaticoRawSpecEditor: React.FC = () => {
   const spec = useAppSpec()
   const dispatch = useMaticoDispatch()
 
+  //Need to figure out how to make sure this updates with other spec changes
   useEffect(()=>{
     setCode(JSON.stringify(spec,null,2))
-  },[JSON.stringify((spec))])
+  },[])
 
   const annotations: Ace.Annotation[] = jsonError
     ? json_error_to_annotation(jsonError)
