@@ -57,6 +57,7 @@ export const stateSlice = createSlice({
         ...oldEntry,
         ...action.payload.update,
       });
+      console.log("new spec is ", newSpec)
       state.spec = newSpec;
     },
     deleteSpecAtPath: (state, action: PayloadAction<{ editPath: string }>) => {

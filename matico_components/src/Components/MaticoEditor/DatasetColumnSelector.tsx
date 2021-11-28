@@ -16,7 +16,8 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
 }) => {
   const { state } = useContext(MaticoDataContext);
   const foundDataset = state.datasets.find((d) => d.name === dataset);
-  const columns = foundDataset.columns()
+
+  const columns =  foundDataset ? foundDataset.columns(): []
   return (
     <Box direction="row" align="center" justify='between'>
       <Text>{label}</Text>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
+import { Add } from "grommet-icons";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import {
   Box,
@@ -18,6 +19,7 @@ import {
   setCurrentEditPath,
   setSpecAtPath,
 } from "../../Stores/MaticoSpecSlice";
+import { PaneDefaults } from "./PaneDefaults";
 
 export interface SectionEditorProps {
   editPath: string;
@@ -27,6 +29,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
   const spec = useMaticoSelector((state) => state.spec.spec);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const dispatch = useMaticoDispatch();
+  const section = _.get(spec, editPath);
 
   const updateSection = (change: Section) => {
     dispatch(setSpecAtPath({ editPath: editPath, update: change }));
@@ -46,7 +49,16 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     );
   };
 
-  const section = _.get(spec, editPath);
+  const addPane = (paneType: string) => {
+    dispatch(
+      setSpecAtPath({
+        editPath: editPath,
+        update: {
+          panes: [...section.panes, { [paneType]: PaneDefaults[paneType] }],
+        },
+      })
+    );
+  };
 
   if (!section) {
     return (
@@ -86,10 +98,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
               <Text>{paneType}</Text>
               {/* @ts-ignore */}
               <Text flex={1}>{paneSpecs.name}</Text>
-              <Button
-                label="edit"
-                onClick={() => editPane(index, paneType)}
-              />
+              <Button label="edit" onClick={() => editPane(index, paneType)} />
             </Box>
           );
         }}
@@ -102,21 +111,22 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
         margin="medium"
       >
         <Button
-          label={"Add Scatterplot"}
-          onClick={() => console.log("Adding Scatterplot pane")}
+          icon={<Add />}
+          label={"Scatterplot"}
+          onClick={() => addPane("Scatterplot")}
         />
         <Button
-          label={"Add Pi Chart"}
-          onClick={() => console.log("Adding Scatterplot pane")}
+          icon={<Add />}
+          label={"PiChart"}
+          onClick={() => addPane("PiChart")}
         />
         <Button
-          label={"Add Histogram"}
-          onClick={() => console.log("Adding Scatterplot pane")}
+          icon={<Add />}
+          label={"Histogram"}
+          onClick={() => addPane("Histograrm")}
         />
-        <Button
-          label={"Add Map"}
-          onClick={() => console.log("Adding Scatterplot pane")}
-        />
+        <Button icon={<Add />} label={"Map"} onClick={() => addPane("Map")} />
+        <Button icon={<Add />} label={"Text"} onClick={() => addPane("Text")} />
       </Box>
       <Heading fill={true} textAlign={"start"} level={3}>
         Danger Zone
