@@ -7,12 +7,15 @@ import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 
 import { MaticoMapLayer } from "./MaticoMapLayer";
+import {useIsEditable} from "../../../Hooks/useIsEditable";
+import {EditButton} from "../../MaticoEditor/EditButton";
 
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
   //TODO WE should properly type this from the matico_spec library. Need to figure out the Typescript integration better or witx
   base_map?: any;
   layers?: Array<any>;
+  editPath?: string;
 }
 
 function getNamedStyleJSON(style: string) {
@@ -43,8 +46,10 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   base_map,
   name,
   layers,
+  editPath
 }) => {
   const [mapLayers, setMapLayers] = useState([]);
+  const edit = useIsEditable()
 
   const updateLayer = (layer) => {
     if (mapLayers.map((l) => l.id).includes(layer.id)) {
@@ -89,6 +94,11 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
 
   return (
     <Box style={{position:'relative', overflow:'hidden'}} fill={true}>
+      {edit &&
+        <Box style={{position:'absolute', zIndex:20, top:"20px", right:'20px', backgroundColor:"rgba(0,0,0,0.2)"}}>
+          <EditButton editPath={`${editPath}.Map`} editType="Map"/>
+        </Box>
+      }
       {currentView && (
         <>
           <DeckGL

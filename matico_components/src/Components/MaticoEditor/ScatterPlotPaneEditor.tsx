@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
-import {
-  Box,
-  Button,
-  Heading,
-  RangeInput,
-  Text,
-} from "grommet";
+import { Box, Button, Heading, RangeInput, Text } from "grommet";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
@@ -17,6 +11,7 @@ import { SketchPicker } from "react-color";
 import { DatasetSelector } from "./DatasetSelector";
 import { DatasetColumnSelector } from "./DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
+import { SectionHeading } from "./Utils";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -114,9 +109,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
   }
   return (
     <Box pad="medium">
-      <Heading fill={true} textAlign={"start"} level={3}>
-        Pane Details
-      </Heading>
+      <SectionHeading>Pane Details</SectionHeading>
       <PaneEditor
         position={scatterPlotPane.position}
         name={scatterPlotPane.name}
@@ -124,9 +117,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
         onChange={(change) => updatePane(change)}
       />
 
-      <Heading fill={true} textAlign={"start"} level={3}>
-        Source
-      </Heading>
+      <SectionHeading>Source</SectionHeading>
       <DatasetSelector
         selectedDataset={scatterPlotPane.dataset.name}
         onDatasetSelected={updateDataset}
@@ -145,9 +136,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
         onColumnSelected={(column) => updateYColumn(column)}
       />
 
-      <Heading fill={true} textAlign={"start"} level={3}>
-        Style
-      </Heading>
+      <SectionHeading>Style</SectionHeading>
       <Box direction="row" fill="horizontal" gap="medium">
         <Text>Dot Size</Text>
         <RangeInput
@@ -166,9 +155,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
         />
       </Box>
 
-      <Heading fill={true} textAlign={"start"} level={3}>
-        Danger Zone
-      </Heading>
+      <SectionHeading>Danger Zone</SectionHeading>
       {confirmDelete ? (
         <Box direction="row">
           <Button primary label="DO IT!" onClick={deletePane} />

@@ -7,29 +7,36 @@ import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
-import {useSize} from '../../../Hooks/useSize';
-import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
-import {useSubVariables} from "../../../Hooks/useSubVariables";
+import { useSize } from "../../../Hooks/useSize";
+import {
+  updateFilterExtent,
+  updateActiveDataset,
+} from "../../../Utils/chartUtils";
+import { useSubVariables } from "../../../Hooks/useSubVariables";
+import { useIsEditable } from "../../../Hooks/useIsEditable";
+import { EditButton } from "../../MaticoEditor/EditButton";
 
 interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
   column: string;
   theme?: string;
+  editPath?: string;
 }
 
-const backgroundColor = "#fff"
-
+const backgroundColor = "#fff";
 
 export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   dataset,
-  column="",
-  theme
+  column = "",
+  theme,
+  editPath,
 }) => {
   const { state: dataState } = useContext(MaticoDataContext);
   const [view, setView] = useState({});
   const chartRef = useRef();
   const containerRef = useRef();
-  
+  const edit = useIsEditable();
+
   const [
     columnFilter,
     updateFilter,
@@ -62,91 +69,101 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
 
   const state = useMaticoSelector((state) => state.variables.autoVariables);
 
-  const [mappedFilters,filtersReady,_] = useSubVariables(dataset.filters)
+  const [mappedFilters, filtersReady, _] = useSubVariables(dataset.filters);
 
   // @ts-ignore
   const chartData = useMemo(() => {
-    return (datasetReady && filtersReady)
+    return datasetReady && filtersReady
       ? foundDataset.getData(mappedFilters)
       : [];
   }, [JSON.stringify(mappedFilters), datasetReady, filtersReady]);
-  
+
   const spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",
     padding: padding,
-    "width": Math.min(dims.width-padding.left-padding.right, dims.height-padding.top-padding.bottom),
-    "height": Math.min(dims.width-padding.left-padding.right, dims.height-padding.top-padding.bottom),
-    "autosize": "none",
-    "data": [
-        {
-          "name": "table"
+    width: Math.min(
+      dims.width - padding.left - padding.right,
+      dims.height - padding.top - padding.bottom
+    ),
+    height: Math.min(
+      dims.width - padding.left - padding.right,
+      dims.height - padding.top - padding.bottom
+    ),
+    autosize: "none",
+    data: [
+      {
+        name: "table",
+      },
+      {
+        name: "binned",
+        source: "table",
+        transform: [
+          {
+            type: "aggregate",
+            groupby: [column],
+          },
+          {
+            type: "pie",
+            field: "count",
+            startAngle: 0,
+            endAngle: 6.29,
+            sort: true,
+          },
+          {
+            type: "formula",
+            expr: `datum.${column} + ': ' + datum.count`,
+            as: "tooltip",
+          },
+        ],
+      },
+    ],
+    scales: [
+      {
+        name: "color",
+        type: "ordinal",
+        domain: {
+          data: "binned",
+          field: column,
         },
-        {
-          "name": "binned",
-          "source": "table",
-          "transform": [
-            {
-              "type": "aggregate",
-              "groupby": [column]
-            },
-            {
-              "type": "pie",
-              "field": "count",
-              "startAngle": 0,
-              "endAngle": 6.29,
-              "sort": true
-            },
-            {
-              "type": "formula",
-              "expr": `datum.${column} + ': ' + datum.count`,
-              "as": "tooltip"
-            }
-          ]
-        }
-      ],
-      "scales": [{
-        "name": "color",
-        "type": "ordinal",
-        "domain": {
-          "data": "binned",
-          "field": column
+        range: {
+          scheme: "category20c",
         },
-        "range": {
-          "scheme": "category20c"
-        }
-      }],
+      },
+    ],
 
-      "marks": [{
-        "type": "arc",
-        "from": {
-          "data": "binned"
+    marks: [
+      {
+        type: "arc",
+        from: {
+          data: "binned",
         },
-        "encode": {
-          "enter": {
-            "fill": {
-              "scale": "color",
-              "field": column
+        encode: {
+          enter: {
+            fill: {
+              scale: "color",
+              field: column,
             },
-            "x": {
-              "signal": "width / 2"
+            x: {
+              signal: "width / 2",
             },
-            "y": {
-              "signal": "height / 2"
+            y: {
+              signal: "height / 2",
             },
-            "startAngle": {
-              "field": "startAngle"
+            startAngle: {
+              field: "startAngle",
             },
-            "endAngle": {
-              "field": "endAngle"
+            endAngle: {
+              field: "endAngle",
             },
-            "outerRadius": {
-              "signal": "width / 2"
+            outerRadius: {
+              signal: "width / 2",
             },
-            "tooltip": {"field": "tooltip"}
-          }
-        }
-      }]
-    }
+            tooltip: { field: "tooltip" },
+          },
+        },
+      },
+    ],
+  };
 
   // function handleDragEnd(e, result) {
   //   if (isNaN(result[1][0]) || isNaN(result[1][1])) return;
@@ -208,6 +225,11 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
       ref={containerRef}
       pad="small"
     >
+      {edit && (
+        <Box style={{ position: "absolute", left: "-20px", top: "-20px" }}>
+          <EditButton editPath={editPath} editType={"PieChart"} />
+        </Box>
+      )}
       <Vega
         ref={chartRef}
         data={{ table: chartData }}
