@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Page } from "matico_spec";
 import React from "react";
 import * as Icons from "grommet-icons";
+import { useIsEditable } from "../../Hooks/useIsEditable";
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
@@ -14,6 +15,8 @@ const NamedButton: React.FC<{ name: string }> = ({ name }) => {
 };
 
 export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
+  const editable = useIsEditable();
+
   return (
     <Sidebar
       background="brand"
@@ -33,6 +36,13 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
             />
           </Link>
         ))}
+        {editable && (
+          <Button
+            a11yTitle="Add page"
+            icon={<NamedButton name={"Add"} />}
+            hoverIndicator
+          />
+        )}
       </Nav>
     </Sidebar>
   );

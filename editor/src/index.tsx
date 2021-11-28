@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import AceEditor from 'react-ace'
-
-import "ace-builds/src-noconflict/mode-json";
 
 ReactDOM.render(
   <React.StrictMode>

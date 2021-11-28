@@ -102,7 +102,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
             }}
             controller={true}
             onViewStateChange={updateViewState}
-            layers={layers
+            layers={[...layers]
               .sort((a, b) => (a.order > b.order ? 1 : -1))
               .map((l) => mapLayers.find((ml) => (ml.id === l.name)))}
               

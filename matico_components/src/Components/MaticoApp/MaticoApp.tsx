@@ -1,75 +1,48 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Dashboard } from "matico_spec";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { Provider } from "react-redux";
 import { store, VariableState } from "../../Stores/MaticoStore";
-import { MaticoState } from "../../Stores/MaticoStore";
 
-import {
-  Grommet,
-  Box,
-  Grid,
-  Main,
-} from "grommet";
 import {
   MaticoDataProvider,
   MaticoDataState,
 } from "../../Contexts/MaticoDataContext/MaticoDataContext";
-import { useMaticoSelector } from "../../Hooks/redux";
-import { MaticoNavBar } from "../MaticoNavBar/MaticoNavBar";
+import { MaticoAppPresenter } from "../MaticoAppPresenter/MaticoAppPresenter";
+import { Grid, Grommet } from "grommet";
+import {MaticoEditor} from "../MaticoEditor/MaticoEditor";
 
 interface MaticoAppInterface {
-  spec: Dashboard;
+  spec?: Dashboard;
   onStateChange?: (state: VariableState) => void;
   onDataChange?: (data: MaticoDataState) => void;
   basename?: string;
+  editActive?: boolean;
 }
-
-const StateReporter: React.FC<{
-  onStateChange: (state: VariableState) => void;
-}> = ({ onStateChange }) => {
-  const state = useMaticoSelector((state) => state);
-  onStateChange(state.variables);
-  return <></>;
-};
 
 export const MaticoApp: React.FC<MaticoAppInterface> = ({
   spec,
   onStateChange,
   basename,
   onDataChange,
+  editActive = false,
 }) => {
   return (
     <Provider store={store}>
-      {onStateChange && <StateReporter onStateChange={onStateChange} />}
       <MaticoDataProvider onStateChange={onDataChange} datasets={spec.datasets}>
         <Grommet style={{ width: "100%", height: "100%" }}>
-          <Router basename={basename}>
-            <Grid
-              columns={["xsmall", "flex"]}
-              rows={["flex"]}
-              fill={true}
-              areas={[["nav", "main"]]}
-            >
-              <Box gridArea="nav" background="light-5">
-                <MaticoNavBar pages={spec.pages} />
-              </Box>
-              <Main gridArea="main">
-                <Switch>
-                  {spec.pages.map((page) => (
-                    <Route
-                      path={page.path ? page.path : `/${page.name}`}
-                      exact={true}
-                      key={page.path}
-                    >
-                      <MaticoPage key={page.path} page={page} />
-                    </Route>
-                  ))}
-                </Switch>
-              </Main>
-            </Grid>
-          </Router>
+          <Grid
+            fill
+            columns={["medium", "flex"]}
+            rows={["flex"]}
+            areas={[["editor", "viewer"]]}
+          >
+            <MaticoEditor editActive={editActive} />
+            <MaticoAppPresenter
+              spec={spec}
+              basename={basename}
+              onStateChange={onStateChange}
+            />
+          </Grid>
         </Grommet>
       </MaticoDataProvider>
     </Provider>

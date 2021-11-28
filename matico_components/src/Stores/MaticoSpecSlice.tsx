@@ -20,6 +20,7 @@ export const stateSlice = createSlice({
         state.editing = action.payload
     },
     setSpec: (state,action: PayloadAction<Dashboard>)=>{
+        console.log("setting spec in action ", action.payload)
         state.spec = action.payload
     },
     specUpdateAtPath: (state,action: PayloadAction<{path: string, update:any}>)=>{
