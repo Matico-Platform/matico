@@ -4,25 +4,19 @@ import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import {
   Box,
   Button,
-  Form,
-  FormField,
   Heading,
-  List,
   RangeInput,
-  Select,
   Text,
-  TextInput,
 } from "grommet";
-import { ScatterplotPane } from "matico_spec";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
 } from "../../Stores/MaticoSpecSlice";
-import { MaticoDataContext } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { SketchPicker } from "react-color";
 import { DatasetSelector } from "./DatasetSelector";
-import {DatasetColumnSelector} from "./DatasetColumnSelector";
+import { DatasetColumnSelector } from "./DatasetColumnSelector";
+import { PaneEditor } from "./PaneEditor";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -34,10 +28,6 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
   const spec = useMaticoSelector((state) => state.spec.spec);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const dispatch = useMaticoDispatch();
-
-  const updatePane = (change: ScatterplotPane) => {
-    dispatch(setSpecAtPath({ editPath: editPath, update: change }));
-  };
 
   const deletePane = () => {
     dispatch(setCurrentEditPath({ editPath: null, editType: null }));
@@ -69,7 +59,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     );
   };
 
-  const updateXColumn =(column:string)=>{
+  const updateXColumn = (column: string) => {
     dispatch(
       setSpecAtPath({
         editPath,
@@ -78,18 +68,30 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
         },
       })
     );
-  }
+  };
 
-  const updateYColumn =(column:string)=>{
+  const updateYColumn = (column: string) => {
     dispatch(
       setSpecAtPath({
         editPath,
         update: {
-          x_column: column,
+          y_column: column,
         },
       })
     );
-  }
+  };
+
+  const updatePane = (change: any) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          ...scatterPlotPane,
+          ...change,
+        },
+      })
+    );
+  };
 
   // const editPane = (index) => {
   //   console.log("SECTION is ",index)
@@ -112,26 +114,40 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
   }
   return (
     <Box pad="medium">
-      <Form value={scatterPlotPane} onChange={(nextVal) => updatePane(nextVal)}>
-        <FormField label="name" name="name" htmlFor={"name"}>
-          <TextInput value={scatterPlotPane.name} name="name" id="name" />
-        </FormField>
-      </Form>
+      <Heading fill={true} textAlign={"start"} level={3}>
+        Pane Details
+      </Heading>
+      <PaneEditor
+        position={scatterPlotPane.position}
+        name={scatterPlotPane.name}
+        background={scatterPlotPane.background}
+        onChange={(change) => updatePane(change)}
+      />
 
-      <Heading level={4}>Source</Heading>
+      <Heading fill={true} textAlign={"start"} level={3}>
+        Source
+      </Heading>
       <DatasetSelector
         selectedDataset={scatterPlotPane.dataset.name}
         onDatasetSelected={updateDataset}
       />
 
-      <DatasetColumnSelector dataset={scatterPlotPane.dataset.name} selectedColumn={scatterPlotPane.x_column} label="X Column" onColumnSelected={
-        (column) => updateXColumn(column)
-      }/>
-      <DatasetColumnSelector dataset={scatterPlotPane.dataset.name} selectedColumn={scatterPlotPane.y_column} label="Y Column" onColumnSelected={
-        (column) => updateYColumn(column)
-      }/>
+      <DatasetColumnSelector
+        dataset={scatterPlotPane.dataset.name}
+        selectedColumn={scatterPlotPane.x_column}
+        label="X Column"
+        onColumnSelected={(column) => updateXColumn(column)}
+      />
+      <DatasetColumnSelector
+        dataset={scatterPlotPane.dataset.name}
+        selectedColumn={scatterPlotPane.y_column}
+        label="Y Column"
+        onColumnSelected={(column) => updateYColumn(column)}
+      />
 
-      <Heading level={4}>Style</Heading>
+      <Heading fill={true} textAlign={"start"} level={3}>
+        Style
+      </Heading>
       <Box direction="row" fill="horizontal" gap="medium">
         <Text>Dot Size</Text>
         <RangeInput
@@ -150,7 +166,9 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
         />
       </Box>
 
-      <Heading level={4}>Danger Zone</Heading>
+      <Heading fill={true} textAlign={"start"} level={3}>
+        Danger Zone
+      </Heading>
       {confirmDelete ? (
         <Box direction="row">
           <Button primary label="DO IT!" onClick={deletePane} />

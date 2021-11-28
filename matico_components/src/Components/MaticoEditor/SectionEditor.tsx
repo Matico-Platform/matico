@@ -37,7 +37,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     dispatch(deleteSpecAtPath({ editPath }));
   };
 
-  const editPane= (index, paneType) => {
+  const editPane = (index, paneType) => {
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.panes.${index}.${paneType}`,
@@ -57,28 +57,70 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
   }
   return (
     <Box pad="medium">
+      <Heading fill textAlign="start" level={3}>
+        Details
+      </Heading>
       <Form value={section} onChange={(nextVal) => updateSection(nextVal)}>
         <FormField label="name" name="name" htmlFor={"name"}>
           <TextInput value={section.name} name="name" id="name" />
         </FormField>
-        <FormField label="Layout" name='layout'>
-          <Select options={["free"]} name='layout' />
+        <FormField label="Layout" name="layout">
+          <Select options={["free"]} name="layout" />
         </FormField>
       </Form>
-      <Heading level={4}>Panes</Heading>
-      <List data={section.panes} >
-        {(datum, index)=>{
-          const [paneType, paneSpecs] = Object.entries(datum)[0]
+
+      <Heading fill textAlign="start" level={3}>
+        Panes
+      </Heading>
+      <List data={section.panes}>
+        {(datum, index) => {
+          const [paneType, paneSpecs] = Object.entries(datum)[0];
           return (
-          <Box direction="row" gap={"medium"} align="center">
-            <Text>{paneType}</Text>
-            {/* @ts-ignore */}
-            <Text>{paneSpecs.name}</Text>
-            <Button alignSelf="end" label="edit" onClick={()=>editPane(index,paneType)} />
-          </Box>
-          )}}
+            <Box
+              direction="row"
+              gap={"medium"}
+              align="center"
+              fill="horizontal"
+              margin="none"
+            >
+              <Text>{paneType}</Text>
+              {/* @ts-ignore */}
+              <Text flex={1}>{paneSpecs.name}</Text>
+              <Button
+                label="edit"
+                onClick={() => editPane(index, paneType)}
+              />
+            </Box>
+          );
+        }}
       </List>
-      <Heading level={4}>Danger Zone</Heading>
+      <Box
+        direction="row"
+        gap={"medium"}
+        align="center"
+        fill="horizontal"
+        margin="medium"
+      >
+        <Button
+          label={"Add Scatterplot"}
+          onClick={() => console.log("Adding Scatterplot pane")}
+        />
+        <Button
+          label={"Add Pi Chart"}
+          onClick={() => console.log("Adding Scatterplot pane")}
+        />
+        <Button
+          label={"Add Histogram"}
+          onClick={() => console.log("Adding Scatterplot pane")}
+        />
+        <Button
+          label={"Add Map"}
+          onClick={() => console.log("Adding Scatterplot pane")}
+        />
+      </Box>
+      <Heading fill={true} textAlign={"start"} level={3}>
+        Danger Zone
+      </Heading>
       {confirmDelete ? (
         <Box direction="row">
           <Button primary label="DO IT!" onClick={deleteSection} />

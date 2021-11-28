@@ -12,14 +12,14 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
 }) => {
   const { state } = useContext(MaticoDataContext);
   return (
-    <Box direction="row">
+    <Box direction="row" align='center' justify='between'>
       <Text> Data Source</Text>
       <Select
         options={state.datasets}
-        value={selectedDataset}
+        value={state.datasets.find((d) => d.name === selectedDataset)}
         valueKey={"name"}
         labelKey={"name"}
-        onChange={({ value, option }) => onDatasetSelected(value)}
+        onChange={({ value }) => onDatasetSelected(value.name)}
       />
     </Box>
   );

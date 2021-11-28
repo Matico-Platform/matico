@@ -1,5 +1,12 @@
-import {Ace} from 'ace-builds'
+import { Ace } from "ace-builds";
+import React from  'react'
+import { Heading } from "grommet";
 
+export const SectionHeading: React.FC = ({ children }) =>(
+  <Heading fill={true} textAlign={"start"} level={3}>
+    {children}
+  </Heading>
+);
 export function json_error_to_annotation(error: string) {
   const rg = /(.*)at line (\d+) column (\d+)/;
   const parts = error.match(rg);

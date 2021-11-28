@@ -5,13 +5,16 @@ import * as vega from "vega";
 import { useContext, useEffect, useState, useRef, useMemo } from "react";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
-import { Box } from "grommet";
+import { Box, Button } from "grommet";
+import {Performance} from 'grommet-icons'
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import _ from "lodash";
 import {useSize} from '../../../Hooks/useSize';
 import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
 import {useSubVariables} from '../../../Hooks/useSubVariables'
+import {useIsEditable} from "../../../Hooks/useIsEditable";
+import {EditButton} from "../../MaticoEditor/EditButton";
 
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
@@ -38,6 +41,7 @@ interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dot_color?: string;
   // backgroundColor: string;
   dot_size?: number;
+  editPath?:string
 }
 
 export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
@@ -47,6 +51,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     y_column = "",
     dot_color = "#ff0000",
     dot_size = 1,
+    editPath
     // config={},
     // options={},
     // id=null
@@ -55,6 +60,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const [view, setView] = useState({});
     const chartRef = useRef();
     const containerRef = useRef();
+
+    const edit = useIsEditable()
 
     const [
       xFilter,
@@ -659,6 +666,9 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         ref={containerRef}
         pad="small"
       >
+        <Box style={{position:"absolute", top:"-20px", left:"-20px"}} >
+          <EditButton editPath={`${editPath}.Scatterplot`} editType={"Scatterplot"} /> 
+        </Box>
         <Vega
           ref={chartRef}
           data={{ table: chartData }}

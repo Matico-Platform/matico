@@ -6,6 +6,7 @@ import * as Icons from "grommet-icons";
 import { useIsEditable } from "../../Hooks/useIsEditable";
 import { useMaticoDispatch } from "../../Hooks/redux";
 import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
+import { EditButton } from "../MaticoEditor/EditButton";
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
@@ -55,28 +56,17 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
           >
             <Button
               badge={
-                editable ? (
-                  <Box
-                    onClick={() =>
-                      dispatch(
-                        setCurrentEditPath({
-                          editPath: `pages.${index}`,
-                          editType: "Page",
-                        })
-                      )
-                    }
-                  >
-                    <NamedButton name={"Performance"} color="accent-4" />
-                  </Box>
-                ) : (
-                  false
-                )
+                <EditButton editPath={`pages.${index}`} editType={"Page"} />
               }
               a11yTitle={page.name}
               icon={<NamedButton name={page.icon} />}
               hoverIndicator
             />
-            <Text color="white" size={"small"} style={{ textDecoration: "none" }}>
+            <Text
+              color="white"
+              size={"small"}
+              style={{ textDecoration: "none" }}
+            >
               {page.name}
             </Text>
           </Link>
@@ -84,7 +74,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
         {editable && (
           <Button
             a11yTitle="Add page"
-            icon={<NamedButton name={"Add"} />}
+            icon={<NamedButton color={'accent-4'} name={"Add"} />}
             hoverIndicator
             onClick={() => onAddPage()}
           />

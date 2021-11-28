@@ -16,14 +16,14 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
 }) => {
   const { state } = useContext(MaticoDataContext);
   const foundDataset = state.datasets.find((d) => d.name === dataset);
-
+  const columns = foundDataset.columns()
   return (
-    <Box direction="row">
+    <Box direction="row" align="center" justify='between'>
       <Text>{label}</Text>
       {foundDataset ? (
         <Select
-          options={foundDataset.columns() as any}
-          value={selectedColumn}
+          options={columns}
+          value={columns.find( c=>c.name === selectedColumn)}
           valueKey={"name"}
           labelKey={"name"}
           onChange={({ value }) => onColumnSelected(value.name)}

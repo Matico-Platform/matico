@@ -6,6 +6,7 @@ import {
   Button,
   Form,
   FormField,
+  Grid,
   Heading,
   List,
   Text,
@@ -18,6 +19,7 @@ import {
   setSpecAtPath,
 } from "../../Stores/MaticoSpecSlice";
 import MDEditor from "@uiw/react-md-editor";
+import {SectionHeading} from './Utils'
 
 export interface PageEditorProps {
   editPath: string;
@@ -40,7 +42,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
   };
 
   const editSection = (index) => {
-    console.log("SECTION is ",index)
+    console.log("SECTION is ", index);
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.sections.${index}`,
@@ -61,19 +63,19 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
   return (
     <Box pad="medium">
       <Form value={page} onChange={(nextVal) => updatePage(nextVal)}>
-        <FormField label="name" name="name" htmlFor={"name"}>
-          <TextInput value={page.name} name="name" id="name" />
-        </FormField>
-        <FormField label="path" name="path" htmlFor="path">
-          <TextInput value={page.path} name="path" id={"path"} />
-        </FormField>
-        <FormField label="icon" name="icon" htmlFor="icon">
-          <TextInput value={page.icon} id={"icon"} name="icon" />
-        </FormField>
+          <FormField label="name" name="name" htmlFor={"name"}>
+            <TextInput value={page.name} name="name" id="name" />
+          </FormField>
+          <FormField label="path" name="path" htmlFor="path">
+            <TextInput value={page.path} name="path" id={"path"} />
+          </FormField>
+          <FormField label="icon" name="icon" htmlFor="icon">
+            <TextInput value={page.icon} id={"icon"} name="icon" />
+          </FormField>
       </Form>
-      <Heading level={4}>Content</Heading>
+      <SectionHeading>Content</SectionHeading>
       <MDEditor preview="edit" value={page.content} onChange={updateContent} />
-      <Heading level={4}>Sections</Heading>
+      <SectionHeading >Sections</SectionHeading>
       <List data={page.sections} pad="medium">
         {(datum, index) => (
           <Box direction="row" align="center" justify="between">
@@ -82,7 +84,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
           </Box>
         )}
       </List>
-      <Heading level={4}>Danger Zone</Heading>
+      <SectionHeading >Danger Zone</SectionHeading>
       {confirmDelete ? (
         <Box direction="row">
           <Button primary label="DO IT!" onClick={deletePage} />

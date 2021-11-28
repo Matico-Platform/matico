@@ -13,6 +13,8 @@ pub struct ChartPane {
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
 pub struct HistogramPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]
@@ -26,8 +28,23 @@ pub struct HistogramPane {
 }
 
 #[wasm_bindgen]
+impl HistogramPane{
+    #[wasm_bindgen(getter = name)]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    #[wasm_bindgen(setter = name)]
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
+}
+
+#[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
 pub struct ScatterplotPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]
@@ -42,8 +59,23 @@ pub struct ScatterplotPane {
 }
 
 #[wasm_bindgen]
+impl ScatterplotPane{
+    #[wasm_bindgen(getter = name)]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    #[wasm_bindgen(setter = name)]
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
+}
+
+#[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
 pub struct PieChartPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]
@@ -52,4 +84,17 @@ pub struct PieChartPane {
     pub column: String,
     #[wasm_bindgen(skip)]
     pub theme: Option<String>, // todo: add mapping for categorical but numbered values (eg. 0,1 )
+}
+
+#[wasm_bindgen]
+impl PieChartPane{
+    #[wasm_bindgen(getter = name)]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    #[wasm_bindgen(setter = name)]
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
 }
