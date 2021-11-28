@@ -37,15 +37,14 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     dispatch(deleteSpecAtPath({ editPath }));
   };
 
-  // const editSection = (index) => {
-  //   console.log("SECTION is ",index)
-  //   dispatch(
-  //     setCurrentEditPath({
-  //       editPath: `${editPath}.${index}`,
-  //       editType: "Section",
-  //     })
-  //   );
-  // };
+  const editPane= (index, paneType) => {
+    dispatch(
+      setCurrentEditPath({
+        editPath: `${editPath}.panes.${index}.${paneType}`,
+        editType: paneType,
+      })
+    );
+  };
 
   const section = _.get(spec, editPath);
 
@@ -75,7 +74,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
             <Text>{paneType}</Text>
             {/* @ts-ignore */}
             <Text>{paneSpecs.name}</Text>
-            <Button alignSelf="end" label="edit" />
+            <Button alignSelf="end" label="edit" onClick={()=>editPane(index,paneType)} />
           </Box>
           )}}
       </List>
