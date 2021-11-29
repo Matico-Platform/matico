@@ -86,7 +86,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({
         Basic
       </SectionHeading>
 
-      <BaseMapSelector baseMap={mapPane.base_map.Named} onChange={(baseMap)=>updateBaseMap(baseMap)}/>
+      <BaseMapSelector baseMap={mapPane?.base_map?.Named} onChange={(baseMap)=>updateBaseMap(baseMap)}/>
 
       <SectionHeading>
         Layers 

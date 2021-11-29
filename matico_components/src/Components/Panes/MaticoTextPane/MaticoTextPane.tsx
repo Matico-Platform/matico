@@ -22,7 +22,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
     <Box elevation={"large"} fill={true} overflow={{vertical:'auto'}}>
       {edit && 
       <Box style={{position:'relative', top:"-20px", left:"-20px", zIndex:20}}>
-        <EditButton editPath={editPath} editType={"Text"} />
+        <EditButton editPath={`${editPath}.Text`} editType={"Text"} />
       </Box>
       }
       <MarkdownContnet>{content}</MarkdownContnet>
