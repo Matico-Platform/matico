@@ -46,11 +46,11 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
 
   return (
     <Sidebar
-      background="brand"
-      round="small"
+      background="darkgray"
       header={
-        <Avatar src="//s.gravatar.com/avatar/b7fb138d53ba0f573212ccce38a7c43b?s=80" />
+        <Avatar src="https://www.matico.app/favicon/favicon-32x32.png" elevation="small" style={{margin:"0 auto"}}/>
       }
+      elevation="medium"
       footer={<Button icon={<Icons.Help />} hoverIndicator />}
     >
       <Nav gap="small">
