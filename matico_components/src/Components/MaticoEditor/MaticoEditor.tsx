@@ -53,7 +53,7 @@ export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
       >
         {currentEditPath && (
           <AccordionPanel label={`Edit ${currentEditType}`}>
-            <BreadCrumbs path={currentEditPath} />
+            <BreadCrumbs editPath={currentEditPath} />
             <EditPane editPath={currentEditPath} />
           </AccordionPanel>
         )}

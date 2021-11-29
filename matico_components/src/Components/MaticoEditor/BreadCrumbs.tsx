@@ -28,9 +28,9 @@ const BreadCrumbButton = styled.button`
   }
 `
 
-export const BreadCrumbs: React.FC<{ currentEditPath: string }> = ({ currentEditPath }) => {
+export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
     const dispatch = useMaticoDispatch();
-    const breadCrumbPath = currentEditPath && currentEditPath.split(".");
+    const breadCrumbPath = editPath && editPath.split(".");
     return <BreadCrumbContainer>
     {
       breadCrumbPath.slice(0,-2).map((editItem, index) => 
