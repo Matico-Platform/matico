@@ -102,13 +102,13 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
 
   if (!scatterPlotPane) {
     return (
-      <Box>
+      <Box background={'white'}>
         <Text color="status-error">Failed to find component</Text>
       </Box>
     );
   }
   return (
-    <Box pad="medium">
+    <Box background={'white'} pad="medium">
       <SectionHeading>Pane Details</SectionHeading>
       <PaneEditor
         position={scatterPlotPane.position}

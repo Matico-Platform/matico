@@ -16,7 +16,7 @@ interface MaticoAppInterface {
   onStateChange?: (state: VariableState) => void;
   onDataChange?: (data: MaticoDataState) => void;
   basename?: string;
-  editActive?: boolean;
+  editActive?: boolean | null;
 }
 
 export const MaticoApp: React.FC<MaticoAppInterface> = ({
@@ -32,9 +32,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
         <Grommet style={{ width: "100%", height: "100%" }}>
           <Grid
             fill
-            columns={["large", "flex"]}
+            columns={["flex", editActive ? "medium" : "0px"]}
             rows={["flex"]}
-            areas={[["editor", "viewer"]]}
+            areas={[["viewer","editor" ]]}
           >
             <MaticoEditor editActive={editActive} />
             <MaticoAppPresenter

@@ -46,6 +46,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
           columns={["xsmall", "flex"]}
           rows={["flex"]}
           fill={true}
+          gridArea={"viewer"}
           areas={[["nav", "main"]]}
         >
           <Box gridArea="nav" background="light-5">

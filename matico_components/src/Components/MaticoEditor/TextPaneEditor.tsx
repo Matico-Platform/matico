@@ -57,13 +57,13 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({
 
   if (!textPane) {
     return (
-      <Box>
+      <Box background={"white"}>
         <Text color="status-error">Failed to find component</Text>
       </Box>
     );
   }
   return (
-    <Box pad="medium">
+    <Box pad="medium" background={"white"}>
       <SectionHeading>Pane Details</SectionHeading>
       <PaneEditor
         position={textPane.position}

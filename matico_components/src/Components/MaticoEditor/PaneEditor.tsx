@@ -29,7 +29,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   };
 
   return (
-    <Box>
+    <Box background={"white"}>
       <Form value={position} onChange={(nextVal) => updatePosition(nextVal)}>
         <Grid
           columns={{ count: 3, size: "auto" }}

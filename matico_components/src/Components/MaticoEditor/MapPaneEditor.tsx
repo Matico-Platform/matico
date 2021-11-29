@@ -71,7 +71,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({
     );
   }
   return (
-    <Box pad="medium">
+    <Box background={"white"} pad="medium">
       <SectionHeading>
         Pane Details
       </SectionHeading>

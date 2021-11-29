@@ -62,7 +62,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
 
   if (!section) {
     return (
-      <Box>
+      <Box background={"white"}>
         <Text color="status-error">Failed to find component</Text>
       </Box>
     );

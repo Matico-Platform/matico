@@ -55,7 +55,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
 
   if (!page) {
     return (
-      <Box>
+      <Box background={"white"}>
         <Text color="status-error">Failed to find component</Text>
       </Box>
     );

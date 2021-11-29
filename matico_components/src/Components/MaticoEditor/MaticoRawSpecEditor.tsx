@@ -56,8 +56,8 @@ export const MaticoRawSpecEditor: React.FC = () => {
 
   if(!validatorReady) return <Spinner />
   return (
-    <Box fill direction="column" >
-      <Box flex>
+    <Box fill background="white" flex direction="column" >
+      <Box flex overflow={{vertical:"auto"}}>
         <AceEditor
           mode={"json"}
           theme="github"
