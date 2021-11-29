@@ -36,7 +36,8 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
             {
               name:"First Section",
               layout:"free",
-              panes:[]
+              panes:[],
+              order:1
             }
           ],
         },
