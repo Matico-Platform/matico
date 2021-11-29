@@ -90,7 +90,6 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
           </FormField>
         </Grid>
       </Form>
-      Form
     </Box>
   );
 };
