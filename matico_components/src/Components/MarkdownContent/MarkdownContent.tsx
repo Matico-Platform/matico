@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { Box } from "grommet";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypeRaw from 'rehype-raw'
 import "katex/dist/katex.min.css"; // `rehype-katex`
 import _ from "lodash";
 import { useAutoVariables } from "../../Hooks/useAutoVariable";
@@ -59,7 +60,7 @@ export const MarkdownContnet: React.FC<MarkdownContentInferface> = ({
 
   return (
     <Box>
-      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+      <ReactMarkdown  remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex, rehypeRaw]}>
         {formattedContent}
       </ReactMarkdown>
     </Box>

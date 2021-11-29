@@ -1,7 +1,9 @@
 import { Box, Button, List, Text } from "grommet";
 import React, { useContext } from "react";
-import { MaticoDataContext } from "../../Contexts/MaticoDataContext/MaticoDataContext"
+import { MaticoDataContext } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { Dataset, DatasetState } from "../../Datasets/Dataset";
+import { Columns, Edit, FormTrash} from "grommet-icons";
+
 
 interface DatasetEditorProps {
   dataset: Dataset;
@@ -13,10 +15,15 @@ export const DatasetEditor: React.FC<DatasetEditorProps> = ({
   status,
 }) => {
   return (
-    <Box direction="row" justify="between">
-      <Text>{dataset.name}</Text>
+    <Box direction="row" gap="small" hoverIndicator="light-1" align="center">
+      <Box flex>
+        <Text textAlign="start">{dataset.name}</Text>
+      </Box>
+      <Text>{dataset.geometryType()}</Text>
       <Text>{dataset.columns().length}</Text>
-      <Text>{dataset.geometryType}</Text>
+      <Columns />
+      <Button icon={<Edit color={'status-warning'} />}/>
+      <Button icon={<FormTrash color={'status-critical'} />}/>
     </Box>
   );
 };
@@ -26,14 +33,14 @@ export const DatasetsEditor: React.FC = () => {
   const { datasets, datasetStates } = state;
 
   return (
-    <Box background='white' fill>
+    <Box background="white" fill gap="medium" pad={{ bottom: "small" }}>
       <List data={datasets}>
         {(dataset, index) => {
           return (
             <DatasetEditor
               dataset={dataset}
-              key={dataset.name()}
-              status={datasetStates[dataset.name()]}
+              key={dataset.name}
+              status={datasetStates[dataset.name]}
             />
           );
         }}

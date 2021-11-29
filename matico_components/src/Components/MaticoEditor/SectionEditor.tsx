@@ -7,12 +7,14 @@ import {
   Button,
   Form,
   FormField,
+  Grid,
   Heading,
   List,
   Select,
   Text,
   TextInput,
 } from "grommet";
+import { Edit } from "grommet-icons";
 import { Section } from "matico_spec";
 import {
   deleteSpecAtPath,
@@ -68,7 +70,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     );
   }
   return (
-    <Box pad="medium">
+    <Box background={"white"} pad='medium' >
       <Heading fill textAlign="start" level={3}>
         Details
       </Heading>
@@ -92,21 +94,30 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
               direction="row"
               gap={"medium"}
               align="center"
+              justify="start"
               fill="horizontal"
               margin="none"
             >
+              <Box flex>
+                <Text textAlign="start">
+                  {/* @ts-ignore */}
+                  {paneSpecs.name}
+                </Text>
+              </Box>
               <Text>{paneType}</Text>
-              {/* @ts-ignore */}
-              <Text flex={1}>{paneSpecs.name}</Text>
-              <Button label="edit" onClick={() => editPane(index, paneType)} />
+              <Button
+                icon={<Edit color="status-warning" />}
+                onClick={() => editPane(index, paneType)}
+              />
             </Box>
           );
         }}
       </List>
-      <Box
-        direction="row"
+      <Grid
+        columns={{"count":3, "size":"auto"}}
         gap={"medium"}
         align="center"
+        justify="center"
         fill="horizontal"
         margin="medium"
       >
@@ -127,7 +138,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
         />
         <Button icon={<Add />} label={"Map"} onClick={() => addPane("Map")} />
         <Button icon={<Add />} label={"Text"} onClick={() => addPane("Text")} />
-      </Box>
+      </Grid>
       <Heading fill={true} textAlign={"start"} level={3}>
         Danger Zone
       </Heading>

@@ -12,6 +12,7 @@ import {
   Text,
   TextInput,
 } from "grommet";
+import { Edit } from "grommet-icons";
 import { Page } from "matico_spec";
 import {
   deleteSpecAtPath,
@@ -19,7 +20,7 @@ import {
   setSpecAtPath,
 } from "../../Stores/MaticoSpecSlice";
 import MDEditor from "@uiw/react-md-editor";
-import {SectionHeading} from './Utils'
+import { SectionHeading } from "./Utils";
 
 export interface PageEditorProps {
   editPath: string;
@@ -61,30 +62,34 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
     );
   }
   return (
-    <Box pad="medium">
+    <Box background={"white"} pad="medium">
       <Form value={page} onChange={(nextVal) => updatePage(nextVal)}>
-          <FormField label="name" name="name" htmlFor={"name"}>
-            <TextInput value={page.name} name="name" id="name" />
-          </FormField>
-          <FormField label="path" name="path" htmlFor="path">
-            <TextInput value={page.path} name="path" id={"path"} />
-          </FormField>
-          <FormField label="icon" name="icon" htmlFor="icon">
-            <TextInput value={page.icon} id={"icon"} name="icon" />
-          </FormField>
+        <SectionHeading>Settings</SectionHeading>
+        <FormField label="name" name="name" htmlFor={"name"}>
+          <TextInput value={page.name} name="name" id="name" />
+        </FormField>
+        <FormField label="path" name="path" htmlFor="path">
+          <TextInput value={page.path} name="path" id={"path"} />
+        </FormField>
+        <FormField label="icon" name="icon" htmlFor="icon">
+          <TextInput value={page.icon} id={"icon"} name="icon" />
+        </FormField>
       </Form>
       <SectionHeading>Content</SectionHeading>
       <MDEditor preview="edit" value={page.content} onChange={updateContent} />
-      <SectionHeading >Sections</SectionHeading>
+      <SectionHeading>Sections</SectionHeading>
       <List data={page.sections} pad="medium">
         {(datum, index) => (
           <Box direction="row" align="center" justify="between">
             <Text>{datum.name}</Text>
-            <Button label="edit" onClick={() => editSection(index)} />
+            <Button
+              icon={<Edit color={"status-warning"} />}
+              onClick={() => editSection(index)}
+            />
           </Box>
         )}
       </List>
-      <SectionHeading >Danger Zone</SectionHeading>
+      <SectionHeading>Danger Zone</SectionHeading>
       {confirmDelete ? (
         <Box direction="row">
           <Button primary label="DO IT!" onClick={deletePage} />

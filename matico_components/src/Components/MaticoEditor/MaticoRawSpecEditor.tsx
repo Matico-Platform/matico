@@ -57,7 +57,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
   if(!validatorReady) return <Spinner />
   return (
     <Box fill background="white" flex direction="column" >
-      <Box flex overflow={{vertical:"auto"}}>
+      <Box flex overflow={{vertical:"auto"}} style={{minHeight:"70vh"}}>
         <AceEditor
           mode={"json"}
           theme="github"
@@ -69,7 +69,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
             width: "100%",
             height:"100%",
             flex: 1,
-            resize: "horizontal",
           }}
           setOptions={{
             enableBasicAutocompletion: true,
@@ -79,7 +78,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
         />
         </Box>
       {(jsonError || validationResult) &&
-        <Box height="medium">
+        <Box height="small">
           <List data={[jsonError,...validationResult].filter(a=>a)} />
         </Box>
       }

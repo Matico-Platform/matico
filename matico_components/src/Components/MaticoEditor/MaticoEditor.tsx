@@ -15,7 +15,7 @@ export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
   const { spec, currentEditPath, currentEditType } = useMaticoSelector(
     (state) => state.spec
   );
-  const [tabIndex, setTabIndex] = useState<number>(0);
+  const [tabIndex, setTabIndex] = useState<number| null>(0);
 
   useEffect(() => {
     if (spec) {
@@ -31,7 +31,7 @@ export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
     if (currentEditPath) {
       setTabIndex(0);
     } else {
-      setTabIndex(1);
+      setTabIndex(null);
     }
   }, [currentEditPath]);
 

@@ -31,27 +31,34 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   return (
     <Box background={"white"}>
       <Form value={position} onChange={(nextVal) => updatePosition(nextVal)}>
+        <FormField label="name" name="name" htmlFor={"name"} gridArea={"name"}>
+          <TextInput value={name} name="name" id="name" textAlign="center" />
+        </FormField>
         <Grid
-          columns={{ count: 3, size: "auto" }}
+          columns={{ count: 2, size: "auto" }}
           gap="medium"
           areas={[
-            ["name", "x", "y"],
-            ["_", "width", "height"],
+            ["x", "y"],
+            ["width", "height"],
           ]}
         >
-          <FormField
-            label="name"
-            name="name"
-            htmlFor={"name"}
-            gridArea={"name"}
-          >
-            <TextInput value={name} name="name" id="name" textAlign='center' />
-          </FormField>
           <FormField label="x" name="x" htmlFor={"x"} gridArea={"x"}>
-            <TextInput type="number" value={position.x} name="x" id="x" textAlign='center'/>
+            <TextInput
+              type="number"
+              value={position.x}
+              name="x"
+              id="x"
+              textAlign="center"
+            />
           </FormField>
           <FormField label="y" name="y" htmlFor="y" gridArea={"y"}>
-            <TextInput type="number" value={position.y} name="y" id={"y"} textAlign='center'/>
+            <TextInput
+              type="number"
+              value={position.y}
+              name="y"
+              id={"y"}
+              textAlign="center"
+            />
           </FormField>
           <FormField
             label="width"
@@ -64,6 +71,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
               value={position.width}
               id={"width"}
               name="width"
+              textAlign="center"
             />
           </FormField>
           <FormField
@@ -77,6 +85,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
               value={position.height}
               id={"height"}
               name="height"
+              textAlign="center"
             />
           </FormField>
         </Grid>
