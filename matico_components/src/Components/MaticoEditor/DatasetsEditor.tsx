@@ -24,6 +24,13 @@ interface DatasetEditorProps {
   status: DatasetState;
 }
 
+const StyledAccordion = styled(Accordion)`
+  button {
+    border:none !important;
+    box-shadow:none !important;
+  }
+`
+
 const StyledAccordionPanel = styled(AccordionPanel)`
   button{
     border:none!important;
@@ -150,7 +157,7 @@ export const DatasetsEditor: React.FC = () => {
         />
       ) : (
         <Box>
-          <Accordion multiple={false}>
+          <StyledAccordion multiple={false}>
             {datasets.map((dataset) => {
               return (
                 <StyledAccordionPanel
@@ -175,7 +182,7 @@ export const DatasetsEditor: React.FC = () => {
                 </StyledAccordionPanel>
               );
             })}
-          </Accordion>
+          </StyledAccordion>
           <Button
             label={"Add Dataset"}
             onClick={() => setShowNewDataset(true)}
