@@ -15,6 +15,7 @@ import {
 import { useSubVariables } from "../../../Hooks/useSubVariables";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "../../MaticoEditor/EditButton";
+import { sort } from "d3-array";
 
 interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -25,6 +26,23 @@ interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
 
 const backgroundColor = "#fff";
 
+const parsePieChartData = (data: any, column: string) => {
+  const valueSum = Object.values(data).reduce((a: number, b: number) => a + b) as number;
+  const startAngle = 0;
+  const endAngle = 6.29;
+  const k = (endAngle - startAngle) / valueSum
+  let a: number = 0;
+  //@ts-ignore type for array string number
+  const sortedData = Object.entries(data).map(entry => {
+    const startAngle = a+0;
+    //@ts-ignore type for array string number
+    a+= k * entry[1]
+    const endAngle = a+0;
+    return { [column]: entry[0], count: entry[1], tooltip: `${entry[0]}: ${entry[1]}`, startAngle, endAngle }
+  })
+
+  return sortedData
+}
 export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   dataset,
   column = "",
@@ -74,47 +92,24 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   // @ts-ignore
   const chartData = useMemo(() => {
     return datasetReady && filtersReady
-      ? foundDataset.getData(mappedFilters)
+      ? parsePieChartData(foundDataset.getCategoryCounts(column), column)
       : [];
-  }, [JSON.stringify(mappedFilters), datasetReady, filtersReady]);
+  }, [JSON.stringify(mappedFilters), datasetReady, filtersReady, column]);
 
+  const squareDim = Math.min(
+    dims.width - padding.left - padding.right,
+    dims.height - padding.top - padding.bottom
+  )
   const spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",
     padding: padding,
-    width: Math.min(
-      dims.width - padding.left - padding.right,
-      dims.height - padding.top - padding.bottom
-    ),
-    height: Math.min(
-      dims.width - padding.left - padding.right,
-      dims.height - padding.top - padding.bottom
-    ),
+    width: squareDim,
+    height: squareDim,
     autosize: "none",
+    title: `Share of ${column} Categories`,
     data: [
       {
-        name: "table",
-      },
-      {
-        name: "binned",
-        source: "table",
-        transform: [
-          {
-            type: "aggregate",
-            groupby: [column],
-          },
-          {
-            type: "pie",
-            field: "count",
-            startAngle: 0,
-            endAngle: 6.29,
-            sort: true,
-          },
-          {
-            type: "formula",
-            expr: `datum.${column} + ': ' + datum.count`,
-            as: "tooltip",
-          },
-        ],
+        name: "table"
       },
     ],
     scales: [
@@ -122,7 +117,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         name: "color",
         type: "ordinal",
         domain: {
-          data: "binned",
+          data: "table",
           field: column,
         },
         range: {
@@ -135,7 +130,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
       {
         type: "arc",
         from: {
-          data: "binned",
+          data: "table",
         },
         encode: {
           enter: {
@@ -144,10 +139,10 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
               field: column,
             },
             x: {
-              signal: "width / 2",
+              signal: squareDim/2
             },
             y: {
-              signal: "height / 2",
+              signal:squareDim/2
             },
             startAngle: {
               field: "startAngle",
@@ -156,7 +151,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
               field: "endAngle",
             },
             outerRadius: {
-              signal: "width / 2",
+              signal: squareDim/2
             },
             tooltip: { field: "tooltip" },
           },
