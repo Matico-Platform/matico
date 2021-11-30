@@ -61,7 +61,8 @@ export const DataDrivenEditor: React.FC<DataDrivenEditor> = ({
         metric:{
           [metricType] :{bins:newBins}
         }
-      }
+      },
+      range:`${selectedColors}.${newBins}` 
     })
   }
 

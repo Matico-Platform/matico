@@ -45,16 +45,6 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
 
   console.log("Layer dataset is ", dataset, layer);
 
-  const updateDataset = (dataset: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          source: { ...layer.source, name: dataset },
-        },
-      })
-    );
-  };
 
   const updateStyle = (property: string, value: any) => {
     dispatch(
@@ -89,6 +79,19 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
       })
     );
   };
+
+  const updateDataset = (dataset:string)=>{
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          source:{name:dataset,filters:[]},
+          style: defaults.style,
+        },
+      })
+    );
+    
+  }
   const toggleDataDriven = (
     param: string,
     dataDriven: boolean,
@@ -143,6 +146,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     <Box background={"white"} pad="medium">
       <Accordion>
         <AccordionPanel label="Datasource"></AccordionPanel>
+        <DatasetSelector selectedDataset={dataset.name} onDatasetSelected={updateDataset} />
 
         <AccordionPanel label={"Style"}>
           <Grid

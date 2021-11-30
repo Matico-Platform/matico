@@ -81,22 +81,17 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     if (!dataset || !dataset.isReady() || !styleReady || !mappedStyle) {
       return;
     }
-    let layer = undefined;
+    console.log("RE REDNERING map style")
     console.log("Mapped style is ", mappedStyle, styleReady);
+    let layer = undefined;
 
     const fillColor = generateColorVar(mappedStyle.fillColor) ?? [
       255, 0, 0, 100,
     ];
-    console.log("Fill color in LAyer is", fillColor);
     const lineColor = generateColorVar(mappedStyle.lineColor) ?? [
       0, 255, 0, 100,
     ];
     const lineWidth = generateNumericVar(mappedStyle.lineWidth) ?? 10;
-    console.log(
-      "line width calc ",
-      generateNumericVar(mappedStyle.lineWidth),
-      mappedStyle.lineWidth
-    );
     const elevation = generateNumericVar(mappedStyle.elevation) ?? 0;
 
     const shouldExtrude = elevation !== null && elevation > 0;
@@ -113,7 +108,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       id: name,
       data: preparedData,
       updateTriggers: {
-        getFillColor: [JSON.stringify(fillColor)],
+         getFillColor: [JSON.stringify(new Date())],
         getLineColor: [JSON.stringify(lineColor)],
         getRadius: [JSON.stringify(mappedStyle.size)],
         getElevation: [JSON.stringify(elevation)],
