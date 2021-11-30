@@ -6,6 +6,7 @@ import {
   AccordionPanel,
   Box,
   Button,
+  Grid,
   Heading,
   RangeInput,
   Text,
@@ -69,7 +70,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
         <AccordionPanel label="Datasource"></AccordionPanel>
 
         <AccordionPanel label={"Style"}>
-          <Box direction="row" fill="horizontal" gap="medium">
+          <Grid columns={['small','1fr']} gap='medium'>
             <Text>Line Width</Text>
             <RangeInput
               value={style.lineWidth}
@@ -80,23 +81,19 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
                 updateStyle("lineWidth", parseFloat(e.target.value))
               }
             />
-          </Box>
-          <Box direction="row" fill="horizontal" gap="medium">
             <Text>Fill Color</Text>
             <ColorPicker
               color={style.fillColor}
               onChange={(value) => updateStyle("fillColor", value)}
               outFormat={"rgba"}
             />
-          </Box>
-          <Box direction="row" fill="horizontal" gap="medium">
             <Text>Line Color</Text>
             <ColorPicker
               color={style.lineColor}
               onChange={(value) => updateStyle("lineColor", value)}
               outFormat={"rgba"}
             />
-          </Box>
+          </Grid>
         </AccordionPanel>
       </Accordion>
     </Box>

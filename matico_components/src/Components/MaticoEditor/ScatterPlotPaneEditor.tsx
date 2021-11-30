@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
-import { Box, Button, Heading, RangeInput, Text } from "grommet";
+import { Box, Button, Grid, Heading, RangeInput, Text } from "grommet";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
@@ -138,7 +138,8 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
       />
 
       <SectionHeading>Style</SectionHeading>
-      <Box direction="row" fill="horizontal" gap="medium">
+      <Grid columns={['small','1fr']}>
+
         <Text>Dot Size</Text>
         <RangeInput
           value={scatterPlotPane.dot_size}
@@ -147,11 +148,9 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
           step={1}
           onChange={updateDotSize}
         />
-      </Box>
-      <Box direction="row" fill="horizontal" gap="medium">
         <Text>Dot Color</Text>
         <ColorPicker color={scatterPlotPane.dot_color} onChange={updateDotColor} outFormat="hex"/>
-      </Box>
+      </Grid>
 
       <SectionHeading>Danger Zone</SectionHeading>
       {confirmDelete ? (

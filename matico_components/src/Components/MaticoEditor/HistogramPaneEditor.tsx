@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
-import { Box, Button, Heading, RangeInput, Text } from "grommet";
+import { Box, Button, Grid, Heading, RangeInput, Text } from "grommet";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
@@ -11,7 +11,7 @@ import { DatasetSelector } from "./DatasetSelector";
 import { DatasetColumnSelector } from "./DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { SectionHeading } from "./Utils";
-import {ColorPicker} from "./ColorPicker";
+import { ColorPicker } from "./ColorPicker";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -39,7 +39,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
         editPath,
         update: {
           dataset: { ...histogramPane.dataset, name: dataset },
-          column: null
+          column: null,
         },
       })
     );
@@ -56,7 +56,6 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
     );
   };
 
-  
   const updateBins = (e: any) => {
     dispatch(
       setSpecAtPath({
@@ -92,13 +91,13 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
 
   if (!histogramPane) {
     return (
-      <Box background={'white'}>
+      <Box background={"white"}>
         <Text color="status-error">Failed to find component</Text>
       </Box>
     );
   }
   return (
-    <Box background={'white'} pad="medium">
+    <Box background={"white"} pad="medium">
       <SectionHeading>Pane Details</SectionHeading>
       <PaneEditor
         position={histogramPane.position}
@@ -121,7 +120,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
       />
 
       <SectionHeading>Style</SectionHeading>
-      <Box direction="row" fill="horizontal" gap="medium">
+      <Grid columns={["small", "1fr"]} gap="medium">
         <Text>Max Number of Bins:{histogramPane.maxbins}</Text>
         <RangeInput
           value={histogramPane.maxbins}
@@ -130,11 +129,13 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
           step={1}
           onChange={updateBins}
         />
-      </Box>
-      <Box direction="row" fill="horizontal" gap="medium">
         <Text>Color</Text>
-        <ColorPicker color={histogramPane.color} onChange={updateColor} outFormat="hex" />
-      </Box>
+        <ColorPicker
+          color={histogramPane.color}
+          onChange={updateColor}
+          outFormat="hex"
+        />
+      </Grid>
 
       <SectionHeading>Danger Zone</SectionHeading>
       {confirmDelete ? (
