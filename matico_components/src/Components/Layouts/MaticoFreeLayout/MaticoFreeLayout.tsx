@@ -20,6 +20,7 @@ const FreePane = styled(Box)<{pane:PanePosition}>`
   bottom:${({pane})=>`${pane.y}%`};
   cursor:${({pane})=> pane.float ? 'grab' : 'pointer'};
   background:${({pane})=> pane.background ? pane.background : 'white'};
+  transition: bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms;
 `
 
 interface MaticoFreeLayoutInterface{
