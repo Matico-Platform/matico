@@ -15,7 +15,6 @@ import {
 import { useSubVariables } from "../../../Hooks/useSubVariables";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "../../MaticoEditor/EditButton";
-import { sort } from "d3-array";
 
 interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
