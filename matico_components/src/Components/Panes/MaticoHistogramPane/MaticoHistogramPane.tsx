@@ -8,6 +8,9 @@ import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { useSize } from "../../../Hooks/useSize";
+import {useIsEditable} from "../../../Hooks/useIsEditable";
+import {EditButton} from "../../MaticoEditor/EditButton";
+
 import {
   updateFilterExtent,
   updateActiveDataset,
@@ -18,7 +21,8 @@ interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
   column: string;
   color?: string;
-  step?: number;
+  maxbins?: number;
+  editPath?:string;
 }
 
 const backgroundColor = "#fff";
@@ -27,7 +31,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   dataset,
   column = "",
   color,
-  step,
+  maxbins,
+  editPath
 }) => {
   const { state: dataState } = useContext(MaticoDataContext);
   const [view, setView] = useState({});
@@ -48,7 +53,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     },
     bind: true,
   });
-
+  
+  const edit = useIsEditable()
   const foundDataset = dataState.datasets.find((d) => {
     console.log("getting data ");
     return d.name === dataset.name;
@@ -60,7 +66,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   const padding = {
     top: 25,
     left: 40,
-    bottom: 120,
+    bottom: 40,
     right: 10,
   };
 
@@ -89,8 +95,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     },
     title: `Distribution of ${column}`,
     signals: [
-      { name: "binOffset", value: 0 },
-      { name: "binStep", value: step },
+      { name: "binOffset", value: 1 }
     ],
 
     data: [
@@ -107,7 +112,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
             field: column,
             extent: { signal: "xext" },
             anchor: { signal: "binOffset" },
-            step: { signal: "binStep" },
+            maxbins: maxbins,
             nice: false,
           },
           {
@@ -153,8 +158,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
             x: { scale: "xscale", field: "bin0" },
             x2: {
               scale: "xscale",
-              field: "bin1",
-              offset: { signal: "binStep > 0.02 ? -0.5 : 0" },
+              field: "bin1"
             },
             y: { scale: "yscale", field: "count" },
             y2: { scale: "yscale", value: 0 },
@@ -243,6 +247,9 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
       ref={containerRef}
       pad="small"
     >
+      <Box style={{position:"absolute", top:"-20px", left:"-20px"}} >
+        <EditButton editPath={`${editPath}.Histogram`} editType={"Histogram"} /> 
+      </Box>
       <Vega
         ref={chartRef}
         data={{ table: chartData }}

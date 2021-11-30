@@ -24,7 +24,7 @@ pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub color: Option<String>,
     #[wasm_bindgen(skip)]
-    pub step: Option<i64>,
+    pub maxbins: Option<i64>,
 }
 
 #[wasm_bindgen]

@@ -54,6 +54,7 @@ function App() {
         <MaticoApp
           basename={process.env.PUBLIC_URL}
           spec={spec}
+          //@ts-ignore
           editActive={edit}
         />
       </div>

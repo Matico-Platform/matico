@@ -32,6 +32,14 @@ export const PaneDefaults = {
     dot_size: 14,
     dataset: {name: 'uknown'},
   },
+  Histogram: {
+    position: DefaultPosition,
+    name: "New Histogram",
+    column: null,
+    color: "#417505",
+    step: 140,
+    dataset: {name: 'uknown'},
+  },
   Text: {
     position: DefaultPosition,
     content: "New Text Pane",
