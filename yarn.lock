@@ -3728,7 +3728,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/rehype-prism@npm:0.8.0, @mapbox/rehype-prism@npm:^0.8.0":
+"@mapbox/rehype-prism@npm:*, @mapbox/rehype-prism@npm:0.8.0, @mapbox/rehype-prism@npm:^0.8.0":
   version: 0.8.0
   resolution: "@mapbox/rehype-prism@npm:0.8.0"
   dependencies:
@@ -6841,7 +6841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/react-md-editor@npm:^3.8.2":
+"@uiw/react-md-editor@npm:^3.7":
   version: 3.8.2
   resolution: "@uiw/react-md-editor@npm:3.8.2"
   dependencies:
@@ -14934,9 +14934,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"grommet@npm:^2.18.0":
-  version: 2.18.0
-  resolution: "grommet@npm:2.18.0"
+"grommet@npm:^2.19.1":
+  version: 2.19.1
+  resolution: "grommet@npm:2.19.1"
   dependencies:
     grommet-icons: ^4.6.2
     hoist-non-react-statics: ^3.2.0
@@ -14946,7 +14946,7 @@ fsevents@^1.2.7:
     react: ^16.6.1 || ^17.0.0
     react-dom: ^16.6.1 || ^17.0.0
     styled-components: ">= 5.1"
-  checksum: 45d7b67fc22d99cee156522611bdf05e203e841fc5267c152e5f2c08f6d93cd8181d0cf08cc74179b31c599fcf377cabbbe467db69770109f6474e8acb272eb5
+  checksum: 1aa967d6f0bbcfbcdfd38180953658f50e62ee80e948d9d8535586b9e6bc5fcc6ed77c2e7226225bb0484d054236db46778798c74055b6d70abfe6829d6078d6
   languageName: node
   linkType: hard
 
@@ -19151,14 +19151,14 @@ fsevents@^1.2.7:
     "@types/react": ^17.0.30
     "@types/react-dom": ^17.0.9
     "@types/react-redux": ^7.1.20
-    "@uiw/react-md-editor": ^3.8.2
+    "@uiw/react-md-editor": ^3.7
     ace-builds: ^1.4.13
     build: ^0.1.4
     chroma-js: ^2.1.2
     d3-array: ^3.1.1
     d3-scale: ^4.0.2
     deck.gl: ^8.6.0
-    grommet: ^2.18.0
+    grommet: ^2.19.1
     grommet-icons: ^4.6.2
     katex: ^0.13.18
     lodash: ^4.17.21
