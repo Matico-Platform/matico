@@ -32,7 +32,7 @@ const parsePieChartData = (data: any, column: string) => {
   const k = (endAngle - startAngle) / valueSum
   let a: number = 0;
   //@ts-ignore type for array string number
-  const sortedData = Object.entries(data).map(entry => {
+  const sortedData = Object.entries(data).sort((a,b) => a[1] - b[1]).map(entry => {
     const startAngle = a+0;
     //@ts-ignore type for array string number
     a+= k * entry[1]
@@ -87,13 +87,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   const state = useMaticoSelector((state) => state.variables.autoVariables);
 
   const [mappedFilters, filtersReady, _] = useSubVariables(dataset.filters);
-
-  // @ts-ignore
-  const chartData = useMemo(() => {
-    return datasetReady && filtersReady
-      ? parsePieChartData(foundDataset.getCategoryCounts(column), column)
-      : [];
-  }, [JSON.stringify(mappedFilters), datasetReady, filtersReady, column]);
 
   const squareDim = Math.min(
     dims.width - padding.left - padding.right,
@@ -158,6 +151,12 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
       },
     ],
   };
+  // @ts-ignore
+  const chartData = useMemo(() => {
+    return datasetReady && filtersReady
+      ? parsePieChartData(foundDataset.getCategoryCounts(column), column)
+      : [];
+  }, [JSON.stringify(mappedFilters), datasetReady, filtersReady, column]);
 
   // function handleDragEnd(e, result) {
   //   if (isNaN(result[1][0]) || isNaN(result[1][1])) return;
