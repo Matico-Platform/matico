@@ -13,6 +13,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   name,
 }) => {
   const updatePosition = (change: any) => {
+    console.log("Name ", change)
     const newPos = {
       x: parseInt(change.x),
       y: parseInt(change.y),
@@ -24,7 +25,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
       background,
       //@ts-ignore
       position: { ...position, ...newPos },
-      name: change.name,
+      name: change.name || name,
     });
   };
 

@@ -31,7 +31,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
           content: "This is a new page",
           icon: "Page",
           //@ts-ignore
-          order: Math.max(...pages.map((p) => p.order)) + 1,
+          order: (Math.max(...pages.map((p) => p.order)) + 1) || 1,
           sections: [
             {
               name:"First Section",

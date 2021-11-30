@@ -7,12 +7,13 @@ import {
   Form,
   FormField,
   Grid,
-  Heading,
-  RangeInput,
   Tab,
   Tabs,
   Text,
   TextInput,
+  Accordion,
+  AccordionPanel,
+  Select,
 } from "grommet";
 import {
   deleteSpecAtPath,
@@ -88,6 +89,8 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
   );
 
+  const otherMapPanes = useMaticoSelector((state)=> Object.keys(state.variables.autoVariables).filter(k=>k.includes("loc")).map(k=>k.split("_")[0]))
+
   const setViewFromMap = () => {
     updateView(mapPaneCurrentView.value);
   };
@@ -99,56 +102,67 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
       </Box>
     );
   }
+
   return (
-    <Box fill gap={"small"} background={"white"} pad="medium">
-      <SectionHeading>Pane Details</SectionHeading>
+    <Box fill gap={"medium"} background={"white"} pad="medium">
+      <Accordion multiple={true}>
+        <AccordionPanel label={"Pane Details"}>
+          <PaneEditor
+            position={mapPane.position}
+            name={mapPane.name}
+            background={mapPane.background}
+            onChange={(change) => updatePane(change)}
+          />
+        </AccordionPanel>
+        <AccordionPanel label={"Base Map"}>
+          <BaseMapSelector
+            baseMap={mapPane?.base_map?.Named}
+            onChange={(baseMap) => updateBaseMap(baseMap)}
+          />
+        </AccordionPanel>
 
-      <PaneEditor
-        position={mapPane.position}
-        name={mapPane.name}
-        background={mapPane.background}
-        onChange={(change) => updatePane(change)}
-      />
-      <Box>
-        <SectionHeading>Basic</SectionHeading>
+        <AccordionPanel label="View">
+          <Tabs >
+            <Tab title="Manual">
+              <Form
+                value={mapPane?.view}
+                onChange={(value) => updateView(value)}
+              >
+                <Grid pad={'medium'} columns={{ size: "small", count: 2 }} fill gap={"medium"}>
+                  <FormField label="latitude" name="lat" htmlFor={"lat"}>
+                    <TextInput name="lat" id="lat" type="number" />
+                  </FormField>
+                  <FormField label="longitude" name="lng" htmlFor={"lng"}>
+                    <TextInput name="lng" id="lng" type="number" />
+                  </FormField>
+                  <FormField label="zoom" name="zoom" htmlFor={"zoom"}>
+                    <TextInput name="zoom" id="zoom" type="number" />
+                  </FormField>
+                  <FormField
+                    label="bearing"
+                    bearing="bearing"
+                    htmlFor={"bearing"}
+                  >
+                    <TextInput name="bearing" id="bearing" type="numner" />
+                  </FormField>
+                  <FormField label="pitch" pitch="pitch" htmlFor={"pitch"}>
+                    <TextInput name="pitch" id="pitch" type="number" />
+                  </FormField>
+                </Grid>
+                <Button label="Set From Map" onClick={setViewFromMap} />
+              </Form>
+            </Tab>
+            <Tab title="Syced">
+              <Box>
+                <Text>Select another map to sync this map with</Text>
+                <Select options={otherMapPanes} onChange={(value)=>{console.log("selected map",value)}} value={mapPane.view.var ? mapPane.view.var : undefined} />
+              </Box>
+            </Tab>
+          </Tabs>
+        </AccordionPanel>
 
-        <BaseMapSelector
-          baseMap={mapPane?.base_map?.Named}
-          onChange={(baseMap) => updateBaseMap(baseMap)}
-        />
-      </Box>
-
-      <SectionHeading>View</SectionHeading>
-
-      <Tabs>
-        <Tab name="manual">
-          <Form value={mapPane?.view} onChange={(value) => updateView(value)}>
-            <Grid columns={{ size: "small", count: 2 }} fill gap={"medium"}>
-              <FormField label="latitude" name="lat" htmlFor={"lat"}>
-                <TextInput name="lat" id="lat" type="number" />
-              </FormField>
-              <FormField label="longitude" name="lng" htmlFor={"lng"}>
-                <TextInput name="lng" id="lng" type="number" />
-              </FormField>
-              <FormField label="zoom" name="zoom" htmlFor={"zoom"}>
-                <TextInput name="zoom" id="zoom" type="number" />
-              </FormField>
-              <FormField label="bearing" bearing="bearing" htmlFor={"bearing"}>
-                <TextInput name="bearing" id="bearing" type="numner" />
-              </FormField>
-              <FormField label="pitch" pitch="pitch" htmlFor={"pitch"}>
-                <TextInput name="pitch" id="pitch" type="number" />
-              </FormField>
-            </Grid>
-            <Button label="Set From Map" onClick={setViewFromMap} />
-          </Form>
-        </Tab>
-        <Tab name="Syced">
-          <Text>Select another map to sync this map with</Text>
-        </Tab>
-      </Tabs>
-
-      <SectionHeading>Layers</SectionHeading>
+        <AccordionPanel label="layers"></AccordionPanel>
+      </Accordion>
 
       <SectionHeading>Danger Zone</SectionHeading>
       {confirmDelete ? (
