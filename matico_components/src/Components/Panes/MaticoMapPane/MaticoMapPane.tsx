@@ -9,6 +9,7 @@ import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import {useIsEditable} from "../../../Hooks/useIsEditable";
 import {EditButton} from "../../MaticoEditor/EditButton";
+import {MaticoLegendPane} from '../MaticoLegendPane/MaticoLegendPane';
 
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
@@ -50,7 +51,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
 }) => {
   const [mapLayers, setMapLayers] = useState([]);
   const edit = useIsEditable()
-
+  
   const updateLayer = (layer) => {
     if (mapLayers.map((l) => l.id).includes(layer.id)) {
       setMapLayers(mapLayers.map((l) => (l.id === layer.id ? layer : l)));
@@ -140,6 +141,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
               mapName={name}
             />
           ))}
+          <MaticoLegendPane layers={mapLayers.map(layer => ({'name': layer?.props?.id, 'colorScale': layer?.props?._legend}))} />
         </>
       )}
     </Box>

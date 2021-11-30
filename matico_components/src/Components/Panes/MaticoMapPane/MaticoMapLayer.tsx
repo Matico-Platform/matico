@@ -116,8 +116,11 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         extruded: [JSON.stringify(shouldExtrude)],
         stroked: [JSON.stringify(shouldStroke)],
       },
+      _legend: {
+        domain: mappedStyle?.fillColor?.domain,
+        range: mappedStyle?.fillColor?.range
+      } 
     };
-
     switch (dataset.geometryType()) {
       case GeomType.Point:
         layer = new ScatterplotLayer({

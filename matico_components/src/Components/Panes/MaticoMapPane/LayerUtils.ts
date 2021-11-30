@@ -115,3 +115,15 @@ export const generateColorVar = (colorVar): ColorReturn => {
   console.log("returning generated ");
   return generateColor(colorVar);
 };
+
+export const getColorScale = (range: any) => {
+  if (typeof range === "string") {
+    let brewer = _.at(colors, [range]);
+    if (!brewer) {
+      return null;
+    }
+    return brewer
+  } else {
+    return range
+  }
+}
