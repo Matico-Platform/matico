@@ -5,6 +5,7 @@ import {HistogramPaneEditor} from './HistogramPaneEditor'
 import {PieChartPaneEditor} from './PieChartPaneEditor'
 import {SectionEditor} from './SectionEditor'
 import {TextPaneEditor} from './TextPaneEditor'
+import {LayerEditor} from './LayerEditor'
 
 
 export const Editors ={
@@ -14,5 +15,6 @@ export const Editors ={
   Map: MapPaneEditor ,
   Text: TextPaneEditor,
   Histogram: HistogramPaneEditor,
-  PieChart: PieChartPaneEditor
+  PieChart: PieChartPaneEditor,
+  Layer: LayerEditor
 }

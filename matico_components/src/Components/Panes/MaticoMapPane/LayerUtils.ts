@@ -69,7 +69,7 @@ export const generateNumericVar = (numericVar): NumberReturn => {
 
 export const generateColor = (color: any) => {
   if (Array.isArray(color)) {
-    return chroma.rgb(...color);
+    return chroma.rgb(...color).rgb();
   }
   if (typeof color === "string") {
     if (chroma.valid(color)) {

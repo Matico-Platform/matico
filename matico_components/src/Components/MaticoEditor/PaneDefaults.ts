@@ -16,6 +16,16 @@ const DefaultView = {
 };
 
 export const PaneDefaults = {
+  Layer:{
+    name:"NewLayer",
+    style:{
+      fillColor:'#FF0000',
+      lineColor:'#FFFFFF',
+      size:20,
+      lineWidth:2000
+    },
+    order:1
+  },
   Map: {
     position: DefaultPosition,
     name: "New Map",

@@ -12,6 +12,7 @@ import { DatasetSelector } from "./DatasetSelector";
 import { DatasetColumnSelector } from "./DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { SectionHeading } from "./Utils";
+import {ColorPicker} from "./ColorPicker";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -38,7 +39,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     );
   };
   const updateDotColor = (color: any) => {
-    dispatch(setSpecAtPath({ editPath, update: { dot_color: color.hex } }));
+    dispatch(setSpecAtPath({ editPath, update: { dot_color: color } }));
   };
 
   const updateDataset = (dataset: string) => {
@@ -149,10 +150,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
       </Box>
       <Box direction="row" fill="horizontal" gap="medium">
         <Text>Dot Color</Text>
-        <SketchPicker
-          color={scatterPlotPane.dot_color}
-          onChangeComplete={updateDotColor}
-        />
+        <ColorPicker color={scatterPlotPane.dot_color} onChange={updateDotColor} outFormat="hex"/>
       </Box>
 
       <SectionHeading>Danger Zone</SectionHeading>

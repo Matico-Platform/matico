@@ -7,11 +7,11 @@ import {
   setCurrentEditPath,
   setSpecAtPath,
 } from "../../Stores/MaticoSpecSlice";
-import { SketchPicker } from "react-color";
 import { DatasetSelector } from "./DatasetSelector";
 import { DatasetColumnSelector } from "./DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { SectionHeading } from "./Utils";
+import {ColorPicker} from "./ColorPicker";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -30,7 +30,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
   };
 
   const updateColor = (color: any) => {
-    dispatch(setSpecAtPath({ editPath, update: { color: color.hex } }));
+    dispatch(setSpecAtPath({ editPath, update: { color } }));
   };
 
   const updateDataset = (dataset: string) => {
@@ -133,10 +133,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
       </Box>
       <Box direction="row" fill="horizontal" gap="medium">
         <Text>Color</Text>
-        <SketchPicker
-          color={histogramPane.color}
-          onChangeComplete={updateColor}
-        />
+        <ColorPicker color={histogramPane.color} onChange={updateColor} outFormat="hex" />
       </Box>
 
       <SectionHeading>Danger Zone</SectionHeading>

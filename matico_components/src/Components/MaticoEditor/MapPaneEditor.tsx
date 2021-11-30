@@ -15,7 +15,9 @@ import {
   AccordionPanel,
   Select,
   CheckBox,
+  List,
 } from "grommet";
+import { Edit, Add } from "grommet-icons";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
@@ -27,6 +29,8 @@ import { DatasetColumnSelector } from "./DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { SectionHeading } from "./Utils";
 import { BaseMapSelector } from "./BaseMapSelector";
+import { PaneDefaults } from "../../Components/MaticoEditor/PaneDefaults";
+import { MaticoDataContext } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -37,6 +41,9 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [bindBothWays, setBindBothWays] = useState(false);
   const dispatch = useMaticoDispatch();
+
+  const { state: datasetState } = useContext(MaticoDataContext);
+  const { datasets } = datasetState;
 
   const deletePane = () => {
     dispatch(setCurrentEditPath({ editPath: null, editType: null }));
@@ -92,16 +99,16 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   );
 
   const updateSyncedView = (view) => {
-    console.log("View is ", view)
+    console.log("View is ", view);
     if (view.var) {
       dispatch(
         setSpecAtPath({
           editPath,
           update: {
-            view:{
+            view: {
               var: `${view.var}_map_loc`,
               bind: view.bind,
-            }
+            },
           },
         })
       );
@@ -130,6 +137,33 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
       </Box>
     );
   }
+
+  const setLayerEdit = (index: number) => {
+    console.log("setting layer edit ", index)
+    dispatch(
+      setCurrentEditPath({
+        editPath: `${editPath}.layers.${index}`,
+        editType: "Layer",
+      })
+    )
+  };
+
+  const addLayer = (value) => {
+    console.log("DATASET is ", value.dataset);
+    const newLayer = {
+      ...PaneDefaults.Layer,
+      source: { name: value.dataset.name },
+    };
+    console.log("NEW LAYER IS ", newLayer);
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          layers: [...mapPane.layers, newLayer],
+        },
+      })
+    );
+  };
 
   const stopSyncing = () => {
     updateView(syncedMapPaneView.value);
@@ -227,30 +261,62 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                 </>
               ) : (
                 <Form
-                  onSubmit={({value}) => {
+                  onSubmit={({ value }) => {
                     updateSyncedView(value);
                   }}
                 >
                   <Box direction="row">
-                  <FormField name={"var"}>
-                    <Select
-                      name={"var"}
-                      placeholder="Or select another map to sync this map with"
-                      options={otherMapPanes}
-                    />
-                  </FormField>
-                  <FormField name={"bind"}>
-                    <CheckBox id="bind" name="bind" label="Bind two ways" />
-                  </FormField>
-                </Box>
-                  <Button type='submit' primary label="Start Syncing"/>
+                    <FormField name={"var"}>
+                      <Select
+                        name={"var"}
+                        placeholder="Or select another map to sync this map with"
+                        options={otherMapPanes}
+                      />
+                    </FormField>
+                    <FormField name={"bind"}>
+                      <CheckBox id="bind" name="bind" label="Bind two ways" />
+                    </FormField>
+                  </Box>
+                  <Button type="submit" primary label="Start Syncing" />
                 </Form>
               )}
             </Box>
           </Box>
         </AccordionPanel>
 
-        <AccordionPanel label="layers"></AccordionPanel>
+        <AccordionPanel label="layers">
+          <List data={mapPane.layers}>
+            {(layer, index) => {
+              return (
+                <Box direction={"row"} justify={"between"} align={"center"}>
+                  <Box flex>
+                    <Text textAlign="start">{layer.name}</Text>
+                  </Box>
+                  <Button icon={<Edit />} onClick={() => setLayerEdit(index)} />
+                </Box>
+              );
+            }}
+          </List>
+
+          <Form onSubmit={({ value }) => addLayer(value)}>
+            <Text>New Layer</Text>
+            <FormField name="name" htmlFor="LayerName">
+              <TextInput name="name" placeholder="Layer name" id="LayerName" />
+            </FormField>
+            <Text>From Dataset</Text>
+            <FormField name="dataset" htmlFor="LayerName">
+              <Select
+                placeholder="Dataset"
+                options={datasets}
+                labelKey={"name"}
+                valueKey={"name"}
+                name="dataset"
+                id="LayerrName"
+              />
+            </FormField>
+            <Button plain={false} label={"Add Layer"} type="submit" />
+          </Form>
+        </AccordionPanel>
       </Accordion>
 
       <SectionHeading>Danger Zone</SectionHeading>
