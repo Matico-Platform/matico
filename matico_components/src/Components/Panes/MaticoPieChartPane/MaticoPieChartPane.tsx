@@ -216,7 +216,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   if (!datasetReady) {
     return <div>{dataset.name} not found!</div>;
   }
-
+  
   return (
     <Box
       background={backgroundColor}
@@ -227,7 +227,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     >
       {edit && (
         <Box style={{ position: "absolute", left: "-20px", top: "-20px" }}>
-          <EditButton editPath={editPath} editType={"PieChart"} />
+          <EditButton editPath={`${editPath}.PieChart`} editType={"PieChart"} /> 
         </Box>
       )}
       <Vega

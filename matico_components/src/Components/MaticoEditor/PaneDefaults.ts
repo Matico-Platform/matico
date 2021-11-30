@@ -40,6 +40,12 @@ export const PaneDefaults = {
     step: 140,
     dataset: {name: 'uknown'},
   },
+  PieChart: {
+    position: DefaultPosition,
+    name: "New Pie chart",
+    column: null,
+    dataset: {name: 'uknown'},
+  },
   Text: {
     position: DefaultPosition,
     content: "New Text Pane",

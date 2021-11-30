@@ -131,8 +131,8 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
         <Button
           plain={false}
           icon={<Add />}
-          label={"PiChart"}
-          onClick={() => addPane("PiChart")}
+          label={"PieChart"}
+          onClick={() => addPane("PieChart")}
         />
         <Button
           plain={false}
