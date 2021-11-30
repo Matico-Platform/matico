@@ -14,6 +14,7 @@ import {
   Accordion,
   AccordionPanel,
   Select,
+  CheckBox,
 } from "grommet";
 import {
   deleteSpecAtPath,
@@ -34,6 +35,7 @@ export interface PaneEditorProps {
 export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   const spec = useMaticoSelector((state) => state.spec.spec);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [bindBothWays, setBindBothWays] = useState(false);
   const dispatch = useMaticoDispatch();
 
   const deletePane = () => {
@@ -89,7 +91,33 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
   );
 
-  const otherMapPanes = useMaticoSelector((state)=> Object.keys(state.variables.autoVariables).filter(k=>k.includes("loc")).map(k=>k.split("_")[0]))
+  const updateSyncedView = (view) => {
+    console.log("View is ", view)
+    if (view.var) {
+      dispatch(
+        setSpecAtPath({
+          editPath,
+          update: {
+            view:{
+              var: `${view.var}_map_loc`,
+              bind: view.bind,
+            }
+          },
+        })
+      );
+    }
+  };
+
+  const otherMapPanes = useMaticoSelector((state) =>
+    Object.keys(state.variables.autoVariables)
+      .filter((k) => k.includes("loc"))
+      .map((k) => k.split("_")[0])
+      .filter((k) => k !== mapPane.name)
+  );
+
+  const syncedMapPaneView = useMaticoSelector((state) =>
+    mapPane.view.var ? state.variables.autoVariables[mapPane.view.var] : null
+  );
 
   const setViewFromMap = () => {
     updateView(mapPaneCurrentView.value);
@@ -102,6 +130,12 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
       </Box>
     );
   }
+
+  const stopSyncing = () => {
+    updateView(syncedMapPaneView.value);
+  };
+
+  const isSynced = syncedMapPaneView ? true : false;
 
   return (
     <Box fill gap={"medium"} background={"white"} pad="medium">
@@ -122,43 +156,98 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
         </AccordionPanel>
 
         <AccordionPanel label="View">
-          <Tabs >
-            <Tab title="Manual">
-              <Form
-                value={mapPane?.view}
-                onChange={(value) => updateView(value)}
+          <Box gap={"medium"}>
+            <Form
+              value={
+                mapPane?.view.var ? syncedMapPaneView?.value : mapPane?.view
+              }
+              onChange={(value) => updateView(value)}
+            >
+              <Grid
+                pad={"medium"}
+                columns={{ size: "small", count: 2 }}
+                fill
+                gap={"medium"}
               >
-                <Grid pad={'medium'} columns={{ size: "small", count: 2 }} fill gap={"medium"}>
-                  <FormField label="latitude" name="lat" htmlFor={"lat"}>
-                    <TextInput name="lat" id="lat" type="number" />
+                <FormField
+                  label="latitude"
+                  name="lat"
+                  htmlFor={"lat"}
+                  disabled={isSynced}
+                >
+                  <TextInput name="lat" id="lat" type="number" />
+                </FormField>
+                <FormField
+                  label="longitude"
+                  name="lng"
+                  htmlFor={"lng"}
+                  disabled={isSynced}
+                >
+                  <TextInput name="lng" id="lng" type="number" />
+                </FormField>
+                <FormField
+                  label="zoom"
+                  name="zoom"
+                  htmlFor={"zoom"}
+                  disabled={isSynced}
+                >
+                  <TextInput name="zoom" id="zoom" type="number" />
+                </FormField>
+                <FormField
+                  label="bearing"
+                  bearing="bearing"
+                  htmlFor={"bearing"}
+                  disabled={isSynced}
+                >
+                  <TextInput name="bearing" id="bearing" type="numner" />
+                </FormField>
+                <FormField
+                  label="pitch"
+                  pitch="pitch"
+                  htmlFor={"pitch"}
+                  disabled={isSynced}
+                >
+                  <TextInput name="pitch" id="pitch" type="number" />
+                </FormField>
+              </Grid>
+            </Form>
+            <Button
+              label="Set From Map"
+              onClick={setViewFromMap}
+              disabled={isSynced}
+            />
+            <Box>
+              {isSynced ? (
+                <>
+                  <Text>Currently </Text>
+                  <Button
+                    label={`Stop syncing with ${mapPane.view.var}`}
+                    onClick={stopSyncing}
+                  />
+                </>
+              ) : (
+                <Form
+                  onSubmit={({value}) => {
+                    updateSyncedView(value);
+                  }}
+                >
+                  <Box direction="row">
+                  <FormField name={"var"}>
+                    <Select
+                      name={"var"}
+                      placeholder="Or select another map to sync this map with"
+                      options={otherMapPanes}
+                    />
                   </FormField>
-                  <FormField label="longitude" name="lng" htmlFor={"lng"}>
-                    <TextInput name="lng" id="lng" type="number" />
+                  <FormField name={"bind"}>
+                    <CheckBox id="bind" name="bind" label="Bind two ways" />
                   </FormField>
-                  <FormField label="zoom" name="zoom" htmlFor={"zoom"}>
-                    <TextInput name="zoom" id="zoom" type="number" />
-                  </FormField>
-                  <FormField
-                    label="bearing"
-                    bearing="bearing"
-                    htmlFor={"bearing"}
-                  >
-                    <TextInput name="bearing" id="bearing" type="numner" />
-                  </FormField>
-                  <FormField label="pitch" pitch="pitch" htmlFor={"pitch"}>
-                    <TextInput name="pitch" id="pitch" type="number" />
-                  </FormField>
-                </Grid>
-                <Button label="Set From Map" onClick={setViewFromMap} />
-              </Form>
-            </Tab>
-            <Tab title="Syced">
-              <Box>
-                <Text>Select another map to sync this map with</Text>
-                <Select options={otherMapPanes} onChange={(value)=>{console.log("selected map",value)}} value={mapPane.view.var ? mapPane.view.var : undefined} />
-              </Box>
-            </Tab>
-          </Tabs>
+                </Box>
+                  <Button type='submit' primary label="Start Syncing"/>
+                </Form>
+              )}
+            </Box>
+          </Box>
         </AccordionPanel>
 
         <AccordionPanel label="layers"></AccordionPanel>
