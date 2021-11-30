@@ -70,7 +70,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     );
   }
   return (
-    <Box background={"white"} pad='medium' >
+    <Box background={"white"} pad="medium">
       <Heading fill textAlign="start" level={3}>
         Details
       </Heading>
@@ -106,6 +106,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
               </Box>
               <Text>{paneType}</Text>
               <Button
+                plain={false}
                 icon={<Edit color="status-warning" />}
                 onClick={() => editPane(index, paneType)}
               />
@@ -114,7 +115,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
         }}
       </List>
       <Grid
-        columns={{"count":3, "size":"auto"}}
+        columns={{ count: 3, size: "auto" }}
         gap={"medium"}
         align="center"
         justify="center"
@@ -122,22 +123,35 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
         margin="medium"
       >
         <Button
+          plain={false}
           icon={<Add />}
           label={"Scatterplot"}
           onClick={() => addPane("Scatterplot")}
         />
         <Button
+          plain={false}
           icon={<Add />}
           label={"PiChart"}
           onClick={() => addPane("PiChart")}
         />
         <Button
+          plain={false}
           icon={<Add />}
           label={"Histogram"}
           onClick={() => addPane("Histogram")}
         />
-        <Button icon={<Add />} label={"Map"} onClick={() => addPane("Map")} />
-        <Button icon={<Add />} label={"Text"} onClick={() => addPane("Text")} />
+        <Button
+          plain={false}
+          icon={<Add />}
+          label={"Map"}
+          onClick={() => addPane("Map")}
+        />
+        <Button
+          plain={false}
+          icon={<Add />}
+          label={"Text"}
+          onClick={() => addPane("Text")}
+        />
       </Grid>
       <Heading fill={true} textAlign={"start"} level={3}>
         Danger Zone

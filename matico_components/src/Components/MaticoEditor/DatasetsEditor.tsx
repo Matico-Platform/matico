@@ -17,11 +17,18 @@ import { Dataset, DatasetState } from "../../Datasets/Dataset";
 import { Columns, Edit, FormTrash } from "grommet-icons";
 import { useMaticoDispatch } from "../..//Hooks/redux";
 import {addDataset} from "../../Stores/MaticoSpecSlice";
+import styled from 'styled-components'
 
 interface DatasetEditorProps {
   dataset: Dataset;
   status: DatasetState;
 }
+
+const StyledAccordionPanel = styled(AccordionPanel)`
+  button{
+    border:none!important;
+  }
+`
 
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({
   dataset,
@@ -146,7 +153,7 @@ export const DatasetsEditor: React.FC = () => {
           <Accordion multiple={false}>
             {datasets.map((dataset) => {
               return (
-                <AccordionPanel
+                <StyledAccordionPanel
                   key={dataset.name}
                   header={() => (
                     <Box>
@@ -165,7 +172,7 @@ export const DatasetsEditor: React.FC = () => {
                       </Box>
                     )}
                   </List>
-                </AccordionPanel>
+                </StyledAccordionPanel>
               );
             })}
           </Accordion>

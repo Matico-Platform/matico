@@ -22,7 +22,7 @@ interface MaticoAppInterface {
 }
 
 const themeTweaks = {
-  button:{default: 'plain'}
+  button: { default: undefined },
 };
 
 export const MaticoApp: React.FC<MaticoAppInterface> = ({
@@ -32,10 +32,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   onDataChange,
   editActive = false,
 }) => {
-  console.log("theme is ", grommet)
   return (
     <Provider store={store}>
-      <MaticoDataProvider onStateChange={onDataChange} >
+      <MaticoDataProvider onStateChange={onDataChange}>
         <Grommet
           theme={deepMerge(themeTweaks, grommet)}
           style={{ width: "100%", height: "100%" }}
