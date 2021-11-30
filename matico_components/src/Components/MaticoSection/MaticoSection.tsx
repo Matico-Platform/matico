@@ -45,7 +45,7 @@ export const MaticoSection: React.FC<MaticoSectionInterface> = ({section,editPat
   return (
     <Box fill={true}>
       <LayoutEngine>
-        {section.panes.map( (pane, index)=>(
+        {section.panes.filter(p=>p).map( (pane, index)=>(
           selectPane(pane,`${editPath}.panes.${index}`) 
         ))}
       </LayoutEngine>

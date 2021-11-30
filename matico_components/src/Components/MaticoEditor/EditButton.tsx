@@ -19,6 +19,7 @@ export const EditButton: React.FC<EditButtonProps> = ({
   if (!edit) return null;
   return (
     <Button
+      plain={false}
       onClick={() =>
         dispatch(
           setCurrentEditPath({

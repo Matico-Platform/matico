@@ -99,6 +99,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({
         <Box direction="row">
           <Button primary label="DO IT!" onClick={deletePane} />
           <Button
+            plain={false}
             secondary
             label="Nah I changed my mind"
             onClick={() => setConfirmDelete(false)}
@@ -106,6 +107,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({
         </Box>
       ) : (
         <Button
+          plain={false}
           color="neutral-4"
           label="Delete mapPane"
           onClick={() => setConfirmDelete(true)}

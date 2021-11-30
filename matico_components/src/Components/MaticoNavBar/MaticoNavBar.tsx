@@ -47,7 +47,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
 
   return (
     <Sidebar
-      background="darkgray"
+      background="dark-2"
       header={
         <Avatar src="https://www.matico.app/favicon/favicon-32x32.png" elevation="small" style={{margin:"0 auto"}}/>
       }
@@ -62,6 +62,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
             to={page.path ? page.path : `/${page.name}`}
           >
             <Button
+              plain={false}
               badge={
                 <EditButton editPath={`pages.${index}`} editType={"Page"} />
               }
@@ -80,6 +81,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
         ))}
         {editable && (
           <Button
+            plain={false}
             a11yTitle="Add page"
             icon={<NamedButton color={'accent-4'} name={"Add"} />}
             hoverIndicator

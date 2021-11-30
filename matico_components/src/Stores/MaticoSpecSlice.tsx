@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Dashboard, Page } from "matico_spec";
 import _ from "lodash";
+import {Dataset} from "../Datasets/Dataset";
 
 export interface SpecState {
   spec: Dashboard | undefined;
@@ -25,11 +26,8 @@ export const stateSlice = createSlice({
       console.log("setting spec in action ", action.payload);
       state.spec = action.payload;
     },
-    specUpdateAtPath: (
-      state,
-      action: PayloadAction<{ path: string; update: any }>
-    ) => {
-      state;
+    addDataset:(state, action:PayloadAction<{dataset:Dataset}>)=>{
+      state.spec.datasets.push(action.payload.dataset)
     },
     addPage: (state, action: PayloadAction<{ page: Page }>) => {
       state.spec.pages.push(action.payload.page);
@@ -75,7 +73,8 @@ export const {
   removePage,
   setCurrentEditPath,
   setSpecAtPath,
-  deleteSpecAtPath
+  deleteSpecAtPath,
+  addDataset
 } = stateSlice.actions;
 
 export const selectSpec = (state: SpecState) => state.spec;

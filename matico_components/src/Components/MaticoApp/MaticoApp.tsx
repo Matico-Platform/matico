@@ -9,7 +9,9 @@ import {
 } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoAppPresenter } from "../MaticoAppPresenter/MaticoAppPresenter";
 import { Grid, Grommet } from "grommet";
-import {MaticoEditor} from "../MaticoEditor/MaticoEditor";
+import { deepMerge } from "grommet/utils";
+import { grommet } from "grommet/themes";
+import { MaticoEditor } from "../MaticoEditor/MaticoEditor";
 
 interface MaticoAppInterface {
   spec?: Dashboard;
@@ -19,6 +21,10 @@ interface MaticoAppInterface {
   editActive?: boolean | null;
 }
 
+const themeTweaks = {
+  button:{default: 'plain'}
+};
+
 export const MaticoApp: React.FC<MaticoAppInterface> = ({
   spec,
   onStateChange,
@@ -26,15 +32,19 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   onDataChange,
   editActive = false,
 }) => {
+  console.log("theme is ", grommet)
   return (
     <Provider store={store}>
-      <MaticoDataProvider onStateChange={onDataChange} datasets={spec.datasets}>
-        <Grommet style={{ width: "100%", height: "100%" }}>
+      <MaticoDataProvider onStateChange={onDataChange} >
+        <Grommet
+          theme={deepMerge(themeTweaks, grommet)}
+          style={{ width: "100%", height: "100%" }}
+        >
           <Grid
             fill
             columns={["flex", editActive ? "25vw" : "0px"]}
             rows={["flex"]}
-            areas={[["viewer","editor" ]]}
+            areas={[["viewer", "editor"]]}
           >
             <MaticoEditor editActive={editActive} />
             <MaticoAppPresenter
