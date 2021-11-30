@@ -120,7 +120,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
       />
 
       <SectionHeading>Style</SectionHeading>
-      <Grid columns={["small", "1fr"]} gap="medium">
+      <Grid columns={["small",  "1fr"]} gap="medium">
         <Text>Max Number of Bins:{histogramPane.maxbins}</Text>
         <RangeInput
           value={histogramPane.maxbins}
