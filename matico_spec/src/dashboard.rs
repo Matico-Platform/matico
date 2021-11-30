@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Dataset, Page, ValidationResult};
+use crate::{AutoComplete,Theme, Dataset, Page, ValidationResult};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -13,6 +13,7 @@ pub struct Dashboard {
     created_at: DateTime<Utc>,
     pages: Vec<Page>,
     datasets: Vec<Dataset>,
+    theme:Option<Theme>
 }
 
 impl Default for Dashboard {
@@ -22,6 +23,7 @@ impl Default for Dashboard {
             created_at: Utc::now(),
             pages: vec![],
             datasets: vec![],
+            theme: None
         }
     }
 }
@@ -43,6 +45,17 @@ impl Dashboard {
         let pages_real = pages.into_serde().unwrap();
         self.pages = pages_real;
     }
+
+    #[wasm_bindgen(getter=theme)]
+    pub fn get_theme(&self) -> JsValue {
+        JsValue::from_serde(&self.theme).unwrap()
+    }
+
+    #[wasm_bindgen(setter=theme)]
+    pub fn set_theme(&mut self, pages: JsValue) {
+        self.theme = Some(pages.into_serde().unwrap());
+    }
+
 
     #[wasm_bindgen(getter=datasets)]
     pub fn get_datasets(&self) -> JsValue {
@@ -137,6 +150,7 @@ mod tests {
             created_at: chrono::Utc::now(),
             pages: vec![],
             datasets: vec![],
+            theme:None 
         };
         dash
     }

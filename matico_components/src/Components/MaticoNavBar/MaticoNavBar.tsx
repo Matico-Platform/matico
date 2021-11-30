@@ -4,9 +4,10 @@ import { Page } from "matico_spec";
 import React from "react";
 import * as Icons from "grommet-icons";
 import { useIsEditable } from "../../Hooks/useIsEditable";
-import { useMaticoDispatch } from "../../Hooks/redux";
+import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
 import { EditButton } from "../MaticoEditor/EditButton";
+import chroma from "chroma-js";
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
@@ -21,6 +22,23 @@ const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
 export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   const editable = useIsEditable();
   const dispatch = useMaticoDispatch();
+  const theme = useMaticoSelector((state) => state.spec.spec.theme);
+  const primaryColor = theme?.primaryColor;
+  const logo = theme?.logoUrl;
+
+  let chromaColor;
+  if (Array.isArray(primaryColor)) {
+    if (primaryColor.length === 4) {
+      chromaColor = chroma.rgb([
+        ...primaryColor.slice(0, 3),
+        primaryColor[3] / 255,
+      ]);
+    } else if ((primaryColor.length = 3)) {
+      chromaColor = chroma.rgb(primaryColor);
+    }
+  } else if (chroma.valid(primaryColor)) {
+    chromaColor = chroma(primaryColor);
+  }
 
   const onAddPage = () => {
     dispatch(
@@ -31,25 +49,29 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
           content: "This is a new page",
           icon: "Page",
           //@ts-ignore
-          order: (Math.max(...pages.map((p) => p.order)) + 1) || 1,
+          order: Math.max(...pages.map((p) => p.order)) + 1 || 1,
           sections: [
             {
-              name:"First Section",
-              layout:"free",
-              panes:[],
-              order:1
-            }
+              name: "First Section",
+              layout: "free",
+              panes: [],
+              order: 1,
+            },
           ],
         },
       })
     );
   };
-
+  console.log("Logo is ", logo, " Theme is ", theme);
   return (
     <Sidebar
-      background="dark-2"
+      background={chromaColor ? chromaColor.hex() : "neutral-2"}
       header={
-        <Avatar src="https://www.matico.app/favicon/favicon-32x32.png" elevation="small" style={{margin:"0 auto"}}/>
+        <Avatar
+          src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
+          elevation="small"
+          style={{ margin: "0 auto" }}
+        />
       }
       elevation="medium"
       footer={<Button icon={<Icons.Help />} hoverIndicator />}
@@ -81,7 +103,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
         {editable && (
           <Button
             a11yTitle="Add page"
-            icon={<NamedButton color={'accent-4'} name={"Add"} />}
+            icon={<NamedButton color={"accent-4"} name={"Add"} />}
             hoverIndicator
             onClick={() => onAddPage()}
           />
