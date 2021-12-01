@@ -75,24 +75,29 @@ export const MaticoLegendPane = ({
 }) => {
     
     return (
-        <LegendOuterContainer>
+        (layers && layers.length) ? <LegendOuterContainer>
             {layers.map(layer => 
-                layer.colorScale.domain && layer.colorScale.range ?
+                layer?.colorScale?.domain && layer?.colorScale?.range ?
                     <LegendInnerContainer>
                         <h4>{layer.name}</h4>
                         <LegendContent>
                             <LegendColors>
                                 {"string" == typeof layer.colorScale.range 
-                                    ? getColorScale(layer.colorScale.range)[0].map(color => <span style={{backgroundColor: color}}/>)
-                                    : layer.colorScale.range.map(d => <span style={{backgroundColor: `rgb(${d.slice(0,3).join(",")})`}}/>)}
+                                    ? getColorScale(layer.colorScale.range)[0]
+                                        ? getColorScale(layer.colorScale.range)[0].map(color => <span style={{backgroundColor: color}}/>)
+                                        : null
+                                    : layer?.colorScale?.range 
+                                        ? layer.colorScale.range.map(d => <span style={{backgroundColor: `rgb(${d.slice(0,3).join(",")})`}}/>)}
+                                        : null
                             </LegendColors>
                             <LegendLabels>
-                                {layer.colorScale.domain.slice(1,).map(d => <p>{Math.round(d).toLocaleString('en')}</p>)}
+                                {!!layer?.colorScale?.domain && layer.colorScale.domain.slice(1,).map(d => <p>{Math.round(d).toLocaleString('en')}</p>)}
                             </LegendLabels>
                         </LegendContent>
                     </LegendInnerContainer>
                 : null
             )}
         </LegendOuterContainer>
+        : null
     )
 }
