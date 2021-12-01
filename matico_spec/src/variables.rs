@@ -4,15 +4,50 @@ use validator::{Validate, ValidationErrors};
 #[derive(Serialize, Deserialize, Debug, Clone, Validate)]
 pub struct Variable {
     var: String,
-    bind: Option<bool> 
+    bind: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct QuantileParams {
+    bins: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct JenksParams {
+    bins: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct EqualIntervalParams {
+    pub bins: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum DatasetMetric {
+    Min,
+    Max,
+    Quantile(QuantileParams),
+    Jenks(JenksParams),
+    EqualInterval(EqualIntervalParams),
+    Mean,
+    Median,
+    Summary,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Validate)]
+pub struct DatasetVal {
+    pub dataset: String,
+    pub column: Option<String>,
+    pub metric: Option<DatasetMetric>,
+    pub feature_id: Option<String>,
 }
 
 #[derive(Serialize, Debug, Deserialize, Clone)]
 #[serde(untagged)]
-pub enum VarOr<T>
-{
+pub enum VarOr<T> {
     Var(Variable),
     Value(T),
+    DVal(DatasetVal),
 }
 
 impl<T> Validate for VarOr<T>
@@ -29,7 +64,8 @@ where
 
         match self {
             Self::Var(v) => ValidationErrors::merge(result, "Variable", v.validate()),
-            Self::Value(val) => ValidationErrors::merge(result, "ChartPane", val.validate()),
+            Self::DVal(v) => ValidationErrors::merge(result, "", v.validate()),
+            Self::Value(val) => ValidationErrors::merge(result, "Value", val.validate()),
         }
     }
 }

@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+.examples{
+  list-style:none;
+  padding:0px;
+  margin:0px;
+}
+
+.examples li{
+    cursor: pointer;
+    border-bottom: 1px solid grey;
+    padding:10px 0px;
+}
+
+.examples li:hover{
+    background-color: lightgrey;
+}

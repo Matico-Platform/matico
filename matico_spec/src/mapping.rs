@@ -1,4 +1,4 @@
-use crate::{AutoComplete, PanePosition, VarOr, Variable, Filter};
+use crate::{AutoComplete, Filter, PanePosition, VarOr, Variable};
 use matico_spec_derive::AutoCompleteMe;
 use palette::Srgb;
 use serde::{Deserialize, Serialize};
@@ -26,25 +26,74 @@ pub enum BaseMap {
     StileJSON(String),
 }
 
-
 impl Default for BaseMap {
     fn default() -> Self {
         Self::Color(Srgb::new(0.0, 0.0, 0.0))
     }
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe)]
-pub struct LayerStyle {
-    size: Option<f32>,
-    color:Option<[f32;4]>,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum Range<T> {
+    Range(Vec<T>),
+    Named(String),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Mapping<D, R> {
+    variable: String,
+    domain: VarOr<Vec<D>>,
+    range: VarOr<Range<R>>,
 }
 
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all="camelCase", untagged)]
+pub enum ColorSpecification{
+    Rgba( [f32;4]),
+    Rgb( [f32;3]),
+    Name(String)
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+enum MappingVarOr<T> {
+    Var(Variable),
+    Mapping(Mapping<DomainVal, T>),
+    Value(T),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+enum DomainVal {
+    String(String),
+    Value(f32),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all="camelCase")]
+pub enum ScaleType{
+    Pixels,
+    Meters
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe)]
+#[serde(rename_all = "camelCase")]
+pub struct LayerStyle {
+    size: Option<MappingVarOr<f32>>,
+    fill_color: Option<MappingVarOr<ColorSpecification>>,
+    opacity: Option<MappingVarOr<f32>>,
+    line_color: Option<MappingVarOr<ColorSpecification>>,
+    line_width: Option<MappingVarOr<f32>>,
+    line_units: Option<ScaleType>,
+    radius_units: Option<ScaleType>,
+    elevation: Option<MappingVarOr<f32>>
+}
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
-pub struct DatasetRef{
+pub struct DatasetRef {
     name: String,
-    filters: Option<Vec<Filter>>
+    filters: Option<Vec<Filter>>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
@@ -76,14 +125,14 @@ pub struct View {
     pub pitch: f32,
 }
 
-impl Default for View{
-    fn default()->Self{
-        Self{
-            lat:40.7128,
-            lng:74.0060,
-            zoom:9.0,
+impl Default for View {
+    fn default() -> Self {
+        Self {
+            lat: 40.7128,
+            lng: 74.0060,
+            zoom: 9.0,
             bearing: 0.0,
-            pitch:0.0
+            pitch: 0.0,
         }
     }
 }
@@ -151,5 +200,32 @@ mod tests {
             validation_result.is_err(),
             "lng lat validated even through lng  < 0"
         );
+    }
+
+    #[test]
+    fn style_with_domain_from_dataset() {
+        let fill_color = Some(MappingVarOr::Mapping(Mapping {
+            variable: "Test".to_string(),
+            domain: VarOr::DVal(crate::DatasetVal {
+                dataset: "test".to_string(),
+                column: Some("test_col".to_string()),
+                feature_id: None,
+                metric: Some(crate::DatasetMetric::EqualInterval(
+                    crate::EqualIntervalParams { bins: 20 },
+                )),
+            }),
+            range: VarOr::Value(Range::Range(vec![
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ])),
+        }));
+        let style = LayerStyle {
+            fill_color,
+            line_color: None,
+            size: None,
+            line_thickness: None,
+            opacity: None,
+        };
+        println!("{}", serde_json::to_string_pretty(&style).unwrap());
     }
 }

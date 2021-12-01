@@ -1,0 +1,145 @@
+{
+  "name": "Interaction with sliders",
+  "created_at": "2021-10-16T13:36:36.249Z",
+  "datasets": [
+    {
+      "CSV": {
+        "name": "csv_test",
+        "url": "https://allofthedata.s3.us-west-2.amazonaws.com/Capital_Projects_Tracker.csv",
+        "lat_col": "Latitude",
+        "lng_col": "Longitude"
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "home",
+      "order": 1,
+      "icon": "Home",
+      "path": "/",
+      "sections": [
+        {
+          "name": "simple_map",
+          "order": 1,
+          "panes": [
+              {"Scatterplot":{
+                "position": {
+                  "width": 25,
+                  "height": 20,
+                  "layer": 2,
+                  "float": false,
+                  "x": 60,
+                  "y": 20
+              },
+              "dataset":{
+                  "name":"csv_test",
+                  "filters": [
+                        {
+                          "Range": {
+                            "variable": "DesignPercentComplete",
+                            "min": {
+                              "var": "range_control_interaction_test.0"
+                            },
+                            "max": {
+                              "var": "range_control_interaction_test.1"
+                            }
+                          }
+                        }
+                        ]
+              },
+               "x_column":"DesignPercentComplete",
+               "y_column":"DesignPercentComplete",
+               "dot_size":20,
+               "dot_color":"red"
+              }
+              },
+            {
+              "Controls": {
+                "name": "controls",
+                "position": {
+                  "width": 40,
+                  "height": 30,
+                  "layer": 2,
+                  "float": false,
+                  "x": 1,
+                  "y": 68
+                },
+                "title": "CONTROLS!",
+                "controls": [
+                  {
+                    "Range": {
+                      "name": "interaction_test",
+                      "min": 0,
+                      "max": 100,
+                      "step": 1,
+                      "default_value": 50
+                    }
+                  },
+                  {
+                    "Select": {
+                      "name": "select_test",
+                      "options":["a","b","c"],
+                      "default_value": "a"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Map": {
+                "name": "map_with_data",
+                "position": {
+                  "width": 100,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "view": {
+                  "lat": 40.79498338990195,
+                  "lng": -73.96771951293968,
+                  "zoom": 13,
+                  "bearing": 0,
+                  "pitch": 0
+                },
+                "layers": [
+                  {
+                    "source": {
+                      "name": "csv_test",
+                      "filters": [
+                        {
+                          "Range": {
+                            "variable": "DesignPercentComplete",
+                            "min": {
+                              "var": "range_control_interaction_test.0"
+                            },
+                            "max": {
+                              "var": "range_control_interaction_test.1"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "name": "csv_text",
+                    "order": 10,
+                    "style": {
+                      "color": [
+                        55,
+                        44,
+                        255,
+                        255
+                      ],
+                      "size": 4
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "layout": "free"
+        }
+      ]
+    }
+  ]
+}

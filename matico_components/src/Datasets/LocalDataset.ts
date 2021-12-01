@@ -1,7 +1,6 @@
 import {
   Dataset,
   Column,
-  Datum,
   GeomType,
   Filter,
   RangeFilter,
@@ -9,6 +8,8 @@ import {
 } from "./Dataset";
 
 import { predicate, DataFrame } from "@apache-arrow/es5-cjs";
+import _ from "lodash";
+import * as d3 from "d3-array";
 
 export class LocalDataset implements Dataset {
   private _isReady: boolean;
@@ -17,6 +18,7 @@ export class LocalDataset implements Dataset {
 
   constructor(
     public name: string,
+    public idCol: string,
     private _columns: Array<Column>,
     public _data: DataFrame,
     public _geometryType: GeomType,
@@ -46,8 +48,115 @@ export class LocalDataset implements Dataset {
     return this._columns;
   }
 
+  getFeature(feature_id: string) {
+    const selectPredicate = predicate.col(this.idCol).eq(feature_id);
+    const results = this._getResultsFromPredicate(selectPredicate);
+    return results;
+  }
+
+  getArrow() {
+    return this._data.serialize();
+  }
+
   getDataWithGeo(filters?: Array<Filter>) {
     return this.getData(filters);
+  }
+
+  _applyAggregateFunction<AggType>(
+    column: string,
+    aggFunc: (agg: AggType, val: number) => AggType,
+    initalVal: AggType,
+    filters?: Array<Filter>
+  ): AggType {
+    let base = null;
+    if (filters && filters.length) {
+      const predicate = this._constructPredicate(filters);
+      base = this._data.filter(predicate);
+    } else {
+      base = this._data;
+    }
+    let columnVals;
+    let agg: AggType = initalVal;
+
+    base.scan(
+      (index) => {
+        const aggResult = aggFunc(agg, columnVals(index));
+        // console.log("agg ", agg, " agg result ", aggResult, columnVals(index))
+        agg = aggResult;
+      },
+      (batch) => {
+        columnVals = predicate.col(column).bind(batch);
+      }
+    );
+    // console.log("returning ", agg, "for ", column);
+    return agg;
+  }
+
+  getColumnMax(column: string, filters?: Array<Filter>) {
+    console.log("CALCULATING MAX");
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) => (val > agg ? val : agg),
+      Number.MIN_VALUE,
+      filters
+    );
+  }
+
+  getColumnMin(column: string, filters?: Array<Filter>) {
+    console.log("CALCULATING MIN");
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) => (val < agg ? val : agg),
+      Number.MAX_VALUE,
+      filters
+    );
+  }
+
+  getColumnSum(column: string, filters?: Array<Filter>) {
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) => (agg += val),
+      0,
+      filters
+    );
+  }
+
+  getCategoryCounts(column: string, filters?: Array<Filter>) {
+    return this._applyAggregateFunction(
+      column,
+      (agg, val) => {
+        agg[val] = agg[val] ? agg[val] + 1 : 1;
+        return agg;
+      },
+      {},
+      filters
+    );
+  }
+
+  getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
+    const range = this._applyAggregateFunction(
+      column,
+      (agg, val) => [val < agg[0] ? val : agg[0], val > agg[1] ? val : agg[1]],
+      [Number.MAX_VALUE, Number.MIN_VALUE],
+      filters
+    );
+
+    return _.range(bins).map(
+      (i: number) => range[0] + ((range[1] - range[0]) * i) / bins
+    );
+  }
+
+  getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
+    const data = this.getData(filters, [column]);
+    const vals = data.map((c: any) => c[column]).sort();
+    const binSize = 1.0 / bins;
+    console.log("bind size is ", binSize)
+    return _.range(bins).map((i: number) => d3.quantile(vals, i * binSize));
+  }
+
+  getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
+    throw Error("function not implemented");
+    return [1, 23, 4, 5, 6];
   }
 
   _constructPredicate(filters?: Array<Filter>) {
@@ -82,19 +191,15 @@ export class LocalDataset implements Dataset {
     return combinedPredicate;
   }
 
-  getData(filters?: Array<Filter>, columns?: Array<string>) {
-    const cacheKey = JSON.stringify([filters, columns]);
-    if (this._filterCache[cacheKey]) {
-      console.log("USING cahced filter ")
-      return this._filterCache[cacheKey];
-    }
-    if (filters && filters.length) {
-      console.log("USING computed filter ")
-      const predicate = this._constructPredicate(filters);
+  _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {
+    const filterResults = filterPredicate
+      ? this._data.filter(filterPredicate)
+      : this._data;
+
+    try {
       const vars = {};
       let results = [];
 
-      const filterResults = this._data.filter(predicate);
       let selectColumns = columns ? columns : this.columns().map((c) => c.name);
 
       selectColumns = [...selectColumns, "geom"];
@@ -102,14 +207,13 @@ export class LocalDataset implements Dataset {
       filterResults.scan(
         (index) => {
           results.push(
-            Object.entries(vars).reduce((agg, [name, values]) => {
+            selectColumns.reduce((agg, col) => {
               return {
                 ...agg,
                 //@ts-ignore
-                [name]: values(index),
+                [col]: vars[col](index),
               };
-            }),
-            {}
+            }, {})
           );
         },
         (batch) => {
@@ -118,11 +222,28 @@ export class LocalDataset implements Dataset {
           });
         }
       );
+      return results;
+    } catch {
+      console.warn(
+        "something went wrong applying filters cowardly returning empty array"
+      );
+      return [];
+    }
+  }
+
+  getData(filters?: Array<Filter>, columns?: Array<string>) {
+    const cacheKey = JSON.stringify([filters, columns]);
+    if (this._filterCache[cacheKey]) {
+      return this._filterCache[cacheKey];
+    }
+    if (filters && filters.length) {
+      const predicate = this._constructPredicate(filters);
+      const results = this._getResultsFromPredicate(predicate);
 
       this._filterCache[JSON.stringify(filters)] = results;
-
       return results;
     }
-    return this._data.toArray();
+    console.log("RETURNING BASE DATA ");
+    return this._getResultsFromPredicate();
   }
 }

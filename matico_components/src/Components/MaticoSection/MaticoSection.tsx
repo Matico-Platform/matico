@@ -6,9 +6,12 @@ import {MaticoMapPane} from '../Panes/MaticoMapPane/MaticoMapPane'
 import {MaticoTextPane} from '../Panes/MaticoTextPane/MaticoTextPane'
 import { MaticoHistogramPane } from '../Panes/MaticoHistogramPane/MaticoHistogramPane'
 import { MaticoScatterplotPane } from '../Panes/MaticoScatterplotPane/MaticoScatterplotPane'
+import { MaticoPieChartPane } from '../Panes/MaticoPieChartPane/MaticoPieChartPane'
+import {MaticoControlsPane} from '../Panes/MaticoControlsPane/MaticoControlsPane'
 
 interface MaticoSectionInterface{
-  section: Section
+  section: Section,
+  editPath?: string
 }
 
 function selectLayout(layout_name: string){
@@ -20,28 +23,30 @@ function selectLayout(layout_name: string){
   }
 }
 
-function selectPane(pane:any){
-  switch(Object.keys(pane)[0]){
-    case "Map":
-      return <MaticoMapPane key={pane.name} {...pane.Map} />
-    case "Text":
-      return <MaticoTextPane  key={pane.name} {...pane.Text} />
-    case "Histogram":
-      return <MaticoHistogramPane key={pane.name} {...pane.Histogram} />
-    case "Scatterplot":
-      return <MaticoScatterplotPane key={pane.name} {...pane.Scatterplot} />
-    default:
-      return null
-  }
+const panes = {
+  "Map": MaticoMapPane,
+  "Text": MaticoTextPane,
+  "Histogram": MaticoHistogramPane,
+  "Scatterplot": MaticoScatterplotPane,
+  "PieChart": MaticoPieChartPane,
+  "Controls": MaticoControlsPane,
 }
 
-export const MaticoSection: React.FC<MaticoSectionInterface> = ({section})=>{
+function selectPane(pane:any,editPath:string){
+  const paneType = Object.keys(pane)[0]
+  const PaneComponent = panes[paneType]
+  
+  if (!PaneComponent) return null;
+  return <PaneComponent key={pane.name} {...pane[paneType]} editPath={`${editPath}`} />
+}
+
+export const MaticoSection: React.FC<MaticoSectionInterface> = ({section,editPath})=>{
   let LayoutEngine = selectLayout(section.layout) 
   return (
     <Box fill={true}>
       <LayoutEngine>
-        {section.panes.map(pane =>(
-          selectPane(pane) 
+        {section.panes.filter(p=>p).map( (pane, index)=>(
+          selectPane(pane,`${editPath}.panes.${index}`) 
         ))}
       </LayoutEngine>
     </Box>

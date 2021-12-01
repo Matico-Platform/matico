@@ -1,4 +1,6 @@
-use crate::{AutoComplete, ChartPane, MapPane, HistogramPane, ScatterplotPane};
+use crate::{
+    AutoComplete, ChartPane, Control, HistogramPane, MapPane, PieChartPane, ScatterplotPane,
+};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError, ValidationErrors};
@@ -10,7 +12,9 @@ pub enum Pane {
     Chart(ChartPane),
     Text(TextPane),
     Histogram(HistogramPane),
-    Scatterplot(ScatterplotPane)
+    Scatterplot(ScatterplotPane),
+    PieChart(PieChartPane),
+    Controls(ControlsPane),
 }
 
 impl Default for Pane {
@@ -32,10 +36,36 @@ impl Validate for Pane {
             Self::Map(map) => ValidationErrors::merge(result, "MapPane", map.validate()),
             Self::Chart(chart) => ValidationErrors::merge(result, "ChartPane", chart.validate()),
             Self::Text(text) => ValidationErrors::merge(result, "TextPane", text.validate()),
-            Self::Histogram(text) => ValidationErrors::merge(result, "HistogramPane", text.validate()),
-            Self::Scatterplot(text) => ValidationErrors::merge(result, "ScatterplotPane", text.validate()),
+            Self::Histogram(histogram) => {
+                ValidationErrors::merge(result, "HistogramPane", histogram.validate())
+            }
+            Self::Scatterplot(scatter) => {
+                ValidationErrors::merge(result, "ScatterplotPane", scatter.validate())
+            }
+            Self::PieChart(piechart) => {
+                ValidationErrors::merge(result, "PieChartPane", piechart.validate())
+            }
+            Self::Controls(controls) => {
+                ValidationErrors::merge(result, "ScatterplotPane", controls.validate())
+            }
         }
     }
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+pub struct ControlsPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[wasm_bindgen(skip)]
+    pub title: String,
+
+    #[validate]
+    pub position: PanePosition,
+
+    #[wasm_bindgen(skip)]
+    pub controls: Vec<Control>,
 }
 
 #[wasm_bindgen]

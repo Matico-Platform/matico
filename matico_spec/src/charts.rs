@@ -1,4 +1,4 @@
-use crate::{AutoComplete, PanePosition, DatasetRef};
+use crate::{AutoComplete, DatasetRef, PanePosition};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
@@ -11,15 +11,40 @@ pub struct ChartPane {
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe)]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
 pub struct HistogramPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
     #[validate]
     pub position: PanePosition,
+    #[wasm_bindgen(skip)]
+    pub dataset: DatasetRef,
+    #[wasm_bindgen(skip)]
+    pub column: String,
+    #[wasm_bindgen(skip)]
+    pub color: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub maxbins: Option<i64>,
+}
+
+#[wasm_bindgen]
+impl HistogramPane{
+    #[wasm_bindgen(getter = name)]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    #[wasm_bindgen(setter = name)]
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
 }
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
 pub struct ScatterplotPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]
@@ -30,5 +55,46 @@ pub struct ScatterplotPane {
     pub y_column: String,
     #[wasm_bindgen(skip)]
     pub dot_color: Option<String>,
-    pub dot_size: Option<u32>
+    pub dot_size: Option<u32>,
+}
+
+#[wasm_bindgen]
+impl ScatterplotPane{
+    #[wasm_bindgen(getter = name)]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    #[wasm_bindgen(setter = name)]
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
+pub struct PieChartPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
+    #[validate]
+    pub position: PanePosition,
+    #[wasm_bindgen(skip)]
+    pub dataset: DatasetRef,
+    #[wasm_bindgen(skip)]
+    pub column: String,
+    #[wasm_bindgen(skip)]
+    pub theme: Option<String>, // todo: add mapping for categorical but numbered values (eg. 0,1 )
+}
+
+#[wasm_bindgen]
+impl PieChartPane{
+    #[wasm_bindgen(getter = name)]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    #[wasm_bindgen(setter = name)]
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
 }

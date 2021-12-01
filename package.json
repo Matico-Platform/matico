@@ -10,6 +10,7 @@
   "workspaces": [
     "./maticojs",
     "./matico_spec/pkg",
+    "./matico_buffer_analysis/pkg",
     "./matico_components",
     "./editor"
   ],

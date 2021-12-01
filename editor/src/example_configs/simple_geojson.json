@@ -1,0 +1,65 @@
+{
+  "name": "New Dashboard",
+  "created_at": "2021-10-16T13:36:36.249Z",
+  "datasets": [
+    {
+      "GeoJSON": {
+        "name": "squirrels",
+        "url": "https://data.cityofnewyork.us/api/geospatial/vfnx-vebw?method=export&format=GeoJSON"
+      }
+    },
+  ],
+  "pages": [
+    {
+      "name": "home",
+      "order": 1,
+      "icon": "Home",
+      "path": "/",
+      "sections": [
+        {
+          "name": "simple_map",
+          "order": 1,
+          "panes": [
+            {
+              "Map": {
+                "name": "map_with_data",
+                "position": {
+                  "width": 50,
+                  "height": 100,
+                  "layer": 0,
+                  "float": false,
+                  "x": 0,
+                  "y": 0
+                },
+                "view": {
+                  "lat": 40.79498338990195,
+                  "lng": -73.96771951293968,
+                  "zoom": 13,
+                  "bearing": 0,
+                  "pitch": 0
+                },
+                "layers": [
+                  {
+                    "source": {"name":"squirrels"},
+                    "name": "squirrels",
+                    "order": 10,
+                    "style": {
+                      "color": [
+                        55,
+                        44,
+                        255,
+                        255
+                      ],
+                      "size": 10
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "layout": "free"
+        }
+      ]
+    }
+  ]
+}

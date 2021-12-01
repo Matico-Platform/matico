@@ -8,6 +8,8 @@ import {
   Struct,
   Binary,
   DataFrame,
+  Field,
+  Int32
 } from "@apache-arrow/es5-cjs";
 
 import Papa from "papaparse";
@@ -40,7 +42,14 @@ export class CSVBuilder {
         );
         this._columns = columns;
 
-        fields.push(new Binary());
+        const lat_index = columns.map(c=>c.name).indexOf(lat_col)
+        const lng_index = columns.map(c=>c.name).indexOf(lng_col)
+
+        fields.push(new Field('geom', new Binary(),true));
+
+        if(!this.id_col){
+          fields.push(new Field('id', new Int32(),true));
+        }
 
         const struct = new Struct(fields);
         const builder = Builder.new({
@@ -49,15 +58,33 @@ export class CSVBuilder {
         });
 
         let isHeader = true;
+        let id = 0
         Papa.parse(url, {
           dynamicTyping: true,
           download: true,
           step: (row) => {
             if (!isHeader) {
+              if(!row) return
               try {
-                const geom = new wkx.Point(row[lng_col], row[lat_col]).toWkb();
+
+                const lng = row.data[lng_index]
+                const lat = row.data[lat_index]
+
+                if(lng === undefined || lat=== undefined){
+                 console.log("Bad lat lng ", lng,lat,row.data) 
+                 return
+                }
+
+                const geom = new wkx.Point(lng,lat).toWkb();
+                
+                let datum = [...row.data, geom]
+
+                if(!id_col){
+                  datum.push(id) 
+                  id++
+                }
                 //@ts-ignore
-                builder.append([...row.data, geom]);
+                builder.append(datum);
               } catch (e) {
                 console.log("issue with datum ", row.data, e);
               }
@@ -71,6 +98,7 @@ export class CSVBuilder {
             onDone(
               new LocalDataset(
                 name,
+                id_col ? id_col : 'id',
                 columns,
                 this._data,
                 this._extractGeomType()
