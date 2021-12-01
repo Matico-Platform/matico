@@ -153,7 +153,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   // @ts-ignore
   const chartData = useMemo(() => {
     return datasetReady && filtersReady && column
-      ? parsePieChartData(foundDataset.getCategoryCounts(column), column)
+      ? parsePieChartData(foundDataset.getCategoryCounts(column, mappedFilters), column)
       : [];
   }, [JSON.stringify(mappedFilters), datasetReady, filtersReady, column]);
 
