@@ -117,6 +117,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         stroked: [JSON.stringify(shouldStroke)],
       },
       _legend: {
+        name: name,
         domain: mappedStyle?.fillColor?.domain,
         range: mappedStyle?.fillColor?.range
       } 

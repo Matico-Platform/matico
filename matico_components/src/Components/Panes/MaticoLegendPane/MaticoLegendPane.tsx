@@ -87,8 +87,9 @@ export const MaticoLegendPane = ({
                                         ? getColorScale(layer.colorScale.range)[0].map(color => <span style={{backgroundColor: color}}/>)
                                         : null
                                     : layer?.colorScale?.range 
-                                        ? layer.colorScale.range.map(d => <span style={{backgroundColor: `rgb(${d.slice(0,3).join(",")})`}}/>)}
+                                        ? layer.colorScale.range.map(d => <span style={{backgroundColor: `rgb(${d.slice(0,3).join(",")})`}}/>)
                                         : null
+                                }
                             </LegendColors>
                             <LegendLabels>
                                 {!!layer?.colorScale?.domain && layer.colorScale.domain.slice(1,).map(d => <p>{Math.round(d).toLocaleString('en')}</p>)}

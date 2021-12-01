@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { View } from "matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
 import { StaticMap } from "react-map-gl";
@@ -10,6 +10,9 @@ import { MaticoMapLayer } from "./MaticoMapLayer";
 import {useIsEditable} from "../../../Hooks/useIsEditable";
 import {EditButton} from "../../MaticoEditor/EditButton";
 import {MaticoLegendPane} from '../MaticoLegendPane/MaticoLegendPane';
+import { useMaticoSelector } from "../../../Hooks/redux";
+import { map } from "d3-array";
+import { MapLocation } from "grommet-icons";
 
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
@@ -59,6 +62,12 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
       setMapLayers([...mapLayers, layer]);
     }
   };
+
+  const validMapLayers: any = useMemo(() => 
+    layers 
+      ? layers.map(layer => mapLayers.find(ml => ml.id === layer.name)).filter(a=>a)
+      : []
+  ,[mapLayers])
 
   const [currentView, updateView] = useAutoVariable({
     //@ts-ignore
@@ -115,7 +124,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
             onViewStateChange={updateViewState}
             layers={[...layers]
               .sort((a, b) => (a.order > b.order ? 1 : -1))
-              .map((l) => mapLayers.find((ml) => (ml.id === l.name)))}
+              .map((l) => validMapLayers.find((ml) => (ml.id === l.name)))}
               
           >
             <StaticMap
@@ -141,7 +150,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
               mapName={name}
             />
           ))}
-          <MaticoLegendPane layers={mapLayers.map(layer => ({'name': layer?.props?.id, 'colorScale': layer?.props?._legend}))} />
+          <MaticoLegendPane layers={validMapLayers ? validMapLayers.map(layer => ({'name': layer?.props?.id, 'colorScale': layer?.props?._legend})) : []} />
         </>
       )}
     </Box>

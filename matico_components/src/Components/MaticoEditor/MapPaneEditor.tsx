@@ -153,6 +153,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     const newLayer = {
       ...PaneDefaults.Layer,
       source: { name: value.dataset.name },
+      name: value.name
     };
     console.log("NEW LAYER IS ", newLayer);
     dispatch(
