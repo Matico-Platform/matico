@@ -70,7 +70,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   });
 
   const foundDataset = dataState.datasets.find((d) => {
-    console.log("getting data ");
     return d.name === dataset.name;
   });
 
@@ -153,7 +152,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   };
   // @ts-ignore
   const chartData = useMemo(() => {
-    return datasetReady && filtersReady
+    return datasetReady && filtersReady && column
       ? parsePieChartData(foundDataset.getCategoryCounts(column), column)
       : [];
   }, [JSON.stringify(mappedFilters), datasetReady, filtersReady, column]);
