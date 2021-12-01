@@ -63,6 +63,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   const datasetReady = foundDataset && foundDataset.isReady();
 
   const dims = useSize(containerRef, datasetReady);
+  
   const padding = {
     top: 25,
     left: 40,
@@ -81,8 +82,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
   const spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",
-    width: dims.width - padding.left - padding.right,
-    height: dims.height - padding.top - padding.bottom,
+    width: dims.width ? dims.width - padding.left - padding.right : 100,
+    height: dims.height ? dims.height - padding.top - padding.bottom : 100,
     padding: padding,
     autosize: "none",
     config: {
@@ -235,10 +236,6 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   //   }
   // }, [view, JSON.stringify(xFilter), JSON.stringify(yFilter)]);
 
-  if (!datasetReady) {
-    return <div>{dataset.name} not found!</div>;
-  }
-
   return (
     <Box
       background={backgroundColor}
@@ -246,18 +243,22 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
       fill={true}
       ref={containerRef}
       pad="small"
+      style={{width:'100%', height:'100%'}}
     >
       <Box style={{position:"absolute", top:"-20px", left:"-20px"}} >
         <EditButton editPath={`${editPath}.Histogram`} editType={"Histogram"} /> 
       </Box>
-      <Vega
-        ref={chartRef}
-        data={{ table: chartData }}
-        signalListeners={signalListeners}
-        onNewView={(view) => setView(view)}
-        // @ts-ignore
-        spec={spec}
-      />
+      {!datasetReady && <div>{dataset.name} not found!</div>} 
+      {!(dims.width > 0) && <div>Calculating dimensions...</div>}
+      {(datasetReady && dims.width > 0) &&
+        <Vega
+          ref={chartRef}
+          data={{ table: chartData }}
+          signalListeners={signalListeners}
+          onNewView={(view) => setView(view)}
+          // @ts-ignore
+          spec={spec}
+        />}
     </Box>
   );
 };

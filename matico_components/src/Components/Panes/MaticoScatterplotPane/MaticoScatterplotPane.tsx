@@ -654,10 +654,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       }
     }, [view, JSON.stringify(xFilter), JSON.stringify(yFilter)]);
 
-    if (!datasetReady) {
-      return <div>{dataset.name} not found!</div>;
-    }
-
     return (
       <Box
         background={backgroundColor}
@@ -669,14 +665,17 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         <Box style={{position:"absolute", top:"-20px", left:"-20px"}} >
           <EditButton editPath={`${editPath}.Scatterplot`} editType={"Scatterplot"} /> 
         </Box>
-        <Vega
-          ref={chartRef}
-          data={{ table: chartData }}
-          signalListeners={signalListeners}
-          onNewView={(view) => setView(view)}
-          // @ts-ignore
-          spec={spec}
-        />
+        {!datasetReady && <div>{dataset.name} not found!</div>} 
+        {!(dims.width > 0) && <div>Calculating dimensions...</div>}
+        {(datasetReady && dims.width > 0) &&
+          <Vega
+            ref={chartRef}
+            data={{ table: chartData }}
+            signalListeners={signalListeners}
+            onNewView={(view) => setView(view)}
+            // @ts-ignore
+            spec={spec}
+          />}
       </Box>
     );
 };
