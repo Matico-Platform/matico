@@ -65,6 +65,7 @@ export const generateNumericVar = (numericVar): NumberReturn => {
     console.log("NUMERIC IS A THING ", variable, ramp);
     return (d) => ramp(d[variable]);
   }
+  return null
 };
 
 export const generateColor = (color: any) => {

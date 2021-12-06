@@ -14,9 +14,13 @@
     "./matico_components",
     "./editor"
   ],
+  "nohoist": [
+    "**/webpack**",
+    "**/babel-loader**"
+  ],
   "scripts": {
     "predeploy": "yarn run build",
-    "start": "concurrently \"cd matico_components && yarn watch\" \"cd editor && yarn start\" ",
+    "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
     "build": " (cd matico_spec && wasm-pack build) && yarn workspace matico_components build && yarn workspace editor build",
     "deploy": "yarn predeploy && yarn run netlify deploy --prod"
   },

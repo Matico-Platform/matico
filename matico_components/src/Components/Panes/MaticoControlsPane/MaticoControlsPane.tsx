@@ -51,6 +51,8 @@ export const MaticoControlsPane: React.FC<MaticoControlPaneInterface> = ({
                 <MaticoSelectControl {...params} />
               </Box>
             );
+          default:
+            throw Error(`Unsupported fitler type ${type}`)
         }
       })}
     </Box>

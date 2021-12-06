@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { Dashboard } from "matico_spec";
 import { Provider } from "react-redux";
-import { store, VariableState } from "../../Stores/MaticoStore";
+import { store } from "../../Stores/MaticoStore";
+import {VariableState} from '../../Stores/MaticoVariableSlice'
 
 import {
   MaticoDataProvider,

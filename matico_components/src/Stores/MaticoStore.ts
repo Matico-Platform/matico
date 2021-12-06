@@ -1,7 +1,6 @@
 import {configureStore} from "@reduxjs/toolkit"
 import {specReducer} from "./MaticoSpecSlice"
 import {variableReducer} from './MaticoVariableSlice'
-export {VariableState} from "./MaticoVariableSlice"
 
 export const store = configureStore({
   reducer:{
