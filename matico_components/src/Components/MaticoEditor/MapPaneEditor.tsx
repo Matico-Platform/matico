@@ -200,7 +200,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             >
               <Grid
                 pad={"medium"}
-                columns={{ size: "small", count: 2 }}
+                columns={{ size: "fill", count: 2 }}
                 fill
                 gap={"medium"}
               >
@@ -208,6 +208,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                   label="latitude"
                   name="lat"
                   htmlFor={"lat"}
+                  width={'small'}
                   disabled={isSynced}
                 >
                   <TextInput name="lat" id="lat" type="number" />
@@ -215,6 +216,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                 <FormField
                   label="longitude"
                   name="lng"
+                  width="small"
                   htmlFor={"lng"}
                   disabled={isSynced}
                 >
@@ -224,6 +226,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                   label="zoom"
                   name="zoom"
                   htmlFor={"zoom"}
+                  width={'small'}
                   disabled={isSynced}
                 >
                   <TextInput name="zoom" id="zoom" type="number" />
@@ -232,6 +235,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                   label="bearing"
                   bearing="bearing"
                   htmlFor={"bearing"}
+                  width={"small"}
                   disabled={isSynced}
                 >
                   <TextInput name="bearing" id="bearing" type="numner" />
@@ -241,6 +245,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                   pitch="pitch"
                   htmlFor={"pitch"}
                   disabled={isSynced}
+                  width={'small'}
                 >
                   <TextInput name="pitch" id="pitch" type="number" />
                 </FormField>

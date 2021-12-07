@@ -7,20 +7,20 @@ import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { setEditing } from "../../Stores/MaticoSpecSlice";
 import { Editors } from "./Editors";
 import { DatasetsEditor } from "./DatasetsEditor";
-import { BreadCrumbs } from './BreadCrumbs';
+import { BreadCrumbs } from "./BreadCrumbs";
 
 export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
   editActive,
 }) => {
   const dispatch = useMaticoDispatch();
-  // eg 
+  // eg
   // spec
   // pages.0.sections.0.panes.1.Map
   // Map
   const { spec, currentEditPath, currentEditType } = useMaticoSelector(
     (state) => state.spec
   );
-  const [tabIndex, setTabIndex] = useState<number| null>(0);
+  const [tabIndex, setTabIndex] = useState<number | null>(0);
 
   useEffect(() => {
     if (spec) {
@@ -43,7 +43,12 @@ export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
   const EditPane = Editors[currentEditType];
   if (!editActive) return null;
   return (
-    <Box fill border="left" background="neutral-3">
+    <Box
+      overflow={{ vertical: 'auto'}}
+      fill
+      border="left"
+      background="neutral-3"
+    >
       <Accordion
         activeIndex={tabIndex}
         onActive={(tab) => setTabIndex(tab[0])}
