@@ -1,10 +1,10 @@
 const webpack = require("webpack");
 const path = require("path");
 const LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
-const pkg = require('./package.json')
+const pkg = require("./package.json");
 
 const config = {
-  entry: ["react-hot-loader/patch", "./src/index.ts"],
+  entry: "./src/index.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.js",
@@ -77,15 +77,26 @@ const config = {
   resolve: {
     mainFields: ["browser", "module", "main"],
     extensions: [".tsx", ".ts", ".js"],
-    alias: {
-      "react-dom": "@hot-loader/react-dom",
+    fallback: {
+      buffer: require.resolve("buffer/"),
     },
+    // alias: {
+    //   "react-dom": "@hot-loader/react-dom",
+    // },
   },
-  externals: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)].filter(a=>a!=='matico_spec'),
+  plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
+  ],
+  externals: [
+    ...Object.keys(pkg.dependencies),
+    ...Object.keys(pkg.peerDependencies),
+  ].filter((a) => a !== "matico_spec"),
   plugins: [new LodashModuleReplacementPlugin()],
   experiments: {
     asyncWebAssembly: true,
-    syncWebAssembly: true
+    syncWebAssembly: true,
   },
 };
 
