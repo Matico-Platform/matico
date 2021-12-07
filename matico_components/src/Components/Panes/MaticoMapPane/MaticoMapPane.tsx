@@ -8,7 +8,7 @@ import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import {useIsEditable} from "../../../Hooks/useIsEditable";
-import {EditButton} from "../../MaticoEditor/EditButton";
+import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import {MaticoLegendPane} from '../MaticoLegendPane/MaticoLegendPane';
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { map } from "d3-array";

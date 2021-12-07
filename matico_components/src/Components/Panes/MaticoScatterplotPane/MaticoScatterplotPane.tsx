@@ -14,7 +14,7 @@ import {useSize} from '../../../Hooks/useSize';
 import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
 import {useSubVariables} from '../../../Hooks/useSubVariables'
 import {useIsEditable} from "../../../Hooks/useIsEditable";
-import {EditButton} from "../../MaticoEditor/EditButton";
+import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';

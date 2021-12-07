@@ -1,7 +1,7 @@
 import { Box } from "grommet";
 import React from "react";
 import ReactJson from "react-json-view";
-import { useMaticoSelector } from "../../Hooks/redux";
+import { useMaticoSelector } from "Hooks/redux";
 
 export const MaticoStateViewer: React.FC = () => {
   const state = useMaticoSelector((state) => state.variables);

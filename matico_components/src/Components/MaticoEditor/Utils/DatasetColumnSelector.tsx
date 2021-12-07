@@ -1,6 +1,6 @@
 import { Text, Box, Select } from "grommet";
 import React, { useContext } from "react";
-import { MaticoDataContext } from "../../Contexts/MaticoDataContext/MaticoDataContext";
+import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
 
 interface DatasetColumnSelectorProps {
   dataset?: string;

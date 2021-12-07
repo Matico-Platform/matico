@@ -6,7 +6,7 @@ import * as Icons from "grommet-icons";
 import { useIsEditable } from "../../Hooks/useIsEditable";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
-import { EditButton } from "../MaticoEditor/EditButton";
+import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import chroma from "chroma-js";
 
 interface MaticoNavBarProps {

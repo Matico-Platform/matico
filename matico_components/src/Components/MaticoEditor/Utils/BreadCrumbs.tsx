@@ -1,6 +1,6 @@
 import React from 'react';
-import { setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
-import { useMaticoDispatch } from "../../Hooks/redux";
+import { setCurrentEditPath } from "Stores/MaticoSpecSlice";
+import { useMaticoDispatch } from "Hooks/redux";
 import styled from "styled-components";
 
 const editTypeMapping = { // todo: centralize 

@@ -13,7 +13,8 @@
     "downlevelIteration": true,
     "emitDeclarationOnly": true,
     "skipLibCheck": true,
-    "declaration":true
+    "declaration":true,
+    "baseUrl": "./src"
   },
   "include": ["./src/**/*"],
   "exclude": ["../node_modules", "node_modules", "dist"]

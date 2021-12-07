@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import {
   Accordion,
   AccordionPanel,
@@ -16,16 +16,16 @@ import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
-} from "../../Stores/MaticoSpecSlice";
+} from "Stores/MaticoSpecSlice";
 import { SketchPicker } from "react-color";
-import { DatasetSelector } from "./DatasetSelector";
-import { DatasetColumnSelector } from "./DatasetColumnSelector";
+import { DatasetSelector } from "../Utils/DatasetSelector";
+import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-import { SectionHeading } from "./Utils";
-import { ColorPicker } from "./ColorPicker";
-import { MaticoDataContext } from "../../Contexts/MaticoDataContext/MaticoDataContext";
-import { PaneDefaults } from "./PaneDefaults";
-import { DataDrivenEditor } from "./DataDrivenEditor";
+import { SectionHeading } from "../Utils/Utils";
+import { ColorPicker } from "../Utils/ColorPicker";
+import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
+import { PaneDefaults } from "../PaneDefaults";
+import { DataDrivenEditor } from "../Utils/DataDrivenEditor";
 
 export interface LayerEditorProps {
   editPath: string;

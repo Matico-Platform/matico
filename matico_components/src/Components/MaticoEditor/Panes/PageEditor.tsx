@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import {
   Box,
   Button,
@@ -18,9 +18,9 @@ import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
-} from "../../Stores/MaticoSpecSlice";
+} from "Stores/MaticoSpecSlice";
 import MDEditor from "@uiw/react-md-editor";
-import { SectionHeading } from "./Utils";
+import { SectionHeading } from "../Utils/Utils";
 
 export interface PageEditorProps {
   editPath: string;

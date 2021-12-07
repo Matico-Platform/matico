@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Accordion, AccordionPanel, Box, Tab, Tabs } from "grommet";
-import { MaticoDatasetsViewer } from "./MaticoDatasetsViewer";
-import { MaticoRawSpecEditor } from "./MaticoRawSpecEditor";
-import { MaticoStateViewer } from "./MaticoStateViewer";
+import { MaticoDatasetsViewer } from "./Utils/MaticoDatasetsViewer";
+import { MaticoRawSpecEditor } from "./Panes/MaticoRawSpecEditor";
+import { MaticoStateViewer } from "./Panes/MaticoStateViewer";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { setEditing } from "../../Stores/MaticoSpecSlice";
 import { Editors } from "./Editors";
-import { DatasetsEditor } from "./DatasetsEditor";
-import { BreadCrumbs } from "./BreadCrumbs";
+import { DatasetsEditor } from "./Panes/DatasetsEditor";
+import { BreadCrumbs } from "./Utils/BreadCrumbs";
 
 export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
   editActive,

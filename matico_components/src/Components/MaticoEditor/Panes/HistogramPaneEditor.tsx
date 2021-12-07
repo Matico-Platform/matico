@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
-import { Box, Button, Heading, RangeInput, Text } from "grommet";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
+import { Box, Button, Grid, Heading, RangeInput, Text } from "grommet";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
-} from "../../Stores/MaticoSpecSlice";
-import { DatasetSelector } from "./DatasetSelector";
-import { DatasetColumnSelector } from "./DatasetColumnSelector";
+} from "Stores/MaticoSpecSlice";
+import { DatasetSelector } from "../Utils/DatasetSelector";
+import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-import { SectionHeading } from "./Utils";
+import { SectionHeading } from "../Utils/Utils";
+import { ColorPicker } from "../Utils/ColorPicker";
 
 export interface PaneEditorProps {
   editPath: string;
 }
 
-export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
+export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
   editPath,
 }) => {
   const spec = useMaticoSelector((state) => state.spec.spec);
@@ -28,13 +29,17 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
     dispatch(deleteSpecAtPath({ editPath }));
   };
 
+  const updateColor = (color: any) => {
+    dispatch(setSpecAtPath({ editPath, update: { color } }));
+  };
+
   const updateDataset = (dataset: string) => {
     dispatch(
       setSpecAtPath({
         editPath,
         update: {
-          dataset: { ...piechartPane.dataset, name: dataset },
-          column: null
+          dataset: { ...histogramPane.dataset, name: dataset },
+          column: null,
         },
       })
     );
@@ -51,12 +56,21 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
     );
   };
 
+  const updateBins = (e: any) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: { maxbins: parseInt(e.target.value) },
+      })
+    );
+  };
+
   const updatePane = (change: any) => {
     dispatch(
       setSpecAtPath({
         editPath,
         update: {
-          ...piechartPane,
+          ...histogramPane,
           ...change,
         },
       })
@@ -73,37 +87,55 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
   //   );
   // };
 
-  const piechartPane = _.get(spec, editPath);
+  const histogramPane = _.get(spec, editPath);
 
-  if (!piechartPane) {
+  if (!histogramPane) {
     return (
-      <Box background={'white'}>
+      <Box background={"white"}>
         <Text color="status-error">Failed to find component</Text>
       </Box>
     );
   }
   return (
-    <Box background={'white'} pad="medium">
+    <Box background={"white"} pad="medium">
       <SectionHeading>Pane Details</SectionHeading>
       <PaneEditor
-        position={piechartPane.position}
-        name={piechartPane.name}
-        background={piechartPane.background}
+        position={histogramPane.position}
+        name={histogramPane.name}
+        background={histogramPane.background}
         onChange={(change) => updatePane(change)}
       />
 
       <SectionHeading>Source</SectionHeading>
       <DatasetSelector
-        selectedDataset={piechartPane.dataset.name}
+        selectedDataset={histogramPane.dataset.name}
         onDatasetSelected={updateDataset}
       />
 
       <DatasetColumnSelector
-        dataset={piechartPane.dataset.name}
-        selectedColumn={piechartPane.column}
+        dataset={histogramPane.dataset.name}
+        selectedColumn={histogramPane.column}
         label="Column"
         onColumnSelected={(column) => updateColumn(column)}
       />
+
+      <SectionHeading>Style</SectionHeading>
+      <Grid columns={["small",  "1fr"]} gap="medium">
+        <Text>Max Number of Bins:{histogramPane.maxbins}</Text>
+        <RangeInput
+          value={histogramPane.maxbins}
+          max={100}
+          min={5}
+          step={1}
+          onChange={updateBins}
+        />
+        <Text>Color</Text>
+        <ColorPicker
+          color={histogramPane.color}
+          onChange={updateColor}
+          outFormat="hex"
+        />
+      </Grid>
 
       <SectionHeading>Danger Zone</SectionHeading>
       {confirmDelete ? (
@@ -118,7 +150,7 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
       ) : (
         <Button
           color="neutral-4"
-          label="Delete Pie Pie Chart"
+          label="Delete Histogram"
           onClick={() => setConfirmDelete(true)}
         />
       )}

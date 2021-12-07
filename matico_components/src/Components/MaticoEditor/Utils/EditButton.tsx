@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Button } from "grommet";
-import { setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
-import { useMaticoDispatch } from "../../Hooks/redux";
-import { useIsEditable } from "../../Hooks/useIsEditable";
+import { setCurrentEditPath } from "Stores/MaticoSpecSlice";
+import { useMaticoDispatch } from "Hooks/redux";
+import { useIsEditable } from "Hooks/useIsEditable";
 import { Performance } from "grommet-icons";
 
 interface EditButtonProps {

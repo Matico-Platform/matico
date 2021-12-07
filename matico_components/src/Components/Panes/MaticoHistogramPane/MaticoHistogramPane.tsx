@@ -9,7 +9,7 @@ import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { useSize } from "../../../Hooks/useSize";
 import {useIsEditable} from "../../../Hooks/useIsEditable";
-import {EditButton} from "../../MaticoEditor/EditButton";
+import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 
 import {
   updateFilterExtent,

@@ -77,6 +77,16 @@ const config = {
   resolve: {
     mainFields: ["browser", "module", "main"],
     extensions: [".tsx", ".ts", ".js"],
+    alias:{
+      "Components" : path.resolve(__dirname,"./src/Components"),
+      "Contexts" : path.resolve(__dirname,"./src/Contexts"),
+      "Hooks" : path.resolve(__dirname,"./src/Hooks"),
+      "Stores" : path.resolve(__dirname,"./src/Stores"),
+      "Utils" : path.resolve(__dirname,"./src/Utils"),
+      "Datasets" : path.resolve(__dirname,"./src/Datasets"),
+      "~/`" : path.resolve(__dirname,"./src"),
+
+    },
     fallback: {
       buffer: require.resolve("buffer/"),
     },

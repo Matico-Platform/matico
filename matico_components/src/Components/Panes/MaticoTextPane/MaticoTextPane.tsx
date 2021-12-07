@@ -4,7 +4,7 @@ import { MarkdownContnet } from "../../MarkdownContent/MarkdownContent";
 import { TextPane } from "matico_spec";
 import { Box } from "grommet";
 import {useIsEditable} from "../../../Hooks/useIsEditable";
-import {EditButton} from "../../MaticoEditor/EditButton";
+import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 
 interface MaticoTextPaneInterface extends MaticoPaneInterface {
   font?: string;

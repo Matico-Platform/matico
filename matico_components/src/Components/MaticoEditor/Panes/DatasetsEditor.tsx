@@ -11,13 +11,13 @@ import {
   Text,
   TextInput,
 } from "grommet";
-import React, { useContext, useState } from "react";
-import { MaticoDataContext } from "../../Contexts/MaticoDataContext/MaticoDataContext";
-import { Dataset, DatasetState } from "../../Datasets/Dataset";
 import { Columns, Edit, FormTrash } from "grommet-icons";
-import { useMaticoDispatch } from "../..//Hooks/redux";
-import {addDataset} from "../../Stores/MaticoSpecSlice";
-import styled from 'styled-components'
+import React, { useContext, useState } from "react";
+import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
+import { Dataset, DatasetState } from "Datasets/Dataset";
+import { useMaticoDispatch } from "Hooks/redux";
+import { addDataset } from "Stores/MaticoSpecSlice";
+import styled from "styled-components";
 
 interface DatasetEditorProps {
   dataset: Dataset;
@@ -26,16 +26,16 @@ interface DatasetEditorProps {
 
 const StyledAccordion = styled(Accordion)`
   button {
-    border:none !important;
-    box-shadow:none !important;
+    border: none !important;
+    box-shadow: none !important;
   }
-`
+`;
 
 const StyledAccordionPanel = styled(AccordionPanel)`
-  button{
-    border:none!important;
+  button {
+    border: none !important;
   }
-`
+`;
 
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({
   dataset,
@@ -83,7 +83,7 @@ const NewDatasetInput: React.FC<NewDatasetInputProps> = ({
       <Tabs>
         <Tab title="CSV">
           <Form
-            onSubmit={({value}) => {
+            onSubmit={({ value }) => {
               onSubmit({ CSV: value });
             }}
           >
@@ -115,7 +115,7 @@ const NewDatasetInput: React.FC<NewDatasetInputProps> = ({
         </Tab>
         <Tab title="GeoJSON">
           <Form
-            onSubmit={({value}) => {
+            onSubmit={({ value }) => {
               onSubmit({ GeoJSON: value });
             }}
           >

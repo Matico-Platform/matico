@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, RadioButtonGroup, Select, Text } from "grommet";
 import { DatasetColumnSelector } from "./DatasetColumnSelector";
-import { colors } from "../../Utils/colors";
+import { colors } from "Utils/colors";
 
 interface DataDrivenEditor {
   type: "color" | "number";

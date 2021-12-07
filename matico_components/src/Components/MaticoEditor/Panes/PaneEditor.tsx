@@ -1,6 +1,6 @@
 import { Box, Form, FormField, Grid, TextInput } from "grommet";
 import React from "react";
-import { MaticoPaneInterface } from "../Panes/Pane";
+import { MaticoPaneInterface } from "Components/Panes/Pane";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;

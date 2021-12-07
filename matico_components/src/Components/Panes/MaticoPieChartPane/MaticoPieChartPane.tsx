@@ -14,7 +14,7 @@ import {
 } from "../../../Utils/chartUtils";
 import { useSubVariables } from "../../../Hooks/useSubVariables";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { EditButton } from "../../MaticoEditor/EditButton";
+import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 
 interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
 import { Add } from "grommet-icons";
-import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import {
   Box,
   Button,
@@ -20,8 +20,8 @@ import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
-} from "../../Stores/MaticoSpecSlice";
-import { PaneDefaults } from "./PaneDefaults";
+} from "Stores/MaticoSpecSlice";
+import { PaneDefaults } from "../PaneDefaults";
 
 export interface SectionEditorProps {
   editPath: string;

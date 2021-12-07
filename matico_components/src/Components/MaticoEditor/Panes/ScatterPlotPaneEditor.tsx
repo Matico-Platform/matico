@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { Box, Button, Grid, Heading, RangeInput, Text } from "grommet";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
-} from "../../Stores/MaticoSpecSlice";
+} from "Stores/MaticoSpecSlice";
 import { SketchPicker } from "react-color";
-import { DatasetSelector } from "./DatasetSelector";
-import { DatasetColumnSelector } from "./DatasetColumnSelector";
+import { DatasetSelector } from "../Utils/DatasetSelector";
+import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-import { SectionHeading } from "./Utils";
-import {ColorPicker} from "./ColorPicker";
+import { SectionHeading } from "../Utils/Utils";
+import {ColorPicker} from "../Utils/ColorPicker";
 
 export interface PaneEditorProps {
   editPath: string;

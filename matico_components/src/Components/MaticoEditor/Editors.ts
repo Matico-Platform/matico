@@ -1,11 +1,11 @@
-import {MapPaneEditor} from './MapPaneEditor'
-import {PageEditor} from './PageEditor'
-import {ScatterplotPaneEditor} from './ScatterPlotPaneEditor'
-import {HistogramPaneEditor} from './HistogramPaneEditor'
-import {PieChartPaneEditor} from './PieChartPaneEditor'
-import {SectionEditor} from './SectionEditor'
-import {TextPaneEditor} from './TextPaneEditor'
-import {LayerEditor} from './LayerEditor'
+import {MapPaneEditor} from './Panes/MapPaneEditor'
+import {PageEditor} from './Panes/PageEditor'
+import {ScatterplotPaneEditor} from './Panes/ScatterPlotPaneEditor'
+import {HistogramPaneEditor} from './Panes/HistogramPaneEditor'
+import {PieChartPaneEditor} from './Panes/PieChartPaneEditor'
+import {SectionEditor} from './Panes/SectionEditor'
+import {TextPaneEditor} from './Panes/TextPaneEditor'
+import {LayerEditor} from './Panes/LayerEditor'
 
 
 export const Editors ={
