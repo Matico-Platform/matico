@@ -42,7 +42,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
           dispatch(setSpec(dash.to_js()));
           setIsValid(true);
           setJsonError(null);
-          setValidationResult(null);
+          setValidationResult([]);
         } else {
           setIsValid(false);
           setValidationResult(errors);
@@ -55,6 +55,18 @@ export const MaticoRawSpecEditor: React.FC = () => {
   }, [JSON.stringify(code), validator, validatorReady]);
 
   if (validatorError) return <h1>Failed to load validator wasm </h1>
+
+  let combinedErrors = []
+  if(jsonError){
+    combinedErrors.push(jsonError)
+  }
+  if(validationResult){
+    combinedErrors =combinedErrors.concat(validationResult)
+  }
+  console.log("combinedErrors ",combinedErrors)
+  console.log("json Error ",jsonError)
+  console.log("validation Result",validationResult)
+
   if (!validatorReady) return <Spinner />;
   return (
     <Box fill background="white" flex direction="column">
@@ -80,7 +92,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
       </Box>
       {(jsonError || validationResult) && (
         <Box height="small">
-          <List data={[jsonError, ...validationResult].filter((a) => a)} />
+          <List data={combinedErrors.filter((a) => a)} />
         </Box>
       )}
     </Box>

@@ -16,22 +16,22 @@ const DefaultView = {
 };
 
 export const PaneDefaults = {
-  Layer:{
-    name:"NewLayer",
-    style:{
-      fillColor:'#FF0000',
-      lineColor:'#FFFFFF',
-      size:20,
-      lineWidth:2000
+  Layer: {
+    name: "NewLayer",
+    style: {
+      fillColor: "#FF0000",
+      lineColor: "#FFFFFF",
+      size: 20,
+      lineWidth: 2000,
     },
-    order:1
+    order: 1,
   },
   Map: {
     position: DefaultPosition,
     name: "New Map",
     view: DefaultView,
     layers: [],
-    base_map: "Terrain",
+    base_map: { Named: "Terrain" },
   },
   Scatterplot: {
     position: DefaultPosition,
@@ -40,7 +40,7 @@ export const PaneDefaults = {
     y_column: null,
     dot_color: "#417505",
     dot_size: 14,
-    dataset: {name: 'uknown'},
+    dataset: { name: "uknown" },
   },
   Histogram: {
     position: DefaultPosition,
@@ -48,13 +48,13 @@ export const PaneDefaults = {
     column: null,
     color: "#417505",
     step: 140,
-    dataset: {name: 'uknown'},
+    dataset: { name: "uknown" },
   },
   PieChart: {
     position: DefaultPosition,
     name: "New Pie chart",
     column: null,
-    dataset: {name: 'uknown'},
+    dataset: { name: "uknown" },
   },
   Text: {
     position: DefaultPosition,
