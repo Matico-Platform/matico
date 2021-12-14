@@ -11,10 +11,9 @@
   "license": "ISC",
   "scripts": {
     "clean": "rm dist/index.js",
-    "build-types": "tsc --emitDeclarationOnly",
-    "build-dev": "webpack --mode development",
-    "build-prod": "webpack --mode production",
-    "start": "webpack watch --mode development"
+    "build-dev": "rollup -c",
+    "build-prod": "rollup -c",
+    "start": "rollup -c -w"
   },
   "dependencies": {
     "@apache-arrow/es5-cjs": "^6.0.0",
