@@ -1,17 +1,17 @@
 import React from 'react';
-import {Box} from 'grommet';
+import { Box } from 'grommet';
 import styled from 'styled-components';
-import {getColorScale} from '../MaticoMapPane/LayerUtils';
+import { getColorScale } from '../MaticoMapPane/LayerUtils';
 
 // interface MaicoMapPaneInterface extends MaticoPaneInterface {
 //     view: View;
-//     //TODO WE should properly type this from the matico_spec library. Need to figure out the Typescript integration better or witx
+//     //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
 //     base_map?: any;
 //     layers?: Array<any>;
 //     editPath?: string;
 // }
 
-const LegendOuterContainer  = styled.div`
+const LegendOuterContainer = styled.div`
     position: absolute;
     right:0.75em;
     bottom:1.5em;
@@ -55,7 +55,7 @@ const LegendColors = styled.div`
     }
 `
 
-const LegendLabels  = styled.div`
+const LegendLabels = styled.div`
     display: flex;
     flex-direction: column-reverse;
     padding: 0.4rem 0 0.4em 0.5rem;
@@ -71,23 +71,23 @@ const LegendLabels  = styled.div`
     }
 `
 export const MaticoLegendPane = ({
-    layers=[]
+    layers = []
 }) => {
-    
+
     return (
         (layers && layers.length) ? <LegendOuterContainer>
-            {layers.map(layer => 
+            {layers.map(layer =>
                 layer?.colorScale?.domain && layer?.colorScale?.range ?
                     <LegendInnerContainer>
                         <h4>{layer.name}</h4>
                         <LegendContent>
                             <LegendColors>
-                                {"string" == typeof layer.colorScale.range 
+                                {"string" == typeof layer.colorScale.range
                                     ? getColorScale(layer.colorScale.range)[0]
-                                        ? getColorScale(layer.colorScale.range)[0].map(color => <span style={{backgroundColor: color}}/>)
+                                        ? getColorScale(layer.colorScale.range)[0].map(color => <span style={{ backgroundColor: color }} />)
                                         : null
-                                    : layer?.colorScale?.range 
-                                        ? layer.colorScale.range.map(d => <span style={{backgroundColor: `rgb(${d.slice(0,3).join(",")})`}}/>)
+                                    : layer?.colorScale?.range
+                                        ? layer.colorScale.range.map(d => <span style={{ backgroundColor: `rgb(${d.slice(0, 3).join(",")})` }} />)
                                         : null
                                 }
                             </LegendColors>
@@ -96,9 +96,9 @@ export const MaticoLegendPane = ({
                             </LegendLabels>
                         </LegendContent>
                     </LegendInnerContainer>
-                : null
+                    : null
             )}
         </LegendOuterContainer>
-        : null
+            : null
     )
 }

@@ -15,7 +15,7 @@ import {
   TextInput,
 } from "grommet";
 import { Edit } from "grommet-icons";
-import { Section } from "matico_spec";
+import { Section } from "@maticoapp/matico_spec";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,

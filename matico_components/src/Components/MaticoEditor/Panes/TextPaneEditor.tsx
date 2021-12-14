@@ -74,6 +74,7 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({
 
       <SectionHeading>Content</SectionHeading>
       <SectionHeading>Content</SectionHeading>
+      
       <MDEditor preview="edit" value={textPane.content} onChange={updateContent} />
 
       <SectionHeading>Danger Zone</SectionHeading>

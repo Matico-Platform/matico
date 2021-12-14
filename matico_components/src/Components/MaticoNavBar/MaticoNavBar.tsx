@@ -1,6 +1,6 @@
 import { Avatar, Box, Text, Button, Nav, Sidebar } from "grommet";
 import { Link } from "react-router-dom";
-import { Page } from "matico_spec";
+import { Page } from "@maticoapp/matico_spec";
 import React from "react";
 import * as Icons from "grommet-icons";
 import { useIsEditable } from "../../Hooks/useIsEditable";

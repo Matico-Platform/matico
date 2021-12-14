@@ -1,1 +1,0 @@
-{"mappings":"AAAA,OAAO,MAAM,MAAK,MAAc,CAAA","sources":["src/src/index.ts","src/index.ts"],"sourcesContent":[null,"export const test:string =\"TEST\"\n"],"names":[],"version":3,"file":"types.d.ts.map","sourceRoot":"../"}

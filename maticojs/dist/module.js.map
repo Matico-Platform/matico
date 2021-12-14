@@ -1,1 +1,0 @@
-{"mappings":"AAAO,KAAK,CAAC,yCAAI,GAAS,CAAM","sources":["src/index.ts"],"sourcesContent":["export const test:string =\"TEST\"\n"],"names":[],"version":3,"file":"module.js.map","sourceRoot":"../"}

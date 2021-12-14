@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View } from "matico_spec";
+import { View } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
@@ -7,16 +7,16 @@ import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 
 import { MaticoMapLayer } from "./MaticoMapLayer";
-import {useIsEditable} from "../../../Hooks/useIsEditable";
+import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
-import {MaticoLegendPane} from '../MaticoLegendPane/MaticoLegendPane';
+import { MaticoLegendPane } from '../MaticoLegendPane/MaticoLegendPane';
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { map } from "d3-array";
 import { MapLocation } from "grommet-icons";
 
 interface MaicoMapPaneInterface extends MaticoPaneInterface {
   view: View;
-  //TODO WE should properly type this from the matico_spec library. Need to figure out the Typescript integration better or witx
+  //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
   base_map?: any;
   layers?: Array<any>;
   editPath?: string;
@@ -54,7 +54,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
 }) => {
   const [mapLayers, setMapLayers] = useState([]);
   const edit = useIsEditable()
-  
+
   const updateLayer = (layer) => {
     if (mapLayers.map((l) => l.id).includes(layer.id)) {
       setMapLayers(mapLayers.map((l) => (l.id === layer.id ? layer : l)));
@@ -63,11 +63,11 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
     }
   };
 
-  const validMapLayers: any = useMemo(() => 
-    layers 
-      ? layers.map(layer => mapLayers.find(ml => ml.id === layer.name)).filter(a=>a)
+  const validMapLayers: any = useMemo(() =>
+    layers
+      ? layers.map(layer => mapLayers.find(ml => ml.id === layer.name)).filter(a => a)
       : []
-  ,[mapLayers])
+    , [mapLayers])
 
   const [currentView, updateView] = useAutoVariable({
     //@ts-ignore
@@ -103,10 +103,10 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
   }
 
   return (
-    <Box style={{position:'relative', overflow:'hidden'}} fill={true}>
+    <Box style={{ position: 'relative', overflow: 'hidden' }} fill={true}>
       {edit &&
-        <Box style={{position:'absolute', zIndex:20, top:"20px", right:'20px', backgroundColor:"rgba(0,0,0,0.2)"}}>
-          <EditButton editPath={`${editPath}.Map`} editType="Map"/>
+        <Box style={{ position: 'absolute', zIndex: 20, top: "20px", right: '20px', backgroundColor: "rgba(0,0,0,0.2)" }}>
+          <EditButton editPath={`${editPath}.Map`} editType="Map" />
         </Box>
       }
       {currentView && (
@@ -125,7 +125,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
             layers={[...layers]
               .sort((a, b) => (a.order > b.order ? 1 : -1))
               .map((l) => validMapLayers.find((ml) => (ml.id === l.name)))}
-              
+
           >
             <StaticMap
               mapboxApiAccessToken={
@@ -150,7 +150,7 @@ export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
               mapName={name}
             />
           ))}
-          <MaticoLegendPane layers={validMapLayers ? validMapLayers.map(layer => ({'name': layer?.props?.id, 'colorScale': layer?.props?._legend})) : []} />
+          <MaticoLegendPane layers={validMapLayers ? validMapLayers.map(layer => ({ 'name': layer?.props?.id, 'colorScale': layer?.props?._legend })) : []} />
         </>
       )}
     </Box>

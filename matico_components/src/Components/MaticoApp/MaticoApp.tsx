@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
-import { Dashboard } from "matico_spec";
+import { Dashboard } from "@maticoapp/matico_spec";
 import { Provider } from "react-redux";
-import { store } from "../../Stores/MaticoStore";
-import {VariableState} from '../../Stores/MaticoVariableSlice'
-
+import { store } from "Stores/MaticoStore";
+import { VariableState } from 'Stores/MaticoVariableSlice'
 import {
   MaticoDataProvider,
   MaticoDataState,
@@ -13,6 +12,7 @@ import { Grid, Grommet } from "grommet";
 import { deepMerge } from "grommet/utils";
 import { grommet } from "grommet/themes";
 import { MaticoEditor } from "../MaticoEditor/MaticoEditor";
+
 
 interface MaticoAppInterface {
   spec?: Dashboard;
@@ -33,6 +33,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   onDataChange,
   editActive = false,
 }) => {
+
   return (
     <Provider store={store}>
       <MaticoDataProvider onStateChange={onDataChange}>

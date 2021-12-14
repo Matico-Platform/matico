@@ -17,7 +17,9 @@ export const MaticoRawSpecEditor: React.FC = () => {
   const [jsonError, setJsonError] = useState<any | null>(null);
   const [validationResult, setValidationResult] = useState<any[] | null>(null);
 
-  const { validator, validatorReady } = useValidator();
+  console.log("Attempting to get validator")
+  const { validator, validatorReady, error: validatorError} = useValidator();
+
 
   const spec = useAppSpec();
   const dispatch = useMaticoDispatch();
@@ -52,6 +54,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
     }
   }, [JSON.stringify(code), validator, validatorReady]);
 
+  if (validatorError) return <h1>Failed to load validator wasm </h1>
   if (!validatorReady) return <Spinner />;
   return (
     <Box fill background="white" flex direction="column">

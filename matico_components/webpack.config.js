@@ -7,10 +7,11 @@ const config = {
   entry: "./src/index.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
+    publicPath:"auto",
+    filename: "matico_components.js",
     library: {
       name: "matico_components",
-      type: "umd",
+      type: "umd"
     },
   },
   module: {
@@ -76,7 +77,7 @@ const config = {
   },
   resolve: {
     mainFields: ["browser", "module", "main"],
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: [".tsx", ".ts", ".js",".wasm"],
     alias:{
       "Components" : path.resolve(__dirname,"./src/Components"),
       "Contexts" : path.resolve(__dirname,"./src/Contexts"),
@@ -85,7 +86,6 @@ const config = {
       "Utils" : path.resolve(__dirname,"./src/Utils"),
       "Datasets" : path.resolve(__dirname,"./src/Datasets"),
       "~/`" : path.resolve(__dirname,"./src"),
-
     },
     fallback: {
       buffer: require.resolve("buffer/"),
@@ -94,19 +94,17 @@ const config = {
     //   "react-dom": "@hot-loader/react-dom",
     // },
   },
-  plugins: [
+  externals: [
+    ...Object.keys(pkg.dependencies),
+    ...Object.keys(pkg.peerDependencies),
+  ].filter((a) => a !== "@maticoapp/matico_spec"),
+  plugins: [new LodashModuleReplacementPlugin(),
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
   ],
-  externals: [
-    ...Object.keys(pkg.dependencies),
-    ...Object.keys(pkg.peerDependencies),
-  ].filter((a) => a !== "matico_spec"),
-  plugins: [new LodashModuleReplacementPlugin()],
   experiments: {
-    asyncWebAssembly: true,
-    syncWebAssembly: true,
+    asyncWebAssembly: true
   },
 };
 

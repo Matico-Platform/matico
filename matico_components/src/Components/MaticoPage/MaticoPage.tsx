@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDom from "react-dom";
-import { Page } from "matico_spec";
+import { Page } from "@maticoapp/matico_spec";
 import { Box } from "grommet";
 import { MarkdownContnet } from "../MarkdownContent/MarkdownContent";
 import { MaticoSection } from "../MaticoSection/MaticoSection";
@@ -13,7 +13,7 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
   page,
   editPath,
 }) => (
-  <Box fill={true} overflow={{vertical:'auto'}}>
+  <Box fill={true} overflow={{ vertical: 'auto' }}>
     {page.content && (
       <MarkdownContnet key="content">{page.content}</MarkdownContnet>
     )}

@@ -13,7 +13,7 @@ import {
   TextInput,
 } from "grommet";
 import { Edit } from "grommet-icons";
-import { Page } from "matico_spec";
+import { Page } from "@maticoapp/matico_spec";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
@@ -76,7 +76,8 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
         </FormField>
       </Form>
       <SectionHeading>Content</SectionHeading>
-      <MDEditor preview="edit" value={page.content} onChange={updateContent} />
+      
+      <MDEditor preview="edit" value={page.content} onChange={updateContent} /> 
       <SectionHeading>Sections</SectionHeading>
       <List data={page.sections} pad="medium">
         {(datum, index) => (

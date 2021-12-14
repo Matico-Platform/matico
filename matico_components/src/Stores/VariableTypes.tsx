@@ -1,48 +1,48 @@
-import {View} from 'matico_spec';
+import { View } from '@maticoapp/matico_spec';
 export type StringVar = {
-    type: 'string',
-    name: string,
-    value: string
+  type: 'string',
+  name: string,
+  value: string
 }
 
-export type NumberVar ={
-    type :'number',
-    name : string,
-    value: number
+export type NumberVar = {
+  type: 'number',
+  name: string,
+  value: number
 }
 
-export type AnyVar={
-  type:any,
-  name:string,
+export type AnyVar = {
+  type: any,
+  name: string,
   value: any
 }
 
-export type MapLocVar={
-    type: 'mapLocVar',
-    name: string,
-    value: {
-      lat: number,
-      lng: number,
-      bearing: number,
-      pitch:number,
-      zoom:number
-    } 
+export type MapLocVar = {
+  type: 'mapLocVar',
+  name: string,
+  value: {
+    lat: number,
+    lng: number,
+    bearing: number,
+    pitch: number,
+    zoom: number
+  }
 }
 
 interface SelectionRange {
   name: string,
   type: "SelectionRange",
-  value:{
+  value: {
     variable: string;
     min: number;
     max: number;
   }
 }
-interface NoSelection{
+interface NoSelection {
   name: string,
-  type:"NoSelection"
-  value:{
-    variable:string
+  type: "NoSelection"
+  value: {
+    variable: string
   }
 }
 

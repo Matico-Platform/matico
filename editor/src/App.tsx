@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import examples from "./example_configs";
 import ErrorBoundary from "./ErrorBoundary";
-import { MaticoApp } from "matico_components";
+import { MaticoApp } from "@maticoapp/matico_components";
 
 const isEditActive = () => {
   const params = window.location.search
@@ -30,7 +29,7 @@ function App() {
       name: "New Dashboard",
       created_at: new Date(),
       pages: [],
-      datasets:[]
+      datasets: [],
     };
   }
 

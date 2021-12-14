@@ -5,7 +5,7 @@ import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { MaticoDataState } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { VariableState } from "../../Stores/MaticoVariableSlice";
 import { MaticoNavBar } from "../MaticoNavBar/MaticoNavBar";
-import { Dashboard } from "matico_spec";
+import { Dashboard } from "@maticoapp/matico_spec";
 import { setSpec } from "../../Stores/MaticoSpecSlice";
 import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
@@ -54,7 +54,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
           </Box>
           <Main gridArea="main">
             <Switch>
-              {appSpec.pages.map((page,index) => (
+              {appSpec.pages.map((page, index) => (
                 <Route
                   path={page.path ? page.path : `/${page.name}`}
                   exact={true}

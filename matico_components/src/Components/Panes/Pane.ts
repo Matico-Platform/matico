@@ -1,6 +1,6 @@
-import {PanePosition} from 'matico_spec'
+import { PanePosition } from '@maticoapp/matico_spec'
 
-export interface MaticoPaneInterface{
+export interface MaticoPaneInterface {
   position: PanePosition,
   name: string,
   background: string,
