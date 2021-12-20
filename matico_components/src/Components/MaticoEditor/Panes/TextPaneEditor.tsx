@@ -9,7 +9,10 @@ import {
 } from "Stores/MaticoSpecSlice";
 import { PaneEditor } from "./PaneEditor";
 import { SectionHeading } from "../Utils/Utils";
-import MDEditor from "@uiw/react-md-editor";
+// import MDEditor from "@uiw/react-md-editor";
+import ReactMde from "react-mde";
+import "react-mde/lib/styles/css/react-mde-all.css";
+
 
 export interface PaneEditorProps {
   editPath: string;
@@ -75,7 +78,7 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({
       <SectionHeading>Content</SectionHeading>
       <SectionHeading>Content</SectionHeading>
       
-      <MDEditor preview="edit" value={textPane.content} onChange={updateContent} />
+      <ReactMde value={textPane.content} onChange={updateContent} />
 
       <SectionHeading>Danger Zone</SectionHeading>
       {confirmDelete ? (

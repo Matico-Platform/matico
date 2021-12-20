@@ -1,0 +1,22 @@
+import esbuild from "esbuild";
+import {outDir,pkg,options} from './options';
+// unminified with external dependencies
+// expected to be imported and bundled again
+esbuild
+  .build({
+    ...options,
+    outfile: `${outDir}/index.js`,
+    minify: false,
+    external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)]
+  })
+  .catch(() => process.exit(1));
+
+// minified with bundled dependencies for direct use in the browser
+// expected to be used via <script type="module">
+esbuild
+  .build({
+    ...options,
+    outfile: `${outDir}/bundle.js`,
+    minify: true,
+  })
+  .catch(() => process.exit(1));

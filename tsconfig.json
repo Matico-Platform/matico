@@ -5,9 +5,9 @@
     "sourceMap": true,
     "jsx": "react",
     "baseUrl":"./src",
-    "esModuleInterop":true
+    "esModuleInterop":true,
+    "declaration": true
   },
-
   "exclude": [
     "node_modules",
     "dist"

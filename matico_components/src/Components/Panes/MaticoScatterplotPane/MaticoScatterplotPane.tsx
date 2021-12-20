@@ -1,19 +1,19 @@
 import React from "react";
 import { Vega } from "react-vega";
-import * as vega from "vega";
+import vega from "vega";
 // import { useSelector, useDispatch } from 'react-redux';
 import { useContext, useEffect, useState, useRef, useMemo } from "react";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
 import { Box, Button } from "grommet";
 import {Performance} from 'grommet-icons'
-import { useAutoVariable } from "../../../Hooks/useAutoVariable";
-import { Filter } from "../../../Datasets/Dataset";
+import { useAutoVariable } from "Hooks/useAutoVariable";
+import { Filter } from "Datasets/Dataset";
 import _ from "lodash";
-import {useSize} from '../../../Hooks/useSize';
-import {updateFilterExtent,updateActiveDataset} from '../../../Utils/chartUtils';
-import {useSubVariables} from '../../../Hooks/useSubVariables'
-import {useIsEditable} from "../../../Hooks/useIsEditable";
+import {useSize} from 'Hooks/useSize';
+import {updateFilterExtent,updateActiveDataset} from 'Utils/chartUtils';
+import {useSubVariables} from 'Hooks/useSubVariables'
+import {useIsEditable} from "Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 
 // import styles from './Widgets.module.scss';

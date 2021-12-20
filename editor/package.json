@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@babel/plugin-syntax-typescript": "^7.14.5",
+    "@typescript-eslint/parser": "^5.7.0",
     "@wasm-tool/wasm-pack-plugin": "^1.5.0",
     "eslint-config-react-app": "^6.0.0",
     "react-app-rewired": "^2.1.8",

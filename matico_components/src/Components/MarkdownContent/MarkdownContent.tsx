@@ -4,8 +4,8 @@ import { Box, Heading, Paragraph } from "grommet";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
-import "katex/dist/katex.min.css"; // `rehype-katex`
-import _ from "lodash";
+// import "katex/dist/katex.min.css"; // `rehype-katex`
+import  _ from "lodash";
 import { useAutoVariables } from "../../Hooks/useAutoVariable";
 
 interface MarkdownContentInferface {}
@@ -48,6 +48,7 @@ export const MarkdownContnet: React.FC<MarkdownContentInferface> = ({
 
   const requiredVariables = useMemo(() => {
     const matches = content.matchAll(regexp);
+    console.log("Matches in regex are ",matches)
     const result = [];
     for (const match of matches) {
       let name = match[1].split(".")[0];

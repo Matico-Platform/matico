@@ -13,6 +13,13 @@ import { deepMerge } from "grommet/utils";
 import { grommet } from "grommet/themes";
 import { MaticoEditor } from "../MaticoEditor/MaticoEditor";
 
+//@ts-ignore
+import DatasetServiceWorker from 'Datasets/DatasetServiceWorker.worker.ts';
+import {wrap} from 'comlink'
+import {DatasetServiceInterface} from "Datasets/DatasetService";
+
+// import {wrap} from 'comlink'
+
 
 interface MaticoAppInterface {
   spec?: Dashboard;
@@ -33,6 +40,14 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   onDataChange,
   editActive = false,
 }) => {
+
+  useEffect(()=>{
+    const DatasetService = wrap<DatasetServiceInterface>(DatasetServiceWorker())
+    DatasetService.slowFunc().then((result)=>{
+      console.log("thing ",result)
+    })
+  },[])
+
 
   return (
     <Provider store={store}>

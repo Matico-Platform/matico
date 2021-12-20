@@ -21,6 +21,8 @@ import {
 } from "Stores/MaticoSpecSlice";
 import MDEditor from "@uiw/react-md-editor";
 import { SectionHeading } from "../Utils/Utils";
+import ReactMde from "react-mde";
+import "react-mde/lib/styles/css/react-mde-all.css";
 
 export interface PageEditorProps {
   editPath: string;
@@ -42,7 +44,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
     dispatch(deleteSpecAtPath({ editPath }));
   };
 
-  const editSection = (index) => {
+  const editSection = (index :number) => {
     console.log("SECTION is ", index);
     dispatch(
       setCurrentEditPath({
@@ -77,7 +79,8 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
       </Form>
       <SectionHeading>Content</SectionHeading>
       
-      <MDEditor preview="edit" value={page.content} onChange={updateContent} /> 
+
+      <ReactMde value={page.content} onChange={updateContent} />
       <SectionHeading>Sections</SectionHeading>
       <List data={page.sections} pad="medium">
         {(datum, index) => (

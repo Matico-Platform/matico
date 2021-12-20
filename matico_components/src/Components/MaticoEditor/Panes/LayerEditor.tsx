@@ -1,31 +1,21 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import {
   Accordion,
   AccordionPanel,
   Box,
-  Button,
   Grid,
-  Heading,
   RadioButtonGroup,
   RangeInput,
   Text,
 } from "grommet";
-import {
-  deleteSpecAtPath,
-  setCurrentEditPath,
-  setSpecAtPath,
-} from "Stores/MaticoSpecSlice";
-import { SketchPicker } from "react-color";
+import { setSpecAtPath } from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
-import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
-import { PaneEditor } from "./PaneEditor";
-import { SectionHeading } from "../Utils/Utils";
 import { ColorPicker } from "../Utils/ColorPicker";
-import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
 import { PaneDefaults } from "../PaneDefaults";
 import { DataDrivenEditor } from "../Utils/DataDrivenEditor";
+import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
 
 export interface LayerEditorProps {
   editPath: string;
@@ -44,7 +34,6 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
   );
 
   console.log("Layer dataset is ", dataset, layer);
-
 
   const updateStyle = (property: string, value: any) => {
     dispatch(
@@ -80,18 +69,17 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     );
   };
 
-  const updateDataset = (dataset:string)=>{
+  const updateDataset = (dataset: string) => {
     dispatch(
       setSpecAtPath({
         editPath,
         update: {
-          source:{name:dataset,filters:[]},
+          source: { name: dataset, filters: [] },
           style: defaults.style,
         },
       })
     );
-    
-  }
+  };
   const toggleDataDriven = (
     param: string,
     dataDriven: boolean,
@@ -146,7 +134,10 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     <Box background={"white"} pad="medium">
       <Accordion>
         <AccordionPanel label="Datasource"></AccordionPanel>
-        <DatasetSelector selectedDataset={dataset.name} onDatasetSelected={updateDataset} />
+        <DatasetSelector
+          selectedDataset={dataset.name}
+          onDatasetSelected={updateDataset}
+        />
 
         <AccordionPanel label={"Style"}>
           <Grid

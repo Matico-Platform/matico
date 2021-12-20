@@ -19,14 +19,13 @@ export class CSVBuilder {
   //TODO find a way to make this a more general expression
   private _data: any;
   private _columns: Column[];
-  private _geometryType;
+  private _geometryType : GeomType;
   private _filterCache: any;
-  GeomType;
 
   constructor(
     public name: string,
     public url: string,
-    onDone: (LocalDataset) => void,
+    onDone: (ld: LocalDataset) => void,
     public lat_col?: string,
     public lng_col?: string,
     public id_col?: string
@@ -36,7 +35,7 @@ export class CSVBuilder {
       dynamicTyping: true,
       header: true,
       download: true,
-      complete: (results) => {
+      complete: (results: any) => {
         const { columns, fields } = constructColumnListFromSample(
           results.data[0]
         );

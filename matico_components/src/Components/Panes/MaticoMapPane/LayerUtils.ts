@@ -5,7 +5,7 @@ import chroma from "chroma-js";
 import { RGBAColor } from "@deck.gl/core";
 import * as d3 from "d3-scale";
 import { colors } from "../../../Utils/colors";
-import _ from "lodash";
+import lodash from "lodash";
 
 export function chunkCoords(coords: Array<Number>) {
   return coords.reduce((result, coord, index) => {
