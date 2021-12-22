@@ -5,16 +5,12 @@ import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
-
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import { MaticoLegendPane } from '../MaticoLegendPane/MaticoLegendPane';
-import { useMaticoSelector } from "../../../Hooks/redux";
-import { map } from "d3-array";
-import { MapLocation } from "grommet-icons";
 
-interface MaicoMapPaneInterface extends MaticoPaneInterface {
+export interface MaticoMapPaneInterface extends MaticoPaneInterface {
   view: View;
   //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
   base_map?: any;
@@ -45,7 +41,7 @@ function getNamedStyleJSON(style: string) {
   }
 }
 
-export const MaticoMapPane: React.FC<MaicoMapPaneInterface> = ({
+export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
   view,
   base_map,
   name,

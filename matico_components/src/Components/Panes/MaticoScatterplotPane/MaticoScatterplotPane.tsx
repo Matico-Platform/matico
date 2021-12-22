@@ -34,7 +34,7 @@ import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 // }
 const backgroundColor = "#fff"; //todo hoist to pane spec
 
-interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
+export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
   x_column: string;
   y_column: string;

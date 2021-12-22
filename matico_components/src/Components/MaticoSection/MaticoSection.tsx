@@ -8,6 +8,7 @@ import { MaticoHistogramPane } from '../Panes/MaticoHistogramPane/MaticoHistogra
 import { MaticoScatterplotPane } from '../Panes/MaticoScatterplotPane/MaticoScatterplotPane'
 import { MaticoPieChartPane } from '../Panes/MaticoPieChartPane/MaticoPieChartPane'
 import { MaticoControlsPane } from '../Panes/MaticoControlsPane/MaticoControlsPane'
+import {Pane} from 'Components/Panes/Pane'
 
 interface MaticoSectionInterface {
   section: Section,
@@ -23,7 +24,7 @@ function selectLayout(layout_name: string) {
   }
 }
 
-const panes = {
+const panes : {[paneType:string] : Pane } = {
   "Map": MaticoMapPane,
   "Text": MaticoTextPane,
   "Histogram": MaticoHistogramPane,

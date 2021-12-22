@@ -6,7 +6,7 @@ import { Box } from "grommet";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 
-interface MaticoTextPaneInterface extends MaticoPaneInterface {
+export interface MaticoTextPaneInterface extends MaticoPaneInterface {
   font?: string;
   content: string;
   editPath?: string;
@@ -21,7 +21,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
   return (
     <Box elevation={"large"} fill={true} overflow={{ vertical: 'auto' }}>
       {edit &&
-        <Box style={{ position: 'relative', top: "-20px", left: "-20px", zIndex: 20, width: "48px", height: "48px" }}>
+        <Box style={{ position: 'absolute', top: "-24px", left: "-25px", zIndex: 20, width: "48px", height: "48px" }}>
           <EditButton editPath={`${editPath}.Text`} editType={"Text"} />
         </Box>
       }

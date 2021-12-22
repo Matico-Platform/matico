@@ -6,12 +6,12 @@ import { MaticoRangeControl } from "./MaticoRangeControl";
 import { MaticoSelectControl } from "./MaticoSelectControl";
 import {useSubVariables} from "../../../Hooks/useSubVariables";
 
-interface MaticoControlPaneInterface extends MaticoPaneInterface {
+export interface MaticoControlsPaneInterface extends MaticoPaneInterface {
   controls: Array<any>;
   title?: string;
 }
 
-export const MaticoControlsPane: React.FC<MaticoControlPaneInterface> = ({
+export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
   controls,
   title,
 }) => {

@@ -41,15 +41,19 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   }
 
   const onAddPage = () => {
+    const firstPage = pages.length === 0
+    const pageNo = firstPage ?  0 : Math.max(...pages.map((p) => p.order)) + 1  
+
     dispatch(
       addPage({
         //@ts-ignore
         page: {
-          name: "new page",
-          content: "This is a new page",
-          icon: "Page",
+          name: firstPage ? "Home" : `Page${pageNo}`,
+          content: `This page ${pageNo}`,
+          path: firstPage ? "/" : `page_${pageNo}`,
+          icon: firstPage ? "Home" : "Page",
           //@ts-ignore
-          order: Math.max(...pages.map((p) => p.order)) + 1 || 1,
+          order: pageNo,
           sections: [
             {
               name: "First Section",
@@ -62,7 +66,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       })
     );
   };
-  console.log("Logo is ", logo, " Theme is ", theme);
+
   return (
     <Sidebar
       background={chromaColor ? chromaColor.hex() : "neutral-2"}

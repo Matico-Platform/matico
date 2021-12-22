@@ -4,13 +4,13 @@ import { Box, Heading, Paragraph } from "grommet";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
-// import "katex/dist/katex.min.css"; // `rehype-katex`
+//import "katex/dist/katex.min.css"; // `rehype-katex`
 import  _ from "lodash";
 import { useAutoVariables } from "../../Hooks/useAutoVariable";
 
 interface MarkdownContentInferface {}
 
-const regexp = new RegExp("#{(.*)}", "g");
+const regexp = new RegExp("#{([^}]*)}", "g");
 
 const CustomHeader = ({ children, id, level }) => {
   const variant = `${Math.min(level, 6)}`;
@@ -48,9 +48,9 @@ export const MarkdownContnet: React.FC<MarkdownContentInferface> = ({
 
   const requiredVariables = useMemo(() => {
     const matches = content.matchAll(regexp);
-    console.log("Matches in regex are ",matches)
     const result = [];
     for (const match of matches) {
+      console.log("match is ",match)
       let name = match[1].split(".")[0];
       let path = match[1].split(".").slice(1).join(".");
       result.push({
@@ -91,7 +91,8 @@ export const MarkdownContnet: React.FC<MarkdownContentInferface> = ({
   return (
     <Box
       style={{ textAlign: "start" }}
-      pad="medium"
+      pad="small"
+    margin="none"
       overflow={{ vertical: "auto" }}
     >
       <ReactMarkdown /*@ts-ignore*/

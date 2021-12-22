@@ -46,16 +46,6 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({
     );
   };
 
-  // const editPane = (index) => {
-  //   console.log("SECTION is ",index)
-  //   dispatch(
-  //     setCurrentEditPath({
-  //       editPath: `${editPath}.${index}`,
-  //       editType: "Pane",
-  //     })
-  //   );
-  // };
-
   const textPane= _.get(spec, editPath);
 
   if (!textPane) {

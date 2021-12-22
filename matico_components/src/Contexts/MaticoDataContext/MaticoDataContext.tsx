@@ -88,7 +88,7 @@ export const MaticoDataProvider: React.FC<{
   };
 
   useEffect(() => {
-    datasets.forEach((dataset) => {
+    datasets.forEach((dataset: any) => {
       if (
         Object.keys(state.datasetStates).find(
           (d) => d === (Object.values(dataset)[0] as Dataset).name
@@ -104,20 +104,14 @@ export const MaticoDataProvider: React.FC<{
             state: DatasetState.LOADING,
           },
         });
-        new GeoJSONBuilder(
-          dataset.GeoJSON.name,
-          dataset.GeoJSON.url,
-          (dataset) => {
-            registerDataset(dataset);
-            dispatch({
-              type: MaticoDataActionType.UPDATE_DATASET_STATE,
-              payload: { datasetName: dataset.name, state: DatasetState.READY },
-            });
-          },
-          dataset.GeoJSON.id_col
-        );
+        GeoJSONBuilder(dataset.GeoJSON).then((dataset: Dataset) => {
+          registerDataset(dataset);
+          dispatch({
+            type: MaticoDataActionType.UPDATE_DATASET_STATE,
+            payload: { datasetName: dataset.name, state: DatasetState.READY },
+          });
+        });
       } else if (dataset.CSV) {
-        const { name, url, lat_col, lng_col, id_col } = dataset.CSV;
         dispatch({
           type: MaticoDataActionType.UPDATE_DATASET_STATE,
           payload: {
@@ -125,20 +119,13 @@ export const MaticoDataProvider: React.FC<{
             state: DatasetState.LOADING,
           },
         });
-        new CSVBuilder(
-          name,
-          url,
-          (dataset) => {
-            registerDataset(dataset);
-            dispatch({
-              type: MaticoDataActionType.UPDATE_DATASET_STATE,
-              payload: { datasetName: dataset.name, state: DatasetState.READY },
-            });
-          },
-          lat_col,
-          lng_col,
-          id_col
-        );
+        CSVBuilder(dataset.CSV).then((dataset) => {
+          registerDataset(dataset);
+          dispatch({
+            type: MaticoDataActionType.UPDATE_DATASET_STATE,
+            payload: { datasetName: dataset.name, state: DatasetState.READY },
+          });
+        });
       }
     });
   }, [JSON.stringify(datasets)]);

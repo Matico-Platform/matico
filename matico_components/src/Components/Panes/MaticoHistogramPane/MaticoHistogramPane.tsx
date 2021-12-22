@@ -17,7 +17,7 @@ import {
 } from "../../../Utils/chartUtils";
 import { useSubVariables } from "../../../Hooks/useSubVariables";
 
-interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
+export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
   column: string;
   color?: string;

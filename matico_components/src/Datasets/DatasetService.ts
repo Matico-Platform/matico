@@ -1,32 +1,30 @@
 import {Dataset} from "Datasets/Dataset"
+import {CSVBuilder} from "./CSVBuilder";
+import {GeoJSONBuilder} from "./GeoJSONBuilder";
 type Loader= (params:any)=> Dataset
 
 export interface DatasetServiceInterface{
-  testFunc: ()=>Promise<string>;
-  slowFunc: ()=>Promise<number>;
-  datasets: Array<Dataset>;
-  datasetLoaders: Array<Loader>;
+  datasets: {[datasetName : string] : Dataset},
+  datasetLoaders:  {[loaderName: string] : Loader},
+  registerDataset: (datasetName:string, datasetDetails:any)=>Promise<{datasetName:string, state:any}>
+
 }
 
 
 export const DatasetService: DatasetServiceInterface ={  
-  datasets :[],
-  datasetLoaders: [],
+  datasets :{},
+  datasetLoaders: {},
 
-  async testFunc(): Promise<string>{
-    return new Promise((resolve,reject)=>{
-      setTimeout(()=>resolve("worked"),1000)
-    })
-  },
+  async registerDataset(datasetName:string, datasetDetails: any): Promise<{datasetName:string, state:any}>{
 
-  async slowFunc(): Promise<number>{
-    const fibonacci = (num: number): number => {
-      if (num <= 1) return 1;
-
-      return fibonacci(num - 1) + fibonacci(num - 2);
-    }
-    return fibonacci(200)
-
+      switch(datasetDetails.type){
+        case "GeoJSON":
+          this.datasets[datasetName] = await GeoJSONBuilder(datasetDetails)
+          return {datasetName, state:"LOADED"}
+        case "CSV":
+          this.datasets[datasetName] = await CSVBuilder(datasetDetails)
+          return {datasetName, state:"LOADED"}
+      }
   }
 }
 
