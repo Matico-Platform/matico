@@ -50,7 +50,6 @@ export const MarkdownContnet: React.FC<MarkdownContentInferface> = ({
     const matches = content.matchAll(regexp);
     const result = [];
     for (const match of matches) {
-      console.log("match is ",match)
       let name = match[1].split(".")[0];
       let path = match[1].split(".").slice(1).join(".");
       result.push({

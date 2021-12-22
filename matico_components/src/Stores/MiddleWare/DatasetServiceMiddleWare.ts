@@ -14,7 +14,9 @@ export const DatasetServiceMiddleWare = () => {
   return (store: any) => (next: any) => (action: any) => {
     switch (action.type) {
       case "datasets/registerDataset":
+        console.log("intercepting register dataset", action,worker)
         worker.registerDataset(action.payload).then(() => {
+          console.log("Registered dataset ")
           store.dispatch({
             type: "datasets/datasetReady",
             payload: {},

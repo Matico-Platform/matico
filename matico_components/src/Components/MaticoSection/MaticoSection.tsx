@@ -40,7 +40,6 @@ function selectPane(pane: any, editPath: string) {
   
 
   if (!PaneComponent) return null;
-  console.log("key is ",pane.name)
   return (
     <PaneComponent
       key={paneDetails.name}

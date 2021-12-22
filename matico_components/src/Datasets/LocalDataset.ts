@@ -150,7 +150,6 @@ export class LocalDataset implements Dataset {
     const data = this.getData(filters, [column]);
     const vals = data.map((c: any) => c[column]).sort();
     const binSize = 1.0 / bins;
-    console.log("bind size is ", binSize)
     return _.range(bins).map((i: number) => d3.quantile(vals, i * binSize));
   }
 
@@ -243,7 +242,6 @@ export class LocalDataset implements Dataset {
       this._filterCache[JSON.stringify(filters)] = results;
       return results;
     }
-    console.log("RETURNING BASE DATA ");
     return this._getResultsFromPredicate();
   }
 }
