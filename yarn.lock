@@ -2939,6 +2939,7 @@ __metadata:
     "@types/react-dom": ^17.0.11
     "@types/react-router": ^5.1.17
     "@types/react-router-dom": ^5.3.2
+    "@types/styled-components": ^5.1.18
     "@types/traverse": ^0.6.32
     "@uiw/react-md-editor": ^3.7
     ace-builds: ^1.4.13
@@ -5017,7 +5018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hoist-non-react-statics@npm:^3.3.0":
+"@types/hoist-non-react-statics@npm:*, @types/hoist-non-react-statics@npm:^3.3.0":
   version: 3.3.1
   resolution: "@types/hoist-non-react-statics@npm:3.3.1"
   dependencies:
@@ -5393,6 +5394,17 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
+  languageName: node
+  linkType: hard
+
+"@types/styled-components@npm:^5.1.18":
+  version: 5.1.18
+  resolution: "@types/styled-components@npm:5.1.18"
+  dependencies:
+    "@types/hoist-non-react-statics": "*"
+    "@types/react": "*"
+    csstype: ^3.0.2
+  checksum: f4d99353e53781283549f5988fda3b3d4cf8fc1bca6624a215883851148db0d5c65c0d0b04ff0a9de43cbce54219a46fe5272278391051e7a4164b4b5e5bd125
   languageName: node
   linkType: hard
 
