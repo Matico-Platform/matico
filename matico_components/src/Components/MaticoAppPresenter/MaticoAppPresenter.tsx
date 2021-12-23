@@ -9,6 +9,7 @@ import { Dashboard } from "@maticoapp/matico_spec";
 import { setSpec } from "../../Stores/MaticoSpecSlice";
 import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
+import {registerDataset} from "Stores/MaticoDatasetSlice";
 
 interface MaticoAppPresenterProps {
   spec?: Dashboard;
@@ -28,6 +29,16 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
   useEffect(() => {
     dispatch(setSpec(spec));
   }, [JSON.stringify(spec)]);
+
+  useEffect(()=>{
+    spec.datasets.forEach((datasetDetails:{[type:string]: any})=>{
+      const [type,details] = Object.entries(datasetDetails)[0]
+      dispatch(registerDataset({
+        ...details,
+        type
+      }))
+    })
+  })
 
   const appSpec = useAppSpec();
 

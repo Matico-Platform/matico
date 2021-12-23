@@ -34,12 +34,18 @@ export const datasetsSlice = createSlice({
       state.datasets[action.payload.datasetName] =
         action.payload.datasetDetails;
     },
-    failedToRegisterDataset:(state,action:PayloadAction<{datasetName:string, error:any}>)=>{
-      state.datasets[action.payload.datasetName] = {state:'failed', error:action.payload.error}
-    }
+    failedToRegisterDataset: (
+      state,
+      action: PayloadAction<{ datasetName: string; error: any }>
+    ) => {
+      state.datasets[action.payload.datasetName] = {
+        state: "failed",
+        error: action.payload.error,
+      };
+    },
   },
 });
 
-export const {} = datasetsSlice.actions;
+export const {registerDataset} = datasetsSlice.actions;
 
 export const datasetsReducer = datasetsSlice.reducer;

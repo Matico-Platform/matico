@@ -34,6 +34,7 @@ export const GeoJSONBuilder = async (details: GeoJSONBuilderOptions) => {
   const geometryType = extractGeomType(result);
   const { columns, fields } = extractColumns(result, idCol);
   const data = buildDataTable(result, idCol, columns, fields);
+
   return new LocalDataset(
     name,
     idCol ? idCol : "id",
