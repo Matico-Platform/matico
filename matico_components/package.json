@@ -82,7 +82,9 @@
     "autoprefixer": "^10.4.0",
     "esbuild": "^0.14.5",
     "esbuild-plugin-inline-worker": "^0.1.1",
+    "esbuild-plugin-replace": "^1.0.9",
     "esbuild-plugin-wasm": "^1.0.0",
+    "node-stdlib-browser": "^1.2.0",
     "typescript": "^4.5.3"
   },
   "peerDependencies": {
