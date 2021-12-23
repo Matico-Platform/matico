@@ -1,8 +1,8 @@
 
 export enum DatasetState{
-  LOADING,
-  ERROR,
-  READY 
+  LOADING = "LOADING",
+  ERROR = "ERROR",
+  READY = "READY" 
 }
 export interface Column{
     name: string,
@@ -33,6 +33,13 @@ export interface CategoryFilter{
 }
 
 export type Filter = RangeFilter | CategoryFilter
+export interface DatasetSummary{
+  name: string,
+  geomType?: GeomType,
+  columns?: Array<Column>,
+  local?:boolean,
+  state: DatasetState
+}
 
 export interface Dataset{
   name: string,

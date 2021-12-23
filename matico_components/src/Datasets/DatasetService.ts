@@ -1,7 +1,14 @@
-import { Dataset } from "Datasets/Dataset";
+import {
+  Dataset,
+  Column,
+  GeomType,
+  DatasetSummary,
+  DatasetState,
+} from "Datasets/Dataset";
 import { CSVBuilder } from "./CSVBuilder";
 import { GeoJSONBuilder } from "./GeoJSONBuilder";
 type Loader = (params: any) => Dataset;
+
 
 export interface DatasetServiceInterface {
   datasets: { [datasetName: string]: Dataset };
@@ -9,30 +16,33 @@ export interface DatasetServiceInterface {
   registerDataset: (
     datasetName: string,
     datasetDetails: any
-  ) => Promise<{ datasetName: string; state: any }>;
+  ) => Promise<DatasetSummary>;
 }
 
 export const DatasetService: DatasetServiceInterface = {
   datasets: {},
   datasetLoaders: {},
 
-  async registerDataset(
-    datasetDetails: any
-  ): Promise<{ datasetName: string; state: any }> {
-    console.log("Registering dataset inside worker ", datasetDetails);
-
+  async registerDataset(datasetDetails: any): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
       case "GeoJSON":
-        this.datasets[datasetDetails.name] = await GeoJSONBuilder(
-          datasetDetails
-        );
-        console.log("Building geojson file");
-        return { datasetName: "test", state: {} };
-      //
-      //         return {datasetName: datasetDetails.datasetName, state:"LOADED"}
-      //       case "CSV":
-      //         this.datasets[datasetDetails.datasetName] = await CSVBuilder(datasetDetails)
-      //         return {datasetName: datasetDetails.datasetName, state:"LOADED"}
+        const geoDataset = await GeoJSONBuilder(datasetDetails);
+        return {
+          name: geoDataset.name,
+          state: DatasetState.READY,
+          columns: geoDataset.columns(),
+          local: true,
+          geomType: geoDataset.geometryType(),
+        };
+      case "CSV":
+        const csvDataset = await CSVBuilder(datasetDetails);
+        return {
+          name: csvDataset.name,
+          state: DatasetState.READY,
+          columns: csvDataset.columns(),
+          local: true,
+          geomType: csvDataset.geometryType(),
+        };
     }
   },
 };

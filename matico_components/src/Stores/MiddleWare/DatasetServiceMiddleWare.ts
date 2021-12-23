@@ -1,5 +1,6 @@
 import { wrap } from "comlink";
 import { DatasetServiceInterface } from "Datasets/DatasetService";
+import { DatasetState, DatasetSummary } from "Datasets/Dataset";
 
 //@ts-ignore
 import DatasetServiceWorker from "Datasets/DatasetServiceWorker.worker.ts";
@@ -9,33 +10,45 @@ export const DatasetServiceMiddleWare = () => {
 
   if (!worker) {
     worker = wrap<DatasetServiceInterface>(DatasetServiceWorker());
-    console.log("Creating worker ", worker)
+    console.log("Creating worker ", worker);
   }
 
   return (store: any) => (next: any) => (action: any) => {
+    const state = store.getState();
     switch (action.type) {
       case "datasets/registerDataset":
-        console.log("intercepting register dataset", action,worker)
-        worker.registerDataset(action.payload).then((stringRet: string)=>{
-          console.log("called test func", stringRet)
-        })
-        // worker.registerDataset(action.payload).then(() => {
-        //   console.log("Registered dataset ")
-        //   store.dispatch({
-        //     type: "datasets/datasetReady",
-        //     payload: {},
-        //   });
-        // })
-        // .catch((error:any)=>{
-        //   store.dispatch({
-        //     type:'datasets/failedToRegisterDataset',
-        //     payload:{
-        //       datasetName: action.payload.datasetName,
-        //       error 
-        //     }
-        //   })
-        // });
+        if (!state.datasets.datasets[action.payload.name]) {
+          worker
+            .registerDataset(action.payload)
+            .then((datasetSummary: DatasetSummary) => {
+              store.dispatch({
+                type: "datasets/datasetReady",
+                payload: datasetSummary,
+              });
+            })
+            .catch((error: any) => {
+              console.warn(
+                "Something went wrong registering dataset",
+                action.payload,
+                error
+              );
+              store.dispatch({
+                type: "datasets/datasetFiledToLoad",
+                payload: {
+                  ...action.payload,
+                  error: error,
+                },
+              });
+            });
 
+          // Once we have started the loading process modify the message
+          // To reflect this
+          //
+          return next({
+            ...action,
+            payload: { name: action.payload.name, state: DatasetState.LOADING },
+          });
+        }
       case "datasets/request_query":
         // worker.runQuery(action.payload).then(() => {
         //   store.dispatch({
@@ -44,7 +57,8 @@ export const DatasetServiceMiddleWare = () => {
         //   });
         // });
         break;
+      default: 
+        return next(action);
     }
-    return next(action);
   };
 };

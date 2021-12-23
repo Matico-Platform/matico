@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {DatasetDetails, DatasetSummary} from 'Datasets/Dataset'
 import _ from "lodash";
 // import { Dataset } from "../Datasets/Dataset";
 
 // export type DatasetLoader = (config: any)=> Dataset;
 
 export interface DatasetsState {
-  datasets: { [datasetName: string]: any };
+  datasets: { [datasetName: string]: DatasetDetails};
   queries: { [queryHash: string]: any };
   loaders: { [loaderName: string]: any };
 }
@@ -22,17 +23,18 @@ export const datasetsSlice = createSlice({
   reducers: {
     registerDataset: (
       state,
-      action: PayloadAction<{ datasetName: string; datasetDetails: any }>
+      action: PayloadAction<DatasetSummary>
     ) => {
-      state.datasets[action.payload.datasetName] =
-        action.payload.datasetDetails;
+      state.datasets[action.payload.name] =
+        action.payload;
     },
     datasetReady: (
       state,
-      action: PayloadAction<{ datasetName: string; datasetDetails: any }>
+      action: PayloadAction<DatasetSummary>
     ) => {
-      state.datasets[action.payload.datasetName] =
-        action.payload.datasetDetails;
+      console.log("DATASET READT ", action)
+      state.datasets[action.payload.name] =
+        action.payload;
     },
     failedToRegisterDataset: (
       state,
