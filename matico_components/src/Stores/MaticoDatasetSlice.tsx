@@ -32,7 +32,6 @@ export const datasetsSlice = createSlice({
       state,
       action: PayloadAction<DatasetSummary>
     ) => {
-      console.log("DATASET READT ", action)
       state.datasets[action.payload.name] =
         action.payload;
     },

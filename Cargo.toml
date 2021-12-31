@@ -3,5 +3,6 @@
 members = [
   "matico_spec_derive",
   "matico_spec",
-  "matico_buffer_analysis"
+  "matico_buffer_analysis",
+  "matico_server"
 ]
