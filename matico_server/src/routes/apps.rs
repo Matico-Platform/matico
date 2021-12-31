@@ -4,8 +4,8 @@ use crate::models::permissions::{Permission, PermissionType};
 use crate::models::users::UserToken;
 
 use crate::errors::ServiceError;
-use crate::models::dashboards::{
-    CreateDashboardDTO, Dashboard, DashboardOrderBy, DashboardSearch, UpdateDashboardDTO,
+use crate::models::apps::{
+    CreateAppDTO, App, AppOrderBy, AppSearch, UpdateAppDTO,
 };
 use crate::utils::PaginationParams;
 use actix_web::{delete, get, post, put, web, HttpResponse};
@@ -13,10 +13,10 @@ use serde_json::json;
 use uuid::Uuid;
 
 #[get("")]
-pub async fn get_all_dashboards(
+pub async fn get_all_apps(
     state: web::Data<State>,
-    web::Query(search): web::Query<DashboardSearch>,
-    web::Query(order): web::Query<DashboardOrderBy>,
+    web::Query(search): web::Query<AppSearch>,
+    web::Query(order): web::Query<AppOrderBy>,
     web::Query(page): web::Query<PaginationParams>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
@@ -30,15 +30,15 @@ pub async fn get_all_dashboards(
         search.public = Some(true)
     };
 
-    let dashboards = Dashboard::search(&state.db, order, search, Some(page))?;
-    Ok(HttpResponse::Ok().json(dashboards))
+    let apps = App::search(&state.db, order, search, Some(page))?;
+    Ok(HttpResponse::Ok().json(apps))
 }
 
 #[post("")]
-pub async fn create_dashboard(
+pub async fn create_app(
     state: web::Data<State>,
     logged_in_user: AuthService,
-    web::Json(mut new_dataset): web::Json<CreateDashboardDTO>,
+    web::Json(mut new_dataset): web::Json<CreateAppDTO>,
 ) -> Result<HttpResponse, ServiceError> {
     let user: UserToken = logged_in_user
         .user
@@ -46,69 +46,69 @@ pub async fn create_dashboard(
 
     new_dataset.owner_id = Some(user.id);
 
-    let dashboard = Dashboard::create(&state.db, new_dataset)?;
-    Ok(HttpResponse::Ok().json(dashboard))
+    let app = App::create(&state.db, new_dataset)?;
+    Ok(HttpResponse::Ok().json(app))
 }
 
-#[delete("/{dashboard_id}")]
-pub async fn delete_dashboard(
+#[delete("/{app_id}")]
+pub async fn delete_app(
     state: web::Data<State>,
-    web::Path(dashboard_id): web::Path<Uuid>,
+    web::Path(app_id): web::Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-    let dashboard = Dashboard::find(&state.db, dashboard_id)?;
+    let app = App::find(&state.db, app_id)?;
 
     let user = logged_in_user
         .user
         .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
 
-    if user.id != dashboard.owner_id {
-        Permission::check_permission(&state.db, &user.id, &dashboard_id, PermissionType::WRITE)?;
+    if user.id != app.owner_id {
+        Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::WRITE)?;
     }
 
-    Dashboard::delete(&state.db, dashboard_id)?;
-    Ok(HttpResponse::Ok().json(json!({ "deleted": dashboard_id })))
+    App::delete(&state.db, app_id)?;
+    Ok(HttpResponse::Ok().json(json!({ "deleted": app_id })))
 }
 
-#[put("/{dashboard_id}")]
-pub async fn update_dashboard(
+#[put("/{app_id}")]
+pub async fn update_app(
     state: web::Data<State>,
-    web::Path(dashboard_id): web::Path<Uuid>,
-    web::Json(update): web::Json<UpdateDashboardDTO>,
+    web::Path(app_id): web::Path<Uuid>,
+    web::Json(update): web::Json<UpdateAppDTO>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let user = logged_in_user
         .user
         .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    Permission::check_permission(&state.db, &user.id, &dashboard_id, PermissionType::WRITE)?;
-    let update = Dashboard::update(&state.db, dashboard_id, update)?;
+    Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::WRITE)?;
+    let update = App::update(&state.db, app_id, update)?;
     Ok(HttpResponse::Ok().json(update))
 }
 
-#[get("/{dashboard_id}")]
-pub async fn get_dashboard(
+#[get("/{app_id}")]
+pub async fn get_app(
     state: web::Data<State>,
-    web::Path(dashboard_id): web::Path<Uuid>,
+    web::Path(app_id): web::Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-    let dashboard = Dashboard::find(&state.db, dashboard_id)?;
+    let app = App::find(&state.db, app_id)?;
     if let Some(user) = logged_in_user.user {
-        if !dashboard.public && user.id != dashboard.owner_id {
+        if !app.public && user.id != app.owner_id {
             Permission::require_permissions(
                 &state.db,
                 &user.id,
-                &dashboard_id,
+                &app_id,
                 &vec![PermissionType::READ],
             )?;
         }
     }
-    Ok(HttpResponse::Ok().json(dashboard))
+    Ok(HttpResponse::Ok().json(app))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(get_all_dashboards);
-    cfg.service(update_dashboard);
-    cfg.service(delete_dashboard);
-    cfg.service(create_dashboard);
-    cfg.service(get_dashboard);
+    cfg.service(get_all_apps);
+    cfg.service(update_app);
+    cfg.service(delete_app);
+    cfg.service(create_app);
+    cfg.service(get_app);
 }

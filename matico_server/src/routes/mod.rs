@@ -1,6 +1,6 @@
 pub mod auth;
 pub mod columns;
-pub mod dashboards;
+pub mod apps;
 pub mod data;
 pub mod datasets;
 pub mod queries;

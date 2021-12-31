@@ -44,6 +44,7 @@ geo-types = "^0.7.0"
 sqlx = { version = "0.4", features = [
     "postgres","uuid","chrono","runtime-actix-rustls","json"
 ]}
+matico_spec= {path = "../matico_spec"}
 
 [dev-dependencies]
 tokio = "0.2.24"

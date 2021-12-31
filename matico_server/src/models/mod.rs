@@ -1,5 +1,5 @@
 pub mod columns;
-pub mod dashboards;
+pub mod apps;
 pub mod datasets;
 pub mod map_style;
 pub mod permissions;

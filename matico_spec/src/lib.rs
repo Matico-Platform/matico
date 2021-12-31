@@ -12,19 +12,19 @@ mod validation;
 mod variables;
 mod theme;
 
-use autocomplete::*;
-use charts::*;
-use controls::*;
-use dashboard::*;
-use datasets::*;
-use filters::*;
-use mapping::*;
-use page::*;
-use pane::*;
-use section::*;
-use validation::*;
-use variables::*;
-use theme::*;
+pub use autocomplete::*;
+pub use charts::*;
+pub use controls::*;
+pub use dashboard::*;
+pub use datasets::*;
+pub use filters::*;
+pub use mapping::*;
+pub use page::*;
+pub use pane::*;
+pub use section::*;
+pub use validation::*;
+pub use variables::*;
+pub use theme::*;
 
 #[macro_use]
 extern crate matico_spec_derive;

@@ -1765,6 +1765,7 @@ dependencies = [
  "geo-types",
  "jsonwebtoken",
  "log",
+ "matico_spec",
  "r2d2",
  "rand 0.7.3",
  "reqwest",
