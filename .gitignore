@@ -1,7 +1,0 @@
-/target
-node_modules
-tmp
-.env
-
-
-simple-map-viewer/.eslintcache

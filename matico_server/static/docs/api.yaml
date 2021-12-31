@@ -1,0 +1,544 @@
+swagger: "2.0"
+info:
+  description: "Matico is a server for persisting geospatial(and non-geospatial) data for use in building dashboards, visuzlisations, apps and API's"
+  version: "1.0.0"
+  title: "Matico"
+  termsOfService: "http://www.wtfpl.net/"
+  contact:
+    email: "stuart.lynn@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "matico.com"
+basePath: "/api"
+tags:
+  - name: "datasets"
+    description: "Individual Datasets. Can be local or synced from an external source"
+  - name: "columns"
+    description: "Columns within a dataset."
+  - name: "users"
+    description: "Our lovely users"
+  - name: "dashboards"
+    description: "Vizualizations consisiting of maps charts and interactivity"
+  - name: "queries"
+    description: "Saved queries which can be used as an API or datasource"
+  - name: "data"
+    description: "Endpoints which return data from a query or a dataset"
+  - name: "tiles"
+    description: "Endpoints which return MVT tiles."
+schemes:
+  - "https"
+  - "http"
+
+paths:
+  /datasets:
+    get:
+      tags:
+        - "datasets"
+      summary: "Access datasets"
+      description: "Allows pagenatable, orderable, searchable retreaval of datasets"
+      operationId: "getDatasets"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "limit"
+          type: number
+          description: "Max number of datasets to retrive"
+        - in: "query"
+          name: "offset"
+          type: number
+          description: Starting point for pagination
+      responses:
+        "200":
+          description: "A list of found datasets"
+          schema:
+            type: array
+            items:
+              $ref: "#definitions/Dataset"
+      security:
+        - petstore_auth:
+            - "write:pets"
+            - "read:pets"
+
+  /datasets/{dataset_id}:
+    get:
+      tags:
+        - "datasets"
+      description: Get a dataset by id
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+      responses:
+        "200":
+          description: The found dataset
+          schema:
+            $ref: "#/definitions/Dataset"
+  /datasets/{dataset_id}/tiles/{z}/{x}/{y}:
+    get:
+      tags:
+        - "datasets"
+        - "tiles"
+      description: Endpoint to get an MVT tile that represents this dataset
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+        - in: path
+          name: z
+          type: string
+          required: true
+          description: the Z coordinate of the tile
+        - in: path
+          name: "x"
+          type: string
+          required: true
+          description: the Z coordinate of the tile
+        - in: path
+          name: "y"
+          type: string
+          required: true
+          description: the Y coordinate of the tile
+        - in: query
+          name: "geom_col"
+          type: string
+          description: "specify a differnt geometry column to use in the tile generation"
+      responses:
+        200:
+          description: "Returns an MVT tile"
+
+  /datasets/{dataset_id}/data:
+    get:
+      tags:
+        - "datasets"
+        - "data"
+      description: Endpoint to get an MVT tile that represents this dataset
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+        - in: query
+          name: limit
+          type: number
+          description: The number of rows to return
+        - in: query
+          name: "offset"
+          type: number
+          description: Where to start the return from
+        - in: query
+          name: "format"
+          type: string
+          description: the format to return the data in
+          enum:
+            - GeoJson
+            - Json
+            - csv
+      responses:
+        200:
+          description: The requested data in the requested format
+    post:
+      tags:
+        - datasets
+        - data
+      description: Append data to the dataset. Needs to be in the same format as the dataset
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: body
+          name: updates
+          schema:
+            type: object
+      responses:
+        204:
+          description: "successfully updated"
+
+  /datasets/{dataset_id}/data/{feature_id}:
+    get:
+      tags:
+        - "datasets"
+        - "data"
+      description: Endpoint to get an specific row of a dataset based on id_col
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+        - in: path
+          name: feature_id
+          type: string
+          required: true
+          description: The id of the row to fetch. This should match with the id_col specified by the dataset
+        - in: query
+          name: "format"
+          type: string
+          description: the format to return the data in (NOT CURRENTLY IMPLEMENTED)
+          enum:
+            - GeoJson
+            - Json
+            - csv
+      responses:
+        200:
+          description: The requested data in the requested format
+    post:
+      tags:
+        - datasets
+        - data
+      description: Update the row specified by feature_id
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: feature_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the feature to update. Should match the id_col specified in the dataset
+        - in: body
+          name: updates
+          schema:
+            type: object
+      responses:
+        204:
+          description: "successfully updated"
+    delete:
+      tags:
+        - datasets
+        - data
+      description: Delete the row specified by feature_id
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: feature_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the feature to update. Should match the id_col specified in the dataset
+      responses:
+        200:
+          description: Successfully deleted
+
+  /datasets/{dataset_id}/columns/:
+    get:
+      tags:
+        - "datasets"
+        - "columns"
+      description: Endpoint to get metadata about the columns contained in a dataset 
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+      responses:
+        200:
+          description: The column metadata 
+
+  /datasets/{dataset_id}/columns/{column_id}:
+    get:
+      tags:
+        - "datasets"
+        - "columns"
+      description: Endpoint to interact with columns 
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+        - in: path
+          name: column_id 
+          type: string
+          required: true
+          description: The id of the column to interact with.
+      responses:
+        200:
+          description: Column metdata
+    delete:
+      tags:
+        - datasets
+        - columns 
+      description: Remove the column from the dataset  
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: column_id 
+          type: string
+          format: uuid
+          required: true
+          description: The id of the column to delete. 
+      responses:
+        200:
+          description: Successfully deleted
+
+  /datasets/{dataset_id}/columns/{column_id}/stats:
+    get:
+      tags:
+        - "datasets"
+        - "data"
+      description: Endpoint to get an specific row of a dataset based on id_col
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset
+        - in: path
+          name: feature_id
+          type: string
+          required: true
+          description: The id of the row to fetch. This should match with the id_col specified by the dataset
+        - in: query
+          name: "format"
+          type: string
+          description: the format to return the data in (NOT CURRENTLY IMPLEMENTED)
+          enum:
+            - GeoJson
+            - Json
+            - csv
+      responses:
+        200:
+          description: The requested data in the requested format
+    post:
+      tags:
+        - datasets
+        - data
+      description: Update the row specified by feature_id
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: feature_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the feature to update. Should match the id_col specified in the dataset
+        - in: body
+          name: updates
+          schema:
+            type: object
+      responses:
+        204:
+          description: "successfully updated"
+    delete:
+      tags:
+        - datasets
+        - data
+      description: Delete the row specified by feature_id
+      parameters:
+        - in: path
+          name: dataset_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the dataset to append data to
+        - in: path
+          name: feature_id
+          type: string
+          format: uuid
+          required: true
+          description: The id of the feature to update. Should match the id_col specified in the dataset
+      responses:
+        200:
+          description: Successfully deleted
+definitions:
+  Dataset:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+        description: "A uuid for the dataset"
+      owner_id:
+        type: "string"
+        format: "uuid"
+        description: "Uuid of the user who owns this dataset"
+      name:
+        type: "string"
+        description: "Human readable name of the dataset, also corrisponds to the postgis table used by the dataset"
+      origional_filename:
+        type: "string"
+        description: "The filename the dataset was origionaly loaded from. In the case of regular datasets, this is the file that was uploaded, for sync datasets it's the url of the sync"
+      origional_type:
+        type: "string"
+        description: "The origional file format the dataset was upload from. GeoJSON, Shapefile etc:"
+      sync_dataset:
+        type: "boolean"
+        description: "True if this dataset is a sync dataset"
+      sync_url:
+        type: "string"
+        description: "For sync datasets, the url to pull new data from "
+      post_import_script:
+        type: "string"
+        description: "Optional script to run after import to allow for some formatting and ETL cleaning. This should probably actually be a QueryID. Currently not implemented"
+      created_at:
+        type: "string"
+        description: The date time when the dataset was created
+      updated_at:
+        type: "string"
+        description: The date time when the dataset was updated
+      geom_col:
+        type: "string"
+        description: Name of the geometry column to use for visualization and geo operations
+      id_col:
+        type: "string"
+        description: The column to use as a unique id for the dataset. Used to refer to and update features
+
+  query:
+    type: "object"
+    description: "Specifies a query that can be run on the platform"
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: A unique identifier for the query
+      name:
+        type: string
+        description: The name of the query
+        example: Limit by building size and category
+      description:
+        type: string
+        description: A breif summary of the query
+        example: Limits the max size of a building in some dataset
+      sql:
+        type: string
+        description: The sql template to use for the query, can include placeholders for variables that can be filled in at execution time
+        example: |
+          select * from buildings where category = "${category}" and size < "${max_value}"
+      parameters:
+        type: array
+        items:
+          $ref: "#definitions/QueryParameter"
+        description: An array of parameter objects that define the customisable parts of the query
+        example: |
+          {"Numerical":{
+            "name": "max_value",
+            "description" : "The largest value we are willing to show"
+            "default_value" : {"Numeric" : 10} 
+          }}
+
+  QueryParameter:
+    type: object
+    description: A query parameter to be used in a query.
+    properties:
+      name:
+        type: string
+        description: "The name of the parameter"
+        example: |
+          upper_limit
+      description:
+        type: string
+        description: "The description of the paramter"
+        example: |
+          The max value that we are interested in showing.
+      default_value:
+        type: number
+        description: "The default value to be used for this parameter. This is specified by an outer tagged enum but swagger cant display that I dont think"
+        example: |
+          {Numeric: 10}
+
+  dashboard:
+    type: object
+    description: A definition of a dashboard. Includes details about the layers to show on the map, how they should be styled and other viz details
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: Uniuqe identifier for the dashboard
+      name:
+        type: string
+        description: Human readable name for the dashboard
+        example: NYC buildings dashboard
+      description:
+        type: string
+        format: markdown
+        description: A breif description of what to expect in this dashboard. Written in markdown
+        example: |
+          This dashboard shows all the buildings in NYC along with their zoning regions.
+      map_style:
+        $ref: "#defenitions/MapStyle"
+
+  MapStyle:
+    type: "object"
+    description: "Specifies the style of a map"
+    properties:
+      base_map:
+        type: string
+        description: |
+          The base map to use for this map. Can be either 
+          - a named basemap like the carto ones
+          - a url to a styling specification (CURRENTLY NOT IMPLMENTED)
+          - a mapbox style specification (CURRENTLY NOT IMPLEMENTED)
+
+        enum:
+          - CartoDBPositron
+          - CartoDBVoyager
+          - CartoDBDarkMatter
+      center:
+        type: array
+        description: "[Lon, Lat] pair describing the inital map location"
+      zoom:
+        type: number
+        description: The starting zoom for the map
+      layers:
+        $ref: "#/definitions/Layer"
+  LayerSource:
+    type: object
+    description: The source for a layer which specifies where to get the data from
+  LayerStyle:
+    type: object
+    description: Specification of how to style the layer
+  Layer:
+    type: object
+    description: A layer object use to specify the source and style of a map layer
+    properties:
+      LayerSource:
+        description: Where to pull the layer data from
+        $ref: "#/definitions/LayerSource"
+      LayerStyle:
+        description: Specification for how to style a layer
+        $ref: "#/definitions/LayerStyle"
+
+  tile:
+    type: "object"
+    description: A Mapbox Vector Tile. For more info checkout, https://docs.mapbox.com/vector-tiles/specification/
+    externalDocs:
+      url: https://docs.mapbox.com/vector-tiles/specification/
