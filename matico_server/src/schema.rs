@@ -1,10 +1,10 @@
 table! {
-    dashboards (id) {
+    apps (id) {
         id -> Uuid,
         name -> Text,
         owner_id -> Uuid,
         description -> Text,
-        map_style -> Jsonb,
+        spec -> Jsonb,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         public -> Bool,
@@ -77,7 +77,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
-    dashboards,
+    apps,
     datasets,
     permissions,
     queries,
