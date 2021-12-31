@@ -1,5 +1,5 @@
-use modest_map_maker::app_config::Config;
-use modest_map_maker::run;
+use matico_server::app_config::Config;
+use matico_server::run;
 use std::net::TcpListener;
 
 #[actix_web::main]

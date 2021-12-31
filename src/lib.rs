@@ -34,6 +34,7 @@ pub async fn run(
     config: app_config::Config,
 ) -> Result<Server, std::io::Error> {
     let db_connection_url = config.connection_string().unwrap();
+    println!("Connecting to : {}",db_connection_url);
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);
 
     // Set up the database pool for the system metadata
