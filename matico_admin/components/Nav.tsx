@@ -2,6 +2,7 @@ import React from "react";
 import { Text, Flex, View } from "@adobe/react-spectrum";
 import { Link as ALink } from "@adobe/react-spectrum";
 import Link from "next/link";
+import { login } from "../utils/api";
 
 export const Nav: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ export const Nav: React.FC = () => {
       <ALink>
         <Link href="/admin">Admin</Link>
       </ALink>
+      
     </Flex>
   );
 };

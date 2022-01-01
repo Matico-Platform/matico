@@ -1,11 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
-import {User,LoginResponse, SignupResponse} from 'types/Users'
-import {Dashboard, CreateDashboardDTO, UpdateDashboardDTO} from 'types/DashboardSpecification'
-import {LayerSource} from 'types/LayerSpecification'
-import {DatasetSource} from 'types/Sources'
-import {Dataset, Column} from 'types/Dataset'
-import {Query,QueryParameter, ValueCount} from 'types/Query'
-import {Page, } from 'types/Pagination'
+import {User,LoginResponse, SignupResponse} from '../types/Users'
+import {Dataset, Column} from '../types/Dataset'
+import {Dashboard, CreateDashboardDTO, UpdateDashboardDTO} from '../types/DashboardSpecification'
+import {Query,QueryParameter, ValueCount} from '../types/Query'
+import {Page, } from '../types/Pagination'
 
 
 // export interface Token {
@@ -17,11 +15,11 @@ import {Page, } from 'types/Pagination'
 
 
 const a = axios.create({
-    baseURL:
-        !process.env.NODE_ENV ||
-        process.env.NODE_ENV === 'development'
-            ? '/api'
-            : `${window.location.origin}/api`,
+    baseURL: "http://localhost:8000/api/",
+        // !process.env.NODE_ENV ||
+        // process.env.NODE_ENV === 'development'
+        //     ? '/api'
+        //     : `${window.location.origin}/api`,
     headers: { 'Content-Type': 'application/json' },
 });
 
@@ -29,7 +27,7 @@ a.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers = {...config.headers, Authorization : `Bearer ${token}`};
         }
         return config;
     },
@@ -122,10 +120,10 @@ export async function getPagedDatasetData(
     return a.get(`datasets/${id}/data`, { params: page });
 }
 
-export async function getDashboards(): Promise<
+export async function getApps(): Promise<
     AxiosResponse<Dashboard[]>
 > {
-    return a.get('dashboards');
+    return a.get('apps');
 }
 
 export async function getDatasetColumns(
@@ -134,23 +132,23 @@ export async function getDatasetColumns(
     return a.get(`datasets/${id}/columns`);
 }
 
-export async function getDashboard(
+export async function getApp(
     id: string,
 ): Promise<AxiosResponse<Dashboard>> {
-    return a.get(`dashboards/${id}`);
+    return a.get(`apps/${id}`);
 }
 
-export async function createDashboard(
+export async function createApp(
     newDashboard: CreateDashboardDTO,
 ) {
-    return a.post('/dashboards', newDashboard);
+    return a.post('/apps', newDashboard);
 }
 
-export async function updateDashboard(
-    dataset_id: string,
+export async function updateApp(
+    appID: string,
     update: UpdateDashboardDTO,
 ): Promise<AxiosResponse<Dashboard>> {
-    return a.put(`/dashboards/${dataset_id}`, update);
+    return a.put(`/apps/${appID}`, update);
 }
 
 export async function updateFeature(
@@ -161,27 +159,27 @@ export async function updateFeature(
     return a.put(`datasets/${dataset_id}/data/${feature_id}`, update);
 }
 
-export async function getColumnStats(
-    source: LayerSource,
-    column: Column,
-) {
-    if (Object.keys(source)[0] === 'Dataset') {
-        const datasetSource = source as DatasetSource;
-        return a.get(
-            `datasets/${datasetSource.Dataset}/columns/${
-                column.name
-            }/stats?stat=${JSON.stringify({
-                BasicStats: {
-                    no_bins: 20,
-                },
-            })}`,
-        );
-    } else {
-        throw Error(
-            'Layer source does not implement this functionality yet',
-        );
-    }
-}
+// export async function getColumnStats(
+//     source: LayerSource,
+//     column: Column,
+// ) {
+//     if (Object.keys(source)[0] === 'Dataset') {
+//         const datasetSource = source as DatasetSource;
+//         return a.get(
+//             `datasets/${datasetSource.Dataset}/columns/${
+//                 column.name
+//             }/stats?stat=${JSON.stringify({
+//                 BasicStats: {
+//                     no_bins: 20,
+//                 },
+//             })}`,
+//         );
+//     } else {
+//         throw Error(
+//             'Layer source does not implement this functionality yet',
+//         );
+//     }
+// }
 export async function getUniqueColumnValues(
     dataset_id: string,
     column_name: string,
@@ -197,28 +195,28 @@ export async function getQueries() {
     return a.get('/queries');
 }
 
-export async function getColumnHistogram(
-    column: Column,
-    source: LayerSource,
-    bins: number,
-) {
-    if (Object.keys(source)[0] === 'Dataset') {
-        const datasetSource = source as DatasetSource;
-        return a.get(
-            `datasets/${datasetSource.Dataset}/columns/${
-                column.name
-            }/stats?stat=${JSON.stringify({
-                Histogram: {
-                    no_bins: 20,
-                },
-            })}`,
-        );
-    } else {
-        throw Error(
-            'Layer source does not implement this functionality yet',
-        );
-    }
-}
+// export async function getColumnHistogram(
+//     column: Column,
+//     source: LayerSource,
+//     bins: number,
+// ) {
+//     if (Object.keys(source)[0] === 'Dataset') {
+//         const datasetSource = source as DatasetSource;
+//         return a.get(
+//             `datasets/${datasetSource.Dataset}/columns/${
+//                 column.name
+//             }/stats?stat=${JSON.stringify({
+//                 Histogram: {
+//                     no_bins: 20,
+//                 },
+//             })}`,
+//         );
+//     } else {
+//         throw Error(
+//             'Layer source does not implement this functionality yet',
+//         );
+//     }
+// }
 
 // not sure if run is the right verb here, but
 // this endpoint isn't restful anyway
