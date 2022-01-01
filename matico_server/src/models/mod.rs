@@ -3,7 +3,7 @@ pub mod apps;
 pub mod datasets;
 pub mod map_style;
 pub mod permissions;
-pub mod queries;
+pub mod apis;
 pub mod styles;
 pub mod users;
 

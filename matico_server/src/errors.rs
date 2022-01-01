@@ -35,6 +35,9 @@ pub enum ServiceError {
     #[display(fmt = "DB config error")]
     DBConfigError(String),
 
+    #[display(fmt = "API failed")]
+    APIFailed(String),
+
     #[display(fmt = "Query failed")]
     QueryFailed(String),
 }
@@ -65,6 +68,9 @@ impl ResponseError for ServiceError {
             )),
             ServiceError::UploadFailed => {
                 HttpResponse::InternalServerError().json("Your upload failed")
+            }
+            ServiceError::APIFailed(reason) => {
+                HttpResponse::BadRequest().json(format!("API failed {}", reason))
             }
             ServiceError::QueryFailed(reason) => {
                 HttpResponse::BadRequest().json(format!("Query failed {}", reason))

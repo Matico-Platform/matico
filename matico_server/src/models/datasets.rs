@@ -192,7 +192,7 @@ impl Dataset {
             .await
             .map_err(|e| {
                 warn!("SQL Query failed: {} {}", e, query2);
-                ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query2))
+                ServiceError::APIFailed(format!("SQL Error: {} API was {}", e, query2))
             })?;
         Ok(update)
     }

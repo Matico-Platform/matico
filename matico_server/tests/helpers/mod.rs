@@ -1,5 +1,5 @@
 use dotenv;
-use modest_map_maker::app_config::Config;
+use matico_server::app_config::Config;
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 
@@ -35,7 +35,7 @@ pub async fn spawn_app() -> TestApp {
 
     dotenv::dotenv().ok();
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    let server = modest_map_maker::run(listener, config)
+    let server = matico_server::run(listener, config)
         .await
         .expect("failed to start server");
     let _ = tokio::spawn(server);

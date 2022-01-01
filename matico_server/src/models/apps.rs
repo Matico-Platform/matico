@@ -11,50 +11,63 @@ use serde::{Deserialize, Serialize};
 use std::convert::From;
 use uuid::Uuid;
 use matico_spec::Dashboard;
+use ts_rs::TS;
 
 #[derive(AsJsonb,Debug,Serialize,Deserialize)]
 pub struct AppSpec(matico_spec::Dashboard);
 
-#[derive(Serialize, Deserialize, Debug, Queryable, Insertable)]
+#[derive(Serialize, Deserialize, Debug, Queryable, Insertable, TS)]
 #[table_name = "apps"]
+#[ts(export)]
 pub struct App{
+    #[ts(type = "string")]
     pub id: Uuid,
     pub name: String,
+    #[ts(type = "string")]
     pub owner_id: Uuid,
     pub description: String,
+    #[ts(type="AppSpec")]
     pub spec: AppSpec,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub public: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct CreateAppDTO{
     pub name: String,
+    #[ts(type = "string")]
     pub owner_id: Option<Uuid>,
     pub description: String,
+    #[ts(type="AppSpec")]
     pub spec: AppSpec,
     pub public: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, AsChangeset)]
+#[derive(Serialize, Deserialize, Debug, AsChangeset, TS)]
 #[table_name = "apps"]
+#[ts(export)]
 pub struct UpdateAppDTO {
     pub name: Option<String>,
     pub description: Option<String>,
+    #[ts(type="AppSpec")]
     pub spec: Option<AppSpec>,
     pub public: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug,TS)]
+#[ts(export)]
 pub struct AppSearch {
     pub name: Option<String>,
     pub description: Option<String>,
+    #[ts(type = "string")]
     pub user_id: Option<Uuid>,
     pub public: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,TS)]
+#[ts(export)]
 pub struct AppOrderBy {
     field: Option<String>,
 }

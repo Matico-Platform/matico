@@ -5,7 +5,7 @@ use crate::errors::ServiceError;
 
 use crate::models::{
     permissions::*,
-    queries::{AnnonQuery, CreateQueryDTO, Query, UpdateQueryDTO},
+    apis::{AnnonQuery, CreateAPIDTO, API, UpdateAPIDTO},
     users::*,
 };
 use crate::utils::{FormatParam, PaginationParams};
@@ -15,52 +15,52 @@ use actix_web::{delete, get, post, put, web, HttpResponse};
 use uuid::Uuid;
 
 #[get("/{id}")]
-async fn get_query(
+async fn get_api(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
-    let query = Query::find(&state.db, id)?;
+    let query = API::find(&state.db, id)?;
     Ok(HttpResponse::Ok().json(query))
 }
 
 #[get("")]
-async fn get_queries(
+async fn get_apis(
     state: web::Data<State>,
     web::Query(page): web::Query<PaginationParams>,
 ) -> Result<HttpResponse, ServiceError> {
-    let queries = Query::search(&state.db, page)?;
+    let queries = API::search(&state.db, page)?;
     Ok(HttpResponse::Ok().json(queries))
 }
 
 #[delete("/{id}")]
-async fn delete_query(
+async fn delete_api(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
-    Query::delete(&state.db, id)?;
-    Ok(HttpResponse::Ok().json(format!("Deleted query {}", id)))
+    API::delete(&state.db, id)?;
+    Ok(HttpResponse::Ok().json(format!("Deleted api {}", id)))
 }
 
 #[put("/{id}")]
-async fn update_query(
+async fn update_api(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
-    web::Json(update_params): web::Json<UpdateQueryDTO>,
+    web::Json(update_params): web::Json<UpdateAPIDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    let result = Query::update(&state.db, id, update_params)?;
+    let result = API::update(&state.db, id, update_params)?;
     Ok(HttpResponse::Ok().json(result))
 }
 
 #[post("")]
-async fn create_query(
+async fn create_api(
     state: web::Data<State>,
-    web::Json(create_query): web::Json<CreateQueryDTO>,
+    web::Json(create_query): web::Json<CreateAPIDTO>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let user: UserToken = logged_in_user
         .user
         .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    let query = Query::create(&state.db, create_query)?;
+    let query = API::create(&state.db, create_query)?;
 
     Permission::grant_permissions(
         &state.db,
@@ -84,15 +84,15 @@ async fn run_annon_query(
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
-    let result = Query::run_raw(&state.data_db, query.q, Some(page), format_param.format).await?;
+    let result = API::run_raw(&state.data_db, query.q, Some(page), format_param.format).await?;
     // let result = "{\"test\":\"test\"}";
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(result))
 }
 
-#[get("/{query_id}/run")]
-async fn run_query(
+#[get("/{api_id}/run")]
+async fn run_api(
     state: web::Data<State>,
     web::Path(query_id): web::Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
@@ -100,7 +100,7 @@ async fn run_query(
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
-    let query = Query::find(&state.db, query_id)?;
+    let query = API::find(&state.db, query_id)?;
     let result = query
         .run(&state.data_db, params, Some(page), format_param.format)
         .await?;
@@ -111,12 +111,11 @@ async fn run_query(
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(run_annon_query);
-    cfg.service(get_queries);
-    cfg.service(get_query);
-    cfg.service(delete_query);
-    cfg.service(update_query);
-    cfg.service(create_query);
-    cfg.service(update_query);
-    cfg.service(run_query);
+    cfg.service(get_apis);
+    cfg.service(get_api);
+    cfg.service(delete_api);
+    cfg.service(update_api);
+    cfg.service(create_api);
+    cfg.service(run_api);
     // cfg.service(run_query);
 }

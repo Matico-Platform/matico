@@ -8,12 +8,16 @@ use jsonwebtoken::{EncodingKey, Header};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use ts_rs::TS;  
 
 static ONE_WEEK: i64 = 60 * 60 * 24 * 7;
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, TS)]
 #[table_name = "users"]
+#[ts(export)]
 pub struct User {
+    #[ts(type = "string")]
     pub id: Uuid,
     pub username: String,
     pub email: String,
@@ -23,8 +27,9 @@ pub struct User {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Serialize, Deserialize, AsChangeset)]
+#[derive(Serialize, Deserialize, AsChangeset, TS)]
 #[table_name = "users"]
+#[ts(export)]
 pub struct SignupDTO {
     pub username: String,
     pub password: String,
@@ -52,19 +57,22 @@ impl From<SignupDTO> for User {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
+#[ts(export)]
 pub struct LoginDTO {
     email: String,
     password: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, TS)]
+#[ts(export)]
 pub struct LoginResponseDTO {
     pub user: User,
     pub token: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,TS)]
+#[ts(export)]
 pub struct SignupResponseDTO {
     pub user: User,
     pub token: String,

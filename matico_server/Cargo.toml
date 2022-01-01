@@ -45,6 +45,7 @@ sqlx = { version = "0.4", features = [
     "postgres","uuid","chrono","runtime-actix-rustls","json"
 ]}
 matico_spec= {path = "../matico_spec"}
+ts-rs = {version="6.1", features=['chrono-impl', 'uuid-impl']}
 
 [dev-dependencies]
 tokio = "0.2.24"

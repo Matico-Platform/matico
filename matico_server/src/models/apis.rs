@@ -22,25 +22,25 @@ pub enum ValueType {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct AnnonQuery {
+pub struct AnnonQuery{
     pub q: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CreateQueryDTO {
+pub struct CreateAPIDTO {
     pub name: String,
     pub description: String,
     pub sql: String,
-    pub parameters: Vec<QueryParam>,
+    pub parameters: Vec<APIParam>,
 }
 
 #[derive(Serialize, Deserialize, Debug, AsChangeset)]
 #[table_name = "queries"]
-pub struct UpdateQueryDTO {
+pub struct UpdateAPIDTO {
     pub name: Option<String>,
     pub description: Option<String>,
     pub sql: Option<String>,
-    pub parameters: Option<Vec<QueryParam>>,
+    pub parameters: Option<Vec<APIParam>>,
 }
 
 impl Display for ValueType {
@@ -62,7 +62,7 @@ impl Display for ValueType {
     }
 }
 
-trait QueryParameter {
+trait APIParameter {
     fn modify_sql(&self, sql: String, value: ValueType) -> Result<String, ServiceError>;
     fn name(&self) -> &String;
     fn description(&self) -> &String;
@@ -70,13 +70,13 @@ trait QueryParameter {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct NumericQueryParameter {
+pub struct NumericAPIParameter {
     pub name: String,
     pub description: String,
     pub default_value: ValueType,
 }
 
-impl QueryParameter for NumericQueryParameter {
+impl APIParameter for NumericAPIParameter {
     fn name(&self) -> &String {
         &self.name
     }
@@ -96,7 +96,7 @@ impl QueryParameter for NumericQueryParameter {
                 Ok(sql.replace(target, &val.to_string()))
             }
             _ => Err(ServiceError::BadRequest(format!(
-                "Query parameter {} got the wrong type",
+                "API parameter {} got the wrong type",
                 self.name()
             ))),
         }
@@ -105,35 +105,35 @@ impl QueryParameter for NumericQueryParameter {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, AsJsonb)]
 #[serde(tag="type")]
-pub enum QueryParam {
-    Numerical(NumericQueryParameter),
+pub enum APIParam {
+    Numerical(NumericAPIParameter),
 }
 
 #[derive(Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
 #[table_name = "queries"]
-pub struct Query {
+pub struct API {
     pub id: Uuid,
     pub name: String,
     pub description: String,
     pub sql: String,
-    pub parameters: Vec<QueryParam>,
+    pub parameters: Vec<APIParam>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
 
-impl From<CreateQueryDTO> for Query {
-    fn from(user: CreateQueryDTO) -> Self {
+impl From<CreateAPIDTO> for API {
+    fn from(user: CreateAPIDTO) -> Self {
         let parameters = user.parameters;
         Self::new(user.name, user.description, user.sql, parameters)
     }
 }
 
-impl Query {
+impl API {
     pub fn new(
         name: String,
         description: String,
         sql: String,
-        parameters: Vec<QueryParam>,
+        parameters: Vec<APIParam>,
     ) -> Self {
         Self {
             id: Uuid::new_v4(),
@@ -149,19 +149,19 @@ impl Query {
     pub fn update(
         pool: &DbPool,
         id: Uuid,
-        update_params: UpdateQueryDTO,
+        update_params: UpdateAPIDTO,
     ) -> Result<Self, ServiceError> {
         let conn = pool.get().unwrap();
-        let updated_query = diesel::update(queries::table.filter(queries::id.eq(&id)))
+        let updated_api = diesel::update(queries::table.filter(queries::id.eq(&id)))
             .set(update_params)
             .get_result(&conn)
-            .map_err(|e| ServiceError::BadRequest(format!("Failed to update query {} ", e)))?;
-        Ok(updated_query)
+            .map_err(|e| ServiceError::BadRequest(format!("Failed to update api {} ", e)))?;
+        Ok(updated_api)
     }
 
     pub fn create_or_update(&self, pool: &DbPool) -> Result<Self, ServiceError> {
         let conn = pool.get().unwrap();
-        info!("Attempting to create query");
+        info!("Attempting to create api");
 
         diesel::insert_into(dsl::queries)
             .values(self)
@@ -174,18 +174,18 @@ impl Query {
             })
     }
 
-    pub fn create(pool: &DbPool, new_query: CreateQueryDTO) -> Result<Self, ServiceError> {
-        let query: Self = new_query.into();
-        query.create_or_update(pool)
+    pub fn create(pool: &DbPool, new_api: CreateAPIDTO) -> Result<Self, ServiceError> {
+        let api: Self = new_api.into();
+        api.create_or_update(pool)
     }
 
     pub fn find(pool: &DbPool, id: Uuid) -> Result<Self, ServiceError> {
         let conn = pool.get().unwrap();
-        let query = queries::table
+        let api = queries::table
             .filter(queries::id.eq(id))
             .first(&conn)
-            .map_err(|_| ServiceError::BadRequest(format!("Failed to find query {}", id)))?;
-        Ok(query)
+            .map_err(|_| ServiceError::BadRequest(format!("Failed to find api {}", id)))?;
+        Ok(api)
     }
 
     //TODO add auth check
@@ -193,7 +193,7 @@ impl Query {
         let conn = pool.get().unwrap();
         diesel::delete(queries::table.filter(queries::id.eq(&id)))
             .execute(&conn)
-            .map_err(|_| ServiceError::BadRequest("Failed to delete query".into()))?;
+            .map_err(|_| ServiceError::BadRequest("Failed to delete api".into()))?;
         Ok(())
     }
 
@@ -209,32 +209,32 @@ impl Query {
         &self,
         params: HashMap<String, serde_json::Value>,
     ) -> Result<String, ServiceError> {
-        let mut query = self.sql.clone();
+        let mut api = self.sql.clone();
 
         for q_param in self.parameters.clone() {
             match q_param {
-                QueryParam::Numerical(param) => {
+                APIParam::Numerical(param) => {
                     let input =
                         params
                             .get(param.name())
-                            .ok_or_else(|| ServiceError::QueryFailed(format!(
+                            .ok_or_else(|| ServiceError::APIFailed(format!(
                                 "missing param {}",
                                 param.name()
                             )))?;
                     info!("parsing parameter for {}, {}", param.name(), input);
-                    let input_val_str = input.as_str().ok_or_else(|| ServiceError::QueryFailed(
+                    let input_val_str = input.as_str().ok_or_else(|| ServiceError::APIFailed(
                         format!("Failed to parse value for {},{:?} ", param.name(), input),
                     ))?;
                     let input_val: f64 = input_val_str.parse().map_err(|_| {
-                        ServiceError::QueryFailed("Failed to parse parameter".into())
+                        ServiceError::APIFailed("Failed to parse parameter".into())
                     })?;
 
-                    query = param.modify_sql(query, ValueType::Numeric(input_val))?;
-                    info!("current query is {}", query);
+                    api = param.modify_sql(api, ValueType::Numeric(input_val))?;
+                    info!("current api is {}", api);
                 }
             }
         }
-        Ok(query)
+        Ok(api)
     }
 
     pub async fn run_raw(

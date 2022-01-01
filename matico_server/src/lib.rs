@@ -71,7 +71,7 @@ pub async fn run(
             .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
             .service(web::scope("/api/auth").configure(routes::auth::init_routes))
-            .service(web::scope("/api/queries").configure(routes::queries::init_routes))
+            .service(web::scope("/api/apis").configure(routes::apis::init_routes))
             .service(web::scope("/api/apps").configure(routes::apps::init_routes))
             .service(
                 web::scope("/api/datasets")
