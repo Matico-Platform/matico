@@ -8,13 +8,16 @@ export const useUser = () => {
   const [loginError, setLoginError] = useState<any | null>(null);
 
   useEffect(() => {
-    getProfile()
-      .then((profile) => {
-        setUser(profile.data);
-      })
-      .catch((e) => {
-        console.warn("token is invalid or stale", e);
-      });
+    const interval = setInterval(()=>{
+      getProfile()
+        .then((profile) => {
+          setUser(profile.data);
+        })
+        .catch((e) => {
+          console.warn("token is invalid or stale", e);
+        });
+    },1000)
+    return ()=> clearInterval(interval)
   }, []);
 
   const tryLogin = (email: string, password: string) => {
@@ -25,7 +28,7 @@ export const useUser = () => {
         setLoginError(null);
       })
       .catch((e) => {
-        setLoginError(e.toString());
+        setLoginError(e.response.data);
       });
   };
 
@@ -37,7 +40,7 @@ export const useUser = () => {
         setSignupError(null);
       })
       .catch((e) => {
-        setSignupError(e.toString());
+        setSignupError(e.response.data);
       });
   };
 
@@ -46,5 +49,12 @@ export const useUser = () => {
     setUser(null);
   };
 
-  return { user, signupError, loginError,login: tryLogin, signup: trySignup, signout };
+  return {
+    user,
+    signupError,
+    loginError,
+    login: tryLogin,
+    signup: trySignup,
+    signout,
+  };
 };

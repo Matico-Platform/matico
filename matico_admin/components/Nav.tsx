@@ -10,17 +10,15 @@ import {
   Item,
   TabPanels,
   TabList,
+  Button,
 } from "@adobe/react-spectrum";
 import { Link as ALink } from "@adobe/react-spectrum";
+import { LoginSignupDialog } from "./LoginSignUpDialog";
 import Link from "next/link";
 import { useUser } from "../hooks/useUser";
 
 export const Nav: React.FC = () => {
-  const { user, login, signup, loginError, signout, signupError } = useUser();
-
-  const attemptLogin = () => {
-    login("stuart.lynn@gmail.com", "password");
-  };
+  const { user, signout } = useUser();
 
   return (
     <Flex
@@ -44,41 +42,21 @@ export const Nav: React.FC = () => {
         <Link href="/admin">Admin</Link>
       </ALink>
 
-      <View justifySelf="right">
+      <div style={{flex:1}} />
+
+      <View justifySelf="end">
         {user ? (
           <MenuTrigger>
             <ActionButton>{user.username}</ActionButton>
-            <Menu minWidth='size-2400'>
-              <Item >
-                <ActionButton>Profile</ActionButton>
-              </Item>
-              <Item >
-                <ActionButton onPress={signout}>Logout</ActionButton>
+            <Menu minWidth="size-2400">
+              <Item>Profile</Item>
+              <Item>
+                <Button variant="primary" isQuiet onPress={signout}>Logout</Button>
               </Item>
             </Menu>
           </MenuTrigger>
         ) : (
-          <MenuTrigger>
-            <ActionButton>Login / Signup</ActionButton>
-            <Menu>
-              <Item>
-                <Tabs>
-                  <TabList>
-                    <Item key="login">Login</Item>
-                    <Item key="signup">Signup</Item>
-                  </TabList>
-                  <TabPanels>
-                    <Item key="login">
-                      <ActionButton onPress={attemptLogin}>Login</ActionButton>
-                    </Item>
-                    <Item key="signup">
-                      <ActionButton>signup</ActionButton>
-                    </Item>
-                  </TabPanels>
-                </Tabs>
-              </Item>
-            </Menu>
-          </MenuTrigger>
+          <LoginSignupDialog />
         )}
       </View>
     </Flex>
