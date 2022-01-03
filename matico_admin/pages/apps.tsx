@@ -36,7 +36,15 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
 
   const submit = (details) => {
     console.log("Submitting ", details);
-    createApp(details);
+    createApp({
+      ...details,
+      spec: {
+        name: details.name,
+        created_at: new Date(),
+        pages: [],
+        datasets: [],
+      },
+    });
   };
 
   return (

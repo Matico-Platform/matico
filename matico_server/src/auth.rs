@@ -24,6 +24,7 @@ pub fn validate_token(token: &str) -> Result<UserToken, ServiceError> {
         info!("Token validation failed with error {}", e);
         ServiceError::InvalidToken
     })?;
+    info!("Token validated the claims are {:#?}", t.claims);
     Ok(t.claims)
 }
 

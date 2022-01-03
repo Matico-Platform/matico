@@ -1800,6 +1800,7 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "toml",
+ "ts-rs",
  "url",
  "validator",
  "wasm-bindgen",
