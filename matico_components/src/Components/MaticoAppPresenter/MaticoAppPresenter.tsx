@@ -1,6 +1,6 @@
 import { Grommet, Grid, Box, Main } from "grommet";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { MaticoDataState } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { VariableState } from "../../Stores/MaticoVariableSlice";
@@ -9,13 +9,13 @@ import { Dashboard } from "@maticoapp/matico_spec";
 import { setSpec } from "../../Stores/MaticoSpecSlice";
 import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
-import {registerDataset} from "Stores/MaticoDatasetSlice";
+import { registerDataset } from "Stores/MaticoDatasetSlice";
 
 interface MaticoAppPresenterProps {
   spec?: Dashboard;
   basename?: string;
   onStateChange?: (state: VariableState) => void;
-  onDataChange?: (data: MaticoDataState) => void;
+  onDataChange?: (data: MaticoDataState) => void
 }
 
 export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
@@ -25,22 +25,29 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
 }) => {
   const dispatch = useMaticoDispatch();
 
+  const firstLoad = useRef(true);
+
   // If the external spec changes, we want to update here
   // This will also set up the inital spec
   useEffect(() => {
-    console.log("Updating from external spec", spec)
-    dispatch(setSpec(spec));
+    if (firstLoad.current) {
+      dispatch(setSpec(spec));
+    } else {
+      firstLoad.current = false;
+    }
   }, []);
 
-  useEffect(()=>{
-    spec.datasets.forEach((datasetDetails:{[type:string]: any})=>{
-      const [type,details] = Object.entries(datasetDetails)[0]
-      dispatch(registerDataset({
-        ...details,
-        type
-      }))
-    })
-  })
+  useEffect(() => {
+    spec.datasets.forEach((datasetDetails: { [type: string]: any }) => {
+      const [type, details] = Object.entries(datasetDetails)[0];
+      dispatch(
+        registerDataset({
+          ...details,
+          type,
+        })
+      );
+    });
+  });
 
   const appSpec = useAppSpec();
 
@@ -69,11 +76,15 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
             <Switch>
               {appSpec.pages.map((page, index) => (
                 <Route
-                  path={page.path ? page.path : `/${page.name}`}
+                  path={page.path ? page.path : page.name}
                   exact={true}
                   key={page.path}
                 >
-                  <MaticoPage key={page.path} page={page} editPath={`pages.${index}`} />
+                  <MaticoPage
+                    key={page.path}
+                    page={page}
+                    editPath={`pages.${index}`}
+                  />
                 </Route>
               ))}
             </Switch>
