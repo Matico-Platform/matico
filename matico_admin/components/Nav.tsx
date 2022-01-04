@@ -21,7 +21,6 @@ import { useUser } from "../hooks/useUser";
 export const Nav: React.FC = () => {
   const { user, signout } = useUser();
   const router = useRouter()
-  console.log('Router is ',router)
   return (
     <Flex
       gridArea="header"
