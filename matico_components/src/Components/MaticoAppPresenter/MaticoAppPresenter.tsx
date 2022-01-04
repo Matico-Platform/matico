@@ -24,11 +24,13 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
   onStateChange,
 }) => {
   const dispatch = useMaticoDispatch();
+
   // If the external spec changes, we want to update here
   // This will also set up the inital spec
   useEffect(() => {
+    console.log("Updating from external spec", spec)
     dispatch(setSpec(spec));
-  }, [JSON.stringify(spec)]);
+  }, []);
 
   useEffect(()=>{
     spec.datasets.forEach((datasetDetails:{[type:string]: any})=>{

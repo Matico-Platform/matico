@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Dashboard } from "@maticoapp/matico_spec";
 import { Provider } from "react-redux";
 import { store } from "Stores/MaticoStore";
-import { VariableState } from 'Stores/MaticoVariableSlice'
+import { VariableState } from "Stores/MaticoVariableSlice";
 import {
   MaticoDataProvider,
   MaticoDataState,
@@ -17,6 +17,7 @@ interface MaticoAppInterface {
   spec?: Dashboard;
   onStateChange?: (state: VariableState) => void;
   onDataChange?: (data: MaticoDataState) => void;
+  onSpecChange?: (data: Dashboard) => void;
   basename?: string;
   editActive?: boolean | null;
 }
@@ -30,10 +31,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   onStateChange,
   basename,
   onDataChange,
+  onSpecChange,
   editActive = false,
 }) => {
-
-
   return (
     <Provider store={store}>
       <MaticoDataProvider onStateChange={onDataChange}>
@@ -47,7 +47,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
             rows={["flex"]}
             areas={[["viewer", "editor"]]}
           >
-            <MaticoEditor editActive={editActive} />
+            <MaticoEditor editActive={editActive} onSpecChange={onSpecChange} />
             <MaticoAppPresenter
               spec={spec}
               basename={basename}

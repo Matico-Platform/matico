@@ -8,9 +8,11 @@ import { setEditing } from "../../Stores/MaticoSpecSlice";
 import { Editors } from "./Editors";
 import { DatasetsEditor } from "./Panes/DatasetsEditor";
 import { BreadCrumbs } from "./Utils/BreadCrumbs";
+import {Dashboard} from "@maticoapp/matico_spec";
 
-export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
+export const MaticoEditor: React.FC<{ editActive: boolean, onSpecChange?: (dashboard:Dashboard) =>void}> = ({
   editActive,
+  onSpecChange
 }) => {
   const dispatch = useMaticoDispatch();
   // eg
@@ -25,6 +27,9 @@ export const MaticoEditor: React.FC<{ editActive: boolean }> = ({
   useEffect(() => {
     if (spec) {
       localStorage.setItem("code", JSON.stringify(spec));
+    }
+    if (onSpecChange){
+        onSpecChange(spec)
     }
   }, [JSON.stringify(spec)]);
 

@@ -18,8 +18,10 @@ export const useApp= (appID:string)=>{
   const {data,error,mutate}= useSWR(`http://localhost:8000/api/apps/${appID}`, (url)=>fetch(url).then(r=>r.json()), {refreshInterval:1000}) 
 
   const updateApp = async (app:any)=>{
-    mutate(app,false)
+    console.log("Updating app ", app)
+    // mutate(app,false)
     await api.updateApp(appID,app)
     mutate()
   }
+  return {app:data, error, updateApp}
 }
