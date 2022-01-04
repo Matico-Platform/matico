@@ -19,7 +19,7 @@ interface MaticoAppInterface {
   onDataChange?: (data: MaticoDataState) => void;
   onSpecChange?: (data: Dashboard) => void;
   basename?: string;
-  editActive?: boolean | null;
+  editActive?: boolean;
 }
 
 const themeTweaks = {
