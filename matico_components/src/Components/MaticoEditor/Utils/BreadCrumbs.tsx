@@ -36,6 +36,7 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
       breadCrumbPath.slice(0,-2).map((editItem, index) => 
         index%2 === 0 && editTypeMapping[editItem] ? 
           <BreadCrumbButton 
+            key={editItem}
             onClick={() => dispatch(setCurrentEditPath({editPath: breadCrumbPath.slice(0,index+2).join('.'), editType:editTypeMapping[editItem]}))}
             >
             {editTypeMapping[editItem]}
