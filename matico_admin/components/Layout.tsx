@@ -25,7 +25,6 @@ export const Layout: React.FC = ({ children }) => {
             height="100vh"
             justifyContent="stretch"
             width="100vw"
-            gap="size-100"
           >
             <Nav />
             {children}

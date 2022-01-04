@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/router";
 import {
   Text,
   Flex,
@@ -19,7 +20,8 @@ import { useUser } from "../hooks/useUser";
 
 export const Nav: React.FC = () => {
   const { user, signout } = useUser();
-
+  const router = useRouter()
+  console.log('Router is ',router)
   return (
     <Flex
       gridArea="header"
@@ -29,18 +31,30 @@ export const Nav: React.FC = () => {
       alignItems="center"
       marginX="size-550"
     >
-      <ALink>
-        <Link href="/apps">Apps</Link>
-      </ALink>
-      <ALink>
-        <Link href="/datasets">Datasets</Link>
-      </ALink>
-      <ALink>
-        <Link href="/apis">Apis</Link>
-      </ALink>
-      <ALink>
-        <Link href="/admin">Admin</Link>
-      </ALink>
+      <Tabs isQuiet={true} selectedKey={router.route}>
+        <TabList>
+          <Item key="/apps">
+          <ALink>
+            <Link href="/apps">Apps</Link>
+          </ALink>
+        </Item>
+        <Item key = "/datasets">
+          <ALink>
+            <Link href="/datasets">Datasets</Link>
+          </ALink>
+        </Item>
+        <Item key="/apis">
+          <ALink>
+            <Link href="/apis">Apis</Link>
+          </ALink>
+        </Item>
+        <Item key="/admin">
+          <ALink>
+            <Link href="/admin">Admin</Link>
+          </ALink>
+        </Item>
+      </TabList>
+    </Tabs>
 
       <div style={{flex:1}} />
 
