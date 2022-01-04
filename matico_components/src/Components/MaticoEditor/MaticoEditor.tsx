@@ -9,10 +9,18 @@ import { Editors } from "./Editors";
 import { DatasetsEditor } from "./Panes/DatasetsEditor";
 import { BreadCrumbs } from "./Utils/BreadCrumbs";
 import {Dashboard} from "@maticoapp/matico_spec";
+import {DatasetProvider} from "Datasets/DatasetProvider";
 
-export const MaticoEditor: React.FC<{ editActive: boolean, onSpecChange?: (dashboard:Dashboard) =>void}> = ({
+export interface MaticoEditorProps{
+  editActive: boolean, 
+  onSpecChange?: (dashboard:Dashboard) =>void
+  datasetProviders?: Array<DatasetProvider>
+}
+
+export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   editActive,
-  onSpecChange
+  onSpecChange,
+  datasetProviders
 }) => {
   const dispatch = useMaticoDispatch();
   // eg
@@ -68,7 +76,7 @@ export const MaticoEditor: React.FC<{ editActive: boolean, onSpecChange?: (dashb
           </AccordionPanel>
         )}
         <AccordionPanel label="Datasets">
-          <DatasetsEditor />
+          <DatasetsEditor datasetProviders={datasetProviders} />
         </AccordionPanel>
         <AccordionPanel label="Spec">
           <MaticoRawSpecEditor />

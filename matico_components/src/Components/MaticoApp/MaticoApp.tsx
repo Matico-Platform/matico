@@ -12,6 +12,7 @@ import { Grid, Grommet } from "grommet";
 import { deepMerge } from "grommet/utils";
 import { grommet } from "grommet/themes";
 import { MaticoEditor } from "../MaticoEditor/MaticoEditor";
+import { DatasetProvider } from "Datasets/DatasetProvider";
 
 interface MaticoAppInterface {
   spec?: Dashboard;
@@ -20,6 +21,7 @@ interface MaticoAppInterface {
   onSpecChange?: (data: Dashboard) => void;
   basename?: string;
   editActive?: boolean;
+  datasetProviders?: Array<DatasetProvider>;
 }
 
 const themeTweaks = {
@@ -33,6 +35,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   onDataChange,
   onSpecChange,
   editActive = false,
+  datasetProviders,
 }) => {
   return (
     <Provider store={store}>
@@ -47,7 +50,11 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
             rows={["flex"]}
             areas={[["viewer", "editor"]]}
           >
-            <MaticoEditor editActive={editActive} onSpecChange={onSpecChange} />
+            <MaticoEditor
+              datasetProviders={datasetProviders}
+              editActive={editActive}
+              onSpecChange={onSpecChange}
+            />
             <MaticoAppPresenter
               spec={spec}
               basename={basename}

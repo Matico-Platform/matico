@@ -18,6 +18,7 @@ import { Dataset, DatasetState } from "Datasets/Dataset";
 import { useMaticoDispatch } from "Hooks/redux";
 import { addDataset } from "Stores/MaticoSpecSlice";
 import styled from "styled-components";
+import { DatasetProvider } from "Datasets/DatasetProvider";
 
 interface DatasetEditorProps {
   dataset: Dataset;
@@ -72,10 +73,12 @@ export const DatasetEditor: React.FC<DatasetEditorProps> = ({
 interface NewDatasetInputProps {
   onCancel: () => void;
   onSubmit: (datasetParams: any) => void;
+  datasetProviders?: Array<DatasetProvider>;
 }
 
 const NewDatasetInput: React.FC<NewDatasetInputProps> = ({
   onCancel,
+  datasetProviders,
   onSubmit,
 }) => {
   return (
@@ -131,12 +134,28 @@ const NewDatasetInput: React.FC<NewDatasetInputProps> = ({
             </Box>
           </Form>
         </Tab>
+        {datasetProviders &&
+          datasetProviders.map((provider: DatasetProvider) => (
+            <Tab title={provider.name} key={provider.name}>
+              <provider.component
+                onSubmit={(selectedDataset: any) =>
+                  onSubmit(selectedDataset)
+                }
+              />
+            </Tab>
+          ))}
       </Tabs>
     </Box>
   );
 };
 
-export const DatasetsEditor: React.FC = () => {
+interface DatasetsEditorProps {
+  datasetProviders?: Array<DatasetProvider>;
+}
+
+export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
+  datasetProviders,
+}) => {
   const { state } = useContext(MaticoDataContext);
   const { datasets, datasetStates } = state;
   const [showNewDataset, setShowNewDataset] = useState(false);
@@ -154,6 +173,7 @@ export const DatasetsEditor: React.FC = () => {
         <NewDatasetInput
           onCancel={() => setShowNewDataset(false)}
           onSubmit={createDataset}
+          datasetProviders={datasetProviders}
         />
       ) : (
         <Box>
