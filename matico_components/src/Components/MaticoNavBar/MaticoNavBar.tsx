@@ -41,8 +41,8 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   }
 
   const onAddPage = () => {
-    const firstPage = pages.length === 0
-    const pageNo = firstPage ?  0 : Math.max(...pages.map((p) => p.order)) + 1  
+    const firstPage = pages.length === 0;
+    const pageNo = firstPage ? 0 : Math.max(...pages.map((p) => p.order)) + 1;
 
     dispatch(
       addPage({
@@ -50,7 +50,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
         page: {
           name: firstPage ? "Home" : `Page${pageNo}`,
           content: `This page ${pageNo}`,
-          path: firstPage ? "/" : `page_${pageNo}`,
+          path: firstPage ? "/" : `/page_${pageNo}`,
           icon: firstPage ? "Home" : "Page",
           //@ts-ignore
           order: pageNo,
@@ -70,6 +70,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   return (
     <Sidebar
       background={chromaColor ? chromaColor.hex() : "neutral-2"}
+      style={{textAlign:'center'}}
       header={
         <Avatar
           src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
@@ -80,7 +81,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       elevation="medium"
       footer={<Button icon={<Icons.Help />} hoverIndicator />}
     >
-      <Nav gap="small">
+      <Nav gap="small" >
         {pages.map((page, index) => (
           <Link
             style={{ textDecoration: "none" }}
