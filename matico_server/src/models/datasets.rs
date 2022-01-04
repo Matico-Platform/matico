@@ -113,6 +113,7 @@ impl Dataset {
         page: Option<PaginationParams>,
         sort: Option<SortParams>,
         format: Option<Format>,
+        includeMetadata:Option<bool>
     ) -> Result<String, ServiceError> {
 
         let q = match query {
@@ -123,13 +124,16 @@ impl Dataset {
         let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
         let f = format.unwrap_or_default();
 
+
         let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
-        let result_with_metadata = json!({
-            "data": result,
-            "metadata": {
-                "total": metadata.total
-            }
-        });
+        let result_with_metadata = match includeMetadata{
+            Some(true) => json!({
+                "data": result,
+                "metadata": {
+                    "total": metadata.total
+                }}),
+            Some(false) | None => json!(result)
+        };
         Ok(result_with_metadata.to_string())
     }
 

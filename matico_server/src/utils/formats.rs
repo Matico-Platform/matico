@@ -16,6 +16,7 @@ impl Default for Format{
 #[derive(Serialize, Deserialize)]
 pub struct FormatParam {
     pub format: Option<Format>,
+    pub includeMetadata: Option<bool>
 }
 
 

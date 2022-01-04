@@ -40,6 +40,7 @@ async fn get_data(
             Some(page),
             Some(sort),
             format_param.format,
+            format_param.includeMetadata
         )
         .await?;
     Ok(HttpResponse::Ok()
@@ -72,7 +73,7 @@ async fn get_feature(
     );
 
     let result = dataset
-        .query(&state.data_db, Some(query), None, None, Some(Format::Json))
+        .query(&state.data_db, Some(query), None, None, Some(Format::Json),Some(true))
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
