@@ -6,8 +6,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useApp } from "../../../hooks/useApps";
 import { Content } from "@adobe/react-spectrum";
-import {useEffect, useRef} from "react";
-import html2canvas from 'html2canvas' 
+import { MaticoServerDatasetProvider } from "../../../datasetProviders/MaticoServerDatasetProvider";
 
 const Editor: NextPage = () => {
   const MaticoApp = dynamic(
@@ -18,21 +17,11 @@ const Editor: NextPage = () => {
     { ssr: false }
   );
   const router = useRouter();
-
-  console.log("router is ", router);
-
   const params = router.query.params;
   const appId = params ? params[0] : "";
-  console.log("appid is ", appId);
 
   const { app, updateApp } = useApp(appId);
 
-
-  const takeScreenshot=()=>{
-    html2canvas(document.getElementById(("appContent"))).then((canvas)=>{
-      console.log("canvas ",canvas)
-    })
-  }
 
 
   return (
@@ -47,7 +36,6 @@ const Editor: NextPage = () => {
               <Divider size='M'/>
               <Heading>Links</Heading>
               <ALink><Link href={`/apps/${appId}`}>App Link</Link></ALink>
-              <ActionButton onPress={takeScreenshot}>Take Screeenshot</ActionButton>
             </Content>
           </>
         ) : (
@@ -66,6 +54,7 @@ const Editor: NextPage = () => {
               console.log("UPDATEING");
               updateApp({ ...app, spec });
             }}
+            datasetProviders={[MaticoServerDatasetProvider]}
           />
         )}
       </View>
