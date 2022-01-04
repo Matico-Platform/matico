@@ -9,6 +9,6 @@ export const useDatasetData = (
   return useSWR(
     `http://localhost:8000/api/datasets/${id}/data?limit=${perPage}&offset=${offset}`,
     (url) => fetch(url).then((r) => r.json()),
-    { refreshInterval: 1000 }
+    { refreshInterval: 10000 }
   );
 };
