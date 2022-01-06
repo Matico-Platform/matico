@@ -110,7 +110,6 @@ export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({ file }) => 
           </TableHeader>
           <TableBody>
             {dataPreview.map((row: { [colName: string]: any }) => {
-              console.log("row is ", row);
               return (
                 <Row>
                   {Object.values(row).map((value: any) => (

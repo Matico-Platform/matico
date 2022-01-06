@@ -68,7 +68,7 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
               <Item key={file.name}>{file.name}</Item>
             ))}
           </TabList>
-          <Flex width="1000px" height="100%">
+          <Flex width="100%" height="100%">
             <TabPanels>
               {acceptedFiles.map((file: File) => (
                 <Item key={file.name}>{previewerForFile(file)}</Item>
