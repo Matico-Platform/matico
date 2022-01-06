@@ -17,18 +17,16 @@ import {
   Radio,
   RadioGroup,
   Button,
+  TextArea,
 } from "@adobe/react-spectrum";
 import React, { useState, useEffect, Key } from "react";
 import { Uploader } from "./Uploader";
 import { getCSVPreview } from "./utils/getCSVPreview";
+import { FilePreviewerInterface } from "./FilePreviewerInterface";
 
-export interface FilePreviewerProps {
-  file: File;
-  onSubmit?: () => void;
-}
-
-export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
+export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({ file }) => {
   const [name, setName] = useState(file.name);
+  const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [geoType, setGeoType] = useState("none");
   const [dataPreview, setDataPreview] = useState<any | null>(null);
@@ -41,8 +39,6 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
 
   let GeomSelector = <></>;
 
-  console.log("columns ", columns);
-
   if (geoType === "lat_lng") {
     GeomSelector = (
       <>
@@ -50,6 +46,7 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
           selectedKey={latCol}
           onSelectionChange={(key: Key) => setLatCol(key as string)}
           label="Latitude Column"
+          isDisabled={upload}
         >
           {columns.map((column: string) => (
             <Item key={column}>{column}</Item>
@@ -59,6 +56,7 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
           selectedKey={lngCol}
           onSelectionChange={(key: Key) => setLngCol(key as string)}
           label="Logitude Column"
+          isDisabled={upload}
         >
           {columns.map((column: string) => (
             <Item key={column}>{column}</Item>
@@ -99,7 +97,6 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
   }, []);
 
   if (upload) {
-    return <Uploader file={file} metadata={{ name, latCol, lngCol }} />;
   }
 
   return (
@@ -131,8 +128,20 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
           label="Dataset Name"
           value={name}
           onChange={setName}
+          isDisabled={upload}
         ></TextField>
-        <Switch isSelected={isPublic} onChange={setIsPublic}>
+        <TextArea
+          label="Description"
+          placeholder="Describe your datasets so that people know whats in it"
+          value={description}
+          onChange={setDescription}
+          isDisabled={upload}
+        ></TextArea>
+        <Switch
+          isDisabled={upload}
+          isSelected={isPublic}
+          onChange={setIsPublic}
+        >
           Public
         </Switch>
         {dataPreview && (
@@ -142,6 +151,7 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
               value={geoType}
               onChange={setGeoType}
               label="Geometry"
+              isDisabled={upload}
             >
               <Radio key="none" value="none">
                 None
@@ -156,7 +166,13 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
             {GeomSelector}
           </>
         )}
-        <Button variant="cta" onPress={() => setUpload(true)}>Upload</Button>
+        {upload ? (
+          <Uploader file={file} metadata={{ name, latCol, description, lngCol }} />
+        ) : (
+          <Button variant="cta" onPress={() => setUpload(true)}>
+            Upload
+          </Button>
+        )}
       </Form>
     </Flex>
   );

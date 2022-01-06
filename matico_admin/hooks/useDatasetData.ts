@@ -7,7 +7,7 @@ export const useDatasetData = (
 ) => {
   const offset = page ? page * perPage : 0;
   return useSWR(
-    `http://localhost:8000/api/datasets/${id}/data?limit=${perPage}&offset=${offset}`,
+    `http://localhost:8000/api/datasets/${id}/data?limit=${perPage}&offset=${offset}&includeMetadata=true`,
     (url) => fetch(url).then((r) => r.json()),
     { refreshInterval: 10000 }
   );

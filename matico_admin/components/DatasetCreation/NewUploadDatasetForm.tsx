@@ -12,8 +12,9 @@ import {
 import React, { useCallback, useState } from "react";
 import Upload from "@spectrum-icons/illustrations/Upload";
 import { useDropzone } from "react-dropzone";
-import { FilePreviewer } from "./FilePreviewer";
+import { CSVFilePreviewer } from "./CSVFilePreviewer";
 import { faAlignJustify } from "@fortawesome/free-solid-svg-icons";
+import { GeoJSONFilePreviewer } from "./GeoJSONFilePreviewer";
 
 export interface NewUploadDatasetFormProps {}
 
@@ -32,6 +33,13 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
         "application/geo+json,application/json,application/csv,text/csv,text/plain,*.csv,*.geojson",
     });
 
+  const previewerForFile = (file: File) => {
+    if (file.type.includes("csv")) {
+      return <CSVFilePreviewer file={file} />;
+    } else {
+      return <GeoJSONFilePreviewer file={file} />;
+    }
+  };
   const dropMessage = isDragActive ? "Drop it here!" : "Drag and drop a file";
   const message = isDragReject
     ? "Only csv, json and geojson files are currently supported"
@@ -54,18 +62,16 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
         </Flex>
       )}
       {acceptedFiles && (
-        <Tabs orientation="vertical" width="100%" height="100%">
+        <Tabs orientation="horizontal" width="100%" height="100%">
           <TabList>
             {acceptedFiles.map((file: File) => (
               <Item key={file.name}>{file.name}</Item>
             ))}
           </TabList>
-          <Flex width="100%" height="100%">
+          <Flex width="1000px" height="100%">
             <TabPanels>
               {acceptedFiles.map((file: File) => (
-                <Item key={file.name}>
-                  <FilePreviewer file={file} />
-                </Item>
+                <Item key={file.name}>{previewerForFile(file)}</Item>
               ))}
             </TabPanels>
           </Flex>

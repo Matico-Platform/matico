@@ -15,15 +15,15 @@ export const Uploader: React.FC<UploaderProps> = ({
   onDone,
   onFail,
 }) => {
-  const [progress, setProgreess] = useState(0);
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
-    uploadFile(file, "/datasets", metadata, setProgreess)
+    uploadFile(file, "/datasets", {...metadata, geom_col:'', id_col:''}, setProgress)
       .then(() => {
         if (onDone) {
           onDone();
         }
       })
-      .error((error: any) => {
+      .catch((error: any) => {
         if (onFail) {
           onFail(error);
         }

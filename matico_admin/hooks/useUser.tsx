@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { getProfile, login, signup } from "../utils/api";
 
 export const useUser = () => {
@@ -6,6 +7,8 @@ export const useUser = () => {
   const [user, setUser] = useState<any | null>(null);
   const [signupError, setSignupError] = useState<any | null>(null);
   const [loginError, setLoginError] = useState<any | null>(null);
+
+  const {data:profile, error:profileError, mutate} = useSWR(`http://localhost:8000/api/profile`, (url)=>fetch(url).then(r=>r.json()) ) 
 
   useEffect(() => {
     const interval = setInterval(()=>{
