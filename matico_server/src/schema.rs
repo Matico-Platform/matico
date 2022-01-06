@@ -28,8 +28,10 @@ table! {
         description -> Text,
         geom_col -> Text,
         id_col -> Text,
+        table_name -> Text,
     }
 }
+
 
 table! {
     permissions (id) {
@@ -65,6 +67,8 @@ table! {
     }
 }
 
+
+
 table! {
     users (id) {
         id -> Uuid,
@@ -75,6 +79,7 @@ table! {
         updated_at -> Timestamp,
     }
 }
+
 
 allow_tables_to_appear_in_same_query!(
     apps,

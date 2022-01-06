@@ -50,6 +50,7 @@ pub struct Dataset {
     pub description: String,
     pub geom_col: String,
     pub id_col: String,
+    pub table_name: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -118,7 +119,7 @@ impl Dataset {
 
         let q = match query {
             Some(query) => query,
-            None => format!(r#"select * from "{}""#, self.name.to_lowercase()),
+            None => format!(r#"select * from "{}""#, self.table_name),
         };
 
         let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
@@ -188,7 +189,7 @@ impl Dataset {
         UPDATE {}
         SET {}
         WHERE {} = {}",
-            self.name, set_statement, self.id_col, feature_id
+            self.table_name, set_statement, self.id_col, feature_id
         );
         info!("Update query is {}", query.clone());
         let query2 = query.clone();
@@ -223,7 +224,7 @@ impl Dataset {
     pub async fn columns(&self, db: &DataDbPool) -> Result<Vec<Column>, ServiceError> {
         let columns = PostgisQueryRunner::get_query_column_details(
             &db,
-            &format!("select * from {}", self.name),
+            &format!("select * from {}", self.table_name),
         )
         .await?;
         Ok(columns)
