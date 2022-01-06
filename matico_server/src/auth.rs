@@ -3,7 +3,6 @@ use crate::models::UserToken;
 use actix_web::{dev::Payload, FromRequest, HttpRequest};
 use futures::future::{err, ok, Ready};
 use jsonwebtoken::{decode, DecodingKey};
-use log::info;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -14,17 +13,14 @@ struct Claims {
 }
 
 pub fn validate_token(token: &str) -> Result<UserToken, ServiceError> {
-    info!("Attempting to validate token {}", token);
     let t = decode::<UserToken>(
         token,
         &DecodingKey::from_secret("secret".as_ref()),
         &jsonwebtoken::Validation::default(),
     )
     .map_err(|e| {
-        info!("Token validation failed with error {}", e);
         ServiceError::InvalidToken
     })?;
-    info!("Token validated the claims are {:#?}", t.claims);
     Ok(t.claims)
 }
 
@@ -56,7 +52,6 @@ impl FromRequest for AuthService {
     type Config = ();
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload) -> Self::Future {
-        info!("Extracting token");
         let token = extract_token_from_req(req);
         match token {
             Some(_) => {
