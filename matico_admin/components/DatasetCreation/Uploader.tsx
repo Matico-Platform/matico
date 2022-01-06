@@ -16,18 +16,29 @@ export const Uploader: React.FC<UploaderProps> = ({
   onFail,
 }) => {
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<any | null>(null);
+  const [isDone, setIsDone] = useState<boolean>(false);
   useEffect(() => {
-    uploadFile(file, "/datasets", {...metadata, geom_col:'', id_col:''}, setProgress)
-      .then(() => {
+    uploadFile(
+      file,
+      "/datasets",
+      { ...metadata, geom_col: "", id_col: "" },
+      setProgress
+    )
+      .then((response  :any) => {
+        console.log("response ", response)
+        setIsDone(true)
         if (onDone) {
           onDone();
         }
       })
       .catch((error: any) => {
+        setError(error);
         if (onFail) {
           onFail(error);
         }
       });
   }, []);
+
   return <ProgressBar label="Uploading..." value={progress} />;
 };
