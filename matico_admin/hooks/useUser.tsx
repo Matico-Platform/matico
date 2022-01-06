@@ -44,7 +44,7 @@ export const useUser = () => {
       });
   };
 
-  const signout = () => {
+  const logout= () => {
     localStorage.removeItem("token");
     setUser(null);
   };
@@ -55,6 +55,6 @@ export const useUser = () => {
     loginError,
     login: tryLogin,
     signup: trySignup,
-    signout,
+    logout,
   };
 };

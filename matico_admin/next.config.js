@@ -41,6 +41,7 @@ const withTM = require('next-transpile-modules')([
   '@react-spectrum/well',
   '@spectrum-icons/ui',
   '@spectrum-icons/workflow',
+  '@spectrum-icons/illustrations',
   "@maticoapp/matico_components",
   "react-mde"
 ]);

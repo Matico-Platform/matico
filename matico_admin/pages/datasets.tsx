@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { Layout } from "../components/Layout";
-import { Divider, View } from "@adobe/react-spectrum";
+import { Divider, Flex, Header, Heading, View } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useDatasets } from "../hooks/useDatasets";
 import { Link as ALink } from "@adobe/react-spectrum";
@@ -14,6 +14,7 @@ import {
   TableBody,
   TableHeader,
 } from "@adobe/react-spectrum";
+import { NewDatasetModal } from "../components/DatasetCreation/NewDatasetModal";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
@@ -35,8 +36,13 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
   return (
     <Layout>
       <View backgroundColor="blue-600" gridArea="sidebar" />
-      <View gridArea="content">
-        <h3>Datasets</h3>
+      <View gridArea="content" padding='size-1000'>
+        <Header>
+          <Flex direction='row' alignItems='center' justifyContent='space-between'>
+            <Heading>Dataset</Heading>
+            <NewDatasetModal />
+          </Flex>
+        </Header>
         <Divider size="S" />
         {datasets && (
           <TableView
@@ -58,7 +64,9 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
                 <Row>
                   <Cell>
                     <ALink>
-                      <Link href={`/datasets/${dataset.id}`} >{dataset.name}</Link>
+                      <Link href={`/datasets/${dataset.id}`}>
+                        {dataset.name}
+                      </Link>
                     </ALink>
                   </Cell>
                   <Cell>{dataset.public ? "Public" : "Private"}</Cell>

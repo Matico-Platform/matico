@@ -17,10 +17,11 @@ import { Link as ALink } from "@adobe/react-spectrum";
 import { LoginSignupDialog } from "./LoginSignUpDialog";
 import Link from "next/link";
 import { useUser } from "../hooks/useUser";
+import { ProfileDiaglog } from "./ProfileDialog";
 
 export const Nav: React.FC = () => {
-  const { user, signout } = useUser();
-  const router = useRouter()
+  const { user, logout} = useUser();
+  const router = useRouter();
   return (
     <Flex
       gridArea="header"
@@ -33,41 +34,37 @@ export const Nav: React.FC = () => {
       <Tabs isQuiet={true} selectedKey={router.route}>
         <TabList>
           <Item key="/apps">
-          <ALink>
-            <Link href="/apps">Apps</Link>
-          </ALink>
-        </Item>
-        <Item key = "/datasets">
-          <ALink>
-            <Link href="/datasets">Datasets</Link>
-          </ALink>
-        </Item>
-        <Item key="/apis">
-          <ALink>
-            <Link href="/apis">Apis</Link>
-          </ALink>
-        </Item>
-        <Item key="/admin">
-          <ALink>
-            <Link href="/admin">Admin</Link>
-          </ALink>
-        </Item>
-      </TabList>
-    </Tabs>
+            <ALink>
+              <Link href="/apps">Apps</Link>
+            </ALink>
+          </Item>
+          <Item key="/datasets">
+            <ALink>
+              <Link href="/datasets">Datasets</Link>
+            </ALink>
+          </Item>
+          <Item key="/apis">
+            <ALink>
+              <Link href="/apis">Apis</Link>
+            </ALink>
+          </Item>
+          <Item key="/admin">
+            <ALink>
+              <Link href="/admin">Admin</Link>
+            </ALink>
+          </Item>
+        </TabList>
+      </Tabs>
 
-      <div style={{flex:1}} />
+      <div style={{ flex: 1 }} />
 
       <View justifySelf="end">
         {user ? (
-          <MenuTrigger>
-            <ActionButton>{user.username}</ActionButton>
-            <Menu minWidth="size-2400">
-              <Item>Profile</Item>
-              <Item>
-                <Button variant="primary" isQuiet onPress={signout}>Logout</Button>
-              </Item>
-            </Menu>
-          </MenuTrigger>
+          <ProfileDiaglog
+            username={user.username}
+            popover={true}
+            onLogout={logout}
+          />
         ) : (
           <LoginSignupDialog />
         )}
