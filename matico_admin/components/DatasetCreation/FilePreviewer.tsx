@@ -16,9 +16,10 @@ import {
   Item,
   Radio,
   RadioGroup,
+  Button,
 } from "@adobe/react-spectrum";
 import React, { useState, useEffect, Key } from "react";
-import {Uploader} from "./Uploader";
+import { Uploader } from "./Uploader";
 import { getCSVPreview } from "./utils/getCSVPreview";
 
 export interface FilePreviewerProps {
@@ -33,10 +34,10 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
   const [dataPreview, setDataPreview] = useState<any | null>(null);
   const [columns, setColumns] = useState<Array<string>>([]);
   const [parseError, setParseError] = useState<any | null>(null);
-  const [upload, setUpload] = useState(false)
-  const [latCol, setLatCol] = useState<string| undefined>(undefined)
-  const [lngCol, setLngCol] = useState<string| undefined>(undefined)
-  const [wkbCol, setWKBCol] = useState<string| undefined>(undefined)
+  const [upload, setUpload] = useState(false);
+  const [latCol, setLatCol] = useState<string | undefined>(undefined);
+  const [lngCol, setLngCol] = useState<string | undefined>(undefined);
+  const [wkbCol, setWKBCol] = useState<string | undefined>(undefined);
 
   let GeomSelector = <></>;
 
@@ -45,12 +46,20 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
   if (geoType === "lat_lng") {
     GeomSelector = (
       <>
-  <Picker selectedKey={latCol} onSelectionChange={(key:Key)=>setLatCol(key as string)} label="Latitude Column">
+        <Picker
+          selectedKey={latCol}
+          onSelectionChange={(key: Key) => setLatCol(key as string)}
+          label="Latitude Column"
+        >
           {columns.map((column: string) => (
             <Item key={column}>{column}</Item>
           ))}
         </Picker>
-        <Picker selectedKey={lngCol} onSelectionChange={(key:Key)=>setLngCol(key as string)} label="Logitude Column">
+        <Picker
+          selectedKey={lngCol}
+          onSelectionChange={(key: Key) => setLngCol(key as string)}
+          label="Logitude Column"
+        >
           {columns.map((column: string) => (
             <Item key={column}>{column}</Item>
           ))}
@@ -61,7 +70,11 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
   if (geoType === "wkb") {
     GeomSelector = (
       <>
-        <Picker selectedKey={wkbCol} onSelectionChange={(key:Key)=>setWKBCol(key as string)} label="WKB Column">
+        <Picker
+          selectedKey={wkbCol}
+          onSelectionChange={(key: Key) => setWKBCol(key as string)}
+          label="WKB Column"
+        >
           {columns.map((column: string) => (
             <Item key={column}>{column}</Item>
           ))}
@@ -85,16 +98,14 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
     }
   }, []);
 
-  if(upload){
-    return(
-      <Uploader file={file} metadata={{name,latCol,lngCol}}  />
-    )
+  if (upload) {
+    return <Uploader file={file} metadata={{ name, latCol, lngCol }} />;
   }
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" width="100%" height="100%">
       {dataPreview && (
-        <TableView>
+        <TableView height="size-1700">
           <TableHeader>
             {Object.keys(dataPreview[0]).map((column) => (
               <Column key={column}>{column}</Column>
@@ -145,7 +156,7 @@ export const FilePreviewer: React.FC<FilePreviewerProps> = ({ file }) => {
             {GeomSelector}
           </>
         )}
-        <ActionButton onPress={()=>setUpload(true)}>Upload</ActionButton>
+        <Button variant="cta" onPress={() => setUpload(true)}>Upload</Button>
       </Form>
     </Flex>
   );

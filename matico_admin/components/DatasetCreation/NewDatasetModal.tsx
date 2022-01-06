@@ -21,14 +21,14 @@ export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
   return (
     <DialogTrigger isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
       <ActionButton>New Dataset</ActionButton>
-      <Dialog>
+      <Dialog width="80vw" height="60vh">
         <Content>
-          <Tabs>
+          <Tabs height="100%">
             <TabList>
               <Item key="upload">Upload</Item>
               <Item key="sync">Sync</Item>
             </TabList>
-            <TabPanels>
+            <TabPanels width="100%" height="100%">
               <Item key="upload">
                 <NewUploadDatasetForm/>
               </Item>
