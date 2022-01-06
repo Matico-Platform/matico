@@ -2701,6 +2701,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@loaders.gl/core@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "@loaders.gl/core@npm:3.1.4"
+  dependencies:
+    "@babel/runtime": ^7.3.1
+    "@loaders.gl/loader-utils": 3.1.4
+    "@loaders.gl/worker-utils": 3.1.4
+    probe.gl: ^3.4.0
+  checksum: 46863fff3c88617c28559c340ef5664bf32b27c03c5f22a1ee9046345870e540b14f9cea61f1fa46ae2e3caa540fcdc73d9a0756af8d5653b14d1ffca2a88c5c
+  languageName: node
+  linkType: hard
+
 "@loaders.gl/draco@npm:3.1.0":
   version: 3.1.0
   resolution: "@loaders.gl/draco@npm:3.1.0"
@@ -2723,6 +2735,19 @@ __metadata:
     "@mapbox/vector-tile": ^1.3.1
     pbf: ^3.2.1
   checksum: 021de3ec136e995f51363f58561e2d8b731578877a36a6e34db7cc8dfa6ec01a5d3640e0de01ab956185bfec46219e109e3b1ab4eccafe06283c583c0085e6a0
+  languageName: node
+  linkType: hard
+
+"@loaders.gl/gis@npm:3.1.4":
+  version: 3.1.4
+  resolution: "@loaders.gl/gis@npm:3.1.4"
+  dependencies:
+    "@loaders.gl/loader-utils": 3.1.4
+    "@loaders.gl/schema": 3.1.4
+    "@mapbox/vector-tile": ^1.3.1
+    "@math.gl/polygon": ^3.5.1
+    pbf: ^3.2.1
+  checksum: b3bca2b2394d14d8baef2ee86bb7c8c0c37cb2abc2590ea64ec9b94d32323f4a086cf59d515d3d4042b53dbe7e4be7c381a692c7875da439e2993207f917cbca
   languageName: node
   linkType: hard
 
@@ -2749,6 +2774,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@loaders.gl/json@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "@loaders.gl/json@npm:3.1.4"
+  dependencies:
+    "@loaders.gl/gis": 3.1.4
+    "@loaders.gl/loader-utils": 3.1.4
+    "@loaders.gl/schema": 3.1.4
+  checksum: 3a3238f86389c3b2d86f3221d61cc7ca5cbb92b9a31312e8156642cb45fc8719f8eeb6b26c22ba88acfa435e0876a54e02b6e69d320781cd17bf880523a08a0b
+  languageName: node
+  linkType: hard
+
 "@loaders.gl/loader-utils@npm:3.0.11":
   version: 3.0.11
   resolution: "@loaders.gl/loader-utils@npm:3.0.11"
@@ -2768,6 +2804,17 @@ __metadata:
     "@loaders.gl/worker-utils": 3.1.0
     "@probe.gl/stats": ^3.4.0
   checksum: 94c31c1d82fa6ded638184fec427a04b33a54d358960112a5acabfa6afc24182e3a7577e74cc41ea0ebf3963971d58b3085638a3b2310df4a439d6c3ed37f56d
+  languageName: node
+  linkType: hard
+
+"@loaders.gl/loader-utils@npm:3.1.4":
+  version: 3.1.4
+  resolution: "@loaders.gl/loader-utils@npm:3.1.4"
+  dependencies:
+    "@babel/runtime": ^7.3.1
+    "@loaders.gl/worker-utils": 3.1.4
+    "@probe.gl/stats": ^3.5.0
+  checksum: f58c9f0f11da790acbaa4350aca8f7c3e78c73377f508b2bdb2f9b8ab464a5468d919071c8dfc9a175088ef7e6b7afbdbd90f75e3612e9cc0f40b209f01c2cc2
   languageName: node
   linkType: hard
 
@@ -2811,6 +2858,15 @@ __metadata:
   dependencies:
     "@types/geojson": ^7946.0.7
   checksum: 6c9764d7c02f8cbe591790f7ebad3c37fc25283d1b7b4c6df53832b81fce0f8b784e8756523ecfb6df14aee986f7a63abbf125fda0970b57eddb4a3bb9561ea5
+  languageName: node
+  linkType: hard
+
+"@loaders.gl/schema@npm:3.1.4":
+  version: 3.1.4
+  resolution: "@loaders.gl/schema@npm:3.1.4"
+  dependencies:
+    "@types/geojson": ^7946.0.7
+  checksum: e8deda279fb8ef2007470ee486c8de6fd4e6e04a0355844c81723b85d11d56d2e71d3f58fba0580a3b2ec6c5b0fc7a5f6b6401bba72a86bca90b512c7683bf69
   languageName: node
   linkType: hard
 
@@ -2881,6 +2937,15 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.3.1
   checksum: a02eff52ba654b41facdc4914c47d75634d5979edca22f439c8eb30428289df038dec55ecde4becfb410519660e63ad6f3af40fddc5ca28dc69236f153aaa90a
+  languageName: node
+  linkType: hard
+
+"@loaders.gl/worker-utils@npm:3.1.4":
+  version: 3.1.4
+  resolution: "@loaders.gl/worker-utils@npm:3.1.4"
+  dependencies:
+    "@babel/runtime": ^7.3.1
+  checksum: 8005ff5a23a3b4e7b703fd7044758482c1d15b021bfca5963d5aff26e0ed3c3ca3b312f97d7a83877dc70fd7c4422d835a26652a6e99680cdbce9298e9c655eb
   languageName: node
   linkType: hard
 
@@ -4522,7 +4587,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@probe.gl/stats@npm:3.5.0, @probe.gl/stats@npm:^3.4.0":
+"@probe.gl/stats@npm:3.5.0, @probe.gl/stats@npm:^3.4.0, @probe.gl/stats@npm:^3.5.0":
   version: 3.5.0
   resolution: "@probe.gl/stats@npm:3.5.0"
   dependencies:
@@ -20929,6 +20994,8 @@ __metadata:
     "@fortawesome/free-brands-svg-icons": ^5.15.4
     "@fortawesome/free-solid-svg-icons": ^5.15.4
     "@fortawesome/react-fontawesome": ^0.1.16
+    "@loaders.gl/core": ^3.1.4
+    "@loaders.gl/json": ^3.1.4
     "@maticoapp/matico_components": "workspace:matico_components"
     "@react-spectrum/card": ^3.0.0-alpha.1
     "@spectrum-icons/illustrations": ^3.2.2

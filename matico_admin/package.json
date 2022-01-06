@@ -14,6 +14,8 @@
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
+    "@loaders.gl/core": "^3.1.4",
+    "@loaders.gl/json": "^3.1.4",
     "@maticoapp/matico_components": "workspace:matico_components",
     "@react-spectrum/card": "^3.0.0-alpha.1",
     "@spectrum-icons/illustrations": "^3.2.2",
