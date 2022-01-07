@@ -1909,7 +1909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@danmarshall/deckgl-typings@npm:^4.9.7":
+"@danmarshall/deckgl-typings@npm:^4.5.1":
   version: 4.9.13
   resolution: "@danmarshall/deckgl-typings@npm:4.9.13"
   dependencies:
@@ -3036,7 +3036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/geojson-rewind@npm:^0.5.1":
+"@mapbox/geojson-rewind@npm:^0.5.0, @mapbox/geojson-rewind@npm:^0.5.1":
   version: 0.5.1
   resolution: "@mapbox/geojson-rewind@npm:0.5.1"
   dependencies:
@@ -3059,6 +3059,15 @@ __metadata:
   version: 2.0.2
   resolution: "@mapbox/jsonlint-lines-primitives@npm:2.0.2"
   checksum: 4eb31edd3ccff530f7b687ddc6d813d6e24fc66e9a563460882e7861b49f9331c5ded6fd7e927b37affbbd98f83bff1f7b916119044f1931df03c6ffedba2cfb
+  languageName: node
+  linkType: hard
+
+"@mapbox/mapbox-gl-supported@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@mapbox/mapbox-gl-supported@npm:1.5.0"
+  peerDependencies:
+    mapbox-gl: ">=0.32.1 <2.0.0"
+  checksum: 0861f89e2a1e116a8731242fe049e6ad398ff3ac1481b87df9b042daa8ad76f5f6e1f60acc37d2bd483546817280259bde57e1aa51e46d1bef9efcecd4884efe
   languageName: node
   linkType: hard
 
@@ -3114,7 +3123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/tiny-sdf@npm:^1.1.0":
+"@mapbox/tiny-sdf@npm:^1.1.0, @mapbox/tiny-sdf@npm:^1.1.1":
   version: 1.2.5
   resolution: "@mapbox/tiny-sdf@npm:1.2.5"
   checksum: d4cfd700c8ccd8b9183da78a943e314cada4184966a52758857cc7141391829a2da31b733046ee0a57e169396314533ffbde8445ce3476a193c6aefcc7bc883a
@@ -3207,7 +3216,7 @@ __metadata:
   resolution: "@maticoapp/matico_components@workspace:matico_components"
   dependencies:
     "@apache-arrow/es5-cjs": ^6.0.0
-    "@danmarshall/deckgl-typings": ^4.9.7
+    "@danmarshall/deckgl-typings": ^4.5.1
     "@deck.gl/core": ^8.6.3
     "@deck.gl/layers": ^8.6.0
     "@deck.gl/react": ^8.6.0
@@ -3226,6 +3235,7 @@ __metadata:
     "@types/papaparse": ^5.3.1
     "@types/react": ^17.0.37
     "@types/react-dom": ^17.0.11
+    "@types/react-map-gl": ^5.2.9
     "@types/react-router": ^5.1.17
     "@types/react-router-dom": ^5.3.2
     "@types/styled-components": ^5.1.18
@@ -8314,7 +8324,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mapbox-gl@npm:^2.0.3":
+"@types/mapbox-gl@npm:*, @types/mapbox-gl@npm:^2.0.3":
   version: 2.6.0
   resolution: "@types/mapbox-gl@npm:2.6.0"
   dependencies:
@@ -8455,6 +8465,18 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 4d5730dffbef86c887cecad7e3cecda424ce6a64d0b5441c63b5b015d48219868660a2bb1aa15e897e565ad8867fa6b885d4358b04e1c4e589ba4c07c3fda55c
+  languageName: node
+  linkType: hard
+
+"@types/react-map-gl@npm:^5.2.9":
+  version: 5.2.11
+  resolution: "@types/react-map-gl@npm:5.2.11"
+  dependencies:
+    "@types/geojson": "*"
+    "@types/mapbox-gl": "*"
+    "@types/react": "*"
+    "@types/viewport-mercator-project": "*"
+  checksum: 72b6df93350824b1a7f03fca953fd686c2efc563d5418e6798003bc8f174699275513c0009b47143a8b230f83f12a43982d2e5e9ed4f49ae0b81c02428dc9f20
   languageName: node
   linkType: hard
 
@@ -8622,6 +8644,15 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/viewport-mercator-project@npm:*":
+  version: 6.1.2
+  resolution: "@types/viewport-mercator-project@npm:6.1.2"
+  dependencies:
+    gl-matrix: ^3.2.0
+  checksum: 5d1c4666bb39c2eb16fa3c09a8ee58ee4deb9ddbb19d5bd3089c88ca5b57463b9672326443da21db6698192bbf502f1cc0eddfb33954ad1e4b273800950c62fd
   languageName: node
   linkType: hard
 
@@ -13346,7 +13377,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deck.gl@npm:^8.6.0":
+"deck.gl@npm:^8.3.14, deck.gl@npm:^8.6.0":
   version: 8.6.5
   resolution: "deck.gl@npm:8.6.5"
   dependencies:
@@ -14174,7 +14205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"earcut@npm:^2.0.6, earcut@npm:^2.2.3":
+"earcut@npm:^2.0.6, earcut@npm:^2.2.2, earcut@npm:^2.2.3":
   version: 2.2.3
   resolution: "earcut@npm:2.2.3"
   checksum: 4e3bab80366c49e0332a0bb061649a3b9354dcbfa636155c7eee250be0670d7139d53f2aebbcf90788507c71b76ec1713c20e36527f202b9abb79c9e5858ec35
@@ -16627,7 +16658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.3.0":
+"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.2.0, gl-matrix@npm:^3.2.1, gl-matrix@npm:^3.3.0":
   version: 3.4.3
   resolution: "gl-matrix@npm:3.4.3"
   checksum: c47830ba727f3d0fab635c48135af96aef66274079a3e0afd6f68b68c98eae9fc1bcfdc7312fe2301e4fd22dd24c5e0f1b5d025960a208e50d07101ed8d940f9
@@ -20910,6 +20941,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mapbox-gl@npm:^1.0.0":
+  version: 1.13.2
+  resolution: "mapbox-gl@npm:1.13.2"
+  dependencies:
+    "@mapbox/geojson-rewind": ^0.5.0
+    "@mapbox/geojson-types": ^1.0.2
+    "@mapbox/jsonlint-lines-primitives": ^2.0.2
+    "@mapbox/mapbox-gl-supported": ^1.5.0
+    "@mapbox/point-geometry": ^0.1.0
+    "@mapbox/tiny-sdf": ^1.1.1
+    "@mapbox/unitbezier": ^0.0.0
+    "@mapbox/vector-tile": ^1.3.1
+    "@mapbox/whoots-js": ^3.1.0
+    csscolorparser: ~1.0.3
+    earcut: ^2.2.2
+    geojson-vt: ^3.2.1
+    gl-matrix: ^3.2.1
+    grid-index: ^1.1.0
+    minimist: ^1.2.5
+    murmurhash-js: ^1.0.0
+    pbf: ^3.2.1
+    potpack: ^1.0.1
+    quickselect: ^2.0.0
+    rw: ^1.3.3
+    supercluster: ^7.1.0
+    tinyqueue: ^2.0.3
+    vt-pbf: ^3.1.1
+  checksum: ea87bbab1b5d2a4597a3170769295dd80b73c06782051d82f9fd9f2839cfc60f56b9043dd707bdac0f9b4a60c087440cc9d215d693cb545b2e446d7c08175458
+  languageName: node
+  linkType: hard
+
 "mapbox-gl@npm:^2.3.0":
   version: 2.6.1
   resolution: "mapbox-gl@npm:2.6.1"
@@ -21004,6 +21066,7 @@ __metadata:
     "@types/papaparse": ^5.3.1
     "@types/react": 17.0.37
     axios: ^0.24.0
+    deck.gl: ^8.3.14
     eslint: 8.4.1
     eslint-config-next: 12.0.7
     next: 12.0.7
@@ -21012,6 +21075,7 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-dropzone: ^11.4.2
+    react-map-gl: ^5.3.10
     swr: ^1.1.1
     typescript: 4.5.4
   languageName: unknown
@@ -25855,6 +25919,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-map-gl@npm:^5.3.10":
+  version: 5.3.18
+  resolution: "react-map-gl@npm:5.3.18"
+  dependencies:
+    "@babel/runtime": ^7.0.0
+    "@types/geojson": ^7946.0.7
+    "@types/mapbox-gl": ^2.0.3
+    mapbox-gl: ^1.0.0
+    mjolnir.js: ^2.5.0
+    prop-types: ^15.7.2
+    resize-observer-polyfill: ^1.5.1
+    viewport-mercator-project: ^7.0.4
+  peerDependencies:
+    react: ">=16.3.0"
+  checksum: 8b29d15387934939cdc0f6cf11d85742a37f5b086e7f54ff1b9f1b5836bb8e1392c2d91a824adbcde38f7c9373ec9234da3c7d2ab47f17a78a724ca8c082cef5
+  languageName: node
+  linkType: hard
+
 "react-map-gl@npm:^6.1.17":
   version: 6.1.18
   resolution: "react-map-gl@npm:6.1.18"
@@ -28588,7 +28670,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supercluster@npm:^7.1.4":
+"supercluster@npm:^7.1.0, supercluster@npm:^7.1.4":
   version: 7.1.4
   resolution: "supercluster@npm:7.1.4"
   dependencies:
@@ -30928,7 +31010,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vt-pbf@npm:^3.1.3":
+"vt-pbf@npm:^3.1.1, vt-pbf@npm:^3.1.3":
   version: 3.1.3
   resolution: "vt-pbf@npm:3.1.3"
   dependencies:
