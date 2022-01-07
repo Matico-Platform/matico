@@ -38,8 +38,8 @@ const Home: NextPage = ({}) => {
               <Column>Access</Column>
             </TableHeader>
             <TableBody>
-              {apis.map((api: any) => (
-                <Row>
+              {apis.map((api: any, index :number) => (
+                <Row key={index}>
                   <Cell>
                     <ALink>
                       <Link href={`/apis/${api.id}`} >{api.name}</Link>
@@ -52,7 +52,6 @@ const Home: NextPage = ({}) => {
           </TableView>
         )}
       </View>
-      <View backgroundColor="magenta-600" gridArea="footer" />
     </Layout>
   );
 };

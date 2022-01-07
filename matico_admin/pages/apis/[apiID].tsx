@@ -30,10 +30,9 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
   return (
     <Layout>
       <View backgroundColor="blue-600" gridArea="sidebar" />
-      <View gridArea="content">
+      <View gridArea="content" padding="size-200">
         {api ? JSON.stringify(api,null,2) : ''}
       </View>
-      <View backgroundColor="magenta-600" gridArea="footer" />
     </Layout>
   );
 };

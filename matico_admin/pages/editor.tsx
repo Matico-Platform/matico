@@ -23,7 +23,6 @@ const Editor: NextPage = () => {
           editActive={true}
           />
       </View>
-      <View backgroundColor="magenta-600" gridArea="footer" />
     </Layout>
   );
 };

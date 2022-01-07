@@ -58,7 +58,6 @@ const Editor: NextPage = () => {
           />
         )}
       </View>
-      <View backgroundColor="magenta-600" gridArea="footer" />
     </Layout>
   );
 };

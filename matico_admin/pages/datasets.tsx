@@ -1,6 +1,14 @@
 import type { NextPage } from "next";
 import { Layout } from "../components/Layout";
-import { Divider, Flex, Header, Heading, View } from "@adobe/react-spectrum";
+import {
+  Text,
+  Content,
+  Divider,
+  Flex,
+  Header,
+  Heading,
+  View,
+} from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useDatasets } from "../hooks/useDatasets";
 import { Link as ALink } from "@adobe/react-spectrum";
@@ -35,10 +43,23 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
 
   return (
     <Layout>
-      <View backgroundColor="blue-600" gridArea="sidebar" />
-      <View gridArea="content" padding='size-1000'>
+      <View backgroundColor="gray-200" padding="size-100" gridArea="sidebar">
+        <Heading>Datasets</Heading>
+        <Content>
+          <Text>
+            These are your datasets. From here you can, edit view and share your
+            core data
+          </Text>
+        </Content>
+      </View>
+
+      <View gridArea="content" padding="size-1000">
         <Header>
-          <Flex direction='row' alignItems='center' justifyContent='space-between'>
+          <Flex
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Heading>Dataset</Heading>
             <NewDatasetModal />
           </Flex>
@@ -60,8 +81,8 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
               <Column>Updated At</Column>
             </TableHeader>
             <TableBody>
-              {datasets.map((dataset: any) => (
-                <Row>
+              {datasets.map((dataset: any, rowIndex: number) => (
+                <Row key={rowIndex}>
                   <Cell>
                     <ALink>
                       <Link href={`/datasets/${dataset.id}`}>
@@ -83,7 +104,6 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
           </TableView>
         )}
       </View>
-      <View backgroundColor="magenta-600" gridArea="footer" />
     </Layout>
   );
 };
