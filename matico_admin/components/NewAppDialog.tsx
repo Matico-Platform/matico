@@ -1,6 +1,5 @@
 import {
   DialogTrigger,
-  ActionButton,
   Dialog,
   Heading,
   Divider,
@@ -28,7 +27,7 @@ export const NewAppDialog: React.FC<NewAppDialogProps> = ({ onSubmit }) => {
   };
   return (
     <DialogTrigger>
-      <ActionButton>New App</ActionButton>
+      <Button variant="cta">New App</Button>
 
       {(close) => (
         <Dialog>
