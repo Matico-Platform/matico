@@ -15,13 +15,14 @@ import {
   TextField,
   TextArea,
   Icon,
+  Flex,
 } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useApps } from "../hooks/useApps";
 import { Link as ALink, ActionButton } from "@adobe/react-spectrum";
 import Link from "next/link";
-import Edit from "@spectrum-icons/workflow/Edit"
-import Preview from "@spectrum-icons/workflow/Preview"
+import Edit from "@spectrum-icons/workflow/Edit";
+import Preview from "@spectrum-icons/workflow/Preview";
 
 import {
   Cell,
@@ -61,8 +62,23 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
           </Text>
         </Content>
       </View>
-      <View gridArea="content">
-        <h3>Apps</h3>
+      <View gridArea="content" padding="size-800">
+        <Header>
+          <Flex
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Heading>Apps</Heading>
+
+            <NewAppDialog
+              onSubmit={(data) => {
+                console.log("Submit data is ", data);
+                submit(data);
+              }}
+            />
+          </Flex>
+        </Header>
         <Divider size="S" />
         {apps && (
           <TableView
@@ -73,40 +89,38 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
             <TableHeader>
               <Column>Name</Column>
               <Column>Access</Column>
-              <Column align='center'>View App</Column>
-              <Column align='center'>Edit App</Column>
+              <Column align="center">View App</Column>
+              <Column align="center">Edit App</Column>
             </TableHeader>
             <TableBody>
-              {apps.map((app: any) => (
-                <Row>
+              {apps.map((app: any, index:number) => (
+                <Row key={index}>
                   <Cell>
                     <ALink>
                       <Link href={`/apps/${app.id}`}>{app.name}</Link>
                     </ALink>
                   </Cell>
                   <Cell>{app.public ? "Public" : "Private"}</Cell>
-                  <Cell><ALink>
-                      <Link href={`/apps/${app.id}`}><Preview size='S'/></Link>
+                  <Cell>
+                    <ALink>
+                      <Link href={`/apps/${app.id}`}>
+                        <Preview size="S" />
+                      </Link>
                     </ALink>
                   </Cell>
-                  <Cell><ALink>
-                      <Link href={`/apps/edit/${app.id}`}><Edit size='S'/></Link>
+                  <Cell>
+                    <ALink>
+                      <Link href={`/apps/edit/${app.id}`}>
+                        <Edit size="S" />
+                      </Link>
                     </ALink>
                   </Cell>
- 
                 </Row>
               ))}
             </TableBody>
           </TableView>
         )}
-        <NewAppDialog
-          onSubmit={(data) => {
-            console.log("Submit data is ", data);
-            submit(data);
-          }}
-        />
       </View>
-      <View backgroundColor="magenta-600" gridArea="footer" />
     </Layout>
   );
 };
