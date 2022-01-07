@@ -8,6 +8,7 @@ import {
   Content,
   DialogTrigger,
   ActionButton,
+  Button,
   Dialog,
   ButtonGroup,
 } from "@adobe/react-spectrum";
@@ -20,7 +21,7 @@ export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <DialogTrigger isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
-      <ActionButton>New Dataset</ActionButton>
+      <Button variant='cta'>New Dataset</Button>
       <Dialog width="80vw" height="60vh">
         <Content>
           <Tabs height="100%">

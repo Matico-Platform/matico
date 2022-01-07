@@ -22,7 +22,7 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
   file,
   onSubmit,
 }) => {
-  const [name, setName] = useState<string>(file.name);
+  const [name, setName] = useState<string>(file.name.split(".").slice(0,-1).join("."));
   const [description, setDescription] = useState<string>("");
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const [upload, setUpload] = useState<boolean>(false);
@@ -31,18 +31,27 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
   >(undefined);
   const [columns, setColumns] = useState<Array<string> | undefined>(undefined);
 
+  console.log("Rendering geojson preview");
+
   useEffect(() => {
     getJsonPreview(file).then((batch) => {
-      const data = batch.data.map((d: any) => d.properties);
-      const columns = Object.keys(data[0]);
+      const data = batch.data
+        .map((d: any) => d.properties)
+        .filter((d: any) => d);
+      const columns = data.reduce(
+        (colSet: Set<string>, row: { [col: string]: any }) =>
+          new Set([...colSet, ...Object.keys(row)]),
+        new Set()
+      );
+      console.log("columns ", columns, " data ", data);
       setDataPreview(data);
-      setColumns(columns);
+      setColumns(Array.from(columns));
     });
   }, []);
 
   return (
     <View>
-      {dataPreview && (
+      {dataPreview && columns && (
         <TableView height="size-2400">
           <TableHeader>
             {Object.keys(dataPreview[0]).map((column) => (
@@ -53,8 +62,8 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
             {dataPreview.map((row: { [colName: string]: any }) => {
               return (
                 <Row>
-                  {Object.values(row).map((value: any) => (
-                    <Cell>{value}</Cell>
+                  {columns.map((column: string) => (
+                    <Cell>{row[column]}</Cell>
                   ))}
                 </Row>
               );

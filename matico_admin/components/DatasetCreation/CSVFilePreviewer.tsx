@@ -24,8 +24,12 @@ import { Uploader } from "./Uploader";
 import { getCSVPreview } from "./utils/getCSVPreview";
 import { FilePreviewerInterface } from "./FilePreviewerInterface";
 
-export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({ file }) => {
-  const [name, setName] = useState(file.name);
+export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({
+  file,
+}) => {
+  const [name, setName] = useState<string>(
+    file.name.split(".").slice(0, -1).join(".")
+  );
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [geoType, setGeoType] = useState("none");
@@ -166,7 +170,10 @@ export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({ file }) => 
           </>
         )}
         {upload ? (
-          <Uploader file={file} metadata={{ name, latCol, description, lngCol }} />
+          <Uploader
+            file={file}
+            metadata={{ name, latCol, description, lngCol }}
+          />
         ) : (
           <Button variant="cta" onPress={() => setUpload(true)}>
             Upload
