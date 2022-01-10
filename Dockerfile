@@ -49,6 +49,7 @@ RUN cat matico_spec/pkg/package.json
 RUN yarn 
 RUN yarn workspace @maticoapp/matico_components run build-prod
 RUN yarn workspace matico_admin run build
+RUN ls -alh matico_admin/.next/
 
 # For running everything 
 #--------------------------------------------------------------------------------
@@ -62,6 +63,9 @@ RUN apt-get update \
     && apt-get install -y ca-certificates tzdata nodejs nginx npm \
     && rm -rf /var/lib/apt/lists/*
 
+# RUN addgroup -g 1001 -S nodejs
+# RUN adduser -S nextjs -u 1001
+
 EXPOSE 8000
 
 ENV TZ=Etc/UTC \
@@ -71,15 +75,27 @@ RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
     && mkdir -p ${APP}
 
+RUN npm install yarn --global
 COPY --from=rust-builder /app/target/release/matico_server ${APP}/matico_server
 ADD ./matico_server/.env ${APP}/.env
 
-COPY --from=frontend-builder /app/matico_admin/public ${APP}/matico_admin/public
-COPY --from=frontend-builder /app/matico_admin/.next ${APP}/matico_admin/.next
-COPY --from=frontend-builder /app/matico_admin/node_modules ${APP}/matico_admin/node_modules
-COPY --from=frontend-builder /app/matico_admin/package.json ${APP}/matico_admin/package.json
+COPY --from=frontend-builder /app/matico_admin ${APP}/matico_admin
+WORKDIR ${APP}/matico_admin
+RUN rm package.json package-lock.json
+RUN rm -rf  node_modules
+RUN yarn init  -y 
+RUN yarn add next
+
+# USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+
+# COPY --from=frontend-builder --chown=nextjs:nodejs /app/matico_admin/.next ${APP}/matico_admin/.next
+# COPY --from=frontend-builder /app/matico_admin/node_modules ${APP}/matico_admin/node_modules
+# COPY --from=frontend-builder /app/matico_admin/package.json ${APP}/matico_admin/package.json
 
 # COPY static/docs ${APP}/static/docs
 
-WORKDIR ${APP}
-CMD ./matico_server
+CMD ["yarn","run", "next", "start"]
