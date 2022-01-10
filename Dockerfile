@@ -1,3 +1,4 @@
+
 # For building the server and the spec
 #----------------------------------------------------------------------------------
 FROM osgeo/gdal:ubuntu-small-3.4.1 as rust-builder
@@ -26,30 +27,51 @@ RUN cargo build --release
 
 
 WORKDIR /app/matico_spec
-RUN wasm-pack build  --release
+RUN wasm-pack build  --release --scope maticoapp
+
+# Install the dependencies for javascript
+#--------------------------------------------------------------------------------
+
+FROM node:16.6.1-alpine3.13 as javascript_deps
+ENV NODE_ENV production
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+COPY .yarn ./.yarn
+COPY .yarnrc.yml ./
+COPY yarn.lock ./yarn.lock
+COPY package.json ./
+COPY matico_components/package.json ./matico_components/package.json
+COPY matico_admin/package.json ./matico_admin/package.json
+COPY --from=rust-builder /app/matico_spec/pkg /app/matico_spec/pkg
+RUN yarn
+RUN ls -alh .
 
 # For building the components lib and the nextjs app
 #--------------------------------------------------------------------------------
 
-FROM node:lts-alpine3.15 as frontend-builder
+FROM node:16.6.1-alpine3.13 as frontend-builder
 
-ADD . /app/
-# ADD matico_components /app/matico_components
-# ADD matico_server /app/matico_server
-# ADD package.json /app/package.json
-# ADD yarn.lock /app/yarn.lock
-# ADD .yarnrc.yml /app/.yarnrc.lock
-# ADD .yarn /app/.yarn
-
+COPY --from=javascript_deps /app /app
+WORKDIR /app/
+# # COPY --from=javascript_deps /app/.yarn ./.yarn 
+# # COPY --from=javascript_deps /app/yarn.lock ./yarn.lock
+# # COPY --from=javascript_deps /app/.yarnrc.yml ./.yarnrc.yml
+# # COPY --from=javascript_deps /app/.pnp.cjs ./.pnp.cjs
+# # COPY --from=javascript_deps /app/package.json ./package.json
 COPY --from=rust-builder /app/matico_spec/pkg /app/matico_spec/pkg
-WORKDIR /app
-RUN sed -i 's/\"matico_spec\"/\"@maticoapp\/matico_spec"/g' matico_spec/pkg/package.json 
-RUN ls matico_spec
-RUN cat matico_spec/pkg/package.json
-RUN yarn 
+ADD matico_components /app/matico_components
+ADD matico_admin /app/matico_admin
+# # ADD package.json /app/package.json
+# # ADD yarn.lock /app/yarn.lock
+# # ADD .yarnrc.yml /app/.yarnrc.lock
+# # ADD .yarn /app/.yarn
+
+# ADD matico_components ./matico_components 
+# ADD matico_admin ./matico_admin
+# RUN yarn
 RUN yarn workspace @maticoapp/matico_components run build-prod
 RUN yarn workspace matico_admin run build
-RUN ls -alh matico_admin/.next/
 
 # For running everything 
 #--------------------------------------------------------------------------------
@@ -60,8 +82,11 @@ ENV NODE_ENV production
 
 ARG APP=/usr/src/app
 RUN apt-get update \
-    && apt-get install -y ca-certificates tzdata nodejs nginx npm \
+    && apt-get install -y ca-certificates tzdata nginx \
     && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs
 
 # RUN addgroup -g 1001 -S nodejs
 # RUN adduser -S nextjs -u 1001
@@ -79,12 +104,10 @@ RUN npm install yarn --global
 COPY --from=rust-builder /app/target/release/matico_server ${APP}/matico_server
 ADD ./matico_server/.env ${APP}/.env
 
-COPY --from=frontend-builder /app/matico_admin ${APP}/matico_admin
-WORKDIR ${APP}/matico_admin
-RUN rm package.json package-lock.json
-RUN rm -rf  node_modules
-RUN yarn init  -y 
-RUN yarn add next
+COPY --from=frontend-builder /app ${APP}/
+WORKDIR ${APP}
+RUN yarn
+RUN npm install pm2 --global
 
 # USER nextjs
 
@@ -92,10 +115,7 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-# COPY --from=frontend-builder --chown=nextjs:nodejs /app/matico_admin/.next ${APP}/matico_admin/.next
-# COPY --from=frontend-builder /app/matico_admin/node_modules ${APP}/matico_admin/node_modules
-# COPY --from=frontend-builder /app/matico_admin/package.json ${APP}/matico_admin/package.json
+ADD scripts/run_docker_prod.sh ./
 
-# COPY static/docs ${APP}/static/docs
 
-CMD ["yarn","run", "next", "start"]
+CMD ["bin/bash","run_docker_prod.sh"]
