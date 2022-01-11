@@ -33,6 +33,7 @@ pub async fn run(
     listener: TcpListener,
     config: app_config::Config,
 ) -> Result<Server, std::io::Error> {
+    println!("config is {:?}", config);
     let db_connection_url = config.connection_string().unwrap();
     println!("Connecting to : {}",db_connection_url);
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);

@@ -120,9 +120,7 @@ WORKDIR ${APP}
 
 # USER nextjs
 
-EXPOSE 3000
-
-ENV PORT 3000
+EXPOSE 80 
 
 ADD scripts/run_docker_prod.sh ./
 ADD scripts/nginx.conf /etc/nginx/nginx.conf
