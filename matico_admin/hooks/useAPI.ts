@@ -1,5 +1,5 @@
-import useSWR from 'api'
+import {useSWRAPI} from '../utils/api'
 
 export const useAPI= (id: string)=>{
-  return useSWR(`/api/queries/${id}`, {refreshInterval:1000}) 
+  return useSWRAPI(`/queries/${id}`, {refreshInterval:1000}) 
 }

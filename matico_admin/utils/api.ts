@@ -18,11 +18,7 @@ import useSWR from "swr";
 // }
 
 const a = axios.create({
-  baseURL: "http://localhost:8000/api/",
-  // !process.env.NODE_ENV ||
-  // process.env.NODE_ENV === 'development'
-  //     ? '/api'
-  //     : `${window.location.origin}/api`,
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
   headers: { "Content-Type": "application/json" },
 });
 

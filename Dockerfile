@@ -71,7 +71,9 @@ ADD matico_admin /app/matico_admin
 # ADD matico_admin ./matico_admin
 # RUN yarn
 RUN yarn workspace @maticoapp/matico_components run build-prod
+ENV NEXT_PUBLIC_SERVER_URL="/api" 
 RUN yarn workspace matico_admin run build
+RUN ls -alh /app/matico_admin/.next
 
 # For running everything 
 #--------------------------------------------------------------------------------
@@ -82,12 +84,13 @@ ENV NODE_ENV production
 
 ARG APP=/usr/src/app
 RUN apt-get update \
-    && apt-get install -y ca-certificates tzdata nginx \
+    && apt-get install -y ca-certificates tzdata nginx systemd \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs
 
+RUN npm install pm2 yarn --global
 # RUN addgroup -g 1001 -S nodejs
 # RUN adduser -S nextjs -u 1001
 
@@ -100,14 +103,20 @@ RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
     && mkdir -p ${APP}
 
-RUN npm install yarn --global
+COPY --from=frontend-builder /app/ ${APP}/
 COPY --from=rust-builder /app/target/release/matico_server ${APP}/matico_server
-ADD ./matico_server/.env ${APP}/.env
+# RUN rm -rf ${APP}/matico_admin/next.config.js
 
-COPY --from=frontend-builder /app ${APP}/
+# COPY --from=frontend-builder /app/matico_admin/.next/static ${APP}/_next/static
+# COPY --from=frontend-builder /app/matico_admin/.next/standalone ${APP}/matico_admin/
+# COPY --from=frontend-builder /app/matico_admin/public ${APP}/matico_admin/public
+
+WORKDIR ${APP}/matico_admin
+# RUN rm package.json
+# RUN npm init -y 
+# RUN npm install next 
+
 WORKDIR ${APP}
-RUN yarn
-RUN npm install pm2 --global
 
 # USER nextjs
 
@@ -116,6 +125,7 @@ EXPOSE 3000
 ENV PORT 3000
 
 ADD scripts/run_docker_prod.sh ./
+ADD scripts/nginx.conf /etc/nginx/nginx.conf
+ADD ./matico_server/.env.prod ${APP}/.env
 
-
-CMD ["bin/bash","run_docker_prod.sh"]
+CMD ["/bin/sh","run_docker_prod.sh"]
