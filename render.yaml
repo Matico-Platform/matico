@@ -1,0 +1,51 @@
+services:
+  # A Docker web service
+  - type: web
+    name: matico 
+    env: docker
+    region: oregon # optional (defaults to oregon)
+    plan: starter # optional (defaults to starter)
+    branch: render_deploy # optional (uses repo default)
+    numInstances: 1 # optional (defaults to 1)
+    healthCheckPath: /
+    domains:
+      - app.matico.app
+    envVars:
+      - key: DB.HOST 
+        fromDatabase:
+          name: matico 
+          property: host # available properties are listed below
+      - key: DB.PORT 
+        fromDatabase:
+          name: matico 
+          property: port
+      - key: DB.USERNAME
+        fromDatabase:
+          name: matico
+          property: user 
+      - key: DB.PASSWORD
+        fromDatabase:
+          name: matico
+          property: password 
+      - key: DATADB.HOST 
+        fromDatabase:
+          name: matico 
+          property: host # available properties are listed below
+      - key: DATADB.PORT 
+        fromDatabase:
+          name: matico 
+          property: port
+      - key: DATADB.USERNAME
+        fromDatabase:
+          name: matico
+          property: user 
+      - key: DATADB.PASSWORD
+        fromDatabase:
+          name: matico
+          property: password 
+databases:
+  - name: matico 
+    region: oregon
+    plan: starter
+    databaseName: matico 
+    user: matico 

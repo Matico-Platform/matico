@@ -126,6 +126,5 @@ ENV PORT 3000
 
 ADD scripts/run_docker_prod.sh ./
 ADD scripts/nginx.conf /etc/nginx/nginx.conf
-ADD ./matico_server/.env.prod ${APP}/.env
 
 CMD ["/bin/sh","run_docker_prod.sh"]
