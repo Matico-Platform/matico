@@ -9,7 +9,7 @@ echo DB.PASSWORD=${DB_PASSWORD} >> .env
 
 echo DATADB.HOST=${DB_HOST} >> .env
 echo DATADB.PORT=${DB_PORT} >> .env
-echo DATRADB.USERNAME=${DB_USERNAME} >> .env
+echo DATADB.USERNAME=${DB_USERNAME} >> .env
 echo DATADB.NAME=${DB_NAME} >> .env
 echo DATADB.PASSWORD=${DB_PASSWORD} >> .env
 
