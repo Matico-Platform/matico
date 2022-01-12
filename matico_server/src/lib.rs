@@ -5,7 +5,7 @@ extern crate argon2;
 use crate::app_state::State;
 use actix_cors::Cors;
 use actix_files as fs;
-use actix_web::dev::Server;
+use actix_web::{dev::Server,Responder};
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use log::{info, warn};
@@ -24,9 +24,13 @@ mod schema;
 mod tiler;
 mod utils;
 
-async fn home() -> std::io::Result<fs::NamedFile> {
-    let path: PathBuf = "./static/index.html".parse().unwrap();
-    Ok(fs::NamedFile::open(path)?)
+// async fn home() -> std::io::Result<fs::NamedFile> {
+//     let path: PathBuf = "./static/index.html".parse().unwrap();
+//     Ok(fs::NamedFile::open(path)?)
+// }
+
+pub async fn health()->impl Responder{
+    "Everything is fine"
 }
 
 pub async fn run(
@@ -81,7 +85,9 @@ pub async fn run(
                     .configure(routes::datasets::init_routes),
             )
             .service(fs::Files::new("/", "static").index_file("index.html"))
-            .default_service(web::get().to(home))
+            .route("/api/health", web::get().to(health))
+
+            // .default_service(web::get().to(home))
     })
     .listen(listener)?
     .run();

@@ -120,7 +120,7 @@ WORKDIR ${APP}
 
 # USER nextjs
 
-EXPOSE 80 
+EXPOSE 8888 
 
 ADD scripts/run_docker_prod.sh ./
 ADD scripts/nginx.conf /etc/nginx/nginx.conf
