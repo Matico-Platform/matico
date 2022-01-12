@@ -4,6 +4,9 @@ pub type DataDbPool = sqlx::PgPool;
 
 pub mod formatters;
 pub mod queries;
+pub mod setup;
 
 pub use formatters::*;
 pub use queries::*;
+pub use setup::*;
+

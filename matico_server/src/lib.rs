@@ -14,7 +14,6 @@ use log::{info, warn};
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use std::path::PathBuf;
-use crate::db::DbPool;
 
 pub mod app_config;
 mod app_state;
@@ -32,15 +31,9 @@ mod utils;
 //     Ok(fs::NamedFile::open(path)?)
 // }
 
-embed_migrations!();
 
 pub async fn health()->impl Responder{
     format!("Everything is fine")
-}
-
-pub fn run_migrations(pool : &DbPool){
-    let conn =pool.get().unwrap();
-    embedded_migrations::run_with_output(&conn, &mut std::io::stdout());
 }
 
 pub async fn run(
@@ -62,7 +55,7 @@ pub async fn run(
     info!("Connected to metadata db");
 
     info!("Running migrations");
-    run_migrations(&pool);
+    db::run_migrations(&pool);
     info!("Migrated succestully");
 
     let data_db_connection_url = config.data_connection_string().unwrap();
