@@ -22,7 +22,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
   const submitDataset = () => {
     onSubmit({
       GeoJSON: {
-        url: `http://localhost:8000/api/datasets/${selectedDatasetID}/data?format=geojson`,
+        url: `${window.location.origin}/api/datasets/${selectedDatasetID}/data?format=geojson`,
         name: selectedDataset.name,
       },
     });
