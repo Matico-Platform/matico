@@ -2,6 +2,8 @@
 extern crate diesel;
 extern crate argon2;
 
+#[macro_use]
+extern crate diesel_migrations;
 use crate::app_state::State;
 use actix_cors::Cors;
 use actix_files as fs;
@@ -12,6 +14,7 @@ use log::{info, warn};
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use std::path::PathBuf;
+use crate::db::DbPool;
 
 pub mod app_config;
 mod app_state;
@@ -29,14 +32,22 @@ mod utils;
 //     Ok(fs::NamedFile::open(path)?)
 // }
 
+embed_migrations!();
+
 pub async fn health()->impl Responder{
     format!("Everything is fine")
+}
+
+pub fn run_migrations(pool : &DbPool){
+    let conn =pool.get().unwrap();
+    embedded_migrations::run_with_output(&conn, &mut std::io::stdout());
 }
 
 pub async fn run(
     listener: TcpListener,
     config: app_config::Config,
 ) -> Result<Server, std::io::Error> {
+
     println!("config is {:?}", config);
     let db_connection_url = config.connection_string().unwrap();
     println!("Connecting to : {}",db_connection_url);
@@ -49,6 +60,10 @@ pub async fn run(
         .build(manager)
         .expect("Failed to connect to DB");
     info!("Connected to metadata db");
+
+    info!("Running migrations");
+    run_migrations(&pool);
+    info!("Migrated succestully");
 
     let data_db_connection_url = config.data_connection_string().unwrap();
     let data_pool = PgPoolOptions::new()

@@ -10,6 +10,8 @@ services:
       DATADB_USERNAME: matico
       DATADB_PASSWORD: password 
       DATADB_NAME: matico 
+  depends_on:
+    - "db"
   db:
     image: postgres
     restart: always
