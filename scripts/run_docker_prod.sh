@@ -17,5 +17,5 @@ echo SERVER_ADDR=0.0.0.0:8000 >> .env
 
 service nginx start
 # (cd matico_admin &&  pm2 start server.js --name admin)
-(cd matico_admin && pm2 start yarn --name admin -- start )
+(cd matico_admin && PORT=3000 pm2 start yarn --name admin -- start )
 ./matico_server
