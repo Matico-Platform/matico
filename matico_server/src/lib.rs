@@ -30,7 +30,7 @@ mod utils;
 // }
 
 pub async fn health()->impl Responder{
-    "Everything is fine"
+    format!("Everything is fine")
 }
 
 pub async fn run(
@@ -72,6 +72,7 @@ pub async fn run(
             })
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
+            .route("/api/health", web::get().to(health))
             // .wrap(middleware::NormalizePath::default())
             .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
@@ -85,7 +86,6 @@ pub async fn run(
                     .configure(routes::datasets::init_routes),
             )
             .service(fs::Files::new("/", "static").index_file("index.html"))
-            .route("/api/health", web::get().to(health))
 
             // .default_service(web::get().to(home))
     })
