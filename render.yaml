@@ -13,8 +13,6 @@ services:
     domains:
       - app.matico.app
     envVars:
-      - key: PORT
-        value: 80 
       - key: DB.HOST 
         fromDatabase:
           name: matico 
