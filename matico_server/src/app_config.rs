@@ -21,7 +21,7 @@ pub struct DataDbConfig {
     pub username: Option<String>,
 }
 
-#[derive(Deserialize ,Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Config {
     pub db: DbConfig,
     pub datadb: DataDbConfig,

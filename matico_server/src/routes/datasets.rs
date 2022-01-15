@@ -13,9 +13,9 @@ use actix_web::{delete, get, guard, put, web, Error, HttpResponse};
 use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
 use log::{info, warn};
+use slugify::slugify;
 use std::io::Write;
 use uuid::Uuid;
-use slugify::slugify;
 
 #[get("")]
 async fn get_datasets(
@@ -134,7 +134,7 @@ async fn create_dataset(
 
     let filepath = file.unwrap();
     let metadata = metadata.unwrap();
-    let table_name = slugify!(&metadata.name.clone(),separator = "_");
+    let table_name = slugify!(&metadata.name.clone(), separator = "_");
 
     let file_info = get_file_info(&filepath)
         .map_err(|_| ServiceError::BadRequest("Failed to extract column info from file".into()))?;
@@ -147,7 +147,7 @@ async fn create_dataset(
         id: Uuid::new_v4(),
         owner_id: user.id,
         name: metadata.name.clone(),
-        table_name:table_name,
+        table_name: table_name,
         description: metadata.description,
         original_filename: filepath.clone(),
         original_type: "json".into(),

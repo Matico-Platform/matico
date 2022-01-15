@@ -7,11 +7,10 @@ use diesel::prelude::*;
 use jsonwebtoken::{EncodingKey, Header};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use uuid::Uuid;
-use ts_rs::TS;  
 
 static ONE_WEEK: i64 = 60 * 60 * 24 * 7;
-
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable, TS)]
 #[table_name = "users"]
@@ -71,7 +70,7 @@ pub struct LoginResponseDTO {
     pub token: String,
 }
 
-#[derive(Debug, Serialize, Deserialize,TS)]
+#[derive(Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct SignupResponseDTO {
     pub user: User,

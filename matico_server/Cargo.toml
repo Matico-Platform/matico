@@ -14,7 +14,10 @@ name = 'matico_server'
 
 [dependencies]
 actix-multipart = "0.3"
-actix-web = "3"
+actix-web = "3" 
+actix ="0.10.0"
+cron ="0.9.0"
+diesel-derive-enum = { version="1", features = ["postgres"]}
 futures = "0.3.1"
 sanitize-filename = "0.2"
 gdal={ version = "0.8.0", features=["bindgen"]}

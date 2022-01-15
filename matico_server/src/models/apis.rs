@@ -7,10 +7,10 @@ use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
 use log::info;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::collections::HashMap;
 use std::convert::From;
 use std::fmt::{Display, Formatter};
-use serde_json::json;
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -22,7 +22,7 @@ pub enum ValueType {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct AnnonQuery{
+pub struct AnnonQuery {
     pub q: String,
 }
 
@@ -104,7 +104,7 @@ impl APIParameter for NumericAPIParameter {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, AsJsonb)]
-#[serde(tag="type")]
+#[serde(tag = "type")]
 pub enum APIParam {
     Numerical(NumericAPIParameter),
 }
@@ -129,12 +129,7 @@ impl From<CreateAPIDTO> for API {
 }
 
 impl API {
-    pub fn new(
-        name: String,
-        description: String,
-        sql: String,
-        parameters: Vec<APIParam>,
-    ) -> Self {
+    pub fn new(name: String, description: String, sql: String, parameters: Vec<APIParam>) -> Self {
         Self {
             id: Uuid::new_v4(),
             name,
@@ -214,20 +209,20 @@ impl API {
         for q_param in self.parameters.clone() {
             match q_param {
                 APIParam::Numerical(param) => {
-                    let input =
-                        params
-                            .get(param.name())
-                            .ok_or_else(|| ServiceError::APIFailed(format!(
-                                "missing param {}",
-                                param.name()
-                            )))?;
-                    info!("parsing parameter for {}, {}", param.name(), input);
-                    let input_val_str = input.as_str().ok_or_else(|| ServiceError::APIFailed(
-                        format!("Failed to parse value for {},{:?} ", param.name(), input),
-                    ))?;
-                    let input_val: f64 = input_val_str.parse().map_err(|_| {
-                        ServiceError::APIFailed("Failed to parse parameter".into())
+                    let input = params.get(param.name()).ok_or_else(|| {
+                        ServiceError::APIFailed(format!("missing param {}", param.name()))
                     })?;
+                    info!("parsing parameter for {}, {}", param.name(), input);
+                    let input_val_str = input.as_str().ok_or_else(|| {
+                        ServiceError::APIFailed(format!(
+                            "Failed to parse value for {},{:?} ",
+                            param.name(),
+                            input
+                        ))
+                    })?;
+                    let input_val: f64 = input_val_str
+                        .parse()
+                        .map_err(|_| ServiceError::APIFailed("Failed to parse parameter".into()))?;
 
                     api = param.modify_sql(api, ValueType::Numeric(input_val))?;
                     info!("current api is {}", api);
@@ -247,7 +242,6 @@ impl API {
 
         //TODO Move this to PostgisQueryRunner
         let metadata = PostgisQueryRunner::run_query_meta(pool, &query).await?;
-
 
         let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;
 

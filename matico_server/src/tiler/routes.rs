@@ -6,10 +6,9 @@ use actix_web::{get, web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-
-#[derive(Serialize,Deserialize)]
-struct QueryParam{
-    q:String 
+#[derive(Serialize, Deserialize)]
+struct QueryParam {
+    q: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -25,7 +24,8 @@ async fn get_tile(
     web::Query(tiler_options): web::Query<TilerOptions>,
 ) -> Result<HttpResponse, ServiceError> {
     let mvt_tile: MVTTile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query.q, tiler_options, tile_id).await?;
+        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query.q, tiler_options, tile_id)
+            .await?;
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
 
@@ -42,7 +42,8 @@ async fn get_tile_for_dataset(
     let query = format!(r#"select * from "{}""#, dataset.table_name);
 
     let mvt_tile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id).await?;
+        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id)
+            .await?;
 
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
