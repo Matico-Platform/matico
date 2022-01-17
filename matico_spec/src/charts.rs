@@ -28,7 +28,7 @@ pub struct HistogramPane {
 }
 
 #[wasm_bindgen]
-impl HistogramPane{
+impl HistogramPane {
     #[wasm_bindgen(getter = name)]
     pub fn get_name(&self) -> String {
         self.name.clone()
@@ -59,7 +59,7 @@ pub struct ScatterplotPane {
 }
 
 #[wasm_bindgen]
-impl ScatterplotPane{
+impl ScatterplotPane {
     #[wasm_bindgen(getter = name)]
     pub fn get_name(&self) -> String {
         self.name.clone()
@@ -87,7 +87,7 @@ pub struct PieChartPane {
 }
 
 #[wasm_bindgen]
-impl PieChartPane{
+impl PieChartPane {
     #[wasm_bindgen(getter = name)]
     pub fn get_name(&self) -> String {
         self.name.clone()

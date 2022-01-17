@@ -8,9 +8,9 @@ mod mapping;
 mod page;
 mod pane;
 mod section;
+mod theme;
 mod validation;
 mod variables;
-mod theme;
 
 pub use autocomplete::*;
 pub use charts::*;
@@ -22,9 +22,9 @@ pub use mapping::*;
 pub use page::*;
 pub use pane::*;
 pub use section::*;
+pub use theme::*;
 pub use validation::*;
 pub use variables::*;
-pub use theme::*;
 
 #[macro_use]
 extern crate matico_spec_derive;
