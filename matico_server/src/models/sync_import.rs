@@ -8,6 +8,7 @@ use diesel_derive_enum::DbEnum;
 use log::info;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use crate::utils::geo_file_utils::load_dataset_to_db;
 
 use std::fs::File;
 use std::io::copy;
@@ -51,6 +52,109 @@ impl SyncImport {
         // Ok(datasets)
     }
 
+    pub fn for_dataset(
+        pool: &DbPool,
+        query_dataset_id: &Uuid,
+    ) -> Result<Vec<SyncImport>, ServiceError> {
+        let conn = pool.get().unwrap();
+        let mut query = sync_imports::table
+            .filter(dataset_id.eq(query_dataset_id))
+            .order(scheduled_for.desc());
+
+        let results: Vec<SyncImport> = query.get_results(&conn).map_err(|_| {
+            ServiceError::InternalServerError(format!(
+                "Failed to retrive SyncImports for dataset {}",
+                query_dataset_id
+            ))
+        })?;
+        Ok(results)
+    }
+
+    pub fn active_for_dataset(
+        pool: &DbPool,
+        query_dataset_id: &Uuid,
+    ) -> Result<Vec<SyncImport>, ServiceError> {
+        let conn = pool.get().unwrap();
+        let mut query = sync_imports::table
+            .filter(dataset_id.eq(query_dataset_id).and(status.eq_any(vec![
+                SyncImportStatus::InProgress,
+                SyncImportStatus::Pending,
+            ])))
+            .order(scheduled_for.desc());
+
+        let results: Vec<SyncImport> = query.get_results(&conn).map_err(|e| {
+            ServiceError::InternalServerError(format!(
+                "Failed to get active datasets for {} : {}",
+                query_dataset_id, e
+            ))
+        })?;
+        Ok(results)
+    }
+
+    pub fn for_user(pool: &DbPool, query_user_id: &Uuid) -> Result<Vec<SyncImport>, ServiceError> {
+        let conn = pool.get().unwrap();
+        let mut query = sync_imports::table
+            .filter(user_id.eq(query_user_id))
+            .order(scheduled_for.desc());
+
+        let results: Vec<SyncImport> = query.get_results(&conn).map_err(|e| {
+            ServiceError::InternalServerError(format!(
+                "Failed to retrive SyncImports for user {}: {}",
+                query_user_id, e
+            ))
+        })?;
+        Ok(results)
+    }
+
+    pub fn start_for_dataset(pool: &DbPool, dataset: &Dataset) -> Result<(), ServiceError> {
+        if !dataset.sync_dataset {
+            return Err(ServiceError::InternalServerError(format!(
+                "Attempted to create an import sync for non sync dataset {:?}",
+                dataset
+            )));
+        }
+
+        let conn = pool.get().unwrap();
+        let run_at = Utc::now().naive_utc();
+
+        diesel::insert_into(sync_imports)
+            .values((
+                sync_imports::dataset_id.eq(dataset.id.clone()),
+                sync_imports::user_id.eq(dataset.owner_id.clone()),
+                sync_imports::status.eq(SyncImportStatus::Pending),
+                sync_imports::scheduled_for.eq(run_at),
+            ))
+            .execute(&conn)
+            .map_err(|_| {
+                ServiceError::InternalServerError(format!(
+                    "Failed to create inital sync for dataset {:?}",
+                    dataset
+                ))
+            })?;
+        Ok(())
+    }
+
+    pub fn active_for_user(
+        pool: &DbPool,
+        query_user_id: &Uuid,
+    ) -> Result<Vec<SyncImport>, ServiceError> {
+        let conn = pool.get().unwrap();
+        let mut query = sync_imports::table
+            .filter(user_id.eq(query_user_id).and(status.eq_any(vec![
+                SyncImportStatus::InProgress,
+                SyncImportStatus::Pending,
+            ])))
+            .order(scheduled_for.desc());
+
+        let results: Vec<SyncImport> = query.get_results(&conn).map_err(|e| {
+            ServiceError::InternalServerError(format!(
+                "Failed to retrive SyncImports for user {}: {}",
+                query_user_id, e
+            ))
+        })?;
+        Ok(results)
+    }
+
     pub fn start_processing(&self, pool: &DbPool) -> Result<(), ServiceError> {
         let conn = pool.get().unwrap();
         diesel::update(self)
@@ -67,7 +171,7 @@ impl SyncImport {
         Ok(())
     }
 
-    pub async fn download_file(url: &str) -> Result<File, ServiceError> {
+    pub async fn download_file(url: &str) -> Result<(File, String), ServiceError> {
         let tmp_dir = Path::new("./tmp/");
         let response = reqwest::get(url).await.map_err(|_| {
             ServiceError::BadRequest(format!("Failed to download dataset from url {}", url))
@@ -94,18 +198,80 @@ impl SyncImport {
         })?;
         copy(&mut content.as_bytes(), &mut dest)
             .map_err(|_| ServiceError::InternalServerError("Failed to save file to disk".into()))?;
-        Ok(dest)
+        Ok((dest, String::from(filename.to_str().unwrap())))
     }
 
     pub async fn process(&self, pool: &DbPool) -> Result<(), ServiceError> {
+        match self.attempt_process(&pool).await {
+            Ok(next_run_time) => {
+                self.schedule_next(&pool, next_run_time)?;
+                self.set_done(pool)?;
+            }
+            Err(err) => {
+                self.set_failed(&pool, err)?;
+            }
+        };
+        Ok(())
+    }
+
+    pub fn schedule_next(
+        &self,
+        pool: &DbPool,
+        run_at: chrono::NaiveDateTime,
+    ) -> Result<(), ServiceError> {
+        let conn = pool.get().unwrap();
+
+        diesel::insert_into(sync_imports)
+            .values((
+                sync_imports::dataset_id.eq(self.dataset_id.clone()),
+                sync_imports::user_id.eq(self.user_id.clone()),
+                sync_imports::status.eq(SyncImportStatus::Pending),
+                sync_imports::scheduled_for.eq(run_at),
+            ))
+            .execute(&conn)
+            .map_err(|_| {
+                ServiceError::InternalServerError(format!(
+                    "Failed to create next sync request {:?}",
+                    self
+                ))
+            })?;
+        Ok(())
+    }
+
+    pub async fn attempt_process(
+        &self,
+        pool: &DbPool,
+    ) -> Result<chrono::NaiveDateTime, ServiceError> {
         self.start_processing(pool)?;
-        info!("Starting to download dataset ");
-        let file = Self::download_file(
-            "https://data.cityofnewyork.us/api/geospatial/vfnx-vebw?method=export&format=GeoJSON",
+        let dataset = Dataset::find(&pool, self.dataset_id)?;
+
+        info!("Starting to download dataset {:?} ", dataset);
+        let (_file, filepath) = Self::download_file(
+           &dataset.sync_url.unwrap() 
         )
         .await?;
-        println!("file downloaded ");
-        self.set_done(pool)?;
+        println!("file downloaded {:?} ", filepath);
+
+        load_dataset_to_db(filepath.clone(), dataset.table_name.clone()).await?;
+        let next_time =
+            self.scheduled_for + chrono::Duration::seconds(dataset.sync_frequency_seconds.unwrap());
+
+        Ok(next_time)
+    }
+    pub fn set_failed(&self, pool: &DbPool, err: ServiceError) -> Result<(), ServiceError> {
+        let conn = pool.get().unwrap();
+        diesel::update(self)
+            .set((
+                status.eq(SyncImportStatus::Error),
+                error.eq(format!("{}", err)),
+                finished_at.eq(Utc::now().naive_utc()),
+            ))
+            .execute(&conn)
+            .map_err(|_| {
+                ServiceError::InternalServerError(
+                    "Failed to set processing status on sync import to complete".into(),
+                )
+            })?;
         Ok(())
     }
 
@@ -127,7 +293,7 @@ impl SyncImport {
 
     pub fn pending(pool: &DbPool) -> Result<Vec<SyncImport>, ServiceError> {
         let conn = pool.get().unwrap();
-        let mut query = sync_imports::table.filter(
+        let query = sync_imports::table.filter(
             sync_imports::scheduled_for
                 .lt(Utc::now().naive_utc())
                 .and(sync_imports::status.eq(SyncImportStatus::Pending)),

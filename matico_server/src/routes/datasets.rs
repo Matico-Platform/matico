@@ -6,7 +6,7 @@ use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
 
 use crate::models::{
     datasets::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, UpdateDatasetDTO},
-    DatasetSearch, UserToken,
+    DatasetSearch, UserToken, SyncImport
 };
 use actix_multipart::{Field, Multipart};
 use actix_web::{delete, get, guard, put, web, Error, HttpResponse};
@@ -181,11 +181,51 @@ async fn create_dataset(
 
 // This maps to "/" when content type is application/json
 async fn create_sync_dataset(
-    _state: web::Data<State>,
-    _logged_in_user: AuthService,
-    _sync_details: web::Json<CreateSyncDatasetDTO>,
+    state: web::Data<State>,
+    logged_in_user: AuthService,
+    sync_details: web::Json<CreateSyncDatasetDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    println!("HITTING SYNC ENDPOINT");
+    
+    let user: UserToken = logged_in_user
+        .user
+        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+
+    let table_name = slugify!(&sync_details.name.clone(), separator = "_");
+
+    let dataset = Dataset {
+        id: Uuid::new_v4(),
+        owner_id: user.id,
+        name:  sync_details.name.clone(),
+        table_name: table_name,
+        description: sync_details.description.clone(),
+        original_filename:sync_details.sync_url.clone(),
+        original_type: "json".into(),
+        sync_dataset: true,
+        sync_url: Some(sync_details.sync_url.clone()),
+        sync_frequency_seconds: Some(sync_details.sync_frequency_seconds),
+        post_import_script: None,
+        created_at: Utc::now().naive_utc(),
+        updated_at: Utc::now().naive_utc(),
+        geom_col: "wkb".into(),
+        id_col: "id".into(),
+        public: false,
+    };
+
+    dataset.create_or_update(&state.db)?;
+
+    Permission::grant_permissions(
+        &state.db,
+        user.id,
+        dataset.id,
+        ResourceType::DATASET,
+        vec![
+            PermissionType::READ,
+            PermissionType::WRITE,
+            PermissionType::ADMIN,
+        ],
+    )?;
+
+    dataset.setup_or_update_sync(&state.db)?;
     Ok(HttpResponse::Ok().json("SYNC ENDPOINT"))
 }
 
@@ -202,6 +242,21 @@ async fn update_dataset(
     Permission::check_permission(&state.db, &user.id, &id, PermissionType::WRITE)?;
 
     let result = Dataset::update(&state.db, id, updates)?;
+    Ok(HttpResponse::Ok().json(result))
+}
+
+#[get("{id}/sync_history")]
+async fn sync_history(
+    state: web::Data<State>,
+    web::Path(id): web::Path<Uuid>,
+    logged_in_user: AuthService,
+)-> Result<HttpResponse, ServiceError>{
+    let user = logged_in_user
+        .user
+        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+    Permission::check_permission(&state.db, &user.id, &id, PermissionType::ADMIN)?;
+
+    let result = SyncImport::for_dataset(&state.db, &id)?;
     Ok(HttpResponse::Ok().json(result))
 }
 
@@ -225,6 +280,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_datasets);
     cfg.service(delete_dataset);
     cfg.service(update_dataset);
+    cfg.service(sync_history);
     cfg.service(
         web::resource("")
             .route(
