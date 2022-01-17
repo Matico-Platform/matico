@@ -64,9 +64,10 @@ export function uploadFile(
 
 type CreateSyncDataset = {
   name: string;
-  url: string;
+  sync_url: string;
   description: string;
-  refreshInterval: number;
+  sync_frequency_seconds: number;
+  public: boolean;
 };
 
 export function createSyncDataset(syncDetails: CreateSyncDataset) {
@@ -216,7 +217,7 @@ export async function runQuery(
   return a.get(`queries/run?q=${sql}`, { params: page });
 }
 
-export const useSWRAPI = (endpoint: string, opts:any) =>
+export const useSWRAPI = (endpoint: string, opts?:any) =>
   useSWR(endpoint, (url: string) => a.get(url).then((res) => res.data), opts);
 
 export default a;

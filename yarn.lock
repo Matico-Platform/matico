@@ -13035,7 +13035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.16.1":
+"date-fns@npm:^2.16.1, date-fns@npm:^2.28.0":
   version: 2.28.0
   resolution: "date-fns@npm:2.28.0"
   checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f
@@ -20793,12 +20793,14 @@ __metadata:
     "@loaders.gl/json": ^3.1.4
     "@maticoapp/matico_components": "workspace:matico_components"
     "@react-spectrum/card": ^3.0.0-alpha.1
+    "@react-stately/data": ^3.4.3
     "@spectrum-icons/illustrations": ^3.2.2
     "@spectrum-icons/workflow": ^3.2.1
     "@types/node": 16.11.13
     "@types/papaparse": ^5.3.1
     "@types/react": 17.0.37
     axios: ^0.24.0
+    date-fns: ^2.28.0
     deck.gl: ^8.3.14
     eslint: 8.4.1
     eslint-config-next: 12.0.7

@@ -15,7 +15,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
   const { data: datasets, error } = useDatasets();
   const [selectedDatasetID, setSelectedDatasetID] = useState<any | null>(null);
   const selectedDataset = datasets
-    ? datasets.find((d) => d.id === selectedDatasetID)
+    ? datasets.find((d:any) => d.id === selectedDatasetID)
     : null;
   const { data, error: dataError } = useDatasetData(selectedDatasetID, 0);
 
