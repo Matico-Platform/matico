@@ -77,8 +77,6 @@ impl Dataset {
         let conn = pool.get().unwrap();
         let mut query = datasets::table.into_boxed();
 
-        info!("Searching datasets with {:#?} ", search);
-
         // TODO This should be doable with a join but not sure how to handle many to many tables just
         // yet
         if let Some(user_id) = search.user_id {
