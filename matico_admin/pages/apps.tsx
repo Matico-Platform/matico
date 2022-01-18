@@ -27,9 +27,9 @@ import { useState } from "react";
 import { NewAppDialog } from "../components/NewAppDialog";
 
 const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
-  const { data: apps, error, createApp } = useApps();
+  const { apps, error, createApp } = useApps();
 
-  const submit = (details) => {
+  const submit = (details:any) => {
     console.log("Submitting ", details);
     createApp({
       ...details,
@@ -43,7 +43,7 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
   };
 
   return (
-    <Layout>
+    <Layout hasSidebar={true}>
       <View backgroundColor="gray-200" padding="size-100" gridArea="sidebar">
         <Heading>Apps</Heading>
         <Content>

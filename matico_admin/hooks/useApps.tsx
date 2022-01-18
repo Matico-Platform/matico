@@ -15,7 +15,7 @@ export const useApps = () => {
     await createAppAPI(app);
     mutate();
   };
-  return { data, error, createApp };
+  return { apps: data, error, createApp };
 };
 
 export const useApp = (appID: string) => {

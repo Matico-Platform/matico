@@ -22,7 +22,7 @@ const Home: NextPage = ({}) => {
   console.log("apis ", apis, error )
 
   return (
-    <Layout>
+    <Layout hasSidebar={true}>
       <View backgroundColor="blue-600" gridArea="sidebar" />
       <View gridArea="content">
         <h3>APIs</h3>

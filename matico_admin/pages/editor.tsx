@@ -13,7 +13,7 @@ const Editor: NextPage = () => {
   const MaticoApp = dynamic(()=>(import("@maticoapp/matico_components") as any).then( (matico:any)  => matico.MaticoApp), {ssr:false}) 
 
   return (
-    <Layout>
+    <Layout hasSidebar={true}>
       <View backgroundColor="blue-600" gridArea="sidebar" />
       <View backgroundColor="purple-600" gridArea="content">
         <MaticoApp 
