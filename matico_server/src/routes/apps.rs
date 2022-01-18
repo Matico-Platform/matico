@@ -17,7 +17,7 @@ pub async fn get_apps(
     web::Query(page): web::Query<PaginationParams>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-    let mut search = search.clone();
+    let mut search = search;
 
     if let Some(user) = logged_in_user.user {
         if search.user_id == None {

@@ -18,7 +18,7 @@ async fn user_signs_up() {
 
     assert_eq!(response.user.username, "test_user");
     assert_eq!(response.user.email, "test_user@gmail.com");
-    assert!(response.token.len() > 0);
+    assert!(!response.token.is_empty());
 }
 
 #[actix_rt::test]

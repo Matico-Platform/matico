@@ -7,7 +7,7 @@ use crate::models::{Permission, ResourceType, PermissionType};
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
-use matico_spec::Dashboard;
+
 use serde::{Deserialize, Serialize};
 use std::convert::From;
 use ts_rs::TS;
@@ -101,7 +101,7 @@ impl App {
         let mut query = apps::table.into_boxed();
 
         if let Some(user_id) = search.user_id{
-            let permissions = Permission::get_permissions_for_user(&pool, &user_id, Some(ResourceType::APP), Some(PermissionType::READ))?;
+            let permissions = Permission::get_permissions_for_user(pool, &user_id, Some(ResourceType::APP), Some(PermissionType::READ))?;
             let apps_user_has_permission_for: Vec<Uuid> = permissions.iter().map(|p| p.resource_id).collect();
             query = query.filter(apps::id.eq_any(apps_user_has_permission_for).or(apps::public.eq(true)));
         }

@@ -4,7 +4,7 @@ use crate::db::Bounds;
 use crate::errors::ServiceError;
 use crate::models::permissions::*;
 use crate::models::Dataset;
-use log::info;
+
 
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
 use actix_web::{get, put, web, HttpResponse};

@@ -14,11 +14,11 @@ use actix_files as fs;
 use actix_web::{dev::Server, Responder};
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
-use log::{info, warn};
+use log::{info};
 use scheduler::ImportScheduler;
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
-use std::path::PathBuf;
+
 use std::time::Duration;
 
 pub mod app_config;
@@ -39,7 +39,7 @@ mod utils;
 // }
 
 pub async fn health() -> impl Responder {
-    format!("Everything is fine")
+    "Everything is fine".to_string()
 }
 
 pub async fn run(
@@ -71,7 +71,7 @@ pub async fn run(
         .expect("FAiled to connect to DB");
 
     let syncPool = pool.clone();
-    let addr = ImportScheduler::create(|_| ImportScheduler {
+    let _addr = ImportScheduler::create(|_| ImportScheduler {
         db: syncPool,
         interval: Duration::new(10, 0),
     });

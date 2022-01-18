@@ -43,7 +43,7 @@ pub struct SyncImport {
 impl SyncImport {
     pub fn all(pool: &DbPool) -> Result<Vec<SyncImport>, ServiceError> {
         let conn = pool.get().unwrap();
-        let mut query = sync_imports::table.into_boxed();
+        let query = sync_imports::table.into_boxed();
 
         let results: Vec<SyncImport> = query.get_results(&conn).map_err(|_| {
             ServiceError::InternalServerError("Failed to retrive SyncImports".into())
@@ -57,7 +57,7 @@ impl SyncImport {
         query_dataset_id: &Uuid,
     ) -> Result<Vec<SyncImport>, ServiceError> {
         let conn = pool.get().unwrap();
-        let mut query = sync_imports::table
+        let query = sync_imports::table
             .filter(dataset_id.eq(query_dataset_id))
             .order(scheduled_for.desc());
 
@@ -75,7 +75,7 @@ impl SyncImport {
         query_dataset_id: &Uuid,
     ) -> Result<Vec<SyncImport>, ServiceError> {
         let conn = pool.get().unwrap();
-        let mut query = sync_imports::table
+        let query = sync_imports::table
             .filter(dataset_id.eq(query_dataset_id).and(status.eq_any(vec![
                 SyncImportStatus::InProgress,
                 SyncImportStatus::Pending,
@@ -93,7 +93,7 @@ impl SyncImport {
 
     pub fn for_user(pool: &DbPool, query_user_id: &Uuid) -> Result<Vec<SyncImport>, ServiceError> {
         let conn = pool.get().unwrap();
-        let mut query = sync_imports::table
+        let query = sync_imports::table
             .filter(user_id.eq(query_user_id))
             .order(scheduled_for.desc());
 
@@ -119,8 +119,8 @@ impl SyncImport {
 
         diesel::insert_into(sync_imports)
             .values((
-                sync_imports::dataset_id.eq(dataset.id.clone()),
-                sync_imports::user_id.eq(dataset.owner_id.clone()),
+                sync_imports::dataset_id.eq(dataset.id),
+                sync_imports::user_id.eq(dataset.owner_id),
                 sync_imports::status.eq(SyncImportStatus::Pending),
                 sync_imports::scheduled_for.eq(run_at),
             ))
@@ -139,7 +139,7 @@ impl SyncImport {
         query_user_id: &Uuid,
     ) -> Result<Vec<SyncImport>, ServiceError> {
         let conn = pool.get().unwrap();
-        let mut query = sync_imports::table
+        let query = sync_imports::table
             .filter(user_id.eq(query_user_id).and(status.eq_any(vec![
                 SyncImportStatus::InProgress,
                 SyncImportStatus::Pending,
@@ -202,13 +202,13 @@ impl SyncImport {
     }
 
     pub async fn process(&self, pool: &DbPool) -> Result<(), ServiceError> {
-        match self.attempt_process(&pool).await {
+        match self.attempt_process(pool).await {
             Ok(next_run_time) => {
-                self.schedule_next(&pool, next_run_time)?;
+                self.schedule_next(pool, next_run_time)?;
                 self.set_done(pool)?;
             }
             Err(err) => {
-                self.set_failed(&pool, err)?;
+                self.set_failed(pool, err)?;
             }
         };
         Ok(())
@@ -223,8 +223,8 @@ impl SyncImport {
 
         diesel::insert_into(sync_imports)
             .values((
-                sync_imports::dataset_id.eq(self.dataset_id.clone()),
-                sync_imports::user_id.eq(self.user_id.clone()),
+                sync_imports::dataset_id.eq(self.dataset_id),
+                sync_imports::user_id.eq(self.user_id),
                 sync_imports::status.eq(SyncImportStatus::Pending),
                 sync_imports::scheduled_for.eq(run_at),
             ))
@@ -243,7 +243,7 @@ impl SyncImport {
         pool: &DbPool,
     ) -> Result<chrono::NaiveDateTime, ServiceError> {
         self.start_processing(pool)?;
-        let dataset = Dataset::find(&pool, self.dataset_id)?;
+        let dataset = Dataset::find(pool, self.dataset_id)?;
 
         info!("Starting to download dataset {:?} ", dataset);
         let (_file, filepath) = Self::download_file(
