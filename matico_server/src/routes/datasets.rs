@@ -23,19 +23,14 @@ async fn get_datasets(
     web::Query(search_criteria): web::Query<DatasetSearch>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-    let mut search = search_criteria.clone();
 
-    // If no user_id is specified in the query and there is
-    // a logged in user then we will grab that user
-    // If there is no logged in user, we will return only
-    // public datasets
+    let mut search = search_criteria.clone();
     if let Some(user) = logged_in_user.user {
-        if search.user_id == None {
-            search.user_id = Some(user.id);
-        }
-    } else {
-        search.public = Some(true)
-    };
+        search.user_id = Some(user.id);
+    }
+    else{
+        search.user_id = None 
+    }
 
     let datasets = Dataset::search(&state.db, search)?;
     Ok(HttpResponse::Ok().json(datasets))

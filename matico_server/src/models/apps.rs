@@ -2,6 +2,7 @@ use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::schema::apps;
 use crate::utils::PaginationParams;
+use crate::models::{Permission, ResourceType, PermissionType};
 
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
@@ -62,6 +63,8 @@ pub struct AppSearch {
     pub description: Option<String>,
     #[ts(type = "string")]
     pub user_id: Option<Uuid>,
+    #[ts(type = "string")]
+    pub owner_id: Option<Uuid>,
     pub public: Option<bool>,
 }
 
@@ -93,8 +96,18 @@ impl App {
         search: AppSearch,
         _page: Option<PaginationParams>,
     ) -> Result<Vec<App>, ServiceError> {
+
         let conn = pool.get().unwrap();
         let mut query = apps::table.into_boxed();
+
+        if let Some(user_id) = search.user_id{
+            let permissions = Permission::get_permissions_for_user(&pool, &user_id, Some(ResourceType::APP), Some(PermissionType::READ))?;
+            let apps_user_has_permission_for: Vec<Uuid> = permissions.iter().map(|p| p.resource_id).collect();
+            query = query.filter(apps::id.eq_any(apps_user_has_permission_for).or(apps::public.eq(true)));
+        }
+        else{
+            query = query.filter(apps::public.eq(true));
+        }
 
         if let Some(name) = search.name {
             query = query.filter(apps::name.like(name))
@@ -106,10 +119,6 @@ impl App {
 
         if let Some(user_id) = search.user_id {
             query = query.filter(apps::owner_id.eq(user_id))
-        }
-
-        if let Some(public) = search.public {
-            query = query.filter(apps::public.eq(public))
         }
 
         let apps = query
