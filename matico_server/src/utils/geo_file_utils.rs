@@ -8,7 +8,7 @@ use std::path::Path;
 use std::process::Command;
 
 pub fn get_file_info(filepath: &str) -> Result<Vec<(String, u32, i32)>, GdalError> {
-    let mut dataset = Dataset::open(Path::new(filepath))?;
+    let dataset = Dataset::open(Path::new(filepath))?;
     let layer = dataset.layer(0)?;
     let fields = layer
         .defn()

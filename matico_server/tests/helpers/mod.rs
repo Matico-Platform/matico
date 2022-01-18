@@ -1,4 +1,4 @@
-use dotenv;
+
 use matico_server::app_config::Config;
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;

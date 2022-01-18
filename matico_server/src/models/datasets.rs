@@ -81,7 +81,7 @@ impl Dataset {
         // yet
         if let Some(user_id) = search.user_id {
             let datasets_the_user_has_permisions_for = Permission::get_permissions_for_user(
-                &pool,
+                pool,
                 &user_id,
                 Some(ResourceType::DATASET),
                 Some(PermissionType::READ),
@@ -139,9 +139,9 @@ impl Dataset {
         pool: &DataDbPool,
         query: Option<String>,
         page: Option<PaginationParams>,
-        sort: Option<SortParams>,
+        _sort: Option<SortParams>,
         format: Option<Format>,
-        includeMetadata: Option<bool>,
+        include_metadata: Option<bool>,
     ) -> Result<String, ServiceError> {
         let q = match query {
             Some(query) => query,
@@ -152,7 +152,7 @@ impl Dataset {
         let f = format.unwrap_or_default();
 
         let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
-        let result_with_metadata = match includeMetadata {
+        let result_with_metadata = match include_metadata {
             Some(true) => json!({
             "data": result,
             "metadata": {
@@ -195,9 +195,9 @@ impl Dataset {
 
     pub fn setup_or_update_sync(&self, pool: &DbPool) -> Result<(), ServiceError> {
         if self.sync_dataset {
-            let pendingSyncs = SyncImport::for_dataset(&pool, &self.id)?;
-            if pendingSyncs.is_empty() {
-               SyncImport::start_for_dataset(&pool, &self)?; 
+            let pending_syncs = SyncImport::for_dataset(pool, &self.id)?;
+            if pending_syncs.is_empty() {
+               SyncImport::start_for_dataset(pool, self)?; 
             }
         }
         Ok(())
@@ -242,7 +242,7 @@ impl Dataset {
         db: &DataDbPool,
         col_name: String,
     ) -> Result<Column, ServiceError> {
-        let cols = self.columns(&db).await?;
+        let cols = self.columns(db).await?;
 
         let result = cols
             .iter()
@@ -258,7 +258,7 @@ impl Dataset {
 
     pub async fn columns(&self, db: &DataDbPool) -> Result<Vec<Column>, ServiceError> {
         let columns = PostgisQueryRunner::get_query_column_details(
-            &db,
+            db,
             &format!("select * from {}", self.table_name),
         )
         .await?;

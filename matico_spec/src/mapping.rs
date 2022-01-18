@@ -2,7 +2,7 @@ use crate::{AutoComplete, Filter, PanePosition, VarOr, Variable};
 use matico_spec_derive::AutoCompleteMe;
 use palette::Srgb;
 use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::{Validate};
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

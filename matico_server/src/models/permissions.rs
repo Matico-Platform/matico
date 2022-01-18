@@ -77,8 +77,8 @@ impl From<NewPermission> for Permission {
             id: Uuid::new_v4(),
             user_id: new_permission.user_id,
             resource_id: new_permission.resource_id,
-            resource_type: resource_type,
-            permission: permission,
+            resource_type,
+            permission,
             created_at: Utc::now().naive_utc(),
             updated_at: Utc::now().naive_utc(),
         }
@@ -104,14 +104,14 @@ impl Permission {
         resource_id: &Uuid,
         permissions: &Vec<PermissionType>,
     ) -> Result<bool, ServiceError> {
-        let user_permissions = Permission::get_permissions(&db, &user_id, &resource_id)?;
+        let user_permissions = Permission::get_permissions(db, user_id, resource_id)?;
         let allowed_types: Vec<PermissionType> = user_permissions
             .iter()
             .map(|user_permission| PermissionType::from_str(&user_permission.permission))
             .collect::<Result<Vec<PermissionType>, ServiceError>>()?;
         let passed = permissions
             .iter()
-            .all(|permission| allowed_types.contains(&permission));
+            .all(|permission| allowed_types.contains(permission));
         Ok(passed)
     }
     // Check permisions and throw service error if they dont match
@@ -121,7 +121,7 @@ impl Permission {
         resource_id: &Uuid,
         permissions: &Vec<PermissionType>,
     ) -> Result<(), ServiceError> {
-        let check_result = Self::check_all_permissions(&db, user_id, resource_id, permissions)?;
+        let check_result = Self::check_all_permissions(db, user_id, resource_id, permissions)?;
         match check_result {
             true => Ok(()),
             false => Err(ServiceError::Unauthorized(format!(
@@ -138,7 +138,7 @@ impl Permission {
         resource_id: &Uuid,
         permission: PermissionType,
     ) -> Result<bool, ServiceError> {
-        Permission::check_all_permissions(&db, user_id, resource_id, &vec![permission])
+        Permission::check_all_permissions(db, user_id, resource_id, &vec![permission])
     }
 
     // Return the permissions a user has for a given resouce
@@ -183,10 +183,10 @@ impl Permission {
     ) -> Result<(), ServiceError> {
         for permission in permissions {
             let new_permision = NewPermission {
-                user_id: user_id.clone(),
-                resource_id: resource_id.clone(),
+                user_id,
+                resource_id,
                 resource_type: resource_type.clone(),
-                permission: permission,
+                permission,
             };
 
             Self::grant_permission(db, new_permision)?;

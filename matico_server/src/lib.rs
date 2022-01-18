@@ -1,8 +1,6 @@
 #[macro_use]
 extern crate diesel;
 extern crate argon2;
-
-#[macro_use]
 extern crate diesel_derive_enum;
 
 #[macro_use]
@@ -14,11 +12,11 @@ use actix_files as fs;
 use actix_web::{dev::Server, Responder};
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
-use log::{info, warn};
+use log::{info};
 use scheduler::ImportScheduler;
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
-use std::path::PathBuf;
+
 use std::time::Duration;
 
 pub mod app_config;
@@ -33,13 +31,8 @@ mod schema;
 mod tiler;
 mod utils;
 
-// async fn home() -> std::io::Result<fs::NamedFile> {
-//     let path: PathBuf = "./static/index.html".parse().unwrap();
-//     Ok(fs::NamedFile::open(path)?)
-// }
-
 pub async fn health() -> impl Responder {
-    format!("Everything is fine")
+    "Everything is fine".to_string()
 }
 
 pub async fn run(
@@ -70,14 +63,13 @@ pub async fn run(
         .await
         .expect("FAiled to connect to DB");
 
-    let syncPool = pool.clone();
-    let addr = ImportScheduler::create(|_| ImportScheduler {
-        db: syncPool,
+    let sync_pool = pool.clone();
+    let _addr = ImportScheduler::create(|_| ImportScheduler {
+        db: sync_pool,
         interval: Duration::new(10, 0),
     });
 
     let server = HttpServer::new(move || {
-        // let auth = HttpAuthentication::bearer(validator);
         let cors = Cors::default()
             .allow_any_header()
             .allow_any_origin()
@@ -92,7 +84,6 @@ pub async fn run(
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
             .route("/api/health", web::get().to(health))
-            // .wrap(middleware::NormalizePath::default())
             .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
             .service(web::scope("/api/auth").configure(routes::auth::init_routes))
@@ -105,8 +96,6 @@ pub async fn run(
                     .configure(routes::datasets::init_routes),
             )
             .service(fs::Files::new("/", "static").index_file("index.html"))
-
-        // .default_service(web::get().to(home))
     })
     .listen(listener)?
     .run();

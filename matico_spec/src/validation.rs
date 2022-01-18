@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationErrors};
+use serde::{Serialize};
+use validator::{ValidationErrors};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

@@ -18,7 +18,7 @@ pub fn validate_token(token: &str) -> Result<UserToken, ServiceError> {
         &DecodingKey::from_secret("secret".as_ref()),
         &jsonwebtoken::Validation::default(),
     )
-    .map_err(|e| ServiceError::InvalidToken)?;
+    .map_err(|_e| ServiceError::InvalidToken)?;
     Ok(t.claims)
 }
 

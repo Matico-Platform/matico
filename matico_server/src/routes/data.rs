@@ -4,7 +4,7 @@ use crate::db::Bounds;
 use crate::errors::ServiceError;
 use crate::models::permissions::*;
 use crate::models::Dataset;
-use log::info;
+
 
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
 use actix_web::{get, put, web, HttpResponse};
@@ -40,7 +40,7 @@ async fn get_data(
             Some(page),
             Some(sort),
             format_param.format,
-            format_param.includeMetadata,
+            format_param.include_metadata,
         )
         .await?;
     Ok(HttpResponse::Ok()

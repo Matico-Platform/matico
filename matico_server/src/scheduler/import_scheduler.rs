@@ -1,8 +1,8 @@
 use crate::db::DbPool;
 use crate::models::SyncImport;
 use actix::prelude::*;
-use chrono::Utc;
-use cron::Schedule;
+
+
 use log::info;
 use std::time::Duration;
 
@@ -23,7 +23,7 @@ impl Actor for ImportScheduler {
     fn started(&mut self, ctx: &mut Context<Self>) {
         info!("Actor is alive");
 
-        ctx.run_interval(self.interval, move |act, ctx| {
+        ctx.run_interval(self.interval, move |_act, ctx| {
             let my_addr = ctx.address();
             info!("Sending run import message");
             my_addr.do_send(RunImportsMsg {});
@@ -33,7 +33,7 @@ impl Actor for ImportScheduler {
 
 impl Handler<RunImportsMsg> for ImportScheduler {
     type Result = ();
-    fn handle(&mut self, msg: RunImportsMsg, ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, _msg: RunImportsMsg, _ctx: &mut Context<Self>) -> Self::Result {
         info!("Running handle");
         let db_pool = self.db.clone();
         let execution = Box::pin(async move {

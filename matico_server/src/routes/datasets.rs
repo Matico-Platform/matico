@@ -24,7 +24,7 @@ async fn get_datasets(
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
 
-    let mut search = search_criteria.clone();
+    let mut search = search_criteria;
     if let Some(user) = logged_in_user.user {
         search.user_id = Some(user.id);
     }
@@ -114,7 +114,7 @@ async fn create_dataset(
         match name {
             "file" => {
                 file = Some(
-                    upload_dataset_to_tmp_file(field, &name)
+                    upload_dataset_to_tmp_file(field, name)
                         .await
                         .map_err(|_| ServiceError::UploadFailed)?,
                 );
@@ -142,7 +142,7 @@ async fn create_dataset(
         id: Uuid::new_v4(),
         owner_id: user.id,
         name: metadata.name.clone(),
-        table_name: table_name,
+        table_name,
         description: metadata.description,
         original_filename: filepath.clone(),
         original_type: "json".into(),
@@ -191,7 +191,7 @@ async fn create_sync_dataset(
         id: Uuid::new_v4(),
         owner_id: user.id,
         name:  sync_details.name.clone(),
-        table_name: table_name,
+        table_name,
         description: sync_details.description.clone(),
         original_filename:sync_details.sync_url.clone(),
         original_type: "json".into(),

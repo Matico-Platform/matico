@@ -1,7 +1,7 @@
 use crate::{AutoComplete, Pane};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::{Validate};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

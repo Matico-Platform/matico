@@ -91,7 +91,7 @@ impl PostgisQueryRunner {
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was  {}", e, query))
             })?;
 
-        return Ok(result);
+        Ok(result)
     }
 
     pub async fn run_query(
@@ -163,7 +163,7 @@ impl PostgisQueryRunner {
         // if we can easily cache this call in the server. Better would
         // be if postgresql had an exclude keyword or if we can find some
         // other way to do this in the db
-        let columns = Self::get_query_column_details(&pool, query).await?;
+        let columns = Self::get_query_column_details(pool, query).await?;
 
         let column_names: Vec<String> = columns
             .iter()
