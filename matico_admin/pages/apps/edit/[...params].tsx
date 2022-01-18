@@ -25,7 +25,7 @@ const Editor: NextPage = () => {
 
 
   return (
-    <Layout>
+    <Layout hasSidebar={true}>
       <View backgroundColor="gray-200" padding="size-200" gridArea="sidebar">
         {app ? (
           <>

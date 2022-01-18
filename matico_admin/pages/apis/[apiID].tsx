@@ -28,7 +28,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
   console.log("GETTING APIS ")
 
   return (
-    <Layout>
+    <Layout hasSidebar={true}>
       <View backgroundColor="blue-600" gridArea="sidebar" />
       <View gridArea="content" padding="size-200">
         {api ? JSON.stringify(api,null,2) : ''}

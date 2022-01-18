@@ -9,12 +9,19 @@ import {
 } from "@adobe/react-spectrum";
 import { Nav } from "./Nav";
 
-export const Layout: React.FC = ({ children }) => {
+interface LayoutProps{
+  hasSidebar?: boolean
+}
+
+export const Layout: React.FC<LayoutProps> = ({ children, hasSidebar }) => {
+
+  const areas = hasSidebar ? ["header  header", "sidebar content", "footer  footer"]
+                           : ["header  header", "content content", "footer  footer"]
   return (
     <SSRProvider>
       <Provider theme={defaultTheme}>
         <Grid
-          areas={["header  header", "sidebar content", "footer  footer"]}
+          areas={areas}
           columns={["1fr", "3fr"]}
           rows={["size-500", "auto", "size-300"]}
           height="100vh"

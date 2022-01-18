@@ -1,15 +1,48 @@
-import type { NextPage } from 'next'
-import {Layout} from '../components/Layout'
-import {View} from "@adobe/react-spectrum"
+import type { NextPage } from "next";
+import { Layout } from "../components/Layout";
+import Image from "next/image";
+import {
+  Flex,
+  Heading,
+  View,
+  Text,
+  ListBox,
+  Item,
+} from "@adobe/react-spectrum";
+import { LoginSignupDialog } from "../components/LoginSignUpDialog";
+import { useUser } from "../hooks/useUser";
 
 const Home: NextPage = () => {
-  return (
-    <Layout>
-      <View backgroundColor="blue-600" gridArea="sidebar" />
-      <View backgroundColor="purple-600" gridArea="content" />
-      <View backgroundColor="magenta-600" gridArea="footer" />
-    </Layout>
-  )
-}
+  const { user } = useUser();
 
-export default Home
+  return (
+    <Layout hasSidebar={false}>
+      <Flex
+        width="100%"
+        height="100%"
+        gridArea="content"
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+      gap={"size-400"}
+      >
+        <Heading level={1}>Welcome to Matico</Heading>
+        <View width="50vw">
+          <Image alt="splash" src={"/main_bg.png"}  width={2465} height={1325}/>
+        </View>
+        <Text>
+          Matico is a tool to help you easily curate, share and analyse datasets
+          and build apis and apps. 
+        </Text>
+
+        {!user && (
+          <>
+            <LoginSignupDialog popover={false} />
+          </>
+        )}
+      </Flex>
+    </Layout>
+  );
+};
+
+export default Home;

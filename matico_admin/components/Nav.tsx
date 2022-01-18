@@ -20,8 +20,18 @@ import { useUser } from "../hooks/useUser";
 import { ProfileDiaglog } from "./ProfileDialog";
 
 export const Nav: React.FC = () => {
-  const { user, logout} = useUser();
+  const { user, logout } = useUser();
   const router = useRouter();
+
+  const loggedInTabs = [
+    { name: "/apps", id: "Apps" },
+    { name: "/datasets", id: "Datasets" },
+    { name: "/apis", id: "Apis" },
+    { name: "/admin", id: "Admin" },
+  ];
+
+  const tabs = [{ name: "/", id: "Matico" }];
+
   return (
     <Flex
       gridArea="header"
@@ -31,44 +41,33 @@ export const Nav: React.FC = () => {
       alignItems="center"
       marginX="size-550"
     >
-      <Tabs isQuiet={true} selectedKey={router.route}>
+      <Tabs
+        isQuiet={true}
+        selectedKey={router.route}
+        items={user ? [...tabs, ...loggedInTabs] : tabs}
+      >
         <TabList>
-          <Item key="/apps">
-            <ALink>
-              <Link href="/apps">Apps</Link>
-            </ALink>
-          </Item>
-          <Item key="/datasets">
-            <ALink>
-              <Link href="/datasets">Datasets</Link>
-            </ALink>
-          </Item>
-          <Item key="/apis">
-            <ALink>
-              <Link href="/apis">Apis</Link>
-            </ALink>
-          </Item>
-          <Item key="/admin">
-            <ALink>
-              <Link href="/admin">Admin</Link>
-            </ALink>
-          </Item>
+          {(item: any) => (
+            <Item key={item.name}>
+              <ALink>
+                <Link href={item.name}>{item.id}</Link>
+              </ALink>
+            </Item>
+          )}
         </TabList>
       </Tabs>
 
       <div style={{ flex: 1 }} />
 
-      <View justifySelf="end">
-        {user ? (
+      {user && (
+        <View justifySelf="end">
           <ProfileDiaglog
             username={user.username}
             popover={true}
             onLogout={logout}
           />
-        ) : (
-          <LoginSignupDialog />
-        )}
-      </View>
+        </View>
+      )}
     </Flex>
   );
 };

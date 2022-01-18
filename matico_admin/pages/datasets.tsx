@@ -44,7 +44,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
   const colWidth=200;
   console.log("datasets are ", datasets)
   return (
-    <Layout>
+    <Layout hasSidebar={true}>
       <View backgroundColor="gray-200" padding="size-100" gridArea="sidebar">
         <Heading>Datasets</Heading>
         <Content>
