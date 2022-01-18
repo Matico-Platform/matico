@@ -1,0 +1,10 @@
+tmp
+**/node_modules
+target
+**/target
+**/.next
+.git
+.yarn/cache
+python
+Dockerfile
+

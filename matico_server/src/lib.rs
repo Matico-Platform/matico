@@ -2,10 +2,12 @@
 extern crate diesel;
 extern crate argon2;
 
+#[macro_use]
+extern crate diesel_migrations;
 use crate::app_state::State;
 use actix_cors::Cors;
 use actix_files as fs;
-use actix_web::dev::Server;
+use actix_web::{dev::Server,Responder};
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use log::{info, warn};
@@ -24,15 +26,22 @@ mod schema;
 mod tiler;
 mod utils;
 
-async fn home() -> std::io::Result<fs::NamedFile> {
-    let path: PathBuf = "./static/index.html".parse().unwrap();
-    Ok(fs::NamedFile::open(path)?)
+// async fn home() -> std::io::Result<fs::NamedFile> {
+//     let path: PathBuf = "./static/index.html".parse().unwrap();
+//     Ok(fs::NamedFile::open(path)?)
+// }
+
+
+pub async fn health()->impl Responder{
+    format!("Everything is fine")
 }
 
 pub async fn run(
     listener: TcpListener,
     config: app_config::Config,
 ) -> Result<Server, std::io::Error> {
+
+    println!("config is {:?}", config);
     let db_connection_url = config.connection_string().unwrap();
     println!("Connecting to : {}",db_connection_url);
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);
@@ -44,6 +53,10 @@ pub async fn run(
         .build(manager)
         .expect("Failed to connect to DB");
     info!("Connected to metadata db");
+
+    info!("Running migrations");
+    db::run_migrations(&pool);
+    info!("Migrated succestully");
 
     let data_db_connection_url = config.data_connection_string().unwrap();
     let data_pool = PgPoolOptions::new()
@@ -67,6 +80,7 @@ pub async fn run(
             })
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
+            .route("/api/health", web::get().to(health))
             // .wrap(middleware::NormalizePath::default())
             .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
@@ -80,7 +94,8 @@ pub async fn run(
                     .configure(routes::datasets::init_routes),
             )
             .service(fs::Files::new("/", "static").index_file("index.html"))
-            .default_service(web::get().to(home))
+
+            // .default_service(web::get().to(home))
     })
     .listen(listener)?
     .run();

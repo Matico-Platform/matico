@@ -1,4 +1,4 @@
-import useSWR, { Key, Fetcher } from "swr";
+import {useSWRAPI} from "../utils/api";
 
 export const useDatasetData = (
   id: string,
@@ -6,9 +6,8 @@ export const useDatasetData = (
   perPage: number = 50
 ) => {
   const offset = page ? page * perPage : 0;
-  return useSWR(
-    `http://localhost:8000/api/datasets/${id}/data?limit=${perPage}&offset=${offset}&includeMetadata=true`,
-    (url) => fetch(url).then((r) => r.json()),
+  return useSWRAPI(
+    `/datasets/${id}/data?limit=${perPage}&offset=${offset}&includeMetadata=true`, 
     { refreshInterval: 10000 }
   );
 };

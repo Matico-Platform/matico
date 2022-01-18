@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import useSWR from "swr";
-import { getProfile, login, signup } from "../utils/api";
+import { useSWRAPI, getProfile, login, signup } from "../utils/api";
 
 export const useUser = () => {
   //@TODO import these from server types
@@ -8,10 +7,14 @@ export const useUser = () => {
   const [signupError, setSignupError] = useState<any | null>(null);
   const [loginError, setLoginError] = useState<any | null>(null);
 
-  const {data:profile, error:profileError, mutate} = useSWR(`http://localhost:8000/api/profile`, (url)=>fetch(url).then(r=>r.json()) ) 
+  const {
+    data: profile,
+    error: profileError,
+    mutate,
+  } = useSWRAPI(`/api/profile`, (url) => fetch(url).then((r) => r.json()));
 
   useEffect(() => {
-    const interval = setInterval(()=>{
+    const interval = setInterval(() => {
       getProfile()
         .then((profile) => {
           setUser(profile.data);
@@ -19,8 +22,8 @@ export const useUser = () => {
         .catch((e) => {
           console.warn("token is invalid or stale", e);
         });
-    },1000)
-    return ()=> clearInterval(interval)
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const tryLogin = (email: string, password: string) => {
@@ -40,14 +43,14 @@ export const useUser = () => {
       .then((result) => {
         localStorage.setItem("token", result.data.token);
         setUser(result.data.user);
-        setSignupError(null);
+  const {data:profile, error:profileError, mutate} = useSWRAPI(`/api/profile`, (url)=>fetch(url).then(r=>r.json()) ) 
       })
       .catch((e) => {
         setSignupError(e.response.data);
       });
   };
 
-  const logout= () => {
+  const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
   };

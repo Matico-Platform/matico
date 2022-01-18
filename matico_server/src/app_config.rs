@@ -3,7 +3,7 @@ pub use ::config::ConfigError;
 use serde::Deserialize;
 use std::str;
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct DbConfig {
     pub host: String,
     pub name: String,
@@ -12,7 +12,7 @@ pub struct DbConfig {
     pub username: Option<String>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct DataDbConfig {
     pub host: String,
     pub name: String,
@@ -21,7 +21,7 @@ pub struct DataDbConfig {
     pub username: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize ,Debug)]
 pub struct Config {
     pub db: DbConfig,
     pub datadb: DataDbConfig,

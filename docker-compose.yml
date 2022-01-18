@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  matico:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_USERNAME: matico
+      DB_PASSWORD: password 
+      DB_NAME: matico 
+      DATADB_HOST: db
+      DATADB_USERNAME: matico
+      DATADB_PASSWORD: password 
+      DATADB_NAME: matico 
+    depends_on:
+      - "db"
+  db:
+    image: postgres
+    restart: always
+    ports:
+       - '5438:5432'
+    volumes: 
+       - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: matico
+      POSTGRES_PASSWORD: password 
+      POSTGRES_DB: matico 

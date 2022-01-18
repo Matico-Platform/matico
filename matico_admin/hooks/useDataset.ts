@@ -1,5 +1,5 @@
-import useSWR, {Key,Fetcher} from 'swr'
+import {useSWRAPI} from '../utils/api'
 
 export const useDataset= (id:string)=>{
-  return useSWR(`http://localhost:8000/api/datasets/${id}`, (url)=>fetch(url).then(r=>r.json()), {refreshInterval:1000}) 
+  return useSWRAPI(`/datasets/${id}`, {refreshInterval:1000}) 
 }

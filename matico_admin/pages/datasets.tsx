@@ -24,23 +24,24 @@ import {
 } from "@adobe/react-spectrum";
 import { NewDatasetModal } from "../components/DatasetCreation/NewDatasetModal";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const datasets = await fetch(`http://localhost:8000/api/datasets`).then(
-      (resp) => resp.json()
-    );
-    return { props: { datasetsInitial: datasets } };
-  } catch (e: any) {
-    console.log(e);
-    return { props: { datasetsInitial: [] } };
-  }
-};
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   try {
+//     const datasets = await fetch(`http://localhost:8000/api/datasets`).then(
+//       (resp) => resp.json()
+//     );
+//     return { props: { datasetsInitial: datasets } };
+//   } catch (e: any) {
+//     console.log(e);
+//     return { props: { datasetsInitial: [] } };
+//   }
+// };
 
 const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
   datasetsInitial,
 }) => {
   const { data: datasets, error } = useDatasets();
 
+  console.log("datasets are ", datasets)
   return (
     <Layout>
       <View backgroundColor="gray-200" padding="size-100" gridArea="sidebar">

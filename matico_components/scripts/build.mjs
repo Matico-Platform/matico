@@ -18,5 +18,6 @@ esbuild
     ...options,
     outfile: `${outDir}/bundle.js`,
     minify: true,
+    external: ["styled-components"]
   })
   .catch(() => process.exit(1));
