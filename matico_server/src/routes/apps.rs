@@ -1,10 +1,8 @@
 use crate::app_state::State;
 use crate::auth::AuthService;
-use crate::models::permissions::{Permission, PermissionType};
-use crate::models::users::UserToken;
 
 use crate::errors::ServiceError;
-use crate::models::apps::{App, AppOrderBy, AppSearch, CreateAppDTO, UpdateAppDTO};
+use crate::models::{App, AppOrderBy, AppSearch, CreateAppDTO, UpdateAppDTO,UserToken, Permission, PermissionType, ResourceType};
 use crate::utils::PaginationParams;
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use log::info;
@@ -12,7 +10,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 #[get("")]
-pub async fn get_all_apps(
+pub async fn get_apps(
     state: web::Data<State>,
     web::Query(search): web::Query<AppSearch>,
     web::Query(order): web::Query<AppOrderBy>,
@@ -50,6 +48,19 @@ pub async fn create_app(
     new_app.owner_id = Some(user.id);
 
     let app = App::create(&state.db, new_app)?;
+
+    Permission::grant_permissions(
+        &state.db,
+        user.id,
+        app.id,
+        ResourceType::APP,
+        vec![
+            PermissionType::READ,
+            PermissionType::WRITE,
+            PermissionType::ADMIN,
+        ],
+    )?;
+
     Ok(HttpResponse::Ok().json(app))
 }
 
@@ -66,7 +77,7 @@ pub async fn delete_app(
         .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
 
     if user.id != app.owner_id {
-        Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::WRITE)?;
+        Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::ADMIN)?;
     }
 
     App::delete(&state.db, app_id)?;
@@ -109,7 +120,7 @@ pub async fn get_app(
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(get_all_apps);
+    cfg.service(get_apps);
     cfg.service(update_app);
     cfg.service(delete_app);
     cfg.service(create_app);

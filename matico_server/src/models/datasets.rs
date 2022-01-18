@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
-use crate::models::{columns::Column, SyncImport};
+use crate::models::{columns::Column, Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::{Format, PaginationParams, SortParams};
 
@@ -19,6 +19,7 @@ pub struct DatasetSearch {
     pub public: Option<bool>,
     pub date_start: Option<NaiveDateTime>,
     pub user_id: Option<Uuid>,
+    pub owner_id: Option<Uuid>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -76,13 +77,43 @@ impl Dataset {
         let conn = pool.get().unwrap();
         let mut query = datasets::table.into_boxed();
 
+        info!("Searching datasets with {:#?} ", search);
+
+        // TODO This should be doable with a join but not sure how to handle many to many tables just
+        // yet
         if let Some(user_id) = search.user_id {
-            query = query.filter(datasets::owner_id.eq(user_id));
+            let datasets_the_user_has_permisions_for = Permission::get_permissions_for_user(
+                &pool,
+                &user_id,
+                Some(ResourceType::DATASET),
+                Some(PermissionType::READ),
+            )?;
+
+            let datasets_the_user_has_permisions_for: Vec<Uuid> =
+                datasets_the_user_has_permisions_for
+                    .iter()
+                    .map(|p| p.resource_id)
+                    .collect();
+            query = query.filter(
+                datasets::id
+                    .eq_any(datasets_the_user_has_permisions_for)
+                    .or(datasets::public.eq(true)),
+            );
+        }
+        else{
+            query = query.filter(
+                datasets::public.eq(true)
+            )
+        }
+
+        if let Some(dataset_owner_id) = search.owner_id {
+            query = query.filter(datasets::owner_id.eq(dataset_owner_id));
         };
 
         let results: Vec<Dataset> = query
             .get_results(&conn)
             .map_err(|_| ServiceError::InternalServerError("Failed to retrive datasets".into()))?;
+
         Ok(results)
     }
 

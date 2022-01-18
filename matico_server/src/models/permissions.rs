@@ -39,8 +39,8 @@ impl FromStr for PermissionType {
 pub enum ResourceType {
     #[display(fmt = "DATASET")]
     DATASET,
-    #[display(fmt = "DASHBOARD")]
-    DASHBOARD,
+    #[display(fmt = "APP")]
+    APP,
     #[display(fmt = "QUERY")]
     QUERY,
 }
@@ -50,7 +50,7 @@ impl FromStr for ResourceType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "DASHBOARD" => Ok(Self::DASHBOARD),
+            "APP" => Ok(Self::APP),
             "DATASET" => Ok(Self::DATASET),
             "QUERY" => Ok(Self::QUERY),
             _ => Err(ServiceError::InternalServerError(format!(
@@ -192,6 +192,34 @@ impl Permission {
             Self::grant_permission(db, new_permision)?;
         }
         Ok(())
+    }
+
+    pub fn get_permissions_for_user(
+        db: &DbPool,
+        user_id: &Uuid,
+        resource_type: Option<ResourceType>,
+        permission_type: Option<PermissionType>,
+    ) -> Result<Vec<Permission>, ServiceError> {
+        let conn = db.get().unwrap();
+        let mut query = permissions::table.into_boxed();
+        query = query.filter(permissions::dsl::user_id.eq(user_id));
+
+        if let Some(resource) = resource_type {
+            query = query.filter(permissions::dsl::resource_type.eq(resource.to_string()))
+        };
+
+        if let Some(permission_t) = permission_type {
+            query = query.filter(permissions::dsl::permission.eq(permission_t.to_string()))
+        };
+
+        let permissions = query.get_results(&conn).map_err(|_| {
+            ServiceError::InternalServerError(format!(
+                "Failed to get permissions for user {}",
+                user_id
+            ))
+        })?;
+
+        Ok(permissions)
     }
 
     // Revoke permission for a specific resource

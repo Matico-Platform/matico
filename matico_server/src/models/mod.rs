@@ -10,3 +10,6 @@ pub use columns::*;
 pub use datasets::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, DatasetSearch};
 pub use sync_import::*;
 pub use users::{LoginDTO, LoginResponseDTO, SignupDTO, User, UserToken};
+pub use permissions::*;
+pub use apps::*;
+pub use apis::*;
