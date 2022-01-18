@@ -12,11 +12,11 @@ use uuid::Uuid;
 #[derive(PartialEq, Debug, Display, Serialize, Deserialize)]
 pub enum PermissionType {
     #[display(fmt = "READ")]
-    READ,
+    Read,
     #[display(fmt = "WRITE")]
-    WRITE,
+    Write,
     #[display(fmt = "ADMIN")]
-    ADMIN,
+    Admin,
 }
 
 impl FromStr for PermissionType {
@@ -24,9 +24,9 @@ impl FromStr for PermissionType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "READ" => Ok(Self::READ),
-            "WRITE" => Ok(Self::WRITE),
-            "ADMIN" => Ok(Self::ADMIN),
+            "READ" => Ok(Self::Read),
+            "WRITE" => Ok(Self::Write),
+            "ADMIN" => Ok(Self::Admin),
             _ => Err(ServiceError::InternalServerError(format!(
                 "Unknown Permision Type {}",
                 s
@@ -38,11 +38,11 @@ impl FromStr for PermissionType {
 #[derive(PartialEq, Debug, Display, Serialize, Deserialize, Clone)]
 pub enum ResourceType {
     #[display(fmt = "DATASET")]
-    DATASET,
+    Dataset,
     #[display(fmt = "APP")]
-    APP,
+    App,
     #[display(fmt = "QUERY")]
-    QUERY,
+    Query,
 }
 
 impl FromStr for ResourceType {
@@ -50,9 +50,9 @@ impl FromStr for ResourceType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "APP" => Ok(Self::APP),
-            "DATASET" => Ok(Self::DATASET),
-            "QUERY" => Ok(Self::QUERY),
+            "APP" => Ok(Self::App),
+            "DATASET" => Ok(Self::Dataset),
+            "QUERY" => Ok(Self::Query),
             _ => Err(ServiceError::InternalServerError(format!(
                 "Unknown Resource Type {}",
                 s
@@ -102,7 +102,7 @@ impl Permission {
         db: &DbPool,
         user_id: &Uuid,
         resource_id: &Uuid,
-        permissions: &Vec<PermissionType>,
+        permissions: &[PermissionType],
     ) -> Result<bool, ServiceError> {
         let user_permissions = Permission::get_permissions(db, user_id, resource_id)?;
         let allowed_types: Vec<PermissionType> = user_permissions
@@ -119,7 +119,7 @@ impl Permission {
         db: &DbPool,
         user_id: &Uuid,
         resource_id: &Uuid,
-        permissions: &Vec<PermissionType>,
+        permissions: &[PermissionType],
     ) -> Result<(), ServiceError> {
         let check_result = Self::check_all_permissions(db, user_id, resource_id, permissions)?;
         match check_result {
@@ -138,7 +138,7 @@ impl Permission {
         resource_id: &Uuid,
         permission: PermissionType,
     ) -> Result<bool, ServiceError> {
-        Permission::check_all_permissions(db, user_id, resource_id, &vec![permission])
+        Permission::check_all_permissions(db, user_id, resource_id, &[permission])
     }
 
     // Return the permissions a user has for a given resouce

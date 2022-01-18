@@ -21,7 +21,7 @@ pub struct GeoJSONDataset {
 impl GeoJSONDataset {
     #[wasm_bindgen(getter=name)]
     pub fn get_name(&self) -> String {
-        return self.name.clone();
+        self.name.clone()
     }
 
     #[wasm_bindgen(setter=name)]
@@ -53,7 +53,7 @@ pub struct CSVDataset {
 impl CSVDataset {
     #[wasm_bindgen(getter=name)]
     pub fn get_name(&self) -> String {
-        return self.name.clone();
+        self.name.clone()
     }
 
     #[wasm_bindgen(setter=name)]

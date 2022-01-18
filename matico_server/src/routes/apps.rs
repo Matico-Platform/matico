@@ -40,7 +40,7 @@ pub async fn create_app(
     info!("Attpempting to create app");
     let user: UserToken = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
 
     info!("Have user {:?}", user);
     info!("new app {:?}", new_app);
@@ -53,11 +53,11 @@ pub async fn create_app(
         &state.db,
         user.id,
         app.id,
-        ResourceType::APP,
+        ResourceType::App,
         vec![
-            PermissionType::READ,
-            PermissionType::WRITE,
-            PermissionType::ADMIN,
+            PermissionType::Read,
+            PermissionType::Write,
+            PermissionType::Admin,
         ],
     )?;
 
@@ -74,10 +74,10 @@ pub async fn delete_app(
 
     let user = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
 
     if user.id != app.owner_id {
-        Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::ADMIN)?;
+        Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::Admin)?;
     }
 
     App::delete(&state.db, app_id)?;
@@ -93,8 +93,8 @@ pub async fn update_app(
 ) -> Result<HttpResponse, ServiceError> {
     let user = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::WRITE)?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
+    Permission::check_permission(&state.db, &user.id, &app_id, PermissionType::Write)?;
     let update = App::update(&state.db, app_id, update)?;
     Ok(HttpResponse::Ok().json(update))
 }
@@ -112,7 +112,7 @@ pub async fn get_app(
                 &state.db,
                 &user.id,
                 &app_id,
-                &vec![PermissionType::READ],
+                &[PermissionType::Read],
             )?;
         }
     }

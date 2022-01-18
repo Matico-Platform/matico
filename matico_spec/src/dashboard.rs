@@ -2,7 +2,7 @@ use crate::{AutoComplete, Dataset, Page, Theme, ValidationResult};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
-use toml;
+// use toml;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 
@@ -123,7 +123,7 @@ impl Dashboard {
             Ok(s) => s,
             Err(e) => format!("{}", e),
         };
-        res.into()
+        res
     }
 
     pub fn to_yaml(&self) -> String {
@@ -132,7 +132,7 @@ impl Dashboard {
             Ok(s) => s,
             Err(e) => format!("{}", e),
         };
-        res.into()
+        res
     }
 }
 

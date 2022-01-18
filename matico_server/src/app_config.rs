@@ -41,7 +41,7 @@ impl Config {
     pub fn connection_string(&self) -> Result<String, ServiceError> {
         let config = if Some(true) == self.test_env {
             println!("USING TEST CONFIG");
-            self.testdb.clone().ok_or(ServiceError::InternalServerError(
+            self.testdb.clone().ok_or_else(|| ServiceError::InternalServerError(
                 "Failed to find test db settings".into(),
             ))
         } else {
@@ -75,7 +75,7 @@ impl Config {
         let config = if Some(true) == self.test_env {
             self.testdatadb
                 .clone()
-                .ok_or(ServiceError::InternalServerError(
+                .ok_or_else(|| ServiceError::InternalServerError(
                     "Failed to find test db settings".into(),
                 ))
         } else {
@@ -109,7 +109,7 @@ impl Config {
         let config = if Some(true) == self.test_env {
             self.testdatadb
                 .clone()
-                .ok_or(ServiceError::InternalServerError(
+                .ok_or_else(|| ServiceError::InternalServerError(
                     "Failed to find test db settings".into(),
                 ))
         } else {

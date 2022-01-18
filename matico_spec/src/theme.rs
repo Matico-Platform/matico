@@ -43,6 +43,6 @@ impl Theme {
 
     #[wasm_bindgen(setter= icon)]
     pub fn set_icon(&mut self, logo_url: String) {
-        self.logo_url = Some(logo_url.clone());
+        self.logo_url = Some(logo_url);
     }
 }

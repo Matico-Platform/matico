@@ -44,7 +44,7 @@ impl Page {
 
     #[wasm_bindgen(setter= icon)]
     pub fn set_icon(&mut self, icon: String) {
-        self.icon = Some(icon.clone());
+        self.icon = Some(icon);
     }
 
     #[wasm_bindgen(getter = content)]

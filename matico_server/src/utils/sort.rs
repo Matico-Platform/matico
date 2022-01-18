@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub enum SortDirection {
-    ASSCENDING,
-    DESCENDING,
+    Asscending,
+    Descending,
 }
 
 #[derive(Serialize, Deserialize)]

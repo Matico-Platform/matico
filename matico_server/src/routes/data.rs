@@ -28,7 +28,7 @@ async fn get_data(
                 &state.db,
                 &user.id,
                 &dataset.id,
-                &vec![PermissionType::READ],
+                &[PermissionType::Read],
             )?;
         }
     }
@@ -57,10 +57,10 @@ async fn get_feature(
     let dataset = Dataset::find(&state.db, dataset_id)?;
 
     if !dataset.public {
-        let user = logged_in_user.user.ok_or(ServiceError::Unauthorized(
+        let user = logged_in_user.user.ok_or_else(|| ServiceError::Unauthorized(
             "You do not have permission to read this dataset".into(),
         ))?;
-        Permission::check_permission(&state.db, &user.id, &dataset_id, PermissionType::READ)?;
+        Permission::check_permission(&state.db, &user.id, &dataset_id, PermissionType::Read)?;
     }
 
     let id_col = &dataset.id_col;
@@ -97,7 +97,7 @@ async fn update_feature(
     let dataset = Dataset::find(&state.db, dataset_id)?;
 
     if let Some(user) = logged_in_user.user {
-        Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::WRITE)?;
+        Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::Write)?;
     }
 
     let result = dataset

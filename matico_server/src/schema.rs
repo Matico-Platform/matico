@@ -78,14 +78,13 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::sync_import::*;
 
     sync_imports (id) {
         id -> Uuid,
         scheduled_for -> Timestamp,
         started_at -> Nullable<Timestamp>,
         finished_at -> Nullable<Timestamp>,
-        status -> SyncImportStatusMapping,
+        status -> crate::models::sync_import::SyncImportStatusMapping,
         error -> Nullable<Text>,
         dataset_id -> Uuid,
         user_id -> Uuid,
