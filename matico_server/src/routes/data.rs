@@ -40,7 +40,7 @@ async fn get_data(
             Some(page),
             Some(sort),
             format_param.format,
-            format_param.includeMetadata,
+            format_param.include_metadata,
         )
         .await?;
     Ok(HttpResponse::Ok()

@@ -1,5 +1,4 @@
 use crate::Section;
-use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;

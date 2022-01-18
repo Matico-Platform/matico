@@ -3,7 +3,7 @@ use crate::{
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::{Validate, ValidationErrors};
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize, Clone, Debug, AutoCompleteMe)]

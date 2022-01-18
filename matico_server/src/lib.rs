@@ -1,8 +1,6 @@
 #[macro_use]
 extern crate diesel;
 extern crate argon2;
-
-#[macro_use]
 extern crate diesel_derive_enum;
 
 #[macro_use]
@@ -32,11 +30,6 @@ mod scheduler;
 mod schema;
 mod tiler;
 mod utils;
-
-// async fn home() -> std::io::Result<fs::NamedFile> {
-//     let path: PathBuf = "./static/index.html".parse().unwrap();
-//     Ok(fs::NamedFile::open(path)?)
-// }
 
 pub async fn health() -> impl Responder {
     "Everything is fine".to_string()
@@ -70,14 +63,13 @@ pub async fn run(
         .await
         .expect("FAiled to connect to DB");
 
-    let syncPool = pool.clone();
+    let sync_pool = pool.clone();
     let _addr = ImportScheduler::create(|_| ImportScheduler {
-        db: syncPool,
+        db: sync_pool,
         interval: Duration::new(10, 0),
     });
 
     let server = HttpServer::new(move || {
-        // let auth = HttpAuthentication::bearer(validator);
         let cors = Cors::default()
             .allow_any_header()
             .allow_any_origin()
@@ -92,7 +84,6 @@ pub async fn run(
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
             .route("/api/health", web::get().to(health))
-            // .wrap(middleware::NormalizePath::default())
             .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
             .service(web::scope("/api/auth").configure(routes::auth::init_routes))
@@ -105,8 +96,6 @@ pub async fn run(
                     .configure(routes::datasets::init_routes),
             )
             .service(fs::Files::new("/", "static").index_file("index.html"))
-
-        // .default_service(web::get().to(home))
     })
     .listen(listener)?
     .run();

@@ -141,7 +141,7 @@ impl Dataset {
         page: Option<PaginationParams>,
         _sort: Option<SortParams>,
         format: Option<Format>,
-        includeMetadata: Option<bool>,
+        include_metadata: Option<bool>,
     ) -> Result<String, ServiceError> {
         let q = match query {
             Some(query) => query,
@@ -152,7 +152,7 @@ impl Dataset {
         let f = format.unwrap_or_default();
 
         let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
-        let result_with_metadata = match includeMetadata {
+        let result_with_metadata = match include_metadata {
             Some(true) => json!({
             "data": result,
             "metadata": {
@@ -195,8 +195,8 @@ impl Dataset {
 
     pub fn setup_or_update_sync(&self, pool: &DbPool) -> Result<(), ServiceError> {
         if self.sync_dataset {
-            let pendingSyncs = SyncImport::for_dataset(pool, &self.id)?;
-            if pendingSyncs.is_empty() {
+            let pending_syncs = SyncImport::for_dataset(pool, &self.id)?;
+            if pending_syncs.is_empty() {
                SyncImport::start_for_dataset(pool, self)?; 
             }
         }

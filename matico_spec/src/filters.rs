@@ -1,8 +1,7 @@
 use crate::{AutoComplete, VarOr};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError, ValidationErrors};
-use wasm_bindgen::prelude::*;
+use validator::{Validate};
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
 pub struct RangeFilter {

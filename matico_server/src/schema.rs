@@ -1,6 +1,5 @@
 table! {
     use diesel::sql_types::*;
-    use crate::models::sync_import::*;
 
     apps (id) {
         id -> Uuid,
@@ -16,7 +15,6 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::sync_import::*;
 
     datasets (id) {
         id -> Uuid,
@@ -40,7 +38,6 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::sync_import::*;
 
     permissions (id) {
         id -> Uuid,
@@ -55,7 +52,6 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::sync_import::*;
 
     queries (id) {
         id -> Uuid,
@@ -70,7 +66,6 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::sync_import::*;
 
     spatial_ref_sys (srid) {
         srid -> Int4,
@@ -99,7 +94,6 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::sync_import::*;
 
     users (id) {
         id -> Uuid,
