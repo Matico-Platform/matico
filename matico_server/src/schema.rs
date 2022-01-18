@@ -1,5 +1,3 @@
-use crate::models::SyncImportStatusMapping;
-
 table! {
     use diesel::sql_types::*;
 
