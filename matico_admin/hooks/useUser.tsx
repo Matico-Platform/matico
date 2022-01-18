@@ -1,37 +1,48 @@
 import { useEffect, useState } from "react";
 import { useSWRAPI, getProfile, login, signup } from "../utils/api";
+import { mutate, useSWRConfig } from 'swr'
+
+
+const profileUrl = '/users/profile'
+
 
 export const useUser = () => {
   //@TODO import these from server types
-  const [user, setUser] = useState<any | null>(null);
   const [signupError, setSignupError] = useState<any | null>(null);
   const [loginError, setLoginError] = useState<any | null>(null);
 
   const {
-    data: profile,
+    data: user,
     error: profileError,
-    mutate,
-  } = useSWRAPI(`/api/profile`, (url) => fetch(url).then((r) => r.json()));
+  } = useSWRAPI(profileUrl, {refreshInterval:0});
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      getProfile()
-        .then((profile) => {
-          setUser(profile.data);
-        })
-        .catch((e) => {
-          console.warn("token is invalid or stale", e);
-        });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const { mutate } = useSWRConfig()
+  const updateRoutes = ()=>{
+        mutate(profileUrl)
+        mutate('/datasets')
+        mutate('/apps')
+
+  }
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getProfile()
+  //       .then((profile) => {
+  //         setUser(profile.data);
+  //       })
+  //       .catch((e) => {
+  //         console.warn("token is invalid or stale", e);
+  //       });
+  //   }, 10000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const tryLogin = (email: string, password: string) => {
     login(email, password)
       .then((result) => {
         localStorage.setItem("token", result.data.token);
-        setUser(result.data.user);
         setLoginError(null);
+        updateRoutes()
       })
       .catch((e) => {
         setLoginError(e.response.data);
@@ -42,8 +53,7 @@ export const useUser = () => {
     signup(username, password, email)
       .then((result) => {
         localStorage.setItem("token", result.data.token);
-        setUser(result.data.user);
-  const {data:profile, error:profileError, mutate} = useSWRAPI(`/api/profile`, (url)=>fetch(url).then(r=>r.json()) ) 
+        updateRoutes()
       })
       .catch((e) => {
         setSignupError(e.response.data);
@@ -52,7 +62,7 @@ export const useUser = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    setUser(null);
+    updateRoutes();
   };
 
   return {

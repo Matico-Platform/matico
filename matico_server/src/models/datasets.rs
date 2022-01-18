@@ -9,10 +9,9 @@ use uuid::Uuid;
 
 use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
-use crate::models::columns::Column;
+use crate::models::{columns::Column, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::{Format, PaginationParams, SortParams};
-use diesel::debug_query;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DatasetSearch {
@@ -24,11 +23,12 @@ pub struct DatasetSearch {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateSyncDatasetDTO {
-    name: String,
-    sync_url: Option<String>,
-    sync_frequency_seconds: Option<i64>,
-    post_import_script: Option<String>,
-    public: bool,
+    pub name: String,
+    pub description:String,
+    pub sync_url: String,
+    pub sync_frequency_seconds: i64,
+    pub post_import_script: Option<String>,
+    pub public: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
@@ -73,7 +73,6 @@ pub struct UpdateDatasetDTO {
 
 impl Dataset {
     pub fn search(pool: &DbPool, search: DatasetSearch) -> Result<Vec<Dataset>, ServiceError> {
-        //     let conn = pool.get().unwrap();
         let conn = pool.get().unwrap();
         let mut query = datasets::table.into_boxed();
 
@@ -85,7 +84,6 @@ impl Dataset {
             .get_results(&conn)
             .map_err(|_| ServiceError::InternalServerError("Failed to retrive datasets".into()))?;
         Ok(results)
-        // Ok(datasets)
     }
 
     pub fn find(pool: &DbPool, dataset_id: Uuid) -> Result<Dataset, ServiceError> {
@@ -114,9 +112,8 @@ impl Dataset {
         page: Option<PaginationParams>,
         sort: Option<SortParams>,
         format: Option<Format>,
-        includeMetadata:Option<bool>
+        includeMetadata: Option<bool>,
     ) -> Result<String, ServiceError> {
-
         let q = match query {
             Some(query) => query,
             None => format!(r#"select * from "{}""#, self.table_name),
@@ -125,15 +122,14 @@ impl Dataset {
         let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
         let f = format.unwrap_or_default();
 
-
         let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
-        let result_with_metadata = match includeMetadata{
+        let result_with_metadata = match includeMetadata {
             Some(true) => json!({
-                "data": result,
-                "metadata": {
-                    "total": metadata.total
-                }}),
-            Some(false) | None => json!(result)
+            "data": result,
+            "metadata": {
+                "total": metadata.total
+            }}),
+            Some(false) | None => json!(result),
         };
         Ok(result_with_metadata.to_string())
     }
@@ -166,6 +162,16 @@ impl Dataset {
             .map_err(|e| {
                 ServiceError::BadRequest(format!("Failed to create or update dataset, {}", e))
             })
+    }
+
+    pub fn setup_or_update_sync(&self, pool: &DbPool) -> Result<(), ServiceError> {
+        if self.sync_dataset {
+            let pendingSyncs = SyncImport::for_dataset(&pool, &self.id)?;
+            if pendingSyncs.is_empty() {
+               SyncImport::start_for_dataset(&pool, &self)?; 
+            }
+        }
+        Ok(())
     }
 
     pub async fn update_feature(

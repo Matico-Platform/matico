@@ -4,14 +4,12 @@ use crate::models::permissions::{Permission, PermissionType};
 use crate::models::users::UserToken;
 
 use crate::errors::ServiceError;
-use crate::models::apps::{
-    CreateAppDTO, App, AppOrderBy, AppSearch, UpdateAppDTO,
-};
+use crate::models::apps::{App, AppOrderBy, AppSearch, CreateAppDTO, UpdateAppDTO};
 use crate::utils::PaginationParams;
 use actix_web::{delete, get, post, put, web, HttpResponse};
+use log::info;
 use serde_json::json;
 use uuid::Uuid;
-use log::info;
 
 #[get("")]
 pub async fn get_all_apps(
@@ -46,7 +44,7 @@ pub async fn create_app(
         .user
         .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
 
-    info!("Have user {:?}",user);
+    info!("Have user {:?}", user);
     info!("new app {:?}", new_app);
 
     new_app.owner_id = Some(user.id);

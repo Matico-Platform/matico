@@ -1,32 +1,31 @@
 use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::map_style::MapStyle;
 use crate::schema::apps;
 use crate::utils::PaginationParams;
 
-use diesel_as_jsonb::AsJsonb;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
+use diesel_as_jsonb::AsJsonb;
+use matico_spec::Dashboard;
 use serde::{Deserialize, Serialize};
 use std::convert::From;
-use uuid::Uuid;
-use matico_spec::Dashboard;
 use ts_rs::TS;
+use uuid::Uuid;
 
-#[derive(AsJsonb,Debug,Serialize,Deserialize)]
+#[derive(AsJsonb, Debug, Serialize, Deserialize)]
 pub struct AppSpec(matico_spec::Dashboard);
 
 #[derive(Serialize, Deserialize, Debug, Queryable, Insertable, TS)]
 #[table_name = "apps"]
 #[ts(export)]
-pub struct App{
+pub struct App {
     #[ts(type = "string")]
     pub id: Uuid,
     pub name: String,
     #[ts(type = "string")]
     pub owner_id: Uuid,
     pub description: String,
-    #[ts(type="AppSpec")]
+    #[ts(type = "AppSpec")]
     pub spec: AppSpec,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
@@ -35,12 +34,12 @@ pub struct App{
 
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
-pub struct CreateAppDTO{
+pub struct CreateAppDTO {
     pub name: String,
     #[ts(type = "string")]
     pub owner_id: Option<Uuid>,
     pub description: String,
-    #[ts(type="AppSpec")]
+    #[ts(type = "AppSpec")]
     pub spec: AppSpec,
     pub public: bool,
 }
@@ -51,12 +50,12 @@ pub struct CreateAppDTO{
 pub struct UpdateAppDTO {
     pub name: Option<String>,
     pub description: Option<String>,
-    #[ts(type="AppSpec")]
+    #[ts(type = "AppSpec")]
     pub spec: Option<AppSpec>,
     pub public: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug,TS)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS)]
 #[ts(export)]
 pub struct AppSearch {
     pub name: Option<String>,
@@ -66,7 +65,7 @@ pub struct AppSearch {
     pub public: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize,TS)]
+#[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct AppOrderBy {
     field: Option<String>,
@@ -74,7 +73,7 @@ pub struct AppOrderBy {
 
 impl From<CreateAppDTO> for App {
     fn from(app: CreateAppDTO) -> Self {
-        App{
+        App {
             id: Uuid::new_v4(),
             name: app.name,
             description: app.description,
@@ -115,15 +114,12 @@ impl App {
 
         let apps = query
             .load::<App>(&conn)
-            .map_err(|e| ServiceError::InternalServerError( format!("Failed to get apps {}",e)))?;
+            .map_err(|e| ServiceError::InternalServerError(format!("Failed to get apps {}", e)))?;
 
         Ok(apps)
     }
 
-    pub fn create(
-        pool: &DbPool,
-        new_app: CreateAppDTO,
-    ) -> Result<App, ServiceError> {
+    pub fn create(pool: &DbPool, new_app: CreateAppDTO) -> Result<App, ServiceError> {
         let conn = pool.get().unwrap();
         let app = App::from(new_app);
         let result = diesel::insert_into(apps::table)
@@ -133,11 +129,7 @@ impl App {
         Ok(result)
     }
 
-    pub fn update(
-        pool: &DbPool,
-        id: Uuid,
-        update: UpdateAppDTO,
-    ) -> Result<App, ServiceError> {
+    pub fn update(pool: &DbPool, id: Uuid, update: UpdateAppDTO) -> Result<App, ServiceError> {
         let conn = pool.get().unwrap();
         let result = diesel::update(apps::table)
             .filter(apps::id.eq(id))

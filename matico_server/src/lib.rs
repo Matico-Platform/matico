@@ -3,17 +3,23 @@ extern crate diesel;
 extern crate argon2;
 
 #[macro_use]
+extern crate diesel_derive_enum;
+
+#[macro_use]
 extern crate diesel_migrations;
 use crate::app_state::State;
+use actix::*;
 use actix_cors::Cors;
 use actix_files as fs;
-use actix_web::{dev::Server,Responder};
+use actix_web::{dev::Server, Responder};
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use log::{info, warn};
+use scheduler::ImportScheduler;
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use std::path::PathBuf;
+use std::time::Duration;
 
 pub mod app_config;
 mod app_state;
@@ -22,6 +28,7 @@ mod db;
 mod errors;
 mod models;
 mod routes;
+mod scheduler;
 mod schema;
 mod tiler;
 mod utils;
@@ -31,8 +38,7 @@ mod utils;
 //     Ok(fs::NamedFile::open(path)?)
 // }
 
-
-pub async fn health()->impl Responder{
+pub async fn health() -> impl Responder {
     format!("Everything is fine")
 }
 
@@ -40,10 +46,9 @@ pub async fn run(
     listener: TcpListener,
     config: app_config::Config,
 ) -> Result<Server, std::io::Error> {
-
     println!("config is {:?}", config);
     let db_connection_url = config.connection_string().unwrap();
-    println!("Connecting to : {}",db_connection_url);
+    println!("Connecting to : {}", db_connection_url);
     let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url);
 
     // Set up the database pool for the system metadata
@@ -64,6 +69,12 @@ pub async fn run(
         .connect(&data_db_connection_url)
         .await
         .expect("FAiled to connect to DB");
+
+    let syncPool = pool.clone();
+    let addr = ImportScheduler::create(|_| ImportScheduler {
+        db: syncPool,
+        interval: Duration::new(10, 0),
+    });
 
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
@@ -95,7 +106,7 @@ pub async fn run(
             )
             .service(fs::Files::new("/", "static").index_file("index.html"))
 
-            // .default_service(web::get().to(home))
+        // .default_service(web::get().to(home))
     })
     .listen(listener)?
     .run();

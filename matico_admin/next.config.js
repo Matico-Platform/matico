@@ -49,6 +49,16 @@ const withTM = require("next-transpile-modules")([
 module.exports = withTM({
   reactStrictMode: true,
   webpack5: true,
+  rewrites: async () => {
+    return process.env.NODE_ENV === "development"
+      ? [
+          {
+            source: "/api/:slug*",
+            destination: "http://localhost:8000/api/:slug*",
+          },
+        ]
+      : [];
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

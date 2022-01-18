@@ -41,6 +41,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
 }) => {
   const { data: datasets, error } = useDatasets();
 
+  const colWidth=200;
   console.log("datasets are ", datasets)
   return (
     <Layout>
@@ -73,13 +74,13 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
             marginY="size-40"
           >
             <TableHeader>
-              <Column>Name</Column>
-              <Column>Access</Column>
-              <Column>Type</Column>
-              <Column>Sync Frequency</Column>
-              <Column>Sync Url</Column>
-              <Column>Created At</Column>
-              <Column>Updated At</Column>
+              <Column minWidth={colWidth}>Name</Column>
+              <Column minWidth={100} >Access</Column>
+              <Column minWidth={100}>Type</Column>
+              <Column minWidth={150}>Sync Frequency</Column>
+              <Column minWidth={colWidth}>Sync Url</Column>
+              <Column minWidth={colWidth}>Created At</Column>
+              <Column minWidth={colWidth}>Updated At</Column>
             </TableHeader>
             <TableBody>
               {datasets.map((dataset: any, rowIndex: number) => (

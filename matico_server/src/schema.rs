@@ -1,4 +1,7 @@
 table! {
+    use diesel::sql_types::*;
+    use crate::models::sync_import::*;
+
     apps (id) {
         id -> Uuid,
         name -> Text,
@@ -12,6 +15,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::sync_import::*;
+
     datasets (id) {
         id -> Uuid,
         owner_id -> Uuid,
@@ -32,8 +38,10 @@ table! {
     }
 }
 
-
 table! {
+    use diesel::sql_types::*;
+    use crate::models::sync_import::*;
+
     permissions (id) {
         id -> Uuid,
         user_id -> Uuid,
@@ -46,6 +54,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::sync_import::*;
+
     queries (id) {
         id -> Uuid,
         name -> Text,
@@ -58,6 +69,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::sync_import::*;
+
     spatial_ref_sys (srid) {
         srid -> Int4,
         auth_name -> Nullable<Varchar>,
@@ -67,9 +81,26 @@ table! {
     }
 }
 
+table! {
+    use diesel::sql_types::*;
+    use crate::models::sync_import::*;
 
+    sync_imports (id) {
+        id -> Uuid,
+        scheduled_for -> Timestamp,
+        started_at -> Nullable<Timestamp>,
+        finished_at -> Nullable<Timestamp>,
+        status -> SyncImportStatusMapping,
+        error -> Nullable<Text>,
+        dataset_id -> Uuid,
+        user_id -> Uuid,
+    }
+}
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::sync_import::*;
+
     users (id) {
         id -> Uuid,
         username -> Text,
@@ -80,12 +111,12 @@ table! {
     }
 }
 
-
 allow_tables_to_appear_in_same_query!(
     apps,
     datasets,
     permissions,
     queries,
     spatial_ref_sys,
+    sync_imports,
     users,
 );

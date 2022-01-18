@@ -46,13 +46,12 @@ pub struct Mapping<D, R> {
     range: VarOr<Range<R>>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all="camelCase", untagged)]
-pub enum ColorSpecification{
-    Rgba( [f32;4]),
-    Rgb( [f32;3]),
-    Name(String)
+#[serde(rename_all = "camelCase", untagged)]
+pub enum ColorSpecification {
+    Rgba([f32; 4]),
+    Rgb([f32; 3]),
+    Name(String),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,10 +70,10 @@ enum DomainVal {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all="camelCase")]
-pub enum ScaleType{
+#[serde(rename_all = "camelCase")]
+pub enum ScaleType {
     Pixels,
-    Meters
+    Meters,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe)]
@@ -87,7 +86,7 @@ pub struct LayerStyle {
     line_width: Option<MappingVarOr<f32>>,
     line_units: Option<ScaleType>,
     radius_units: Option<ScaleType>,
-    elevation: Option<MappingVarOr<f32>>
+    elevation: Option<MappingVarOr<f32>>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]

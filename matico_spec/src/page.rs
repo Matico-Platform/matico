@@ -68,5 +68,4 @@ impl Page {
         let sections_real = sections.into_serde().unwrap();
         self.sections = sections_real;
     }
-
 }

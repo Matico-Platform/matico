@@ -2,19 +2,20 @@ import type { NextPage } from "next";
 import { Layout } from "../../components/Layout";
 import {
   Divider,
+  Flex,
   Grid,
+  Heading,
   Item,
   TabList,
   TabPanels,
   Tabs,
   TextArea,
   View,
+  Text,
+  Link,
 } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useDataset } from "../../hooks/useDataset";
-import { Link as ALink } from "@adobe/react-spectrum";
-import { MaticoMapPane } from "@maticoapp/matico_components";
-import Link from "next/link";
 
 import {
   Cell,
@@ -28,6 +29,7 @@ import { useDatasetColumns } from "../../hooks/useDatasetColumns";
 import { useDatasetData } from "../../hooks/useDatasetData";
 import { MapView } from "../../components/MapView";
 import TableEdit from "@spectrum-icons/workflow/TableEdit";
+import { SyncHistory } from "../../components/SyncHistory";
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
@@ -41,10 +43,36 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
 
   return (
     <Layout>
-      <View backgroundColor="gray-200" padding="size-200" gridArea="sidebar">
-        <h3>{dataset ? dataset.name : "Loading..."}</h3>
+      <View
+        backgroundColor="gray-200"
+        padding="size-200"
+        gridArea="sidebar"
+        height="100%"
+      >
+        <Heading level={2}>{dataset ? dataset.name : "Loading..."}</Heading>
+        {dataset && dataset.sync_dataset && (
+          <Flex height="100%" direction="column">
+            <View>
+              <Heading level={4}>Description</Heading>
+              <Divider size="S" />
+              <Text>{dataset.description}</Text>
+            </View>
+            <View flex={1} />
+            <View>
+              <Heading level={4}>Sync Status</Heading>
+              <Divider size="S" />
+              <SyncHistory datasetId={datasetId} />
+              <Text>
+                Sycing form{" "}
+                <Link>
+                  <a href={dataset.sync_url}>{dataset.sync_url}</a>
+                </Link>
+              </Text>
+            </View>
+          </Flex>
+        )}
       </View>
-      <View gridArea="content" padding="size-800">
+      <View gridArea="content" padding="size-800" width="100%" height="100vh">
         {dataset && (
           <>
             <Grid
@@ -63,15 +91,17 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                   gridArea="table"
                 >
                   <TableHeader>
-                    {columns.map((column: any, index:number) => (
-                      <Column key={index}>{column.name}</Column>
+                    {columns.map((column: any, index: number) => (
+                      <Column width={200} key={index}>
+                        {column.name}
+                      </Column>
                     ))}
                   </TableHeader>
                   <TableBody>
                     {data.data.map((datum: any) => (
-                      <Row >
+                      <Row>
                         {columns.map((col: any) => (
-                          <Cell >
+                          <Cell>
                             {col.col_type === "geometry"
                               ? "geometry"
                               : datum[col.name]}
