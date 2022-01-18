@@ -4,7 +4,7 @@ use crate::db::Bounds;
 use crate::errors::ServiceError;
 
 use crate::models::{
-    apis::{AnnonQuery, CreateAPIDTO, UpdateAPIDTO, API},
+    apis::{AnnonQuery, CreateAPIDTO, UpdateAPIDTO, Api},
     permissions::*,
     users::*,
 };
@@ -19,7 +19,7 @@ async fn get_api(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
-    let query = API::find(&state.db, id)?;
+    let query = Api::find(&state.db, id)?;
     Ok(HttpResponse::Ok().json(query))
 }
 
@@ -28,7 +28,7 @@ async fn get_apis(
     state: web::Data<State>,
     web::Query(page): web::Query<PaginationParams>,
 ) -> Result<HttpResponse, ServiceError> {
-    let queries = API::search(&state.db, page)?;
+    let queries = Api::search(&state.db, page)?;
     Ok(HttpResponse::Ok().json(queries))
 }
 
@@ -37,7 +37,7 @@ async fn delete_api(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
-    API::delete(&state.db, id)?;
+    Api::delete(&state.db, id)?;
     Ok(HttpResponse::Ok().json(format!("Deleted api {}", id)))
 }
 
@@ -47,7 +47,7 @@ async fn update_api(
     web::Path(id): web::Path<Uuid>,
     web::Json(update_params): web::Json<UpdateAPIDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    let result = API::update(&state.db, id, update_params)?;
+    let result = Api::update(&state.db, id, update_params)?;
     Ok(HttpResponse::Ok().json(result))
 }
 
@@ -59,18 +59,18 @@ async fn create_api(
 ) -> Result<HttpResponse, ServiceError> {
     let user: UserToken = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    let query = API::create(&state.db, create_query)?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
+    let query = Api::create(&state.db, create_query)?;
 
     Permission::grant_permissions(
         &state.db,
         user.id,
         query.id,
-        ResourceType::DATASET,
+        ResourceType::Dataset,
         vec![
-            PermissionType::READ,
-            PermissionType::WRITE,
-            PermissionType::ADMIN,
+            PermissionType::Read,
+            PermissionType::Write,
+            PermissionType::Admin,
         ],
     )?;
     Ok(HttpResponse::Ok().json(query))
@@ -84,7 +84,7 @@ async fn run_annon_query(
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
-    let result = API::run_raw(&state.data_db, query.q, Some(page), format_param.format).await?;
+    let result = Api::run_raw(&state.data_db, query.q, Some(page), format_param.format).await?;
     // let result = "{\"test\":\"test\"}";
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -100,7 +100,7 @@ async fn run_api(
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
-    let query = API::find(&state.db, query_id)?;
+    let query = Api::find(&state.db, query_id)?;
     let result = query
         .run(&state.data_db, params, Some(page), format_param.format)
         .await?;

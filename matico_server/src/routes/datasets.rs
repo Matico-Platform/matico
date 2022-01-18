@@ -50,7 +50,7 @@ async fn get_dataset(
                 &state.db,
                 &user.id,
                 &dataset.id,
-                &vec![PermissionType::READ],
+                &[PermissionType::Read],
             )?;
         }
     }
@@ -103,7 +103,7 @@ async fn create_dataset(
 ) -> Result<HttpResponse, ServiceError> {
     let user: UserToken = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
 
     let mut file: Option<String> = None;
     let mut metadata: Option<CreateDatasetDTO> = None;
@@ -163,11 +163,11 @@ async fn create_dataset(
         &state.db,
         user.id,
         dataset.id,
-        ResourceType::DATASET,
+        ResourceType::Dataset,
         vec![
-            PermissionType::READ,
-            PermissionType::WRITE,
-            PermissionType::ADMIN,
+            PermissionType::Read,
+            PermissionType::Write,
+            PermissionType::Admin,
         ],
     )?;
 
@@ -183,7 +183,7 @@ async fn create_sync_dataset(
     
     let user: UserToken = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
 
     let table_name = slugify!(&sync_details.name.clone(), separator = "_");
 
@@ -212,11 +212,11 @@ async fn create_sync_dataset(
         &state.db,
         user.id,
         dataset.id,
-        ResourceType::DATASET,
+        ResourceType::Dataset,
         vec![
-            PermissionType::READ,
-            PermissionType::WRITE,
-            PermissionType::ADMIN,
+            PermissionType::Read,
+            PermissionType::Write,
+            PermissionType::Admin,
         ],
     )?;
 
@@ -233,8 +233,8 @@ async fn update_dataset(
 ) -> Result<HttpResponse, ServiceError> {
     let user = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    Permission::check_permission(&state.db, &user.id, &id, PermissionType::WRITE)?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
+    Permission::check_permission(&state.db, &user.id, &id, PermissionType::Write)?;
 
     let result = Dataset::update(&state.db, id, updates)?;
     Ok(HttpResponse::Ok().json(result))
@@ -248,8 +248,8 @@ async fn sync_history(
 )-> Result<HttpResponse, ServiceError>{
     let user = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    Permission::check_permission(&state.db, &user.id, &id, PermissionType::ADMIN)?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
+    Permission::check_permission(&state.db, &user.id, &id, PermissionType::Admin)?;
 
     let result = SyncImport::for_dataset(&state.db, &id)?;
     Ok(HttpResponse::Ok().json(result))
@@ -263,8 +263,8 @@ async fn delete_dataset(
 ) -> Result<HttpResponse, ServiceError> {
     let user = logged_in_user
         .user
-        .ok_or(ServiceError::Unauthorized("No user logged in".into()))?;
-    Permission::check_permission(&state.db, &user.id, &id, PermissionType::ADMIN)?;
+        .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
+    Permission::check_permission(&state.db, &user.id, &id, PermissionType::Admin)?;
 
     Dataset::delete(&state.db, id)?;
     Ok(HttpResponse::Ok().json(format!("Deleted dataset {}", id)))

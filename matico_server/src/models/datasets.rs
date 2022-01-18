@@ -83,8 +83,8 @@ impl Dataset {
             let datasets_the_user_has_permisions_for = Permission::get_permissions_for_user(
                 pool,
                 &user_id,
-                Some(ResourceType::DATASET),
-                Some(PermissionType::READ),
+                Some(ResourceType::Dataset),
+                Some(PermissionType::Read),
             )?;
 
             let datasets_the_user_has_permisions_for: Vec<Uuid> =

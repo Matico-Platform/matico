@@ -111,7 +111,7 @@ pub enum APIParam {
 
 #[derive(Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
 #[table_name = "queries"]
-pub struct API {
+pub struct Api  {
     pub id: Uuid,
     pub name: String,
     pub description: String,
@@ -121,14 +121,14 @@ pub struct API {
     pub updated_at: NaiveDateTime,
 }
 
-impl From<CreateAPIDTO> for API {
+impl From<CreateAPIDTO> for Api {
     fn from(user: CreateAPIDTO) -> Self {
         let parameters = user.parameters;
         Self::new(user.name, user.description, user.sql, parameters)
     }
 }
 
-impl API {
+impl Api {
     pub fn new(name: String, description: String, sql: String, parameters: Vec<APIParam>) -> Self {
         Self {
             id: Uuid::new_v4(),
