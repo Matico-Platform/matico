@@ -42,7 +42,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const { data, error: dataError } = useDatasetData(datasetId, 0, 30);
 
   return (
-    <Layout hasSidebar{true}>
+    <Layout hasSidebar={true}>
       <View
         backgroundColor="gray-200"
         padding="size-200"
