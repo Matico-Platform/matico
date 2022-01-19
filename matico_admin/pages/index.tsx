@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { Layout } from "../components/Layout";
-import Image from "next/image";
+
 import {
   Flex,
   Heading,
@@ -28,7 +28,7 @@ const Home: NextPage = () => {
       >
         <Heading level={1}>Welcome to Matico</Heading>
         <View width="50vw">
-          <Image alt="splash" src={"/main_bg.png"}  width={2465} height={1325}/>
+          <img alt="splash" src={"/main_bg.png"}  width={"100%"}/>
         </View>
         <Text>
           Matico is a tool to help you easily curate, share and analyse datasets

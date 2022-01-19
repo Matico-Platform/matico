@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+const withPlugins = require("next-compose-plugins");
+const optomizedImages = require('next-optimized-images');
+
+
 const withTM = require("next-transpile-modules")([
   "@adobe/react-spectrum",
   "@react-spectrum/actiongroup",
@@ -46,7 +50,7 @@ const withTM = require("next-transpile-modules")([
   "react-mde",
 ]);
 
-module.exports = withTM({
+module.exports = withPlugins([withTM, optomizedImages],{
   reactStrictMode: true,
   webpack5: true,
   rewrites: async () => {
