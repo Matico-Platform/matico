@@ -34,7 +34,22 @@ RUN wasm-pack build  --release --scope maticoapp
 
 FROM node:16.6.1-alpine3.13 as javascript_deps
 ENV NODE_ENV production
-RUN apk add --no-cache libc6-compat
+RUN apk --no-cache add shadow \                                                                   
+    gcc \                                                                                         
+    musl-dev \                                                                                    
+    autoconf \                                                                                    
+    automake \                                                                                    
+    make \                                                                                        
+    libtool \                                                                                     
+    nasm \                                                                                        
+    tiff \                                                                                        
+    jpeg \                                                                                        
+    zlib \                                                                                        
+    zlib-dev \                                                                                    
+    file \                                                                                        
+    pkgconf \                                                                                     
+    libc6-compat
+
 
 WORKDIR /app
 COPY .yarn ./.yarn
