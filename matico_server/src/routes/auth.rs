@@ -2,6 +2,7 @@ use crate::app_state::State;
 use crate::errors::ServiceError;
 use crate::models::users::{LoginDTO, LoginResponseDTO, SignupDTO, SignupResponseDTO, User};
 use actix_web::{post, web, HttpResponse};
+use validator::Validate;
 
 #[post("/login")]
 async fn login(
@@ -19,6 +20,8 @@ async fn register(
     state: web::Data<State>,
     user: web::Json<SignupDTO>,
 ) -> Result<HttpResponse, ServiceError> {
+
+    user.validate().map_err(|e| ServiceError::BadRequest(format!("{}",e)))?;
     let user = User::create(&state.db, user.into_inner())?;
     let token = user.generate_token();
 

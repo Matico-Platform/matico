@@ -26,9 +26,6 @@ pub struct Config {
     pub db: DbConfig,
     pub datadb: DataDbConfig,
     pub server_addr: String,
-    pub testdb: Option<DbConfig>,
-    pub testdatadb: Option<DataDbConfig>,
-    pub test_env: Option<bool>,
 }
 
 impl Config {
@@ -39,14 +36,13 @@ impl Config {
     }
 
     pub fn connection_string(&self) -> Result<String, ServiceError> {
-        let config = if Some(true) == self.test_env {
-            println!("USING TEST CONFIG");
-            self.testdb.clone().ok_or_else(|| ServiceError::InternalServerError(
-                "Failed to find test db settings".into(),
-            ))
-        } else {
-            Ok(self.db.clone())
-        }?;
+        let config = self.db.clone();
+        let base_connection_string = self.connection_string_without_db()?;
+        Ok(format!("{}/{}",base_connection_string,config.name))
+    }
+
+    pub fn connection_string_without_db(&self)->Result<String, ServiceError>{
+        let config = self.db.clone();
 
         let username_password = match (&config.username, &config.password) {
             (Some(username), Some(password)) => Ok(format!("{}:{}@", username, password)),
@@ -63,24 +59,21 @@ impl Config {
         };
 
         Ok(format!(
-            "postgresql://{user_pass}{host}{port}/{name}",
+            "postgresql://{user_pass}{host}{port}",
             user_pass = username_password,
             host = config.host,
             port = port,
-            name = config.name
         ))
     }
 
     pub fn data_connection_string(&self) -> Result<String, ServiceError> {
-        let config = if Some(true) == self.test_env {
-            self.testdatadb
-                .clone()
-                .ok_or_else(|| ServiceError::InternalServerError(
-                    "Failed to find test db settings".into(),
-                ))
-        } else {
-            Ok(self.datadb.clone())
-        }?;
+        let partial_connection_string = self.data_connection_string_without_db()?;
+        let name = self.datadb.name.clone();
+        Ok(format!("{}/{}",partial_connection_string,name))
+    }
+
+    pub fn data_connection_string_without_db(&self)->Result<String,ServiceError>{
+        let config = self.datadb.clone();
 
         let username_password = match (&config.username, &config.password) {
             (Some(username), Some(password)) => Ok(format!("{}:{}@", username, password)),
@@ -97,24 +90,15 @@ impl Config {
         };
 
         Ok(format!(
-            "postgresql://{user_pass}{host}{port}/{name}",
+            "postgresql://{user_pass}{host}{port}",
             user_pass = username_password,
             host = config.host,
             port = port,
-            name = config.name
         ))
     }
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
-        let config = if Some(true) == self.test_env {
-            self.testdatadb
-                .clone()
-                .ok_or_else(|| ServiceError::InternalServerError(
-                    "Failed to find test db settings".into(),
-                ))
-        } else {
-            Ok(self.datadb.clone())
-        }?;
+        let config =self.datadb.clone();
 
         let db = format!("dbname={}", config.name);
 

@@ -104,6 +104,7 @@ async fn create_dataset(
     let user: UserToken = logged_in_user
         .user
         .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
+    info!("Starting to try update");
 
     let mut file: Option<String> = None;
     let mut metadata: Option<CreateDatasetDTO> = None;
@@ -135,7 +136,7 @@ async fn create_dataset(
         .map_err(|_| ServiceError::BadRequest("Failed to extract column info from file".into()))?;
 
     //Figure out how to not need this clone
-    load_dataset_to_db(filepath.clone(), table_name.clone()).await?;
+    load_dataset_to_db(filepath.clone(), table_name.clone(), metadata.import_params.clone()).await?;
 
     //TODO Refactor this
     let dataset = Dataset {
@@ -155,6 +156,7 @@ async fn create_dataset(
         geom_col: metadata.geom_col,
         id_col: metadata.id_col,
         public: false,
+        import_params: metadata.import_params
     };
 
     dataset.create_or_update(&state.db)?;
@@ -204,6 +206,7 @@ async fn create_sync_dataset(
         geom_col: "wkb".into(),
         id_col: "id".into(),
         public: false,
+        import_params: sync_details.import_params.clone()
     };
 
     dataset.create_or_update(&state.db)?;

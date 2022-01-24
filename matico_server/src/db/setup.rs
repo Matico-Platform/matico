@@ -4,5 +4,6 @@ embed_migrations!();
 
 pub fn run_migrations(pool: &DbPool) {
     let conn = pool.get().unwrap();
-    embedded_migrations::run_with_output(&conn, &mut std::io::stdout()).expect("FAILED TO RUN MIGRATIONS!");
+    //Figure out how to send this to log crate using run_with_output
+    embedded_migrations::run(&conn).expect("FAILED TO RUN MIGRATIONS!");
 }

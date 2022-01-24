@@ -8,7 +8,7 @@ use diesel_derive_enum::DbEnum;
 use log::info;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::utils::geo_file_utils::load_dataset_to_db;
+use crate::utils::geo_file_utils::{load_dataset_to_db};
 
 use std::fs::File;
 use std::io::copy;
@@ -252,7 +252,7 @@ impl SyncImport {
         .await?;
         println!("file downloaded {:?} ", filepath);
 
-        load_dataset_to_db(filepath.clone(), dataset.table_name.clone()).await?;
+        load_dataset_to_db(filepath.clone(), dataset.table_name.clone(), dataset.import_params.clone()).await?;
         let next_time =
             self.scheduled_for + chrono::Duration::seconds(dataset.sync_frequency_seconds.unwrap());
 
