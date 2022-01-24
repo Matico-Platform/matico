@@ -28,7 +28,7 @@ pub async fn signup_user(
     email: &str,
     username: &str,
     password: &str,
-    base_url: String,
+    base_url: &str,
 ) -> Result<SignupResponse, ()> {
     let client = reqwest::Client::new();
     let request = SignupRequest {
@@ -36,7 +36,6 @@ pub async fn signup_user(
         password: String::from(password),
         email: String::from(email),
     };
-    println!("Attempting to signup user {:?}", request);
     let response = client
         .post(&format!("{}/api/auth/signup", base_url))
         .header(reqwest::header::CONTENT_TYPE, "application/json")

@@ -11,7 +11,7 @@ use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::models::{columns::Column, Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
-use crate::utils::{Format, PaginationParams, SortParams};
+use crate::utils::{Format, PaginationParams, SortParams, ImportParams};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DatasetSearch {
@@ -30,6 +30,7 @@ pub struct CreateSyncDatasetDTO {
     pub sync_frequency_seconds: i64,
     pub post_import_script: Option<String>,
     pub public: bool,
+    pub import_params: ImportParams
 }
 
 #[derive(Debug, Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
@@ -52,6 +53,7 @@ pub struct Dataset {
     pub geom_col: String,
     pub id_col: String,
     pub table_name: String,
+    pub import_params: ImportParams
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -60,6 +62,7 @@ pub struct CreateDatasetDTO {
     pub description: String,
     pub geom_col: String,
     pub id_col: String,
+    pub import_params: ImportParams
 }
 
 #[derive(Serialize, Deserialize, Debug, AsChangeset)]
