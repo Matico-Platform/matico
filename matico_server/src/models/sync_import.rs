@@ -201,8 +201,8 @@ impl SyncImport {
         Ok((dest, String::from(filename.to_str().unwrap())))
     }
 
-    pub async fn process(&self, pool: &DbPool) -> Result<(), ServiceError> {
-        match self.attempt_process(pool).await {
+    pub async fn process(&self, pool: &DbPool, ogr_string:String) -> Result<(), ServiceError> {
+        match self.attempt_process(pool, ogr_string).await {
             Ok(next_run_time) => {
                 self.schedule_next(pool, next_run_time)?;
                 self.set_done(pool)?;
@@ -241,6 +241,7 @@ impl SyncImport {
     pub async fn attempt_process(
         &self,
         pool: &DbPool,
+        ogr_string: String
     ) -> Result<chrono::NaiveDateTime, ServiceError> {
         self.start_processing(pool)?;
         let dataset = Dataset::find(pool, self.dataset_id)?;
@@ -252,7 +253,7 @@ impl SyncImport {
         .await?;
         println!("file downloaded {:?} ", filepath);
 
-        load_dataset_to_db(filepath.clone(), dataset.table_name.clone(), dataset.import_params.clone()).await?;
+        load_dataset_to_db(filepath.clone(), dataset.table_name.clone(), dataset.import_params.clone(), ogr_string).await?;
         let next_time =
             self.scheduled_for + chrono::Duration::seconds(dataset.sync_frequency_seconds.unwrap());
 

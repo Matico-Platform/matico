@@ -25,7 +25,6 @@ pub fn validate_token(token: &str) -> Result<UserToken, ServiceError> {
 // Extracts the token from the request
 fn extract_token_from_req(req: &HttpRequest) -> Option<&str> {
     let auth = req.headers().get("Authorization");
-    println!("auth is {:?}", auth);
     match auth {
         Some(auth_str) => {
             let auth_str = auth_str.to_str().unwrap();
