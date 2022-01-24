@@ -18,17 +18,56 @@ pub enum ImportParams{
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub  struct CSVImportParams{
+    // The column to use as the x coord on datasets that are considered points. 
+    // Defaults to "longitude"
     x_col : Option<String>,
+
+    // The column to use as the y coord on datasets that are considered points 
+    // Defaults to "latitude"
     y_col : Option<String>,
-    epsg  : Option<String>,
+    
+    // The coodinate reference system (e.g. epsg:4326)  
+    // Defaults to "epsg:4326"
+    crs : Option<String>,
+
+    // The column that contains either the wkb or wkt values for geometries  
+    // Defaults to None 
     wkx_col :Option<String>,
 }
 
+impl Default for CSVImportParams{
+    fn default() -> Self{
+        Self{
+            x_col : Some("longitude".into()),
+            y_col : Some("latitude".into()),
+            crs : Some("epsg:4326".into()),
+            wkx_col: None 
+        }
+    }
+}
+
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GeoJsonImportParams{
+    // If the importing GeoJson isn't in epsg:4326, what crs is it in
+    #[serde(default)]
     input_crs: Option<String>,
+
+    // What crs should we transform this dataset to when importing 
+    #[serde(default)]
     target_crs: Option<String>
 } 
+
+impl Default for GeoJsonImportParams{
+    fn default() -> Self{
+        Self{
+            input_crs: Some("epsg:4326".into()),
+            target_crs: Some("epsg:4326".into()),
+        }
+    }
+}
+
+
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ShpFileImportParams{
@@ -45,31 +84,31 @@ pub fn get_file_info(filepath: &str) -> Result<Vec<(String, u32, i32)>, GdalErro
     Ok(fields)
 }
 
-pub async fn load_dataset_to_db(filepath: String, name:String, params: ImportParams) ->Result<(), ServiceError>{
+pub async fn load_dataset_to_db(filepath: String, name:String, params: ImportParams,ogr_string:String) ->Result<(), ServiceError>{
     match params{
-        ImportParams::Csv(params)=> load_csv_dataset_to_db(filepath, name, params).await,
-        ImportParams::GeoJson(params)=> load_geojson_dataset_to_db(filepath, name, params).await,
-        ImportParams::Shp(params)=> load_shp_dataset_to_db(filepath, name, params).await
+        ImportParams::Csv(params)=> load_csv_dataset_to_db(filepath, name, params, ogr_string).await,
+        ImportParams::GeoJson(params)=> load_geojson_dataset_to_db(filepath, name, params,ogr_string).await,
+        ImportParams::Shp(params)=> load_shp_dataset_to_db(filepath, name, params, ogr_string).await
     }
 }
 
-pub async fn load_shp_dataset_to_db(_filepath: String, _name:String, _params:ShpFileImportParams)->Result<(),ServiceError>{
+pub async fn load_shp_dataset_to_db(_filepath: String, _name:String, _params:ShpFileImportParams, ogr_string:String)->Result<(),ServiceError>{
     Err(
         ServiceError::InternalServerError("Importing SHP files not implemented just yet".into())
     )
 }
 
-pub async fn load_geojson_dataset_to_db(filepath: String, name: String, params: GeoJsonImportParams) -> Result<(), ServiceError> {
+pub async fn load_geojson_dataset_to_db(filepath: String, name: String, params: GeoJsonImportParams, ogr_string:String) -> Result<(), ServiceError> {
     info!("Attempting to load file {} to table {}", filepath, name);
-    let config = Config::from_conf().unwrap();
-    let ogr_string = config.org_connection_string()?;
     let output = web::block(move || {
         let mut cmd =Command::new("ogr2ogr");
          cmd.arg(&"-f")
             .arg(&"PostgreSQL")
             .arg(ogr_string)
             .arg(&"-nln")
-            .arg(&name);
+            .arg(&name)
+            .arg("-oo")
+            .arg("autodetect_type=yes");
 
         if let Some(target_crs) = params.target_crs{
             cmd.arg(&"-t_srs")
@@ -89,10 +128,8 @@ pub async fn load_geojson_dataset_to_db(filepath: String, name: String, params: 
     Ok(())
 }
 
-pub async fn load_csv_dataset_to_db(filepath: String, name: String, params: CSVImportParams)-> Result<(), ServiceError>{
+pub async fn load_csv_dataset_to_db(filepath: String, name: String, params: CSVImportParams, ogr_string: String)-> Result<(), ServiceError>{
     info!("Attempting to load file {} to table {}", filepath, name);
-    let config = Config::from_conf().unwrap();
-    let ogr_string = config.org_connection_string()?;
     let output = web::block(move || {
         let mut cmd = Command::new("ogr2ogr");
             cmd.arg(&"-f")
@@ -101,7 +138,7 @@ pub async fn load_csv_dataset_to_db(filepath: String, name: String, params: CSVI
             .arg(&"-nln")
             .arg(&name)
             .arg("-oo")
-            .arg("AUTODETECT_TYPE=YES");
+            .arg("autodetect_type=yes");
 
         if let Some(x_col)= params.x_col{
             cmd.arg("-oo")

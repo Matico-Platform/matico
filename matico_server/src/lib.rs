@@ -62,11 +62,15 @@ pub async fn run(
         .await
         .expect("FAiled to connect to DB");
 
+    let ogr_string = config.org_connection_string().expect("Failed to construct ogr string");
+
     let sync_pool = pool.clone();
     let _addr = ImportScheduler::create(|_| ImportScheduler {
         db: sync_pool,
         interval: Duration::new(10, 0),
+        ogr_string : ogr_string.clone()
     });
+
 
     let server = HttpServer::new(move || {
         let cors = Cors::default()
@@ -79,6 +83,7 @@ pub async fn run(
             .data(State {
                 db: pool.clone(),
                 data_db: data_pool.clone(),
+                ogr_string: ogr_string.clone()
             })
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))

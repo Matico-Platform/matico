@@ -1,20 +1,25 @@
+use diesel::r2d2::ConnectionManager;
 use matico_server::app_config::Config;
 use sqlx::postgres::{PgPoolOptions};
 use diesel::pg::{PgConnection};
 use std::net::TcpListener;
-use std::path::PathBuf;
 use uuid::Uuid;
 use diesel::RunQueryDsl;
 use diesel::prelude::*;
 use dotenv;
 
+pub type DbPool = r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::pg::PgConnection>>;
+pub type DataDbPool = sqlx::PgPool;
+
+pub mod imports;
 pub mod users;
 pub use users::*;
+pub use imports::*;
 
 pub struct TestApp {
     pub address: String,
-    pub db: sqlx::PgPool,
-    pub data_db: sqlx::PgPool,
+    pub db: DbPool,
+    pub data_db: DataDbPool,
     pub db_connection_url: String,
     pub data_db_connection_url: String,
     pub db_name:String,
@@ -47,6 +52,19 @@ pub async fn setup_dbs(config: &Config)->(String, String, String, String){
         .execute(&data_conn)
         .expect("Failed to create temporary data database");
 
+    let data_conn_database = PgConnection::establish(&format!("{}/{}",base_data_connection_string, random_data_database_name)).expect("Failed to connect to new data database");
+
+
+    let postgis_installl_commands = [
+        "CREATE EXTENSION postgis;",
+        "CREATE EXTENSION postgis_raster;",
+        "CREATE EXTENSION postgis_topology;"
+    ];
+
+    for command in postgis_installl_commands{
+        diesel::sql_query(command).execute(&data_conn_database)
+          .expect("Failed to install postgis");
+    }
     (base_metadata_connection_string, random_metadata_database_name, base_data_connection_string, random_data_database_name)
 
 }
@@ -83,6 +101,31 @@ impl Drop for TestApp{
     }
 }
 
+impl TestApp{
+    /// A Convenience method for getting the full url of a API path in the test server
+    pub fn url(&self, path: &str)->String{
+        format!("{}/api{}",self.address,path)
+    }
+}
+
+/// Spawn a TestApp to test against. Assigns a random port to the API and sets up 
+/// a metadata database and a data database with random names
+///
+/// # Examples 
+///
+/// ```
+/// let test_server = spawn_app().await;
+///
+/// // Get the url of an api endpoint on the test server 
+/// let api_url = test_server.url("/datasets");
+///
+/// // Get a connection to the metadata database; 
+/// let metadata_conn = test_server.db.get().unwrap()
+///
+/// // Get a connection to the data database;
+///
+/// let data_conn = test_server.data_db.get().unwrap()
+/// ```
 pub async fn spawn_app() -> TestApp {
     dotenv::dotenv().ok();
     std::env::set_var("TEST_ENV", "true");
@@ -91,15 +134,16 @@ pub async fn spawn_app() -> TestApp {
     
     let (db_connection_url, db_name, data_db_connection_url, data_db_name) =setup_dbs(&config).await;
 
-    //Connect to the metadata db
+    // Connect to the metadata db
+    let manager = ConnectionManager::<diesel::pg::PgConnection>::new(db_connection_url.clone());
 
+    // Set up the database pool for the system metadata
+    let db_pool = r2d2::Pool::builder()
+        .max_size(10)
+        .build(manager)
+        .expect("Failed to connect to DB");
 
-    let db_pool = PgPoolOptions::new()
-        .connect(&format!("{}/{}",db_connection_url, db_name))
-        .await
-        .expect("FAiled to connect to DB");
-
-    //Connect to the dataset db
+    // Connect to the dataset db
     let data_pool = PgPoolOptions::new()
         .connect(&format!("{}/{}",data_db_connection_url, data_db_name))
         .await
@@ -126,29 +170,4 @@ pub async fn spawn_app() -> TestApp {
         data_db_connection_url: data_db_connection_url,
         data_db_name: data_db_name
     }
-}
-
-pub async fn upload_file(file_path: &str, url: &str, metadata: String, token: Option<&str>) -> Result<reqwest::Response, reqwest::Error>{
-
-    let client = reqwest::Client::new();
-    let mut test_file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    test_file_path.push(file_path);
-
-    let reader : Vec<u8> = std::fs::read(test_file_path).expect("Failed to load the file to upload");
-
-    let part = reqwest::multipart::Part::stream(reader).file_name("file.geojson");
-
-    let form = reqwest::multipart::Form::new()
-                   .text("metadata",metadata)
-                   .part("file", part);
-
-
-    let mut request = client 
-        .post(url)
-        .multipart(form);
-
-    if let Some(token) = token{
-        request = request.bearer_auth(token)
-    }
-    request.send().await
 }

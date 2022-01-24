@@ -132,11 +132,8 @@ async fn create_dataset(
     let metadata = metadata.unwrap();
     let table_name = slugify!(&metadata.name.clone(), separator = "_");
 
-    let file_info = get_file_info(&filepath)
-        .map_err(|_| ServiceError::BadRequest("Failed to extract column info from file".into()))?;
-
     //Figure out how to not need this clone
-    load_dataset_to_db(filepath.clone(), table_name.clone(), metadata.import_params.clone()).await?;
+    load_dataset_to_db(filepath.clone(), table_name.clone(), metadata.import_params.clone(), state.ogr_string.clone()).await?;
 
     //TODO Refactor this
     let dataset = Dataset {
@@ -173,7 +170,7 @@ async fn create_dataset(
         ],
     )?;
 
-    Ok(HttpResponse::Ok().json(file_info))
+    Ok(HttpResponse::Ok().json(dataset))
 }
 
 // This maps to "/" when content type is application/json

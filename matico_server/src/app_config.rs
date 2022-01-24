@@ -121,13 +121,15 @@ impl Config {
             format!("")
         };
 
-        Ok(format!(
+        let connection_string = format!(
             "PG:{db} {user} {host} {port} {password}",
             db = db,
             user = user,
             host = host,
             port = port,
             password = password
-        ))
+        );
+
+        Ok(connection_string)
     }
 }
