@@ -172,7 +172,7 @@ export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({
         {upload ? (
           <Uploader
             file={file}
-            metadata={{ name, latCol, description, lngCol }}
+            metadata={{ name,  description, importParams: {Csv: {x_col: latCol, y_col:lngCol}}}}
           />
         ) : (
           <Button variant="cta" onPress={() => setUpload(true)}>
