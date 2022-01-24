@@ -1,0 +1,44 @@
+{
+  "name": "matico_charts",
+  "version": "0.0.1",
+  "description": "A concise, flexible charting wrapper made for React and Matico.",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "author": "Dylan Halpern",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "@storybook/cli": "^6.4.14",
+    "@storybook/react": "^6.4.14",
+    "@types/react": "^17.0.38",
+    "@types/styled-components": "^5.1.21",
+    "react": "^17.0.2",
+    "rollup": "^2.66.0",
+    "rollup-plugin-dts": "^4.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2",
+    "storybook": "^6.4.14",
+    "styled-components": "^5.3.3",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@visx/axis": "^2.6.0",
+    "@visx/brush": "^2.6.0",
+    "@visx/event": "^2.6.0",
+    "@visx/grid": "^2.6.0",
+    "@visx/group": "^2.1.0",
+    "@visx/heatmap": "^2.1.2",
+    "@visx/pattern": "^2.1.2",
+    "@visx/responsive": "^2.4.1",
+    "@visx/shape": "^2.4.0",
+    "simple-statistics": "^7.7.3"
+  }
+}
