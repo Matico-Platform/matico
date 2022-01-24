@@ -88,7 +88,7 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
           Public
         </Switch>
         {upload ? (
-          <Uploader file={file} metadata={{ name, description }} />
+          <Uploader file={file} metadata={{ name, description, import_params:{GeoJson:{}} }} />
         ) : (
           <Button variant="cta" onPress={() => setUpload(true)}>
             Upload
