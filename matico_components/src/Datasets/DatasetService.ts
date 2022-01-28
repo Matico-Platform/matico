@@ -4,6 +4,7 @@ import {
   GeomType,
   DatasetSummary,
   DatasetState,
+  Filter,
 } from "Datasets/Dataset";
 import { CSVBuilder } from "./CSVBuilder";
 import { GeoJSONBuilder } from "./GeoJSONBuilder";
@@ -13,6 +14,7 @@ type Loader = (params: any) => Dataset;
 export interface DatasetServiceInterface {
   datasets: { [datasetName: string]: Dataset };
   datasetLoaders: { [loaderName: string]: Loader };
+  getData(datasetName:string, filters?:Array<Filter>, includeGeo?:boolean);
   registerDataset: (
     datasetName: string,
     datasetDetails: any
@@ -23,6 +25,18 @@ export const DatasetService: DatasetServiceInterface = {
   datasets: {},
   datasetLoaders: {},
 
+  async getData(datasetName: string, filters?: Array<Filter>, includeGeo?: boolean ){
+      return []
+     // try{
+     // let d = this.datasets[datasetName]
+     // let data = includeGeo ? d.getDataWithGeo(filters) : d.getData(filters)  
+     // return data
+     // }
+     // catch{
+     //    return null
+     // }
+  },
+
   async registerDataset(datasetDetails: any): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
       case "GeoJSON":
@@ -30,18 +44,18 @@ export const DatasetService: DatasetServiceInterface = {
         return {
           name: geoDataset.name,
           state: DatasetState.READY,
-          columns: geoDataset.columns(),
+          columns: await geoDataset.columns(),
+          geomType: await geoDataset.geometryType(),
           local: true,
-          geomType: geoDataset.geometryType(),
         };
       case "CSV":
         const csvDataset = await CSVBuilder(datasetDetails);
         return {
           name: csvDataset.name,
           state: DatasetState.READY,
-          columns: csvDataset.columns(),
+          columns: await geoDataset.columns(),
+          geomType: await geoDataset.geometryType(),
           local: true,
-          geomType: csvDataset.geometryType(),
         };
     }
   },

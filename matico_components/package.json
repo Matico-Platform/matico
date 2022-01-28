@@ -33,6 +33,7 @@
     "@types/d3-scale": "^4.0.2",
     "@uiw/react-md-editor": "^3.7",
     "ace-builds": "^1.4.13",
+    "axios": "^0.25.0",
     "buffer": "^6.0.3",
     "build": "^0.1.4",
     "chroma-js": "^2.1.2",
