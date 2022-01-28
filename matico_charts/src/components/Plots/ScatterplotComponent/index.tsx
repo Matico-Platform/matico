@@ -13,6 +13,8 @@ export const ScatterplotComponent = ({
   color = "gray",
   scale = () => 1,
   shape = () => "circle",
+  xOffset = 0,
+  yOffset = 0,
 }: ScatterSpec) => {
   if (!data || !xAccessor || !yAccessor) return null;
   const fill = isFunc(color)
@@ -22,8 +24,7 @@ export const ScatterplotComponent = ({
     : () => sanitizeColor(color) || [];
   //@ts-ignore
   const r = isFunc(scale) ? (d) => scale(d) : () => scale || 1;
-
-  return data.map((point, i) => (
+  return <g style={{transform:`translate(${xOffset}px, ${yOffset}px)`}}>{data.map((point, i) => (
     <Circle
       key={`point-${point[0]}-${i}`}
       className="dot"
@@ -35,5 +36,5 @@ export const ScatterplotComponent = ({
       // @ts-ignore
       fill={fill(point)}
     />
-  ));
+  ))}</g>
 };

@@ -35,7 +35,7 @@ export const BarComponent = (props: BarSpec) => {
     : isFunc(color)
     ? //@ts-ignore
       (d) => color(d) //@ts-ignore
-    : (d) => sanitizeColor(color);
+    : () => sanitizeColor(color);
     
   return data.map((entry, i) => (
     <Bar
@@ -43,10 +43,10 @@ export const BarComponent = (props: BarSpec) => {
       //@ts-ignore
       x={xScale(xAccessor(entry)) - xTranslationPx}
       //@ts-ignore
-      y={yMax - yScale(yAccessor(entry))}
+      y={yScale(yAccessor(entry))}
       width={barWidth}
       //@ts-ignore
-      height={yScale(yAccessor(entry))}
+      height={yMax - yScale(yAccessor(entry))}
       fill={colorScale(entry)}
     />
   ));

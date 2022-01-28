@@ -77,6 +77,8 @@ export interface BaseLayerSpec {
   yExtent?: ContinuousDomain;
   onClick?: InteractiveFunction;
   onHover?: InteractiveFunction;
+  xOffset?: number;
+  yOffset?: number;
 }
 
 export interface ScatterSpec extends BaseLayerSpec {
