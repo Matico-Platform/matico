@@ -33,6 +33,16 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
 
   console.log("Rendering geojson preview");
 
+  const metadata = {
+    name,
+    description,
+    geom_col:"wkb_geometry",
+    id_col:"ogc_fid",
+    import_params:{
+      GeoJson:{}
+    }
+  }
+
   useEffect(() => {
     getJsonPreview(file).then((batch) => {
       const data = batch.data

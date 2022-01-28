@@ -56,10 +56,10 @@ module.exports = withPlugins([withTM, optomizedImages],{
   rewrites: async () => {
     return process.env.NODE_ENV === "development"
       ? [
-          {
-            source: "/api/:slug*",
-            destination: "http://localhost:8000/api/:slug*",
-          },
+{
+        source: '/api/:slug*',
+        destination: 'http://localhost:8000/api/:slug*'
+      },
         ]
       : [];
   },

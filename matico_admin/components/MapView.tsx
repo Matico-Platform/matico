@@ -11,10 +11,9 @@ const INITIAL_VIEW_STATE = {
 };
 
 export interface MapViewInterface {
-  datasetId: string;
+  url: string;
 }
-export const MapView: React.FC<MapViewInterface> = ({ datasetId }) => {
-  const url = `/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`;
+export const MapView: React.FC<MapViewInterface> = ({ url }) => {
   const layer = new MVTLayer({
     data: url,
     // @ts-ignore

@@ -25,9 +25,11 @@ import {
 } from "@adobe/react-spectrum";
 import { useState } from "react";
 import { NewAppDialog } from "../components/NewAppDialog";
+import {useRouter} from "next/router";
 
 const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
   const { apps, error, createApp } = useApps();
+  const router = useRouter()
 
   const submit = (details:any) => {
     console.log("Submitting ", details);
@@ -80,8 +82,7 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
             <TableHeader>
               <Column>Name</Column>
               <Column>Access</Column>
-              <Column align="center">View App</Column>
-              <Column align="center">Edit App</Column>
+              <Column align="center">Actions</Column>
             </TableHeader>
             <TableBody>
               {apps.map((app: any, index:number) => (
@@ -93,18 +94,8 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
                   </Cell>
                   <Cell>{app.public ? "Public" : "Private"}</Cell>
                   <Cell>
-                    <ALink>
-                      <Link href={`/apps/${app.id}`}>
-                        <Preview size="S" />
-                      </Link>
-                    </ALink>
-                  </Cell>
-                  <Cell>
-                    <ALink>
-                      <Link href={`/apps/edit/${app.id}`}>
-                        <Edit size="S" />
-                      </Link>
-                    </ALink>
+                    <ActionButton isQuiet={true} onPress={()=>router.push(`/apps/${app.id}`)}><Preview size="S" /></ActionButton>
+                    <ActionButton isQuiet={true} onPress={()=>router.push(`/apps/edit/${app.id}`)}><Edit size="S" /></ActionButton>
                   </Cell>
                 </Row>
               ))}

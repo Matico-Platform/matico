@@ -13,9 +13,13 @@ import {
   View,
   Text,
   Link,
+  IllustratedMessage,
+  Content,
 } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
-import { useDataset } from "../../hooks/useDataset";
+import { useDataset } from "../../hooks/useDatasets";
+import NotFound from '@spectrum-icons/illustrations/NotFound';
+
 
 import {
   Cell,
@@ -30,6 +34,8 @@ import { useDatasetData } from "../../hooks/useDatasetData";
 import { MapView } from "../../components/MapView";
 import TableEdit from "@spectrum-icons/workflow/TableEdit";
 import { SyncHistory } from "../../components/SyncHistory";
+import dynamic from "next/dynamic";
+import {QueryEditorProps} from "../../components/QueryEditor";
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
@@ -39,8 +45,16 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const { data: dataset, error: datasetError } = useDataset(datasetId);
   const { data: columns, error: columnsError } = useDatasetColumns(datasetId);
 
+  const mapUrl = `http://localhost:8000/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`
   const { data, error: dataError } = useDatasetData(datasetId, 0, 30);
 
+  const QueryEditor=  dynamic<QueryEditorProps>(
+    () =>
+      (import("../../components/QueryEditor") as any).then(
+        (imp: any) => imp.QueryEditor
+      ),
+    { ssr: false }
+  );
   return (
     <Layout hasSidebar={true}>
       <View
@@ -86,9 +100,10 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
               {columns && data && (
                 <TableView
                   aria-label="Example table with static contents"
-                  selectionMode="multiple"
                   marginY="size-40"
                   gridArea="table"
+                  selectionMode={"single"}
+                  onSelectionChange={(selection)=> console.log("selection is ", selection)}
                 >
                   <TableHeader>
                     {columns.map((column: any, index: number) => (
@@ -98,8 +113,8 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                     ))}
                   </TableHeader>
                   <TableBody>
-                    {data.data.map((datum: any) => (
-                      <Row>
+                    {data.data.map((datum: any, index:number) => (
+                      <Row key={index}>
                         {columns.map((col: any) => (
                           <Cell>
                             {col.col_type === "geometry"
@@ -125,9 +140,15 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                   </TabList>
                   <TabPanels>
                     <Item key="query">
-                      <TextArea width="100%" height="100%" />
+                      <QueryEditor query={"select * from table"} onRunQuery={()=>console.log("running query")} onQueryChange={()=>console.log("Query changed")} />
                     </Item>
-                    <Item key="feature">Feature</Item>
+                    <Item key="feature">
+                      <IllustratedMessage>
+                        <NotFound />
+                        <Heading>No feature selected</Heading>
+                        <Content>Select a table row or click on map feature to view or edit</Content>
+                        </IllustratedMessage>
+                    </Item>
                   </TabPanels>
                 </Tabs>
               </View>

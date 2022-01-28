@@ -9,7 +9,7 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
-use validator::{Validate}; 
+use validator::Validate;
 
 static ONE_WEEK: i64 = 60 * 60 * 24 * 7;
 
@@ -31,9 +31,9 @@ pub struct User {
 #[table_name = "users"]
 #[ts(export)]
 pub struct SignupDTO {
-    #[validate(length(min=2))]
+    #[validate(length(min = 2))]
     pub username: String,
-    #[validate(length(min=5))]
+    #[validate(length(min = 5))]
     pub password: String,
     #[validate(email)]
     pub email: String,

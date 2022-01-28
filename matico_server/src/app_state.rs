@@ -4,5 +4,5 @@ use crate::db::*;
 pub struct State {
     pub db: DbPool,
     pub data_db: DataDbPool,
-    pub ogr_string: String
+    pub ogr_string: String,
 }

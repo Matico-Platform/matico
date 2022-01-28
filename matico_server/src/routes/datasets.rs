@@ -6,7 +6,7 @@ use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
 
 use crate::models::{
     datasets::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, UpdateDatasetDTO},
-    DatasetSearch, UserToken, SyncImport
+    DatasetSearch, SyncImport, UserToken,
 };
 use actix_multipart::{Field, Multipart};
 use actix_web::{delete, get, guard, put, web, Error, HttpResponse};
@@ -23,13 +23,11 @@ async fn get_datasets(
     web::Query(search_criteria): web::Query<DatasetSearch>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-
     let mut search = search_criteria;
     if let Some(user) = logged_in_user.user {
         search.user_id = Some(user.id);
-    }
-    else{
-        search.user_id = None 
+    } else {
+        search.user_id = None
     }
 
     let datasets = Dataset::search(&state.db, search)?;
@@ -133,7 +131,13 @@ async fn create_dataset(
     let table_name = slugify!(&metadata.name.clone(), separator = "_");
 
     //Figure out how to not need this clone
-    load_dataset_to_db(filepath.clone(), table_name.clone(), metadata.import_params.clone(), state.ogr_string.clone()).await?;
+    load_dataset_to_db(
+        filepath.clone(),
+        table_name.clone(),
+        metadata.import_params.clone(),
+        state.ogr_string.clone(),
+    )
+    .await?;
 
     //TODO Refactor this
     let dataset = Dataset {
@@ -153,7 +157,7 @@ async fn create_dataset(
         geom_col: metadata.geom_col,
         id_col: metadata.id_col,
         public: false,
-        import_params: metadata.import_params
+        import_params: metadata.import_params,
     };
 
     dataset.create_or_update(&state.db)?;
@@ -179,7 +183,6 @@ async fn create_sync_dataset(
     logged_in_user: AuthService,
     sync_details: web::Json<CreateSyncDatasetDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    
     let user: UserToken = logged_in_user
         .user
         .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
@@ -189,10 +192,10 @@ async fn create_sync_dataset(
     let dataset = Dataset {
         id: Uuid::new_v4(),
         owner_id: user.id,
-        name:  sync_details.name.clone(),
+        name: sync_details.name.clone(),
         table_name,
         description: sync_details.description.clone(),
-        original_filename:sync_details.sync_url.clone(),
+        original_filename: sync_details.sync_url.clone(),
         original_type: "json".into(),
         sync_dataset: true,
         sync_url: Some(sync_details.sync_url.clone()),
@@ -203,7 +206,7 @@ async fn create_sync_dataset(
         geom_col: "wkb".into(),
         id_col: "id".into(),
         public: false,
-        import_params: sync_details.import_params.clone()
+        import_params: sync_details.import_params.clone(),
     };
 
     dataset.create_or_update(&state.db)?;
@@ -245,7 +248,7 @@ async fn sync_history(
     state: web::Data<State>,
     web::Path(id): web::Path<Uuid>,
     logged_in_user: AuthService,
-)-> Result<HttpResponse, ServiceError>{
+) -> Result<HttpResponse, ServiceError> {
     let user = logged_in_user
         .user
         .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;

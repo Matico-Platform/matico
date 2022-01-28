@@ -11,7 +11,7 @@ use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::models::{columns::Column, Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
-use crate::utils::{Format, PaginationParams, SortParams, ImportParams};
+use crate::utils::{Format, ImportParams, PaginationParams, SortParams};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DatasetSearch {
@@ -25,12 +25,12 @@ pub struct DatasetSearch {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateSyncDatasetDTO {
     pub name: String,
-    pub description:String,
+    pub description: String,
     pub sync_url: String,
     pub sync_frequency_seconds: i64,
     pub post_import_script: Option<String>,
     pub public: bool,
-    pub import_params: ImportParams
+    pub import_params: ImportParams,
 }
 
 #[derive(Debug, Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
@@ -53,9 +53,8 @@ pub struct Dataset {
     pub geom_col: String,
     pub id_col: String,
     pub table_name: String,
-    pub import_params: ImportParams
+    pub import_params: ImportParams,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateDatasetDTO {
@@ -63,7 +62,7 @@ pub struct CreateDatasetDTO {
     pub description: String,
     pub geom_col: String,
     pub id_col: String,
-    pub import_params: ImportParams
+    pub import_params: ImportParams,
 }
 
 #[derive(Serialize, Deserialize, Debug, AsChangeset)]
@@ -101,11 +100,8 @@ impl Dataset {
                     .eq_any(datasets_the_user_has_permisions_for)
                     .or(datasets::public.eq(true)),
             );
-        }
-        else{
-            query = query.filter(
-                datasets::public.eq(true)
-            )
+        } else {
+            query = query.filter(datasets::public.eq(true))
         }
 
         if let Some(dataset_owner_id) = search.owner_id {
@@ -201,7 +197,7 @@ impl Dataset {
         if self.sync_dataset {
             let pending_syncs = SyncImport::for_dataset(pool, &self.id)?;
             if pending_syncs.is_empty() {
-               SyncImport::start_for_dataset(pool, self)?; 
+                SyncImport::start_for_dataset(pool, self)?;
             }
         }
         Ok(())

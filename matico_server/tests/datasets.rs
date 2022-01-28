@@ -1,5 +1,5 @@
 mod helpers;
-use helpers::{spawn_app, signup_user, upload_file};
+use helpers::{signup_user, spawn_app, upload_file};
 use serde_json::json;
 
 #[actix_rt::test]
@@ -15,9 +15,15 @@ async fn get_datasets_logged_out() {
         "import_params":{
             "GeoJson":{}
         }
-    }); 
-    let file_upload_result = upload_file("resources/test/squirrel.geojson", &url, metadata.to_string(), None).await.unwrap();
+    });
+    let file_upload_result = upload_file(
+        "resources/test/squirrel.geojson",
+        &url,
+        metadata.to_string(),
+        None,
+    )
+    .await
+    .unwrap();
 
     assert!(!file_upload_result.status().is_success());
 }
-
