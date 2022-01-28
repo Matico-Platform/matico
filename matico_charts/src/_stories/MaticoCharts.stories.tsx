@@ -121,3 +121,66 @@ Histogram.args = {
   ],
 };
 
+export const HistogramWithScatterplot = Template.bind({});
+
+HistogramWithScatterplot.args = {
+  data: SampleHistogramData.binned,
+  xCol: "x0",
+  xExtent: [SampleHistogramData.min, SampleHistogramData.max],
+  xLabel: "Scale of Something",
+  xAxis: {
+    scaleType: "linear",
+    position: "bottom",
+  },
+  yCol: "count",
+  yLabel: "Count of Something",
+  title: "My Histogram",
+  subtitle: "Click to brush and check that console!!!",
+  grid: {
+    rows: true,
+    columns: false
+  },
+  useBrush: {
+    horizontal: true,
+    vertical: false,
+  },
+  onBrush: (e) => console.table(e),
+  layers: [
+    {
+      type: "bar",
+      color: "steelblue",
+      scale: 2,
+      padding: 0.1,
+      xAccessor: (d) => (d.x0 + d.x1) / 2,
+    },
+    {
+      data: Sample2dData,
+      type: "scatter",
+      color: "rgba(70,130,180,0.2)",
+      scale: 2,
+      xAccessor: d => (d["x_column"]),
+      yAccessor: () => 0,
+      yOffset: 20
+    }
+  ],
+};
+
+
+
+
+
+export const Chartspace = Template.bind({});
+Chartspace.args = {
+  xAxis: {
+    scaleType: "linear",
+    display: true,
+  },
+  yAxis: {
+    scaleType: "linear",
+    display: true,
+  },
+  grid: true,
+  xCol: "x_column",
+  yCol: "y_column",
+  data: Sample2dData,
+};
