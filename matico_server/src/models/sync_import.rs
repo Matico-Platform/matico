@@ -2,13 +2,13 @@ use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::models::{Dataset, User};
 use crate::schema::sync_imports::{self, dsl::*};
+use crate::utils::geo_file_utils::load_dataset_to_db;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_derive_enum::DbEnum;
 use log::info;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::utils::geo_file_utils::{load_dataset_to_db};
 
 use std::fs::File;
 use std::io::copy;
@@ -201,7 +201,7 @@ impl SyncImport {
         Ok((dest, String::from(filename.to_str().unwrap())))
     }
 
-    pub async fn process(&self, pool: &DbPool, ogr_string:String) -> Result<(), ServiceError> {
+    pub async fn process(&self, pool: &DbPool, ogr_string: String) -> Result<(), ServiceError> {
         match self.attempt_process(pool, ogr_string).await {
             Ok(next_run_time) => {
                 self.schedule_next(pool, next_run_time)?;
@@ -241,19 +241,22 @@ impl SyncImport {
     pub async fn attempt_process(
         &self,
         pool: &DbPool,
-        ogr_string: String
+        ogr_string: String,
     ) -> Result<chrono::NaiveDateTime, ServiceError> {
         self.start_processing(pool)?;
         let dataset = Dataset::find(pool, self.dataset_id)?;
 
         info!("Starting to download dataset {:?} ", dataset);
-        let (_file, filepath) = Self::download_file(
-           &dataset.sync_url.unwrap() 
-        )
-        .await?;
+        let (_file, filepath) = Self::download_file(&dataset.sync_url.unwrap()).await?;
         println!("file downloaded {:?} ", filepath);
 
-        load_dataset_to_db(filepath.clone(), dataset.table_name.clone(), dataset.import_params.clone(), ogr_string).await?;
+        load_dataset_to_db(
+            filepath.clone(),
+            dataset.table_name.clone(),
+            dataset.import_params.clone(),
+            ogr_string,
+        )
+        .await?;
         let next_time =
             self.scheduled_for + chrono::Duration::seconds(dataset.sync_frequency_seconds.unwrap());
 

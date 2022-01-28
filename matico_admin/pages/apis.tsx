@@ -1,10 +1,19 @@
 import type { NextPage } from "next";
 import { Layout } from "../components/Layout";
-import { Divider, View } from "@adobe/react-spectrum";
-import { GetServerSideProps } from "next";
-import { useAPIs} from "../hooks/useAPIs";
-import { Link as ALink } from "@adobe/react-spectrum";
+import {
+  Divider,
+  View,
+  Content,
+  Heading,
+  Header,
+  Flex,
+  Text
+} from "@adobe/react-spectrum";
+import { useApis } from "../hooks/useApis";
+import { Link as ALink, ActionButton } from "@adobe/react-spectrum";
 import Link from "next/link";
+import Edit from "@spectrum-icons/workflow/Edit";
+import Preview from "@spectrum-icons/workflow/Preview";
 
 import {
   Cell,
@@ -14,38 +23,79 @@ import {
   TableBody,
   TableHeader,
 } from "@adobe/react-spectrum";
+import { useState } from "react";
+import { NewApiDialog } from "../components/NewApiDialog";
 
+const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
+  const { apis, error, createApi } = useApis();
 
-const Home: NextPage = ({}) => {
-
-  const { data: apis, error } = useAPIs();
-  console.log("apis ", apis, error )
+  const submit = (details:any) => {
+    createApi(details);
+  };
 
   return (
     <Layout hasSidebar={true}>
-      <View backgroundColor="blue-600" gridArea="sidebar" />
-      <View gridArea="content">
-        <h3>APIs</h3>
+      <View backgroundColor="gray-200" padding="size-100" gridArea="sidebar">
+        <Heading>Apis</Heading>
+        <Content>
+          <Text>
+            APIs allow you to build sophisticated query based APIs on top of your datasets
+          </Text>
+        </Content>
+      </View>
+      <View gridArea="content" padding="size-800">
+        <Header>
+          <Flex
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Heading>Apis</Heading>
+
+            <NewApiDialog
+              onSubmit={(data) => {
+                console.log("Submit data is ", data);
+                submit(data);
+              }}
+            />
+          </Flex>
+        </Header>
         <Divider size="S" />
         {apis && (
           <TableView
-            aria-label="List of APIS"
+            aria-label="Example table with static contents"
             selectionMode="multiple"
             marginY="size-40"
           >
             <TableHeader>
               <Column>Name</Column>
               <Column>Access</Column>
+              <Column align="center">View Api</Column>
+              <Column align="center">Edit Api</Column>
             </TableHeader>
             <TableBody>
-              {apis.map((api: any, index :number) => (
+              {apis.map((api: any, index:number) => (
                 <Row key={index}>
                   <Cell>
                     <ALink>
-                      <Link href={`/apis/${api.id}`} >{api.name}</Link>
+                      <Link href={`/apis/${api.id}`}>{api.name}</Link>
                     </ALink>
                   </Cell>
                   <Cell>{api.public ? "Public" : "Private"}</Cell>
+                  <Cell>
+                    <ALink>
+                      <Link href={`/apis/${api.id}`}>
+                        <Preview size="S" />
+                      </Link>
+                    </ALink>
+                  </Cell>
+                  <Cell>
+                    <ALink>
+                      <Link href={`/apis/edit/${api.id}`}>
+                        <Edit size="S" />
+                      </Link>
+                    </ALink>
+                  </Cell>
                 </Row>
               ))}
             </TableBody>
@@ -56,4 +106,4 @@ const Home: NextPage = ({}) => {
   );
 };
 
-export default Home;
+export default ApisPage;

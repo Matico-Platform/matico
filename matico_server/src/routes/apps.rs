@@ -2,7 +2,10 @@ use crate::app_state::State;
 use crate::auth::AuthService;
 
 use crate::errors::ServiceError;
-use crate::models::{App, AppOrderBy, AppSearch, CreateAppDTO, UpdateAppDTO,UserToken, Permission, PermissionType, ResourceType};
+use crate::models::{
+    App, AppOrderBy, AppSearch, CreateAppDTO, Permission, PermissionType, ResourceType,
+    UpdateAppDTO, UserToken,
+};
 use crate::utils::PaginationParams;
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use log::info;
@@ -108,12 +111,7 @@ pub async fn get_app(
     let app = App::find(&state.db, app_id)?;
     if let Some(user) = logged_in_user.user {
         if !app.public && user.id != app.owner_id {
-            Permission::require_permissions(
-                &state.db,
-                &user.id,
-                &app_id,
-                &[PermissionType::Read],
-            )?;
+            Permission::require_permissions(&state.db, &user.id, &app_id, &[PermissionType::Read])?;
         }
     }
     Ok(HttpResponse::Ok().json(app))

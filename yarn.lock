@@ -12395,6 +12395,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"brace@npm:^0.11.1":
+  version: 0.11.1
+  resolution: "brace@npm:0.11.1"
+  checksum: def78159abccf5ad465efbe217cc31cade9b484dc5142f876e237301b998ea2c17e0006b929b9e3b60da5dd51e844b5aa439198f65eafc312ed91b944addf366
+  languageName: node
+  linkType: hard
+
 "braces@npm:^2.3.1, braces@npm:^2.3.2":
   version: 2.3.2
   resolution: "braces@npm:2.3.2"
@@ -24244,6 +24251,7 @@ __metadata:
     "@types/papaparse": ^5.3.1
     "@types/react": 17.0.37
     axios: ^0.24.0
+    brace: ^0.11.1
     date-fns: ^2.28.0
     deck.gl: ^8.3.14
     eslint: 8.4.1
@@ -24257,6 +24265,7 @@ __metadata:
     next-transpile-modules: ^9.0.0
     papaparse: ^5.3.1
     react: 17.0.2
+    react-ace: ^9.5.0
     react-dom: 17.0.2
     react-dropzone: ^11.4.2
     react-map-gl: ^5.3.10

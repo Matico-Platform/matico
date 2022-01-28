@@ -62,7 +62,9 @@ export const useUser = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    updateRoutes();
+    setTimeout(()=>{
+      updateRoutes();
+    })
   };
 
   return {

@@ -38,10 +38,10 @@ impl Config {
     pub fn connection_string(&self) -> Result<String, ServiceError> {
         let config = self.db.clone();
         let base_connection_string = self.connection_string_without_db()?;
-        Ok(format!("{}/{}",base_connection_string,config.name))
+        Ok(format!("{}/{}", base_connection_string, config.name))
     }
 
-    pub fn connection_string_without_db(&self)->Result<String, ServiceError>{
+    pub fn connection_string_without_db(&self) -> Result<String, ServiceError> {
         let config = self.db.clone();
 
         let username_password = match (&config.username, &config.password) {
@@ -69,10 +69,10 @@ impl Config {
     pub fn data_connection_string(&self) -> Result<String, ServiceError> {
         let partial_connection_string = self.data_connection_string_without_db()?;
         let name = self.datadb.name.clone();
-        Ok(format!("{}/{}",partial_connection_string,name))
+        Ok(format!("{}/{}", partial_connection_string, name))
     }
 
-    pub fn data_connection_string_without_db(&self)->Result<String,ServiceError>{
+    pub fn data_connection_string_without_db(&self) -> Result<String, ServiceError> {
         let config = self.datadb.clone();
 
         let username_password = match (&config.username, &config.password) {
@@ -98,7 +98,7 @@ impl Config {
     }
 
     pub fn org_connection_string(&self) -> Result<String, ServiceError> {
-        let config =self.datadb.clone();
+        let config = self.datadb.clone();
 
         let db = format!("dbname={}", config.name);
 

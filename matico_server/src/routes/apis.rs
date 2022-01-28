@@ -4,7 +4,7 @@ use crate::db::Bounds;
 use crate::errors::ServiceError;
 
 use crate::models::{
-    apis::{AnnonQuery, CreateAPIDTO, UpdateAPIDTO, Api},
+    apis::{AnnonQuery, Api, CreateAPIDTO, UpdateAPIDTO},
     permissions::*,
     users::*,
 };
@@ -57,9 +57,11 @@ async fn create_api(
     web::Json(create_query): web::Json<CreateAPIDTO>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+
     let user: UserToken = logged_in_user
         .user
         .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
+
     let query = Api::create(&state.db, create_query)?;
 
     Permission::grant_permissions(

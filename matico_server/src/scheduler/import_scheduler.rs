@@ -2,7 +2,6 @@ use crate::db::DbPool;
 use crate::models::SyncImport;
 use actix::prelude::*;
 
-
 use log::info;
 use std::time::Duration;
 
@@ -37,7 +36,7 @@ impl Handler<RunImportsMsg> for ImportScheduler {
     fn handle(&mut self, _msg: RunImportsMsg, _ctx: &mut Context<Self>) -> Self::Result {
         info!("Running handle");
         let db_pool = self.db.clone();
-        let ogr_string =self.ogr_string.clone();
+        let ogr_string = self.ogr_string.clone();
         let execution = Box::pin(async move {
             info!("Schduling task");
             let requests = SyncImport::pending(&db_pool).expect("SOMHOW FAILED TO GET SYNC TABLE");
