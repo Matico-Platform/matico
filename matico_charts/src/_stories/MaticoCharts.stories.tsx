@@ -4,12 +4,16 @@ import { Story, Meta } from "@storybook/react";
 import MaticoChart from "../components/MaticoChart";
 import { ChartSpaceSpec } from "../components/types";
 
-import { Sample2dData, SampleCategoricalData } from "./SampleData";
+import {
+  Sample2dData,
+  SampleCategoricalData,
+  SampleHistogramData,
+} from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
 
 export default {
-  title: "Matico/MaticoChart",
+  title: "Matico/Continuous Charts",
   component: MaticoChart,
   argTypes: {
     onClick: { action: "clicked" },
@@ -83,19 +87,37 @@ PieChart.args = {
   attribution: "Data from my data source",
   data: SampleCategoricalData,
 };
-
-export const Chartspace = Template.bind({});
-Chartspace.args = {
+export const Histogram = Template.bind({});
+Histogram.args = {
+  data: SampleHistogramData.binned,
+  xCol: "x0",
+  xExtent: [SampleHistogramData.min, SampleHistogramData.max],
+  xLabel: "Scale of Something",
   xAxis: {
     scaleType: "linear",
-    display: true,
+    position: "bottom",
   },
-  yAxis: {
-    scaleType: "linear",
-    display: true,
+  yCol: "count",
+  yLabel: "Count of Something",
+  title: "My Histogram",
+  subtitle: "Click to brush and check that console!!!",
+  grid: {
+    rows: true,
+    columns: false
   },
-  grid: true,
-  xCol: "x_column",
-  yCol: "y_column",
-  data: Sample2dData,
+  useBrush: {
+    horizontal: true,
+    vertical: false,
+  },
+  onBrush: (e) => console.table(e),
+  layers: [
+    {
+      type: "bar",
+      color: "steelblue",
+      scale: 2,
+      padding: 0.1,
+      xAccessor: (d) => (d.x0 + d.x1) / 2,
+    },
+  ],
 };
+

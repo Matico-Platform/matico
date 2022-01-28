@@ -1,4 +1,5 @@
 import { linearRegression, linearRegressionLine } from 'simple-statistics';
+import * as d3 from 'd3';
 
 export const generate2dData = (n) => Array(n)
   .fill(0)
@@ -13,44 +14,16 @@ export const getRegressionLine = (data2d) => linearRegressionLine(
   linearRegression(data2d.map((d) => [d['x_column'], d['y_column']]))
 );
 
-export const getHistogramData = (data) => {
-  const min = Math.min(...data.map((f) => f.x_column));
-  const max = Math.max(...data.map((f) => f.x_column));
-  const binNum = 20;
-  const step = (max - min) / binNum;
-  let counts = {};
-  let steps = [];
-  let iter = min + step;
-
-  do {
-    iter += step;
-    steps.unshift(iter);
-    counts[iter] = 0;
-  } while (iter <= max);
-
-  for (let i = 0; i < data.length; i++) {
-    for (let j = 0; j < steps.length; j++) {
-      if (data[i]['x_column'] > steps[j]) {
-        counts[steps[j]] += 1;
-        break;
-      }
-    }
-  }
-
+export const getHistogramData = (data, binNum=20) => {
+  const bin = d3.bin().thresholds(binNum)
+  const binned = bin(data.map(f => f.x_column)).map(f => ({count: f.length, x0: f.x0, x1: f.x1}));
+  const min = Math.min(...binned.map((f) => f.x0));
+  const max = Math.max(...binned.map((f) => f.x1));
   return {
     min,
     max,
-    step,
-    steps,
-    data: Array(steps.length)
-      .fill(null)
-      .map((_, idx) => ({
-        min: steps[idx - 1],
-        max: steps[idx],
-        count: counts[steps[idx]],
-      })),
-  };
-};
+    binned
+}};
 
 export const getCategoricalData = (n) => {
   let returnObj = ['😀', '😂', '🥰', '😎'].map((f) => ({ label: f, count: 0 }));
