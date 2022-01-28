@@ -57,6 +57,20 @@ export const DatasetServiceMiddleWare = () => {
         //   });
         // });
         break;
+      case "datasets/requestData":
+        console.log("worker is ", worker)
+        worker.getData(action.payload.datasetName,action.payload.filters, true).then((data)=>{
+          console.log("Got data back from the dataset worker ", data)
+          store.dispatch({
+            type:"/datasets/gotData",
+            payload:{
+              datasetName: action.payload.datasetName,
+              filters: action.payload.filters,
+              requestHash: action.payload.requestHash,
+              data
+            }
+          })     
+        })
       default: 
         return next(action);
     }

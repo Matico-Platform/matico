@@ -14,15 +14,19 @@ import {
 import { Columns, Edit, FormTrash } from "grommet-icons";
 import React, { useContext, useState } from "react";
 import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
-import { Dataset, DatasetState } from "Datasets/Dataset";
-import { useMaticoDispatch } from "Hooks/redux";
+import {
+  Column,
+  Dataset,
+  DatasetState,
+  DatasetSummary,
+} from "Datasets/Dataset";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { addDataset } from "Stores/MaticoSpecSlice";
 import styled from "styled-components";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 
 interface DatasetEditorProps {
-  dataset: Dataset;
-  status: DatasetState;
+  dataset: DatasetSummary;
 }
 
 const StyledAccordion = styled(Accordion)`
@@ -40,7 +44,6 @@ const StyledAccordionPanel = styled(AccordionPanel)`
 
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({
   dataset,
-  status,
 }) => {
   let statusColors = {
     [DatasetState.LOADING]: "status-warning",
@@ -57,13 +60,19 @@ export const DatasetEditor: React.FC<DatasetEditorProps> = ({
       pad="medium"
     >
       <Box flex>
-        <Text textAlign="start" color={statusColors[status]}>
+        <Text textAlign="start" color={statusColors[dataset.state]}>
           {dataset.name}
         </Text>
       </Box>
-      <Text>{dataset.geometryType()}</Text>
-      <Text>{dataset.columns().length}</Text>
-      <Columns />
+      {dataset.state === DatasetState.READY ? (
+        <>
+          <Text>{dataset.geomType}</Text>
+          <Text>{dataset.columns.length}</Text>
+          <Columns />
+        </>
+      ) : (
+        <Text>Loading</Text>
+      )}
       <Button icon={<Edit color={"status-warning"} />} />
       <Button icon={<FormTrash color={"status-critical"} />} />
     </Box>
@@ -138,9 +147,7 @@ const NewDatasetInput: React.FC<NewDatasetInputProps> = ({
           datasetProviders.map((provider: DatasetProvider) => (
             <Tab title={provider.name} key={provider.name}>
               <provider.component
-                onSubmit={(selectedDataset: any) =>
-                  onSubmit(selectedDataset)
-                }
+                onSubmit={(selectedDataset: any) => onSubmit(selectedDataset)}
               />
             </Tab>
           ))}
@@ -156,8 +163,7 @@ interface DatasetsEditorProps {
 export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
   datasetProviders,
 }) => {
-  const { state } = useContext(MaticoDataContext);
-  const { datasets, datasetStates } = state;
+  const { datasets } = useMaticoSelector((s) => s.datasets);
   const [showNewDataset, setShowNewDataset] = useState(false);
 
   const dispatch = useMaticoDispatch();
@@ -166,6 +172,8 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
     dispatch(addDataset({ dataset: details }));
     setShowNewDataset(false);
   };
+
+  console.log("datasets are", datasets);
 
   return (
     <Box background="white" fill gap="medium" pad={{ bottom: "small" }}>
@@ -178,23 +186,22 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
       ) : (
         <Box>
           <StyledAccordion multiple={false}>
-            {datasets.map((dataset) => {
+            {Object.entries(datasets).map(([datasetName, dataset]) => {
               return (
                 <StyledAccordionPanel
-                  key={dataset.name}
+                  key={datasetName}
                   header={() => (
                     <Box>
                       <DatasetEditor
                         dataset={dataset}
-                        key={dataset.name}
-                        status={datasetStates[dataset.name]}
+                        key={datasetName}
                       />
                     </Box>
                   )}
                 >
-                  <List data={dataset.columns()}>
-                    {(column, index) => (
-                      <Box key={index}>
+                  <List data={dataset.columns}>
+                    {(column: Column) => (
+                      <Box key={column.name}>
                         {column.name} : {column.type}
                       </Box>
                     )}
