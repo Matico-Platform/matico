@@ -34,19 +34,19 @@ export const BarComponent = (props: BarSpec) => {
     ? () => 'gray'
     : isFunc(color)
     ? //@ts-ignore
-      (d) => color(d)
+      (d) => color(d) //@ts-ignore
     : (d) => sanitizeColor(color);
-
+    
   return data.map((entry, i) => (
     <Bar
       key={`bar-${i}`}
       //@ts-ignore
       x={xScale(xAccessor(entry)) - xTranslationPx}
       //@ts-ignore
-      y={yScale(yAccessor(entry))}
+      y={yMax - yScale(yAccessor(entry))}
       width={barWidth}
       //@ts-ignore
-      height={yScale(yBounds[1] - yAccessor(entry))}
+      height={yScale(yAccessor(entry))}
       fill={colorScale(entry)}
     />
   ));
