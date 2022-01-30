@@ -10,7 +10,7 @@ import {
   generateColorVar,
   generateNumericVar,
 } from "./LayerUtils";
-import { useSubVariables } from "../../../Hooks/useSubVariables";
+import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
 import { DatasetState } from "../../../../dist/Datasets/Dataset";
@@ -33,6 +33,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
   const dataset = useMaticoSelector(
     (state) => state.datasets.datasets[source.name]
   );
+
   const [hoverVariable, updateHoverVariable] = useAutoVariable({
     name: `${mapName}_map_${name}_hover`,
     type: "any",
@@ -47,15 +48,16 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     bind: true,
   } as AutoVariableInterface);
 
-  const [mappedFilters, filtersReady] = useSubVariables(source.filters);
-  const [mappedStyle, styleReady] = useSubVariables(style);
+  console.log('Filters are ', source.filters)
+  const [mappedFilters, filtersReady, filterMapError] = useNormalizeSpec(source.filters ? source.filters : []);
+  const [mappedStyle, styleReady, styleMapError] = useNormalizeSpec(style);
+
+  console.log("Mapped filters are ", mappedFilters)
 
   const dataResult = useRequestData(
     filtersReady ? source.name : null,
     mappedFilters
   );
-
-  console.log("Data result is ", dataResult)
 
   const preparedData = useMemo(() => {
     if (!styleReady) {
@@ -82,19 +84,18 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           geom: convertLine(d.geom),
         }));
     }
-  }, [source.name, dataResult, styleReady]);
+  }, [source.name, dataResult, styleReady, dataset]);
 
   useEffect(() => {
     if (
-      !dataset ||
-      !dataResult ||
-      dataResult.state !== "Done" ||
-      !styleReady ||
-      !mappedStyle
+      !(dataResult && dataResult.state === "Done" && styleReady && mappedStyle)
     ) {
+      console.log("LAYER RETRUNING WITHOUT DOING ANYTHING ");
+      console.log("dataResult ", dataResult, styleReady,mappedStyle)
       return;
     }
 
+    console.log("RETURNING LAYER ");
     let layer = undefined;
 
     const fillColor = generateColorVar(mappedStyle.fillColor) ?? [
@@ -134,7 +135,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         range: mappedStyle?.fillColor?.range,
       },
     };
-    switch (dataset.geometryType()) {
+    switch (dataset.geomType) {
       case GeomType.Point:
         layer = new ScatterplotLayer({
           filled: true,

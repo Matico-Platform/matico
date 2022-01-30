@@ -100,7 +100,7 @@ export class LocalDataset implements Dataset {
       Number.MIN_VALUE,
       filters
     );
-    Promise.resolve(columnMax)
+    return Promise.resolve(columnMax)
   }
 
   getColumnMin(column: string, filters?: Array<Filter>) {
@@ -151,8 +151,8 @@ export class LocalDataset implements Dataset {
     return Promise.resolve(intervalBins)
   }
 
-  getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
-    const data = this.getData(filters, [column]);
+  async getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
+    const data = await this.getData(filters, [column]);
     const vals = data.map((c: any) => c[column]).sort();
     const binSize = 1.0 / bins;
     const quantileBins = _.range(bins).map((i: number) => d3.quantile(vals, i * binSize));
@@ -196,7 +196,7 @@ export class LocalDataset implements Dataset {
     return combinedPredicate;
   }
 
-  _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {
+  async _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {
     const filterResults = filterPredicate
       ? this._data.filter(filterPredicate)
       : this._data;
@@ -205,7 +205,7 @@ export class LocalDataset implements Dataset {
       const vars = {};
       let results = [];
 
-      let selectColumns = columns ? columns : this.columns().map((c) => c.name);
+      let selectColumns = columns ? columns :  (await this.columns()).map((c) => c.name);
 
       selectColumns = [...selectColumns, "geom"];
 
@@ -228,26 +228,30 @@ export class LocalDataset implements Dataset {
         }
       );
       return results;
-    } catch {
-      console.warn(
-        "something went wrong applying filters cowardly returning empty array"
+    } catch (e){
+      console.log(
+        `something went wrong applying filters cowardly returning empty array ${e}`
       );
       return [];
     }
   }
 
   getData(filters?: Array<Filter>, columns?: Array<string>) {
+    console.log("IN GET DATA ")
+    console.log("FIlters are ",filters)
     const cacheKey = JSON.stringify([filters, columns]);
     if (this._filterCache[cacheKey]) {
       return this._filterCache[cacheKey];
     }
     if (filters && filters.length) {
+      console.log("FOr some reasion attempting to apply filters")
       const predicate = this._constructPredicate(filters);
       const results = this._getResultsFromPredicate(predicate);
 
       this._filterCache[JSON.stringify(filters)] = results;
       return results;
     }
+    console.log("RETUNRING non filtered results")
     return Promise.resolve(this._getResultsFromPredicate());
   }
 }

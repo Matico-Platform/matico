@@ -1,6 +1,7 @@
 import { Text, Box, Select } from "grommet";
 import React, { useContext } from "react";
 import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
+import {useMaticoSelector} from "Hooks/redux";
 
 interface DatasetSelectorProps {
   selectedDataset?: string;
@@ -10,13 +11,13 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
   selectedDataset,
   onDatasetSelected,
 }) => {
-  const { state } = useContext(MaticoDataContext);
+  const datasets = useMaticoSelector(state=>state.datasets.datasets)
   return (
     <Box direction="row" align='center' justify='between'>
       <Text> Data Source</Text>
       <Select
-        options={state.datasets}
-        value={state.datasets.find((d) => d.name === selectedDataset)}
+        options={Object.values(datasets)}
+        value={datasets[selectedDataset]}
         valueKey={"name"}
         labelKey={"name"}
         onChange={({ value }) => onDatasetSelected(value.name)}

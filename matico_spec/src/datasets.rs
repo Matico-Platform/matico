@@ -5,6 +5,7 @@ use wasm_bindgen::prelude::*;
 pub enum Dataset {
     GeoJSON(GeoJSONDataset),
     CSV(CSVDataset),
+    MaticoRemote(MaticoRemoteDataset)
 }
 
 #[wasm_bindgen]
@@ -32,7 +33,7 @@ impl GeoJSONDataset {
 
 #[wasm_bindgen]
 #[derive(Default,Serialize,Deserialize, Clone,Debug)]
-struct MaticoRemoteDataset{
+pub struct MaticoRemoteDataset{
     #[wasm_bindgen(skip)]
     pub name: String,
 

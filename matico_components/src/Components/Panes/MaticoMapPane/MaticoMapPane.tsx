@@ -52,6 +52,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
   const edit = useIsEditable()
 
   const updateLayer = (layer) => {
+    if(!layer) return
     if (mapLayers.map((l) => l.id).includes(layer.id)) {
       setMapLayers(mapLayers.map((l) => (l.id === layer.id ? layer : l)));
     } else {

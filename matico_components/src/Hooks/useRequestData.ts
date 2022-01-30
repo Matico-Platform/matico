@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {Query, requestData} from "Stores/MaticoDatasetSlice";
+import {Query, registerDataUpdates} from "Stores/MaticoDatasetSlice";
 import {Filter} from "Datasets/Dataset";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 
@@ -10,7 +10,7 @@ export const useRequestData = (datasetName: string, filters?: Array<Filter>) =>{
 
   useEffect(()=>{
     if(!result && datasetName){
-      dispatch(requestData({datasetName,requestHash,filters}))
+      dispatch(registerDataUpdates({datasetName,requestHash,filters}))
     }
   },[requestHash, result])
 

@@ -17,6 +17,19 @@ export interface DatasetsState {
   loaders: { [loaderName: string]: any };
 }
 
+export interface ColumnStatRequest{
+  datasetName: string,
+  column: string, 
+  metric: string,
+  parameters: {[param:string]: any},
+  filters: Array<Filter>
+}
+
+export interface DataRequest{
+  datasetName: string,
+  filters: Array<Filter>
+}
+
 const initialState: DatasetsState = {
   datasets: {},
   queries: {},
@@ -42,7 +55,7 @@ export const datasetsSlice = createSlice({
         error: action.payload.error,
       };
     },
-    requestData: (
+    registerDataUpdates: (
       state,
       action: PayloadAction<{
         datasetName: string;
@@ -51,7 +64,14 @@ export const datasetsSlice = createSlice({
       }>
     ) => {
       const { requestHash } = action.payload;
-      state.datasets[requestHash] = { state: "Loading" };
+      state.queries[requestHash] = { state: "Loading", result:null};
+    },
+    registerColumnStatUpdates:(
+      state,
+      action: PayloadAction<{requestHash: string, args: ColumnStatRequest}>
+    ) =>{
+      const {requestHash,args} = action.payload ;
+      state.queries[requestHash] = {state:"Loading", result:null}
     },
     gotData: (
       state,
@@ -68,6 +88,6 @@ export const datasetsSlice = createSlice({
   },
 });
 
-export const { registerDataset, requestData} = datasetsSlice.actions;
+export const { registerDataset, registerDataUpdates, registerColumnStatUpdates} = datasetsSlice.actions;
 
 export const datasetsReducer = datasetsSlice.reducer;

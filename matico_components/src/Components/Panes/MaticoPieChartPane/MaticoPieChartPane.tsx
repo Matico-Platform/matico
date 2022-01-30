@@ -12,7 +12,7 @@ import {
   updateFilterExtent,
   updateActiveDataset,
 } from "../../../Utils/chartUtils";
-import { useSubVariables } from "../../../Hooks/useSubVariables";
+import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 
@@ -85,7 +85,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
 
   const state = useMaticoSelector((state) => state.variables.autoVariables);
 
-  const [mappedFilters, filtersReady, _] = useSubVariables(dataset.filters);
+  const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
 
   const squareDim = Math.min(
     dims.width - padding.left - padding.right,
