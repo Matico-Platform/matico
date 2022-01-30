@@ -4,7 +4,7 @@ import { MaticoPaneInterface } from "../Pane";
 import { MaticoControl } from "../../Controls";
 import { MaticoRangeControl } from "./MaticoRangeControl";
 import { MaticoSelectControl } from "./MaticoSelectControl";
-import {useSubVariables} from "../../../Hooks/useSubVariables";
+import {useNormalizeSpec} from "../../../Hooks/useNormalizeSpec";
 
 export interface MaticoControlsPaneInterface extends MaticoPaneInterface {
   controls: Array<any>;
@@ -16,7 +16,7 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
   title,
 }) => {
 
-  const [mappedControls, filtersReady, _] = useSubVariables(controls)
+  const [mappedControls, filtersReady, _] = useNormalizeSpec(controls)
   if(!filtersReady) return <h1>Loading</h1>
 
   return (

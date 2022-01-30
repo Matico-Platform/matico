@@ -2,40 +2,47 @@ use crate::db::queries::{Bounds, PostgisQueryRunner};
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
 use crate::utils::Format;
+use ts_rs::TS;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct EqualIntervalParams {
     pub no_bins: usize,
     pub treat_null_as_zero: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug,  TS)]
+#[ts(export)]
 pub struct LogorithmicParams {
     pub no_bins: usize,
     pub base: Option<f64>,
     pub treat_null_as_zero: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct JenksParams {
     pub no_bins: usize,
     pub treat_null_as_zero: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct PercentilesParams {
     pub no_bins: usize,
     pub treat_null_as_zero: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct BasicStatsParams {
     pub treat_null_as_zero: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct HistogramParams {
     treat_null_as_zero: Option<bool>,
     inclusive_bins: Option<bool>,
@@ -43,12 +50,14 @@ pub struct HistogramParams {
     bin_edges: Option<Vec<f64>>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct ValueCountsParams {
     pub ignore_null: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub enum StatParams {
     Percentiles(PercentilesParams),
     Jenks(JenksParams),
@@ -58,26 +67,30 @@ pub enum StatParams {
     Histogram(HistogramParams),
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct PercentilesResults {
     pub bins: Vec<f32>,
     pub values: Vec<f32>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct JenksResults {
     pub bins: Vec<f32>,
     pub values: Vec<f32>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct LogorithmicResults {
     pub bins: Vec<f32>,
     pub values: Vec<f32>,
     pub values_bellow_zero: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct BasicStatsResults {
     pub min: f64,
     pub max: f64,
@@ -87,13 +100,15 @@ pub struct BasicStatsResults {
     pub count: usize,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 struct ValCountEntry {
     count: usize,
     name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 struct HistogramEntry {
     bin_start: f64,
     bin_end: f64,
@@ -101,13 +116,16 @@ struct HistogramEntry {
     freq: f64,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct HistogramResults(Vec<HistogramEntry>);
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub struct ValueCountsResults(Vec<ValCountEntry>);
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
 pub enum StatResults {
     Percentiles(PercentilesResults),
     Jenks(JenksResults),
@@ -117,7 +135,8 @@ pub enum StatResults {
     Histogram(HistogramResults),
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS)]
+#[ts(export)]
 pub struct Column {
     pub name: String,
     pub col_type: String,

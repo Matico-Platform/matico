@@ -15,7 +15,8 @@ import {
   updateFilterExtent,
   updateActiveDataset,
 } from "../../../Utils/chartUtils";
-import { useSubVariables } from "../../../Hooks/useSubVariables";
+import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
+import {useRequestData} from "Hooks/useRequestData";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -55,12 +56,10 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   });
   
   const edit = useIsEditable()
-  const foundDataset = dataState.datasets.find((d) => {
-    console.log("getting data ");
-    return d.name === dataset.name;
-  });
 
-  const datasetReady = foundDataset && foundDataset.isReady();
+  const foundDataset= useMaticoSelector(state=>state.datasets.datasets[dataset.name])
+
+  const datasetReady = foundDataset && foundDataset.state==="READY";
 
   const dims = useSize(containerRef, datasetReady);
   
@@ -73,12 +72,10 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
   const state = useMaticoSelector((state) => state.variables.autoVariables);
 
-  const [mappedFilters, filtersReady,_] = useSubVariables(dataset.filters);
+  const [mappedFilters, filtersReady,_] = useNormalizeSpec(dataset.filters);
 
   // @ts-ignore
-  const chartData = useMemo(() => {
-    return (datasetReady && filtersReady) ? foundDataset.getData(mappedFilters) : [];
-  }, [JSON.stringify(mappedFilters), datasetReady, filtersReady]);
+  const chartData = useRequestData(foundDataset.name, mappedFilters,false)
 
   const spec = {
     $schema: "https://vega.github.io/schema/vega/v5.json",
@@ -235,6 +232,11 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   //     }
   //   }
   // }, [view, JSON.stringify(xFilter), JSON.stringify(yFilter)]);
+  //
+  if(!chartData || chartData.state!=='Done'){
+    return <Box>loading</Box>
+  }
+
 
   return (
     <Box
@@ -253,7 +255,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
       {(datasetReady && dims.width > 0) &&
         <Vega
           ref={chartRef}
-          data={{ table: chartData }}
+          data={{ table: chartData.result}}
           signalListeners={signalListeners}
           onNewView={(view) => setView(view)}
           // @ts-ignore
