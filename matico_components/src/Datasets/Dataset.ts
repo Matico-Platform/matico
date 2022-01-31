@@ -38,7 +38,10 @@ export interface DatasetSummary{
   geomType?: GeomType,
   columns?: Array<Column>,
   local?:boolean,
-  state: DatasetState
+  state: DatasetState,
+  error?: string,
+  tiled: boolean,
+  mvtUrl?: string
 }
 
 export interface Dataset{
@@ -50,6 +53,7 @@ export interface Dataset{
   getFeature: (feature_id: string) => Promise<Datum | undefined>,
   local:()=>boolean,
   tiled:()=>boolean,
+  mvtUrl?:()=>string,
   isReady:()=> boolean,
   geometryType:()=> Promise<GeomType>,
   onStateChange?:(reportState :(state: DatasetState)=>void)=>void,

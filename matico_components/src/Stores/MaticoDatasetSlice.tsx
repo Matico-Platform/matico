@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { DatasetDetails, DatasetSummary, Filter } from "Datasets/Dataset";
+import { DatasetState, DatasetSummary, Filter } from "Datasets/Dataset";
 import _ from "lodash";
 // import { Dataset } from "../Datasets/Dataset";
 
@@ -12,7 +12,7 @@ export interface Query {
 }
 
 export interface DatasetsState {
-  datasets: { [datasetName: string]: DatasetDetails };
+  datasets: { [datasetName: string]: DatasetSummary};
   queries: { [queryHash: string]: Query };
   loaders: { [loaderName: string]: any };
 }
@@ -40,21 +40,23 @@ export const datasetsSlice = createSlice({
   name: "datasets",
   initialState,
   reducers: {
+    // Also triggers middleware 
     registerDataset: (state, action: PayloadAction<DatasetSummary>) => {
       state.datasets[action.payload.name] = action.payload;
     },
     datasetReady: (state, action: PayloadAction<DatasetSummary>) => {
       state.datasets[action.payload.name] = action.payload;
     },
-    failedToRegisterDataset: (
+    datasetFailedToLoad: (
       state,
-      action: PayloadAction<{ datasetName: string; error: any }>
+      action: PayloadAction< DatasetSummary>
     ) => {
-      state.datasets[action.payload.datasetName] = {
-        state: "failed",
-        error: action.payload.error,
+      state.datasets[action.payload.name] = {
+        state: DatasetState.ERROR,
+        ...action.payload
       };
     },
+    // Also triggers middleware
     registerDataUpdates: (
       state,
       action: PayloadAction<{
@@ -66,6 +68,7 @@ export const datasetsSlice = createSlice({
       const { requestHash } = action.payload;
       state.queries[requestHash] = { state: "Loading", result:null};
     },
+    // Also triggers middleware
     registerColumnStatUpdates:(
       state,
       action: PayloadAction<{requestHash: string, args: ColumnStatRequest}>

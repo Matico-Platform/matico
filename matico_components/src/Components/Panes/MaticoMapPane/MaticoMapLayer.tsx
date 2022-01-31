@@ -14,6 +14,7 @@ import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
 import { DatasetState } from "../../../../dist/Datasets/Dataset";
+import { MVTLayer } from "deck.gl";
 
 interface MaticoLayerInterface {
   name: string;
@@ -48,14 +49,13 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     bind: true,
   } as AutoVariableInterface);
 
-  console.log('Filters are ', source.filters)
-  const [mappedFilters, filtersReady, filterMapError] = useNormalizeSpec(source.filters ? source.filters : []);
+  const [mappedFilters, filtersReady, filterMapError] = useNormalizeSpec(
+    source.filters ? source.filters : []
+  );
   const [mappedStyle, styleReady, styleMapError] = useNormalizeSpec(style);
 
-  console.log("Mapped filters are ", mappedFilters)
-
   const dataResult = useRequestData(
-    filtersReady ? source.name : null,
+    filtersReady && dataset.tiled === false ? source.name : null,
     mappedFilters
   );
 
@@ -67,6 +67,9 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       return [];
     }
     if (dataResult.state !== "Done") {
+      return [];
+    }
+    if (dataset && dataset.tiled === true) {
       return [];
     }
 
@@ -87,15 +90,19 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
   }, [source.name, dataResult, styleReady, dataset]);
 
   useEffect(() => {
-    if (
-      !(dataResult && dataResult.state === "Done" && styleReady && mappedStyle)
-    ) {
-      console.log("LAYER RETRUNING WITHOUT DOING ANYTHING ");
-      console.log("dataResult ", dataResult, styleReady,mappedStyle)
+    // if the style isnt ready return
+    if (!styleReady || !mappedStyle) {
       return;
     }
 
-    console.log("RETURNING LAYER ");
+    //If we the dataset is tiled and we dont have data
+    //return
+    if (!dataset.tiled) {
+      if (!dataResult || dataResult.state !== "Done") {
+        return;
+      }
+    }
+
     let layer = undefined;
 
     const fillColor = generateColorVar(mappedStyle.fillColor) ?? [
@@ -119,7 +126,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       onClick: (clickTarget) => updateClickVariable(clickTarget.object),
       pickable: true,
       id: name,
-      data: preparedData,
+      data: dataset.tiled ? dataset.mvtUrl : preparedData,
       updateTriggers: {
         getFillColor: [JSON.stringify(new Date())],
         getLineColor: [JSON.stringify(lineColor)],
@@ -135,35 +142,41 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         range: mappedStyle?.fillColor?.range,
       },
     };
-    switch (dataset.geomType) {
-      case GeomType.Point:
-        layer = new ScatterplotLayer({
-          filled: true,
-          radiusUnits: mappedStyle.radiusUnits
-            ? mappedStyle.radiusUnits
-            : "meters",
-          getRadius: generateNumericVar(mappedStyle.size) ?? 20,
-          //@ts-ignore
-          getPosition: (d) => d.geom,
-          ...common,
-          //@ts-ignore
-        });
-        break;
-      case GeomType.Line:
-        layer = new PathLayer({
-          getColor: [0, 255, 0, 100],
-          getPath: (d) => d.geom,
-          ...common,
-        });
-        break;
-      case GeomType.Polygon:
-        layer = new PolygonLayer({
-          //@ts-ignore
-          getPolygon: (d) => d.geom,
-          filled: true,
-          ...common,
-        });
-        break;
+    if (!dataset.tiled) {
+      switch (dataset.geomType) {
+        case GeomType.Point:
+          layer = new ScatterplotLayer({
+            filled: true,
+            radiusUnits: mappedStyle.radiusUnits
+              ? mappedStyle.radiusUnits
+              : "meters",
+            getRadius: generateNumericVar(mappedStyle.size) ?? 20,
+            //@ts-ignore
+            getPosition: (d) => d.geom,
+            ...common,
+            //@ts-ignore
+          });
+          break;
+        case GeomType.Line:
+          layer = new PathLayer({
+            getColor: [0, 255, 0, 100],
+            getPath: (d) => d.geom,
+            ...common,
+          });
+          break;
+        case GeomType.Polygon:
+          layer = new PolygonLayer({
+            //@ts-ignore
+            getPolygon: (d) => d.geom,
+            filled: true,
+            ...common,
+          });
+          break;
+      }
+    } else {
+      layer = new MVTLayer({
+        ...common,
+      });
     }
 
     onUpdate(layer);

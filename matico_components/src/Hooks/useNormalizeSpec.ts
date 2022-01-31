@@ -41,7 +41,6 @@ const getRequiredDatasetMetrics = (struct: any)=>{
 */
 export const useNormalizeSpec= (spec: any) => {
 
-  console.log("Starting to normalize spec" , spec)
   const [mappedStructure, setMappedStructure] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,8 +68,6 @@ export const useNormalizeSpec= (spec: any) => {
 
 
   const requiredDatasetMetrics  = getRequiredDatasetMetrics(specWithVariables)
-
-
   const datasetValues  = useRequestColumnStats(requiredDatasetMetrics)
 
   if(datasetValues.length==0){
