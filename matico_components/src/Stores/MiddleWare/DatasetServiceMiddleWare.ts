@@ -1,6 +1,7 @@
 import { wrap } from "comlink";
 import { DatasetServiceInterface } from "Datasets/DatasetService";
 import { DatasetState, DatasetSummary } from "Datasets/Dataset";
+import * as comlink from "comlink";
 
 //@ts-ignore
 import DatasetServiceWorker from "Datasets/DatasetServiceWorker.worker.ts";
@@ -10,7 +11,6 @@ export const DatasetServiceMiddleWare = () => {
 
   if (!worker) {
     worker = wrap<DatasetServiceInterface>(DatasetServiceWorker());
-    console.log("Creating worker ", worker);
   }
 
   return (store: any) => (next: any) => (action: any) => {
@@ -33,10 +33,10 @@ export const DatasetServiceMiddleWare = () => {
                 error
               );
               store.dispatch({
-                type: "datasets/datasetFiledToLoad",
+                type: "datasets/datasetFailedToLoad",
                 payload: {
                   ...action.payload,
-                  error: error,
+                  error: error.toString(),
                 },
               });
             });
@@ -49,6 +49,7 @@ export const DatasetServiceMiddleWare = () => {
             payload: { name: action.payload.name, state: DatasetState.LOADING },
           });
         }
+        break
       case "datasets/request_query":
         // worker.runQuery(action.payload).then(() => {
         //   store.dispatch({
@@ -57,7 +58,45 @@ export const DatasetServiceMiddleWare = () => {
         //   });
         // });
         break;
-      default: 
+      case "datasets/registerColumnStatUpdates":
+        const onStatsUpdate= (data: Array<any>) => {
+          store.dispatch({
+            type: "datasets/gotData",
+            payload: {
+              datasetName: action.payload.args.datasetName,
+              filters: action.payload.args.filters,
+              requestHash: action.payload.requestHash,
+              data,
+            },
+          });
+        };
+        worker.registerColumnData(
+          action.payload.args,
+          comlink.proxy(onStatsUpdate),
+        );
+        break
+
+      case "datasets/registerDataUpdates":
+        const onDataUpdate = (data: Array<any>) => {
+          store.dispatch({
+            type: "datasets/gotData",
+            payload: {
+              datasetName: action.payload.datasetName,
+              filters: action.payload.filters,
+              requestHash: action.payload.requestHash,
+              data,
+            },
+          });
+        };
+
+        worker.registerForUpdates(
+          action.payload.datasetName,
+          comlink.proxy(onDataUpdate),
+          action.payload.filters,
+          true
+        );
+        break
+      default:
         return next(action);
     }
   };

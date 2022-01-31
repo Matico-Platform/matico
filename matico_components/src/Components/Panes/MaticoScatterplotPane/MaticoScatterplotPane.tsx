@@ -8,13 +8,15 @@ import { MaticoPaneInterface } from "../Pane";
 import { Box, Button } from "grommet";
 import {Performance} from 'grommet-icons'
 import { useAutoVariable } from "Hooks/useAutoVariable";
-import { Filter } from "Datasets/Dataset";
+import { DatasetState, Filter } from "Datasets/Dataset";
 import _ from "lodash";
 import {useSize} from 'Hooks/useSize';
 import {updateFilterExtent,updateActiveDataset} from 'Utils/chartUtils';
-import {useSubVariables} from 'Hooks/useSubVariables'
+import {useNormalizeSpec} from 'Hooks/useNormalizeSpec'
 import {useIsEditable} from "Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import {useMaticoSelector} from "Hooks/redux";
+import {useRequestData} from "Hooks/useRequestData";
 
 // import styles from './Widgets.module.scss';
 // import useGetScatterData from '@webgeoda/hooks/useGetScatterData';
@@ -56,7 +58,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     // options={},
     // id=null
   }) => {
-    const { state: dataState } = useContext(MaticoDataContext);
     const [view, setView] = useState({});
     const chartRef = useRef();
     const containerRef = useRef();
@@ -92,11 +93,9 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       bind: true,
     });
 
-    const foundDataset = dataState.datasets.find((d) => {
-      return d.name === dataset.name;
-    });
+    const foundDataset = useMaticoSelector( state => state.datasets.datasets[dataset.name])
 
-    const datasetReady = foundDataset && foundDataset.isReady();
+    const datasetReady = foundDataset && foundDataset.state===DatasetState.READY;
 
     const dims = useSize(containerRef, datasetReady);
     const padding = {
@@ -106,16 +105,12 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       right: 10,
     };
 
-    const [mappedFilters, filtersReady, _] = useSubVariables(dataset.filters)
+    const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters)
     if(!filtersReady) return <h1>Loading</h1>
 
-    // @ts-ignore
-    const chartData = useMemo(() => {
-      return datasetReady
-        ? foundDataset.getData(mappedFilters)
-        : [];
-    }, [JSON.stringify(mappedFilters), datasetReady, ]);
-    
+    const chartData = useRequestData(dataset.name, dataset.filters)
+
+    console.log("Chart data is ", chartData)
 
     const spec = {
       $schema: "https://vega.github.io/schema/vega/v5.json",
@@ -628,6 +623,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     //     foundDataset?.isReady(),
     //   ]
     // );
+    
 
     useEffect(() => {
       if (xFilter && yFilter && view && Object.keys(view).length) {
@@ -639,10 +635,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
             dataset: "filterExtent",
           });
         }
-        if (chartData.length) {
+        if (chartData && chartData.state==="Done") {
           updateActiveDataset({
             view,
-            chartData,
+            chartData: [...chartData.result],
             filter: (data) =>
               data[x_column] >= xFilter.min &&
               data[x_column] <= xFilter.max &&
@@ -652,7 +648,11 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           });
         }
       }
-    }, [view, JSON.stringify(xFilter), JSON.stringify(yFilter)]);
+    }, [view, JSON.stringify(chartData),JSON.stringify(xFilter), JSON.stringify(yFilter)]);
+
+
+    let table =chartData?.state ==="Done" ? chartData.result :[]
+    table = table.filter(d=> d[x_column] && d[y_column])
 
     return (
       <Box
@@ -670,7 +670,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         {(datasetReady && dims.width > 0) &&
           <Vega
             ref={chartRef}
-            data={{ table: chartData }}
+            data={{ table: [...table] }}
             signalListeners={signalListeners}
             onNewView={(view) => setView(view)}
             // @ts-ignore

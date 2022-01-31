@@ -172,23 +172,20 @@ impl PostgisQueryRunner {
             .collect();
         let select_string = column_names.join(",");
 
-        let bbox = bbox(&tile_id);
-
         let geom_column = match tiler_options.geom_column {
             Some(column) => column,
             None => String::from("wkb_geometry"),
         };
+        
         let formatted_query = format!(
             include_str!("tile_query.sql"),
             columns = select_string,
             geom_column = geom_column,
             tile_table = query,
-            x_min = bbox[0],
-            y_min = bbox[1],
-            x_max = bbox[2],
-            y_max = bbox[3]
+            x = tile_id.x,
+            y = tile_id.y,
+            z = tile_id.z,
         );
-
         let result: Vec<u8> = sqlx::query(&formatted_query)
             .map(|row: PgRow| row.get("mvt"))
             .fetch_one(pool)

@@ -1,6 +1,7 @@
 import { Text, Box, Select } from "grommet";
 import React, { useContext } from "react";
 import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
+import {useMaticoSelector} from "Hooks/redux";
 
 interface DatasetColumnSelectorProps {
   dataset?: string;
@@ -14,10 +15,9 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
   label = "Column",
   onColumnSelected,
 }) => {
-  const { state } = useContext(MaticoDataContext);
-  const foundDataset = state.datasets.find((d) => d.name === dataset);
+  const foundDataset = useMaticoSelector(state=>state.datasets.datasets[dataset]);
+  const columns =  foundDataset ? foundDataset.columns: []
 
-  const columns =  foundDataset ? foundDataset.columns(): []
   return (
     <Box direction="row" align="center" justify='between'>
       <Text>{label}</Text>

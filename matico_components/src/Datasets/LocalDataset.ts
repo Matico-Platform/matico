@@ -41,17 +41,17 @@ export class LocalDataset implements Dataset {
   }
 
   geometryType() {
-    return this._geometryType;
+    return Promise.resolve(this._geometryType);
   }
 
   columns() {
-    return this._columns;
+    return Promise.resolve(this._columns);
   }
 
   getFeature(feature_id: string) {
     const selectPredicate = predicate.col(this.idCol).eq(feature_id);
     const results = this._getResultsFromPredicate(selectPredicate);
-    return results;
+    return Promise.resolve(results);
   }
 
   getArrow() {
@@ -59,7 +59,7 @@ export class LocalDataset implements Dataset {
   }
 
   getDataWithGeo(filters?: Array<Filter>) {
-    return this.getData(filters);
+    return Promise.resolve(this.getData(filters));
   }
 
   _applyAggregateFunction<AggType>(
@@ -94,35 +94,38 @@ export class LocalDataset implements Dataset {
 
   getColumnMax(column: string, filters?: Array<Filter>) {
     console.log("CALCULATING MAX");
-    return this._applyAggregateFunction(
+    let columnMax = this._applyAggregateFunction(
       column,
       (agg, val) => (val > agg ? val : agg),
       Number.MIN_VALUE,
       filters
     );
+    return Promise.resolve(columnMax)
   }
 
   getColumnMin(column: string, filters?: Array<Filter>) {
     console.log("CALCULATING MIN");
-    return this._applyAggregateFunction(
+    let columnMin = this._applyAggregateFunction(
       column,
       (agg, val) => (val < agg ? val : agg),
       Number.MAX_VALUE,
       filters
     );
+    return Promise.resolve(columnMin)
   }
 
   getColumnSum(column: string, filters?: Array<Filter>) {
-    return this._applyAggregateFunction(
+    let columnSum = this._applyAggregateFunction(
       column,
       (agg, val) => (agg += val),
       0,
       filters
     );
+    return Promise.resolve(columnSum)
   }
 
   getCategoryCounts(column: string, filters?: Array<Filter>) {
-    return this._applyAggregateFunction(
+    let categoryCounts = this._applyAggregateFunction(
       column,
       (agg, val) => {
         agg[val] = agg[val] ? agg[val] + 1 : 1;
@@ -131,6 +134,7 @@ export class LocalDataset implements Dataset {
       {},
       filters
     );
+    return Promise.resolve(categoryCounts)
   }
 
   getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
@@ -141,21 +145,23 @@ export class LocalDataset implements Dataset {
       filters
     );
 
-    return _.range(bins).map(
+    let intervalBins = _.range(bins).map(
       (i: number) => range[0] + ((range[1] - range[0]) * i) / bins
     );
+    return Promise.resolve(intervalBins)
   }
 
-  getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
-    const data = this.getData(filters, [column]);
+  async getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
+    const data = await this.getData(filters, [column]);
     const vals = data.map((c: any) => c[column]).sort();
     const binSize = 1.0 / bins;
-    return _.range(bins).map((i: number) => d3.quantile(vals, i * binSize));
+    const quantileBins = _.range(bins).map((i: number) => d3.quantile(vals, i * binSize));
+    return Promise.resolve(quantileBins)
   }
 
   getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
     throw Error("function not implemented");
-    return [1, 23, 4, 5, 6];
+    return Promise.resolve([1, 23, 4, 5, 6]);
   }
 
   _constructPredicate(filters?: Array<Filter>) {
@@ -190,7 +196,7 @@ export class LocalDataset implements Dataset {
     return combinedPredicate;
   }
 
-  _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {
+  async _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {
     const filterResults = filterPredicate
       ? this._data.filter(filterPredicate)
       : this._data;
@@ -199,7 +205,7 @@ export class LocalDataset implements Dataset {
       const vars = {};
       let results = [];
 
-      let selectColumns = columns ? columns : this.columns().map((c) => c.name);
+      let selectColumns = columns ? columns :  (await this.columns()).map((c) => c.name);
 
       selectColumns = [...selectColumns, "geom"];
 
@@ -222,26 +228,30 @@ export class LocalDataset implements Dataset {
         }
       );
       return results;
-    } catch {
-      console.warn(
-        "something went wrong applying filters cowardly returning empty array"
+    } catch (e){
+      console.log(
+        `something went wrong applying filters cowardly returning empty array ${e}`
       );
       return [];
     }
   }
 
   getData(filters?: Array<Filter>, columns?: Array<string>) {
+    console.log("IN GET DATA ")
+    console.log("FIlters are ",filters)
     const cacheKey = JSON.stringify([filters, columns]);
     if (this._filterCache[cacheKey]) {
       return this._filterCache[cacheKey];
     }
     if (filters && filters.length) {
+      console.log("FOr some reasion attempting to apply filters")
       const predicate = this._constructPredicate(filters);
       const results = this._getResultsFromPredicate(predicate);
 
       this._filterCache[JSON.stringify(filters)] = results;
       return results;
     }
-    return this._getResultsFromPredicate();
+    console.log("RETUNRING non filtered results")
+    return Promise.resolve(this._getResultsFromPredicate());
   }
 }

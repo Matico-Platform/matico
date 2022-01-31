@@ -23,7 +23,6 @@ import {
   setCurrentEditPath,
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
-import { SketchPicker } from "react-color";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
@@ -40,6 +39,8 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   const spec = useMaticoSelector((state) => state.spec.spec);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [bindBothWays, setBindBothWays] = useState(false);
+  const [newLayerName, setNewLayerName] = useState<string>("");
+  const [newLayerDataset, setNewLayerDataset] = useState<string | null>(null);
   const dispatch = useMaticoDispatch();
 
   const { state: datasetState } = useContext(MaticoDataContext);
@@ -139,23 +140,23 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   }
 
   const setLayerEdit = (index: number) => {
-    console.log("setting layer edit ", index)
+    console.log("setting layer edit ", index);
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.layers.${index}`,
         editType: "Layer",
       })
-    )
+    );
   };
 
-  const addLayer = (value) => {
-    console.log("DATASET is ", value.dataset);
+  const addLayer = () => {
     const newLayer = {
       ...PaneDefaults.Layer,
-      source: { name: value.dataset.name },
-      name: value.name
+      source: { name: newLayerDataset },
+      name: newLayerName,
     };
-    console.log("NEW LAYER IS ", newLayer);
+    setNewLayerName("");
+    setNewLayerDataset(null);
     dispatch(
       setSpecAtPath({
         editPath,
@@ -208,7 +209,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                   label="latitude"
                   name="lat"
                   htmlFor={"lat"}
-                  width={'small'}
+                  width={"small"}
                   disabled={isSynced}
                 >
                   <TextInput name="lat" id="lat" type="number" />
@@ -226,7 +227,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                   label="zoom"
                   name="zoom"
                   htmlFor={"zoom"}
-                  width={'small'}
+                  width={"small"}
                   disabled={isSynced}
                 >
                   <TextInput name="zoom" id="zoom" type="number" />
@@ -245,7 +246,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                   pitch="pitch"
                   htmlFor={"pitch"}
                   disabled={isSynced}
-                  width={'small'}
+                  width={"small"}
                 >
                   <TextInput name="pitch" id="pitch" type="number" />
                 </FormField>
@@ -304,24 +305,21 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             }}
           </List>
 
-          <Form onSubmit={({ value }) => addLayer(value)}>
+          <Box>
             <Text>New Layer</Text>
-            <FormField name="name" htmlFor="LayerName">
-              <TextInput name="name" placeholder="Layer name" id="LayerName" />
-            </FormField>
-            <Text>From Dataset</Text>
-            <FormField name="dataset" htmlFor="LayerName">
-              <Select
-                placeholder="Dataset"
-                options={datasets}
-                labelKey={"name"}
-                valueKey={"name"}
-                name="dataset"
-                id="LayerrName"
-              />
-            </FormField>
-            <Button plain={false} label={"Add Layer"} type="submit" />
-          </Form>
+            <DatasetSelector
+              selectedDataset={newLayerDataset}
+              onDatasetSelected={setNewLayerDataset}
+            />
+            <TextInput
+              name="name"
+              value={newLayerName}
+              onChange={(e) => setNewLayerName(e.target.value)}
+              placeholder="Layer name"
+              id="LayerName"
+            />
+            <Button plain={false} label="Add Layer" onClick={addLayer} type="submit" />
+          </Box>
         </AccordionPanel>
       </Accordion>
 

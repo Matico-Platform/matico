@@ -1,3 +1,4 @@
+use crate::Filter;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationErrors};
 
@@ -39,6 +40,7 @@ pub struct DatasetVal {
     pub dataset: String,
     pub column: Option<String>,
     pub metric: Option<DatasetMetric>,
+    pub filters: Option<Vec<Filter>>,
     pub feature_id: Option<String>,
 }
 

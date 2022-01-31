@@ -38,28 +38,32 @@ export interface DatasetSummary{
   geomType?: GeomType,
   columns?: Array<Column>,
   local?:boolean,
-  state: DatasetState
+  state: DatasetState,
+  error?: string,
+  tiled: boolean,
+  mvtUrl?: string
 }
 
 export interface Dataset{
   name: string,
   idCol: string,
-  columns: ()=>Column[],
-  getData:(filters?: Array<Filter>, columns?: Array<string>) =>Datum[],
-  getDataWithGeo:(filters?: Array<Filter>, columns?:Array<string>) =>Datum[],
-  getFeature:(feature_id: string) => Datum | undefined,
+  columns: ()=>Promise<Column[]>,
+  getData: (filters?: Array<Filter>, columns?: Array<string>) =>Promise<Datum[]>,
+  getDataWithGeo: (filters?: Array<Filter>, columns?:Array<string>) =>Promise<Datum[]>,
+  getFeature: (feature_id: string) => Promise<Datum | undefined>,
   local:()=>boolean,
   tiled:()=>boolean,
-  isReady:()=>boolean,
-  geometryType:()=> GeomType,
-  onStateChange?:( (state: DatasetState)=>void),
-  getColumnMax: (columns: string) => number,
-  getColumnMin: (columns: string) => number,
-  getColumnSum: (columns: string) => number,
-  getCategoryCounts: (columns: string, filters?: Array<Filter>) => {[entry: string| number]: number},
-  getEqualIntervalBins:(column: string, bins:number, filters?: Array<Filter>)=>number[],
-  getQuantileBins:(column: string, bins:number, filters?:Array<Filter>)=>number[],
-  getJenksBins:(column: string, bins:number, filters?: Array<Filter>)=>number[]
+  mvtUrl?:()=>string,
+  isReady:()=> boolean,
+  geometryType:()=> Promise<GeomType>,
+  onStateChange?:(reportState :(state: DatasetState)=>void)=>void,
+  getColumnMax: (columns: string) => Promise<number>,
+  getColumnMin: (columns: string) => Promise<number>,
+  getColumnSum: (columns: string) => Promise<number>,
+  getCategoryCounts: (columns: string, filters?: Array<Filter>) => Promise<{[entry: string| number]: number}>,
+  getEqualIntervalBins:(column: string, bins:number, filters?: Array<Filter>)=> Promise<Array<number>>,
+  getQuantileBins:(column: string, bins:number, filters?:Array<Filter>)=>Promise<Array<number>>,
+  getJenksBins:(column: string, bins:number, filters?: Array<Filter>)=>Promise<Array<number[]>>
 
   // metricForColumn?: (columnName:string, metric: DatasetMetric)=> any
 }

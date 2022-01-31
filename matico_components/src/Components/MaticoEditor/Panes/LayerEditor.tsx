@@ -15,7 +15,6 @@ import { DatasetSelector } from "../Utils/DatasetSelector";
 import { ColorPicker } from "../Utils/ColorPicker";
 import { PaneDefaults } from "../PaneDefaults";
 import { DataDrivenEditor } from "../Utils/DataDrivenEditor";
-import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
 
 export interface LayerEditorProps {
   editPath: string;
@@ -28,12 +27,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
   const layer = _.get(spec, editPath);
 
   const defaults = PaneDefaults.Layer;
-  const { state: datasetState } = useContext(MaticoDataContext);
-  const dataset = datasetState.datasets.find(
-    (d) => d.name === layer.source.name
-  );
-
-  console.log("Layer dataset is ", dataset, layer);
+  const dataset = useMaticoSelector(state=> state.datasets.datasets[layer.source.name])
 
   const updateStyle = (property: string, value: any) => {
     dispatch(
@@ -85,7 +79,8 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     dataDriven: boolean,
     type: "color" | "number"
   ) => {
-    const variable = dataset.columns().find((c) => c["type"] === "number");
+    const variable = dataset.columns.find((c) => c["type"] === "number");
+    console.log("Variable is ", variable)
 
     if (dataDriven) {
       const dataSpecs = {

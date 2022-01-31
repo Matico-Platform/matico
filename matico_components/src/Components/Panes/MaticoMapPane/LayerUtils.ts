@@ -63,9 +63,14 @@ export const generateNumericVar = (numericVar): NumberReturn => {
     const { variable, domain, range } = numericVar;
     const ramp = d3.scaleLinear().domain(domain).range(range);
     console.log("NUMERIC IS A THING ", variable, ramp);
-    return (d) => ramp(d[variable]);
+    return (d) => {
+      const val = d.hasOwnProperty("properties")
+        ? d.properties[variable]
+        : d[variable];
+      return ramp(val);
+    };
   }
-  return null
+  return null;
 };
 
 export const generateColor = (color: any) => {
@@ -107,7 +112,12 @@ export const generateColorVar = (colorVar): ColorReturn => {
       const ramp = chroma
         .scale(brewer.map((c) => generateColor(c)))
         .domain(domain);
-      return (d) => ramp(d[variable]).rgb();
+      return (d: any) => {
+        const val = d.hasOwnProperty("properties")
+          ? d.properties[variable]
+          : d[variable];
+        return ramp(val).rgb();
+      };
     } else {
       return null;
     }
@@ -123,8 +133,8 @@ export const getColorScale = (range: any) => {
     if (!brewer) {
       return null;
     }
-    return brewer
+    return brewer;
   } else {
-    return range
-  }
-}
+    return range;
+      return ramp(val);
+};
