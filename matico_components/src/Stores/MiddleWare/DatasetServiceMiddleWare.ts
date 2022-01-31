@@ -11,7 +11,6 @@ export const DatasetServiceMiddleWare = () => {
 
   if (!worker) {
     worker = wrap<DatasetServiceInterface>(DatasetServiceWorker());
-    console.log("Creating worker ", worker);
   }
 
   return (store: any) => (next: any) => (action: any) => {
@@ -34,10 +33,10 @@ export const DatasetServiceMiddleWare = () => {
                 error
               );
               store.dispatch({
-                type: "datasets/datasetFiledToLoad",
+                type: "datasets/datasetFailedToLoad",
                 payload: {
                   ...action.payload,
-                  error: error,
+                  error: error.toString(),
                 },
               });
             });
@@ -71,7 +70,6 @@ export const DatasetServiceMiddleWare = () => {
             },
           });
         };
-
         worker.registerColumnData(
           action.payload.args,
           comlink.proxy(onStatsUpdate),

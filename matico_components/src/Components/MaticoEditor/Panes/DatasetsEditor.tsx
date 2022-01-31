@@ -42,9 +42,7 @@ const StyledAccordionPanel = styled(AccordionPanel)`
   }
 `;
 
-export const DatasetEditor: React.FC<DatasetEditorProps> = ({
-  dataset,
-}) => {
+export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
   let statusColors = {
     [DatasetState.LOADING]: "status-warning",
     [DatasetState.ERROR]: "status-warning",
@@ -64,14 +62,18 @@ export const DatasetEditor: React.FC<DatasetEditorProps> = ({
           {dataset.name}
         </Text>
       </Box>
-      {dataset.state === DatasetState.READY ? (
+      {dataset.state === DatasetState.READY && (
         <>
           <Text>{dataset.geomType}</Text>
           <Text>{dataset.columns.length}</Text>
           <Columns />
         </>
-      ) : (
-        <Text>Loading</Text>
+      )}
+
+      {dataset.state === DatasetState.LOADING && <Text>Loading</Text>}
+
+      {dataset.state === DatasetState.ERROR && (
+        <Text>Failed to load {dataset.error}</Text>
       )}
       <Button icon={<Edit color={"status-warning"} />} />
       <Button icon={<FormTrash color={"status-critical"} />} />
@@ -173,8 +175,6 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
     setShowNewDataset(false);
   };
 
-  console.log("datasets are", datasets);
-
   return (
     <Box background="white" fill gap="medium" pad={{ bottom: "small" }}>
       {showNewDataset ? (
@@ -192,10 +192,7 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
                   key={datasetName}
                   header={() => (
                     <Box>
-                      <DatasetEditor
-                        dataset={dataset}
-                        key={datasetName}
-                      />
+                      <DatasetEditor dataset={dataset} key={datasetName} />
                     </Box>
                   )}
                 >

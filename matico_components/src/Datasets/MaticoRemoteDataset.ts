@@ -6,14 +6,20 @@ export class MaticoRemoteDataset implements Dataset {
   datasetId: string;
   token: string;
   serverUrl: string;
+  idCol: string;
   _axiosInstance: any;
 
   constructor(
     name: string,
     datasetId: string,
     serverUrl: string,
-    token: string
+    token?: string
   ) {
+    this.name = name;
+    this.datasetId = datasetId;
+    this.serverUrl = serverUrl;
+    this.token = token;
+
     this._axiosInstance = axios.create({
       baseURL: serverUrl + `/datasets/${datasetId}`,
       headers: {
@@ -24,11 +30,20 @@ export class MaticoRemoteDataset implements Dataset {
   }
 
   async _queryServer(path: string, params?: { [param: string]: any }) {
-    return await this._axiosInstance(path, params).data;
+    const queryResults = await this._axiosInstance(path, {params});
+    return queryResults.data;
   }
 
-  columns() {
-    return this._queryServer("/columns");
+  async columns() {
+    const serverColumns = await this._queryServer("/columns");
+    const typeMappings: { [postgisType: string]: any } = {
+      INT4: "number",
+      VARCHAR: "string",
+    };
+    return serverColumns.map((sc) => ({
+      name: sc.name,
+      type: typeMappings[sc.col_type] ?? sc.col_type,
+    }));
   }
 
   getData(filters?: Filter[], columns?: string[]) {
@@ -48,14 +63,15 @@ export class MaticoRemoteDataset implements Dataset {
   tiled() {
     return true;
   }
-
+  mvtUrl() {
+    return `${this.serverUrl}/tiler/dataset/${this.datasetId}/{z}/{x}/{y}`;
+  }
   isReady() {
     return true;
   }
-
   async geometryType() {
     let columns = await this.columns();
-    return columns.find((c: Column) => c.type === "geometry");
+    return columns.find((c: Column) => c.type === "geometry")?.type;
   }
 
   async getColumnMax(column: string) {
@@ -115,7 +131,7 @@ export class MaticoRemoteDataset implements Dataset {
   async getQuantileBins(column: string, bins: number, filters?: Filter[]) {
     const statParams = {
       stat: JSON.stringify({
-        Percentiles: { no_bins: bins, treat_null_as_zero: false },
+        Quantiles: { no_bins: bins, treat_null_as_zero: false },
       }),
     };
 
@@ -123,7 +139,7 @@ export class MaticoRemoteDataset implements Dataset {
       `/columns/${column}/stats`,
       statParams
     );
-    return result;
+    return result.Quantiles.map( (q:any)=>q.bin_end);
   }
   //TODO implement backend jenks bins
   getJenksBins: (

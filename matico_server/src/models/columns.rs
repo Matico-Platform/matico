@@ -3,6 +3,7 @@ use crate::db::DataDbPool;
 use crate::errors::ServiceError;
 use crate::utils::Format;
 use ts_rs::TS;
+use log::info;
 
 use serde::{Deserialize, Serialize};
 
@@ -30,7 +31,7 @@ pub struct JenksParams {
 
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
-pub struct PercentilesParams {
+pub struct QuantileParams {
     pub no_bins: usize,
     pub treat_null_as_zero: Option<bool>,
 }
@@ -59,7 +60,7 @@ pub struct ValueCountsParams {
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
 pub enum StatParams {
-    Percentiles(PercentilesParams),
+    Quantiles(QuantileParams),
     Jenks(JenksParams),
     Logorithmic(LogorithmicParams),
     BasicStats(BasicStatsParams),
@@ -69,10 +70,15 @@ pub enum StatParams {
 
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
-pub struct PercentilesResults {
-    pub bins: Vec<f32>,
-    pub values: Vec<f32>,
+pub struct QuantileEntry{
+    pub quantile: u32,
+    pub bin_start: f32, 
+    pub bin_end: f32
 }
+
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export)]
+pub struct QuantileResults(Vec<QuantileEntry>);
 
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
@@ -127,7 +133,7 @@ pub struct ValueCountsResults(Vec<ValCountEntry>);
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
 pub enum StatResults {
-    Percentiles(PercentilesResults),
+    Quantiles(QuantileResults),
     Jenks(JenksResults),
     Logotithmic(LogorithmicParams),
     BasicStats(BasicStatsResults),
@@ -155,8 +161,42 @@ impl Column {
             StatParams::ValueCounts(params) => self.calc_value_counts(conn, params).await,
             StatParams::BasicStats(params) => self.calc_basic_stats(conn, params).await,
             StatParams::Histogram(params) => self.calc_histogram(conn, params).await,
+            StatParams::Quantiles(params) => self.calc_quantiles(conn,params).await,
+            
             _ => Err(ServiceError::BadRequest("Stat not implemented".into())),
         }
+    }
+
+    async fn calc_quantiles(
+        &self,
+        db: &DataDbPool,
+        params: QuantileParams,
+    
+    )-> Result<StatResults,ServiceError>{
+
+        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
+
+        let query =format!(
+                "
+                SELECT
+                    ntile as quantile,
+                    CAST(min({column}) AS FLOAT) AS bin_start,
+                    CAST(max({column}) AS FLOAT) AS bin_end
+                    FROM (
+                        SELECT {column}, ntile({bins}) OVER (ORDER BY {column}) AS ntile FROM ({source_query}) as y ) x
+                    GROUP BY ntile 
+                    ORDER BY ntile
+                ",
+                column = self.name,
+                source_query = self.source_query,
+                bins = params.no_bins
+            );
+
+        let json = PostgisQueryRunner::run_query(db, &query, None, Format::Json).await?;
+        info!("JSON RESPONSE {:?}",json);
+        let results: QuantileResults =
+            serde_json::from_value(json).expect("Failed to deserialize quantiles response");
+        Ok(StatResults::Quantiles(results))
     }
 
     async fn calc_histogram(
@@ -200,17 +240,6 @@ impl Column {
         let results: HistogramResults =
             serde_json::from_value(json).expect("Failed to deserialize histogram response");
         Ok(StatResults::Histogram(results))
-    }
-
-    async fn _calc_percentiles(
-        &self,
-        _conn: &DataDbPool,
-        _params: PercentilesParams,
-    ) -> Result<StatResults, ServiceError> {
-        Ok(StatResults::Percentiles(PercentilesResults {
-            bins: vec![],
-            values: vec![],
-        }))
     }
 
     async fn calc_value_counts(

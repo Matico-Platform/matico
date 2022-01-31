@@ -9,6 +9,7 @@ import {
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { CSVBuilder } from "./CSVBuilder";
 import { GeoJSONBuilder } from "./GeoJSONBuilder";
+import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -71,13 +72,12 @@ export const DatasetService: DatasetServiceInterface = {
       callback(metricVal);
     }
 
-    this._registerNotifier(datasetName,async()=>{
-      const metricVal = await getMetric(datasetName)
-      if(metricVal){
-        callback(metricVal)
+    this._registerNotifier(datasetName, async () => {
+      const metricVal = await getMetric(datasetName);
+      if (metricVal) {
+        callback(metricVal);
       }
-    })
-
+    });
   },
   registerForUpdates(
     datasetName: string,
@@ -128,6 +128,7 @@ export const DatasetService: DatasetServiceInterface = {
           columns: await geoDataset.columns(),
           geomType: await geoDataset.geometryType(),
           local: true,
+          tiled: geoDataset.tiled(),
         };
       case "CSV":
         const csvDataset = await CSVBuilder(datasetDetails);
@@ -136,9 +137,23 @@ export const DatasetService: DatasetServiceInterface = {
         return {
           name: csvDataset.name,
           state: DatasetState.READY,
-          columns: await geoDataset.columns(),
-          geomType: await geoDataset.geometryType(),
+          columns: await csvDataset.columns(),
+          geomType: await csvDataset.geometryType(),
           local: true,
+          tiled: geoDataset.tiled(),
+        };
+      case "MaticoRemote":
+        const maticoDataset = await MaticoRemoteBuilder(datasetDetails);
+        this.datasets[maticoDataset.name] = maticoDataset;
+        this._notify(maticoDataset.name);
+        return {
+          name: maticoDataset.name,
+          state: DatasetState.READY,
+          columns: await maticoDataset.columns(),
+          geomType: await maticoDataset.geometryType(),
+          local: false,
+          tiled: maticoDataset.tiled(),
+          mvtUrl: maticoDataset.mvtUrl(),
         };
     }
   },

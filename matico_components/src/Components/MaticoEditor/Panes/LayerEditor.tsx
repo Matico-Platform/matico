@@ -15,7 +15,6 @@ import { DatasetSelector } from "../Utils/DatasetSelector";
 import { ColorPicker } from "../Utils/ColorPicker";
 import { PaneDefaults } from "../PaneDefaults";
 import { DataDrivenEditor } from "../Utils/DataDrivenEditor";
-import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
 
 export interface LayerEditorProps {
   editPath: string;

@@ -27,7 +27,6 @@ export const useRequestColumnStat= (args: ColumnStatRequest) =>{
  *
 */
 export const useRequestColumnStats = (requests: Array<ColumnStatRequest>)=>{
-  console.log("requsting updates ", requests)
   const dispatch = useMaticoDispatch()
   const requestHashes = requests.map((args) =>JSON.stringify(args))
 
