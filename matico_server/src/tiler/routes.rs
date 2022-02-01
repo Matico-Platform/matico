@@ -1,7 +1,8 @@
+use std::collections::HashMap;
 use crate::app_state::State;
 use crate::db::{MVTTile, PostgisQueryRunner, TileID, TilerOptions};
 use crate::errors::ServiceError;
-use crate::models::Dataset;
+use crate::models::{Dataset,Api};
 use actix_web::{get, web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -14,6 +15,11 @@ struct QueryParam {
 #[derive(Serialize, Deserialize)]
 struct DatasetID {
     dataset_id: Uuid,
+}
+
+#[derive(Serialize, Deserialize)]
+struct ApiID {
+    api_id: Uuid,
 }
 
 #[get("/{z}/{x}/{y}")]
@@ -48,7 +54,27 @@ async fn get_tile_for_dataset(
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
 
+#[get("/api/{api_id}/{z}/{x}/{y}")]
+async fn get_tile_for_query(
+    state: web::Data<State>,
+    web::Path(api): web::Path<ApiID>,
+    web::Path(tile_id): web::Path<TileID>,
+    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+    web::Path(tiler_options): web::Path<TilerOptions>,
+)-> Result<HttpResponse, ServiceError>{
+   let api = Api::find(&state.db, api.api_id)?;
+   let query = api.construct_query(params)?;
+
+
+    let mvt_tile =
+        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id)
+            .await?;
+
+    Ok(HttpResponse::Ok().body(mvt_tile.mvt))
+}
+
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_tile);
     cfg.service(get_tile_for_dataset);
+    cfg.service(get_tile_for_query);
 }

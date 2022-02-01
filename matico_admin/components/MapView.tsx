@@ -15,7 +15,7 @@ export interface MapViewInterface {
 }
 export const MapView: React.FC<MapViewInterface> = ({ url }) => {
   const layer = new MVTLayer({
-    data: url,
+    data: `${url}#${(new Date()).toISOString()}`,
     // @ts-ignore
     getLineColor: [255, 0, 0, 255],
     getLineWidth: 1,
