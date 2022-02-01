@@ -136,5 +136,5 @@ export const getColorScale = (range: any) => {
     return brewer;
   } else {
     return range;
-      return ramp(val);
+  }
 };

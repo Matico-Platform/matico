@@ -130,6 +130,64 @@ impl TextPane {
 }
 
 #[wasm_bindgen]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy,AutoCompleteMe)]
+pub enum ScreenUnits{
+    Pixels,
+    Percent
+}
+
+impl Default for ScreenUnits{
+    fn default()->Self{
+        Self::Pixels
+    }    
+}
+
+impl std::fmt::Display for ScreenUnits{
+ fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            Self::Pixels=> write!(f, "pixels"),
+            Self::Percent=> write!(f, "percent"),
+        }
+    } 
+}
+
+#[wasm_bindgen]
+impl PanePosition{
+    
+    #[wasm_bindgen(getter = x_units)]
+    pub fn get_x_units(&self) -> String {
+        match self.x_units{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
+
+    #[wasm_bindgen(getter = y_units)]
+    pub fn get_y_units(&self) -> String {
+        match self.y_units{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
+
+    #[wasm_bindgen(getter = width_units)]
+    pub fn get_width_units(&self) -> String {
+        match self.width_units{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
+
+    #[wasm_bindgen(getter = height_units)]
+    pub fn get_height_units(&self) -> String {
+        match self.height_units{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
+}
+
+#[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe, Default)]
 pub struct PanePosition {
     #[validate(range(min = 0, max = 100))]
@@ -140,4 +198,13 @@ pub struct PanePosition {
     pub float: bool,
     pub x: Option<f32>,
     pub y: Option<f32>,
+
+    #[wasm_bindgen(skip)]
+    pub x_units: Option<ScreenUnits>,
+    #[wasm_bindgen(skip)]
+    pub y_units: Option<ScreenUnits>,
+    #[wasm_bindgen(skip)]
+    pub width_units: Option<ScreenUnits>,
+    #[wasm_bindgen(skip)]
+    pub height_units: Option<ScreenUnits>
 }

@@ -1,5 +1,5 @@
 {
-  "name": "matico_charts",
+  "name": "@maticoapp/matico_charts",
   "version": "0.0.1",
   "description": "A concise, flexible charting wrapper made for React and Matico.",
   "main": "dist/cjs/index.js",

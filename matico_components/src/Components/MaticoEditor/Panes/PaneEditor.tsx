@@ -1,4 +1,12 @@
-import { Box, Form, FormField, Grid, TextInput } from "grommet";
+import {
+  Box,
+  Form,
+  FormField,
+  Grid,
+  RadioButton,
+  RadioButtonGroup,
+  TextInput,
+} from "grommet";
 import React from "react";
 import { MaticoPaneInterface } from "Components/Panes/Pane";
 
@@ -13,8 +21,9 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   name,
 }) => {
   const updatePosition = (change: any) => {
-    console.log("Name ", change)
+    console.log("Name ", change);
     const newPos = {
+      ...change,
       x: parseInt(change.x),
       y: parseInt(change.y),
       width: parseInt(change.width),
@@ -28,19 +37,23 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
       name: change.name || name,
     });
   };
+  console.log("position ", position)
 
   return (
-    <Box background={"white"}>
-      <Form value={position} onChange={(nextVal) => updatePosition(nextVal)}>
+    <Box background={"white"} width="100%" height="100%">
+      <Form value={position} onChange={(nextVal) => updatePosition(nextVal)} widht="100%" height="100%">
         <FormField label="name" name="name" htmlFor={"name"} gridArea={"name"}>
           <TextInput value={name} name="name" id="name" textAlign="center" />
         </FormField>
         <Grid
-          columns={{ count: 2, size: "auto" }}
-          gap="medium"
+          columns={["100px","100px","0.5fr","100px","100px"]}
           areas={[
-            ["x", "y"],
-            ["width", "height"],
+            // ["x",  "y"],
+            // ["x_units", 'y_units'],
+            // ["width", "height"], 
+            // ["width_units","height_units"]
+            ["x", "x_units","gap","y","y_units"],
+            ["width", "width_units","gap","height", "height_units"],
           ]}
         >
           <FormField label="x" name="x" htmlFor={"x"} gridArea={"x"}>
@@ -52,6 +65,23 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
               textAlign="center"
             />
           </FormField>
+          <FormField
+            name="x_units"
+            htmlFor={"x_units"}
+            gridArea={"x_units"}
+            style={{alignSelf:"end"}}
+          >
+            <RadioButtonGroup
+              direction="row"
+              name="x_units"
+              id="x_units"
+              options={[
+                { label: "px", value: "Pixels" },
+                { label: "%", value: "Percent" },
+              ]}
+              value={position.x_units ?? "Pixels"}
+            />
+          </FormField>
           <FormField label="y" name="y" htmlFor="y" gridArea={"y"}>
             <TextInput
               type="number"
@@ -59,6 +89,23 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
               name="y"
               id={"y"}
               textAlign="center"
+            />
+          </FormField>
+          <FormField
+            name="y_units"
+            htmlFor={"y_units"}
+            gridArea={"y_units"}
+            style={{alignSelf:"end"}}
+          >
+            <RadioButtonGroup
+              direction="row"
+              name="y_units"
+              id="y_units"
+              options={[
+                { label: "px", value: "Pixels" },
+                { label: "%", value: "Percent" },
+              ]}
+              value={position.y_units ?? "Pixels"}
             />
           </FormField>
           <FormField
@@ -76,6 +123,23 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             />
           </FormField>
           <FormField
+            name="width_units"
+            htmlFor={"width_units"}
+            gridArea={"width_units"}
+            style={{alignSelf:"end"}}
+          >
+            <RadioButtonGroup
+              direction="row"
+              id="width_units"
+              name="width_units"
+              options={[
+                { label: "px", value: "Pixels" },
+                { label: "%", value: "Percent" },
+              ]}
+              value={position.width_units ?? "Pixels"}
+            />
+          </FormField>
+          <FormField
             label="height"
             name="height"
             htmlFor="height"
@@ -87,6 +151,24 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
               id={"height"}
               name="height"
               textAlign="center"
+            />
+          </FormField>
+
+          <FormField
+            name="height_units"
+            htmlFor={"height_units"}
+            gridArea={"height_units"}
+            style={{alignSelf:"end"}}
+          >
+            <RadioButtonGroup
+              direction="row"
+              name="height_units"
+              id="height_units"
+              options={[
+                { label: "px", value: "Pixels" },
+                { label: "%", value: "Percent" },
+              ]}
+              value={position.height_units ?? "Pixels"}
             />
           </FormField>
         </Grid>

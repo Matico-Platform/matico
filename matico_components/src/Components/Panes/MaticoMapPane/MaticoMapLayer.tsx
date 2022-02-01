@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import { GeomType } from "../../../Datasets/Dataset";
-import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { AutoVariableInterface, useAutoVariable } from "Hooks/useAutoVariable";
 import { ScatterplotLayer, PathLayer, PolygonLayer } from "@deck.gl/layers";
 import {
@@ -13,7 +12,6 @@ import {
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
-import { DatasetState } from "../../../../dist/Datasets/Dataset";
 import { MVTLayer } from "deck.gl";
 
 interface MaticoLayerInterface {

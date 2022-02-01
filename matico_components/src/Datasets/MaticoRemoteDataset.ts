@@ -1,4 +1,11 @@
-import { Column, Dataset, DatasetState, Filter, GeomType } from "./Dataset";
+import {
+  Column,
+  Dataset,
+  DatasetState,
+  Filter,
+  GeomType,
+  HistogramBin,
+} from "./Dataset";
 import axios from "axios";
 
 export class MaticoRemoteDataset implements Dataset {
@@ -20,17 +27,21 @@ export class MaticoRemoteDataset implements Dataset {
     this.serverUrl = serverUrl;
     this.token = token;
 
+    const headers: { [header: string]: string } = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     this._axiosInstance = axios.create({
       baseURL: serverUrl + `/datasets/${datasetId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers,
     });
   }
 
   async _queryServer(path: string, params?: { [param: string]: any }) {
-    const queryResults = await this._axiosInstance(path, {params});
+    const queryResults = await this._axiosInstance(path, { params });
     return queryResults.data;
   }
 
@@ -113,6 +124,28 @@ export class MaticoRemoteDataset implements Dataset {
     return categoryCounts;
   }
 
+  async getColumnHistogram(column: string, noBins: number, filters?: Filter[]) {
+    console.log(`No bins is ${noBins} `);
+    const statParams = {
+      stat: JSON.stringify({
+        Histogram: { no_bins: noBins, treat_null_as_zero: false },
+      }),
+    };
+
+    let result = await this._queryServer(
+      `/columns/${column}/stats`,
+      statParams
+    );
+
+    result = result.Histogram;
+
+    return result.map((bin: any) => ({
+      count: bin.freq,
+      binStart: bin.bin_start,
+      binEnd: bin.bin_end,
+    }));
+  }
+
   async getEqualIntervalBins(column: string, bins: number, filters?: Filter[]) {
     const statParams = {
       stat: JSON.stringify({
@@ -139,7 +172,7 @@ export class MaticoRemoteDataset implements Dataset {
       `/columns/${column}/stats`,
       statParams
     );
-    return result.Quantiles.map( (q:any)=>q.bin_end);
+    return result.Quantiles.map((q: any) => q.bin_end);
   }
   //TODO implement backend jenks bins
   getJenksBins: (

@@ -47,6 +47,7 @@ export const DatasetService: DatasetServiceInterface = {
     callback: (data: any) => void
   ) {
     const { datasetName, metric, column, parameters, filters } = args;
+    console.log("setting up column request for ", datasetName,metric,column,parameters)
     const getMetric = async (datasetName: string) => {
       let dataset = this.datasets[datasetName];
       if (dataset) {
@@ -59,6 +60,8 @@ export const DatasetService: DatasetServiceInterface = {
             return dataset.getEqualIntervalBins(column, parameters.bins);
           case "Quantile":
             return dataset.getQuantileBins(column, parameters.bins);
+          case "Histogram":
+            return dataset.getColumnHistogram(column, parameters.noBins,filters);
           default:
             return null;
         }
