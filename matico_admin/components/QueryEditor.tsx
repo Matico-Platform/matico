@@ -40,7 +40,7 @@ export const QueryEditor: React.FC<QueryEditorProps> = ({
         onChange={onQueryChange}
         name="sql"
         fontSize="25px"
-        style={{ width: "100%", flex: 1, minHeight:"400px" }}
+        style={{ width: "100%", flex: 1, minHeight:"400px",height:"100%" }}
         editorProps={{ $blockScrolling: true }}
       />
   );

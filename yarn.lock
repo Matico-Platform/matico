@@ -24242,6 +24242,7 @@ __metadata:
     "@fortawesome/react-fontawesome": ^0.1.16
     "@loaders.gl/core": ^3.1.4
     "@loaders.gl/json": ^3.1.4
+    "@maticoapp/matico_charts": "workspace:matico_charts"
     "@maticoapp/matico_components": "workspace:matico_components"
     "@react-spectrum/card": ^3.0.0-alpha.1
     "@react-stately/data": ^3.4.3

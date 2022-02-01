@@ -36,6 +36,7 @@ import TableEdit from "@spectrum-icons/workflow/TableEdit";
 import { SyncHistory } from "../../components/SyncHistory";
 import dynamic from "next/dynamic";
 import {QueryEditorProps} from "../../components/QueryEditor";
+import {useState} from "react";
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
@@ -44,6 +45,8 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const { data: dataset, error: datasetError } = useDataset(datasetId);
   const { data: columns, error: columnsError } = useDatasetColumns(datasetId);
+
+  const [query,setQuery] = useState(`select * from ${dataset?.table_name}`)
 
   const mapUrl = `http://localhost:8000/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`
   const { data, error: dataError } = useDatasetData(datasetId, 0, 30);
@@ -114,7 +117,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                   </TableHeader>
                   <TableBody>
                     {data.data.map((datum: any, index:number) => (
-                      <Row key={index}>
+                      <Row>
                         {columns.map((col: any) => (
                           <Cell>
                             {col.col_type === "geometry"
@@ -140,7 +143,10 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                   </TabList>
                   <TabPanels>
                     <Item key="query">
-                      <QueryEditor query={"select * from table"} onRunQuery={()=>console.log("running query")} onQueryChange={()=>console.log("Query changed")} />
+                    <QueryEditor
+                      key={"query_pane"}
+                      query={query}
+                      onQueryChange={setQuery} />
                     </Item>
                     <Item key="feature">
                       <IllustratedMessage>
