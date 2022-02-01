@@ -5,6 +5,7 @@ import {
   Filter,
   RangeFilter,
   DatasetState,
+  HistogramBin,
 } from "./Dataset";
 
 import { predicate, DataFrame } from "@apache-arrow/es5-cjs";
@@ -194,6 +195,20 @@ export class LocalDataset implements Dataset {
       }
     });
     return combinedPredicate;
+  }
+
+  async getColumnHistogram (column: string, noBins: number, filters?:Array<Filter>) {
+    const maxVal = await this.getColumnMax(column, filters)
+    const minVal = await this.getColumnMin(column, filters)
+    const binWidth = (maxVal-minVal)/noBins;
+    const initalBins = [...Array(noBins-1)].map( (_)=>0);
+
+    const counts = this._applyAggregateFunction(column,(agg,value)=>{
+      const bin = Math.floor((value-minVal)/binWidth)
+      agg[bin]+=1;
+      return agg
+    } , [...Array(noBins-1)].map( (_)=> 0), filters) 
+    return counts.map((count:number,index:number)=> ({count, binStart:index*binWidth, binEnd:(index + 1)*binWidth}) ) 
   }
 
   async _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {

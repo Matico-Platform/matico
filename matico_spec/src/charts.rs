@@ -25,6 +25,9 @@ pub struct HistogramPane {
     pub color: Option<String>,
     #[wasm_bindgen(skip)]
     pub maxbins: Option<i64>,
+
+    #[wasm_bindgen(skip)]
+    pub labels: Option<Labels>
 }
 
 #[wasm_bindgen]
@@ -38,6 +41,21 @@ impl HistogramPane {
     pub fn set_name(&mut self, name: String) {
         self.name = name;
     }
+}
+
+#[wasm_bindgen]
+#[derive(Default,Serialize,Deserialize,Validate,Debug,Clone)]
+pub struct Labels{
+    #[wasm_bindgen(skip)]
+    pub title: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub sub_title: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub attribution: Option<String>, 
+    #[wasm_bindgen(skip)]
+    pub x_label: Option<String>, 
+    #[wasm_bindgen(skip)]
+    pub y_label: Option<String>, 
 }
 
 #[wasm_bindgen]
@@ -56,6 +74,8 @@ pub struct ScatterplotPane {
     #[wasm_bindgen(skip)]
     pub dot_color: Option<String>,
     pub dot_size: Option<u32>,
+    #[wasm_bindgen(skip)]
+    pub labels: Option<Labels>
 }
 
 #[wasm_bindgen]
@@ -84,6 +104,8 @@ pub struct PieChartPane {
     pub column: String,
     #[wasm_bindgen(skip)]
     pub theme: Option<String>, // todo: add mapping for categorical but numbered values (eg. 0,1 )
+    #[wasm_bindgen(skip)]
+    pub labels: Option<Labels>
 }
 
 #[wasm_bindgen]

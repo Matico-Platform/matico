@@ -13,11 +13,11 @@ const FreeArea = styled.div`
 
 const FreePane = styled(Box) <{ pane: PanePosition }>`
   position: absolute;
-  width:${({ pane }) => `${pane.width}%`};
-  height:${({ pane }) => `${pane.height}%`};
+  width:${({ pane }) => `${pane.width}${pane.width_units === "Percent" ? '%' : 'px' }`};
+  height:${({ pane }) => `${pane.height}${pane.height_units ==="Percent" ? '%' : 'px' }`};
   z-index:${({ pane }) => `${pane.layer}`};
-  left:${({ pane }) => `${pane.x}%`};
-  bottom:${({ pane }) => `${pane.y}%`};
+  left:${({ pane }) => `${pane.x}${pane.x_units ==="Percent" ? '%' : 'px' }`};
+  bottom:${({ pane }) => `${pane.y}${pane.y_units ==="Percent" ? '%' : 'px' }`};
   cursor:${({ pane }) => pane.float ? 'grab' : 'pointer'};
   background:${({ pane }) => pane.background ? pane.background : 'white'};
   transition: bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms;

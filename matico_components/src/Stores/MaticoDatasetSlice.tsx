@@ -62,7 +62,8 @@ export const datasetsSlice = createSlice({
       action: PayloadAction<{
         datasetName: string;
         requestHash: string;
-        filters: Array<Filter>;
+        filters?: Array<Filter>;
+        includeGeo?:boolean;
       }>
     ) => {
       const { requestHash } = action.payload;

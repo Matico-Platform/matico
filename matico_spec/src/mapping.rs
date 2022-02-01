@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Filter, PanePosition, VarOr, Variable};
+use crate::{AutoComplete, Filter, PanePosition, VarOr, Variable, ScreenUnits};
 use matico_spec_derive::AutoCompleteMe;
 use palette::Srgb;
 use serde::{Deserialize, Serialize};
@@ -179,6 +179,10 @@ impl Default for MapPane {
                 layer: 1,
                 x: Some(0.0),
                 y: Some(0.0),
+                width_units: Some(ScreenUnits::Pixels),
+                height_units: Some(ScreenUnits::Pixels),
+                x_units: Some(ScreenUnits::Pixels),
+                y_units: Some(ScreenUnits::Pixels)
             },
             view: VarOr::Value(View::default()),
             layers: vec![],

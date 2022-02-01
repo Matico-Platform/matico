@@ -1,10 +1,14 @@
 const DefaultPosition = {
   x: 25,
   y: 25,
-  width: 40,
-  height: 40,
+  width: 300,
+  height: 300,
   float: false,
   layer: 1,
+  x_units:"Percent",
+  y_units:"Precent",
+  width_units:"Pixels",
+  height_units:"Pixels"
 };
 
 const DefaultView = {

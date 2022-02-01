@@ -113,7 +113,7 @@ Histogram.args = {
   layers: [
     {
       type: "bar",
-      color: "steelblue",
+      color: color,
       scale: 2,
       padding: 0.1,
       xAccessor: (d) => (d.x0 + d.x1) / 2,

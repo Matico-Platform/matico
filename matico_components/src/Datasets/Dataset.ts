@@ -44,6 +44,12 @@ export interface DatasetSummary{
   mvtUrl?: string
 }
 
+export type HistogramBin={
+  binStart: number,
+  binEnd: number,
+  count: number
+}
+
 export interface Dataset{
   name: string,
   idCol: string,
@@ -57,9 +63,10 @@ export interface Dataset{
   isReady:()=> boolean,
   geometryType:()=> Promise<GeomType>,
   onStateChange?:(reportState :(state: DatasetState)=>void)=>void,
-  getColumnMax: (columns: string) => Promise<number>,
-  getColumnMin: (columns: string) => Promise<number>,
-  getColumnSum: (columns: string) => Promise<number>,
+  getColumnMax: (column: string) => Promise<number>,
+  getColumnMin: (column: string) => Promise<number>,
+  getColumnSum: (column: string) => Promise<number>,
+  getColumnHistogram:(column:string)=>Promise<Array<HistogramBin>>,
   getCategoryCounts: (columns: string, filters?: Array<Filter>) => Promise<{[entry: string| number]: number}>,
   getEqualIntervalBins:(column: string, bins:number, filters?: Array<Filter>)=> Promise<Array<number>>,
   getQuantileBins:(column: string, bins:number, filters?:Array<Filter>)=>Promise<Array<number>>,
