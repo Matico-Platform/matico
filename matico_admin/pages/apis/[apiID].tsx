@@ -48,10 +48,13 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
   const [query, setQuery] = useState("test");
   const [lastRunKey, setLastRunKey] = useState(new Date().toISOString());
   const [localParameters, setLocalParameters] = useState<any[]>([]);
+  const [values, setValues] = useState<{[param:string]:any}>({});
 
+
+  console.log("values are ", values)
 
   const valuesForQuery = localParameters.reduce((agg,val)=>{
-    return {...agg, [val.name]: val.value ?? Object.values(val.default_value)[0] }
+    return {...agg, [val.name]: values[val.name] ?? Object.values(val.default_value)[0] }
   },{})
 
   const {
@@ -154,7 +157,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
         <Heading level={4}>Api URLS</Heading>
         <Well>
           <Heading>Data endpoint</Heading>
-          <p>{`http://localhost:8000/api/apis/${api?.id}&${urlParams}`}</p>
+          <p>{`http://localhost:8000/api/apis/${api?.id}/run?${urlParams}`}</p>
         </Well>
         <Well>
           <Heading>Tile endpoint</Heading>
@@ -181,6 +184,9 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
                 <VariableEditor 
                   parameters={localParameters}
                   onParametersChanged={(newParams)=> setLocalParameters(newParams)}
+                  onValuesChanged={(newValues)=> setValues(newValues) }
+                  values={values}
+                  editable={true}
                 />
               </View>
             </Flex>

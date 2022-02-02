@@ -10,6 +10,7 @@ import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { CSVBuilder } from "./CSVBuilder";
 import { GeoJSONBuilder } from "./GeoJSONBuilder";
 import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
+import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -157,6 +158,19 @@ export const DatasetService: DatasetServiceInterface = {
           local: false,
           tiled: maticoDataset.tiled(),
           mvtUrl: maticoDataset.mvtUrl(),
+        };
+      case "MaticoApi":
+        const maticoApi= await MaticoRemoteApiBuilder(datasetDetails);
+        this.datasets[maticoApi.name] = maticoApi;
+        this._notify(maticoApi.name);
+        return {
+          name: maticoApi.name,
+          state: DatasetState.READY,
+          columns: await maticoApi.columns(),
+          geomType: await maticoApi.geometryType(),
+          local: false,
+          tiled: maticoApi.tiled(),
+          mvtUrl: maticoApi.mvtUrl(),
         };
     }
   },

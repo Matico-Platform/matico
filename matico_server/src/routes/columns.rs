@@ -10,8 +10,8 @@ use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]
 pub struct ColumnStatRequest {
-    stat: String,
-    bounds: Option<Bounds>,
+    pub stat: String,
+    pub bounds: Option<Bounds>,
 }
 
 #[get("{dataset_id}/columns")]

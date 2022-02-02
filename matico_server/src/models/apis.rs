@@ -2,6 +2,7 @@ use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
 use crate::utils::{Format, PaginationParams};
+use crate::models::columns::Column;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
@@ -262,6 +263,36 @@ impl Api {
         });
 
         Ok(result_with_metadata.to_string())
+    }
+
+    pub async fn get_column(
+        &self,
+        db: &DataDbPool,
+        col_name: String,
+        params:HashMap<String, serde_json::Value>
+    ) -> Result<Column, ServiceError> {
+        let cols = self.columns(db,params).await?;
+
+        let result = cols
+            .iter()
+            .find(|col| col.name == col_name)
+            .ok_or_else(|| {
+                ServiceError::BadRequest(format!(
+                    "No columns by the name of {} on table {}",
+                    col_name, self.name
+                ))
+            })?;
+        Ok((*result).clone())
+    }
+
+    pub async fn columns(&self, db : &DataDbPool, params:HashMap<String,serde_json::Value>)->Result<Vec<Column>, ServiceError>{
+        let query = self.construct_query(params)?;
+        let columns = PostgisQueryRunner::get_query_column_details(
+            db,
+            &query,
+        )
+        .await?;
+        Ok(columns)
     }
 
     pub async fn run(
