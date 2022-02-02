@@ -36,7 +36,7 @@ import TableEdit from "@spectrum-icons/workflow/TableEdit";
 import { SyncHistory } from "../../components/SyncHistory";
 import dynamic from "next/dynamic";
 import {QueryEditorProps} from "../../components/QueryEditor";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
@@ -46,7 +46,13 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const { data: dataset, error: datasetError } = useDataset(datasetId);
   const { data: columns, error: columnsError } = useDatasetColumns(datasetId);
 
-  const [query,setQuery] = useState(`select * from ${dataset?.table_name}`)
+  const [query,setQuery] = useState<null|string>(null)
+
+  useEffect(()=>{
+    if(query===null && dataset){
+        setQuery(`select * from ${dataset?.table_name}`)
+    }
+  },[dataset,query])
 
   const mapUrl = `http://localhost:8000/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`
   const { data, error: dataError } = useDatasetData(datasetId, 0, 30);
@@ -131,7 +137,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                 </TableView>
               )}
               <View gridArea="map">
-                <MapView datasetId={datasetId} />
+                <MapView datasetId={datasetId} sql={query} />
               </View>
               <View gridArea="focus">
                 <Tabs orientation="vertical" width="100%" height="100%">

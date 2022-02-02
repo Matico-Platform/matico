@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useApp } from "../../../hooks/useApps";
 import { Content } from "@adobe/react-spectrum";
 import { MaticoServerDatasetProvider } from "../../../datasetProviders/MaticoServerDatasetProvider";
+import {MaticoServerApiProvider} from "../../../datasetProviders/MaticoApiProvider";
 
 const Editor: NextPage = () => {
   const MaticoApp = dynamic(
@@ -54,7 +55,7 @@ const Editor: NextPage = () => {
               console.log("UPDATEING");
               updateApp({ ...app, spec });
             }}
-            datasetProviders={[MaticoServerDatasetProvider]}
+            datasetProviders={[MaticoServerDatasetProvider, MaticoServerApiProvider]}
           />
         )}
       </View>

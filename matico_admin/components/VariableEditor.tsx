@@ -17,31 +17,40 @@ import React, { Key } from "react";
 
 interface VariableEditorProps {
   parameters: Array<any>;
+  values: {[param :string] : any};
+  onValuesChanged: (newParams :{[param :string] : any})=>void;
   onParametersChanged: (newParams: Array<any>) => void;
+  editable: boolean;
 }
 
 export const VariableEditor: React.FC<VariableEditorProps> = ({
   parameters,
   onParametersChanged,
+  values,
+  onValuesChanged,
+  editable,
 }) => {
 
+  const updateValue=(
+    name:string,
+    value: any
+  )=>{
+    const newValues = {...values, [name]:value}
+    onValuesChanged(newValues)
+  }
   const updateParameterValue = (
     name: string,
     change: { [value: string]: any }
   ) => {
-    const newParams = parameters.map((p) => 
-        p.name === name ? { ...p, ...change } : p
-    )
-    onParametersChanged(
-      newParams
+    const newParams = parameters.map((p) =>
+      p.name === name ? { ...p, ...change } : p
     );
+    onParametersChanged(newParams);
   };
 
-  const removeVar= (name:string)=>{
-    onParametersChanged(
-      parameters.filter(p=>p.name!==name)
-    )
-  }
+  const removeVar = (name: string) => {
+    onParametersChanged(parameters.filter((p) => p.name !== name));
+  };
 
   return (
     <Flex
@@ -69,40 +78,50 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
                 alignItems="end"
               >
                 <Text>{p.name}</Text>
-                <Picker
-                  label="Variable Type"
-                  selectedKey={p.type as Key}
-                  width={"size-1600"}
-                  onSelectionChange={(type) =>
-                    updateParameterValue(p.name, { type: type as string })
-                  }
-                >
-                  <Item key="Numerical">Numerical</Item>
-                  <Item key="Text">Text</Item>
-                </Picker>
-                <NumberField
-                  label="Default Value"
-                  value={Object.values(p.default_value)[0] as number}
-                  onChange={(default_value) =>
-                    updateParameterValue(p.name, { default_value: {Numeric:default_value}})
-                  }
-                  step={0.01}
-                  width={"size-900"}
-                />
+                {editable ? (
+                  <Picker
+                    label="Variable Type"
+                    selectedKey={p.type as Key}
+                    width={"size-1600"}
+                    onSelectionChange={(type) =>
+                      updateParameterValue(p.name, { type: type as string })
+                    }
+                  >
+                    <Item key="Numerical">Numerical</Item>
+                    <Item key="Text">Text</Item>
+                  </Picker>
+                ) : (
+                  <Text>{p.type}</Text>
+                )}
+
+                {editable && (
+                  <NumberField
+                    label="Default Value"
+                    value={Object.values(p.default_value)[0] as number}
+                    onChange={(default_value) =>
+                      updateParameterValue(p.name, {
+                        default_value: { Numeric: default_value },
+                      })
+                    }
+                    step={0.01}
+                    width={"size-900"}
+                  />
+                )}
                 <NumberField
                   label="Value"
-                  value={p.value ?? Object.values(p.default_value)[0]}
-                  onChange={(value) =>
-                    updateParameterValue(p.name, { value})
-                  }
+                  value={values[p.name] ?? Object.values(p.default_value)[0]}
+                  onChange={(value) => updateValue(p.name, value )}
                   formatOptions={{
-                    minimumFractionDigits:3
+                    minimumFractionDigits: 3,
                   }}
                   step={0.01}
-
-                  width={"size-900"}
+                  width={editable ? "size-900" : "size-2400"}
                 />
-                  <ActionButton onPress={()=>removeVar(p.name)}>Delete</ActionButton>
+                {editable && (
+                  <ActionButton onPress={() => removeVar(p.name)}>
+                    Delete
+                  </ActionButton>
+                )}
               </Flex>
             ))}
           </Flex>
