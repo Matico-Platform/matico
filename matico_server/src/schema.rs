@@ -66,6 +66,7 @@ table! {
         parameters -> Array<Jsonb>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        public -> Bool,
     }
 }
 

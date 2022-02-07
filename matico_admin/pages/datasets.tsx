@@ -8,6 +8,7 @@ import {
   Header,
   Heading,
   View,
+  ActionButton,
 } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useDatasets } from "../hooks/useDatasets";
@@ -23,6 +24,7 @@ import {
   TableHeader,
 } from "@adobe/react-spectrum";
 import { NewDatasetModal } from "../components/DatasetCreation/NewDatasetModal";
+import Edit from "@spectrum-icons/workflow/Edit";
 
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   try {
@@ -41,8 +43,8 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
 }) => {
   const { data: datasets, error } = useDatasets();
 
-  const colWidth=200;
-  console.log("datasets are ", datasets)
+  const colWidth = 200;
+  console.log("datasets are ", datasets);
   return (
     <Layout hasSidebar={true}>
       <View backgroundColor="gray-200" padding="size-100" gridArea="sidebar">
@@ -75,7 +77,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
           >
             <TableHeader>
               <Column minWidth={colWidth}>Name</Column>
-              <Column minWidth={100} >Access</Column>
+              <Column minWidth={100}>Access</Column>
               <Column minWidth={100}>Type</Column>
               <Column minWidth={150}>Sync Frequency</Column>
               <Column minWidth={colWidth}>Sync Url</Column>
@@ -92,7 +94,14 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
                       </Link>
                     </ALink>
                   </Cell>
-                  <Cell>{dataset.public ? "Public" : "Private"}</Cell>
+                  <Cell>
+                    <Flex direction='row' justifyContent='space-between' alignItems="center">
+                      <Text> {dataset.public ? "Public" : "Private"}</Text>
+                    <ActionButton isQuiet>
+                      <Edit size="S" />
+                    </ActionButton>
+                  </Flex>
+                  </Cell>
                   <Cell>{dataset.sync_dataset ? "Sync" : "Static"}</Cell>
                   <Cell>
                     {dataset.sync_dataset ? dataset.sync_frequency_seconds : ""}

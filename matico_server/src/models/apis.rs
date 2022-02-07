@@ -2,6 +2,7 @@ use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
 use crate::utils::{Format, PaginationParams};
+use crate::models::columns::Column;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
@@ -30,8 +31,9 @@ pub struct AnnonQuery {
 pub struct CreateAPIDTO {
     pub name: String,
     pub description: String,
-    pub sql: String,
-    pub parameters: Vec<APIParam>,
+    pub sql: Option<String>,
+    pub parameters: Option<Vec<APIParam>>,
+    pub public: Option<bool>
 }
 
 #[derive(Serialize, Deserialize, Debug, AsChangeset)]
@@ -41,6 +43,7 @@ pub struct UpdateAPIDTO {
     pub description: Option<String>,
     pub sql: Option<String>,
     pub parameters: Option<Vec<APIParam>>,
+    pub public: Option<bool>
 }
 
 impl Display for ValueType {
@@ -111,7 +114,7 @@ pub enum APIParam {
 
 #[derive(Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
 #[table_name = "queries"]
-pub struct Api  {
+pub struct Api {
     pub id: Uuid,
     pub name: String,
     pub description: String,
@@ -119,17 +122,23 @@ pub struct Api  {
     pub parameters: Vec<APIParam>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
+    pub public: bool 
 }
 
 impl From<CreateAPIDTO> for Api {
-    fn from(user: CreateAPIDTO) -> Self {
-        let parameters = user.parameters;
-        Self::new(user.name, user.description, user.sql, parameters)
+    fn from(api: CreateAPIDTO) -> Self {
+        Self::new(
+            api.name,
+            api.description,
+            api.sql.unwrap_or("select * from #{input_table}".into()),
+            api.parameters.unwrap_or(vec![]),
+            api.public.unwrap_or(false)
+        )
     }
 }
 
 impl Api {
-    pub fn new(name: String, description: String, sql: String, parameters: Vec<APIParam>) -> Self {
+    pub fn new(name: String, description: String, sql: String, parameters: Vec<APIParam>, public: bool) -> Self {
         Self {
             id: Uuid::new_v4(),
             name,
@@ -138,6 +147,7 @@ impl Api {
             parameters,
             created_at: Utc::now().naive_utc(),
             updated_at: Utc::now().naive_utc(),
+            public
         }
     }
 
@@ -204,7 +214,7 @@ impl Api {
         &self,
         params: HashMap<String, serde_json::Value>,
     ) -> Result<String, ServiceError> {
-        let mut api = self.sql.clone();
+        let mut api = self.sql.clone().replace(";", "");
 
         for q_param in self.parameters.clone() {
             match q_param {
@@ -255,6 +265,36 @@ impl Api {
         Ok(result_with_metadata.to_string())
     }
 
+    pub async fn get_column(
+        &self,
+        db: &DataDbPool,
+        col_name: String,
+        params:HashMap<String, serde_json::Value>
+    ) -> Result<Column, ServiceError> {
+        let cols = self.columns(db,params).await?;
+
+        let result = cols
+            .iter()
+            .find(|col| col.name == col_name)
+            .ok_or_else(|| {
+                ServiceError::BadRequest(format!(
+                    "No columns by the name of {} on table {}",
+                    col_name, self.name
+                ))
+            })?;
+        Ok((*result).clone())
+    }
+
+    pub async fn columns(&self, db : &DataDbPool, params:HashMap<String,serde_json::Value>)->Result<Vec<Column>, ServiceError>{
+        let query = self.construct_query(params)?;
+        let columns = PostgisQueryRunner::get_query_column_details(
+            db,
+            &query,
+        )
+        .await?;
+        Ok(columns)
+    }
+
     pub async fn run(
         &self,
         pool: &DataDbPool,
@@ -263,6 +303,7 @@ impl Api {
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let f = format.unwrap_or_default();
+        info!("Using format {}",f);
 
         let query = self.construct_query(params)?;
         let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;

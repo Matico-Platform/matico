@@ -181,8 +181,16 @@ export async function getUniqueColumnValues(
   );
 }
 
-export async function getQueries() {
-  return a.get("/queries");
+export async function createApi(newAPI: any){
+  return a.post("/apis", newAPI)
+}
+
+export async function updateApi(id: string, newAPI: any){
+  return a.put(`/apis/${id}`, newAPI)
+}
+
+export async function getApis() {
+  return a.get("/apis");
 }
 
 // export async function getColumnHistogram(
@@ -217,7 +225,10 @@ export async function runQuery(
   return a.get(`queries/run?q=${sql}`, { params: page });
 }
 
-export const useSWRAPI = (endpoint: string, opts?:any) =>
-  useSWR(endpoint, (url: string) => a.get(url).then((res) => res.data), opts);
+export const useSWRAPI = (endpoint: string | null, opts?:any) =>{
+  const {params, ...swrOpts} = opts
+  console.log(" opts ",params, swrOpts)
+  return useSWR(endpoint, (url: string) => a.get(url,{params}).then((res) => res.data), swrOpts);
+}
 
 export default a;

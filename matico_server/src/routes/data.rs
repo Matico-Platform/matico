@@ -5,7 +5,6 @@ use crate::errors::ServiceError;
 use crate::models::permissions::*;
 use crate::models::Dataset;
 
-
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
 use actix_web::{get, put, web, HttpResponse};
 use uuid::Uuid;
@@ -57,9 +56,9 @@ async fn get_feature(
     let dataset = Dataset::find(&state.db, dataset_id)?;
 
     if !dataset.public {
-        let user = logged_in_user.user.ok_or_else(|| ServiceError::Unauthorized(
-            "You do not have permission to read this dataset".into(),
-        ))?;
+        let user = logged_in_user.user.ok_or_else(|| {
+            ServiceError::Unauthorized("You do not have permission to read this dataset".into())
+        })?;
         Permission::check_permission(&state.db, &user.id, &dataset_id, PermissionType::Read)?;
     }
 

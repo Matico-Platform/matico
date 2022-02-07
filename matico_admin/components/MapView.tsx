@@ -11,12 +11,27 @@ const INITIAL_VIEW_STATE = {
 };
 
 export interface MapViewInterface {
-  datasetId: string;
+  url?: string;
+  datasetId?:string,
+  sql?:string
 }
-export const MapView: React.FC<MapViewInterface> = ({ datasetId }) => {
-  const url = `/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`;
+export const MapView: React.FC<MapViewInterface> = ({ url, datasetId, sql}) => {
+
+  let requestUrl =""
+  if(url){
+    requestUrl=url 
+  }
+  else if(sql){
+    requestUrl = `http://localhost:8000/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(sql)}`
+  }
+  else if(datasetId){
+    requestUrl = `http://localhost:8000/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`
+  }
+
+
+  console.log("request url is ",requestUrl)
   const layer = new MVTLayer({
-    data: url,
+    data: `${requestUrl}#${(new Date()).toISOString()}`,
     // @ts-ignore
     getLineColor: [255, 0, 0, 255],
     getLineWidth: 1,
