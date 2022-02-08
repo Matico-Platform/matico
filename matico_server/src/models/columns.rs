@@ -192,7 +192,7 @@ impl Column {
                 bins = params.no_bins
             );
 
-        let json = PostgisQueryRunner::run_query(db, &query, None, Format::Json).await?;
+        let json = PostgisQueryRunner::run_query(db, &query, None, None, Format::Json).await?;
         info!("JSON RESPONSE {:?}",json);
         let results: QuantileResults =
             serde_json::from_value(json).expect("Failed to deserialize quantiles response");
@@ -236,7 +236,7 @@ impl Column {
             ),
         };
 
-        let json = PostgisQueryRunner::run_query(db, &query, None, Format::Json).await?;
+        let json = PostgisQueryRunner::run_query(db, &query, None, None, Format::Json).await?;
         let results: HistogramResults =
             serde_json::from_value(json).expect("Failed to deserialize histogram response");
         Ok(StatResults::Histogram(results))
@@ -255,7 +255,7 @@ impl Column {
             order by count DESC",
             self.name, self.source_query, self.name
         );
-        let json = PostgisQueryRunner::run_query(db, &query, None, Format::Json).await?;
+        let json = PostgisQueryRunner::run_query(db, &query, None,None, Format::Json).await?;
         let results: ValueCountsResults =
             serde_json::from_value(json).expect("Failed to deserialize value count response");
         Ok(StatResults::ValueCounts(results))
@@ -280,7 +280,7 @@ impl Column {
         );
 
         let results: Vec<BasicStatsResults> = serde_json::from_value(
-            PostgisQueryRunner::run_query(db, &query, None, Format::Json).await?,
+            PostgisQueryRunner::run_query(db, &query, None, None, Format::Json).await?,
         )
         .expect("Failed to deserialize basic results response");
 

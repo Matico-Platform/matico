@@ -5,7 +5,6 @@ import {
   Cell,
   Column,
   Content,
-  Divider,
   Flex,
   Grid,
   Heading,
@@ -17,13 +16,16 @@ import {
   Text,
   Well,
 } from "@adobe/react-spectrum";
+
 import { GetServerSideProps } from "next";
-import { useApi, useApiTableData } from "../../hooks/useApis";
+import { useApi } from "../../hooks/useApis";
+import { SourceType, useTableData } from "../../hooks/useTableData";
 import dynamic from "next/dynamic";
 import { QueryEditorProps } from "../../components/QueryEditor";
 import { VariableEditor } from "../../components/VariableEditor";
 import { MapView } from "../../components/MapView";
 import { useMemo, useEffect, useState, memo } from "react";
+import {DataTable} from "../../components/DataTable";
 
 const parameterRegEx = /\$\{([A-Za-z0-9]*)\}/g;
 
@@ -48,60 +50,23 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
   const [query, setQuery] = useState("test");
   const [lastRunKey, setLastRunKey] = useState(new Date().toISOString());
   const [localParameters, setLocalParameters] = useState<any[]>([]);
-  const [values, setValues] = useState<{[param:string]:any}>({});
+  const [values, setValues] = useState<{ [param: string]: any }>({});
+  const [queryError, setQueryError] = useState<string|null>(null)
 
+  const valuesForQuery = localParameters.reduce((agg, val) => {
+    return {
+      ...agg,
+      [val.name]: values[val.name] ?? Object.values(val.default_value)[0],
+    };
+  }, {});
 
-  console.log("values are ", values)
+  const urlParams: string = Object.keys(valuesForQuery)
+    .map(
+      (key) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(valuesForQuery[key])}`
+    )
+    .join("&");
 
-  const valuesForQuery = localParameters.reduce((agg,val)=>{
-    return {...agg, [val.name]: values[val.name] ?? Object.values(val.default_value)[0] }
-  },{})
-
-  const {
-    data: tableData,
-    error,
-    mutate: updateTableData,
-  } = useApiTableData(api, { params: { limit: 15, ...valuesForQuery }, refreshInterval: 0 });
-
-
-  useEffect(()=>{
-      updateTableData()
-  },[JSON.stringify(valuesForQuery)])
-
-
-  const Table = useMemo(() => {
-    const columns = 
-      tableData
-        ? Object.keys(tableData[0]).map((item) => ({ id: item, name: item }))
-        : [];
-    return (
-      <TableView id={"table"} key={"table"} gridArea="table">
-        <TableHeader columns={columns}>
-          {(col) => (
-            <Column key={col.id} width={200}>
-              {col.name}
-            </Column>
-          )}
-        </TableHeader>
-        <TableBody items={tableData}>
-          {(param: { [key: string]: any }) => (
-            <Row key={JSON.stringify(param)}>
-              {(columnKey) => (
-                <Cell>
-                  {typeof param[columnKey] === "object"
-                    ? "Geometry"
-                    : param[columnKey]}
-                </Cell>
-              )}
-            </Row>
-          )}
-        </TableBody>
-      </TableView>
-    );
-  }, [tableData]);
-
-  const urlParams: string = Object.keys(valuesForQuery).map(key=>`${encodeURIComponent(key)}=${encodeURIComponent(valuesForQuery[key])}`).join("&")
-  
   const mapUrl = api
     ? `http://localhost:8000/api/tiler/api/${api.id}/{z}/{x}/{y}?${urlParams}`
     : "";
@@ -113,28 +78,25 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
     }
   }, [api]);
 
-  useEffect(()=>{
-    const variables = parseVariables(query)
-    const newVariables: Array<any> = []
-    variables.forEach((variable)=>{
-      if(!localParameters.find(p=>p.name === variable)){
+  useEffect(() => {
+    const variables = parseVariables(query);
+    const newVariables: Array<any> = [];
+    variables.forEach((variable) => {
+      if (!localParameters.find((p) => p.name === variable)) {
         newVariables.push({
-          type:'Numerical',
-          name:variable,
-          description:`The value of ${variable}`,
-          default_value:{Numeric:0}
-        })
+          type: "Numerical",
+          name: variable,
+          description: `The value of ${variable}`,
+          default_value: { Numeric: 0 },
+        });
       }
-    })
-    setLocalParameters([...localParameters,...newVariables])
-  },[query])
+    });
+    setLocalParameters([...localParameters, ...newVariables]);
+  }, [query]);
 
   const updateAndRun = () => {
     setLastRunKey(new Date().toISOString());
-    updateApi({ sql: query.replace(";", ""), parameters:localParameters });
-    setTimeout(() => {
-      updateTableData();
-    });
+    updateApi({ sql: query.replace(";", ""), parameters: localParameters });
   };
 
   const parseVariables = (query: string) => {
@@ -142,7 +104,6 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
       return match[1];
     });
   };
-
 
   return (
     <Layout hasSidebar={true}>
@@ -180,18 +141,20 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
                 query={query}
                 onQueryChange={setQuery}
               />
-              <View width={"25%"} height={"100%"}>
-                <VariableEditor 
+              <View width={"40%"} height={"100%"}>
+                <VariableEditor
                   parameters={localParameters}
-                  onParametersChanged={(newParams)=> setLocalParameters(newParams)}
-                  onValuesChanged={(newValues)=> setValues(newValues) }
+                  onParametersChanged={(newParams) =>
+                    setLocalParameters(newParams)
+                  }
+                  onValuesChanged={(newValues) => setValues(newValues)}
                   values={values}
                   editable={true}
                 />
               </View>
             </Flex>
             <Flex gridArea="buttons" gap={"10px"} justifyContent={"end"}>
-              {error && <Text>{error.toString()}</Text>}
+              {queryError && <Text>{queryError}</Text>}
               <Button variant={"negative"}>Clear</Button>
               <Button variant={"primary"} onPress={updateAndRun}>
                 Run
@@ -200,7 +163,18 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
             <View gridArea="map">
               <MapView url={mapUrl} />
             </View>
-            {tableData && Table}
+            {api && 
+              <DataTable 
+                source={{
+                  id:api.id,
+                  type: SourceType.API,
+                  parameters: localParameters
+                }}
+                filters={[]}
+                onError={setQueryError}
+              
+              />
+            }
           </Grid>
         )}
       </View>

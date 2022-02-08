@@ -46,7 +46,20 @@ async fn get_stats(
     Ok(HttpResponse::Ok().json(result))
 }
 
+#[get("{dataset_id}/columns/{column_name}")]
+async fn get_column(
+    state: web::Data<State>,
+    web::Path((dataset_id, column_name)): web::Path<(Uuid, String)>,
+) -> Result<HttpResponse, ServiceError> {
+    let dataset = Dataset::find(&state.db, dataset_id)?;
+
+    let col = dataset.get_column(&state.data_db, column_name).await?;
+
+    Ok(HttpResponse::Ok().json(col))
+}
+
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_columns);
+    cfg.service(get_column);
     cfg.service(get_stats);
 }

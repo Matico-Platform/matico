@@ -1,7 +1,7 @@
 use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
-use crate::utils::{Format, PaginationParams};
+use crate::utils::{Format, PaginationParams,SortParams};
 use crate::models::columns::Column;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
@@ -246,6 +246,7 @@ impl Api {
         pool: &DataDbPool,
         query: String,
         page: Option<PaginationParams>,
+        sort: Option<SortParams>,
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let f = format.unwrap_or_default();
@@ -253,7 +254,7 @@ impl Api {
         //TODO Move this to PostgisQueryRunner
         let metadata = PostgisQueryRunner::run_query_meta(pool, &query).await?;
 
-        let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;
+        let result = PostgisQueryRunner::run_query(pool, &query, page, sort, f).await?;
 
         let result_with_metadata = json!({
             "data":result,
@@ -300,13 +301,14 @@ impl Api {
         pool: &DataDbPool,
         params: HashMap<String, serde_json::Value>,
         page: Option<PaginationParams>,
+        sort: Option<SortParams>,
         format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let f = format.unwrap_or_default();
         info!("Using format {}",f);
 
         let query = self.construct_query(params)?;
-        let result = PostgisQueryRunner::run_query(pool, &query, page, f).await?;
+        let result = PostgisQueryRunner::run_query(pool, &query, page, sort, f).await?;
         Ok(result.to_string())
     }
 }

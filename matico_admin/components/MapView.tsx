@@ -13,7 +13,8 @@ const INITIAL_VIEW_STATE = {
 export interface MapViewInterface {
   url?: string;
   datasetId?:string,
-  sql?:string
+  sql?:string,
+  visCol?:string
 }
 export const MapView: React.FC<MapViewInterface> = ({ url, datasetId, sql}) => {
 
@@ -29,7 +30,6 @@ export const MapView: React.FC<MapViewInterface> = ({ url, datasetId, sql}) => {
   }
 
 
-  console.log("request url is ",requestUrl)
   const layer = new MVTLayer({
     data: `${requestUrl}#${(new Date()).toISOString()}`,
     // @ts-ignore

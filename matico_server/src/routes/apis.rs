@@ -10,7 +10,7 @@ use crate::models::{
     permissions::*,
     users::*,
 };
-use crate::utils::{FormatParam, PaginationParams};
+use crate::utils::{FormatParam, PaginationParams, SortParams};
 use std::collections::HashMap;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
@@ -85,10 +85,11 @@ async fn run_annon_query(
     state: web::Data<State>,
     web::Query(query): web::Query<AnnonQuery>,
     web::Query(page): web::Query<PaginationParams>,
+    web::Query(sort): web::Query<SortParams>,
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
-    let result = Api::run_raw(&state.data_db, query.q, Some(page), format_param.format).await?;
+    let result = Api::run_raw(&state.data_db, query.q, Some(page), Some(sort), format_param.format).await?;
     // let result = "{\"test\":\"test\"}";
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -118,6 +119,19 @@ async fn get_column_stats(
     Ok(HttpResponse::Ok().json(result))
 }
 
+#[get("{api_id}/columns/{column_name}")]
+async fn get_column(
+    state: web::Data<State>,
+    web::Path((api_id, column_name)): web::Path<(Uuid, String)>,
+    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+) -> Result<HttpResponse, ServiceError> {
+    let api= Api::find(&state.db, api_id)?;
+
+    let col = api.get_column(&state.data_db, column_name, params).await?;
+
+    Ok(HttpResponse::Ok().json(col))
+}
+
 #[get("/{api_id}/columns")]
 async fn get_columns(
     state: web::Data<State>,
@@ -134,18 +148,20 @@ async fn get_columns(
         .json(columns))
 }
 
+
 #[get("/{api_id}/run")]
 async fn run_api(
     state: web::Data<State>,
     web::Path(query_id): web::Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(page): web::Query<PaginationParams>,
+    web::Query(sort): web::Query<SortParams>,
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
 ) -> Result<HttpResponse, ServiceError> {
     let query = Api::find(&state.db, query_id)?;
     let result = query
-        .run(&state.data_db, params, Some(page), format_param.format)
+        .run(&state.data_db, params, Some(page), Some(sort), format_param.format)
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -161,6 +177,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(create_api);
     cfg.service(get_column_stats);
     cfg.service(get_columns);
+    cfg.service(get_column);
     cfg.service(run_api);
     // cfg.service(run_query);
 }

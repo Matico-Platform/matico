@@ -37,6 +37,8 @@ import { SyncHistory } from "../../components/SyncHistory";
 import dynamic from "next/dynamic";
 import {QueryEditorProps} from "../../components/QueryEditor";
 import {useEffect, useState} from "react";
+import {DataTable} from "../../components/DataTable";
+import {SourceType} from "../../hooks/useTableData";
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
@@ -106,36 +108,12 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
               height="100%"
               gap="size-400"
             >
-              {columns && data && (
-                <TableView
-                  aria-label="Example table with static contents"
-                  marginY="size-40"
-                  gridArea="table"
-                  selectionMode={"single"}
-                  onSelectionChange={(selection)=> console.log("selection is ", selection)}
-                >
-                  <TableHeader>
-                    {columns.map((column: any, index: number) => (
-                      <Column width={200} key={index}>
-                        {column.name}
-                      </Column>
-                    ))}
-                  </TableHeader>
-                  <TableBody>
-                    {data.data.map((datum: any, index:number) => (
-                      <Row>
-                        {columns.map((col: any) => (
-                          <Cell>
-                            {col.col_type === "geometry"
-                              ? "geometry"
-                              : datum[col.name]}
-                          </Cell>
-                        ))}
-                      </Row>
-                    ))}
-                  </TableBody>
-                </TableView>
-              )}
+              {dataset &&
+                <DataTable source={{
+                id: datasetId,
+                type: SourceType.Dataset,
+              }} filters={[]} />
+              }
               <View gridArea="map">
                 <MapView datasetId={datasetId} sql={query} />
               </View>

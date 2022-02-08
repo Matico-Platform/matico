@@ -73,7 +73,7 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
               <Flex
                 key={p.name}
                 direction="row"
-                justifyContent="space-between"
+                justifyContent="stretch"
                 gap={"size-200"}
                 alignItems="end"
               >
@@ -104,7 +104,6 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
                       })
                     }
                     step={0.01}
-                    width={"size-900"}
                   />
                 )}
                 <NumberField
@@ -115,7 +114,6 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
                     minimumFractionDigits: 3,
                   }}
                   step={0.01}
-                  width={editable ? "size-900" : "size-2400"}
                 />
                 {editable && (
                   <ActionButton onPress={() => removeVar(p.name)}>

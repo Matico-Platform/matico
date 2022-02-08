@@ -139,7 +139,7 @@ impl Dataset {
         pool: &DataDbPool,
         query: Option<String>,
         page: Option<PaginationParams>,
-        _sort: Option<SortParams>,
+        sort: Option<SortParams>,
         format: Option<Format>,
         include_metadata: Option<bool>,
     ) -> Result<String, ServiceError> {
@@ -151,7 +151,7 @@ impl Dataset {
         let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
         let f = format.unwrap_or_default();
 
-        let result = PostgisQueryRunner::run_query(pool, &q, page, f).await?;
+        let result = PostgisQueryRunner::run_query(pool, &q, page, sort, f).await?;
         let result_with_metadata = match include_metadata {
             Some(true) => json!({
             "data": result,

@@ -2,7 +2,7 @@ use crate::db::formatters::*;
 use crate::db::DataDbPool;
 use crate::errors::ServiceError;
 use crate::models::Column as DatasetColumn;
-use crate::utils::{Format, PaginationParams, QueryMetadata};
+use crate::utils::{Format, PaginationParams, QueryMetadata, SortParams};
 use log::info;
 use log::warn;
 use serde::{Deserialize, Serialize};
@@ -75,6 +75,18 @@ impl PostgisQueryRunner {
             page = page_str
         )
     }
+    
+    pub fn ordered_query(query: &str, sort: Option<SortParams>) -> String {
+        let sort_str = match sort{
+            Some(sort_options) => sort_options.to_string(),
+            None => String::from(""),
+        };
+        format!(
+            "select * from ({sub_query}) as ordered {order}",
+            sub_query = query,
+            order = sort_str 
+        )
+    }
 
     pub async fn run_query_meta(
         pool: &DataDbPool,
@@ -98,9 +110,11 @@ impl PostgisQueryRunner {
         pool: &DataDbPool,
         query: &str,
         page: Option<PaginationParams>,
+        sort:Option<SortParams>,
         format: Format,
     ) -> Result<serde_json::Value, ServiceError> {
-        let paged_query = Self::paginate_query(query, page);
+        let ordered_query = Self::ordered_query(query,sort);
+        let paged_query = Self::paginate_query(&ordered_query, page);
 
         let formatted_query = match format {
             Format::Csv => Ok(csv_format(&paged_query)),
@@ -108,7 +122,7 @@ impl PostgisQueryRunner {
             Format::Json => Ok(json_format(&paged_query)),
         }?;
 
-        info!("running query {}", formatted_query);
+        println!("running query {}", formatted_query);
 
         let result: String = sqlx::query(&formatted_query)
             .map(|row: PgRow| row.get("res"))
