@@ -97,7 +97,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
           </Flex>
         )}
       </View>
-      <View gridArea="content" padding="size-800" width="100%" height="100vh">
+      <View gridArea="content" padding="size-200" width="100%" height="100%">
         {dataset && (
           <>
             <Grid
@@ -106,7 +106,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
               rows={["60%", "40%"]}
               width="100%"
               height="100%"
-              gap="size-400"
+              gap="size-200"
             >
               {dataset && (
                 <DataTable
@@ -120,38 +120,37 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                 <MapView 
                 visCol={visCol} 
                 source={source} 
-                extent={extent?.extent}
+                 extent={extent?.extent}
+
               />
               </View>
-              <View gridArea="focus">
-                <Tabs orientation="vertical" width="100%" height="100%">
-                  <TabList>
-                    <Item key="query">Query</Item>
-                    <Item key="feature">
-                      <TableEdit />
-                    </Item>
-                  </TabList>
-                  <TabPanels>
-                    <Item key="query">
-                      <QueryEditor
-                        key={"query_pane"}
-                        query={query}
-                        onQueryChange={setQuery}
-                      />
-                    </Item>
-                    <Item key="feature">
-                      <IllustratedMessage>
-                        <NotFound />
-                        <Heading>No feature selected</Heading>
-                        <Content>
-                          Select a table row or click on map feature to view or
-                          edit
-                        </Content>
-                      </IllustratedMessage>
-                    </Item>
-                  </TabPanels>
-                </Tabs>
-              </View>
+              <Tabs gridArea="focus" orientation="vertical" width="100%" height="100%">
+                <TabList>
+                  <Item key="query">Query</Item>
+                  <Item key="feature">
+                    <TableEdit />
+                  </Item>
+                </TabList>
+                <TabPanels>
+                  <Item key="query">
+                    <QueryEditor
+                      key={"query_pane"}
+                      query={query}
+                      onQueryChange={setQuery}
+                    />
+                  </Item>
+                  <Item key="feature">
+                    <IllustratedMessage>
+                      <NotFound />
+                      <Heading>No feature selected</Heading>
+                      <Content>
+                        Select a table row or click on map feature to view or
+                        edit
+                      </Content>
+                    </IllustratedMessage>
+                  </Item>
+                </TabPanels>
+              </Tabs>
             </Grid>
           </>
         )}

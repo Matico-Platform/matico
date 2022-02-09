@@ -5,7 +5,6 @@ import { mutate, useSWRConfig } from 'swr'
 
 const profileUrl = '/users/profile'
 
-
 export const useUser = () => {
   //@TODO import these from server types
   const [signupError, setSignupError] = useState<any | null>(null);

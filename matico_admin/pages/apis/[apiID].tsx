@@ -131,7 +131,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
           <p>{mapUrl}</p>
         </Well>
       </View>
-      <View gridArea="content" padding="size-200" width="100%" height="95%">
+      <View gridArea="content" padding="size-200" width="100%" height="100%">
         {api && (
           <Grid
             width="100%"
@@ -147,7 +147,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
                 query={query}
                 onQueryChange={setQuery}
               />
-              <View width={"40%"} height={"100%"}>
+              <View width={"50%"} height={"100%"}>
                 <VariableEditor
                   parameters={localParameters}
                   onParametersChanged={(newParams) =>
