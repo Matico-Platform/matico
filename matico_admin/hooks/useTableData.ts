@@ -3,6 +3,7 @@ import { useSWRAPI } from "../utils/api";
 export enum SourceType {
   API = "api",
   Dataset = "dataset",
+  Query ="query"
 }
 
 export type Page = {
@@ -14,6 +15,7 @@ export type Source = {
   id: string;
   type: SourceType;
   parameters?: { [param: string]: any };
+  query?: string
 };
 
 export type Sort = {

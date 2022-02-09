@@ -9,6 +9,7 @@ import {
   TableBody,
   Flex,
   ActionButton,
+  ToggleButton,
 } from "@adobe/react-spectrum";
 import { Source, useTableData, Page, Sort } from "../hooks/useTableData";
 import { ColumnDetails } from "./ColumnDetails";
@@ -18,14 +19,16 @@ export interface DataTableProps {
   source: Source;
   filters: Array<any>;
   onError?: (error: string) => void;
-  onVizualizeCol?: (col: string) => void;
+  onVizualizeCol?: (col: string | null) => void;
+  visCol? : string | null
 }
 
 export const DataTable: React.FC<DataTableProps> = ({
   source,
   filters,
   onError,
-  onVizualizeCol
+  onVizualizeCol,
+  visCol
 }) => {
   const [sort, setSort] = useState<null | any>(null);
 
@@ -49,7 +52,12 @@ export const DataTable: React.FC<DataTableProps> = ({
 
   const setVisCol = (column: string)=>{
     if(onVizualizeCol){
-      onVizualizeCol(column)
+      if(visCol === column){
+        onVizualizeCol(null)
+      }
+      else{
+        onVizualizeCol(column)
+      }
     }
   }
 
@@ -78,9 +86,9 @@ export const DataTable: React.FC<DataTableProps> = ({
             <Flex direction="row" alignItems="center">
               {col.name}
               <ColumnDetails  source={source} colName={col.name} />
-              <ActionButton onPress={setVisCol} isQuiet>
+              <ToggleButton isEmphasized isSelected={visCol === col.name} onChange={()=> setVisCol(col.name)} isQuiet>
                 <MapView size="XXS" />
-              </ActionButton>
+              </ToggleButton>
             </Flex>
           </Column>
         )}

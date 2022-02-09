@@ -1,6 +1,10 @@
 import DeckGL from "@deck.gl/react";
 import { MVTLayer } from "@deck.gl/geo-layers";
 import { StaticMap } from "react-map-gl";
+import { useDatasetColumn } from "../hooks/useDatasetColumns";
+import { Source, SourceType } from "../hooks/useTableData";
+import { useColumnStat } from "../hooks/useColumnStat";
+import chroma from "chroma-js";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.006,
@@ -10,29 +14,56 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-export interface MapViewInterface {
-  url?: string;
-  datasetId?:string,
-  sql?:string,
-  visCol?:string
-}
-export const MapView: React.FC<MapViewInterface> = ({ url, datasetId, sql}) => {
-
-  let requestUrl =""
-  if(url){
-    requestUrl=url 
+const urlForSource = (source: Source | undefined) => {
+  if (!source) {
+    return null;
   }
-  else if(sql){
-    requestUrl = `http://localhost:8000/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(sql)}`
+  switch (source.type) {
+    case SourceType.Dataset:
+      return `http://localhost:8000/api/tiler/dataset/${source.id}/{z}/{x}/{y}`;
+    case SourceType.API:
+      return `http://localhost:8000/api/tiler/api/${
+        source.id
+      }/{z}/{x}/{y}?${Object.keys(source.parameters!)
+        .map((key: string) =>
+          encodeURIComponent(`${key}=${source.parameters![key]}`)
+        )
+        .join("&")}`;
+    case SourceType.Query:
+      return `http://localhost:8000/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
+        source.query!
+      )}`;
   }
-  else if(datasetId){
-    requestUrl = `http://localhost:8000/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`
+};
+
+const binsForColType = (type: string | undefined | null) => {
+  const categories = {
+    ValueCounts: {},
+  };
+  const quantiles = {
+    Quantiles: {
+      no_bins: 8,
+      treat_null_as_zero: true,
+    },
+  };
+  switch (type) {
+    case "VARCHAR":
+      return categories;
+    case "INT4":
+      return quantiles;
+    case "FLOAT16":
+      return quantiles;
+    default:
+      return null;
   }
+};
 
-
-  const layer = new MVTLayer({
-    data: `${requestUrl}#${(new Date()).toISOString()}`,
-    // @ts-ignore
+const styleForCol = (
+  colStats: { [statType: string]: any } | undefined | null,
+  visCol: string | null | undefined
+) => {
+  const statType = colStats ? Object.keys(colStats)[0] : null;
+  const common = {
     getLineColor: [255, 0, 0, 255],
     getLineWidth: 1,
     lineWidthUnits: "pixels",
@@ -42,9 +73,68 @@ export const MapView: React.FC<MapViewInterface> = ({ url, datasetId, sql}) => {
     stroked: true,
     pickable: true,
     autoHighlight: true,
-    highlightColor: [200, 100, 200, 200],
     radiusUnits: "pixels",
+  };
+  switch (statType) {
+    case "ValueCounts":
+      const valueCounts = colStats!.ValueCounts;
+      const topCategories = valueCounts.slice(0, 7).map((vc: any) => vc.name);
+      const categoryPallet = chroma.brewer.Pastel2;
+      return {
+        ...common,
+        getFillColor: (d: any) => {
+          const color =
+            categoryPallet[topCategories.indexOf(d.properties[visCol!])];
+          return chroma.valid(color) ? chroma(color).rgb() : "gray";
+        },
+      };
+    case "Quantiles":
+      const quantileBins = colStats!.Quantiles.map((qb: any) => qb.bin_end);
+      const quantileScale = chroma.scale("RdYlBu").domain(quantileBins);
+      console.log("Scale is ", quantileScale);
+      return {
+        ...common,
+        getFillColor: (d: any) =>
+          quantileScale(d.properties[visCol!])?.rgb() ?? "gray",
+      };
+    default:
+      return common;
+  }
+};
+
+export interface MapViewInterface {
+  source: Source;
+  visCol?: string | null;
+}
+export const MapView: React.FC<MapViewInterface> = ({ source, visCol }) => {
+  const tileUrl = urlForSource(source);
+
+  const { column, columnError } = useDatasetColumn(source, visCol);
+  const stat = binsForColType(column?.col_type);
+
+  const { data: categories, error: dataSummaryError } = useColumnStat(
+    source,
+    visCol ?? "",
+    stat
+  );
+
+  const layerStyle = styleForCol(categories, visCol);
+  console.log(
+    "visCol",
+    visCol,
+    " column ",
+    column,
+    " stat ",
+    stat,
+    " categories ",
+    categories
+  );
+
+  const layer = new MVTLayer({
+    data: `${tileUrl}#${new Date().toISOString()}`,
+    ...layerStyle,
   });
+
   return (
     <div
       style={{

@@ -17,7 +17,8 @@ export const useDatasetColumns= (source: Source)=>{
   return useSWRAPI(url, {refreshInterval:0, params:source.parameters}) 
 }
 
-export const useDatasetColumn= (source:Source, colName:string)=>{
+export const useDatasetColumn= (source:Source, colName:string | undefined)=>{
   let url = urlForSource(source)
-  return useSWRAPI(`${url}/${colName}`, {refreshInterval:0, params:source.parameters}) 
+  const {data,error, mutate} = useSWRAPI(`${url}/${colName}`, {refreshInterval:0, params:source.parameters}) 
+  return {column : data, columnError: error, mutateCol: mutate }
 }

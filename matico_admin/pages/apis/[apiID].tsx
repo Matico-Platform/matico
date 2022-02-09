@@ -25,7 +25,7 @@ import { QueryEditorProps } from "../../components/QueryEditor";
 import { VariableEditor } from "../../components/VariableEditor";
 import { MapView } from "../../components/MapView";
 import { useMemo, useEffect, useState, memo } from "react";
-import {DataTable} from "../../components/DataTable";
+import { DataTable } from "../../components/DataTable";
 
 const parameterRegEx = /\$\{([A-Za-z0-9]*)\}/g;
 
@@ -51,7 +51,10 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
   const [lastRunKey, setLastRunKey] = useState(new Date().toISOString());
   const [localParameters, setLocalParameters] = useState<any[]>([]);
   const [values, setValues] = useState<{ [param: string]: any }>({});
-  const [queryError, setQueryError] = useState<string|null>(null)
+  const [queryError, setQueryError] = useState<string | null>(null);
+  const [visCol, setVisCol] = useState<string | null>(null);
+
+  console.log("Vis col is ", visCol);
 
   const valuesForQuery = localParameters.reduce((agg, val) => {
     return {
@@ -105,6 +108,11 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
     });
   };
 
+  const source = {
+    id: api?.id,
+    type: SourceType.API,
+    parameters: localParameters,
+  };
   return (
     <Layout hasSidebar={true}>
       <View
@@ -161,20 +169,17 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
               </Button>
             </Flex>
             <View gridArea="map">
-              <MapView url={mapUrl} />
+              <MapView visCol={visCol} source={source} />
             </View>
-            {api && 
-              <DataTable 
-                source={{
-                  id:api.id,
-                  type: SourceType.API,
-                  parameters: localParameters
-                }}
+            {api && (
+              <DataTable
+                source={source}
                 filters={[]}
                 onError={setQueryError}
-              
+                visCol={visCol}
+                onVizualizeCol={setVisCol}
               />
-            }
+            )}
           </Grid>
         )}
       </View>
