@@ -44,7 +44,7 @@ export const generateMargins = ({
     right: 0,
   };
   if (title) {
-    margin.top += 40;
+    margin.top += 50;
   }
   if (subtitle) {
     margin.top += 10;
