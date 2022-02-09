@@ -58,6 +58,7 @@ COPY yarn.lock ./yarn.lock
 COPY package.json ./
 COPY matico_components/package.json ./matico_components/package.json
 COPY matico_admin/package.json ./matico_admin/package.json
+COPY matico_charts/package.json ./matico_charts/package.json
 COPY --from=rust-builder /app/matico_spec/pkg /app/matico_spec/pkg
 RUN yarn
 RUN ls -alh .
@@ -77,6 +78,7 @@ WORKDIR /app/
 COPY --from=rust-builder /app/matico_spec/pkg /app/matico_spec/pkg
 ADD matico_components /app/matico_components
 ADD matico_admin /app/matico_admin
+ADD matico_charts /app/matico_charts
 # # ADD package.json /app/package.json
 # # ADD yarn.lock /app/yarn.lock
 # # ADD .yarnrc.yml /app/.yarnrc.lock
@@ -86,6 +88,7 @@ ADD matico_admin /app/matico_admin
 # ADD matico_admin ./matico_admin
 # RUN yarn
 RUN yarn workspace @maticoapp/matico_components run build-prod
+RUN yarn workspace @maticoapp/matico_charts run build
 ENV NEXT_PUBLIC_SERVER_URL="/api" 
 RUN yarn workspace matico_admin run build
 RUN ls -alh /app/matico_admin/.next
