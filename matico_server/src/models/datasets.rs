@@ -6,12 +6,19 @@ use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use uuid::Uuid;
+use sqlx::postgres::PgRow;
+use sqlx::Row;
 
 use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
 use crate::errors::ServiceError;
 use crate::models::{columns::Column, Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::{Format, ImportParams, PaginationParams, SortParams};
+
+#[derive(Serialize,Deserialize, Clone,Debug)]
+pub struct Extent{
+    pub extent: Vec<f64>
+}
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DatasetSearch {
@@ -193,6 +200,10 @@ impl Dataset {
             })
     }
 
+    /// Will set up, or change the parameters for the sync requests for this dataset 
+    ///
+    /// Any pending syncs should be retired (Not actually implemented yet)
+    /// and a new seed SyncImport is generated
     pub fn setup_or_update_sync(&self, pool: &DbPool) -> Result<(), ServiceError> {
         if self.sync_dataset {
             let pending_syncs = SyncImport::for_dataset(pool, &self.id)?;
@@ -203,6 +214,9 @@ impl Dataset {
         Ok(())
     }
 
+    /// Update a feature within the dataset 
+    ///
+    /// Based on feature id and a subset of fields to update
     pub async fn update_feature(
         &self,
         pool: &DbPool,
@@ -235,6 +249,33 @@ impl Dataset {
                 ServiceError::APIFailed(format!("SQL Error: {} API was {}", e, query2))
             })?;
         Ok(update)
+    }
+
+    /// Calculates the extent of the dataset 
+    ///
+    pub async fn extent(&self, db: &DataDbPool)->Result<Extent,ServiceError>{
+        let query = format!("Select ARRAY [
+                            ST_XMIN(ST_EXTENT({geom_col})),
+                            ST_YMIN(ST_EXTENT({geom_col})),
+                            ST_XMAX(ST_EXTENT({geom_col})),
+                            ST_YMAX(ST_EXTENT({geom_col}))
+                            ]
+                            as extent from {table_name}",
+                            geom_col=self.geom_col, 
+                            table_name=self.table_name);
+        println!("Extent query : {}",query);
+        let extent= sqlx::query(&query)
+                            .map(|row:PgRow| 
+                                Extent{
+                                 extent : row.get("extent")
+                                })
+                            .fetch_one(db)
+                            .await
+                            .map_err(|e| {
+                                ServiceError::APIFailed(format!("Failed to get bounding box {}",e))
+                            })?;
+        Ok(extent)
+
     }
 
     pub async fn get_column(
