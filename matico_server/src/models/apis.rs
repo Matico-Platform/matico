@@ -3,6 +3,9 @@ use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
 use crate::utils::{Format, PaginationParams,SortParams};
 use crate::models::columns::Column;
+use crate::models::datasets::Extent;
+use sqlx::postgres::PgRow;
+use sqlx::Row;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
@@ -212,7 +215,7 @@ impl Api {
 
     pub fn construct_query(
         &self,
-        params: HashMap<String, serde_json::Value>,
+        params: &HashMap<String, serde_json::Value>,
     ) -> Result<String, ServiceError> {
         let mut api = self.sql.clone().replace(";", "");
 
@@ -241,7 +244,7 @@ impl Api {
         }
         Ok(api)
     }
-
+    
     pub async fn run_raw(
         pool: &DataDbPool,
         query: String,
@@ -266,11 +269,45 @@ impl Api {
         Ok(result_with_metadata.to_string())
     }
 
+    /// Calculates the extent of the dataset 
+    ///
+    pub async fn extent(&self, db: &DataDbPool, params: &HashMap<String,serde_json::Value>)->Result<Extent,ServiceError>{
+
+        let base_query = self.construct_query(params)?;
+        let columns = self.columns(&db, &params).await?;
+
+        let geom_col = columns.iter().find(|c|c.col_type == "geometry").ok_or_else(|| ServiceError::APIFailed("Query produced no geom column".into()))?;
+
+        let query = format!("Select ARRAY [
+                            ST_XMIN(ST_EXTENT({geom_col})),
+                            ST_YMIN(ST_EXTENT({geom_col})),
+                            ST_XMAX(ST_EXTENT({geom_col})),
+                            ST_YMAX(ST_EXTENT({geom_col}))
+                            ]
+                            as extent from ({query}) as a",
+                            geom_col=geom_col.name, 
+                            query=base_query);
+
+        println!("Extent query : {}",query);
+        let extent= sqlx::query(&query)
+                            .map(|row:PgRow| 
+                                Extent{
+                                 extent : row.get("extent")
+                                })
+                            .fetch_one(db)
+                            .await
+                            .map_err(|e| {
+                                ServiceError::APIFailed(format!("Failed to get bounding box {}",e))
+                            })?;
+        Ok(extent)
+
+    }
+
     pub async fn get_column(
         &self,
         db: &DataDbPool,
         col_name: String,
-        params:HashMap<String, serde_json::Value>
+        params: &HashMap<String, serde_json::Value>
     ) -> Result<Column, ServiceError> {
         let cols = self.columns(db,params).await?;
 
@@ -286,7 +323,7 @@ impl Api {
         Ok((*result).clone())
     }
 
-    pub async fn columns(&self, db : &DataDbPool, params:HashMap<String,serde_json::Value>)->Result<Vec<Column>, ServiceError>{
+    pub async fn columns(&self, db : &DataDbPool, params: &HashMap<String,serde_json::Value>)->Result<Vec<Column>, ServiceError>{
         let query = self.construct_query(params)?;
         let columns = PostgisQueryRunner::get_query_column_details(
             db,
@@ -299,7 +336,7 @@ impl Api {
     pub async fn run(
         &self,
         pool: &DataDbPool,
-        params: HashMap<String, serde_json::Value>,
+        params: &HashMap<String, serde_json::Value>,
         page: Option<PaginationParams>,
         sort: Option<SortParams>,
         format: Option<Format>,

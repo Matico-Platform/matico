@@ -113,11 +113,24 @@ async fn get_column_stats(
         ))
     })?;
 
-    let col = api.get_column(&state.data_db, column_name, params).await?;
+    let col = api.get_column(&state.data_db, column_name, &params).await?;
     let result = col.calc_stat(&state.data_db, stat_params, None).await?;
 
     Ok(HttpResponse::Ok().json(result))
 }
+
+#[get("{api_id}/extent")]
+async fn extent(
+    state: web::Data<State>,
+    web::Path(api_id): web::Path<Uuid>,
+    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+) -> Result<HttpResponse, ServiceError> {
+    let api= Api::find(&state.db, api_id)?;
+
+    let extent = api.extent(&state.data_db, &params).await?;
+    Ok(HttpResponse::Ok().json(extent))
+}
+
 
 #[get("{api_id}/columns/{column_name}")]
 async fn get_column(
@@ -127,7 +140,7 @@ async fn get_column(
 ) -> Result<HttpResponse, ServiceError> {
     let api= Api::find(&state.db, api_id)?;
 
-    let col = api.get_column(&state.data_db, column_name, params).await?;
+    let col = api.get_column(&state.data_db, column_name, &params).await?;
 
     Ok(HttpResponse::Ok().json(col))
 }
@@ -142,7 +155,7 @@ async fn get_columns(
     web::Query(format_param): web::Query<FormatParam>)-> Result<HttpResponse,ServiceError>{
 
     let query = Api::find(&state.db, query_id)?;
-    let columns = query.columns(&state.data_db, params,).await?;
+    let columns = query.columns(&state.data_db, &params,).await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .json(columns))
@@ -161,7 +174,7 @@ async fn run_api(
 ) -> Result<HttpResponse, ServiceError> {
     let query = Api::find(&state.db, query_id)?;
     let result = query
-        .run(&state.data_db, params, Some(page), Some(sort), format_param.format)
+        .run(&state.data_db, &params, Some(page), Some(sort), format_param.format)
         .await?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -178,6 +191,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_column_stats);
     cfg.service(get_columns);
     cfg.service(get_column);
+    cfg.service(extent);
     cfg.service(run_api);
     // cfg.service(run_query);
 }

@@ -63,7 +63,7 @@ async fn get_tile_for_query(
     web::Path(tiler_options): web::Path<TilerOptions>,
 )-> Result<HttpResponse, ServiceError>{
    let api = Api::find(&state.db, api.api_id)?;
-   let query = api.construct_query(params)?;
+   let query = api.construct_query(&params)?;
 
 
     let mvt_tile =
