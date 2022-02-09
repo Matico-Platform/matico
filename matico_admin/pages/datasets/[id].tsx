@@ -9,7 +9,6 @@ import {
   TabList,
   TabPanels,
   Tabs,
-  TextArea,
   View,
   Text,
   Link,
@@ -19,15 +18,6 @@ import {
 import { GetServerSideProps } from "next";
 import { useDataset } from "../../hooks/useDatasets";
 import NotFound from "@spectrum-icons/illustrations/NotFound";
-
-import {
-  Cell,
-  Column,
-  Row,
-  TableView,
-  TableBody,
-  TableHeader,
-} from "@adobe/react-spectrum";
 import { useDatasetColumns } from "../../hooks/useDatasetColumns";
 import { useDatasetData } from "../../hooks/useDatasetData";
 import { MapView } from "../../components/MapView";
@@ -37,15 +27,23 @@ import dynamic from "next/dynamic";
 import { QueryEditorProps } from "../../components/QueryEditor";
 import { useEffect, useState } from "react";
 import { DataTable } from "../../components/DataTable";
-import { SourceType } from "../../hooks/useTableData";
+import { Source, SourceType } from "../../utils/api";
+import {useExtent} from "../../hooks/useExtent";
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
 };
 
 const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
+  const source: Source = {
+    type: SourceType.Dataset,
+    id: datasetId,
+  };
   const { data: dataset, error: datasetError } = useDataset(datasetId);
-  const { data: columns, error: columnsError } = useDatasetColumns(datasetId);
+  const { data: columns, error: columnsError } = useDatasetColumns(source);
+  const [selectedFeatureId, setSelectedFeatureId] =
+    useState<string | null>(null);
+  const [visCol, setVisCol] = useState<string | null>(null);
 
   const [query, setQuery] = useState<null | string>(null);
 
@@ -58,6 +56,8 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const mapUrl = `http://localhost:8000/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`;
   const { data, error: dataError } = useDatasetData(datasetId, 0, 30);
 
+  const {extent, extentError} = useExtent(source)
+
   const QueryEditor = dynamic<QueryEditorProps>(
     () =>
       (import("../../components/QueryEditor") as any).then(
@@ -65,11 +65,6 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
       ),
     { ssr: false }
   );
-
-  const source: Source = {
-    type: SourceType.Dataset,
-    id: datasetId,
-  };
 
   return (
     <Layout hasSidebar={true}>
@@ -113,9 +108,20 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
               height="100%"
               gap="size-400"
             >
-              {dataset && <DataTable source={source} filters={[]} />}
+              {dataset && (
+                <DataTable
+                  source={source}
+                  filters={[]}
+                  visCol={visCol}
+                  onVizualizeCol={setVisCol}
+                />
+              )}
               <View gridArea="map">
-                <MapView source={source} />
+                <MapView 
+                visCol={visCol} 
+                source={source} 
+                extent={extent?.extent}
+              />
               </View>
               <View gridArea="focus">
                 <Tabs orientation="vertical" width="100%" height="100%">

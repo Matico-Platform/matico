@@ -31,8 +31,6 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
   >(undefined);
   const [columns, setColumns] = useState<Array<string> | undefined>(undefined);
 
-  console.log("Rendering geojson preview");
-
   const metadata = {
     name,
     description,

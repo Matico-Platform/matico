@@ -54,7 +54,6 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
 
             <NewApiDialog
               onSubmit={(data) => {
-                console.log("Submit data is ", data);
                 submit(data);
               }}
             />

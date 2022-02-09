@@ -13,16 +13,6 @@ export function useProfile() {
     const [loading, setLoading] = useState<boolean>(false);
     const [token, setToken] = useState<string | null>(null);
 
-    // useEffect(()=>{
-    //     console.log("setting up listening")
-    //     window.addEventListener("storage", (e)=>{
-    //         console.log(e)
-    //         if(e.key==='token'){
-    //             setToken(e.newValue)
-    //         }
-    //     })
-    // },[])
-
     useEffect(() => {
         setLoading(true);
         api.get<UserProfile>('/users/profile')

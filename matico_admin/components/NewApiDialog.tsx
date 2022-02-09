@@ -36,7 +36,7 @@ export const NewApiDialog: React.FC<NewApiDialogProps> = ({ onSubmit }) => {
           <Heading>Create New Api</Heading>
           <Divider />
           <Content>
-            <Form onSubmit={(stuff) => console.log("submitted stuff ", stuff)}>
+            <Form>
               <TextField
                 value={name}
                 onChange={setName}

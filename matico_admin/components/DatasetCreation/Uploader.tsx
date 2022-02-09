@@ -26,7 +26,6 @@ export const Uploader: React.FC<UploaderProps> = ({
       setProgress
     )
       .then((response  :any) => {
-        console.log("response ", response)
         setIsDone(true)
         if (onDone) {
           onDone();

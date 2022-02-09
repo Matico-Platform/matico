@@ -1,21 +1,8 @@
-import { useSWRAPI } from "../utils/api";
-
-export enum SourceType {
-  API = "api",
-  Dataset = "dataset",
-  Query ="query"
-}
+import { useSWRAPI, urlForSource, SourceType, Source } from "../utils/api";
 
 export type Page = {
   limit: number;
   offset: number;
-};
-
-export type Source = {
-  id: string;
-  type: SourceType;
-  parameters?: { [param: string]: any };
-  query?: string
 };
 
 export type Sort = {
@@ -29,24 +16,23 @@ export const useTableData = (
   sort: Sort,
   page: Page
 ) => {
-  let baseUrl;
+  let baseUrl = urlForSource(source);
 
   switch (source?.type) {
     case SourceType.Dataset:
-      baseUrl = `/datasets/${source?.id}/data`;
+      baseUrl = `${baseUrl}/data`;
       break;
     case SourceType.API:
-      baseUrl = `/apis/${source?.id}/run`;
+      baseUrl = `${baseUrl}/run`;
       break;
     default:
       baseUrl = null;
   }
 
-  console.log("table data hook ", baseUrl, source);
   const { data, error, mutate } = useSWRAPI(baseUrl, {
     params: { ...source?.parameters, ...page, ...sort },
     refreshInterval: 0,
   });
-  console.log("table data hook result ", data, error);
+
   return { data, error: error?.response?.data, mutate };
 };

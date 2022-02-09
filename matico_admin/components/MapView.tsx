@@ -1,10 +1,14 @@
 import DeckGL from "@deck.gl/react";
 import { MVTLayer } from "@deck.gl/geo-layers";
-import { StaticMap } from "react-map-gl";
+import { StaticMap, ViewportProps, WebMercatorViewport } from "react-map-gl";
 import { useDatasetColumn } from "../hooks/useDatasetColumns";
-import { Source, SourceType } from "../hooks/useTableData";
+import { Source, SourceType, tileUrlForSource } from "../utils/api";
 import { useColumnStat } from "../hooks/useColumnStat";
 import chroma from "chroma-js";
+import { useEffect, useState } from "react";
+import { ActionButton, Tooltip, TooltipTrigger } from "@adobe/react-spectrum";
+import Vignette from "@spectrum-icons/workflow/Vignette";
+import {FlyToInterpolator } from "deck.gl";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.006,
@@ -12,28 +16,6 @@ const INITIAL_VIEW_STATE = {
   zoom: 10,
   pitch: 0,
   bearing: 0,
-};
-
-const urlForSource = (source: Source | undefined) => {
-  if (!source) {
-    return null;
-  }
-  switch (source.type) {
-    case SourceType.Dataset:
-      return `http://localhost:8000/api/tiler/dataset/${source.id}/{z}/{x}/{y}`;
-    case SourceType.API:
-      return `http://localhost:8000/api/tiler/api/${
-        source.id
-      }/{z}/{x}/{y}?${Object.keys(source.parameters!)
-        .map((key: string) =>
-          encodeURIComponent(`${key}=${source.parameters![key]}`)
-        )
-        .join("&")}`;
-    case SourceType.Query:
-      return `http://localhost:8000/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
-        source.query!
-      )}`;
-  }
 };
 
 const binsForColType = (type: string | undefined | null) => {
@@ -51,7 +33,11 @@ const binsForColType = (type: string | undefined | null) => {
       return categories;
     case "INT4":
       return quantiles;
+    case "INT8":
+      return quantiles;
     case "FLOAT16":
+      return quantiles;
+    case "FLOAT8":
       return quantiles;
     default:
       return null;
@@ -74,6 +60,9 @@ const styleForCol = (
     pickable: true,
     autoHighlight: true,
     radiusUnits: "pixels",
+    updateTriggers:{
+      getFillColor:[colStats,visCol]
+    }
   };
   switch (statType) {
     case "ValueCounts":
@@ -91,7 +80,6 @@ const styleForCol = (
     case "Quantiles":
       const quantileBins = colStats!.Quantiles.map((qb: any) => qb.bin_end);
       const quantileScale = chroma.scale("RdYlBu").domain(quantileBins);
-      console.log("Scale is ", quantileScale);
       return {
         ...common,
         getFillColor: (d: any) =>
@@ -105,9 +93,44 @@ const styleForCol = (
 export interface MapViewInterface {
   source: Source;
   visCol?: string | null;
+  extent?: [number, number, number, number];
 }
-export const MapView: React.FC<MapViewInterface> = ({ source, visCol }) => {
-  const tileUrl = urlForSource(source);
+
+export const MapView: React.FC<MapViewInterface> = ({
+  source,
+  visCol,
+  extent,
+}) => {
+  const tileUrl = tileUrlForSource(source);
+  const [viewport, setViewport] = useState<any>(INITIAL_VIEW_STATE);
+
+  const setViewportWithExtent = (
+    extent: [number, number, number, number] | undefined
+  ) => {
+    if (extent) {
+      //@ts-ignore
+      const newViewport = new WebMercatorViewport(viewport);
+      const { longitude, latitude, zoom } = newViewport.fitBounds(
+        [
+          [extent[0], extent[1]],
+          [extent[2], extent[3]],
+        ],
+        { padding: 30 }
+      );
+      setViewport({ ...viewport,
+                  latitude,
+                  longitude,
+                  zoom,
+                  transitionDuration: 2000,
+                  transitionInterpolator: new FlyToInterpolator()
+      });
+    }
+  };
+
+  useEffect(() => {
+    //@ts-ignore
+    setViewportWithExtent(extent);
+  }, [extent]);
 
   const { column, columnError } = useDatasetColumn(source, visCol);
   const stat = binsForColType(column?.col_type);
@@ -119,19 +142,9 @@ export const MapView: React.FC<MapViewInterface> = ({ source, visCol }) => {
   );
 
   const layerStyle = styleForCol(categories, visCol);
-  console.log(
-    "visCol",
-    visCol,
-    " column ",
-    column,
-    " stat ",
-    stat,
-    " categories ",
-    categories
-  );
 
   const layer = new MVTLayer({
-    data: `${tileUrl}#${new Date().toISOString()}`,
+    data: `${tileUrl}`,
     ...layerStyle,
   });
 
@@ -145,12 +158,28 @@ export const MapView: React.FC<MapViewInterface> = ({ source, visCol }) => {
         padding: "0px",
       }}
     >
+      <div
+        style={{ position: "absolute", zIndex: 20, right: "20px", top: "20px" }}
+      >
+        <TooltipTrigger delay={0}>
+          <ActionButton
+            onPress={() => setViewportWithExtent(extent)}
+            staticColor={"white"}
+            isQuiet
+          >
+              <Vignette size="XL" />
+          </ActionButton>
+          <Tooltip>Zoom to bounds or selected feature</Tooltip>
+        </TooltipTrigger>
+      </div>
       <DeckGL
         style={{ position: "absolute" }}
         width="100%"
         height="100%"
         controller={true}
-        initialViewState={INITIAL_VIEW_STATE}
+        initialViewState={viewport}
+        //@ts-ignore
+        onViewStateChange={({ viewState }) => setViewport(viewState)}
         layers={[layer]}
       >
         <StaticMap

@@ -1,24 +1,13 @@
-import {useSWRAPI} from '../utils/api'
-import {Source, SourceType} from './useTableData'
+import {useSWRAPI,Source,urlForSource} from '../utils/api'
 
-const urlForSource = (source:Source)=>{
-  switch (source?.type) {
-    case SourceType.Dataset:
-      return  `/datasets/${source?.id}/columns`;
-    case SourceType.API:
-      return `/apis/${source?.id}/columns`;
-    default:
-      return null;
-  }
-}
 
 export const useDatasetColumns= (source: Source)=>{
   let url = urlForSource(source)
-  return useSWRAPI(url, {refreshInterval:0, params:source.parameters}) 
+  return useSWRAPI(`${url}/columns`, {refreshInterval:0, params:source.parameters}) 
 }
 
-export const useDatasetColumn= (source:Source, colName:string | undefined)=>{
+export const useDatasetColumn= (source:Source, colName:string | undefined | null)=>{
   let url = urlForSource(source)
-  const {data,error, mutate} = useSWRAPI(`${url}/${colName}`, {refreshInterval:0, params:source.parameters}) 
+  const {data,error, mutate} = useSWRAPI(`${url}/columns/${colName}`, {refreshInterval:0, params:source.parameters}) 
   return {column : data, columnError: error, mutateCol: mutate }
 }

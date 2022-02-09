@@ -24,19 +24,6 @@ export const useUser = () => {
 
   }
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     getProfile()
-  //       .then((profile) => {
-  //         setUser(profile.data);
-  //       })
-  //       .catch((e) => {
-  //         console.warn("token is invalid or stale", e);
-  //       });
-  //   }, 10000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
   const tryLogin = (email: string, password: string) => {
     login(email, password)
       .then((result) => {

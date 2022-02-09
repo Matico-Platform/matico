@@ -44,7 +44,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
   const { data: datasets, error } = useDatasets();
 
   const colWidth = 200;
-  console.log("datasets are ", datasets);
+
   return (
     <Layout hasSidebar={true}>
       <View backgroundColor="gray-200" padding="size-100" gridArea="sidebar">

@@ -22,6 +22,7 @@ interface ColumnDetailProps {
 const statForDataType = (dataType: any) => {
   const histogram = { Histogram: { no_bins: 20 } };
   const categories = { ValueCounts: {} };
+  
   switch (dataType) {
     case "INT4":
       return histogram;
@@ -83,17 +84,14 @@ export const ColumnDetails: React.FC<ColumnDetailProps> = ({
   source,
   colName,
 }) => {
-  console.log("attempting to get column data ", source, colName);
-  const { data, error } = useDatasetColumn(source, colName);
+  const { column , columnError} = useDatasetColumn(source, colName);
 
-  const stat = statForDataType(data?.col_type);
+  const stat = statForDataType(column?.col_type);
   const { data: dataSummary, error: dataSummaryError } = useColumnStat(
     source,
     colName,
     stat
   );
-
-  console.log("datasummart ", dataSummary);
 
   return (
     <DialogTrigger type="popover">

@@ -22,7 +22,6 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
   const [acceptedFiles, setAcceptedFiles] = useState<Array<File> | null>(null);
 
   const onDrop = useCallback((acceptedFiles: Array<File>) => {
-    console.log("acceptedFiles ", acceptedFiles);
     setAcceptedFiles(acceptedFiles);
   }, []);
 

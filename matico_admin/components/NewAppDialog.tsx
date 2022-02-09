@@ -34,7 +34,7 @@ export const NewAppDialog: React.FC<NewAppDialogProps> = ({ onSubmit }) => {
           <Heading>Create New App</Heading>
           <Divider />
           <Content>
-            <Form onSubmit={(stuff) => console.log("submitted stuff ", stuff)}>
+            <Form>
               <TextField
                 value={name}
                 onChange={setName}

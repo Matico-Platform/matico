@@ -8,7 +8,6 @@ export const useApps = () => {
   const { data, error, mutate } = useSWRAPI(`/apps`, {
     refreshInterval: 1000,
   });
-  console.log("data ", data);
 
   const createApp = async (app: any) => {
     mutate([...data, app], false);

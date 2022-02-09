@@ -22,7 +22,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, hasSidebar }) => {
       <Provider theme={defaultTheme}>
         <Grid
           areas={areas}
-          columns={["1fr", "3fr"]}
+          columns={["static-size-4600", "3fr"]}
           rows={["size-500", "auto", "size-300"]}
           height="100vh"
           justifyContent="stretch"

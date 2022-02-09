@@ -52,7 +52,6 @@ const Editor: NextPage = () => {
             //@ts-ignore
             editActive={true}
             onSpecChange={(spec: any) => {
-              console.log("UPDATEING");
               updateApp({ ...app, spec });
             }}
             datasetProviders={[MaticoServerDatasetProvider, MaticoServerApiProvider]}

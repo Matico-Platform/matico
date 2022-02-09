@@ -10,6 +10,8 @@ import {
   Flex,
   ActionButton,
   ToggleButton,
+  TooltipTrigger,
+  Tooltip,
 } from "@adobe/react-spectrum";
 import { Source, useTableData, Page, Sort } from "../hooks/useTableData";
 import { ColumnDetails } from "./ColumnDetails";
@@ -42,13 +44,9 @@ export const DataTable: React.FC<DataTableProps> = ({
     updateTableData()
   },[source,filters,sort])
 
-  console.log("sort desc ", sort);
-
   const columns = tableData
     ? Object.keys(tableData[0]).map((item) => ({ id: item, name: item }))
     : [];
-
-  console.log("data ", tableData, error, source, filters, null);
 
   const setVisCol = (column: string)=>{
     if(onVizualizeCol){
@@ -85,10 +83,16 @@ export const DataTable: React.FC<DataTableProps> = ({
           <Column allowsSorting key={col.id} width={200}>
             <Flex direction="row" alignItems="center">
               {col.name}
-              <ColumnDetails  source={source} colName={col.name} />
+              <TooltipTrigger delay={0}>
+                <ColumnDetails  source={source} colName={col.name} />
+                <Tooltip>Column stats and controls</Tooltip>
+              </TooltipTrigger>
+              <TooltipTrigger delay={0}>
               <ToggleButton isEmphasized isSelected={visCol === col.name} onChange={()=> setVisCol(col.name)} isQuiet>
                 <MapView size="XXS" />
               </ToggleButton>
+                <Tooltip>Visualize on map</Tooltip>
+              </TooltipTrigger>
             </Flex>
           </Column>
         )}

@@ -32,7 +32,6 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
   const router = useRouter()
 
   const submit = (details:any) => {
-    console.log("Submitting ", details);
     createApp({
       ...details,
       spec: {
@@ -66,7 +65,6 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
 
             <NewAppDialog
               onSubmit={(data) => {
-                console.log("Submit data is ", data);
                 submit(data);
               }}
             />

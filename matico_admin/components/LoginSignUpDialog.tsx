@@ -86,9 +86,7 @@ export const LoginSignupDialog: React.FC<LoginSignupDialogProps> = ({
                 {loginError && <Text>{loginError}</Text>}
               </Item>
               <Item key="signup">
-                <Form
-                  onSubmit={(stuff) => console.log("submitted stuff ", stuff)}
-                >
+                <Form>
                   <TextField
                     label="username"
                     placeholder="Your name"

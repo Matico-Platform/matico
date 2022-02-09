@@ -2,30 +2,25 @@ import type { NextPage } from "next";
 import { Layout } from "../../components/Layout";
 import {
   Button,
-  Cell,
-  Column,
   Content,
   Flex,
   Grid,
   Heading,
-  Row,
-  TableBody,
-  TableHeader,
-  TableView,
   View,
-  Text,
   Well,
+  Text
 } from "@adobe/react-spectrum";
 
 import { GetServerSideProps } from "next";
 import { useApi } from "../../hooks/useApis";
-import { SourceType, useTableData } from "../../hooks/useTableData";
+import { SourceType} from '../../utils/api' 
 import dynamic from "next/dynamic";
 import { QueryEditorProps } from "../../components/QueryEditor";
 import { VariableEditor } from "../../components/VariableEditor";
 import { MapView } from "../../components/MapView";
-import { useMemo, useEffect, useState, memo } from "react";
+import { useEffect, useState} from "react";
 import { DataTable } from "../../components/DataTable";
+import {useExtent} from "../../hooks/useExtent";
 
 const parameterRegEx = /\$\{([A-Za-z0-9]*)\}/g;
 
@@ -42,11 +37,6 @@ const QueryEditor = dynamic<QueryEditorProps>(
 );
 
 const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
-  const {
-    api,
-    error: apiError,
-    updateApi,
-  } = useApi(apiId, { refreshInterval: 0 });
   const [query, setQuery] = useState("test");
   const [lastRunKey, setLastRunKey] = useState(new Date().toISOString());
   const [localParameters, setLocalParameters] = useState<any[]>([]);
@@ -54,7 +44,20 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
   const [queryError, setQueryError] = useState<string | null>(null);
   const [visCol, setVisCol] = useState<string | null>(null);
 
-  console.log("Vis col is ", visCol);
+  const {
+    api,
+    error: apiError,
+    updateApi,
+  } = useApi(apiId, { refreshInterval: 0 });
+
+
+  const source = {
+    id: api?.id,
+    type: SourceType.API,
+    parameters: localParameters,
+  };
+
+  const {extent, extentError} = useExtent(source)
 
   const valuesForQuery = localParameters.reduce((agg, val) => {
     return {
@@ -108,11 +111,6 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
     });
   };
 
-  const source = {
-    id: api?.id,
-    type: SourceType.API,
-    parameters: localParameters,
-  };
   return (
     <Layout hasSidebar={true}>
       <View
@@ -169,7 +167,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
               </Button>
             </Flex>
             <View gridArea="map">
-              <MapView visCol={visCol} source={source} />
+              <MapView extent={extent?.extent} visCol={visCol} source={source} />
             </View>
             {api && (
               <DataTable

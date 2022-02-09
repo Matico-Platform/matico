@@ -16,6 +16,53 @@ import useSWR from "swr";
 //     username: string;
 //     id: string;
 // }
+//
+
+
+export enum SourceType {
+  API = "api",
+  Dataset = "dataset",
+  Query ="query"
+}
+export type Source = {
+  id: string;
+  type: SourceType;
+  parameters?: { [param: string]: any };
+  query?: string
+};
+
+export const tileUrlForSource = (source: Source | undefined) => {
+  if (!source) {
+    return null;
+  }
+  switch (source.type) {
+    case SourceType.Dataset:
+      return `http://localhost:8000/api/tiler/dataset/${source.id}/{z}/{x}/{y}`;
+    case SourceType.API:
+      return `http://localhost:8000/api/tiler/api/${
+        source.id
+      }/{z}/{x}/{y}?${Object.keys(source.parameters!)
+        .map((key: string) =>
+          encodeURIComponent(`${key}=${source.parameters![key]}`)
+        )
+        .join("&")}`;
+    case SourceType.Query:
+      return `http://localhost:8000/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
+        source.query!
+      )}`;
+  }
+};
+
+export const urlForSource = (source:Source)=>{
+  switch (source?.type) {
+    case SourceType.Dataset:
+      return  `/datasets/${source?.id}`;
+    case SourceType.API:
+      return `/apis/${source?.id}`;
+    default:
+      return null;
+  }
+}
 
 const a = axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
@@ -42,8 +89,6 @@ export function uploadFile(
   onProgress?: (progress: number) => void
 ) {
   const formData = new FormData();
-
-  console.log("metadata is ", metadata);
 
   formData.append("metadata", JSON.stringify(metadata));
   formData.append("file", file);
@@ -227,7 +272,6 @@ export async function runQuery(
 
 export const useSWRAPI = (endpoint: string | null, opts?:any) =>{
   const {params, ...swrOpts} = opts
-  console.log(" opts ",params, swrOpts)
   return useSWR(endpoint, (url: string) => a.get(url,{params}).then((res) => res.data), swrOpts);
 }
 
