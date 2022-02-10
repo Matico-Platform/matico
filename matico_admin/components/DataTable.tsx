@@ -1,28 +1,30 @@
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import {
   TableView,
   TableHeader,
-  TableBoy,
   Cell,
   Column,
   Row,
   TableBody,
   Flex,
-  ActionButton,
   ToggleButton,
   TooltipTrigger,
   Tooltip,
 } from "@adobe/react-spectrum";
-import { Source, useTableData, Page, Sort } from "../hooks/useTableData";
+import { useTableData } from "../hooks/useTableData";
 import { ColumnDetails } from "./ColumnDetails";
 import MapView from "@spectrum-icons/workflow/MapView";
+import {Source} from '../utils/api'
 
 export interface DataTableProps {
   source: Source;
   filters: Array<any>;
   onError?: (error: string) => void;
+  selection?:string | number | null | undefined;
+  onSelectionChange?: (featureId : string | number | null) => void;
   onVizualizeCol?: (col: string | null) => void;
-  visCol? : string | null
+  visCol? : string | null,
+  idCol : string  | null
 }
 
 export const DataTable: React.FC<DataTableProps> = ({
@@ -30,7 +32,10 @@ export const DataTable: React.FC<DataTableProps> = ({
   filters,
   onError,
   onVizualizeCol,
-  visCol
+  visCol,
+  selection,
+  onSelectionChange,
+  idCol
 }) => {
   const [sort, setSort] = useState<null | any>(null);
 
@@ -38,8 +43,9 @@ export const DataTable: React.FC<DataTableProps> = ({
     data: tableData,
     error,
     mutate: updateTableData,
-  } = useTableData(source, filters, sort, { limit: 15, offset: null });
+  } = useTableData(source, filters, sort, { limit: 15, offset: 0});
 
+  // This insures we update the table whenever the various options change
   useEffect(()=>{
     updateTableData()
   },[source,filters,sort])
@@ -47,6 +53,12 @@ export const DataTable: React.FC<DataTableProps> = ({
   const columns = tableData
     ? Object.keys(tableData[0]).map((item) => ({ id: item, name: item }))
     : [];
+
+  const updateSelection = (selection : "all" | Set<Key>)=>{
+    if(onSelectionChange){
+      onSelectionChange(Array.from(selection)[0] as string)
+    }
+  }
 
   const setVisCol = (column: string)=>{
     if(onVizualizeCol){
@@ -65,6 +77,8 @@ export const DataTable: React.FC<DataTableProps> = ({
     }
   });
 
+  console.log("ID COL is ", idCol)
+
   if (!tableData) {
     return <div>Loading</div>;
   }
@@ -75,6 +89,7 @@ export const DataTable: React.FC<DataTableProps> = ({
       gridArea="table"
       sortDescriptor={sort}
       onSortChange={(sort) => setSort(sort)}
+      onSelectionChange={updateSelection}
       selectionMode="single"
       selectionStyle="highlight"
     >
@@ -99,7 +114,7 @@ export const DataTable: React.FC<DataTableProps> = ({
       </TableHeader>
       <TableBody items={tableData}>
         {(param: { [key: string]: any }) => (
-          <Row key={JSON.stringify(param)}>
+          <Row key={ idCol ? param[idCol] : JSON.stringify(param)}>
             {(columnKey) => (
               <Cell>
                 {typeof param[columnKey] === "object"

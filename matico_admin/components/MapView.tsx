@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { ActionButton, Tooltip, TooltipTrigger } from "@adobe/react-spectrum";
 import Vignette from "@spectrum-icons/workflow/Vignette";
 import {FlyToInterpolator } from "deck.gl";
+import {useMapSelectEditFeature} from "../hooks/useMapSelectEditFeature";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.006,
@@ -92,38 +93,49 @@ const styleForCol = (
 
 export interface MapViewInterface {
   source: Source;
+  idCol?: string;
   visCol?: string | null;
   extent?: [number, number, number, number];
+  selectedFeatureId? : string | number | null;
+  onSelectFeature?: (featureId :string | number | null)=>void
 }
 
 export const MapView: React.FC<MapViewInterface> = ({
   source,
   visCol,
   extent,
+  idCol,
+  selectedFeatureId,
+  onSelectFeature
 }) => {
   const tileUrl = tileUrlForSource(source);
   const [viewport, setViewport] = useState<any>(INITIAL_VIEW_STATE);
+
+  const {selectionLayer} = useMapSelectEditFeature(source,selectedFeatureId,false);
 
   const setViewportWithExtent = (
     extent: [number, number, number, number] | undefined
   ) => {
     if (extent) {
-      //@ts-ignore
-      const newViewport = new WebMercatorViewport(viewport);
-      const { longitude, latitude, zoom } = newViewport.fitBounds(
-        [
-          [extent[0], extent[1]],
-          [extent[2], extent[3]],
-        ],
-        { padding: 30 }
-      );
-      setViewport({ ...viewport,
-                  latitude,
-                  longitude,
-                  zoom,
-                  transitionDuration: 2000,
-                  transitionInterpolator: new FlyToInterpolator()
-      });
+      setTimeout(()=>{
+        //@ts-ignore
+        const newViewport = new WebMercatorViewport(viewport);
+        const { longitude, latitude, zoom } = newViewport.fitBounds(
+          [
+            [extent[0], extent[1]],
+            [extent[2], extent[3]],
+          ],
+          { padding: 30 }
+        );
+        setViewport({ ...viewport,
+                    latitude,
+                    longitude,
+                    zoom,
+                    transitionDuration: 2000,
+                    transitionInterpolator: new FlyToInterpolator()
+        });
+      }
+      ,0)
     }
   };
 
@@ -134,6 +146,12 @@ export const MapView: React.FC<MapViewInterface> = ({
 
   const { column, columnError } = useDatasetColumn(source, visCol);
   const stat = binsForColType(column?.col_type);
+
+  const selectFeature = (feature:any)=>{
+    if(idCol && onSelectFeature){
+      onSelectFeature( feature.object.properties[idCol] )
+    }
+  }
 
   const { data: categories, error: dataSummaryError } = useColumnStat(
     source,
@@ -146,7 +164,10 @@ export const MapView: React.FC<MapViewInterface> = ({
   const layer = new MVTLayer({
     data: `${tileUrl}`,
     ...layerStyle,
+    onClick: selectFeature
   });
+
+  const layers = [layer,selectionLayer].filter(l=>l)
 
   return (
     <div
@@ -180,7 +201,7 @@ export const MapView: React.FC<MapViewInterface> = ({
         initialViewState={viewport}
         //@ts-ignore
         onViewStateChange={({ viewState }) => setViewport(viewState)}
-        layers={[layer]}
+        layers={layers}
       >
         <StaticMap
           mapboxApiAccessToken="pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"

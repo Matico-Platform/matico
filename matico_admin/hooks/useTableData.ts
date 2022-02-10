@@ -29,8 +29,8 @@ export const useTableData = (
       baseUrl = null;
   }
 
-  const { data, error, mutate } = useSWRAPI(baseUrl, {
-    params: { ...source?.parameters, ...page, ...sort },
+  const { data, error, mutate } = useSWRAPI( source ?  baseUrl: null, {
+    params: { ...source?.parameters, ...page, ...sort, include_metadata:true },
     refreshInterval: 0,
   });
 

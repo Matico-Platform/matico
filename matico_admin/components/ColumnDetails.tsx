@@ -28,9 +28,12 @@ const statForDataType = (dataType: any) => {
       return histogram;
     case "FLOAT":
       return histogram;
+    case "FLOAT8":
+      return histogram;
     case "VARCHAR":
       return categories;
     default:
+      console.log("missed data type ", dataType )
       return null;
   }
 };

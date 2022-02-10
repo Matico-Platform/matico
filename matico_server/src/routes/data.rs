@@ -51,6 +51,7 @@ async fn get_data(
 async fn get_feature(
     state: web::Data<State>,
     web::Path((dataset_id, feature_id)): web::Path<(Uuid, String)>,
+    web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
@@ -77,8 +78,8 @@ async fn get_feature(
             Some(query),
             None,
             None,
-            Some(Format::Json),
-            Some(true),
+            format_param.format,
+            Some(false),
         )
         .await?;
     Ok(HttpResponse::Ok()

@@ -14,6 +14,11 @@ import {
   Link,
   IllustratedMessage,
   Content,
+  TooltipTrigger,
+  Tooltip,
+  Well,
+  Picker,
+  Header,
 } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useDataset } from "../../hooks/useDatasets";
@@ -22,13 +27,15 @@ import { useDatasetColumns } from "../../hooks/useDatasetColumns";
 import { useDatasetData } from "../../hooks/useDatasetData";
 import { MapView } from "../../components/MapView";
 import TableEdit from "@spectrum-icons/workflow/TableEdit";
+import SqlQuery from "@spectrum-icons/workflow/SQLQuery";
 import { SyncHistory } from "../../components/SyncHistory";
 import dynamic from "next/dynamic";
 import { QueryEditorProps } from "../../components/QueryEditor";
 import { useEffect, useState } from "react";
 import { DataTable } from "../../components/DataTable";
 import { Source, SourceType } from "../../utils/api";
-import {useExtent} from "../../hooks/useExtent";
+import { useExtent } from "../../hooks/useExtent";
+import {FeatureEditor} from "../../components/FeatureEditor";
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
@@ -41,10 +48,11 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   };
   const { data: dataset, error: datasetError } = useDataset(datasetId);
   const { data: columns, error: columnsError } = useDatasetColumns(source);
-  const [selectedFeatureId, setSelectedFeatureId] =
-    useState<string | null>(null);
-  const [visCol, setVisCol] = useState<string | null>(null);
 
+  const [selectedFeatureId, setSelectedFeatureId] =
+    useState<string | number | null>(null);
+
+  const [visCol, setVisCol] = useState<string | null>(null);
   const [query, setQuery] = useState<null | string>(null);
 
   useEffect(() => {
@@ -53,10 +61,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
     }
   }, [dataset, query]);
 
-  const mapUrl = `http://localhost:8000/api/tiler/dataset/${datasetId}/{z}/{x}/{y}`;
-  const { data, error: dataError } = useDatasetData(datasetId, 0, 30);
-
-  const {extent, extentError} = useExtent(source)
+  const { extent, extentError } = useExtent(source);
 
   const QueryEditor = dynamic<QueryEditorProps>(
     () =>
@@ -74,27 +79,46 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
         gridArea="sidebar"
         height="100%"
       >
-        <Heading level={2}>{dataset ? dataset.name : "Loading..."}</Heading>
+        <Heading marginBottom={"size-200"}>{dataset ? dataset.name : "Loading..."}</Heading>
+        {dataset && (
+          <Well>
+            <Header marginBottom={"size-200"}>Description</Header>
+            <Content>{dataset.description}</Content>
+          </Well>
+        )}
+        {columns && (
+          <Well>
+            <Header marginBottom={"size-200"}>Column settings</Header>
+            <Picker
+              selectedKey={dataset?.id_col}
+              marginBottom={"size-200"}
+              items={columns}
+              label={"Id Column"}
+            >
+              {(item) => <Item key={item.name}>{item.name}</Item>}
+            </Picker>
+            <Picker
+              selectedKey={dataset?.geom_col}
+              marginBottom={"size-200"}
+              items={columns.filter((c) => c.col_type === "geometry")}
+              label={"Geometry Column"}
+            >
+              {(item) => <Item key={item.name}>{item.name}</Item>}
+            </Picker>
+          </Well>
+        )}
+
         {dataset && dataset.sync_dataset && (
-          <Flex height="100%" direction="column">
-            <View>
-              <Heading level={4}>Description</Heading>
-              <Divider size="S" />
-              <Text>{dataset.description}</Text>
-            </View>
-            <View flex={1} />
-            <View>
-              <Heading level={4}>Sync Status</Heading>
-              <Divider size="S" />
-              <SyncHistory datasetId={datasetId} />
-              <Text>
-                Sycing form{" "}
-                <Link>
-                  <a href={dataset.sync_url}>{dataset.sync_url}</a>
-                </Link>
-              </Text>
-            </View>
-          </Flex>
+          <Well>
+            <Header marginBottom={"size-200"}>Sync Status</Header>
+            <SyncHistory datasetId={datasetId} />
+            <Text>
+              Sycing form{" "}
+              <Link>
+                <a href={dataset.sync_url}>{dataset.sync_url}</a>
+              </Link>
+            </Text>
+          </Well>
         )}
       </View>
       <View gridArea="content" padding="size-200" width="100%" height="100%">
@@ -114,21 +138,39 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                   filters={[]}
                   visCol={visCol}
                   onVizualizeCol={setVisCol}
+                  idCol={dataset?.id_col}
+                  selection={selectedFeatureId}
+                  onSelectionChange={setSelectedFeatureId}
                 />
               )}
               <View gridArea="map">
-                <MapView 
-                visCol={visCol} 
-                source={source} 
-                 extent={extent?.extent}
-
-              />
+                <MapView
+                  visCol={visCol}
+                  source={source}
+                  extent={extent?.extent}
+                  selectedFeatureId={selectedFeatureId}
+                  idCol={dataset?.id_col}
+                  onSelectFeature={setSelectedFeatureId}
+                />
               </View>
-              <Tabs gridArea="focus" orientation="vertical" width="100%" height="100%">
+              <Tabs
+                gridArea="focus"
+                orientation="vertical"
+                width="100%"
+                height="100%"
+              >
                 <TabList>
-                  <Item key="query">Query</Item>
+                  <Item key="query">
+                    <TooltipTrigger delay={0}>
+                      <SqlQuery />
+                      <Tooltip>Query data</Tooltip>
+                    </TooltipTrigger>
+                  </Item>
                   <Item key="feature">
-                    <TableEdit />
+                    <TooltipTrigger delay={0}>
+                      <TableEdit />
+                      <Tooltip>Edit Features</Tooltip>
+                    </TooltipTrigger>
                   </Item>
                 </TabList>
                 <TabPanels>
@@ -140,14 +182,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                     />
                   </Item>
                   <Item key="feature">
-                    <IllustratedMessage>
-                      <NotFound />
-                      <Heading>No feature selected</Heading>
-                      <Content>
-                        Select a table row or click on map feature to view or
-                        edit
-                      </Content>
-                    </IllustratedMessage>
+                    <FeatureEditor edit={true} featureId={selectedFeatureId} source={source}/>
                   </Item>
                 </TabPanels>
               </Tabs>

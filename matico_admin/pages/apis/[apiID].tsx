@@ -50,21 +50,21 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
     updateApi,
   } = useApi(apiId, { refreshInterval: 0 });
 
-
-  const source = {
-    id: api?.id,
-    type: SourceType.API,
-    parameters: localParameters,
-  };
-
-  const {extent, extentError} = useExtent(source)
-
   const valuesForQuery = localParameters.reduce((agg, val) => {
     return {
       ...agg,
       [val.name]: values[val.name] ?? Object.values(val.default_value)[0],
     };
   }, {});
+
+  const source = {
+    id: api?.id,
+    type: SourceType.API,
+    parameters: valuesForQuery,
+  };
+
+  const {extent, extentError} = useExtent(source)
+
 
   const urlParams: string = Object.keys(valuesForQuery)
     .map(
