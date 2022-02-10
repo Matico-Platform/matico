@@ -87,8 +87,8 @@ ADD matico_charts /app/matico_charts
 # ADD matico_components ./matico_components 
 # ADD matico_admin ./matico_admin
 # RUN yarn
-RUN yarn workspace @maticoapp/matico_components run build-prod
 RUN yarn workspace @maticoapp/matico_charts run build
+RUN yarn workspace @maticoapp/matico_components run build-prod
 ENV NEXT_PUBLIC_SERVER_URL="/api" 
 RUN yarn workspace matico_admin run build
 RUN ls -alh /app/matico_admin/.next
