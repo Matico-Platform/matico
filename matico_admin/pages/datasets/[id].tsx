@@ -47,7 +47,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
     id: datasetId,
   };
   const { data: dataset, error: datasetError } = useDataset(datasetId);
-  const { data: columns, error: columnsError } = useDatasetColumns(source);
+  const { columns, columnsError } = useDatasetColumns(source);
 
   const [selectedFeatureId, setSelectedFeatureId] =
     useState<string | number | null>(null);

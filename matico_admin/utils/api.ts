@@ -191,7 +191,6 @@ export async function updateFeature(
   update: any
 ) {
 
-  console.log("Attempting to do update ", update)
   return a.put(`datasets/${dataset_id}/data/${feature_id}`, update);
 }
 

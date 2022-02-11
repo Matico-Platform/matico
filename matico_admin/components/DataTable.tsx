@@ -77,7 +77,6 @@ export const DataTable: React.FC<DataTableProps> = ({
     }
   });
 
-  console.log("ID COL is ", idCol)
 
   if (!tableData) {
     return <div>Loading</div>;

@@ -33,7 +33,6 @@ const statForDataType = (dataType: any) => {
     case "VARCHAR":
       return categories;
     default:
-      console.log("missed data type ", dataType )
       return null;
   }
 };

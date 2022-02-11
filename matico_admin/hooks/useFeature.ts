@@ -27,7 +27,6 @@ export const useFeature = (
   const editFeature = (update: { [parameter: string]: any }) => {
     if (featureId) {
       updateFeature(source.id, featureId, update).then(() => {
-        console.log("Suggesfully updated feature");
         mutate();
       });
     }

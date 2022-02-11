@@ -4,10 +4,11 @@ import { GeoJsonLayer } from 'deck.gl'
 import {ViewMode, ModifyMode} from '@nebula.gl/edit-modes'
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import {useEffect, useState} from 'react';
+import {useDataset} from './useDatasets';
 
 
 export const useMapSelectEditFeature  = (source:Source, featureId:string | number| null, edit:boolean)=>{
-
+  const {data: dataset} = useDataset(source.id)
 
   const {feature, featureError, editable, mutateFeature, updateFeature} = useFeature(source, featureId, edit, "geojson")
 
@@ -18,7 +19,10 @@ export const useMapSelectEditFeature  = (source:Source, featureId:string | numbe
   }
 
   const saveGeometry = ()=>{
-    console.log("saving changes ", editFeature)
+    if(dataset){
+      //TODO Prob want to handle this server side at some point
+      updateFeature({[dataset.geom_col] : editFeature.features[0].geometry})
+    }
   }
 
   useEffect(()=>{

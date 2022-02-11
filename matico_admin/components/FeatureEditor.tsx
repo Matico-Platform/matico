@@ -14,6 +14,7 @@ import {
 } from "@adobe/react-spectrum";
 import NotFound from "@spectrum-icons/illustrations/NotFound";
 import { useEffect, useState } from "react";
+import { useDatasetColumns } from "../hooks/useDatasetColumns";
 import { useFeature } from "../hooks/useFeature";
 import { Source } from "../utils/api";
 
@@ -28,52 +29,58 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
   featureId,
   edit,
 }) => {
-  const { feature, featureError, updateFeature , mutateFeature} = useFeature(
+  const { feature, featureError, updateFeature, mutateFeature } = useFeature(
     source,
     featureId,
     edit
   );
 
-  const [featureUpdates, setFeatureUpdates] = useState(feature);
+  const [featureUpdates, setFeatureUpdates] = useState({});
+  const { columns } = useDatasetColumns(source);
 
-  useEffect(() => {
-    setFeatureUpdates(feature ? feature[0] : null);
-  }, [feature]);
+  const discardChanges = () => {
+    setFeatureUpdates({});
+  };
 
-  const discardChanges = ()=>{
-    setFeatureUpdates(feature ? feature[0] : null);
-  }
+  const saveChanges = () => {
+    updateFeature(featureUpdates);
+  };
 
-  const saveChanges  = ()=>{
-    updateFeature(featureUpdates)
-  }
+  useEffect(()=>{
+    setFeatureUpdates({}) 
+  },[feature])
 
 
-  const fieldForParameter= (parameter:any)=>{
-    switch (typeof(parameter)){
-      case "string":
-          return <TextField
-                key={parameter}
-                label={parameter}
-                value={featureUpdates[parameter]}
-                onChange={(value) =>
-                  setFeatureUpdates({ ...featureUpdates, [parameter]: value })
-                }
-              />
-      case "number":
-          return <NumberField
-                key={parameter}
-                label={parameter}
-                value={featureUpdates[parameter]}
-                onChange={(value) =>
-                  setFeatureUpdates({ ...featureUpdates, [parameter]: value })
-                }
-              />
-            default:
-              return null
-      
+  const fieldForParameter = (column: any) => {
+    const combinedParameters = {...feature[0], ...featureUpdates}
+
+    if (column.col_type.includes("INT") || column.col_type.includes("FLOAT")) {
+      return (
+        <NumberField
+          width="size-2400"
+          key={column.name}
+          label={column.name}
+          value={combinedParameters[column.name]}
+          onChange={(value) =>
+            setFeatureUpdates({ ...featureUpdates, [column.name]: value })
+          }
+        />
+      );
+    } else if (column.col_type === "VARCHAR") {
+      return (
+        <TextField
+          width="size-2400"
+          key={column.name}
+          label={column.name}
+          value={combinedParameters[column.name]}
+          onChange={(value) =>
+            setFeatureUpdates({ ...featureUpdates, [column.name]: value })
+          }
+        />
+      );
     }
-  }
+    return null;
+  };
 
   if (!featureId) {
     return (
@@ -103,21 +110,32 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
   return (
     <Well width="100%" height="100%">
       <Header>Edit the selected features properties</Header>
-      {featureUpdates && (
+      { columns && feature && (
         <Form>
           <Grid
             columns={repeat("auto-fit", "size-2400")}
             autoRows="size-800"
             gap="size-100"
             alignItems="end"
+            justifyContent='space-evenly'
           >
-            {Object.keys(feature[0]).map((parameter: string) => fieldForParameter(parameter)).filter(d=>d)}
-            {JSON.stringify(featureUpdates) !== JSON.stringify(feature[0]) && (
+            {columns
+              .map((column: any) => fieldForParameter(column))
+              .filter((d) => d)}
+              { Object.keys(featureUpdates).length > 0 && (
               <>
-                <Button gridColumnStart={"-2"} variant="negative" onPress={discardChanges}>
+                <Button
+                  gridColumnStart={"-3"}
+                  variant="negative"
+                  onPress={discardChanges}
+                >
                   Discard Changes
                 </Button>
-                <Button gridColumnStart={"-1"} variant="cta" onPress={saveChanges}>
+                <Button
+                  gridColumnStart={"-2"}
+                  variant="cta"
+                  onPress={saveChanges}
+                >
                   Save Changes
                 </Button>
               </>

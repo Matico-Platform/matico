@@ -1,9 +1,10 @@
 import {useSWRAPI,Source,urlForSource} from '../utils/api'
 
 
-export const useDatasetColumns= (source: Source)=>{
+export const useDatasetColumns= (source: Source | null)=>{
   let url = urlForSource(source)
-  return useSWRAPI(`${url}/columns`, {refreshInterval:0, params:source.parameters}) 
+  const {data, error, mutate} = useSWRAPI(source  ? `${url}/columns` : null, {refreshInterval:0, params:source.parameters}) 
+  return {columns:data, columnsError: error, columnsMutate:mutate}
 }
 
 export const useDatasetColumn= (source:Source, colName:string | undefined | null)=>{
