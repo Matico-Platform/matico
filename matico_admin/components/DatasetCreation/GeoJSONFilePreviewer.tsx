@@ -51,7 +51,6 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
           new Set([...colSet, ...Object.keys(row)]),
         new Set()
       );
-      console.log("columns ", columns, " data ", data);
       setDataPreview(data);
       setColumns(Array.from(columns));
     });

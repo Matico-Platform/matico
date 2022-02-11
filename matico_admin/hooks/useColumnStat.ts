@@ -7,8 +7,8 @@ export const useColumnStat = (
 ) => {
   let url = urlForSource(source);
 
-  return useSWRAPI(`${url}/columns/${colName}/stats`, {
-    params: { stat: JSON.stringify(statDetails) },
+  return useSWRAPI(source && statDetails && colName ? `${url}/columns/${colName}/stats` : null, {
+    params: { stat: JSON.stringify(statDetails), ...source.parameters },
     refreshInterval: 0,
   });
 };

@@ -18,17 +18,16 @@ import useSWR from "swr";
 // }
 //
 
-
 export enum SourceType {
   API = "api",
   Dataset = "dataset",
-  Query ="query"
+  Query = "query",
 }
 export type Source = {
   id: string;
   type: SourceType;
   parameters?: { [param: string]: any };
-  query?: string
+  query?: string;
 };
 
 export const tileUrlForSource = (source: Source | undefined) => {
@@ -43,7 +42,7 @@ export const tileUrlForSource = (source: Source | undefined) => {
         source.id
       }/{z}/{x}/{y}?${Object.keys(source.parameters!)
         .map((key: string) =>
-          encodeURIComponent(`${key}=${source.parameters![key]}`)
+          `${encodeURIComponent(key)}=${encodeURIComponent(source.parameters![key])}`
         )
         .join("&")}`;
     case SourceType.Query:
@@ -53,16 +52,16 @@ export const tileUrlForSource = (source: Source | undefined) => {
   }
 };
 
-export const urlForSource = (source:Source)=>{
+export const urlForSource = (source: Source) => {
   switch (source?.type) {
     case SourceType.Dataset:
-      return  `/datasets/${source?.id}`;
+      return `/datasets/${source?.id}`;
     case SourceType.API:
       return `/apis/${source?.id}`;
     default:
       return null;
   }
-}
+};
 
 const a = axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
@@ -188,9 +187,10 @@ export async function updateApp(
 
 export async function updateFeature(
   dataset_id: string,
-  feature_id: string,
+  feature_id: string | number,
   update: any
 ) {
+
   return a.put(`datasets/${dataset_id}/data/${feature_id}`, update);
 }
 
@@ -226,12 +226,12 @@ export async function getUniqueColumnValues(
   );
 }
 
-export async function createApi(newAPI: any){
-  return a.post("/apis", newAPI)
+export async function createApi(newAPI: any) {
+  return a.post("/apis", newAPI);
 }
 
-export async function updateApi(id: string, newAPI: any){
-  return a.put(`/apis/${id}`, newAPI)
+export async function updateApi(id: string, newAPI: any) {
+  return a.put(`/apis/${id}`, newAPI);
 }
 
 export async function getApis() {
@@ -270,9 +270,13 @@ export async function runQuery(
   return a.get(`queries/run?q=${sql}`, { params: page });
 }
 
-export const useSWRAPI = (endpoint: string | null, opts?:any) =>{
-  const {params, ...swrOpts} = opts
-  return useSWR(endpoint, (url: string) => a.get(url,{params}).then((res) => res.data), swrOpts);
-}
+export const useSWRAPI = (endpoint: string | null, opts?: any) => {
+  const { params, ...swrOpts } = opts;
+  return useSWR(
+    endpoint ? [endpoint, params] : null,
+    (url: string) => a.get(url, { params }).then((res) => res.data),
+    swrOpts
+  );
+};
 
 export default a;

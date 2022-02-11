@@ -219,36 +219,45 @@ impl Dataset {
     /// Based on feature id and a subset of fields to update
     pub async fn update_feature(
         &self,
-        pool: &DbPool,
+        db: &DataDbPool,
         feature_id: String,
         update: serde_json::Value,
-    ) -> Result<serde_json::Value, ServiceError> {
-        let conn = pool.get().unwrap();
+        format: Option<Format>
+    ) -> Result<String, ServiceError> {
         let obj = update.as_object().unwrap();
         let mut key_vals: Vec<String> = vec![];
 
         for (key, value) in &*obj {
-            info!("{} : {}", key, value);
-            // TODO FIX THIS!
-            key_vals.push(format!("{} = {}", key, value).replace("\"", "'"));
+            // TODO FIX THIS ITS SUPER FUCKING HACKY JUST NOW!
+            if value.to_string().contains("coordinates"){
+                key_vals.push(format!("{} = ST_GeomFromGeoJSON('{}')", key, value.to_string().replace("'", "\"")));
+            }
+            else{
+                key_vals.push(format!("{} = {}", key, value).replace("\"", "'"));
+            }
         }
         let set_statement = key_vals.join(",");
         let query = format!(
-            "
-        UPDATE {}
-        SET {}
-        WHERE {} = {}",
+            r#"UPDATE "{}"
+            SET {}
+            WHERE "{}" = {}"#,
             self.table_name, set_statement, self.id_col, feature_id
         );
-        info!("Update query is {}", query.clone());
+
         let query2 = query.clone();
-        web::block(move || diesel::sql_query(&query).execute(&conn))
-            .await
-            .map_err(|e| {
-                warn!("SQL Query failed: {} {}", e, query2);
-                ServiceError::APIFailed(format!("SQL Error: {} API was {}", e, query2))
-            })?;
-        Ok(update)
+        sqlx::query(&query).execute(db).await.map_err(|e| ServiceError::APIFailed(format!("Failed to update feature {}",e)))?;
+
+        self.get_feature(&db,feature_id,format).await
+    }
+
+    pub async fn get_feature(
+        &self,
+        db: &DataDbPool,
+        feature_id: String,
+        format:Option<Format>
+    ) -> Result<String, ServiceError>{
+        let query = format!(r#"select * from "{}"  where "{}" = {}"#, self.table_name, self.id_col, feature_id );
+        self.query(db,Some(query), None, None, format, None).await
     }
 
     /// Calculates the extent of the dataset 

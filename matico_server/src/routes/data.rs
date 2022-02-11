@@ -51,6 +51,7 @@ async fn get_data(
 async fn get_feature(
     state: web::Data<State>,
     web::Path((dataset_id, feature_id)): web::Path<(Uuid, String)>,
+    web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
@@ -62,28 +63,10 @@ async fn get_feature(
         Permission::check_permission(&state.db, &user.id, &dataset_id, PermissionType::Read)?;
     }
 
-    let id_col = &dataset.id_col;
-    let table = &dataset.name;
-    let query = format!(
-        "Select * from \"{table}\" where {id_col} ={feature_id}",
-        table = table,
-        id_col = id_col,
-        feature_id = feature_id
-    );
+    let feature = dataset.get_feature(&state.data_db, feature_id , format_param.format).await?;
+    
+    Ok(HttpResponse::Ok().body(feature))
 
-    let result = dataset
-        .query(
-            &state.data_db,
-            Some(query),
-            None,
-            None,
-            Some(Format::Json),
-            Some(true),
-        )
-        .await?;
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .body(result))
 }
 
 #[put("{dataset_id}/data/{feature_id}")]
@@ -91,6 +74,7 @@ async fn update_feature(
     state: web::Data<State>,
     web::Path((dataset_id, feature_id)): web::Path<(Uuid, String)>,
     web::Json(update): web::Json<serde_json::Value>,
+    web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
@@ -100,10 +84,11 @@ async fn update_feature(
     }
 
     let result = dataset
-        .update_feature(&state.db, feature_id, update)
+        .update_feature(&state.data_db, feature_id, update, format_param.format)
         .await?;
-    Ok(HttpResponse::Ok().json(result))
+    Ok(HttpResponse::Ok().body(result))
 }
+
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_feature);
     cfg.service(get_data);

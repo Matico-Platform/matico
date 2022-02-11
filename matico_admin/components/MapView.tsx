@@ -8,7 +8,12 @@ import chroma from "chroma-js";
 import { useEffect, useState } from "react";
 import { ActionButton, Tooltip, TooltipTrigger } from "@adobe/react-spectrum";
 import Vignette from "@spectrum-icons/workflow/Vignette";
-import {FlyToInterpolator } from "deck.gl";
+import EditIn from "@spectrum-icons/workflow/Edit";
+import Save from "@spectrum-icons/workflow/SaveFloppy";
+import Cancel from "@spectrum-icons/workflow/Cancel";
+import { FlyToInterpolator } from "deck.gl";
+import { useMapSelectEditFeature } from "../hooks/useMapSelectEditFeature";
+import { Toolbox } from "@nebula.gl/editor";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.006,
@@ -32,11 +37,8 @@ const binsForColType = (type: string | undefined | null) => {
     case "VARCHAR":
       return categories;
     case "INT4":
-      return quantiles;
     case "INT8":
-      return quantiles;
     case "FLOAT16":
-      return quantiles;
     case "FLOAT8":
       return quantiles;
     default:
@@ -60,9 +62,9 @@ const styleForCol = (
     pickable: true,
     autoHighlight: true,
     radiusUnits: "pixels",
-    updateTriggers:{
-      getFillColor:[colStats,visCol]
-    }
+    updateTriggers: {
+      getFillColor: [colStats, visCol],
+    },
   };
   switch (statType) {
     case "ValueCounts":
@@ -92,48 +94,37 @@ const styleForCol = (
 
 export interface MapViewInterface {
   source: Source;
+  idCol?: string;
   visCol?: string | null;
   extent?: [number, number, number, number];
+  selectedFeatureId?: string | number | null;
+  onSelectFeature?: (featureId: string | number | null) => void;
 }
 
 export const MapView: React.FC<MapViewInterface> = ({
   source,
   visCol,
   extent,
+  idCol,
+  selectedFeatureId,
+  onSelectFeature,
 }) => {
   const tileUrl = tileUrlForSource(source);
   const [viewport, setViewport] = useState<any>(INITIAL_VIEW_STATE);
+  const [edit, setEdit] = useState<boolean>(false);
+  const [mapTileUpdateTrigger, setMapTileUpdateTrigger] = useState(new Date());
 
-  const setViewportWithExtent = (
-    extent: [number, number, number, number] | undefined
-  ) => {
-    if (extent) {
-      //@ts-ignore
-      const newViewport = new WebMercatorViewport(viewport);
-      const { longitude, latitude, zoom } = newViewport.fitBounds(
-        [
-          [extent[0], extent[1]],
-          [extent[2], extent[3]],
-        ],
-        { padding: 30 }
-      );
-      setViewport({ ...viewport,
-                  latitude,
-                  longitude,
-                  zoom,
-                  transitionDuration: 2000,
-                  transitionInterpolator: new FlyToInterpolator()
-      });
+  const { selectionLayer, saveGeometry, discardGeometryChanges } =
+    useMapSelectEditFeature(source, selectedFeatureId, edit);
+  const { column, columnError } = useDatasetColumn(source, visCol);
+
+  const stat = binsForColType(column?.col_type);
+
+  const selectFeature = (feature: any) => {
+    if (idCol && onSelectFeature) {
+      onSelectFeature(feature.object.properties[idCol]);
     }
   };
-
-  useEffect(() => {
-    //@ts-ignore
-    setViewportWithExtent(extent);
-  }, [extent]);
-
-  const { column, columnError } = useDatasetColumn(source, visCol);
-  const stat = binsForColType(column?.col_type);
 
   const { data: categories, error: dataSummaryError } = useColumnStat(
     source,
@@ -141,12 +132,56 @@ export const MapView: React.FC<MapViewInterface> = ({
     stat
   );
 
+  const setViewportWithExtent = (
+    extent: [number, number, number, number] | undefined
+  ) => {
+    if (extent) {
+      setTimeout(() => {
+        //@ts-ignore
+        const newViewport = new WebMercatorViewport(viewport);
+        const { longitude, latitude, zoom } = newViewport.fitBounds(
+          [
+            [extent[0], extent[1]],
+            [extent[2], extent[3]],
+          ],
+          { padding: 30 }
+        );
+        setViewport({
+          ...viewport,
+          latitude,
+          longitude,
+          zoom,
+          transitionDuration: 2000,
+          transitionInterpolator: new FlyToInterpolator(),
+        });
+      }, 0);
+    }
+  };
+
+  const updateGeometry = (newGeom: any) => {
+    saveGeometry();
+    setEdit(false);
+    setMapTileUpdateTrigger(new Date());
+  };
+
+  useEffect(() => {
+    //@ts-ignore
+    setViewportWithExtent(extent);
+  }, [extent]);
+
   const layerStyle = styleForCol(categories, visCol);
 
   const layer = new MVTLayer({
     data: `${tileUrl}`,
     ...layerStyle,
+    onClick: selectFeature,
+    updateTriggers: {
+      ...layerStyle.updateTriggers,
+      getTileData: mapTileUpdateTrigger,
+    },
   });
+
+  const layers = [layer, selectionLayer].filter((l) => l);
 
   return (
     <div
@@ -167,10 +202,46 @@ export const MapView: React.FC<MapViewInterface> = ({
             staticColor={"white"}
             isQuiet
           >
-              <Vignette size="XL" />
+            <Vignette size="XL" />
           </ActionButton>
           <Tooltip>Zoom to bounds or selected feature</Tooltip>
         </TooltipTrigger>
+        {selectedFeatureId &&
+          (edit ? (
+            <>
+              <TooltipTrigger delay={0}>
+                <ActionButton
+                  onPress={updateGeometry}
+                  staticColor={"white"}
+                  isQuiet
+                >
+                  <Save size="XL" />
+                </ActionButton>
+                <Tooltip>wdit Selected geometry</Tooltip>
+              </TooltipTrigger>
+              <TooltipTrigger delay={0}>
+                <ActionButton
+                  onPress={discardGeometryChanges}
+                  staticColor={"white"}
+                  isQuiet
+                >
+                  <Cancel size="XL" />
+                </ActionButton>
+                <Tooltip>wdit Selected geometry</Tooltip>
+              </TooltipTrigger>
+            </>
+          ) : (
+            <TooltipTrigger delay={0}>
+              <ActionButton
+                onPress={() => setEdit(true)}
+                staticColor={"white"}
+                isQuiet
+              >
+                <EditIn size="XL" />
+              </ActionButton>
+              <Tooltip>Edit Selected geometry</Tooltip>
+            </TooltipTrigger>
+          ))}
       </div>
       <DeckGL
         style={{ position: "absolute" }}
@@ -180,7 +251,8 @@ export const MapView: React.FC<MapViewInterface> = ({
         initialViewState={viewport}
         //@ts-ignore
         onViewStateChange={({ viewState }) => setViewport(viewState)}
-        layers={[layer]}
+        //@ts-ignore
+        layers={layers}
       >
         <StaticMap
           mapboxApiAccessToken="pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
