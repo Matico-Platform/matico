@@ -8,8 +8,12 @@ import chroma from "chroma-js";
 import { useEffect, useState } from "react";
 import { ActionButton, Tooltip, TooltipTrigger } from "@adobe/react-spectrum";
 import Vignette from "@spectrum-icons/workflow/Vignette";
+import EditIn from "@spectrum-icons/workflow/Edit";
+import Save from "@spectrum-icons/workflow/SaveFloppy";
+import Cancel from "@spectrum-icons/workflow/Cancel";
 import {FlyToInterpolator } from "deck.gl";
 import {useMapSelectEditFeature} from "../hooks/useMapSelectEditFeature";
+import {Toolbox} from "@nebula.gl/editor"
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.006,
@@ -110,8 +114,25 @@ export const MapView: React.FC<MapViewInterface> = ({
 }) => {
   const tileUrl = tileUrlForSource(source);
   const [viewport, setViewport] = useState<any>(INITIAL_VIEW_STATE);
+  const [edit, setEdit] = useState<boolean>(false)
 
-  const {selectionLayer} = useMapSelectEditFeature(source,selectedFeatureId,false);
+  const {selectionLayer, saveGeometry, discardGeometryChanges} = useMapSelectEditFeature(source,selectedFeatureId,edit);
+  const { column, columnError } = useDatasetColumn(source, visCol);
+
+  const stat = binsForColType(column?.col_type);
+
+  const selectFeature = (feature:any)=>{
+    if(idCol && onSelectFeature){
+      onSelectFeature( feature.object.properties[idCol] )
+    }
+  }
+
+  const { data: categories, error: dataSummaryError } = useColumnStat(
+    source,
+    visCol ?? "",
+    stat
+  );
+
 
   const setViewportWithExtent = (
     extent: [number, number, number, number] | undefined
@@ -144,20 +165,6 @@ export const MapView: React.FC<MapViewInterface> = ({
     setViewportWithExtent(extent);
   }, [extent]);
 
-  const { column, columnError } = useDatasetColumn(source, visCol);
-  const stat = binsForColType(column?.col_type);
-
-  const selectFeature = (feature:any)=>{
-    if(idCol && onSelectFeature){
-      onSelectFeature( feature.object.properties[idCol] )
-    }
-  }
-
-  const { data: categories, error: dataSummaryError } = useColumnStat(
-    source,
-    visCol ?? "",
-    stat
-  );
 
   const layerStyle = styleForCol(categories, visCol);
 
@@ -192,6 +199,45 @@ export const MapView: React.FC<MapViewInterface> = ({
           </ActionButton>
           <Tooltip>Zoom to bounds or selected feature</Tooltip>
         </TooltipTrigger>
+        { selectedFeatureId && ( 
+          edit ?
+            <>
+          <TooltipTrigger delay={0}>
+            <ActionButton
+              onPress={saveGeometry}
+              staticColor={"white"}
+              isQuiet
+            >
+                <Save size="XL" />
+            </ActionButton>
+            <Tooltip>wdit Selected geometry</Tooltip>
+          </TooltipTrigger>
+          <TooltipTrigger delay={0}>
+            <ActionButton
+              onPress={discardGeometryChanges}
+              staticColor={"white"}
+              isQuiet
+            >
+                <Cancel size="XL" />
+            </ActionButton>
+            <Tooltip>wdit Selected geometry</Tooltip>
+          </TooltipTrigger>
+          </>
+
+            :
+          <TooltipTrigger delay={0}>
+            <ActionButton
+              onPress={()=>setEdit(true)}
+              staticColor={"white"}
+              isQuiet
+            >
+                <EditIn size="XL" />
+            </ActionButton>
+            <Tooltip>Edit Selected geometry</Tooltip>
+          </TooltipTrigger>
+                               )
+        }
+        
       </div>
       <DeckGL
         style={{ position: "absolute" }}
@@ -201,6 +247,7 @@ export const MapView: React.FC<MapViewInterface> = ({
         initialViewState={viewport}
         //@ts-ignore
         onViewStateChange={({ viewState }) => setViewport(viewState)}
+        //@ts-ignore
         layers={layers}
       >
         <StaticMap

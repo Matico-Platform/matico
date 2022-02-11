@@ -38,5 +38,6 @@ export const useFeature = (
     featureError: error,
     editable: source.type === SourceType.Dataset,
     updateFeature: editFeature,
+    mutateFeature: mutate
   };
 };

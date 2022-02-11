@@ -190,6 +190,8 @@ export async function updateFeature(
   feature_id: string | number,
   update: any
 ) {
+
+  console.log("Attempting to do update ", update)
   return a.put(`datasets/${dataset_id}/data/${feature_id}`, update);
 }
 

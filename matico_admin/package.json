@@ -18,6 +18,8 @@
     "@loaders.gl/json": "^3.1.4",
     "@maticoapp/matico_charts": "workspace:matico_charts",
     "@maticoapp/matico_components": "workspace:matico_components",
+    "@nebula.gl/edit-modes": "^1.0.2-alpha.1",
+    "@nebula.gl/editor": "^1.0.2-alpha.1",
     "@react-spectrum/card": "^3.0.0-alpha.1",
     "@react-stately/data": "^3.4.3",
     "@spectrum-icons/illustrations": "^3.2.2",
@@ -42,6 +44,7 @@
     "react-dropzone": "^11.4.2",
     "react-map-gl": "^5.3.10",
     "react-mde": "^11.5.0",
+    "react-paginate": "^8.1.0",
     "styled-components": "^5.3.1",
     "swr": "^1.1.1"
   },
