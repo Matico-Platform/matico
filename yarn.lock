@@ -25,7 +25,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@adobe/react-spectrum@npm:^3.15.0":
+"@adobe/react-spectrum@npm:^3.15.0, @adobe/react-spectrum@npm:^3.15.1":
   version: 3.15.1
   resolution: "@adobe/react-spectrum@npm:3.15.1"
   dependencies:
@@ -2733,7 +2733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@internationalized/number@npm:^3.0.2":
+"@internationalized/number@npm:^3.0.2, @internationalized/number@npm:^3.0.3":
   version: 3.0.3
   resolution: "@internationalized/number@npm:3.0.3"
   dependencies:
@@ -3555,7 +3555,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@maticoapp/matico_components@workspace:matico_components"
   dependencies:
-    "@adobe/react-spectrum": ^3.15.0
+    "@adobe/react-spectrum": ^3.15.1
     "@apache-arrow/es5-cjs": ^6.0.0
     "@danmarshall/deckgl-typings": ^4.5.1
     "@deck.gl/core": ^8.6.3
@@ -3573,6 +3573,7 @@ __metadata:
     "@maticoapp/matico_spec": "workspace:matico_spec/pkg"
     "@parcel/transformer-react-refresh-wrap": ^2.0.0
     "@react-hook/resize-observer": ^1.2.4
+    "@react-spectrum/color": 3.0.0-beta.6
     "@reduxjs/toolkit": ^1.6.2
     "@spectrum-icons/workflow": ^3.2.1
     "@swc/helpers": ^0.2.13
@@ -5226,6 +5227,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-aria/color@npm:3.0.0-beta.6":
+  version: 3.0.0-beta.6
+  resolution: "@react-aria/color@npm:3.0.0-beta.6"
+  dependencies:
+    "@babel/runtime": ^7.6.2
+    "@react-aria/i18n": ^3.3.3
+    "@react-aria/interactions": ^3.7.0
+    "@react-aria/slider": ^3.0.3
+    "@react-aria/spinbutton": ^3.0.1
+    "@react-aria/textfield": ^3.5.0
+    "@react-aria/utils": ^3.11.0
+    "@react-stately/color": 3.0.0-beta.5
+    "@react-types/color": 3.0.0-beta.3
+    "@react-types/shared": ^3.10.1
+    "@react-types/slider": ^3.0.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1
+    react-dom: ^16.8.0 || ^17.0.0-rc.1
+  checksum: 5c802ec332d900766a421bf8303d51a09802213af2036809b896341575ae0a091e7ce8824c4c915853df8eb41e443b3c35108450f83b66fd79ea75608e0a5b8a
+  languageName: node
+  linkType: hard
+
 "@react-aria/combobox@npm:^3.2.0":
   version: 3.2.1
   resolution: "@react-aria/combobox@npm:3.2.1"
@@ -6217,6 +6240,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-spectrum/color@npm:3.0.0-beta.6":
+  version: 3.0.0-beta.6
+  resolution: "@react-spectrum/color@npm:3.0.0-beta.6"
+  dependencies:
+    "@babel/runtime": ^7.6.2
+    "@react-aria/color": 3.0.0-beta.6
+    "@react-aria/focus": ^3.5.0
+    "@react-aria/i18n": ^3.3.3
+    "@react-aria/interactions": ^3.7.0
+    "@react-aria/slider": ^3.0.3
+    "@react-aria/utils": ^3.11.0
+    "@react-spectrum/label": ^3.4.1
+    "@react-spectrum/layout": ^3.2.1
+    "@react-spectrum/textfield": ^3.3.0
+    "@react-spectrum/utils": ^3.6.3
+    "@react-stately/color": 3.0.0-beta.5
+    "@react-stately/slider": ^3.0.3
+    "@react-stately/utils": ^3.3.0
+    "@react-types/color": 3.0.0-beta.3
+    "@react-types/shared": ^3.10.1
+    "@react-types/slider": ^3.0.2
+    "@react-types/textfield": ^3.3.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1
+    react-dom: ^16.8.0 || ^17.0.0-rc.1
+  checksum: 8100af71616547004bd18fa6af6651b044f39b742236598df55327562c954ef21ea11595669ca55024f8d6735e69a8578593f3a1bde40c14cb023aacaa425e06
+  languageName: node
+  linkType: hard
+
 "@react-spectrum/combobox@npm:^3.2.0":
   version: 3.2.0
   resolution: "@react-spectrum/combobox@npm:3.2.0"
@@ -7109,6 +7162,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-stately/color@npm:3.0.0-beta.5":
+  version: 3.0.0-beta.5
+  resolution: "@react-stately/color@npm:3.0.0-beta.5"
+  dependencies:
+    "@babel/runtime": ^7.6.2
+    "@internationalized/message": ^3.0.2
+    "@internationalized/number": ^3.0.3
+    "@react-stately/slider": ^3.0.3
+    "@react-stately/utils": ^3.3.0
+    "@react-types/color": 3.0.0-beta.3
+    "@react-types/numberfield": ^3.1.0
+  peerDependencies:
+    react: ^16.8.0
+  checksum: 2bbfdff09465f31eb943d43e6305e6db0e130c488ba736244ac055f4de79f3b4584d0e3c530c6d4a280e34eccafd9211010da65c5078f50ef21205f21eabc37f
+  languageName: node
+  linkType: hard
+
 "@react-stately/combobox@npm:^3.0.1":
   version: 3.0.1
   resolution: "@react-stately/combobox@npm:3.0.1"
@@ -7555,6 +7625,18 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1
   checksum: e9d4371fff8e4e9460346f7cc715df8f10051860b8b3f4bf0773267f653e6541ce50ca6548822742e43972682c9c0ff9d72ecb364ee62779e07dac85086157c5
+  languageName: node
+  linkType: hard
+
+"@react-types/color@npm:3.0.0-beta.3":
+  version: 3.0.0-beta.3
+  resolution: "@react-types/color@npm:3.0.0-beta.3"
+  dependencies:
+    "@react-types/shared": ^3.9.0
+    "@react-types/slider": ^3.0.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1
+  checksum: af06425cd8acf9c1fdc6e5694e4c7cdce06bae18ca7de39e4cf5f67da3c4521b964b6a3eeaa41a8b3b9b365b3cb6a1f9d3bff8993c3629bbb8b1a2c306c3cde4
   languageName: node
   linkType: hard
 
@@ -25161,12 +25243,6 @@ __metadata:
     styled-components: ^5.3.1
     swr: ^1.1.1
     typescript: 4.5.4
-  languageName: unknown
-  linkType: soft
-
-"matico_buffer_analysis@workspace:matico_buffer_analysis/pkg":
-  version: 0.0.0-use.local
-  resolution: "matico_buffer_analysis@workspace:matico_buffer_analysis/pkg"
   languageName: unknown
   linkType: soft
 

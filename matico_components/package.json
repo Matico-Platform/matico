@@ -16,7 +16,7 @@
     "start": "yarn build-dev"
   },
   "dependencies": {
-    "@adobe/react-spectrum": "^3.15.0",
+    "@adobe/react-spectrum": "^3.15.1",
     "@apache-arrow/es5-cjs": "^6.0.0",
     "@danmarshall/deckgl-typings": "^4.9.7",
     "@deck.gl/core": "^8.6.3",
@@ -34,6 +34,7 @@
     "@maticoapp/matico_spec": "workspace:matico_spec/pkg",
     "@parcel/transformer-react-refresh-wrap": "^2.0.0",
     "@react-hook/resize-observer": "^1.2.4",
+    "@react-spectrum/color": "3.0.0-beta.6",
     "@reduxjs/toolkit": "^1.6.2",
     "@spectrum-icons/workflow": "^3.2.1",
     "@swc/helpers": "^0.2.13",

@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import { useState, useRef, useMemo } from "react";
-import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
+import { useState, useRef, useMemo } from "react"; import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
 import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";

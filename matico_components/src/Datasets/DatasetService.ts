@@ -58,9 +58,9 @@ export const DatasetService: DatasetServiceInterface = {
           case "Min":
             return dataset.getColumnMin(column);
           case "EqualInterval":
-            return dataset.getEqualIntervalBins(column, parameters.bins);
+            return dataset.getEqualIntervalBins(column, parameters.noBins);
           case "Quantile":
-            return dataset.getQuantileBins(column, parameters.bins);
+            return dataset.getQuantileBins(column, parameters.noBins);
           case "Histogram":
             return dataset.getColumnHistogram(column, parameters.noBins,filters);
           default:

@@ -198,6 +198,7 @@ export class LocalDataset implements Dataset {
   }
 
   async getColumnHistogram (column: string, noBins: number, filters?:Array<Filter>) {
+    console.log(`Getting column hist ${column} ${noBins}`)
     const maxVal = await this.getColumnMax(column, filters)
     const minVal = await this.getColumnMin(column, filters)
     const binWidth = (maxVal-minVal)/noBins;
