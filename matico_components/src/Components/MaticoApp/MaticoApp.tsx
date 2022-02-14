@@ -13,6 +13,8 @@ import { deepMerge } from "grommet/utils";
 import { grommet } from "grommet/themes";
 import { MaticoEditor } from "../MaticoEditor/MaticoEditor";
 import { DatasetProvider } from "Datasets/DatasetProvider";
+import {defaultTheme, darkTheme, Provider as SpectrumProvider} from "@adobe/react-spectrum"
+
 
 interface MaticoAppInterface {
   spec?: Dashboard;
@@ -44,6 +46,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
           theme={deepMerge(themeTweaks, grommet)}
           style={{ width: "100%", height: "100%" }}
         >
+          <SpectrumProvider theme={darkTheme} width="100%" height="100%">
           <Grid
             fill
             columns={["flex", editActive ? "25vw" : "0px"]}
@@ -61,6 +64,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
               onStateChange={onStateChange}
             />
           </Grid>
+          </SpectrumProvider>
         </Grommet>
       </MaticoDataProvider>
     </Provider>

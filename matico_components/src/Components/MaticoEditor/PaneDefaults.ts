@@ -6,7 +6,7 @@ const DefaultPosition = {
   float: false,
   layer: 1,
   x_units:"Percent",
-  y_units:"Precent",
+  y_units:"Percent",
   width_units:"Pixels",
   height_units:"Pixels"
 };

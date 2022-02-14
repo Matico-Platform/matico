@@ -8,19 +8,27 @@ import { setEditing } from "../../Stores/MaticoSpecSlice";
 import { Editors } from "./Editors";
 import { DatasetsEditor } from "./Panes/DatasetsEditor";
 import { BreadCrumbs } from "./Utils/BreadCrumbs";
-import {Dashboard} from "@maticoapp/matico_spec";
-import {DatasetProvider} from "Datasets/DatasetProvider";
+import { Dashboard } from "@maticoapp/matico_spec";
+import { DatasetProvider } from "Datasets/DatasetProvider";
+import {
+  Tabs,
+  TabList,
+  Item,
+  TabPanels,
+  View,
+  Flex,
+} from "@adobe/react-spectrum";
 
-export interface MaticoEditorProps{
-  editActive: boolean, 
-  onSpecChange?: (dashboard:Dashboard) =>void
-  datasetProviders?: Array<DatasetProvider>
+export interface MaticoEditorProps {
+  editActive: boolean;
+  onSpecChange?: (dashboard: Dashboard) => void;
+  datasetProviders?: Array<DatasetProvider>;
 }
 
 export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   editActive,
   onSpecChange,
-  datasetProviders
+  datasetProviders,
 }) => {
   const dispatch = useMaticoDispatch();
   // eg
@@ -30,14 +38,14 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   const { spec, currentEditPath, currentEditType } = useMaticoSelector(
     (state) => state.spec
   );
-  const [tabIndex, setTabIndex] = useState<number | null>(0);
+  const [tabKey, setTabKey] = useState<string>("Components");
 
   useEffect(() => {
     if (spec) {
       localStorage.setItem("code", JSON.stringify(spec));
     }
-    if (onSpecChange){
-        onSpecChange(spec)
+    if (onSpecChange) {
+      onSpecChange(spec);
     }
   }, [JSON.stringify(spec)]);
 
@@ -45,46 +53,38 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     dispatch(setEditing(editActive));
   }, [editActive]);
 
-  useEffect(() => {
-    if (currentEditPath) {
-      setTabIndex(0);
-    } else {
-      setTabIndex(null);
-    }
-  }, [currentEditPath]);
-
   const EditPane = Editors[currentEditType];
+  console.log("Edit pane is ", EditPane, currentEditType)
   if (!editActive) return null;
   return (
-    <Box
-      overflow={{ vertical: 'auto'}}
-      fill
-      border="left"
-      background="neutral-3"
-    >
-      <Accordion
-        activeIndex={tabIndex}
-        onActive={(tab) => setTabIndex(tab[0])}
-        multiple={false}
-        flex
-        fill
-      >
-        {currentEditPath && (
-          <AccordionPanel label={`Edit ${currentEditType}`}>
-            <BreadCrumbs editPath={currentEditPath} />
-            <EditPane editPath={currentEditPath} />
-          </AccordionPanel>
-        )}
-        <AccordionPanel label="Datasets">
+    <Tabs selectedKey={tabKey} onSelectionChange={setTabKey}>
+      <TabList>
+        <Item key="Components">Components</Item>
+        <Item key="Datasets">Datasets</Item>
+        <Item key="Specification">Specification</Item>
+        <Item key="State">State</Item>
+      </TabList>
+      <TabPanels>
+        <Item key="Components">
+          {currentEditPath && (
+            <Flex height="100%" width="100%" direction="column">
+              <View flex="1">
+                <EditPane editPath={currentEditPath} />
+              </View>
+              <BreadCrumbs editPath={currentEditPath} />
+            </Flex>
+          )}
+        </Item>
+        <Item key="Datasets">
           <DatasetsEditor datasetProviders={datasetProviders} />
-        </AccordionPanel>
-        <AccordionPanel label="Spec">
+        </Item>
+        <Item key="Specification">
           <MaticoRawSpecEditor />
-        </AccordionPanel>
-        <AccordionPanel label="State">
+        </Item>
+        <Item key="State">
           <MaticoStateViewer />
-        </AccordionPanel>
-      </Accordion>
-    </Box>
+        </Item>
+      </TabPanels>
+    </Tabs>
   );
 };

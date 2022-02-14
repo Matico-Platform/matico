@@ -1,28 +1,31 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import {
-  Box,
-  Button,
-  Form,
-  FormField,
-  Grid,
-  Heading,
-  List,
-  Text,
-  TextInput,
-} from "grommet";
-import { Edit } from "grommet-icons";
 import { Page } from "@maticoapp/matico_spec";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
-import MDEditor from "@uiw/react-md-editor";
-import { SectionHeading } from "../Utils/Utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
+import {
+  ComboBox,
+  Heading,
+  Flex,
+  Item,
+  TextField,
+  Well,
+  View,
+  Button,
+  ButtonGroup,
+  Switch,
+  Text,
+  ActionButton,
+} from "@adobe/react-spectrum";
+import * as icons from "@fortawesome/free-solid-svg-icons";
 
 export interface PageEditorProps {
   editPath: string;
@@ -44,7 +47,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
     dispatch(deleteSpecAtPath({ editPath }));
   };
 
-  const editSection = (index :number) => {
+  const editSection = (index: number) => {
     console.log("SECTION is ", index);
     dispatch(
       setCurrentEditPath({
@@ -56,60 +59,90 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
 
   const page = _.get(spec, editPath);
 
+  const iconOptions = Object.keys(icons)
+    .slice(100, 200)
+    .map((iconName: string) => ({ key: iconName, icon: icons[iconName] }))
+    .filter((a) => a);
+  console.log("Icon options are ", iconOptions);
+
   if (!page) {
     return (
-      <Box background={"white"}>
-        <Text color="status-error">Failed to find component</Text>
-      </Box>
+      <View>
+        <Text>Something went wrong. We could not find that page</Text>
+      </View>
     );
   }
   return (
-    <Box background={"white"} pad="medium">
-      <Form value={page} onChange={(nextVal) => updatePage(nextVal)}>
-        <SectionHeading>Settings</SectionHeading>
-        <FormField label="name" name="name" htmlFor={"name"}>
-          <TextInput value={page.name} name="name" id="name" />
-        </FormField>
-        <FormField label="path" name="path" htmlFor="path">
-          <TextInput value={page.path} name="path" id={"path"} />
-        </FormField>
-        <FormField label="icon" name="icon" htmlFor="icon">
-          <TextInput value={page.icon} id={"icon"} name="icon" />
-        </FormField>
-      </Form>
-      <SectionHeading>Content</SectionHeading>
-      
-
-      <ReactMde value={page.content} onChange={updateContent} />
-      <SectionHeading>Sections</SectionHeading>
-      <List data={page.sections} pad="medium">
-        {(datum, index) => (
-          <Box direction="row" align="center" justify="between">
-            <Text>{datum.name}</Text>
-            <Button
-              icon={<Edit color={"status-warning"} />}
-              onClick={() => editSection(index)}
-            />
-          </Box>
-        )}
-      </List>
-      <SectionHeading>Danger Zone</SectionHeading>
-      {confirmDelete ? (
-        <Box direction="row">
-          <Button primary label="DO IT!" onClick={deletePage} />
-          <Button
-            secondary
-            label="Nah I changed my mind"
-            onClick={() => setConfirmDelete(false)}
-          />
-        </Box>
-      ) : (
-        <Button
-          color="neutral-4"
-          label="Delete Page"
-          onClick={() => setConfirmDelete(true)}
+    <Flex width="100%" height="100%" direction="column">
+      <Well>
+        <Heading>Page Details</Heading>
+        <TextField
+          label="Name"
+          value={page.name}
+          onChange={(name: string) => updatePage({ name })}
         />
-      )}
-    </Box>
+        <TextField
+          label="path"
+          value={page.path}
+          onChange={(path: string) => updatePage({ path })}
+        />
+        <ComboBox defaultItems={iconOptions} label="Icon">
+          {(item) => (
+            <Item key={item.key}>
+              <FontAwesomeIcon icon={item.icon} />
+              <Text>{item.key}</Text>
+            </Item>
+          )}
+        </ComboBox>
+      </Well>
+      <Well>
+        <Heading>
+          <Flex
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Text>Content</Text> <Switch>Simple</Switch>
+          </Flex>
+        </Heading>
+        <ReactMde value={page.content} onChange={updateContent} />
+      </Well>
+      <Well>
+        <Heading>
+          <Flex
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Text>Sections</Text> <ActionButton>Add New</ActionButton>
+          </Flex>
+        </Heading>
+        <Flex direction="column">
+          {page.sections.map((section, index) => (
+            <Flex
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <ActionButton onPress={() => editSection(index)} isQuiet>{section.name}</ActionButton>
+            </Flex>
+          ))}
+        </Flex>
+      </Well>
+
+      <Well>
+        <Heading>Danger Zone</Heading>
+        <Flex direction='row' justifyContent='end' alignItems='center'>
+          {confirmDelete ? (
+            <ButtonGroup>
+              <Button variant="cta" onPress={deletePage}>Confirm</Button>
+              <Button variant="secondary" onPress={()=>setConfirmDelete(false)}>Cancel</Button>
+            </ButtonGroup>
+          ) : (
+          <Button variant="cta" onPress={()=>setConfirmDelete(true)}>Remove Page</Button>
+          )}
+        </Flex>
+      </Well>
+    </Flex>
   );
 };
