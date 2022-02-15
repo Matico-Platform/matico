@@ -153,6 +153,7 @@ export class LocalDataset implements Dataset {
   }
 
   async getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
+    console.log(`IN WORKER ${column}, ${bins}, ${filters}`)
     const data = await this.getData(filters, [column]);
     const vals = data.map((c: any) => c[column]).sort();
     const binSize = 1.0 / bins;

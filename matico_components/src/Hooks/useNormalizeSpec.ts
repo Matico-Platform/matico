@@ -67,8 +67,13 @@ export const useNormalizeSpec= (spec: any) => {
   })
 
 
+  console.log("spec with variables ", specWithVariables)
+
   const requiredDatasetMetrics  = getRequiredDatasetMetrics(specWithVariables)
+  console.log("required data metrics ", requiredDatasetMetrics)
+
   const datasetValues  = useRequestColumnStats(requiredDatasetMetrics)
+  console.log("dataset value resiults ", datasetValues)
 
   if(datasetValues.length==0){
     return [specWithVariables,true,null]

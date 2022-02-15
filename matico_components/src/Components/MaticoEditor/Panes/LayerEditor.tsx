@@ -5,8 +5,8 @@ import { Box } from "grommet";
 import { setSpecAtPath } from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { PaneDefaults } from "../PaneDefaults";
-import { DataDrivenModal} from "../Utils/DataDrivenModal";
-import {ColorPickerDialog} from '../Utils/ColorPickerDialog'
+import { DataDrivenModal } from "../Utils/DataDrivenModal";
+import { ColorPickerDialog } from "../Utils/ColorPickerDialog";
 import {
   Flex,
   Heading,
@@ -16,6 +16,7 @@ import {
   Item,
   Text,
   Well,
+  Header,
 } from "@adobe/react-spectrum";
 
 export interface LayerEditorProps {
@@ -140,6 +141,8 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
       </Well>
       <Well>
         <Heading>Style</Heading>
+
+        <Header>Line Width</Header>
         <Flex
           direction="row"
           gap="size-125"
@@ -149,6 +152,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           <Slider
             label="Line width"
             value={style.lineWidth}
+            labelPosition="side"
             onChange={(val) => updateStyle("lineWidth", val)}
             flex={1}
             maxValue={2000}
@@ -163,14 +167,31 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           <Picker
             width="size-1200"
             selectedKey={style.lineUnits}
-            onSelectionChange={(units) => updateStyle("lineUnits", units as string)}
+            onSelectionChange={(units) =>
+              updateStyle("lineUnits", units as string)
+            }
           >
             <Item key="meters">Meters</Item>
             <Item key="pixels">Pixels</Item>
           </Picker>
         </Flex>
-        <ColorPickerDialog color={style.fillColor} onColorChange={(color)=> updateStyle("fillColor", color)}/>
-        <DataDrivenModal datasetName={dataset?.name} />
+
+        <Header>Fill Color</Header>
+        {style.fillColor.variable ? (
+          <DataDrivenModal
+            rangeType="color"
+            datasetName={dataset.name}
+            spec={style.fillColor}
+            onUpdateSpec={(newSpec) => {
+              updateStyle("fillColor", newSpec);
+            }}
+          />
+        ) : (
+          <ColorPickerDialog
+            color={style.fillColor}
+            onColorChange={(color) => updateStyle("fillColor", color)}
+          />
+        )}
       </Well>
     </Flex>
   );

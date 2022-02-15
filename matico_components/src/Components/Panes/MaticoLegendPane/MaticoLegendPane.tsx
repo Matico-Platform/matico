@@ -72,6 +72,7 @@ const LegendLabels = styled.div`
   }
 `;
 export const MaticoLegendPane = ({ layers = [] }) => {
+  console.log("layers ", layers)
   return layers && layers.length ? (
     <LegendOuterContainer>
       {layers.map((layer) =>

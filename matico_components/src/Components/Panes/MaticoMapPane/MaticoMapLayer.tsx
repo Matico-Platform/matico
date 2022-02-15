@@ -57,6 +57,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     mappedFilters
   );
 
+  console.log("data rsult is ", dataResult, mappedStyle)
+
   const preparedData = useMemo(() => {
     if (!styleReady) {
       return [];

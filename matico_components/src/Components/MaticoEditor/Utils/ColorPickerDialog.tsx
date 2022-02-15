@@ -22,7 +22,12 @@ color, onColorChange }) => {
   let chromaColor;
 
   if (Array.isArray(color)) {
-    chromaColor = chroma([...color.slice(0, 3), color[3] / 255]);
+    if(color.length===4){
+      chromaColor = chroma([...color.slice(0, 3), color[3] / 255]);
+    }
+    else{
+      chromaColor = chroma([...color])
+    }
   } else if (chroma.valid(color)){
     chromaColor = chroma(color);
   }
