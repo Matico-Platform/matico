@@ -83,7 +83,8 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
         editPath,
         update:{
           ...histogramPane,
-          position:{...histogramPane.position, ...change}
+          name: change.name,
+          position:{...histogramPane.position, ...change.position}
         }
       })
     )
@@ -108,7 +109,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
         position={histogramPane.position}
         name={histogramPane.name}
         background={histogramPane.background}
-        onChange={(change) => updatePane(change)}
+        onChange={(change) => updatePaneDetails(change)}
       />
       <Well>
         <Heading>Data Source</Heading>

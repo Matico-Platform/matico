@@ -42,8 +42,7 @@ const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
         onChange={onValueChange}
       />
       <Picker
-        width={"size-1200"}
-        label="units"
+        width={"size-1200"} label="units"
         selectedKey={units}
         onSelectionChange={onUnitsChange}
       >
@@ -85,7 +84,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
         <TextField
           label="name"
           value={name}
-          onChange={(name: string) => updateName({ name })}
+          onChange={(name: string) => updateName( name )}
         />
         <Grid columns={["1fr 1fr"]} autoRows="size-800">
           <PositionUnitEditor
