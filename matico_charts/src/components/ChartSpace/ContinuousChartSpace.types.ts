@@ -16,6 +16,7 @@ import {
 export interface ContinuousChartSpaceProps {
     data: DataCollection;
     layers: LayerSpec[];
+    tickFormatFunc?: (d: number) => string;
     xCol: string | AccessorFunction;
     xAxis?: boolean | AxisSpec;
     xAxisPos?: string;
