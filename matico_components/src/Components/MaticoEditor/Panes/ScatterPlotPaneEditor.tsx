@@ -78,18 +78,18 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
   };
 
 
-  const updatePaneDetails = (change: any) => {
-    console.log("updating position ", change)
+  const updatePaneDetails = (change:any)=>{
     dispatch(
       setSpecAtPath({
         editPath,
-        update: {
+        update:{
           ...scatterPlotPane,
-          position: { ...scatterPlotPane.position, ...change },
-        },
+          name: change.name,
+          position:{...scatterPlotPane.position, ...change.position}
+        }
       })
-    );
-  };
+    )
+  }
 
   const dataset: DatasetSummary = useMaticoSelector(
     (state) => state.datasets.datasets[scatterPlotPane.dataset.name]
@@ -169,6 +169,33 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
           />
         </>
       )}
+      <Well>
+        <Heading>Interaction</Heading>
+        {dataset && (
+          <>
+            <DatasetColumnSelector
+              label="X Column"
+              datasetName={scatterPlotPane.dataset.name}
+              selectedColumn={dataset?.columns.find(
+                (c) => c.name === scatterPlotPane.x_column
+              )}
+              onColumnSelected={(x_column) =>
+                updateSpec({ x_column: x_column.name })
+              }
+            />
+            <DatasetColumnSelector
+              label="Y Column"
+              datasetName={scatterPlotPane.dataset.name}
+              selectedColumn={dataset?.columns.find(
+                (c) => c.name === scatterPlotPane.y_column
+              )}
+              onColumnSelected={(y_column) =>
+                updateSpec({ y_column: y_column.name })
+              }
+            />
+          </>
+        )}
+      </Well>
     </Flex>
   );
 };

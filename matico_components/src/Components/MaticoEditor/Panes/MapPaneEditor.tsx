@@ -98,6 +98,20 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     );
   };
 
+
+  const updatePaneDetails = (change:any)=>{
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update:{
+          ...mapPane,
+          name: change.name,
+          position:{...mapPane.position, ...change.position}
+        }
+      })
+    )
+  }
+
   const updateBaseMap = (change: any) => {
     dispatch(
       setSpecAtPath({
@@ -205,7 +219,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
         position={mapPane.position}
         name={mapPane.name}
         background={mapPane.background}
-        onChange={(change) => updatePane(change)}
+        onChange={updatePaneDetails}
       />
 
       <Well>
