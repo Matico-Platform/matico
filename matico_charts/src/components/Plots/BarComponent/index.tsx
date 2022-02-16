@@ -34,7 +34,7 @@ export const BarComponent = (props: BarSpec) => {
     ? () => 'gray'
     : isFunc(color)
     ? //@ts-ignore
-      (d) => color(d) //@ts-ignore
+      (d) => sanitizeColor(color(d))//@ts-ignore
     : () => sanitizeColor(color);
     
   return data.map((entry, i) => (

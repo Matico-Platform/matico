@@ -19,7 +19,7 @@ export const ScatterplotComponent = ({
   if (!data || !xAccessor || !yAccessor) return null;
   const fill = isFunc(color)
     ? //@ts-ignore
-      (d) => color(d)
+      (d) => sanitizeColor(color(d))
       //@ts-ignore
     : () => sanitizeColor(color) || [];
   //@ts-ignore
