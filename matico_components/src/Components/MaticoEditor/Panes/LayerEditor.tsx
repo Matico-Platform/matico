@@ -18,6 +18,8 @@ import {
 } from "@adobe/react-spectrum";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
+import { FilterEditor } from "../Utils/FilterEditor";
+import {Filter} from "Datasets/Dataset";
 
 export interface LayerEditorProps {
   editPath: string;
@@ -67,6 +69,21 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
       })
     );
   };
+
+  const updateFilters = (newFilters: Array<Filter>)=>{
+    console.log("Updating filters ", newFilters )
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update:{
+          source: {
+            ...layer.source,
+            filters: newFilters
+          }
+        }
+      })
+    )
+  }
 
   const updateDataset = (dataset: string) => {
     dispatch(
@@ -137,6 +154,11 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           selectedDataset={dataset.name}
           onDatasetSelected={updateDataset}
         />
+        <FilterEditor
+          datasetName={dataset.name}
+          filters={layer.source.filters}
+          onUpdateFilters={updateFilters}
+        />
       </Well>
       <Well>
         <Heading>Style</Heading>
@@ -186,7 +208,6 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           minVal={0}
           maxVal={10000}
         />
-        
       </Well>
     </Flex>
   );
