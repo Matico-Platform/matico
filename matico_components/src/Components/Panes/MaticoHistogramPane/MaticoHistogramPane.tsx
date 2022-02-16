@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { useState, useRef, useMemo } from "react"; import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
+import { useState, useRef, useMemo } from "react";
+import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
 import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
@@ -10,7 +11,7 @@ import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
-import {generateColorVar} from "../MaticoMapPane/LayerUtils";
+import { generateColorVar } from "../MaticoMapPane/LayerUtils";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -18,7 +19,7 @@ export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   color?: string;
   maxbins?: number;
   editPath?: string;
-  labels?:{[name:string]: string}
+  labels?: { [name: string]: string };
 }
 
 const backgroundColor = "#fff";
@@ -29,9 +30,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   color,
   maxbins,
   editPath,
-  labels 
+  labels,
 }) => {
-  const { state: dataState } = useContext(MaticoDataContext);
   const [view, setView] = useState({});
 
   const [
@@ -55,42 +55,68 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     (state) => state.datasets.datasets[dataset.name]
   );
   const datasetReady = foundDataset && foundDataset.state === "READY";
-  const state = useMaticoSelector((state) => state.variables.autoVariables);
-  const [mappedFilters, filtersReady, ] = useNormalizeSpec(dataset.filters);
+  const [mappedFilters, filtersReady] = useNormalizeSpec(dataset.filters);
 
-  const [mappedStyle, styleReady, ]= useNormalizeSpec({
-    color
+  const [mappedStyle, styleReady] = useNormalizeSpec({
+    color,
   });
 
-  console.log("mapping style ", mappedStyle)
-
-  const dataRequest = 
-    foundDataset && filtersReady 
+  const dataRequest =
+    foundDataset && filtersReady
       ? {
           datasetName: dataset.name,
           column,
           metric: "Histogram",
           filters: mappedFilters,
-          parameters: { bins: maxbins},
+          parameters: { bins: maxbins },
         }
-      : null
+      : null;
 
-  console.log("data request ", dataRequest)
+  console.log("data request ", dataRequest);
 
-  const chartData = useRequestColumnStat(
-    dataRequest
-  );
+  const chartData = useRequestColumnStat(dataRequest);
 
-  if (!chartData || chartData.state !== "Done") {
-    return <Box>loading</Box>;
-  }
+  const Chart = useMemo(() => {
+    if (!chartData || chartData.state !== "Done") {
+      return <Box>loading</Box>;
+    }
+    const data: Array<{ binStart: number; binEnd: number; count: number }> =
+      chartData.result;
 
-  const data : Array<{binStart:number, binEnd:number, count:number}>= chartData.result
+    const extent = [
+      data[0].binStart - (data[0].binEnd - data[0].binStart),
+      data[data.length - 1].binEnd,
+    ];
 
-  const extent = [data[0].binStart - (data[0].binEnd - data[0].binStart), data[data.length-1].binEnd]
+    const colorMap = generateColorVar(mappedStyle?.color);
 
-  const colorMap = generateColorVar(mappedStyle?.color)
-
+    return (
+      <MaticoChart
+        xExtent={extent}
+        xCol="binStart"
+        xLabel={labels?.x_label ?? column}
+        yLabel={labels?.y_label ?? "counts"}
+        yCol="count"
+        title={labels?.title}
+        subtitle={labels?.sub_title}
+        attribution={labels?.attribution}
+        data={data.filter((d) => d.count)}
+        xAxis={{
+          scaleType: "linear",
+          position: "bottom",
+        }}
+        grid={{ rows: true, columns: false }}
+        layers={[
+          {
+            type: "bar",
+            color: colorMap,
+            scale: 11,
+            xAccessor: (d: any) => d.binEnd,
+          },
+        ]}
+      />
+    );
+  }, [JSON.stringify({labels, mappedStyle, backgroundColor}), chartData]);
 
   return (
     <Box
@@ -104,32 +130,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         <EditButton editPath={`${editPath}.Histogram`} editType={"Histogram"} />
       </Box>
       {!datasetReady && <div>{dataset.name} not found!</div>}
-      {data && styleReady && (
-        <MaticoChart
-          xExtent={extent}
-          xCol ="binStart"
-          xLabel={labels?.x_label ??  column}
-          yLabel={labels?.y_label ??  "counts"}
-          yCol="count"
-          title={labels?.title}
-          subtitle={labels?.sub_title}
-          attribution={labels?.attribution}
-          data={data.filter(d=>d.count)}
-          xAxis={{
-            scaleType:"linear",
-            position:"bottom"
-          }}
-          grid= { {rows:true, columns:false }}
-          layers={[
-            {
-              type: "bar",
-              color: colorMap,
-              scale:11,
-              xAccessor:((d:any)=> d.binEnd),
-            },
-          ]}
-        />
-      )}
+      {Chart}
     </Box>
   );
 };

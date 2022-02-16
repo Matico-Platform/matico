@@ -40,8 +40,6 @@ const getRequiredDatasetMetrics = (struct: any)=>{
 */
 export const useNormalizeSpec= (spec: any) => {
 
-  const [mappedStructure, setMappedStructure] = useState<any | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Get a list of required variables for the spec from the global
