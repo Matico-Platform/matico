@@ -14,7 +14,7 @@ import { AxisTop, AxisRight, AxisBottom, AxisLeft } from "@visx/axis";
 import debounce from "lodash/debounce";
 import { localPoint } from "@visx/event";
 import PlotLayers from "./PlotLayers";
-import { isBool, isFunc, isObj, getBoolOrProperty } from "../../Utils";
+import { isBool, isFunc, isObj, getBoolOrProperty, nicelyFormatNumber } from "../../Utils";
 
 // types
 import { EventType } from "@visx/event/lib/types";
@@ -41,6 +41,7 @@ export default function ContinuousChartspace({
   data,
   layers,
   xCol,
+  tickFormatFunc = nicelyFormatNumber,
   xAxis = false,
   xAxisPos,
   xLabel,
@@ -234,7 +235,7 @@ export default function ContinuousChartspace({
     if (val < margin.top) return margin.top;
     return val;
   };
-
+  
   return (
     <svg width={width} height={height} ref={svgRef}>
       <rect
@@ -307,6 +308,8 @@ export default function ContinuousChartspace({
             // orientation="left"
             left={yAxisPos === "right" ? width - margin.left - margin.right : 0}
             scale={yScale}
+            //@ts-ignore
+            tickFormat={tickFormatFunc}
             label={yLabel || ""}
           />
         )}
@@ -315,7 +318,8 @@ export default function ContinuousChartspace({
             // orientation="bottom"
             top={
               xAxisPos === "bottom" ? height - margin.top - margin.bottom : 0
-            }
+            }//@ts-ignore
+            tickFormat={tickFormatFunc}
             scale={xScale}
             label={xLabel || ""}
           />
