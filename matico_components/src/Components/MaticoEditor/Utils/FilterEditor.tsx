@@ -76,6 +76,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
 
       {typeof min === "number" ? (
         <NumberField
+          key="min_val"
           value={min}
           label="min"
           onChange={(min) =>
@@ -87,6 +88,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
       ) : (
         <TextField
           width={"size-1200"}
+          key="min_val_var"
           label="Min variable"
           value={min.var}
           onChange={(newVar) =>
@@ -112,6 +114,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
         <NumberField
           value={max}
           label="max"
+          key="max_val"
           onChange={(max) =>
             onUpdateFilter({
               Range: { variable: selectedColumn.name, max, min },
@@ -122,6 +125,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
         <TextField
           label="Max variable"
           width={"size-1200"}
+          key={"max_val_var"}
           value={max.var}
           onChange={(newVar) =>
             onUpdateFilter({
