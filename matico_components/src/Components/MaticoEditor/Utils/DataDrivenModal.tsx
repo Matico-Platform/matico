@@ -313,10 +313,10 @@ const baseSpecForCol = (datasetName: string, column: Column) => {
         Quantile: {
           bins: 5,
         },
-        dataset: datasetName,
-        column: column.name,
       },
-    },
+      dataset: datasetName,
+      column: column.name,
+  },
     range: "RedOr.5",
   };
 };
