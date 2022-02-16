@@ -64,6 +64,7 @@ export const datasetsSlice = createSlice({
         requestHash: string;
         filters?: Array<Filter>;
         includeGeo?:boolean;
+        notifierId:string;
       }>
     ) => {
       const { requestHash } = action.payload;
@@ -72,7 +73,7 @@ export const datasetsSlice = createSlice({
     // Also triggers middleware
     registerColumnStatUpdates:(
       state,
-      action: PayloadAction<{requestHash: string, args: ColumnStatRequest}>
+      action: PayloadAction<{requestHash: string, args: ColumnStatRequest, notifierId: string}>
     ) =>{
       const {requestHash,args} = action.payload ;
       state.queries[requestHash] = {state:"Loading", result:null}
@@ -87,7 +88,13 @@ export const datasetsSlice = createSlice({
       }>
     ) => {
       const { data, requestHash } = action.payload;
-      state.queries[requestHash] = { state: "Done", result: data };
+      // if (
+      //   state.queries[requestHash] && state.queries[requestHash].state === "Done" 
+      // ) {
+      //   // do no dispatch
+      // } else {
+        state.queries[requestHash] = { state: "Done", result: data };
+      // }
     },
   },
 });

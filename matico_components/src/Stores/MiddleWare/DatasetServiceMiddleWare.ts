@@ -70,9 +70,11 @@ export const DatasetServiceMiddleWare = () => {
             },
           });
         };
+
         worker.registerColumnData(
           action.payload.args,
           comlink.proxy(onStatsUpdate),
+          action.payload.notifierId
         );
         break
 
@@ -93,7 +95,8 @@ export const DatasetServiceMiddleWare = () => {
           action.payload.datasetName,
           comlink.proxy(onDataUpdate),
           action.payload.filters,
-          true
+          true,
+          action.payload.notifierId
         );
         break
       default:
