@@ -56,7 +56,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   );
   const datasetReady = foundDataset && foundDataset.state === "READY";
   const [mappedFilters, filtersReady] = useNormalizeSpec(dataset.filters);
-
+  
   const [mappedStyle, styleReady] = useNormalizeSpec({
     color,
   });
@@ -106,6 +106,23 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
           position: "bottom",
         }}
         grid={{ rows: true, columns: false }}
+        useBrush={{
+          vertical: false,
+          horizontal: true
+        }}
+        //@ts-ignore
+        onBrush={({x0,x1}) => updateFilter(
+          x0 === x1
+            ? {
+              type: "NoSelection",
+              variable: column
+            } : {
+              type: "SelectionRange",
+              variable: column,
+              min: x0,
+              max: x1,
+            }
+        )}
         layers={[
           {
             type: "bar",

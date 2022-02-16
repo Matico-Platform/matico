@@ -8,6 +8,7 @@ import { useIsEditable } from "Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import { useMaticoSelector } from "Hooks/redux";
 import { useRequestData } from "Hooks/useRequestData";
+import { useAutoVariable } from "Hooks/useAutoVariable";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import {
   generateColorVar,
@@ -51,6 +52,35 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
     const chartData = useRequestData(dataset.name, dataset.filters);
 
+    const [
+      xFilter,
+      updateXFilter,
+      //@ts-ignore
+    ] = useAutoVariable({
+      //@ts-ignore
+      name: `${x_column}_range`,
+      //@ts-ignore
+      type: "NoSelection",
+      initialValue: {
+        type: "NoSelection",
+      },
+      bind: true,
+    });
+    const [
+      yFilter,
+      updateYFilter,
+      //@ts-ignore
+    ] = useAutoVariable({
+      //@ts-ignore
+      name: `${y_column}_range`,
+      //@ts-ignore
+      type: "NoSelection",
+      initialValue: {
+        type: "NoSelection",
+      },
+      bind: true,
+    });
+    
     const Chart = useMemo(() => {
       const data = chartData?.state === "Done" ? chartData.result : [];
 
@@ -72,6 +102,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           [Number.MAX_VALUE, Number.MIN_VALUE],
         ]
       );
+
       return (
         <MaticoChart
           xExtent={xExtent}
@@ -100,6 +131,36 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
               scale: dotSize,
             },
           ]}
+          useBrush={{
+            horizontal: true,
+            vertical: true,
+          }}
+          //@ts-ignore
+          onBrush={({x0,x1,y0,y1}) => {
+            
+            updateXFilter(
+              x0 === x1
+              ? {
+                type: "NoSelection",
+                variable: x_column
+              } : {
+                  type: "SelectionRange",
+                  variable: x_column,
+                  min: x0,
+                  max: x1,
+              });
+            updateYFilter(
+              y0 === y1 
+              ? {
+                type: "NoSelection",
+                variable: y_column
+              } : {
+                  type: "SelectionRange",
+                  variable: y_column,
+                  min: y0,
+                  max: y1,
+              });
+          }}
         />
       );
     }, [
