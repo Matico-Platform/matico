@@ -22,7 +22,7 @@ pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub column: String,
     #[wasm_bindgen(skip)]
-    pub color: Option<MappingVar<ColorSpecification>>,
+    pub color: Option<MappingVarOr<ColorSpecification>>,
     #[wasm_bindgen(skip)]
     pub maxbins: Option<i64>,
 
