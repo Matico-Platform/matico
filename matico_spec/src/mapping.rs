@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Filter, PanePosition, VarOr, Variable, ScreenUnits};
+use crate::{AutoComplete, Filter, PanePosition, VarOr, Variable, ScreenUnits, ColorSpecification, MappingVarOr, Mapping, Range,DomainVal};
 use matico_spec_derive::AutoCompleteMe;
 use palette::Srgb;
 use serde::{Deserialize, Serialize};
@@ -32,42 +32,6 @@ impl Default for BaseMap {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum Range<T> {
-    Range(Vec<T>),
-    Named(String),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Mapping<D, R> {
-    variable: String,
-    domain: VarOr<Vec<D>>,
-    range: VarOr<Range<R>>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum ColorSpecification {
-    Rgba([f32; 4]),
-    Rgb([f32; 3]),
-    Name(String),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-enum MappingVarOr<T> {
-    Var(Variable),
-    Mapping(Mapping<DomainVal, T>),
-    Value(T),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-enum DomainVal {
-    String(String),
-    Value(f32),
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

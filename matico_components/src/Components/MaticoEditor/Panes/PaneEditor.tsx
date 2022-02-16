@@ -77,7 +77,6 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
       name: newName,
     });
   };
-  console.log("position ", position);
 
   return (
     <Flex direction="column" width="100%" height="100%">

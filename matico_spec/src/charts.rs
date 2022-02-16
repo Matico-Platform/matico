@@ -1,4 +1,4 @@
-use crate::{AutoComplete, DatasetRef, PanePosition};
+use crate::{AutoComplete, DatasetRef, PanePosition, ColorSpecification, MappingVarOr};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
@@ -22,7 +22,7 @@ pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub column: String,
     #[wasm_bindgen(skip)]
-    pub color: Option<String>,
+    pub color: Option<MappingVar<ColorSpecification>>,
     #[wasm_bindgen(skip)]
     pub maxbins: Option<i64>,
 
@@ -72,8 +72,9 @@ pub struct ScatterplotPane {
     #[wasm_bindgen(skip)]
     pub y_column: String,
     #[wasm_bindgen(skip)]
-    pub dot_color: Option<String>,
-    pub dot_size: Option<u32>,
+    pub dot_color: Option<MappingVarOr<ColorSpecification>>,
+    #[wasm_bindgen(skip)]
+    pub dot_size: Option<MappingVarOr<u32>>,
     #[wasm_bindgen(skip)]
     pub labels: Option<Labels>
 }

@@ -40,14 +40,12 @@ const ContinuousDomain: React.FC<{
   mapping: any;
   onUpdateMapping: (newMapping: any) => void;
 }> = ({ dataset, mapping, column, filters, rangeType, onUpdateMapping }) => {
-
   const domain = mapping.domain;
   const range = mapping.range;
 
   const [metric, metricParams] = Array.isArray(domain)
     ? ["Manual", { bins: domain.length }]
     : Object.entries(domain.metric)[0];
-
 
   //@ts-ignore
   const noBins = metricParams.bins;
@@ -65,7 +63,6 @@ const ContinuousDomain: React.FC<{
     : //@ts-ignore
       colors[selectedPaletteName][range.split(".")[1]];
 
-
   const [domainValues, setDomainValues] = useState<Array<number> | null>(
     Array.isArray(domain) ? domain : []
   );
@@ -82,7 +79,7 @@ const ContinuousDomain: React.FC<{
     datasetName: dataset.name,
     column: column.name,
     metric: "Quantile",
-    parameters: { bins :noBins },
+    parameters: { bins: noBins },
     filters: filters,
   });
 
@@ -90,11 +87,9 @@ const ContinuousDomain: React.FC<{
     datasetName: dataset.name,
     column: column.name,
     metric: "EqualInterval",
-    parameters: { bins : noBins },
+    parameters: { bins: noBins },
     filters: filters,
   });
-
-  console.log("Histogram is ", histogram)
 
   useEffect(() => {
     if (metric === "Quantile" && quantiles && quantiles.state === "Done") {
@@ -121,53 +116,62 @@ const ContinuousDomain: React.FC<{
         ]
       : [];
 
-  const updateQuantization = (quanization: string) => {
-    if (quanization === "Manual") {
+  const updateQuantization = (quantization: string) => {
+    if (quantization === "Manual") {
       onUpdateMapping({ ...mapping, domain: domainValues });
     }
-    if (quanization === "Quantile") {
+    if (quantization === "Quantile") {
       onUpdateMapping({
         ...mapping,
-        domain: { dataset:dataset.name, column: column.name , metric: { Quantile: { bins: noBins } } },
+        domain: {
+          dataset: dataset.name,
+          column: column.name,
+          metric: { Quantile: { bins: noBins } },
+        },
       });
     }
-    if (quanization === "EqualInterval") {
+    if (quantization === "EqualInterval") {
       onUpdateMapping({
         ...mapping,
-        domain: { dataset:dataset.name, variable:column.name, metric: { EqualInterval: { bins: noBins } } },
+        domain: {
+          dataset: dataset.name,
+          variable: column.name,
+          metric: { EqualInterval: { bins: noBins } },
+        },
       });
     }
-    console.warn("Trying to set an unknown quantization method ", quanization);
+    console.warn("Trying to set an unknown quantization method ", quantization);
   };
 
   const updateBins = (bins: number) => {
-    let newRange
-    if(Array.isArray(range)){
-      _.range(bins).map((index)=> range[index] ? range[index] : [0,0,0] ) 
-    }
-    else{
-      newRange = `${selectedPaletteName}.${bins}`
+    let newRange;
+    if (Array.isArray(range)) {
+      _.range(bins).map((index) => (range[index] ? range[index] : [0, 0, 0]));
+    } else {
+      newRange = `${selectedPaletteName}.${bins}`;
     }
     if (metric === "Manual") {
       onUpdateMapping({
         ...mapping,
-        range : newRange,
+        range: newRange,
         domain: _.range(noBins).map((index: number) =>
-          domainValues[index] ? domainValues[index] : 0 
+          domainValues[index] ? domainValues[index] : 0
         ),
       });
     }
     if (metric === "Quantile") {
-      const newMapping = { ...mapping, range:newRange, domain: {...domain, metric: { Quantile: { bins} } }}
-      console.log("upating quantile bins ", newMapping)
+      const newMapping = {
+        ...mapping,
+        range: newRange,
+        domain: { ...domain, metric: { Quantile: { bins } } },
+      };
       onUpdateMapping(newMapping);
-
     }
     if (metric === "EqualInterval") {
       onUpdateMapping({
         ...mapping,
-        range:newRange,
-        domain: { ...domain, metric: {EqualInterval: { bins} }},
+        range: newRange,
+        domain: { ...domain, metric: { EqualInterval: { bins } } },
       });
     }
   };
@@ -179,12 +183,11 @@ const ContinuousDomain: React.FC<{
     onUpdateMapping({ ...mapping, range: `${palette.name}.${bins}` });
   };
 
-  const updateColorForBin = (color: Color, binNo: Number) => {
-    console.log("updating color for bin ", color, binNo )
-    const newRange = rangeValues.map((newColor: Color, index: number) =>
-      index === binNo ? color : newColor
+  const updateRangeValForBin = (newVal: Color | number, binNo: Number) => {
+    const newRange = rangeValues.map((val: Color | number, index: number) =>
+      index === binNo ? newVal : val
     );
-    onUpdateMapping({ ...mapping, range:newRange});
+    onUpdateMapping({ ...mapping, range: newRange });
   };
 
   const updateValueForBin = (newVal: number, binNo: number) => {
@@ -272,7 +275,18 @@ const ContinuousDomain: React.FC<{
                 {rangeType === "color" && rangeValues && (
                   <ColorPickerDialog
                     color={rangeValues[index]}
-                    onColorChange={(color) => updateColorForBin(color, index)}
+                    onColorChange={(color) =>
+                      updateRangeValForBin(color, index)
+                    }
+                  />
+                )}
+
+                {rangeType === "value" && rangeValues && (
+                  <NumberField
+                    width="size-2000"
+                    key={`values ${index}`}
+                    value={rangeValues[index]}
+                    onChange={(newVal) => updateRangeValForBin(newVal, index)}
                   />
                 )}
               </Flex>
@@ -285,16 +299,34 @@ const ContinuousDomain: React.FC<{
 
 interface DataDrivenModalProps {
   spec: any;
+  label:string;
   rangeType: RangeType;
   datasetName: string;
   onUpdateSpec: (spec: any) => void;
 }
+
+const baseSpecForCol = (datasetName: string, column: Column) => {
+  return {
+    variable: column.name,
+    domain: {
+      metric: {
+        Quantile: {
+          bins: 5,
+        },
+        dataset: datasetName,
+        column: column.name,
+      },
+    },
+    range: "RedOr.5",
+  };
+};
 
 export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
   spec,
   rangeType,
   datasetName,
   onUpdateSpec,
+  label 
 }) => {
   const dataset = useMaticoSelector(
     (state) => state.datasets.datasets[datasetName]
@@ -304,7 +336,7 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
 
   return (
     <DialogTrigger isDismissable>
-      <ActionButton>edit</ActionButton>
+      <ActionButton>{label}</ActionButton>
       <Dialog>
         <Content>
           <Flex direction="column">
@@ -313,15 +345,15 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
                 datasetName={datasetName}
                 selectedColumn={column}
                 onColumnSelected={(column) =>
-                  onUpdateSpec({ ...spec, variable: column.name })
+                  onUpdateSpec(baseSpecForCol(datasetName, column))
                 }
               />
 
-              {column && (
+              {column && spec && (
                 <ContinuousDomain
                   column={column}
                   dataset={dataset}
-                  rangeType={"color"}
+                  rangeType={rangeType}
                   filters={[]}
                   mapping={spec}
                   onUpdateMapping={(newMapping) =>

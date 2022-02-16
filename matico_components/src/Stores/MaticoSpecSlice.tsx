@@ -23,7 +23,6 @@ export const stateSlice = createSlice({
       state.editing = action.payload;
     },
     setSpec: (state, action: PayloadAction<Dashboard>) => {
-      console.log("setting spec in action ", action.payload);
       state.spec = action.payload;
     },
     addDataset: (state, action: PayloadAction<{ dataset: Dataset }>) => {
@@ -55,7 +54,6 @@ export const stateSlice = createSlice({
         ...oldEntry,
         ...action.payload.update,
       });
-      console.log("new spec is ", newSpec)
       state.spec = newSpec;
     },
     deleteSpecAtPath: (state, action: PayloadAction<{ editPath: string }>) => {

@@ -21,7 +21,6 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
   );
 
   const columns = foundDataset ? foundDataset.columns : [];
-  console.log("columns are ", columns)
 
   return (
     <Picker

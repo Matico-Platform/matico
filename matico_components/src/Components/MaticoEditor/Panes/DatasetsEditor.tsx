@@ -1,17 +1,19 @@
 import {
-  Accordion,
-  AccordionPanel,
-  Box,
-  Button,
-  Form,
-  FormField,
-  List,
-  Tab,
-  Tabs,
+  View,
+  Heading,
+  ActionButton,
+  Flex,
   Text,
-  TextInput,
-} from "grommet";
-import { Columns, Edit, FormTrash } from "grommet-icons";
+  DialogTrigger,
+  Dialog,
+  Content,
+  Tabs,
+  Well,
+  TabList,
+  Item,
+  TabPanels,
+  StatusLight,
+} from "@adobe/react-spectrum";
 import React, { useContext, useState } from "react";
 import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
 import {
@@ -29,132 +31,70 @@ interface DatasetEditorProps {
   dataset: DatasetSummary;
 }
 
-const StyledAccordion = styled(Accordion)`
-  button {
-    border: none !important;
-    box-shadow: none !important;
-  }
-`;
-
-const StyledAccordionPanel = styled(AccordionPanel)`
-  button {
-    border: none !important;
-  }
-`;
-
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
   let statusColors = {
-    [DatasetState.LOADING]: "status-warning",
-    [DatasetState.ERROR]: "status-warning",
-    [DatasetState.READY]: "status-ok",
+    [DatasetState.LOADING]: "yellow",
+    [DatasetState.ERROR]: "negative",
+    [DatasetState.READY]: "positive",
   };
 
   return (
-    <Box
-      direction="row"
-      gap="small"
-      hoverIndicator="light-1"
-      align="center"
-      pad="medium"
-    >
-      <Box flex>
-        <Text textAlign="start" color={statusColors[dataset.state]}>
-          {dataset.name}
-        </Text>
-      </Box>
+    <Flex direction="row" gap="small" width="100%" alignItems="center" justifyContent='space-between'>
+      <Text>{dataset.name}</Text>
       {dataset.state === DatasetState.READY && (
         <>
           <Text>{dataset.geomType}</Text>
-          <Text>{dataset.columns.length}</Text>
-          <Columns />
         </>
       )}
-
-      {dataset.state === DatasetState.LOADING && <Text>Loading</Text>}
-
+      <StatusLight variant={statusColors[dataset.state]} />
       {dataset.state === DatasetState.ERROR && (
         <Text>Failed to load {dataset.error}</Text>
       )}
-      <Button icon={<Edit color={"status-warning"} />} />
-      <Button icon={<FormTrash color={"status-critical"} />} />
-    </Box>
+    </Flex>
   );
 };
 
-interface NewDatasetInputProps {
-  onCancel: () => void;
+interface NewDatasetModalProps {
   onSubmit: (datasetParams: any) => void;
   datasetProviders?: Array<DatasetProvider>;
 }
 
-const NewDatasetInput: React.FC<NewDatasetInputProps> = ({
-  onCancel,
+const NewDatasetModal: React.FC<NewDatasetModalProps> = ({
   datasetProviders,
   onSubmit,
 }) => {
   return (
-    <Box pad="medium">
-      <Tabs>
-        <Tab title="CSV">
-          <Form
-            onSubmit={({ value }) => {
-              onSubmit({ CSV: value });
-            }}
-          >
-            <FormField label="url" name="url" htmlFor={"url"}>
-              <TextInput name="url" id="url" />
-            </FormField>
-            <FormField label="name" name="name" htmlFor={"name"}>
-              <TextInput name="name" id="name" />
-            </FormField>
-            <FormField
-              label="Longitude Column"
-              name="lng_col"
-              htmlFor={"lng_col"}
-            >
-              <TextInput name="lng_column" id="lng_col" />
-            </FormField>
-            <FormField
-              label="Latitude Column"
-              name="lat_col"
-              htmlFor={"lat_col"}
-            >
-              <TextInput name="lat_col" id="lat_col" />
-            </FormField>
-            <Box direction="row" justify="between">
-              <Button label="Cancel" onClick={onCancel} />
-              <Button label="Create" type="submit" />
-            </Box>
-          </Form>
-        </Tab>
-        <Tab title="GeoJSON">
-          <Form
-            onSubmit={({ value }) => {
-              onSubmit({ GeoJSON: value });
-            }}
-          >
-            <FormField label="url" name="url" htmlFor={"url"}>
-              <TextInput name="url" id="url" />
-            </FormField>
-            <FormField label="name" name="name" htmlFor={"name"}>
-              <TextInput name="name" id="name" />
-            </FormField>
-            <Box direction="row" justify="between">
-              <Button label="Cancel" onClick={onCancel} />
-              <Button label="Create" type="submit" />
-            </Box>
-          </Form>
-        </Tab>
-        {datasetProviders &&
-          datasetProviders.map((provider: DatasetProvider) => (
-            <Tab title={provider.name} key={provider.name}>
-              <provider.component
-                onSubmit={(selectedDataset: any) => onSubmit(selectedDataset)}
-              />
-            </Tab>
-          ))}
-      </Tabs>
-    </Box>
+    <DialogTrigger isDismissable>
+      <ActionButton>Add</ActionButton>
+      {(close)=>
+      <Dialog>
+        <Content>
+          <Tabs>
+            <TabList>
+              {datasetProviders &&
+                datasetProviders.map((provider: DatasetProvider) => (
+                  <Item key={provider.name}>{provider.name}</Item>
+                ))}
+            </TabList>
+            <TabPanels>
+              {datasetProviders &&
+                datasetProviders.map((provider: DatasetProvider) => (
+                  <Item key={provider.name}>
+                    <provider.component
+                      onSubmit={(datasetSpec: any) =>{
+                        onSubmit(datasetSpec)
+                        close()
+                      }}
+                    />
+                  </Item>
+                ))}
+            </TabPanels>
+          </Tabs>
+        </Content>
+      </Dialog>
+
+      }
+    </DialogTrigger>
   );
 };
 
@@ -176,43 +116,28 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
   };
 
   return (
-    <Box background="white" fill gap="medium" pad={{ bottom: "small" }}>
-      {showNewDataset ? (
-        <NewDatasetInput
-          onCancel={() => setShowNewDataset(false)}
-          onSubmit={createDataset}
-          datasetProviders={datasetProviders}
-        />
-      ) : (
-        <Box>
-          <StyledAccordion multiple={false}>
-            {Object.entries(datasets).map(([datasetName, dataset]) => {
-              return (
-                <StyledAccordionPanel
-                  key={datasetName}
-                  header={() => (
-                    <Box>
-                      <DatasetEditor dataset={dataset} key={datasetName} />
-                    </Box>
-                  )}
-                >
-                  <List data={dataset.columns}>
-                    {(column: Column) => (
-                      <Box key={column.name}>
-                        {column.name} : {column.type}
-                      </Box>
-                    )}
-                  </List>
-                </StyledAccordionPanel>
-              );
-            })}
-          </StyledAccordion>
-          <Button
-            label={"Add Dataset"}
-            onClick={() => setShowNewDataset(true)}
-          />
-        </Box>
-      )}
-    </Box>
+    <Flex height="100%" width="100%" direction="column">
+      <Well>
+        <Heading>
+          <Flex direction="row" justifyContent="space-between">
+            <Text>Datasets</Text>
+            <NewDatasetModal
+              onSubmit={createDataset}
+              datasetProviders={datasetProviders}
+            />
+          </Flex>
+        </Heading>
+
+        <Flex direction="column">
+          {Object.entries(datasets).map(([datasetName, dataset]) => {
+            return (
+              <ActionButton width="100%">
+                <DatasetEditor dataset={dataset} key={datasetName} />
+              </ActionButton>
+            );
+          })}
+        </Flex>
+      </Well>
+    </Flex>
   );
 };

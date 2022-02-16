@@ -48,7 +48,6 @@ export const DatasetService: DatasetServiceInterface = {
     callback: (data: any) => void
   ) {
     const { datasetName, metric, column, parameters, filters } = args;
-    console.log("setting up column request for ", datasetName,metric,column,parameters)
     const getMetric = async (datasetName: string) => {
       let dataset = this.datasets[datasetName];
       if (dataset) {

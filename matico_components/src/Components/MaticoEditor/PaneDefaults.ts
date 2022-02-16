@@ -52,7 +52,7 @@ export const PaneDefaults = {
     column: null,
     color: "#417505",
     step: 140,
-    dataset: { name: "uknown" },
+    dataset: { name: "unknown" },
   },
   PieChart: {
     position: DefaultPosition,

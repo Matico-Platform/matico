@@ -48,7 +48,6 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
   };
 
   const editSection = (index: number) => {
-    console.log("SECTION is ", index);
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.sections.${index}`,
@@ -63,7 +62,6 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
     .slice(100, 200)
     .map((iconName: string) => ({ key: iconName, icon: icons[iconName] }))
     .filter((a) => a);
-  console.log("Icon options are ", iconOptions);
 
   if (!page) {
     return (

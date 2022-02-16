@@ -151,7 +151,6 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
   };
 
   const editPane = (index: number, paneType: string) => {
-    console.log
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.panes.${index}.${paneType}`,
@@ -178,7 +177,6 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     const existingNames = section.panes.map(
       (pane) => Object.values(pane)[0].name
     );
-    console.log("Trying to validate pane name ", name, existingNames);
     return !existingNames.includes(name);
   };
 

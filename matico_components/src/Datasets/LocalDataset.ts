@@ -82,19 +82,16 @@ export class LocalDataset implements Dataset {
     base.scan(
       (index) => {
         const aggResult = aggFunc(agg, columnVals(index));
-        // console.log("agg ", agg, " agg result ", aggResult, columnVals(index))
         agg = aggResult;
       },
       (batch) => {
         columnVals = predicate.col(column).bind(batch);
       }
     );
-    // console.log("returning ", agg, "for ", column);
     return agg;
   }
 
   getColumnMax(column: string, filters?: Array<Filter>) {
-    console.log("CALCULATING MAX");
     let columnMax = this._applyAggregateFunction(
       column,
       (agg, val) => (val > agg ? val : agg),
@@ -105,7 +102,6 @@ export class LocalDataset implements Dataset {
   }
 
   getColumnMin(column: string, filters?: Array<Filter>) {
-    console.log("CALCULATING MIN");
     let columnMin = this._applyAggregateFunction(
       column,
       (agg, val) => (val < agg ? val : agg),
@@ -153,7 +149,6 @@ export class LocalDataset implements Dataset {
   }
 
   async getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
-    console.log(`IN WORKER ${column}, ${bins}, ${filters}`)
     const data = await this.getData(filters, [column]);
     const vals = data.map((c: any) => c[column]).sort();
     const binSize = 1.0 / bins;
@@ -199,7 +194,6 @@ export class LocalDataset implements Dataset {
   }
 
   async getColumnHistogram (column: string, noBins: number, filters?:Array<Filter>) {
-    console.log(`Getting column hist ${column} ${noBins}`)
     const maxVal = await this.getColumnMax(column, filters)
     const minVal = await this.getColumnMin(column, filters)
     const binWidth = (maxVal-minVal)/noBins;
@@ -254,21 +248,17 @@ export class LocalDataset implements Dataset {
   }
 
   getData(filters?: Array<Filter>, columns?: Array<string>) {
-    console.log("IN GET DATA ")
-    console.log("FIlters are ",filters)
     const cacheKey = JSON.stringify([filters, columns]);
     if (this._filterCache[cacheKey]) {
       return this._filterCache[cacheKey];
     }
     if (filters && filters.length) {
-      console.log("FOr some reasion attempting to apply filters")
       const predicate = this._constructPredicate(filters);
       const results = this._getResultsFromPredicate(predicate);
 
       this._filterCache[JSON.stringify(filters)] = results;
       return results;
     }
-    console.log("RETUNRING non filtered results")
     return Promise.resolve(this._getResultsFromPredicate());
   }
 }

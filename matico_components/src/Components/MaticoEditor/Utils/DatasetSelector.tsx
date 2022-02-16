@@ -11,7 +11,6 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
   onDatasetSelected,
 }) => {
   const datasets = useMaticoSelector((state) => state.datasets.datasets);
-  console.log("datasets ",datasets)
   if(!datasets){
     return <Text>Loading</Text>
   }

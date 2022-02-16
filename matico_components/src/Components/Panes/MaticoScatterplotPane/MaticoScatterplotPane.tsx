@@ -9,6 +9,7 @@ import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import {useMaticoSelector} from "Hooks/redux";
 import {useRequestData} from "Hooks/useRequestData";
 import {MaticoChart} from "@maticoapp/matico_charts"
+import {generateColorVar, generateNumericVar} from "../MaticoMapPane/LayerUtils";
 
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
@@ -38,6 +39,14 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const foundDataset = useMaticoSelector( state => state.datasets.datasets[dataset.name])
     const datasetReady = foundDataset && foundDataset.state===DatasetState.READY;
 
+    const [mappedStyle, styleReady,] = useNormalizeSpec({
+      dot_color,
+      dot_size
+    })
+
+    const dotSize = generateNumericVar(mappedStyle?.dot_size);
+    const dotColor = generateColorVar(mappedStyle?.dot_color);
+
     const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters)
     const chartData = useRequestData(dataset.name, dataset.filters)
 
@@ -53,7 +62,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         return agg
       },[ [ Number.MAX_VALUE, Number.MIN_VALUE], [Number.MAX_VALUE,Number.MIN_VALUE]])
 
-      console.log("XExxtent ", xExtent, " y Extent ", yExtent)
 
     return (
       <Box
@@ -89,8 +97,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
             layers={[
               {
                 type: "scatter",
-                color: dot_color,
-                scale: dot_size
+                color: dotColor,
+                scale: dotSize 
               },
             ]}
           />

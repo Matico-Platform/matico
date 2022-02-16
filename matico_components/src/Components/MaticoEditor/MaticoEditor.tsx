@@ -54,7 +54,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   }, [editActive]);
 
   const EditPane = Editors[currentEditType];
-  console.log("Edit pane is ", EditPane, currentEditType)
+
   if (!editActive) return null;
   return (
     <Tabs selectedKey={tabKey} onSelectionChange={setTabKey}>

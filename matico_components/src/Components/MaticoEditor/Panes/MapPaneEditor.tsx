@@ -37,7 +37,7 @@ interface AddPaneModalProps {
 const AddPaneModal: React.FC<AddPaneModalProps> = ({ onAddLayer }) => {
   const [dataset, setDataset] = useState<string | null>(null);
   const [layerName, setLayerName] = useState<string>("New layer name");
-  console.log("new layer ", dataset, layerName);
+
   return (
     <DialogTrigger isDismissable type="popover">
       <ActionButton>Add</ActionButton>
@@ -128,7 +128,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   );
 
   const updateSyncedView = (view) => {
-    console.log("View is ", view);
     if (view.var) {
       dispatch(
         setSpecAtPath({
@@ -168,7 +167,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   }
 
   const setLayerEdit = (index: number) => {
-    console.log("setting layer edit ", index);
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.layers.${index}`,

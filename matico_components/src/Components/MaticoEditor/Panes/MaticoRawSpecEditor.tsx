@@ -17,9 +17,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
   const [jsonError, setJsonError] = useState<any | null>(null);
   const [validationResult, setValidationResult] = useState<any[] | null>(null);
 
-  console.log("Attempting to get validator")
   const { validator, validatorReady, error: validatorError} = useValidator();
-
 
   const spec = useAppSpec();
   const dispatch = useMaticoDispatch();
@@ -63,9 +61,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
   if(validationResult){
     combinedErrors =combinedErrors.concat(validationResult)
   }
-  console.log("combinedErrors ",combinedErrors)
-  console.log("json Error ",jsonError)
-  console.log("validation Result",validationResult)
 
   if (!validatorReady) return <Spinner />;
   return (

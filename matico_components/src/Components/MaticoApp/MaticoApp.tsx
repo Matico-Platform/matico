@@ -14,6 +14,8 @@ import { grommet } from "grommet/themes";
 import { MaticoEditor } from "../MaticoEditor/MaticoEditor";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 import {defaultTheme, darkTheme, Provider as SpectrumProvider} from "@adobe/react-spectrum"
+import {GeoJSONProvider} from "DatasetsProviders/GeoJSONProvider";
+import {CSVProvider} from "DatasetsProviders/CSVProvider";
 
 
 interface MaticoAppInterface {
@@ -37,7 +39,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   onDataChange,
   onSpecChange,
   editActive = false,
-  datasetProviders,
+  datasetProviders = [],
 }) => {
   return (
     <Provider store={store}>
@@ -53,8 +55,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
             rows={["flex"]}
             areas={[["viewer", "editor"]]}
           >
+
             <MaticoEditor
-              datasetProviders={datasetProviders}
+              datasetProviders={[CSVProvider, GeoJSONProvider,  ...datasetProviders ]}
               editActive={editActive}
               onSpecChange={onSpecChange}
             />

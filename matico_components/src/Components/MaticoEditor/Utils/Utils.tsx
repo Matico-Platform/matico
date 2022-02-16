@@ -20,6 +20,5 @@ export function json_error_to_annotation(error: string) {
       },
     ] as Ace.Annotation[];
   }
-  console.log("Failed to parse error ", error);
   return [] as Ace.Annotation[];
 }
