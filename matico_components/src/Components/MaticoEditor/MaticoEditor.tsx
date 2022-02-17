@@ -69,10 +69,10 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
           <Item key="Components">
             {currentEditPath && (
               <Flex height="100%" width="100%" direction="column">
+                <BreadCrumbs editPath={currentEditPath} />
                 <View flex="1">
                   <EditPane editPath={currentEditPath} />
                 </View>
-                <BreadCrumbs editPath={currentEditPath} />
               </Flex>
             )}
           </Item>
