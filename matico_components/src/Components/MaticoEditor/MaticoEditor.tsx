@@ -73,7 +73,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
         <Item key="Specification">Specification</Item>
         <Item key="State">State</Item>
       </TabList>
-      <View ref={editorView} overflow={shouldOverflow ? "hidden scroll" : "hidden hidden"} maxHeight={shouldOverflow ? "95vh" : "98vh"}>
+      <View ref={editorView} overflow={shouldOverflow ? "hidden scroll" : "hidden scroll"} maxHeight={shouldOverflow ? "95vh" : "95vh"}>
         <TabPanels>
           <Item key="Components">
             {currentEditPath && (
