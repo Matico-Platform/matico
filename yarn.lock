@@ -2255,6 +2255,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dnd-kit/accessibility@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@dnd-kit/accessibility@npm:3.0.0"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: feac6afea07ece1568df38973d7a1a1b994782a6df119983250c3849ca2a3818a7bcc67fe4c5d22b0a1cfde866081644d677d2188abed507b3eccc255da79320
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/core@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@dnd-kit/core@npm:5.0.1"
+  dependencies:
+    "@dnd-kit/accessibility": ^3.0.0
+    "@dnd-kit/utilities": ^3.1.0
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 47b1bf5722bf8e860daaf69f66017ec45fc87199351091d7fc90a1691e81c1c1237b2abf4c948222e64098f6a27f364859be8bdcc5d1dc3b77f105f4ab567cc3
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/utilities@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@dnd-kit/utilities@npm:3.1.0"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: b9cb87dd4a26389aeb667d6b11e3854e00479e4f2842f36d9abc4dfee67fd06e0f75525ab9475462d57b055094a7723169c95362affdd84b0e656b96424c0f8c
+  languageName: node
+  linkType: hard
+
 "@emotion/cache@npm:^10.0.27":
   version: 10.0.29
   resolution: "@emotion/cache@npm:10.0.29"
@@ -3561,6 +3597,7 @@ __metadata:
     "@deck.gl/core": ^8.6.3
     "@deck.gl/layers": ^8.6.0
     "@deck.gl/react": ^8.6.0
+    "@dnd-kit/core": ^5.0.1
     "@fortawesome/fontawesome-free": ^6.0.0
     "@fortawesome/fontawesome-svg-core": ^1.3.0
     "@fortawesome/free-solid-svg-icons": ^6.0.0
