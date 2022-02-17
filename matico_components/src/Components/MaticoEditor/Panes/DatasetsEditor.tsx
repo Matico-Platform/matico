@@ -26,6 +26,7 @@ import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { addDataset } from "Stores/MaticoSpecSlice";
 import styled from "styled-components";
 import { DatasetProvider } from "Datasets/DatasetProvider";
+import { registerDataset } from "Stores/MaticoDatasetSlice";
 
 interface DatasetEditorProps {
   dataset: DatasetSummary;
@@ -111,7 +112,14 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
   const dispatch = useMaticoDispatch();
 
   const createDataset = (details: any) => {
+    const type = Object.keys(details)[0]
     dispatch(addDataset({ dataset: details }));
+    dispatch(
+      registerDataset({
+        ...details[type],
+        type: Object.keys(details)[0],
+      })
+    );
     setShowNewDataset(false);
   };
 
