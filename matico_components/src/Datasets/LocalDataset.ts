@@ -36,6 +36,9 @@ export class LocalDataset implements Dataset {
   local() {
     return true;
   }
+  raster(){
+    return false
+  }
 
   tiled() {
     return false;

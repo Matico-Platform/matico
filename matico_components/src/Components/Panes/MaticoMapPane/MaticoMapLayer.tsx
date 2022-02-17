@@ -1,7 +1,12 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import { GeomType } from "../../../Datasets/Dataset";
 import { AutoVariableInterface, useAutoVariable } from "Hooks/useAutoVariable";
-import { ScatterplotLayer, PathLayer, PolygonLayer } from "@deck.gl/layers";
+import {
+  ScatterplotLayer,
+  PathLayer,
+  PolygonLayer,
+  BitmapLayer,
+} from "@deck.gl/layers";
 import {
   convertPoint,
   convertLine,
@@ -12,7 +17,7 @@ import {
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
-import { MVTLayer } from "deck.gl";
+import { MVTLayer, TileLayer } from "deck.gl";
 
 interface MaticoLayerInterface {
   name: string;
@@ -56,7 +61,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     filtersReady && dataset.tiled === false ? source.name : null,
     mappedFilters
   );
-
 
   const preparedData = useMemo(() => {
     if (!styleReady) {
@@ -113,16 +117,18 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     const lineWidth = generateNumericVar(mappedStyle.lineWidth) ?? 10;
     const elevation = generateNumericVar(mappedStyle.elevation) ?? 0;
 
-    const shouldExtrude = elevation !== null && (elevation > 0  || typeof(elevation)==="function") ;
-    const shouldStroke = lineWidth !== null && (lineWidth > 0 || typeof(lineWidth)==="function"); 
-    
+    const shouldExtrude =
+      elevation !== null && (elevation > 0 || typeof elevation === "function");
+    const shouldStroke =
+      lineWidth !== null && (lineWidth > 0 || typeof lineWidth === "function");
+
     const common = {
       getFillColor: fillColor,
       getLineColor: lineColor,
       getLineWidth: lineWidth,
       extruded: shouldExtrude,
       stroked: shouldStroke,
-      getElevation : elevation,
+      getElevation: elevation,
       onHover: (hoverTarget) => updateHoverVariable(hoverTarget.object),
       onClick: (clickTarget) => updateClickVariable(clickTarget.object),
       pickable: true,
@@ -175,10 +181,34 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           break;
       }
     } else {
-      layer = new MVTLayer({
-        ...common,
-      });
+      if (dataset.raster) {
+        layer = new TileLayer({
+          id: name,
+          data: dataset.mvtUrl,
+          minZoom: 0,
+          maxZoom: 19,
+          tileSize: 256,
+
+          renderSubLayers: (props) => {
+            const {
+              bbox: { west, south, east, north },
+            } = props.tile;
+
+            return new BitmapLayer(props, {
+              data: null,
+              image: props.data,
+              bounds: [west, south, east, north],
+            });
+          },
+        });
+      } else {
+        layer = new MVTLayer({
+          ...common,
+        });
+      }
     }
+
+    console.log("Layer is ",layer, dataset.mvtUrl)
 
     onUpdate(layer);
   }, [

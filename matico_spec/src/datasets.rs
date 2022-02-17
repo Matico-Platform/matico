@@ -9,7 +9,17 @@ pub enum Dataset {
     GeoJSON(GeoJSONDataset),
     CSV(CSVDataset),
     MaticoRemote(MaticoRemoteDataset),
-    MaticoApi(MaticoApiDataset)
+    MaticoApi(MaticoApiDataset),
+    COG(COGDataset)
+}
+
+#[wasm_bindgen]
+#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+pub struct COGDataset{
+    #[wasm_bindgen(skip)]
+    pub name:String,
+    #[wasm_bindgen(skip)]
+    pub url:String
 }
 
 #[wasm_bindgen]

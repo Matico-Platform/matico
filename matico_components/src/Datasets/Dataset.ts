@@ -41,6 +41,7 @@ export interface DatasetSummary{
   state: DatasetState,
   error?: string,
   tiled: boolean,
+  raster:boolean,
   mvtUrl?: string
 }
 
@@ -59,6 +60,7 @@ export interface Dataset{
   getFeature: (feature_id: string) => Promise<Datum | undefined>,
   local:()=>boolean,
   tiled:()=>boolean,
+  raster:()=>boolean,
   mvtUrl?:()=>string,
   isReady:()=> boolean,
   geometryType:()=> Promise<GeomType>,

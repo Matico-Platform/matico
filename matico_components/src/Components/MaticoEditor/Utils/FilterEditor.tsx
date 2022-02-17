@@ -13,10 +13,9 @@ import {
   TextField,
   ToggleButton,
 } from "@adobe/react-spectrum";
-import { DatasetState, Filter } from "Datasets/Dataset";
+import { DatasetState, Filter, CategoryFilter, Column} from "Datasets/Dataset";
 import { useMaticoSelector } from "Hooks/redux";
 import React from "react";
-import { CategoryFilter, Column } from "../../../../dist/Datasets/Dataset";
 import FunctionIcon from "@spectrum-icons/workflow/Function";
 
 interface FilterEditor {
