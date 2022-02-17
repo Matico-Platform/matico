@@ -1,5 +1,6 @@
-import { Avatar, Box, Text, Button, Nav, Sidebar } from "grommet";
-import { Link } from "react-router-dom";
+import { Avatar, Box, Button, Nav, Sidebar } from "grommet";
+import { Link, Text, View } from "@adobe/react-spectrum";
+import { Link as RouterLink } from "react-router-dom";
 import { Page } from "@maticoapp/matico_spec";
 import React from "react";
 import * as Icons from "grommet-icons";
@@ -70,7 +71,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   return (
     <Sidebar
       background={chromaColor ? chromaColor.hex() : "neutral-2"}
-      style={{textAlign:'center'}}
+      style={{ textAlign: "center" }}
       header={
         <Avatar
           src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
@@ -81,29 +82,25 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       elevation="medium"
       footer={<Button icon={<Icons.Help />} hoverIndicator />}
     >
-      <Nav gap="small" >
+      <Nav gap="small">
         {pages.map((page, index) => (
-          <Link
-            style={{ textDecoration: "none" }}
-            key={page.name}
-            to={page.path ? page.path : `/${page.name}`}
-          >
-            <Button
-              badge={
-                <EditButton editPath={`pages.${index}`} editType={"Page"} />
-              }
-              a11yTitle={page.name}
-              icon={<NamedButton name={page.icon} />}
-              hoverIndicator
-            />
-            <Text
-              color="white"
-              size={"small"}
-              style={{ textDecoration: "none" }}
-            >
-              {page.name}
-            </Text>
-          </Link>
+          <View position="relative">
+            <EditButton editPath={`pages.${index}`} editType={"Page"} />
+            <Link isQuiet variant="secondary">
+              <RouterLink
+                style={{ textDecoration: "none" }}
+                key={page.name}
+                to={page.path ? page.path : `/${page.name}`}
+              >
+                <Button
+                  a11yTitle={page.name}
+                  icon={<NamedButton name={page.icon} />}
+                  hoverIndicator
+                />
+                <Text>{page.name}</Text>
+              </RouterLink>
+            </Link>
+          </View>
         ))}
         {editable && (
           <Button
