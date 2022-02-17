@@ -11,10 +11,9 @@ export const MaticoStateViewer: React.FC = () => {
       style={{ textAlign: "left" }}
       fill
       flex
-      overflow={{ vertical: "auto" }}
     >
       <ReactJson
-        style={{ fontSize: 15, maxHeight: "1300px", overflowY: "auto" }}
+        style={{ fontSize: 15 }}
         collapsed={3}
         src={state}
       />

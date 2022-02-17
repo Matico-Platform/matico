@@ -32,6 +32,7 @@ import PieChartIcon from "@spectrum-icons/workflow/GraphPie";
 import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import traverse from "traverse";
+import { DefaultGrid } from "../Utils/DefaultGrid";
 
 export interface SectionEditorProps {
   editPath: string;
@@ -108,7 +109,7 @@ const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                   onChange={setNewPaneName}
                   errorMessage={errorText}
                 ></TextField>
-                <Grid
+                <DefaultGrid
                   columns={repeat(2, "1fr")}
                   columnGap={"size-50"}
                   rowGap={"size-50"}
@@ -125,7 +126,7 @@ const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                       <Text>{pane.label}</Text>
                     </ActionButton>
                   ))}
-                </Grid>
+                </DefaultGrid>
               </>
             ))}
           </Content>

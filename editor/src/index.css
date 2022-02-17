@@ -17,4 +17,6 @@ body, html, #root{
   height:100vh;
   margin:0px;
   padding:0px;
+  /* Once fixed other issues, turn on this bad boy */
+  /* overflow:hidden; */
 }

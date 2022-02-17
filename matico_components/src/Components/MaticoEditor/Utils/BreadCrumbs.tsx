@@ -36,10 +36,10 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
   if (!editPath) {
     return <></>;
   }
-
   const breadCrumbPath = editPath.split(".");
 
-  const setEditPath = () => {};
+  //@ts-ignore
+  const setEditPath = ({editPath, editType}) => dispatch(setCurrentEditPath({ editPath, editType }));
 
   console.log("breadCrumbPath ", breadCrumbPath);
 
@@ -47,7 +47,7 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
     .slice(0, -2)
     .map((editItem, index) => ({
       label: editTypeMapping[editItem],
-      editPath: breadCrumbPath.slice(0, index + 1).join("."),
+      editPath: breadCrumbPath.slice(0, index + 2).join("."),
       editType: editTypeMapping[editItem],
     }))
     .filter((a) => a.label);
@@ -60,10 +60,10 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
 
   return (
     <Breadcrumbs
-      onAction={(selectedId: Key) => console.log("selected ", selectedId)}
+      onAction={(idx: number) => dispatch(setEditPath(pathSegments[idx]))}
     >
-      {pathSegments.map((item: any) => (
-        <Item key={editPath}>{item.label}</Item>
+      {pathSegments.map((item: any, idx: number) => (
+        <Item key={idx}>{item.label}</Item>
       ))}
     </Breadcrumbs>
   );

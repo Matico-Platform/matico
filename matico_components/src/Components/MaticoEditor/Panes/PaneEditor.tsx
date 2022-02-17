@@ -12,6 +12,7 @@ import {
   NumberField,
   Picker,
 } from "@adobe/react-spectrum";
+import { DefaultGrid } from "../Utils/DefaultGrid";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;
@@ -86,7 +87,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
           value={name}
           onChange={(name: string) => updateName( name )}
         />
-        <Grid columns={["1fr 1fr"]} autoRows="size-800">
+        <DefaultGrid>
           <PositionUnitEditor
             label="x"
             value={position.x}
@@ -115,7 +116,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onValueChange={(height) => updatePosition({ height })}
             onUnitsChange={(height_units) => updatePosition({ height_units })}
           />
-        </Grid>
+        </DefaultGrid>
       </Well>
     </Flex>
   );

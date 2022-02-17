@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Accordion, AccordionPanel, Box, Tab, Tabs } from "grommet";
 import { MaticoDatasetsViewer } from "./Utils/MaticoDatasetsViewer";
 import { MaticoRawSpecEditor } from "./Panes/MaticoRawSpecEditor";
@@ -31,6 +31,8 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   datasetProviders,
 }) => {
   const dispatch = useMaticoDispatch();
+  const editorView = useRef(null);
+  const [shouldOverflow, setShouldOverflow] = useState(false);
   // eg
   // spec
   // pages.0.sections.0.panes.1.Map
@@ -52,6 +54,13 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   useEffect(() => {
     dispatch(setEditing(editActive));
   }, [editActive]);
+  
+  useLayoutEffect(() => {
+    // Spectrum unhappy about this, but unsure how else to conditionally overflow
+    const couldOverflow = typeof window !== undefined && editorView?.current && editorView?.current?.UNSAFE_getDOMNode()?.clientHeight > window.innerHeight * .95;
+    setShouldOverflow(couldOverflow);
+  },[currentEditPath, tabKey])
+
 
   const EditPane = Editors[currentEditType];
 
@@ -64,27 +73,29 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
         <Item key="Specification">Specification</Item>
         <Item key="State">State</Item>
       </TabList>
-      <TabPanels>
-        <Item key="Components">
-          {currentEditPath && (
-            <Flex height="100%" width="100%" direction="column">
-              <View flex="1">
-                <EditPane editPath={currentEditPath} />
-              </View>
-              <BreadCrumbs editPath={currentEditPath} />
-            </Flex>
-          )}
-        </Item>
-        <Item key="Datasets">
-          <DatasetsEditor datasetProviders={datasetProviders} />
-        </Item>
-        <Item key="Specification">
-          <MaticoRawSpecEditor />
-        </Item>
-        <Item key="State">
-          <MaticoStateViewer />
-        </Item>
-      </TabPanels>
+      <View ref={editorView} overflow={shouldOverflow ? "hidden scroll" : "hidden hidden"} maxHeight={shouldOverflow ? "95vh" : "98vh"}>
+        <TabPanels>
+          <Item key="Components">
+            {currentEditPath && (
+              <Flex height="100%" width="100%" direction="column">
+                <BreadCrumbs editPath={currentEditPath} />
+                <View flex="1">
+                  <EditPane editPath={currentEditPath} />
+                </View>
+              </Flex>
+            )}
+          </Item>
+          <Item key="Datasets">
+            <DatasetsEditor datasetProviders={datasetProviders} />
+          </Item>
+          <Item key="Specification">
+            <MaticoRawSpecEditor />
+          </Item>
+          <Item key="State">
+            <MaticoStateViewer />
+          </Item>
+        </TabPanels>
+      </View>
     </Tabs>
   );
 };
