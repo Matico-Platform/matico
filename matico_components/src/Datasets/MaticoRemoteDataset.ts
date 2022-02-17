@@ -71,8 +71,14 @@ export class MaticoRemoteDataset implements Dataset {
   local() {
     return false;
   }
+  raster(){
+    return false;
+  }
   tiled() {
     return true;
+  }
+  raster(){
+    return false;
   }
   mvtUrl() {
     return `${this.serverUrl}/tiler/dataset/${this.datasetId}/{z}/{x}/{y}`;

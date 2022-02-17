@@ -1,7 +1,8 @@
 import {useSWRAPI, updateDataset} from "../utils/api";
 
 export const useDatasets= ()=>{
-  return useSWRAPI('/datasets',  {refreshInterval:10000}) 
+  const {data,error, mutate} = useSWRAPI('/datasets',  {refreshInterval:10000}) 
+  return {datasets:data,datasetsError: error, datasetsMutate: mutate}
 }
 
 export const useDataset= (id:string)=>{

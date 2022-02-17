@@ -9,6 +9,7 @@ import {
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { CSVBuilder } from "./CSVBuilder";
 import { GeoJSONBuilder } from "./GeoJSONBuilder";
+import { COGBuilder } from "./COGBuilder";
 import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
 type Loader = (params: any) => Dataset;
@@ -131,6 +132,7 @@ export const DatasetService: DatasetServiceInterface = {
           columns: await geoDataset.columns(),
           geomType: await geoDataset.geometryType(),
           local: true,
+          raster:false,
           tiled: geoDataset.tiled(),
         };
       case "CSV":
@@ -142,6 +144,7 @@ export const DatasetService: DatasetServiceInterface = {
           state: DatasetState.READY,
           columns: await csvDataset.columns(),
           geomType: await csvDataset.geometryType(),
+          raster:false,
           local: true,
           tiled: geoDataset.tiled(),
         };
@@ -156,6 +159,7 @@ export const DatasetService: DatasetServiceInterface = {
           geomType: await maticoDataset.geometryType(),
           local: false,
           tiled: maticoDataset.tiled(),
+          raster:false,
           mvtUrl: maticoDataset.mvtUrl(),
         };
       case "MaticoApi":
@@ -168,8 +172,23 @@ export const DatasetService: DatasetServiceInterface = {
           columns: await maticoApi.columns(),
           geomType: await maticoApi.geometryType(),
           local: false,
+          raster:false,
           tiled: maticoApi.tiled(),
           mvtUrl: maticoApi.mvtUrl(),
+        };
+      case "COG":
+        const cog = await COGBuilder(datasetDetails);
+        this.datasets[cog.name] = cog;
+        this._notify(cog.name);
+        return {
+          name: cog.name,
+          state: DatasetState.READY,
+          columns: await cog.columns(),
+          geomType: await cog.geometryType(),
+          local: false,
+          raster: true,
+          tiled: cog.tiled(),
+          mvtUrl: cog.mvtUrl(),
         };
     }
   },

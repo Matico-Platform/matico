@@ -16,6 +16,7 @@ import { DatasetProvider } from "Datasets/DatasetProvider";
 import {defaultTheme, darkTheme, Provider as SpectrumProvider} from "@adobe/react-spectrum"
 import {GeoJSONProvider} from "DatasetsProviders/GeoJSONProvider";
 import {CSVProvider} from "DatasetsProviders/CSVProvider";
+import {COGProvider} from "DatasetsProviders/COGProvider";
 
 
 interface MaticoAppInterface {
@@ -57,7 +58,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
           >
 
             <MaticoEditor
-              datasetProviders={[CSVProvider, GeoJSONProvider,  ...datasetProviders ]}
+              datasetProviders={[CSVProvider, GeoJSONProvider, COGProvider, ...datasetProviders ]}
               editActive={editActive}
               onSpecChange={onSpecChange}
             />

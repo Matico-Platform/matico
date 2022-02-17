@@ -84,14 +84,9 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
           value={page.path}
           onChange={(path: string) => updatePage({ path })}
         />
-        <ComboBox defaultItems={iconOptions} label="Icon">
-          {(item) => (
-            <Item key={item.key}>
-              <FontAwesomeIcon icon={item.icon} />
-              <Text>{item.key}</Text>
-            </Item>
-          )}
-        </ComboBox>
+          <TextField label='icon'
+          value={page.icon}
+          onChange={(icon)=> updatePage({icon})}/>
       </Well>
       <Well>
         <Heading>
