@@ -10,12 +10,13 @@ import {
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { PaneEditor } from "./PaneEditor";
 import { BaseMapSelector } from "../Utils/BaseMapSelector";
+import { DefaultGrid } from "../Utils/DefaultGrid";
 import { PaneDefaults } from "Components/MaticoEditor/PaneDefaults";
 import {
   Flex,
   Heading,
   Well,
-  Grid,
+  // Grid,
   NumberField,
   ActionButton,
   Text,
@@ -28,6 +29,7 @@ import {
   TextField,
   View,
   ButtonGroup,
+  // repeat,
 } from "@adobe/react-spectrum";
 
 interface AddPaneModalProps {
@@ -232,7 +234,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             <Text>Map Bounds</Text>
           </Flex>
         </Heading>
-        <Grid alignItems="end" columns={["1fr", "1fr"]} autoRows={"size-800"}>
+        <DefaultGrid>
           <NumberField
             width="size-2400"
             label="lat"
@@ -285,7 +287,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
               <ActionButton>Start Syncing</ActionButton>
             </>
           )}
-        </Grid>
+        </DefaultGrid>
       </Well>
       <Well>
         <Heading>

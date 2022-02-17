@@ -64,27 +64,29 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
         <Item key="Specification">Specification</Item>
         <Item key="State">State</Item>
       </TabList>
-      <TabPanels>
-        <Item key="Components">
-          {currentEditPath && (
-            <Flex height="100%" width="100%" direction="column">
-              <View flex="1">
-                <EditPane editPath={currentEditPath} />
-              </View>
-              <BreadCrumbs editPath={currentEditPath} />
-            </Flex>
-          )}
-        </Item>
-        <Item key="Datasets">
-          <DatasetsEditor datasetProviders={datasetProviders} />
-        </Item>
-        <Item key="Specification">
-          <MaticoRawSpecEditor />
-        </Item>
-        <Item key="State">
-          <MaticoStateViewer />
-        </Item>
-      </TabPanels>
+      <View overflow="hidden scroll" maxHeight="95vh">
+        <TabPanels>
+          <Item key="Components">
+            {currentEditPath && (
+              <Flex height="100%" width="100%" direction="column">
+                <View flex="1">
+                  <EditPane editPath={currentEditPath} />
+                </View>
+                <BreadCrumbs editPath={currentEditPath} />
+              </Flex>
+            )}
+          </Item>
+          <Item key="Datasets">
+            <DatasetsEditor datasetProviders={datasetProviders} />
+          </Item>
+          <Item key="Specification">
+            <MaticoRawSpecEditor />
+          </Item>
+          <Item key="State">
+            <MaticoStateViewer />
+          </Item>
+        </TabPanels>
+      </View>
     </Tabs>
   );
 };
