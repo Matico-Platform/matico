@@ -87,7 +87,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
         />
       ) : (
         <TextField
-          width={"size-1200"}
+          width={"size-2400"}
           key="min_val_var"
           label="Min variable"
           value={min.var}
@@ -124,7 +124,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
       ) : (
         <TextField
           label="Max variable"
-          width={"size-1200"}
+          width={"size-2400"}
           key={"max_val_var"}
           value={max.var}
           onChange={(newVar) =>
@@ -164,32 +164,32 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   );
 };
 
-const editorForFilter = (
-  filter: any,
-  columns: Array<Column>,
-  updateFilter: (newFilter: Filter) => void
-) => {
+
+const EditorForFilter: React.FC<{filter: any, columns: Array<Column>, updateFilter: (newFilter: Filter, index: number) => void, index:number}> = ({
+  filter={},
+  columns=[],
+  updateFilter=()=>{},
+  index=0,
+}) => {
   console.log("TRYING TO GET EDITOR FOR FILTER ", filter);
   const [filterType, filterParams] = Object.entries(filter)[0];
   if (filterType === "Range") {
     return (
       <RangeFilterEditor
-        key={JSON.stringify({ filterParams })}
         selectedColumn={columns.find((c) => c.name === filterParams.variable)}
         columns={columns}
         max={filterParams.max}
         min={filterParams.min}
-        onUpdateFilter={updateFilter}
+        onUpdateFilter={(newValue) => updateFilter(newValue, index)}
       />
     );
   } else if (filterType === "Category") {
     return (
       <CategoryFilter
-        key={JSON.stringify({ filterParams })}
         selectedColumn={columns.find((c) => c.name === filterParams.variable)}
         columns={columns}
         categories={filterParams.is_one_of}
-        onUpdateFilter={updateFilter}
+        onUpdateFilter={(newValue) => updateFilter(newValue, index)}
       />
     );
   }
@@ -230,6 +230,20 @@ const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
   );
 };
 
+
+interface FilterBlockProps {
+  filters: Array<any>;
+  columns: Array<Column>;
+  updateFilter: (newFilter: Filter, index: number) => void;
+}
+
+//@ts-ignore
+const FilterBlock: React.FC<FilterBlockProps> = ({
+  filters=[],
+  columns=[],
+  updateFilter=()=>{}, //@ts-ignore
+}) => filters?.map((filter, index) => <EditorForFilter key={index} {...{filter, columns, updateFilter, index }} />);
+
 interface FilterEditorProps {
   filters: Array<any>;
   onUpdateFilters: (update: any) => void;
@@ -250,11 +264,13 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
 
   const addFilter = (newFilter: Filter) =>
     onUpdateFilters(filters ? [...filters, newFilter] : [newFilter]);
-  const updateFilter = (newFilter: Filter, index: Number) =>
+
+
+    const updateFilter = (newFilter: Filter, index: Number) =>
     onUpdateFilters(
       filters.map((filter, i) => (i === index ? newFilter : filter))
     );
-
+    
   return (
     <Flex direction="column">
       <Heading>
@@ -263,11 +279,7 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
         </Flex>
       </Heading>
       <Flex direction="column">
-        {filters?.map((filter, index) =>
-          editorForFilter(filter, columns, (newFilter: Filter) =>
-            updateFilter(newFilter, index)
-          )
-        )}
+        <FilterBlock {...{columns, filters, updateFilter}} />
       </Flex>
     </Flex>
   );
