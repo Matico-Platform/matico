@@ -19,7 +19,9 @@ import {
 export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
   onSubmit,
 }) => {
-  const { data: datasets, error } = useDatasets();
+  const { datasets, datasetError } = useDatasets();
+  console.log("matico datasets ", datasets)
+
   const [selectedDatasetID, setSelectedDatasetID] = useState<any | null>(null);
   const [remote, setRemote] = useState<boolean>(false);
   const selectedDataset = datasets

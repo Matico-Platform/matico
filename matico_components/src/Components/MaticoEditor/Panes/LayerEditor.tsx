@@ -1,20 +1,25 @@
-import React, { useContext } from "react";
+import React from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import {
-  Accordion,
-  AccordionPanel,
-  Box,
-  Grid,
-  RadioButtonGroup,
-  RangeInput,
-  Text,
-} from "grommet";
+import { Box } from "grommet";
 import { setSpecAtPath } from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
-import { ColorPicker } from "../Utils/ColorPicker";
 import { PaneDefaults } from "../PaneDefaults";
-import { DataDrivenEditor } from "../Utils/DataDrivenEditor";
+import {
+  Flex,
+  Heading,
+  NumberField,
+  Picker,
+  Slider,
+  Item,
+  Text,
+  Well,
+  Header,
+} from "@adobe/react-spectrum";
+import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
+import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
+import { FilterEditor } from "../Utils/FilterEditor";
+import {Filter} from "Datasets/Dataset";
 
 export interface LayerEditorProps {
   editPath: string;
@@ -27,7 +32,9 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
   const layer = _.get(spec, editPath);
 
   const defaults = PaneDefaults.Layer;
-  const dataset = useMaticoSelector(state=> state.datasets.datasets[layer.source.name])
+  const dataset = useMaticoSelector(
+    (state) => state.datasets.datasets[layer.source.name]
+  );
 
   const updateStyle = (property: string, value: any) => {
     dispatch(
@@ -63,6 +70,21 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     );
   };
 
+  const updateFilters = (newFilters: Array<Filter>)=>{
+    console.log("Updating filters ", newFilters )
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update:{
+          source: {
+            ...layer.source,
+            filters: newFilters
+          }
+        }
+      })
+    )
+  }
+
   const updateDataset = (dataset: string) => {
     dispatch(
       setSpecAtPath({
@@ -80,7 +102,6 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     type: "color" | "number"
   ) => {
     const variable = dataset.columns.find((c) => c["type"] === "number");
-    console.log("Variable is ", variable)
 
     if (dataDriven) {
       const dataSpecs = {
@@ -124,101 +145,70 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
 
   const fillDataDriven = style.fillColor.variable ? "Data Driven" : "Simple";
   const lineDataDriven = style.lineColor.variable ? "Data Driven" : "Simple";
-  console.log("style is ,", style, fillDataDriven, lineDataDriven);
+
   return (
-    <Box background={"white"} pad="medium">
-      <Accordion>
-        <AccordionPanel label="Datasource"></AccordionPanel>
+    <Flex direction="column">
+      <Well>
+        <Heading>Datasource</Heading>
         <DatasetSelector
           selectedDataset={dataset.name}
           onDatasetSelected={updateDataset}
         />
+        <FilterEditor
+          datasetName={dataset.name}
+          filters={layer.source.filters}
+          onUpdateFilters={updateFilters}
+        />
+      </Well>
+      <Well>
+        <Heading>Style</Heading>
 
-        <AccordionPanel label={"Style"}>
-          <Grid
-            align="center"
-            justify="start"
-            columns={["small", "small", "1fr"]}
-            gap="medium"
-          >
-            <Text>Line Width</Text>
-            <Box />
-            <RangeInput
-              value={style.lineWidth}
-              max={3000}
-              min={1}
-              step={1}
-              onChange={(e) =>
-                updateStyle("lineWidth", parseFloat(e.target.value))
-              }
-            />
-            <Text>Fill Color</Text>
-            <RadioButtonGroup
-              name="fillData"
-              direction="row"
-              value={fillDataDriven}
-              options={["Simple", "Data Driven"]}
-              onChange={(e) => {
-                toggleDataDriven(
-                  "fillColor",
-                  e.target.value === "Data Driven",
-                  "color"
-                );
-              }}
-            >
-              {(option, { checked, focus, hover }) => (
-                <Text color={checked ? "brand" : "lightGrey"}>{option}</Text>
-              )}
-            </RadioButtonGroup>
-            {fillDataDriven === "Data Driven" ? (
-              <DataDrivenEditor
-                spec={style.fillColor}
-                type="color"
-                dataset={dataset.name}
-                onChange={(newSpec) => updateDataDriven(newSpec, "fillColor")}
-              />
-            ) : (
-              <ColorPicker
-                color={style.fillColor}
-                onChange={(value) => updateStyle("fillColor", value)}
-                outFormat={"rgba"}
-              />
-            )}
-            <Text>Line Color</Text>
-            <RadioButtonGroup
-              name="lineData"
-              direction="row"
-              value={lineDataDriven}
-              options={["Simple", "Data Driven"]}
-              onChange={(e) => {
-                toggleDataDriven(
-                  "lineColor",
-                  e.target.value === "Data Driven",
-                  "color"
-                );
-              }}
-            >
-              {(option, { checked, focus, hover }) => (
-                <Text color={checked ? "brand" : "lightGrey"}>{option}</Text>
-              )}
-            </RadioButtonGroup>
-            {lineDataDriven === "Data Driven" ? (
-              <DataDrivenEditor
-                spec={style.lineColor}
-                type="color"
-                dataset={dataset.name}
-                onChange={(newSpec) => updateDataDriven(newSpec, "lineColor")}
-              />
-            ) : (
-              <ColorPicker
-                color={style.lineColor}
-                onChange={(value) => updateStyle("lineColor", value)}
-                outFormat={"rgba"}
-              />
-            )}
-          </Grid>
-        </AccordionPanel>
-      </Accordion>
-    </Box>
+        <ColorVariableEditor
+          label="Line Color"
+          datasetName={dataset.name}
+          style={style.lineColor}
+          onUpdateStyle={(style) => {
+            updateStyle("lineColor", style);
+          }}
+        />
+
+        <NumericVariableEditor
+          label="Line Width"
+          datasetName={dataset.name}
+          style={style.lineWidth}
+          onUpdateStyle={(style) => updateStyle("lineWidth", style)}
+          minVal={0}
+          maxVal={2000}
+        />
+        <Picker
+          width="size-1200"
+          selectedKey={style}
+          onSelectionChange={(units) =>
+            updateStyle("lineUnits", units as string)
+          }
+        >
+          <Item key="meters">Meters</Item>
+          <Item key="pixels">Pixels</Item>
+        </Picker>
+
+        <ColorVariableEditor
+          label="Fill Color"
+          datasetName={dataset.name}
+          style={style.fillColor}
+          onUpdateStyle={(style) => {
+            updateStyle("fillColor", style);
+          }}
+        />
+
+        <NumericVariableEditor
+          label="Elevation"
+          datasetName={dataset.name}
+          style={style.elevation}
+          onUpdateStyle={(style) => updateStyle("elevation", style)}
+          minVal={0}
+          maxVal={10000}
+        />
+      </Well>
+    </Flex>
   );
 };

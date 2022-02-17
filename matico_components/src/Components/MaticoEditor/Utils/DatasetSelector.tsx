@@ -1,6 +1,6 @@
-import { Text, Box, Select } from "grommet";
-import React, { useContext } from "react";
-import {useMaticoSelector} from "Hooks/redux";
+import React from "react";
+import { useMaticoSelector } from "Hooks/redux";
+import { Picker, Item,Text, Flex} from "@adobe/react-spectrum";
 
 interface DatasetSelectorProps {
   selectedDataset?: string;
@@ -10,17 +10,21 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
   selectedDataset,
   onDatasetSelected,
 }) => {
-  const datasets = useMaticoSelector(state=>state.datasets.datasets)
+  const datasets = useMaticoSelector((state) => state.datasets.datasets);
+  if(!datasets){
+    return <Text>Loading</Text>
+  }
   return (
-    <Box direction="row" align='center' justify='between'>
-      <Select
-        placeholder="Select dataset"
-        options={Object.values(datasets)}
-        value={datasets[selectedDataset]}
-        valueKey={"name"}
-        labelKey={"name"}
-        onChange={({ value }) => onDatasetSelected(value.name)}
-      />
-    </Box>
+    <Flex>
+    <Picker
+      items={Object.values(datasets)}
+      selectedKey={selectedDataset}
+      onSelectionChange={(dataset) => onDatasetSelected(dataset as string)}
+      label="Dataset"
+      width="100%"
+    >
+      {(dataset) => <Item key={dataset.name}>{dataset.name}</Item>}
+    </Picker>
+  </Flex>
   );
 };

@@ -19,6 +19,7 @@ import {
   Well,
   Picker,
   Header,
+  ToggleButton,
 } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useDataset } from "../../hooks/useDatasets";
@@ -46,7 +47,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
     type: SourceType.Dataset,
     id: datasetId,
   };
-  const { data: dataset, error: datasetError } = useDataset(datasetId);
+  const { dataset,  datasetError, updateDataset } = useDataset(datasetId);
   const { columns, columnsError } = useDatasetColumns(source);
 
   const [selectedFeatureId, setSelectedFeatureId] =
@@ -71,6 +72,18 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
     { ssr: false }
   );
 
+  const setIdColumn = (new_id_col:string)=>{
+    updateDataset({id_col:new_id_col}) 
+  }
+
+  const setGeomColumn =(new_geom_col:string)=>{
+    updateDataset({geom_col: new_geom_col})
+  }
+
+  const setPublic = (isPublic:boolean)=>{
+    updateDataset({public: isPublic})
+  }
+
   return (
     <Layout hasSidebar={true}>
       <View
@@ -89,22 +102,30 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
         {columns && (
           <Well>
             <Header marginBottom={"size-200"}>Column settings</Header>
+            <Flex direction='column'>
             <Picker
+              width="100%"
               selectedKey={dataset?.id_col}
               marginBottom={"size-200"}
               items={columns}
               label={"Id Column"}
+              onSelectionChange={(key) => setIdColumn(key as string)}
             >
               {(item) => <Item key={item.name}>{item.name}</Item>}
             </Picker>
             <Picker
+              width="100%"
               selectedKey={dataset?.geom_col}
               marginBottom={"size-200"}
               items={columns.filter((c) => c.col_type === "geometry")}
               label={"Geometry Column"}
+              onSelectionChange={(key) => setGeomColumn(key as string)}
             >
               {(item) => <Item key={item.name}>{item.name}</Item>}
             </Picker>
+
+            <ToggleButton isEmphasized isSelected={dataset.public} onChange={setPublic} >Public</ToggleButton>
+          </Flex>
           </Well>
         )}
 

@@ -57,6 +57,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     mappedFilters
   );
 
+
   const preparedData = useMemo(() => {
     if (!styleReady) {
       return [];
@@ -112,25 +113,27 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     const lineWidth = generateNumericVar(mappedStyle.lineWidth) ?? 10;
     const elevation = generateNumericVar(mappedStyle.elevation) ?? 0;
 
-    const shouldExtrude = elevation !== null && elevation > 0;
-    const shouldStroke = lineWidth !== null && lineWidth > 0;
+    const shouldExtrude = elevation !== null && (elevation > 0  || typeof(elevation)==="function") ;
+    const shouldStroke = lineWidth !== null && (lineWidth > 0 || typeof(lineWidth)==="function"); 
+    
     const common = {
       getFillColor: fillColor,
       getLineColor: lineColor,
       getLineWidth: lineWidth,
       extruded: shouldExtrude,
       stroked: shouldStroke,
+      getElevation : elevation,
       onHover: (hoverTarget) => updateHoverVariable(hoverTarget.object),
       onClick: (clickTarget) => updateClickVariable(clickTarget.object),
       pickable: true,
       id: name,
       data: dataset.tiled ? dataset.mvtUrl : preparedData,
       updateTriggers: {
-        getFillColor: [JSON.stringify(new Date())],
-        getLineColor: [JSON.stringify(lineColor)],
+        getFillColor: [JSON.stringify(mappedStyle.fillColor)],
+        getLineColor: [JSON.stringify(mappedStyle.lineColor)],
         getRadius: [JSON.stringify(mappedStyle.size)],
-        getElevation: [JSON.stringify(elevation)],
-        getLineWidth: [JSON.stringify(lineWidth)],
+        getElevation: [JSON.stringify(mappedStyle.elevation)],
+        getLineWidth: [JSON.stringify(mappedStyle.lineWidth)],
         extruded: [JSON.stringify(shouldExtrude)],
         stroked: [JSON.stringify(shouldStroke)],
       },

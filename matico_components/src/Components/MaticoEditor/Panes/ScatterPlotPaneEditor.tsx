@@ -2,16 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import {
-  Accordion,
-  Box,
-  Button,
-  Grid,
-  Heading,
-  RangeInput,
+  Well,
   Text,
-  TextInput,
-  AccordionPanel,
-} from "grommet";
+  Heading,
+  Flex,
+  View,
+  TextField,
+} from "@adobe/react-spectrum";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
@@ -21,6 +18,10 @@ import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { ColorPicker } from "../Utils/ColorPicker";
+import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
+import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
+import { DatasetSummary } from "Datasets/Dataset";
+import { LabelEditor } from "../Utils/LabelEditor";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -30,24 +31,13 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
   editPath,
 }) => {
   const spec = useMaticoSelector((state) => state.spec.spec);
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const dispatch = useMaticoDispatch();
+
+  const scatterPlotPane = _.get(spec, editPath);
 
   const deletePane = () => {
     dispatch(setCurrentEditPath({ editPath: null, editType: null }));
     dispatch(deleteSpecAtPath({ editPath }));
-  };
-
-  const updateDotSize = (e: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: { dot_size: parseInt(e.target.value) },
-      })
-    );
-  };
-  const updateDotColor = (color: any) => {
-    dispatch(setSpecAtPath({ editPath, update: { dot_color: color } }));
   };
 
   const updateLabels = (change: { [name: string]: string }) => {
@@ -75,29 +65,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     );
   };
 
-  const updateXColumn = (column: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          x_column: column,
-        },
-      })
-    );
-  };
-
-  const updateYColumn = (column: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          y_column: column,
-        },
-      })
-    );
-  };
-
-  const updatePane = (change: any) => {
+  const updateSpec = (change: any) => {
     dispatch(
       setSpecAtPath({
         editPath,
@@ -109,124 +77,125 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     );
   };
 
-  const scatterPlotPane = _.get(spec, editPath);
+
+  const updatePaneDetails = (change:any)=>{
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update:{
+          ...scatterPlotPane,
+          name: change.name,
+          position:{...scatterPlotPane.position, ...change.position}
+        }
+      })
+    )
+  }
+
+  const dataset: DatasetSummary = useMaticoSelector(
+    (state) => state.datasets.datasets[scatterPlotPane.dataset.name]
+  );
+  console.log("Scatter plot pane is ", scatterPlotPane);
 
   if (!scatterPlotPane) {
     return (
-      <Box background={"white"}>
-        <Text color="status-error">Failed to find component</Text>
-      </Box>
+      <View>
+        <Text>Failed to find component</Text>
+      </View>
     );
   }
+
   return (
-    <Box background={"white"} pad="medium">
-      <Accordion>
-        <AccordionPanel label="Pane Details">
-          <PaneEditor
-            position={scatterPlotPane.position}
-            name={scatterPlotPane.name}
-            background={scatterPlotPane.background}
-            onChange={(change) => updatePane(change)}
+    <Flex direction="column">
+      <PaneEditor
+        position={scatterPlotPane.position}
+        name={scatterPlotPane.name}
+        background={scatterPlotPane.background}
+        onChange={updatePaneDetails}
+      />
+      <Well>
+        <Heading>Source</Heading>
+        <DatasetSelector
+          selectedDataset={scatterPlotPane.dataset.name}
+          onDatasetSelected={updateDataset}
+        />
+        {dataset && (
+          <>
+            <DatasetColumnSelector
+              label="X Column"
+              datasetName={scatterPlotPane.dataset.name}
+              selectedColumn={dataset?.columns.find(
+                (c) => c.name === scatterPlotPane.x_column
+              )}
+              onColumnSelected={(x_column) =>
+                updateSpec({ x_column: x_column.name })
+              }
+            />
+            <DatasetColumnSelector
+              label="Y Column"
+              datasetName={scatterPlotPane.dataset.name}
+              selectedColumn={dataset?.columns.find(
+                (c) => c.name === scatterPlotPane.y_column
+              )}
+              onColumnSelected={(y_column) =>
+                updateSpec({ y_column: y_column.name })
+              }
+            />
+          </>
+        )}
+      </Well>
+      {dataset && (
+        <>
+          <Well>
+            <Heading>Style</Heading>
+            <NumericVariableEditor
+              label="Dot Size"
+              datasetName={scatterPlotPane.dataset.name}
+              style={scatterPlotPane.dot_size}
+              onUpdateStyle={(dot_size) => updateSpec({ dot_size })}
+              minVal={0}
+              maxVal={100}
+            />
+
+            <ColorVariableEditor
+              label="Dot Color"
+              datasetName={scatterPlotPane.dataset.name}
+              style={scatterPlotPane.dot_color}
+              onUpdateStyle={(dot_color) => updateSpec({ dot_color })}
+            />
+          </Well>
+          <LabelEditor
+            labels={scatterPlotPane.labels}
+            onUpdateLabels={updateLabels}
           />
-        </AccordionPanel>
-
-        <AccordionPanel label="Source">
-          <DatasetSelector
-            selectedDataset={scatterPlotPane.dataset.name}
-            onDatasetSelected={updateDataset}
-          />
-
-          <DatasetColumnSelector
-            dataset={scatterPlotPane.dataset.name}
-            selectedColumn={scatterPlotPane.x_column}
-            label="X Column"
-            onColumnSelected={(column) => updateXColumn(column)}
-          />
-          <DatasetColumnSelector
-            dataset={scatterPlotPane.dataset.name}
-            selectedColumn={scatterPlotPane.y_column}
-            label="Y Column"
-            onColumnSelected={(column) => updateYColumn(column)}
-          />
-        </AccordionPanel>
-
-        <AccordionPanel label="Style">
-          <Grid columns={["small", "1fr"]}>
-            <Text>Dot Size</Text>
-            <RangeInput
-              value={scatterPlotPane.dot_size}
-              max={30}
-              min={1}
-              step={1}
-              onChange={updateDotSize}
+        </>
+      )}
+      <Well>
+        <Heading>Interaction</Heading>
+        {dataset && (
+          <>
+            <DatasetColumnSelector
+              label="X Column"
+              datasetName={scatterPlotPane.dataset.name}
+              selectedColumn={dataset?.columns.find(
+                (c) => c.name === scatterPlotPane.x_column
+              )}
+              onColumnSelected={(x_column) =>
+                updateSpec({ x_column: x_column.name })
+              }
             />
-            <Text>Dot Color</Text>
-            <ColorPicker
-              color={scatterPlotPane.dot_color}
-              onChange={updateDotColor}
-              outFormat="hex"
+            <DatasetColumnSelector
+              label="Y Column"
+              datasetName={scatterPlotPane.dataset.name}
+              selectedColumn={dataset?.columns.find(
+                (c) => c.name === scatterPlotPane.y_column
+              )}
+              onColumnSelected={(y_column) =>
+                updateSpec({ y_column: y_column.name })
+              }
             />
-          </Grid>
-        </AccordionPanel>
-
-        <AccordionPanel label="Labels">
-          <Grid columns={["small", "1fr"]} gap="medium">
-            <Text>Title</Text>
-            <TextInput
-              placeholder={"Title"}
-              value={scatterPlotPane.labels?.title}
-              onChange={(e) => updateLabels({ title: e.target.value })}
-            />
-
-            <Text>Sub-title</Text>
-            <TextInput
-              placeholder={"Sub title"}
-              value={scatterPlotPane.labels?.sub_title}
-              onChange={(e) => updateLabels({ sub_title: e.target.value })}
-            />
-
-            <Text>X label</Text>
-            <TextInput
-              placeholder={"X Label"}
-              value={scatterPlotPane.labels?.x_label}
-              onChange={(e) => updateLabels({ x_label: e.target.value })}
-            />
-
-            <Text>Y label</Text>
-            <TextInput
-              placeholder={"Y Label"}
-              value={scatterPlotPane.labels?.y_label}
-              onChange={(e) => updateLabels({ y_label: e.target.value })}
-            />
-
-            <Text>Attribution</Text>
-            <TextInput
-              placeholder={"Attribution"}
-              value={scatterPlotPane.labels?.attribution}
-              onChange={(e) => updateLabels({ attribution: e.target.value })}
-            />
-          </Grid>
-        </AccordionPanel>
-
-        <AccordionPanel label="Danger Zone">
-          {confirmDelete ? (
-            <Box direction="row">
-              <Button primary label="DO IT!" onClick={deletePane} />
-              <Button
-                secondary
-                label="Nah I changed my mind"
-                onClick={() => setConfirmDelete(false)}
-              />
-            </Box>
-          ) : (
-            <Button
-              color="neutral-4"
-              label="Delete scatterPlotPane"
-              onClick={() => setConfirmDelete(true)}
-            />
-          )}
-        </AccordionPanel>
-      </Accordion>
-    </Box>
+          </>
+        )}
+      </Well>
+    </Flex>
   );
 };

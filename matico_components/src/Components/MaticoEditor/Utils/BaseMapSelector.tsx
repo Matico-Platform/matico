@@ -1,4 +1,4 @@
-import { Text, Box, Select } from "grommet";
+import { Picker, Text, Item } from "@adobe/react-spectrum";
 import React from "react";
 
 const BaseMaps = [
@@ -22,13 +22,16 @@ export const BaseMapSelector: React.FC<BaseMapSelectorProps> = ({
   onChange,
 }) => {
   return (
-    <Box fill direction={"row"} justify={'between'} align="center">
-      <Text>Base Map</Text>
-      <Select
-        options={BaseMaps}
-        value={baseMap}
-        onChange={({ value }) => onChange(value)}
-      />
-    </Box>
+    <Picker
+      label='Basemap'
+      width="100%"
+      items={BaseMaps.map((bm) => ({ key: bm }))}
+      selectedKey={baseMap}
+      onSelectionChange={(newBasemap) => onChange(newBasemap as string)}
+    >
+      {(basemapOption) => (
+        <Item key={basemapOption.key}>{basemapOption.key}</Item>
+      )}
+    </Picker>
   );
 };

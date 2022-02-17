@@ -1,16 +1,14 @@
 import React, { useState} from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import { Box, Button,  Text } from "grommet";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
 import { PaneEditor } from "./PaneEditor";
-import { SectionHeading } from "../Utils/Utils";
-// import MDEditor from "@uiw/react-md-editor";
 import ReactMde from "react-mde";
+import {View,Flex,Well,Text,Heading} from "@adobe/react-spectrum"
 import "react-mde/lib/styles/css/react-mde-all.css";
 
 
@@ -50,14 +48,14 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({
 
   if (!textPane) {
     return (
-      <Box background={"white"}>
-        <Text color="status-error">Failed to find component</Text>
-      </Box>
+      <View>
+        <Text>Failed to find component</Text>
+      </View>
     );
   }
   return (
-    <Box pad="medium" background={"white"}>
-      <SectionHeading>Pane Details</SectionHeading>
+    <Flex direction='column'>
+
       <PaneEditor
         position={textPane.position}
         name={textPane.name}
@@ -65,28 +63,12 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({
         onChange={(change) => updatePane(change)}
       />
 
-      <SectionHeading>Content</SectionHeading>
-      <SectionHeading>Content</SectionHeading>
-      
-      <ReactMde value={textPane.content} onChange={updateContent} />
+      <Well>
+        <Heading>Content</Heading>
+        
+        <ReactMde value={textPane.content} onChange={updateContent} />
+      </Well>
 
-      <SectionHeading>Danger Zone</SectionHeading>
-      {confirmDelete ? (
-        <Box direction="row">
-          <Button primary label="DO IT!" onClick={deletePane} />
-          <Button
-            secondary
-            label="Nah I changed my mind"
-            onClick={() => setConfirmDelete(false)}
-          />
-        </Box>
-      ) : (
-        <Button
-          color="neutral-4"
-          label="Delete textPane"
-          onClick={() => setConfirmDelete(true)}
-        />
-      )}
-    </Box>
-  );
+    </Flex>
+  )
 };

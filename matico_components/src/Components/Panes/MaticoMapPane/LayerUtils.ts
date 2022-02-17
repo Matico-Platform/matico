@@ -62,7 +62,6 @@ export const generateNumericVar = (numericVar): NumberReturn => {
   if (numericVar.variable) {
     const { variable, domain, range } = numericVar;
     const ramp = d3.scaleLinear().domain(domain).range(range);
-    console.log("NUMERIC IS A THING ", variable, ramp);
     return (d) => {
       const val = d.hasOwnProperty("properties")
         ? d.properties[variable]
@@ -123,7 +122,6 @@ export const generateColorVar = (colorVar): ColorReturn => {
     }
   }
 
-  console.log("returning generated ");
   return generateColor(colorVar);
 };
 

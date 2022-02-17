@@ -9,7 +9,6 @@ interface MaticoRemoteBuilderOptions {
 
 export const MaticoRemoteBuilder = async (details: MaticoRemoteBuilderOptions) => {
   const { name, server_url, dataset_id } = details;
-  console.log("NAME IS ",name, details)
 
   return new MaticoRemoteDataset(
     name,

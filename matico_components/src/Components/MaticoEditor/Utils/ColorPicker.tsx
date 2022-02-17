@@ -17,7 +17,6 @@ export const ColorPicker: React.FC<ColorPicker> = ({
 
   let chromaColor;
 
-  console.log("color is ", color);
   if (Array.isArray(color)) {
     chromaColor = chroma.rgb([...color.slice(0, 3), color[3] / 255]);
   } else {

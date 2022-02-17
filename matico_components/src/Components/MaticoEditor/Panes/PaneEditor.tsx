@@ -1,18 +1,58 @@
-import {
-  Box,
-  Form,
-  FormField,
-  Grid,
-  RadioButton,
-  RadioButtonGroup,
-  TextInput,
-} from "grommet";
 import React from "react";
 import { MaticoPaneInterface } from "Components/Panes/Pane";
+import {
+  Flex,
+  TextField,
+  Well,
+  Grid,
+  Text,
+  Heading,
+  repeat,
+  Item,
+  NumberField,
+  Picker,
+} from "@adobe/react-spectrum";
+import { DefaultGrid } from "../Utils/DefaultGrid";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;
 }
+
+interface PositionUnitEditorProps {
+  label: string;
+  value: number;
+  units: "Percent" | "Pixels";
+  onValueChange: (value: number) => void;
+  onUnitsChange: (units: "Percent" | "Pixels") => void;
+}
+
+const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
+  label,
+  value,
+  units,
+  onValueChange,
+  onUnitsChange,
+}) => {
+  return (
+    <Flex direction="row">
+      <NumberField
+        width={"size-1200"}
+        label={label}
+        marginEnd={"size-100"}
+        value={value}
+        onChange={onValueChange}
+      />
+      <Picker
+        width={"size-1200"} label="units"
+        selectedKey={units}
+        onSelectionChange={onUnitsChange}
+      >
+        <Item key="Percent">%</Item>
+        <Item key="Pixels">px</Item>
+      </Picker>
+    </Flex>
+  );
+};
 
 export const PaneEditor: React.FC<PaneEditorProps> = ({
   position,
@@ -22,157 +62,62 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
 }) => {
   const updatePosition = (change: any) => {
     console.log("Name ", change);
-    const newPos = {
-      ...change,
-      x: parseInt(change.x),
-      y: parseInt(change.y),
-      width: parseInt(change.width),
-      height: parseInt(change.height),
-    };
-    // TODO make rust emmit interfaces + classes with the intrfaces lacking things like free
     onChange({
       background,
       //@ts-ignore
-      position: { ...position, ...newPos },
-      name: change.name || name,
+      position: { ...position, ...change },
+      name,
     });
   };
-  console.log("position ", position)
+
+  const updateName = (newName: string) => {
+    onChange({
+      background,
+      position,
+      name: newName,
+    });
+  };
 
   return (
-    <Box background={"white"} width="100%" height="100%">
-      <Form value={position} onChange={(nextVal) => updatePosition(nextVal)} widht="100%" height="100%">
-        <FormField label="name" name="name" htmlFor={"name"} gridArea={"name"}>
-          <TextInput value={name} name="name" id="name" textAlign="center" />
-        </FormField>
-        <Grid
-          columns={["100px","100px","0.5fr","100px","100px"]}
-          areas={[
-            // ["x",  "y"],
-            // ["x_units", 'y_units'],
-            // ["width", "height"], 
-            // ["width_units","height_units"]
-            ["x", "x_units","gap","y","y_units"],
-            ["width", "width_units","gap","height", "height_units"],
-          ]}
-        >
-          <FormField label="x" name="x" htmlFor={"x"} gridArea={"x"}>
-            <TextInput
-              type="number"
-              value={position.x}
-              name="x"
-              id="x"
-              textAlign="center"
-            />
-          </FormField>
-          <FormField
-            name="x_units"
-            htmlFor={"x_units"}
-            gridArea={"x_units"}
-            style={{alignSelf:"end"}}
-          >
-            <RadioButtonGroup
-              direction="row"
-              name="x_units"
-              id="x_units"
-              options={[
-                { label: "px", value: "Pixels" },
-                { label: "%", value: "Percent" },
-              ]}
-              value={position.x_units ?? "Pixels"}
-            />
-          </FormField>
-          <FormField label="y" name="y" htmlFor="y" gridArea={"y"}>
-            <TextInput
-              type="number"
-              value={position.y}
-              name="y"
-              id={"y"}
-              textAlign="center"
-            />
-          </FormField>
-          <FormField
-            name="y_units"
-            htmlFor={"y_units"}
-            gridArea={"y_units"}
-            style={{alignSelf:"end"}}
-          >
-            <RadioButtonGroup
-              direction="row"
-              name="y_units"
-              id="y_units"
-              options={[
-                { label: "px", value: "Pixels" },
-                { label: "%", value: "Percent" },
-              ]}
-              value={position.y_units ?? "Pixels"}
-            />
-          </FormField>
-          <FormField
+    <Flex direction="column" width="100%" height="100%">
+      <Well>
+        <Heading>Pane Details</Heading>
+        <TextField
+          label="name"
+          value={name}
+          onChange={(name: string) => updateName( name )}
+        />
+        <DefaultGrid>
+          <PositionUnitEditor
+            label="x"
+            value={position.x}
+            units={position.x_units}
+            onValueChange={(x) => updatePosition({ x })}
+            onUnitsChange={(x_units) => updatePosition({ x_units })}
+          />
+          <PositionUnitEditor
+            label="y"
+            value={position.y}
+            units={position.y_units}
+            onValueChange={(y) => updatePosition({ y })}
+            onUnitsChange={(y_units) => updatePosition({ y_units })}
+          />
+          <PositionUnitEditor
             label="width"
-            name="width"
-            htmlFor="width"
-            gridArea={"width"}
-          >
-            <TextInput
-              type="number"
-              value={position.width}
-              id={"width"}
-              name="width"
-              textAlign="center"
-            />
-          </FormField>
-          <FormField
-            name="width_units"
-            htmlFor={"width_units"}
-            gridArea={"width_units"}
-            style={{alignSelf:"end"}}
-          >
-            <RadioButtonGroup
-              direction="row"
-              id="width_units"
-              name="width_units"
-              options={[
-                { label: "px", value: "Pixels" },
-                { label: "%", value: "Percent" },
-              ]}
-              value={position.width_units ?? "Pixels"}
-            />
-          </FormField>
-          <FormField
+            value={position.width}
+            units={position.width_units}
+            onValueChange={(width) => updatePosition({ width })}
+            onUnitsChange={(width_units) => updatePosition({ width_units })}
+          />
+          <PositionUnitEditor
             label="height"
-            name="height"
-            htmlFor="height"
-            gridArea={"height"}
-          >
-            <TextInput
-              type="number"
-              value={position.height}
-              id={"height"}
-              name="height"
-              textAlign="center"
-            />
-          </FormField>
-
-          <FormField
-            name="height_units"
-            htmlFor={"height_units"}
-            gridArea={"height_units"}
-            style={{alignSelf:"end"}}
-          >
-            <RadioButtonGroup
-              direction="row"
-              name="height_units"
-              id="height_units"
-              options={[
-                { label: "px", value: "Pixels" },
-                { label: "%", value: "Percent" },
-              ]}
-              value={position.height_units ?? "Pixels"}
-            />
-          </FormField>
-        </Grid>
-      </Form>
-    </Box>
+            value={position.height}
+            units={position.height_units}
+            onValueChange={(height) => updatePosition({ height })}
+            onUnitsChange={(height_units) => updatePosition({ height_units })}
+          />
+        </DefaultGrid>
+      </Well>
+    </Flex>
   );
 };

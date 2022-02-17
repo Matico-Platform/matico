@@ -116,7 +116,6 @@ Histogram.args = {
       color: color,
       scale: 2,
       padding: 0.1,
-      xAccessor: (d) => (d.x0 + d.x1) / 2,
     },
   ],
 };
@@ -151,7 +150,6 @@ HistogramWithScatterplot.args = {
       color: "steelblue",
       scale: 2,
       padding: 0.1,
-      xAccessor: (d) => (d.x0 + d.x1) / 2,
     },
     {
       data: Sample2dData,

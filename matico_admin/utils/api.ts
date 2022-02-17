@@ -234,6 +234,9 @@ export async function updateApi(id: string, newAPI: any) {
   return a.put(`/apis/${id}`, newAPI);
 }
 
+export async function updateDataset(id: string, newDataset: any) {
+  return a.put(`/datasets/${id}`, newDataset);
+}
 export async function getApis() {
   return a.get("/apis");
 }

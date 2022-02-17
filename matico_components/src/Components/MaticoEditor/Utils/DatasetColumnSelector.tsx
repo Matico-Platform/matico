@@ -1,37 +1,37 @@
-import { Text, Box, Select } from "grommet";
-import React, { useContext } from "react";
-import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
-import {useMaticoSelector} from "Hooks/redux";
+import React from "react";
+import { useMaticoSelector } from "Hooks/redux";
+import { Picker, Item } from "@adobe/react-spectrum";
+import { Column } from "Datasets/Dataset";
 
 interface DatasetColumnSelectorProps {
-  dataset?: string;
-  selectedColumn?: string;
-  onColumnSelected: (datasetName: string) => void;
+  datasetName?: string;
+  selectedColumn?: Column | null;
+  onColumnSelected: (column: Column) => void;
   label?: string;
 }
 export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
-  dataset,
+  datasetName,
   selectedColumn,
   label = "Column",
   onColumnSelected,
 }) => {
-  const foundDataset = useMaticoSelector(state=>state.datasets.datasets[dataset]);
-  const columns =  foundDataset ? foundDataset.columns: []
+
+  const foundDataset = useMaticoSelector(
+    (state) => state.datasets.datasets[datasetName]
+  );
+
+  const columns = foundDataset ? foundDataset.columns : [];
 
   return (
-    <Box direction="row" align="center" justify='between'>
-      <Text>{label}</Text>
-      {foundDataset ? (
-        <Select
-          options={columns}
-          value={columns.find( c=>c.name === selectedColumn)}
-          valueKey={"name"}
-          labelKey={"name"}
-          onChange={({ value }) => onColumnSelected(value.name)}
-        />
-      ) : (
-        <Text>First select a dataset</Text>
-      )}
-    </Box>
+    <Picker
+      items={columns}
+      label={label ?? "Column"}
+      selectedKey={selectedColumn?.name}
+      onSelectionChange={(column) =>
+        onColumnSelected(columns.find((c) => c.name === column))
+      }
+    >
+      {(column) => <Item key={column.name}>{column.name}</Item>}
+    </Picker>
   );
 };

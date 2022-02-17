@@ -6,7 +6,7 @@ const DefaultPosition = {
   float: false,
   layer: 1,
   x_units:"Percent",
-  y_units:"Precent",
+  y_units:"Percent",
   width_units:"Pixels",
   height_units:"Pixels"
 };
@@ -52,7 +52,7 @@ export const PaneDefaults = {
     column: null,
     color: "#417505",
     step: 140,
-    dataset: { name: "uknown" },
+    dataset: { name: "unknown" },
   },
   PieChart: {
     position: DefaultPosition,

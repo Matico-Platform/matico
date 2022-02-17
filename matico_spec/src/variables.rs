@@ -35,6 +35,36 @@ pub enum DatasetMetric {
     Summary,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum Range<T> {
+    Range(Vec<T>),
+    Named(String),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DomainVal {
+    String(String),
+    Value(f32),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Mapping<D, R> {
+    variable: String,
+    domain: VarOr<Vec<D>>,
+    range: VarOr<Range<R>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum MappingVarOr<T> {
+    Var(Variable),
+    Mapping(Mapping<DomainVal, T>),
+    Value(T),
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Validate)]
 pub struct DatasetVal {
     pub dataset: String,

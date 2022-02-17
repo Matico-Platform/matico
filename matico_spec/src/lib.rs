@@ -11,6 +11,7 @@ mod section;
 mod theme;
 mod validation;
 mod variables;
+mod colors;
 
 pub use autocomplete::*;
 pub use charts::*;
@@ -25,6 +26,7 @@ pub use section::*;
 pub use theme::*;
 pub use validation::*;
 pub use variables::*;
+pub use colors::*;
 
 #[macro_use]
 extern crate matico_spec_derive;
