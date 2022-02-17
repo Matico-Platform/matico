@@ -5,6 +5,7 @@ const optomizedImages = require('next-optimized-images');
 
 const withTM = require("next-transpile-modules")([
   "@adobe/react-spectrum",
+  "@react-spectrum/color",
   "@react-spectrum/actiongroup",
   "@react-spectrum/breadcrumbs",
   "@react-spectrum/button",
@@ -48,7 +49,7 @@ const withTM = require("next-transpile-modules")([
   "@spectrum-icons/illustrations",
   "@maticoapp/matico_components",
   "react-mde",
-]);
+],{"resolveSymlinks":false});
 
 module.exports = withPlugins([withTM, optomizedImages],{
   reactStrictMode: true,

@@ -8,7 +8,7 @@ import {useDataset} from './useDatasets';
 
 
 export const useMapSelectEditFeature  = (source:Source, featureId:string | number| null, edit:boolean)=>{
-  const {data: dataset} = useDataset(source.id)
+  const {dataset} = useDataset(source.id)
 
   const {feature, featureError, editable, mutateFeature, updateFeature} = useFeature(source, featureId, edit, "geojson")
 
