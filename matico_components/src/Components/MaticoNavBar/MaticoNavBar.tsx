@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Nav, Sidebar } from "grommet";
 import { Link, Text, View } from "@adobe/react-spectrum";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import { Page } from "@maticoapp/matico_spec";
 import React from "react";
 import * as Icons from "grommet-icons";
@@ -22,8 +22,9 @@ const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
 
 export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   const editable = useIsEditable();
-  const dispatch = useMaticoDispatch();
+  const dispatch = useMaticoDispatch(); 
   const theme = useMaticoSelector((state) => state.spec.spec.theme);
+  const history = useHistory();
   const primaryColor = theme?.primaryColor;
   const logo = theme?.logoUrl;
 
@@ -85,7 +86,9 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       <Nav gap="small">
         {pages.map((page, index) => (
           <View position="relative">
-            <EditButton editPath={`pages.${index}`} editType={"Page"} />
+            <View position="absolute" top="0" right="-25%">
+              <EditButton editPath={`pages.${index}`} editType={"Page"} sideEffect={() => history.push(page.path ? page.path : `/${page.name}`)} />
+            </View>
             <Link isQuiet variant="secondary">
               <RouterLink
                 style={{ textDecoration: "none" }}

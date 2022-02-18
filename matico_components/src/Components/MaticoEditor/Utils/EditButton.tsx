@@ -42,11 +42,13 @@ import Settings from "@spectrum-icons/workflow/Settings";
 interface EditButtonProps {
   editPath: string;
   editType: string;
+  sideEffect: Function;
 }
 
 export const EditButton: React.FC<EditButtonProps> = ({
   editPath,
   editType,
+  sideEffect=()=>{},
 }) => {
   const dispatch = useMaticoDispatch();
   const edit = useIsEditable();
@@ -54,18 +56,15 @@ export const EditButton: React.FC<EditButtonProps> = ({
   return (
     <Button
       variant="primary"
-      marginBottom="-50px"
-      position="absolute"
-      right="0"
-      top="0"
-      onPress={() =>
+      onPress={() => {
         dispatch(
           setCurrentEditPath({
             editPath,
             editType,
           })
-        )
-      }
+        );
+        sideEffect();
+      }}
       isQuiet
     >
       <Settings aria-label="Edit" color="notice" />
