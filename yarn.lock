@@ -3613,6 +3613,7 @@ __metadata:
     query-string: ^7.0.1
     react-ace: ^9.5.0
     react-color: ^2.19.3
+    react-dom: ^17.0.2
     react-draggable: ^4.4.4
     react-json-view: ^1.21.3
     react-map-gl: ^6.1.17
