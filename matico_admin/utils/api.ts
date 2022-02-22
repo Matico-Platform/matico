@@ -6,17 +6,9 @@ import {
   CreateDashboardDTO,
   UpdateDashboardDTO,
 } from "../types/DashboardSpecification";
-import { Query, QueryParameter, ValueCount } from "../types/Query";
 import { Page } from "../types/Pagination";
 import useSWR from "swr";
 
-// export interface Token {
-//     iat: number;
-//     exp: number;
-//     username: string;
-//     id: string;
-// }
-//
 
 export enum SourceType {
   API = "api",
@@ -34,11 +26,13 @@ export const tileUrlForSource = (source: Source | undefined) => {
   if (!source) {
     return null;
   }
+
+  const baseURL = process.env.NEXT_PUBLIC_SERVER_URL ?? "";
   switch (source.type) {
     case SourceType.Dataset:
-      return `http://localhost:8000/api/tiler/dataset/${source.id}/{z}/{x}/{y}`;
+      return `${baseURL}/tiler/dataset/${source.id}/{z}/{x}/{y}`;
     case SourceType.API:
-      return `http://localhost:8000/api/tiler/api/${
+      return `${baseURL}/tiler/api/${
         source.id
       }/{z}/{x}/{y}?${Object.keys(source.parameters!)
         .map((key: string) =>
@@ -46,7 +40,7 @@ export const tileUrlForSource = (source: Source | undefined) => {
         )
         .join("&")}`;
     case SourceType.Query:
-      return `http://localhost:8000/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
+      return `${baseURL}/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
         source.query!
       )}`;
   }
@@ -64,7 +58,7 @@ export const urlForSource = (source: Source) => {
 };
 
 const a = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
+  baseURL:  process.env.NEXT_PUBLIC_SERVER_URL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -150,14 +144,14 @@ export async function getDatasets(): Promise<AxiosResponse<Dataset[]>> {
 }
 
 export async function getDataset(id: string): Promise<AxiosResponse<Dataset>> {
-  return a.get(`datasets/${id}`);
+  return a.get(`/datasets/${id}`);
 }
 
 export async function getPagedDatasetData(
   id: string,
   page: Page
 ): Promise<AxiosResponse<any>> {
-  return a.get(`datasets/${id}/data`, { params: page });
+  return a.get(`/datasets/${id}/data`, { params: page });
 }
 
 export async function getApps(): Promise<AxiosResponse<Dashboard[]>> {
@@ -167,7 +161,7 @@ export async function getApps(): Promise<AxiosResponse<Dashboard[]>> {
 export async function getDatasetColumns(
   id: string
 ): Promise<AxiosResponse<Column[]>> {
-  return a.get(`datasets/${id}/columns`);
+  return a.get(`/datasets/${id}/columns`);
 }
 
 export async function getApp(id: string): Promise<AxiosResponse<Dashboard>> {
@@ -191,36 +185,15 @@ export async function updateFeature(
   update: any
 ) {
 
-  return a.put(`datasets/${dataset_id}/data/${feature_id}`, update);
+  return a.put(`/datasets/${dataset_id}/data/${feature_id}`, update);
 }
 
-// export async function getColumnStats(
-//     source: LayerSource,
-//     column: Column,
-// ) {
-//     if (Object.keys(source)[0] === 'Dataset') {
-//         const datasetSource = source as DatasetSource;
-//         return a.get(
-//             `datasets/${datasetSource.Dataset}/columns/${
-//                 column.name
-//             }/stats?stat=${JSON.stringify({
-//                 BasicStats: {
-//                     no_bins: 20,
-//                 },
-//             })}`,
-//         );
-//     } else {
-//         throw Error(
-//             'Layer source does not implement this functionality yet',
-//         );
-//     }
-// }
 export async function getUniqueColumnValues(
   dataset_id: string,
   column_name: string
 ) {
   return a.get(
-    `datasets/${dataset_id}/columns/${column_name}/stats?stat=${JSON.stringify({
+    `/datasets/${dataset_id}/columns/${column_name}/stats?stat=${JSON.stringify({
       ValueCounts: {},
     })}`
   );
@@ -241,28 +214,6 @@ export async function getApis() {
   return a.get("/apis");
 }
 
-// export async function getColumnHistogram(
-//     column: Column,
-//     source: LayerSource,
-//     bins: number,
-// ) {
-//     if (Object.keys(source)[0] === 'Dataset') {
-//         const datasetSource = source as DatasetSource;
-//         return a.get(
-//             `datasets/${datasetSource.Dataset}/columns/${
-//                 column.name
-//             }/stats?stat=${JSON.stringify({
-//                 Histogram: {
-//                     no_bins: 20,
-//                 },
-//             })}`,
-//         );
-//     } else {
-//         throw Error(
-//             'Layer source does not implement this functionality yet',
-//         );
-//     }
-// }
 
 // not sure if run is the right verb here, but
 // this endpoint isn't restful anyway
@@ -270,7 +221,7 @@ export async function runQuery(
   sql: string,
   page: Page
 ): Promise<AxiosResponse<Dataset>> {
-  return a.get(`queries/run?q=${sql}`, { params: page });
+  return a.get(`/queries/run?q=${sql}`, { params: page });
 }
 
 export const useSWRAPI = (endpoint: string | null, opts?: any) => {

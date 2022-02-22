@@ -26,22 +26,10 @@ import {
 import { NewDatasetModal } from "../components/DatasetCreation/NewDatasetModal";
 import Edit from "@spectrum-icons/workflow/Edit";
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   try {
-//     const datasets = await fetch(`http://localhost:8000/api/datasets`).then(
-//       (resp) => resp.json()
-//     );
-//     return { props: { datasetsInitial: datasets } };
-//   } catch (e: any) {
-//     console.log(e);
-//     return { props: { datasetsInitial: [] } };
-//   }
-// };
-
 const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
   datasetsInitial,
 }) => {
-  const { data: datasets, error } = useDatasets();
+  const { datasets, datasetsError} = useDatasets();
 
   const colWidth = 200;
 

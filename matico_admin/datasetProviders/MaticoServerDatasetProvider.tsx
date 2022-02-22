@@ -35,13 +35,13 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
           MaticoRemote: {
             name: selectedDataset.name,
             description: selectedDataset.description,
-            server_url: "http://localhost:8000/api",
+            server_url: "/api",
             dataset_id: selectedDataset.id,
           },
         }
       : {
           GeoJSON: {
-            url: `http://localhost:8000/api/datasets/${selectedDatasetID}/data?format=geojson`,
+            url: `/api/datasets/${selectedDatasetID}/data?format=geojson`,
             name: selectedDataset.name,
           },
         };

@@ -74,7 +74,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
     .join("&");
 
   const mapUrl = api
-    ? `http://localhost:8000/api/tiler/api/${api.id}/{z}/{x}/{y}?${urlParams}`
+    ? `/api/tiler/api/${api.id}/{z}/{x}/{y}?${urlParams}`
     : "";
 
   useEffect(() => {
@@ -124,7 +124,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
         <Heading level={4}>Api URLS</Heading>
         <Well>
           <Heading>Data endpoint</Heading>
-          <p>{`http://localhost:8000/api/apis/${api?.id}/run?${urlParams}`}</p>
+          <p>{`/api/apis/${api?.id}/run?${urlParams}`}</p>
         </Well>
         <Well>
           <Heading>Tile endpoint</Heading>
