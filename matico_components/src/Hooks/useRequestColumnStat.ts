@@ -13,8 +13,8 @@ export const useRequestColumnStat= (args: ColumnStatRequest) =>{
   const dispatch = useMaticoDispatch()
   const requestHash = JSON.stringify(args)
   const result : Query | null = useMaticoSelector((state)=>state.datasets.queries[requestHash])
-  const notifierId = useMemo(() => uuid(),[requestHash])
-  console.log(notifierId)
+  const notifierId = useMemo(() => uuid(),[])
+
   useEffect(()=>{
     if(!result && args){
       dispatch(registerColumnStatUpdates({requestHash,args,notifierId}))
@@ -38,10 +38,12 @@ export const useRequestColumnStats = (requests: Array<ColumnStatRequest>)=>{
 
   const haveAll = result.every(r=>r)
 
+  const notifierId = useMemo(() => uuid(),[])
+
   useEffect(()=>{
     if(!haveAll && requests){
       requests.forEach((request, index)=>{
-        dispatch(registerColumnStatUpdates({requestHash: requestHashes[index],args:request}))
+        dispatch(registerColumnStatUpdates({requestHash: requestHashes[index],args:request, notifierId}))
       })
     }
   },[requests, haveAll])

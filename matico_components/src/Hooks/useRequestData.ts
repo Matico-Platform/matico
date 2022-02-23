@@ -9,7 +9,8 @@ export const useRequestData = (datasetName: string, filters?: Array<Filter>,incl
   const dispatch = useMaticoDispatch()
   const requestHash = JSON.stringify({datasetName,filters, includeGeo})
   const result : Query | null = useMaticoSelector((state)=>state.datasets.queries[requestHash])
-  const notifierId = useMemo(() => uuid(),[requestHash, JSON.stringify(filters)])
+  const notifierId = useMemo(() => uuid(),[])
+  console.log("in hoook notifierid ", notifierId)
   
   useEffect(()=>{
     if(!result && datasetName){

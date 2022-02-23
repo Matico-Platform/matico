@@ -19,12 +19,13 @@ type Notifier = (datasetName: string) => void;
 export interface DatasetServiceInterface {
   datasets: { [datasetName: string]: Dataset };
   datasetLoaders: { [loaderName: string]: Loader };
-  notifiers: { [datasetName: string]: (datasetName: string) => void };
+  notifiers: { [datasetName: string]: Record<string, Notifier>  };
   _notify: (datasetName: string) => void;
-  _registerNotifier: (datasetName: string, notifier: Notifier) => void;
+  _registerNotifier: (datasetName: string, notifierId: string, notifier: Notifier) => void;
   registerForUpdates(
     datasetName: string,
     callback: (data: Array<any>) => void,
+    notifierId:string,
     filters?: Array<Filter>,
     includeGeo?: boolean
   ): void;
@@ -46,8 +47,8 @@ export const DatasetService: DatasetServiceInterface = {
 
   async registerColumnData(
     args: ColumnStatRequest,
+    notifierId: string,
     callback: (data: any) => void,
-    notifierId?: string
   ) {
 
     const { datasetName, metric, column, parameters, filters } = args;
@@ -79,51 +80,54 @@ export const DatasetService: DatasetServiceInterface = {
       callback(metricVal);
     }
 
-    this._registerNotifier(datasetName, async () => {
+    this._registerNotifier(datasetName, notifierId, async () => {
       const metricVal = await getMetric(datasetName);
       if (metricVal) {
         callback(metricVal);
       }
-    },notifierId);
+    },);
   },
   registerForUpdates(
     datasetName: string,
     callback: (data: Array<any>) => void,
+    notifierId: string,
     filters?: Array<Filter>,
     includeGeo?: boolean,
-    notifierId?: string
   ) {
-    this._registerNotifier(datasetName, async (datasetName: string) => {
-      let d = this.datasets[datasetName];
 
+    this._registerNotifier(datasetName,notifierId, async (datasetName: string) => {
+      let d = this.datasets[datasetName];
+      
       if (d) {
         let data = includeGeo
           ? await d.getDataWithGeo(filters)
           : await d.getData(filters);
         callback(data);
       }
-    }, notifierId);
+
+    });
 
     this._notify(datasetName);
   },
 
   _registerNotifier(
     datasetName: string,
+    notifierId: string,
     callback: (datasetName: string) => void,
-    notifierId?: string
   ) {
     if (datasetName in this.notifiers) {
       this.notifiers[datasetName][notifierId] = callback;
     } else {
       this.notifiers[datasetName] = {
-        [notifierId]: callback
+        [notifierId] : callback 
       };
     }
+    
   },
   _notify(datasetName: string) {
     if (datasetName in this.notifiers) {
-      Object.values(this.notifiers[datasetName]).forEach((notifier: Notifier) => {
-        notifier(datasetName);
+      Object.keys(this.notifiers[datasetName]).forEach((notifierID) => {
+        this.notifiers[datasetName][notifierID](datasetName);
       });
     }
   },
