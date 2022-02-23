@@ -24,6 +24,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
 
   const [selectedDatasetID, setSelectedDatasetID] = useState<any | null>(null);
   const [remote, setRemote] = useState<boolean>(false);
+
   const selectedDataset = datasets
     ? datasets.find((d: any) => d.id === selectedDatasetID)
     : null;
@@ -48,6 +49,8 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
     onSubmit(spec);
   };
 
+  
+
   return (
     <View>
       {datasets && (
@@ -56,6 +59,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
           items={datasets}
           selectedKey={selectedDatasetID}
           onSelectionChange={setSelectedDatasetID}
+          disabledKeys={datasets.filter(d=>!d.public).map(d=>d.id)}
         >
           {(dataset: any) => <Item key={dataset.id}>{dataset.name}</Item>}
         </Picker>
