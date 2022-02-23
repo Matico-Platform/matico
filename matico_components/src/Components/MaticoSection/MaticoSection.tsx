@@ -44,7 +44,7 @@ function selectPane(pane: any, editPath: string) {
     <PaneComponent
       key={paneDetails.name}
       {...paneDetails}
-      editPath={`${editPath}`}
+      editPath={`${editPath}.${paneType}`}
     />
   );
 }
@@ -56,7 +56,7 @@ export const MaticoSection: React.FC<MaticoSectionInterface> = ({
   let LayoutEngine = selectLayout(section.layout);
   return (
     <Box fill={true}>
-      <LayoutEngine>
+      <LayoutEngine editPath={editPath}>
         {section.panes
           .filter((p: Pane) => p)
           .map((pane: Pane, index: number) =>

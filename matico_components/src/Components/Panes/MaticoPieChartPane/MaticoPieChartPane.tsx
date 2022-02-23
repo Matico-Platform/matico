@@ -219,7 +219,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     >
       {edit && (
         <Box style={{ position: "absolute", left: "-20px", top: "-20px" }}>
-          <EditButton editPath={`${editPath}.PieChart`} editType={"PieChart"} /> 
+          <EditButton editPath={editPath} editType={"PieChart"} /> 
         </Box>
       )}
       <Vega

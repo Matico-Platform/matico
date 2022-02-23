@@ -117,7 +117,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             backgroundColor: "rgba(0,0,0,0.2)",
           }}
         >
-          <EditButton editPath={`${editPath}.Map`} editType="Map" />
+          <EditButton editPath={editPath} editType="Map" />
         </Box>
       )}
       {currentView && (

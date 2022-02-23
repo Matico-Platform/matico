@@ -172,7 +172,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       <Box elevation={"large"} fill={true} pad="small">
         <Box style={{ position: "absolute", top: "-20px", left: "-20px" }}>
           <EditButton
-            editPath={`${editPath}.Scatterplot`}
+            editPath={editPath}
             editType={"Scatterplot"}
           />
         </Box>

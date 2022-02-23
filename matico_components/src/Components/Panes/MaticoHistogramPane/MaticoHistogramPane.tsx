@@ -144,7 +144,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
       style={{ width: "100%", height: "100%" }}
     >
       <Box style={{ position: "absolute", top: "-20px", left: "-20px" }}>
-        <EditButton editPath={`${editPath}.Histogram`} editType={"Histogram"} />
+        <EditButton editPath={editPath} editType={"Histogram"} />
       </Box>
       {!datasetReady && <div>{dataset.name} not found!</div>}
       {Chart}

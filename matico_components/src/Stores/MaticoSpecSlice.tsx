@@ -50,10 +50,12 @@ export const stateSlice = createSlice({
     ) => {
       const newSpec = { ...state.spec };
       const oldEntry = _.get(state.spec, action.payload.editPath);
+      console.log("Updating old entry ", state.spec,oldEntry, action.payload.editPath)
       _.set(newSpec, action.payload.editPath, {
         ...oldEntry,
         ...action.payload.update,
       });
+      console.log("new Spec ",newSpec)
       state.spec = newSpec;
     },
     deleteSpecAtPath: (state, action: PayloadAction<{ editPath: string }>) => {
