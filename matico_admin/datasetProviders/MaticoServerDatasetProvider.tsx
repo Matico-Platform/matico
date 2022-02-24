@@ -42,7 +42,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
         }
       : {
           GeoJSON: {
-            url: `/api/datasets/${selectedDatasetID}/data?format=geojson`,
+            url: `${window.location.origin}/api/datasets/${selectedDatasetID}/data?format=geojson`,
             name: selectedDataset.name,
           },
         };
