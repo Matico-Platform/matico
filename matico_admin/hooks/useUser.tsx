@@ -39,6 +39,7 @@ export const useUser = () => {
   const tryLogin = (email: string, password: string) => {
     login(email, password)
       .then((result) => {
+        localStorage.setItem("token", result.data.token);
         setLoginError(null);
         updateRoutes();
       })
