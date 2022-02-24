@@ -1,6 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
+import { GeomType } from "../../../Datasets/Dataset";
 import { Box } from "grommet";
 import { setSpecAtPath } from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
@@ -36,6 +37,8 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     (state) => state.datasets.datasets[layer.source.name]
   );
 
+  const isPoint = dataset?.geomType === GeomType.Point;
+  
   const updateStyle = (property: string, value: any) => {
     dispatch(
       setSpecAtPath({
@@ -161,6 +164,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
         />
       </Well>
       <Well>
+        <Flex direction="column" gap="size-200">
         <Heading>Style</Heading>
 
         <ColorVariableEditor
@@ -179,10 +183,16 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           onUpdateStyle={(style) => updateStyle("lineWidth", style)}
           minVal={0}
           maxVal={2000}
+          // picker={true} TODO: add picker integrated into numberic editor
+          // pickerKey={style.lineUnits}
+          // pickerOptions={[{ label: "px", value: "px" }, { label: "pt", value: "pt" }]}
+          // onPickerChange={(units) =>
+          //   updateStyle("lineUnits", units as string)
+          // }
         />
         <Picker
           width="size-1200"
-          selectedKey={style}
+          selectedKey={style.lineUnits}
           onSelectionChange={(units) =>
             updateStyle("lineUnits", units as string)
           }
@@ -190,6 +200,28 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           <Item key="meters">Meters</Item>
           <Item key="pixels">Pixels</Item>
         </Picker>
+
+
+        {!!isPoint && <>
+          <NumericVariableEditor
+            label="Point Radius"
+            datasetName={dataset.name}
+            style={style.size}
+            onUpdateStyle={(style) => updateStyle("size", style)}
+            minVal={0}
+            maxVal={2000}
+          />
+          <Picker
+            width="size-1200"
+            selectedKey={style.radiusUnits}
+            onSelectionChange={(units) =>
+              updateStyle("radiusUnits", units as string)
+            }
+          >
+            <Item key="meters">Meters</Item>
+            <Item key="pixels">Pixels</Item>
+          </Picker>
+        </>}
 
         <ColorVariableEditor
           label="Fill Color"
@@ -208,6 +240,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           minVal={0}
           maxVal={10000}
         />
+        </Flex>
       </Well>
     </Flex>
   );
