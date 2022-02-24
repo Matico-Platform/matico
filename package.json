@@ -36,6 +36,8 @@
     "@nebula.gl/layers": "^1.0.2-alpha.1",
     "@nebula.gl/overlays": "^1.0.2-alpha.1",
     "@parcel/transformer-react-refresh-wrap": "^2.0.0",
-    "immer": "^9.0.6"
+    "immer": "^9.0.6",
+    "logrocket": "^2.2.0",
+    "logrocket-react": "^5.0.1"
   }
 }

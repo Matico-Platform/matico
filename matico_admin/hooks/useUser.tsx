@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSWRAPI, getProfile, login, signup } from "../utils/api";
-import { mutate, useSWRConfig } from 'swr'
+import { mutate, useSWRConfig } from "swr";
+import LogRocket from "logrocket";
 
-
-const profileUrl = '/users/profile'
+const profileUrl = "/users/profile";
 
 export const useUser = () => {
   //@TODO import these from server types
@@ -13,24 +13,34 @@ export const useUser = () => {
   const {
     data: user,
     error: profileError,
-    mutate: mutateProfile
-  } = useSWRAPI(profileUrl, {refreshInterval:0});
+    mutate: mutateProfile,
+  } = useSWRAPI(profileUrl, { refreshInterval: 0 });
 
-  const { mutate } = useSWRConfig()
+  const { mutate } = useSWRConfig();
 
-  const updateRoutes = ()=>{
-        mutateProfile()
-        mutate('/datasets')
-        mutate('/apps')
+  const updateRoutes = () => {
+    mutateProfile();
+    mutate("/datasets");
+    mutate("/apps");
+  };
 
-  }
+  useEffect(() => {
+    if(user){
+      LogRocket.identify(user.id, {
+        name: user.username,
+        email: user.email,
+      });
+    }
+    else{
+      LogRocket.identify("Annon")
+    }
+  }, [user]);
 
   const tryLogin = (email: string, password: string) => {
     login(email, password)
       .then((result) => {
-        localStorage.setItem("token", result.data.token);
         setLoginError(null);
-        updateRoutes()
+        updateRoutes();
       })
       .catch((e) => {
         setLoginError(e.response.data);
@@ -41,7 +51,7 @@ export const useUser = () => {
     signup(username, password, email)
       .then((result) => {
         localStorage.setItem("token", result.data.token);
-        updateRoutes()
+        updateRoutes();
       })
       .catch((e) => {
         setSignupError(e.response.data);
@@ -50,13 +60,13 @@ export const useUser = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    setTimeout(()=>{
-      mutateProfile(null)
+    setTimeout(() => {
+      mutateProfile(null);
       updateRoutes();
-    },0)
+    }, 0);
   };
 
-  console.log("USER ",user)
+  console.log("USER ", user);
   return {
     user,
     signupError,

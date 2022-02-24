@@ -8,9 +8,20 @@ import {
   Flex,
 } from "@adobe/react-spectrum";
 import { Nav } from "./Nav";
+import LogRocket from 'logrocket';
+import setupLogRocketReact from 'logrocket-react';
 
 interface LayoutProps{
   hasSidebar?: boolean
+}
+
+// you can import these packages anywhere
+
+// only initialize when in the browser
+if (typeof window !== 'undefined') {
+  LogRocket.init('5fasmn/matico');
+  // plugins should also only be initialized when in the browser
+  setupLogRocketReact(LogRocket);
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children, hasSidebar }) => {
