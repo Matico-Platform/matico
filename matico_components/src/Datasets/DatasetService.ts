@@ -158,7 +158,7 @@ export const DatasetService: DatasetServiceInterface = {
           geomType: await csvDataset.geometryType(),
           raster:false,
           local: true,
-          tiled: geoDataset.tiled(),
+          tiled: csvDataset.tiled(),
         };
       case "MaticoRemote":
         const maticoDataset = await MaticoRemoteBuilder(datasetDetails);
