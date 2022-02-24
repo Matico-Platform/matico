@@ -72,9 +72,10 @@ export const generateNumericVar = (numericVar): NumberReturn => {
   return null;
 };
 
-export const generateColor = (color: any) => {
+export const generateColor = (color: any, alpha: boolean) => {
   if (Array.isArray(color)) {
-    return chroma.rgb(...color).rgb();
+    const chromaColor = chroma.rgb(...color).rgb()
+    return alpha ? [...chromaColor, color[3]||120] : chromaColor
   }
   if (typeof color === "string") {
     if (chroma.valid(color)) {
@@ -84,7 +85,7 @@ export const generateColor = (color: any) => {
   return null;
 };
 
-export const generateColorVar = (colorVar): ColorReturn => {
+export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
   if (!colorVar) {
     return null;
   }
@@ -122,7 +123,7 @@ export const generateColorVar = (colorVar): ColorReturn => {
     }
   }
 
-  return generateColor(colorVar);
+  return generateColor(colorVar, alpha);
 };
 
 export const getColorScale = (range: any) => {

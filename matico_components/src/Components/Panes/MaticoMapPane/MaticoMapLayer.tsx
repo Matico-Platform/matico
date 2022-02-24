@@ -107,11 +107,11 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     }
 
     let layer = undefined;
-
-    const fillColor = generateColorVar(mappedStyle.fillColor) ?? [
+    const fillColor = generateColorVar(mappedStyle.fillColor, true) ?? [
       255, 0, 0, 100,
     ];
-    const lineColor = generateColorVar(mappedStyle.lineColor) ?? [
+    
+    const lineColor = generateColorVar(mappedStyle.lineColor, true) ?? [
       0, 255, 0, 100,
     ];
     const lineWidth = generateNumericVar(mappedStyle.lineWidth) ?? 10;
