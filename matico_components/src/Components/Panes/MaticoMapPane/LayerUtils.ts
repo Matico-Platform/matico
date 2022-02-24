@@ -73,13 +73,20 @@ export const generateNumericVar = (numericVar): NumberReturn => {
 };
 
 export const generateColor = (color: any, alpha: boolean) => {
+  console.log("Generating color ", color)
   if (Array.isArray(color)) {
-    const chromaColor = chroma.rgb(...color).rgb()
-    return alpha ? [...chromaColor, color[3]||255] : chromaColor
+    console.log("as array ", color)
+    if(color.length===4){
+      return chroma(...color.slice(0,3), color[3]/255.0, "rgb").rgba()
+    }
+    else{
+    const chromaColor = chroma(...color,'rgb').rgba()
+    return chromaColor
+    }
   }
   if (typeof color === "string") {
     if (chroma.valid(color)) {
-      return chroma(color).rgb();
+      return chroma(color).rgba();
     }
   }
   return null;
@@ -95,7 +102,7 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
     const { variable, domain, range } = colorVar;
 
     if (Array.isArray(range)) {
-      const mappedRange = range.map((c) => chroma(generateColor(c,true)))
+      const mappedRange = range.map((c) => generateColor(c,true))
 
       console.log("Range is ", range, " Mapped range ",mappedRange)
       const ramp = chroma
