@@ -1,8 +1,6 @@
 import DeckGL from "@deck.gl/react";
 import { MVTLayer } from "@deck.gl/geo-layers";
-import { StaticMap, ViewportProps, WebMercatorViewport } from "react-map-gl";
-import { useDatasetColumn } from "../hooks/useDatasetColumns";
-import { Source, SourceType, tileUrlForSource } from "../utils/api";
+import { StaticMap, ViewportProps, WebMercatorViewport } from "react-map-gl"; import { useDatasetColumn } from "../hooks/useDatasetColumns"; import { Source, SourceType, tileUrlForSource } from "../utils/api";
 import { useColumnStat } from "../hooks/useColumnStat";
 import chroma from "chroma-js";
 import { useEffect, useState } from "react";
@@ -57,7 +55,8 @@ const styleForCol = (
     lineWidthUnits: "pixels",
     getFillColor: [226, 125, 96, 200],
     getBorderColor: [200, 200, 200],
-    getRadius: 40,
+    getPointRadius: 10,
+    pointRadiusUnits:'pixels',
     stroked: true,
     pickable: true,
     autoHighlight: true,

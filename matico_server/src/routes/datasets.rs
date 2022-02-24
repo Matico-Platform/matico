@@ -84,9 +84,9 @@ async fn parse_dataset_metadata(mut field: Field) -> Result<CreateDatasetDTO, Se
     let metadata_str = std::str::from_utf8(&field_content)
         .map_err(|_| ServiceError::InternalServerError("Failed to parse file metadata".into()))?;
 
-    let metadata: CreateDatasetDTO = serde_json::from_str(metadata_str).map_err(|_| {
-        ServiceError::BadRequest(String::from(
-            "Failed to parse metadata, needs a name and description field",
+    let metadata: CreateDatasetDTO = serde_json::from_str(metadata_str).map_err(|e| {
+        ServiceError::BadRequest(format!(
+            "Failed to parse metadata: ${:#?}",e
         ))
     })?;
     info!("GOT METADATA AS STRING {:?}", metadata);

@@ -2,6 +2,7 @@ import {
   Button,
   Cell,
   Column,
+  Flex,
   Form,
   Row,
   Switch,
@@ -57,7 +58,7 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
   }, []);
 
   return (
-    <View>
+    <Flex>
       {dataPreview && columns && (
         <TableView height="size-2400">
           <TableHeader>
@@ -102,6 +103,6 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
           </Button>
         )}
       </Form>
-    </View>
+    </Flex>
   );
 };
