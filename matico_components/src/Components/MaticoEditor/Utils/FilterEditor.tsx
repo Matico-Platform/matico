@@ -241,7 +241,7 @@ const FilterBlock: React.FC<FilterBlockProps> = ({
   filters=[],
   columns=[],
   updateFilter=()=>{}, //@ts-ignore
-}) => filters?.map((filter, index) => <EditorForFilter key={index} {...{filter, columns, updateFilter, index }} />);
+}) => filters?.map((filter, index) => <EditorForFilter key={index} {...{filter, columns, updateFilter, index }} />) ?? <></> ;
 
 interface FilterEditorProps {
   filters: Array<any>;

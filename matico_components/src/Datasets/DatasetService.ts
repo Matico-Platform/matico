@@ -19,12 +19,13 @@ type Notifier = (datasetName: string) => void;
 export interface DatasetServiceInterface {
   datasets: { [datasetName: string]: Dataset };
   datasetLoaders: { [loaderName: string]: Loader };
-  notifiers: { [datasetName: string]: (datasetName: string) => void };
+  notifiers: { [datasetName: string]: Record<string, Notifier>  };
   _notify: (datasetName: string) => void;
-  _registerNotifier: (datasetName: string, notifier: Notifier) => void;
+  _registerNotifier: (datasetName: string, notifierId: string, notifier: Notifier) => void;
   registerForUpdates(
     datasetName: string,
     callback: (data: Array<any>) => void,
+    notifierId:string,
     filters?: Array<Filter>,
     includeGeo?: boolean
   ): void;
@@ -46,9 +47,12 @@ export const DatasetService: DatasetServiceInterface = {
 
   async registerColumnData(
     args: ColumnStatRequest,
-    callback: (data: any) => void
+    notifierId: string,
+    callback: (data: any) => void,
   ) {
+
     const { datasetName, metric, column, parameters, filters } = args;
+    
     const getMetric = async (datasetName: string) => {
       let dataset = this.datasets[datasetName];
       if (dataset) {
@@ -76,27 +80,31 @@ export const DatasetService: DatasetServiceInterface = {
       callback(metricVal);
     }
 
-    this._registerNotifier(datasetName, async () => {
+    this._registerNotifier(datasetName, notifierId, async () => {
       const metricVal = await getMetric(datasetName);
       if (metricVal) {
         callback(metricVal);
       }
-    });
+    },);
   },
   registerForUpdates(
     datasetName: string,
     callback: (data: Array<any>) => void,
+    notifierId: string,
     filters?: Array<Filter>,
-    includeGeo?: boolean
+    includeGeo?: boolean,
   ) {
-    this._registerNotifier(datasetName, async (datasetName: string) => {
+
+    this._registerNotifier(datasetName,notifierId, async (datasetName: string) => {
       let d = this.datasets[datasetName];
+      
       if (d) {
         let data = includeGeo
           ? await d.getDataWithGeo(filters)
           : await d.getData(filters);
         callback(data);
       }
+
     });
 
     this._notify(datasetName);
@@ -104,18 +112,22 @@ export const DatasetService: DatasetServiceInterface = {
 
   _registerNotifier(
     datasetName: string,
-    callback: (datasetName: string) => void
+    notifierId: string,
+    callback: (datasetName: string) => void,
   ) {
     if (datasetName in this.notifiers) {
-      this.notifiers[datasetName].push(callback);
+      this.notifiers[datasetName][notifierId] = callback;
     } else {
-      this.notifiers[datasetName] = [callback];
+      this.notifiers[datasetName] = {
+        [notifierId] : callback 
+      };
     }
+    
   },
   _notify(datasetName: string) {
     if (datasetName in this.notifiers) {
-      this.notifiers[datasetName].forEach((notifier: Notifier) => {
-        notifier(datasetName);
+      Object.keys(this.notifiers[datasetName]).forEach((notifierID) => {
+        this.notifiers[datasetName][notifierID](datasetName);
       });
     }
   },

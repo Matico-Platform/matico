@@ -23,6 +23,18 @@ import React, { useState, useEffect, Key } from "react";
 import { Uploader } from "./Uploader";
 import { getCSVPreview } from "./utils/getCSVPreview";
 import { FilePreviewerInterface } from "./FilePreviewerInterface";
+import formatISO from 'date-fns/formatISO'
+
+
+function valueFormatter(value : unknown){
+  if( value instanceof Date ){
+   return formatISO(value) 
+  }
+  else if ( typeof(value)==="object"){
+    return JSON.stringify(value)
+  }
+  return value
+}
 
 export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({
   file,
@@ -102,6 +114,7 @@ export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({
 
   if (upload) {
   }
+  console.log("Dataset preview ",dataPreview) 
 
   return (
     <Flex direction="column" width="100%" height="100%">
@@ -117,7 +130,7 @@ export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({
               return (
                 <Row>
                   {Object.values(row).map((value: any) => (
-                    <Cell>{value}</Cell>
+                    <Cell>{valueFormatter(value)}</Cell>
                   ))}
                 </Row>
               );
@@ -172,7 +185,7 @@ export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({
         {upload ? (
           <Uploader
             file={file}
-            metadata={{ name,  description, importParams: {Csv: {x_col: latCol, y_col:lngCol}}}}
+            metadata={{ name,  description, import_params: {Csv: {x_col: lngCol, y_col:latCol}}}}
           />
         ) : (
           <Button variant="cta" onPress={() => setUpload(true)}>
