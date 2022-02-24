@@ -36,7 +36,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
           MaticoRemote: {
             name: selectedDataset.name,
             description: selectedDataset.description,
-            server_url: "/api",
+            server_url: `${window.location.origin}/api`,
             dataset_id: selectedDataset.id,
           },
         }

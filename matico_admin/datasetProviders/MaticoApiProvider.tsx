@@ -35,7 +35,7 @@ export const MaticoApiExplorer: React.FC<DatasetProviderComponent> = ({
       MaticoApi: {
         name: selectedApi.name,
         description: selectedApi.description,
-        server_url: "/api",
+        server_url: `${window.location.origin}/api`,
         api_id: selectedApi.id,
         params: values
       },

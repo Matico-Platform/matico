@@ -95,8 +95,11 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
     const { variable, domain, range } = colorVar;
 
     if (Array.isArray(range)) {
+      const mappedRange = range.map((c) => chroma(generateColor(c,true)))
+
+      console.log("Range is ", range, " Mapped range ",mappedRange)
       const ramp = chroma
-        .scale(range.map((c) => generateColor(c)))
+        .scale(mappedRange)
         .domain(domain);
       return (d) => ramp(d[variable]).rgb();
     } else if (typeof range === "string" && _.at(colors, range)[0]) {

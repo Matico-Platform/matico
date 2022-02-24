@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "grommet";
 import styled from "styled-components";
-import { getColorScale } from "../MaticoMapPane/LayerUtils";
+import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
 
 // interface MaicoMapPaneInterface extends MaticoPaneInterface {
 //     view: View;
@@ -87,14 +87,17 @@ export const MaticoLegendPane = ({ layers = [] }) => {
                       ))
                     : null
                   : layer?.colorScale?.range
-                  ? layer.colorScale.range.map((d) => (
-                      <span
-                        key={`rgb(${d.slice(0, 3).join(",")})`}
+                    ? layer.colorScale.range.map((d) => {
+
+                      console.log("color is ",d)
+                      return <span
+                        key={`rgb(${generateColor(d,false).slice(0, 3).join(",")})`}
                         style={{
-                          backgroundColor: `rgb(${d.slice(0, 3).join(",")})`,
+                          backgroundColor: `rgb(${generateColor(d,false).slice(0, 3).join(",")})`,
                         }}
                       />
-                    ))
+                        }
+                    )
                   : null}
               </LegendColors>
               <LegendLabels>
