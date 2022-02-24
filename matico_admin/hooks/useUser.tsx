@@ -51,10 +51,12 @@ export const useUser = () => {
   const logout = () => {
     localStorage.removeItem("token");
     setTimeout(()=>{
+      mutateProfile(null)
       updateRoutes();
-    })
+    },0)
   };
 
+  console.log("USER ",user)
   return {
     user,
     signupError,
