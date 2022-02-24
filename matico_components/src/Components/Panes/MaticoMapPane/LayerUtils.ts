@@ -77,16 +77,20 @@ export const generateColor = (color: any, alpha: boolean) => {
   if (Array.isArray(color)) {
     console.log("as array ", color)
     if(color.length===4){
-      return chroma(...color.slice(0,3), color[3]/255.0, "rgb").rgba()
+      let c  = chroma(...color.slice(0,3), color[3]/255.0, "rgb").rgba()
+      return c 
     }
     else{
-    const chromaColor = chroma(...color,'rgb').rgba()
-    return chromaColor
+    let c= chroma(...color,'rgb').rgba()
+    if(alpha){ c[3] = 0.7} 
+    return c 
     }
   }
   if (typeof color === "string") {
     if (chroma.valid(color)) {
-      return chroma(color).rgba();
+      let c = chroma(color).rgba()
+      if(alpha){ c[3] = 0.7} 
+      return c
     }
   }
   return null;
@@ -108,7 +112,11 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
       const ramp = chroma
         .scale(mappedRange)
         .domain(domain);
-      return (d) => ramp(d[variable]).rgb();
+      return (d) => {
+        let c = ramp(d[variable]).rgba();
+        c[3]= c[3]*255
+        return c
+      }
     } else if (typeof range === "string" && _.at(colors, range)[0]) {
       let brewer = _.at(colors, range)[0];
       if (!brewer) {
@@ -120,20 +128,24 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
       }
 
       const ramp = chroma
-        .scale(brewer.map((c) => generateColor(c)))
+        .scale(brewer.map((c) => generateColor(c,true)))
         .domain(domain);
       return (d: any) => {
         const val = d.hasOwnProperty("properties")
           ? d.properties[variable]
           : d[variable];
-        return ramp(val).rgb();
+        let c = ramp(val).rgba();
+        c[3]= c[3]*255
+        return c
       };
     } else {
       return null;
     }
   }
 
-  return generateColor(colorVar, alpha);
+  let c= generateColor(colorVar, alpha);
+  c[3]= c[3]*255
+  return c
 };
 
 export const getColorScale = (range: any) => {
