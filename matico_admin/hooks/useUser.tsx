@@ -13,11 +13,13 @@ export const useUser = () => {
   const {
     data: user,
     error: profileError,
+    mutate: mutateProfile
   } = useSWRAPI(profileUrl, {refreshInterval:0});
 
   const { mutate } = useSWRConfig()
+
   const updateRoutes = ()=>{
-        mutate(profileUrl)
+        mutateProfile()
         mutate('/datasets')
         mutate('/apps')
 
