@@ -87,7 +87,7 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
                 <Row key={index}>
                   <Cell>
                     <ALink>
-                      <Link href={`/apps/${app.id}`}>{app.name}</Link>
+                      <Link href={`/apps/edit/${app.id}`}>{app.name}</Link>
                     </ALink>
                   </Cell>
                   <Cell>{app.public ? "Public" : "Private"}</Cell>
