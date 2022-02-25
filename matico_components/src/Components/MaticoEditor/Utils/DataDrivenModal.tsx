@@ -200,32 +200,45 @@ const ContinuousDomain: React.FC<{
     });
   };
 
+  const sanitizedHistogramData = histogram?.result?.map((result: any) => ({
+    ...result,
+    count: isNaN(result.count) ? 0 : result.count,
+  }))||[]
+
   return (
     <Flex direction="column">
       {histogram && histogram.state === "Done" && (
-        <MaticoChart
-          width={300}
-          height={200}
-          xExtent={extent}
-          xCol="binStart"
-          xLabel={column.name}
-          yLabel={"count"}
-          yCol="count"
-          data={histogram.result}
-          xAxis={{
-            scaleType: "linear",
-            position: "bottom",
-          }}
-          grid={{ rows: true, columns: false }}
-          layers={[
-            {
-              type: "bar",
-              color: "red",
-              scale: 1,
-              xAccessor: (d: any) => d.binEnd,
-            },
-          ]}
-        />
+        <View margin="size-200">
+          <MaticoChart
+            // width={300}
+            height={200}
+            xExtent={extent}
+            xCol="binStart"
+            xLabel={column.name}
+            yLabel={"Count"}
+            yCol="count"
+            data={sanitizedHistogramData}
+            xAxis={{
+              scaleType: "linear",
+              position: "bottom",
+            }}
+            grid={{ rows: true, columns: false }}
+            margin={{
+              top: 10,
+              bottom: 25,
+              left:60,
+              right:50
+            }}
+            layers={[
+              {
+                type: "bar",
+                color: "red",
+                scale: 1,
+                xAccessor: (d: any) => d.binEnd,
+              },
+            ]}
+          />
+        </View>
       )}
 
       <Flex direction="row" gap="size-200" alignItems="end">
