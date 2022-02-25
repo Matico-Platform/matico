@@ -1,20 +1,34 @@
+import React, {Key} from "react";
+import { Item, Picker } from "@adobe/react-spectrum";
+import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 
-import React from 'react'
-import {Box,Select} from 'grommet'
-import {useAutoVariable} from '../../../Hooks/useAutoVariable'
-
-interface MaticoSelectControlInterface{
-  options: Array<string|number>;
-  name:string;
-  default_value: string
+interface MaticoSelectControlInterface {
+  options: Array<string | number>;
+  name: string;
+  default_value: string;
 }
 
-export const MaticoSelectControl : React.FC<MaticoSelectControlInterface> = ({options, name, default_value})=>{
-  const [value, updateValue] = useAutoVariable({name:`select_control_${name}`, type:'any', initialValue:default_value, bind:true})
+export const MaticoSelectControl: React.FC<MaticoSelectControlInterface> = ({
+  options,
+  name,
+  default_value,
+}) => {
+  const [value, updateValue] = useAutoVariable({
+    name: `select_control_${name}`,
+    type: "any",
+    initialValue: null,
+    bind: true,
+  });
+
   return (
-    <Box flex='grow'>
-      <Select value={value} options={options} onChange={({option})=> updateValue(option)} />
-    </Box>
-  )
-
-}
+    <Picker
+      width={"100%"}
+      items={options.map((o) => ({ key: o }))}
+      selectedKey={value}
+      onSelectionChange={(option) => updateValue(option)}
+      label={name}
+    >
+      {(option) => <Item key={option.key}>{option.key}</Item>}
+    </Picker>
+  );
+};
