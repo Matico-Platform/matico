@@ -78,15 +78,20 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
                   <IllustratedMessage>
                     <Upload />
                     <Heading>{message}</Heading>
-                    <Content>Select a File from your computer</Content>
+                    <Content>
+                      Select a File from your computer
+                      {!!fileRejectionError && 
+                        <StatusLight variant="negative">
+                          {fileRejectionError} 
+                          <br/>
+                          Please upload a different file.
+                        </StatusLight>}
+                    </Content>
                   </IllustratedMessage>
               </View>
             </Flex>
         </div>
       )}
-      {!!fileRejectionError && <View alignSelf="center">
-          <StatusLight variant="negative">{fileRejectionError}</StatusLight>
-        </View>}
       {acceptedFiles && (
         <Tabs orientation="horizontal" width="100%" height="100%">
           <TabList>
