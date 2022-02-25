@@ -13,6 +13,7 @@ import {
   Picker,
 } from "@adobe/react-spectrum";
 import { DefaultGrid } from "../Utils/DefaultGrid";
+import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;
@@ -83,11 +84,12 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
       <Well>
         <Heading>Pane Details</Heading>
         <TextField
+          width="100%"
           label="name"
           value={name}
           onChange={(name: string) => updateName( name )}
         />
-        <DefaultGrid>
+        <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="x"
             value={position.x}
@@ -102,6 +104,8 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onValueChange={(y) => updatePosition({ y })}
             onUnitsChange={(y_units) => updatePosition({ y_units })}
           />
+        </TwoUpCollapsableGrid>
+        <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="width"
             value={position.width}
@@ -116,7 +120,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onValueChange={(height) => updatePosition({ height })}
             onUnitsChange={(height_units) => updatePosition({ height_units })}
           />
-        </DefaultGrid>
+        </TwoUpCollapsableGrid>
       </Well>
     </Flex>
   );

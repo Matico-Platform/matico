@@ -9,6 +9,7 @@ import {
 
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
+import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import { PaneEditor } from "./PaneEditor";
 import { BaseMapSelector } from "../Utils/BaseMapSelector";
 import { DefaultGrid } from "../Utils/DefaultGrid";
@@ -17,7 +18,7 @@ import {
   Flex,
   Heading,
   Well,
-  // Grid,
+  Grid,
   NumberField,
   ActionButton,
   Text,
@@ -275,60 +276,66 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             <Text>Map Bounds</Text>
           </Flex>
         </Heading>
-        <DefaultGrid>
+        <Flex direction="column">
+          <TwoUpCollapsableGrid>
+            <NumberField
+              width="100%"
+              label="lat"
+              step={0.001}
+              value={mapView.lat}
+              isDisabled={isSynced}
+              onChange={(lat) => updateView({ lat })}
+            />
+            <NumberField
+              width="100%"
+              label="lng"
+              step={0.001}
+              value={mapView.lng}
+              isDisabled={isSynced}
+              onChange={(lng) => updateView({ lng })}
+            />
+          </TwoUpCollapsableGrid>
+          <TwoUpCollapsableGrid>
+            <NumberField
+              width="100%"
+              label="bearing"
+              step={1}
+              value={mapView.bearing}
+              isDisabled={isSynced}
+              onChange={(bearing) => updateView({ bearing })}
+            />
+            <NumberField
+              width="100%"
+              label="pitch"
+              step={1}
+              value={mapView.pitch}
+              isDisabled={isSynced}
+              onChange={(pitch) => updateView({ pitch })}
+            />
+          </TwoUpCollapsableGrid>
           <NumberField
-            width="size-2400"
-            label="lat"
-            step={0.001}
-            value={mapView.lat}
-            isDisabled={isSynced}
-            onChange={(lat) => updateView({ lat })}
-          />
-          <NumberField
-            width="size-2400"
-            label="lng"
-            step={0.001}
-            value={mapView.lng}
-            isDisabled={isSynced}
-            onChange={(lng) => updateView({ lng })}
-          />
-          <NumberField
-            width="size-2400"
-            label="bearing"
-            step={1}
-            value={mapView.bearing}
-            isDisabled={isSynced}
-            onChange={(bearing) => updateView({ bearing })}
-          />
-          <NumberField
-            width="size-2400"
-            label="pitch"
-            step={1}
-            value={mapView.pitch}
-            isDisabled={isSynced}
-            onChange={(pitch) => updateView({ pitch })}
-          />
-          <NumberField
-            width="size-2400"
+            width={{L: "50%", M: "100%", S: "100%", base: "100%"}}
             label="zoom"
             step={1}
             value={mapView.zoom}
             isDisabled={isSynced}
             onChange={(zoom) => updateView({ zoom })}
           />
-          <ActionButton width="size-2400" onPress={setViewFromMap}>
+          <ActionButton width="100%" onPress={setViewFromMap} marginTop="size-200" marginBottom="size-200">
             Set from current view
           </ActionButton>
           {otherMapPanes && otherMapPanes.length > 0 && (
-            <>
-              <Picker width="size-2400" items={otherMapPanes}>
-                {(pane) => <Item key={pane.name}>{pane.name}</Item>}
-              </Picker>
-              <Checkbox name="Bind two ways" />
-              <ActionButton>Start Syncing</ActionButton>
-            </>
+            <TwoUpCollapsableGrid>
+              <View width="100%">
+                <Picker width="size-2400" items={otherMapPanes}>
+                  {(pane) => <Item key={pane.name}>{pane.name}</Item>}
+                </Picker>
+                <Checkbox name="Bind two ways" />
+              </View>
+              <ActionButton width="100%">Start Syncing</ActionButton>
+            </TwoUpCollapsableGrid>
           )}
-        </DefaultGrid>
+        </Flex>
       </Well>
       <Well>
         <Heading>
