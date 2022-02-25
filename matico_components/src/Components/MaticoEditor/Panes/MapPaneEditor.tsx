@@ -8,6 +8,7 @@ import {
 } from "Stores/MaticoSpecSlice";
 
 import { DatasetSelector } from "../Utils/DatasetSelector";
+import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
 import { BaseMapSelector } from "../Utils/BaseMapSelector";
 import { DefaultGrid } from "../Utils/DefaultGrid";
@@ -207,6 +208,46 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     );
   };
 
+  const changeOrder = (index: number, direction: 'up'|'down') => {
+    if ((index === 0 && direction === 'up') || (index === mapPane.layers.length - 1 && direction === 'down')) {
+      return;
+    }
+
+    let layers = [...mapPane.layers];
+    const changedLayer = layers.splice(index, 1)[0];    
+    layers.splice(direction === 'up' ? index - 1 : index + 1, 0, changedLayer);
+
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          layers
+        },
+      })
+    );
+  }
+
+  const duplicateLayer = (index: number) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          layers: [...mapPane.layers.slice(0,index), mapPane.layers[index], ...mapPane.layers.slice(index)],
+        },
+      })
+    );
+  }
+  const deleteLayer = (index: number) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          layers: [...mapPane.layers.slice(0,index), ...mapPane.layers.slice(index+1)],
+        },
+      })
+    );
+  }
+
   const stopSyncing = () => {
     updateView(syncedMapPaneView.value);
   };
@@ -296,15 +337,23 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             <AddPaneModal onAddLayer={addLayer} />
           </Flex>
         </Heading>
-          <BaseMapSelector
-            baseMap={mapPane?.base_map?.Named}
-            onChange={(baseMap) => updateBaseMap(baseMap)}
-          />
-        <Flex marginTop={"size-200"} direction="column">
-          {mapPane.layers.map((layer, index) => (
-            <ActionButton onPress={()=>setLayerEdit(index)}>{layer.name}</ActionButton>
-          ))}
+        <Flex marginBottom={"size-200"} direction="column">
+          {mapPane.layers.map((layer, index) => 
+            <RowEntryMultiButton 
+              key={index} 
+              index={index} 
+              entryName={layer.name} 
+              setEdit={setLayerEdit} 
+              changeOrder={changeOrder} 
+              deleteEntry={deleteLayer} 
+              duplicateEntry={duplicateLayer}
+              />
+          )}
         </Flex>
+        <BaseMapSelector
+          baseMap={mapPane?.base_map?.Named}
+          onChange={(baseMap) => updateBaseMap(baseMap)}
+        />
       </Well>
     </Flex>
   );
