@@ -241,7 +241,7 @@ export default function ContinuousChartspace({
       <rect
         width={width}
         height={height}
-        rx={14}
+        // rx={14}
         fill={"white"}
         onMouseDown={handleMouseDown}
         onMouseMove={debouncedHandleMouseMove}

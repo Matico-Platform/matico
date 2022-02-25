@@ -15,10 +15,12 @@ interface ColorPickerDialogInterface {
   // label: string;
   color: string | [number,number,number,number];
   onColorChange: (color: string | [number, number, number, number]) => void;
+  height?: string,
+  width?: string
 }
 
 export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
-color, onColorChange }) => {
+color, onColorChange, height="size-300", width="size-600" }) => {
   let chromaColor;
 
   if (Array.isArray(color)) {
@@ -45,8 +47,8 @@ color, onColorChange }) => {
 
   return (
     <DialogTrigger type="popover">
-      <View width="size-900" UNSAFE_style={{backgroundColor : spectrumColor}}>
-        <ActionButton width="size-900" staticColor="white"></ActionButton>
+      <View width={width} height={height} UNSAFE_style={{backgroundColor : spectrumColor}}>
+        <ActionButton width="100%" height="100%" staticColor="white"></ActionButton>
       </View>
       {(close) => (
         <Dialog>
