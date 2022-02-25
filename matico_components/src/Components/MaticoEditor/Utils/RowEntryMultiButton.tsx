@@ -7,7 +7,7 @@ import Delete from "@spectrum-icons/workflow/Delete";
 import Copy from "@spectrum-icons/workflow/Copy";
 
 interface RowEntryMultiButtonProps {
-    entryName: string,
+    entryName: string | React.ReactNode,
     index: number,
     setEdit: (index: number) => void,
     changeOrder?: (index: number, direction: "up" | "down") => void,
