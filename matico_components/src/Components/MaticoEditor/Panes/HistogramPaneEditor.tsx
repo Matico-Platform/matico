@@ -13,6 +13,7 @@ import { PaneEditor } from "./PaneEditor";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { LabelEditor } from "../Utils/LabelEditor";
+import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -113,16 +114,18 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
       />
       <Well>
         <Heading>Data Source</Heading>
-        <DatasetSelector
-          selectedDataset={histogramPane.dataset.name}
-          onDatasetSelected={updateDataset}
-        />
-        <DatasetColumnSelector
-          datasetName={histogramPane.dataset.name}
-          selectedColumn={histogramPane.column}
-          label="Column"
-          onColumnSelected={(column) => updateColumn(column.name)}
-        />
+        <TwoUpCollapsableGrid>
+          <DatasetSelector
+            selectedDataset={histogramPane.dataset.name}
+            onDatasetSelected={updateDataset}
+          />
+          <DatasetColumnSelector
+            datasetName={histogramPane.dataset.name}
+            selectedColumn={histogramPane.column}
+            label="Column"
+            onColumnSelected={(column) => updateColumn(column.name)}
+          />
+        </TwoUpCollapsableGrid>
       </Well>
       {dataset && (
         <>

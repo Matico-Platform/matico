@@ -15,7 +15,6 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
     return <Text>Loading</Text>
   }
   return (
-    <Flex>
     <Picker
       items={Object.values(datasets)}
       selectedKey={selectedDataset}
@@ -25,6 +24,5 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
     >
       {(dataset) => <Item key={dataset.name}>{dataset.name}</Item>}
     </Picker>
-  </Flex>
   );
 };

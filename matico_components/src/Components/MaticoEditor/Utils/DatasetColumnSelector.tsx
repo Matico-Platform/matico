@@ -24,6 +24,7 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
 
   return (
     <Picker
+      width="100%"
       items={columns}
       label={label ?? "Column"}
       selectedKey={selectedColumn?.name}
