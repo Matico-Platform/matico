@@ -43,7 +43,7 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
           </Text>
         </Content>
       </View>
-      <View gridArea="content" padding="size-800">
+      <Flex gridArea="content" margin="size-1000" direction='column'>
         <Header>
           <Flex
             direction="row"
@@ -62,10 +62,11 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
         <Divider size="S" />
         {apis && (
           <TableView
+            width='100%'
             aria-label="Example table with static contents"
             selectionMode="multiple"
             marginY="size-40"
-            max-height="70%"
+            max-height="70vh"
           >
             <TableHeader>
               <Column>Name</Column>
@@ -101,7 +102,7 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
             </TableBody>
           </TableView>
         )}
-      </View>
+      </Flex>
     </Layout>
   );
 };
