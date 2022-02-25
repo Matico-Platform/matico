@@ -13,6 +13,7 @@ import {
   Picker,
 } from "@adobe/react-spectrum";
 import { DefaultGrid } from "../Utils/DefaultGrid";
+import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;
@@ -36,14 +37,15 @@ const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
   return (
     <Flex direction="row">
       <NumberField
-        width={"size-1200"}
+        width="50%"
         label={label}
         marginEnd={"size-100"}
         value={value}
         onChange={onValueChange}
       />
       <Picker
-        width={"size-1200"} label="units"
+        width="50%"
+        label="units"
         selectedKey={units}
         onSelectionChange={onUnitsChange}
       >
@@ -77,17 +79,19 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
       name: newName,
     });
   };
+  console.log('POSITION', position)
 
   return (
     <Flex direction="column" width="100%" height="100%">
       <Well>
         <Heading>Pane Details</Heading>
         <TextField
+          width="100%"
           label="name"
           value={name}
           onChange={(name: string) => updateName( name )}
         />
-        <DefaultGrid>
+        <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="x"
             value={position.x}
@@ -102,6 +106,8 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onValueChange={(y) => updatePosition({ y })}
             onUnitsChange={(y_units) => updatePosition({ y_units })}
           />
+        </TwoUpCollapsableGrid>
+        <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="width"
             value={position.width}
@@ -116,7 +122,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onValueChange={(height) => updatePosition({ height })}
             onUnitsChange={(height_units) => updatePosition({ height_units })}
           />
-        </DefaultGrid>
+        </TwoUpCollapsableGrid>
       </Well>
     </Flex>
   );

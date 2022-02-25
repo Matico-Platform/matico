@@ -8,6 +8,8 @@ import {
 } from "Stores/MaticoSpecSlice";
 
 import { DatasetSelector } from "../Utils/DatasetSelector";
+import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
+import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import { PaneEditor } from "./PaneEditor";
 import { BaseMapSelector } from "../Utils/BaseMapSelector";
 import { DefaultGrid } from "../Utils/DefaultGrid";
@@ -16,7 +18,7 @@ import {
   Flex,
   Heading,
   Well,
-  // Grid,
+  Grid,
   NumberField,
   ActionButton,
   Text,
@@ -207,6 +209,46 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     );
   };
 
+  const changeOrder = (index: number, direction: 'up'|'down') => {
+    if ((index === 0 && direction === 'up') || (index === mapPane.layers.length - 1 && direction === 'down')) {
+      return;
+    }
+
+    let layers = [...mapPane.layers];
+    const changedLayer = layers.splice(index, 1)[0];    
+    layers.splice(direction === 'up' ? index - 1 : index + 1, 0, changedLayer);
+
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          layers
+        },
+      })
+    );
+  }
+
+  const duplicateLayer = (index: number) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          layers: [...mapPane.layers.slice(0,index), mapPane.layers[index], ...mapPane.layers.slice(index)],
+        },
+      })
+    );
+  }
+  const deleteLayer = (index: number) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          layers: [...mapPane.layers.slice(0,index), ...mapPane.layers.slice(index+1)],
+        },
+      })
+    );
+  }
+
   const stopSyncing = () => {
     updateView(syncedMapPaneView.value);
   };
@@ -234,60 +276,66 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             <Text>Map Bounds</Text>
           </Flex>
         </Heading>
-        <DefaultGrid>
+        <Flex direction="column">
+          <TwoUpCollapsableGrid>
+            <NumberField
+              width="100%"
+              label="lat"
+              step={0.001}
+              value={mapView.lat}
+              isDisabled={isSynced}
+              onChange={(lat) => updateView({ lat })}
+            />
+            <NumberField
+              width="100%"
+              label="lng"
+              step={0.001}
+              value={mapView.lng}
+              isDisabled={isSynced}
+              onChange={(lng) => updateView({ lng })}
+            />
+          </TwoUpCollapsableGrid>
+          <TwoUpCollapsableGrid>
+            <NumberField
+              width="100%"
+              label="bearing"
+              step={1}
+              value={mapView.bearing}
+              isDisabled={isSynced}
+              onChange={(bearing) => updateView({ bearing })}
+            />
+            <NumberField
+              width="100%"
+              label="pitch"
+              step={1}
+              value={mapView.pitch}
+              isDisabled={isSynced}
+              onChange={(pitch) => updateView({ pitch })}
+            />
+          </TwoUpCollapsableGrid>
           <NumberField
-            width="size-2400"
-            label="lat"
-            step={0.001}
-            value={mapView.lat}
-            isDisabled={isSynced}
-            onChange={(lat) => updateView({ lat })}
-          />
-          <NumberField
-            width="size-2400"
-            label="lng"
-            step={0.001}
-            value={mapView.lng}
-            isDisabled={isSynced}
-            onChange={(lng) => updateView({ lng })}
-          />
-          <NumberField
-            width="size-2400"
-            label="bearing"
-            step={1}
-            value={mapView.bearing}
-            isDisabled={isSynced}
-            onChange={(bearing) => updateView({ bearing })}
-          />
-          <NumberField
-            width="size-2400"
-            label="pitch"
-            step={1}
-            value={mapView.pitch}
-            isDisabled={isSynced}
-            onChange={(pitch) => updateView({ pitch })}
-          />
-          <NumberField
-            width="size-2400"
+            width={{L: "50%", M: "100%", S: "100%", base: "100%"}}
             label="zoom"
             step={1}
             value={mapView.zoom}
             isDisabled={isSynced}
             onChange={(zoom) => updateView({ zoom })}
           />
-          <ActionButton width="size-2400" onPress={setViewFromMap}>
+          <ActionButton width="100%" onPress={setViewFromMap} marginTop="size-200" marginBottom="size-200">
             Set from current view
           </ActionButton>
           {otherMapPanes && otherMapPanes.length > 0 && (
-            <>
-              <Picker width="size-2400" items={otherMapPanes}>
-                {(pane) => <Item key={pane.name}>{pane.name}</Item>}
-              </Picker>
-              <Checkbox name="Bind two ways" />
-              <ActionButton>Start Syncing</ActionButton>
-            </>
+            <TwoUpCollapsableGrid>
+              <View width="100%">
+                <Picker width="size-2400" items={otherMapPanes}>
+                  {(pane) => <Item key={pane.name}>{pane.name}</Item>}
+                </Picker>
+                <Checkbox name="Bind two ways" />
+              </View>
+              <ActionButton width="100%">Start Syncing</ActionButton>
+            </TwoUpCollapsableGrid>
           )}
-        </DefaultGrid>
+        </Flex>
       </Well>
       <Well>
         <Heading>
@@ -296,15 +344,23 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             <AddPaneModal onAddLayer={addLayer} />
           </Flex>
         </Heading>
-          <BaseMapSelector
-            baseMap={mapPane?.base_map?.Named}
-            onChange={(baseMap) => updateBaseMap(baseMap)}
-          />
-        <Flex marginTop={"size-200"} direction="column">
-          {mapPane.layers.map((layer, index) => (
-            <ActionButton onPress={()=>setLayerEdit(index)}>{layer.name}</ActionButton>
-          ))}
+        <Flex marginBottom={"size-200"} direction="column">
+          {mapPane.layers.map((layer, index) => 
+            <RowEntryMultiButton 
+              key={index} 
+              index={index} 
+              entryName={layer.name} 
+              setEdit={setLayerEdit} 
+              changeOrder={changeOrder} 
+              deleteEntry={deleteLayer} 
+              duplicateEntry={duplicateLayer}
+              />
+          )}
         </Flex>
+        <BaseMapSelector
+          baseMap={mapPane?.base_map?.Named}
+          onChange={(baseMap) => updateBaseMap(baseMap)}
+        />
       </Well>
     </Flex>
   );

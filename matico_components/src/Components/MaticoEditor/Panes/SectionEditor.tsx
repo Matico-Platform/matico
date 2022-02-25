@@ -33,6 +33,7 @@ import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import traverse from "traverse";
 import { DefaultGrid } from "../Utils/DefaultGrid";
+import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 
 export interface SectionEditorProps {
   editPath: string;
@@ -65,6 +66,7 @@ const AvaliablePanes = [
     ],
   },
 ];
+
 
 interface NewPaneDialogProps {
   validatePaneName?: (name: string) => boolean;
@@ -151,7 +153,8 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     dispatch(deleteSpecAtPath({ editPath }));
   };
 
-  const editPane = (index: number, paneType: string) => {
+  const editPane = (index: number) => {
+    const paneType = Object.entries(section.panes[index])[0][0];
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.panes.${index}.${paneType}`,
@@ -159,6 +162,26 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
       })
     );
   };
+
+  const validateName = (name: string) => {
+    const existingNames = section.panes.map(
+      (pane) => Object.values(pane)[0].name
+    );
+    return !existingNames.includes(name);
+  };
+
+  
+  const incrementPaneName = (paneName: string) => {
+    //@ts-ignore
+    const baseName = !isNaN(paneName.slice(-1)[0]) ? paneName.slice(0,-1) : paneName;
+    let tempName = `${baseName}`;
+    let suffix = 2;
+    do {
+      tempName = `${baseName}${suffix}`;
+      suffix++;
+    } while (!validateName(tempName))
+    return tempName;
+  }    
 
   const addPane = (paneName: string, paneType: string) => {
     dispatch(
@@ -173,13 +196,57 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
       })
     );
   };
-
-  const validateName = (name: string) => {
-    const existingNames = section.panes.map(
-      (pane) => Object.values(pane)[0].name
+  
+  const duplicatePane = (index: number) => {
+    let [[paneType, props]] = Object.entries(section.panes[index]);
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          panes: [
+            ...section.panes.slice(0,index),
+            //@ts-ignore
+            {[paneType]: {...props, name: incrementPaneName(props.name) }},
+            ...section.panes.slice(index)
+          ],
+        },
+      })
     );
-    return !existingNames.includes(name);
-  };
+  }
+
+  const deletePane = (index: number) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          panes: [
+            ...section.panes.slice(0,index),
+            ...section.panes.slice(index+1)
+          ],
+        },
+      })
+    );
+  }
+
+  const changeOrder = (index: number, direction: 'up'|'down') => {
+    if ((index === 0 && direction === 'up') || (index === section.panes.length - 1 && direction === 'down')) {
+      return;
+    }
+
+    let panes = [...section.panes];
+    const changedPane = panes.splice(index, 1)[0];    
+    panes.splice(direction === 'up' ? index - 1 : index + 1, 0, changedPane);
+
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          panes
+        },
+      })
+    );
+  }
+
 
   if (!section) {
     return <View>Failed to find section in specification</View>;
@@ -216,14 +283,18 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
           {section.panes.map((pane, index) => {
             let [paneType, paneSpecs] = Object.entries(pane)[0];
             return (
-              <ActionButton
-                onPress={() => editPane(index, paneType)}
-                key={paneSpecs.name}
-                width="100%"
-              >
-                {IconForPaneType(paneType)}
-                <Text>{paneSpecs.name}</Text>
-              </ActionButton>
+              <RowEntryMultiButton
+                index={index}
+                key={index}
+                entryName={<>
+                  {IconForPaneType(paneType)}
+                  <Text>{paneSpecs.name}</Text>
+                </>}
+                setEdit={editPane}
+                changeOrder={changeOrder}
+                deleteEntry={deletePane}
+                duplicateEntry={duplicatePane}
+              />
             );
           })}
         </Flex>

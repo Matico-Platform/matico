@@ -22,6 +22,7 @@ import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { DatasetSummary } from "Datasets/Dataset";
 import { LabelEditor } from "../Utils/LabelEditor";
+import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -119,7 +120,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
           onDatasetSelected={updateDataset}
         />
         {dataset && (
-          <>
+          <TwoUpCollapsableGrid>
             <DatasetColumnSelector
               label="X Column"
               datasetName={scatterPlotPane.dataset.name}
@@ -140,7 +141,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                 updateSpec({ y_column: y_column.name })
               }
             />
-          </>
+          </TwoUpCollapsableGrid>
         )}
       </Well>
       {dataset && (

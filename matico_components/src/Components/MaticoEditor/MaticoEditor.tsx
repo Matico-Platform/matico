@@ -31,8 +31,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   datasetProviders,
 }) => {
   const dispatch = useMaticoDispatch();
-  const editorView = useRef(null);
-  const [shouldOverflow, setShouldOverflow] = useState(false);
+  
   // eg
   // spec
   // pages.0.sections.0.panes.1.Map
@@ -54,17 +53,18 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   useEffect(() => {
     dispatch(setEditing(editActive));
   }, [editActive]);
-  
-  useLayoutEffect(() => {
-    // Spectrum unhappy about this, but unsure how else to conditionally overflow
-    const couldOverflow = typeof window !== undefined && editorView?.current && editorView?.current?.UNSAFE_getDOMNode()?.clientHeight > window.innerHeight * .95;
-    setShouldOverflow(couldOverflow);
-  },[currentEditPath, tabKey])
-
 
   const EditPane = Editors[currentEditType];
 
   if (!editActive) return null;
+
+  const height = {
+    L:"95vh",
+    M: "95vh",
+    S: "35vh",
+    base: "35vh",
+  };
+
   return (
     <Tabs selectedKey={tabKey} onSelectionChange={setTabKey}>
       <TabList>
@@ -73,7 +73,10 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
         <Item key="Specification">Specification</Item>
         <Item key="State">State</Item>
       </TabList>
-      <View ref={editorView} overflow={shouldOverflow ? "hidden scroll" : "hidden scroll"} maxHeight={shouldOverflow ? "95vh" : "95vh"}>
+      <View
+        overflow={"hidden auto"}
+        height={height}
+      >
         <TabPanels>
           <Item key="Components">
             {currentEditPath && (
