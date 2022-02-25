@@ -62,6 +62,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
             aria-label="Example table with static contents"
             selectionMode="multiple"
             marginY="size-40"
+            max-height="70%"
           >
             <TableHeader>
               <Column minWidth={colWidth}>Name</Column>

@@ -122,7 +122,7 @@ export const CSVFilePreviewer: React.FC<FilePreviewerInterface> = ({
         <TableView height="size-1700">
           <TableHeader>
             {Object.keys(dataPreview[0]).map((column) => (
-              <Column key={column}>{column}</Column>
+              <Column width={150} key={column}>{column}</Column>
             ))}
           </TableHeader>
           <TableBody>

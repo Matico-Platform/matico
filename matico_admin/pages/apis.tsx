@@ -65,6 +65,7 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
             aria-label="Example table with static contents"
             selectionMode="multiple"
             marginY="size-40"
+            max-height="70%"
           >
             <TableHeader>
               <Column>Name</Column>
