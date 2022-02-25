@@ -211,7 +211,7 @@ const ContinuousDomain: React.FC<{
   
   const colorFunc = quantiles?.result && rangeValues 
     ? scaleThreshold()
-      .domain(quantiles.result)
+      .domain([...quantiles.result.slice(1,), Math.pow(10, 10)])
       .range(rangeValues) 
     : () => 'gray';
       
@@ -276,7 +276,7 @@ const ContinuousDomain: React.FC<{
                       labelPosition="side"
                       isDisabled={metric !== "Manual"}
                       onChange={(newVal) => updateValueForBin(newVal, index)}
-                    /> : <Text key={index} marginX="size-200">{bin && bin.toFixed(1)}</Text>}
+                    /> : <Text key={index} marginX="size-200" marginTop="size-50">{bin && index === domainValues.length-1 ? `> ${bin && bin.toFixed(1)}` :`${domainValues[index] && domainValues[index].toFixed(1)} to ${domainValues[index+1] && domainValues[index+1].toFixed(1)}`}</Text>}
                     {rangeType === "value" && rangeValues && (
                       <NumberField
                         key={`values ${index}`}
