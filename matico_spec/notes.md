@@ -9,3 +9,5 @@ Getting enaums working with serde and toml https://github.com/serde-rs/serde/iss
 # Implement a type <T> for autocomplete to return either a String or JsValue
 
 
+# Build
+`wasm-pack build --scope maticoapp`
