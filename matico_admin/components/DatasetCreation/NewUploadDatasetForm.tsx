@@ -8,14 +8,12 @@ import {
   TabPanels,
   Item,
   Flex,
-  Text,
   StatusLight,
 } from "@adobe/react-spectrum";
 import React, { useCallback, useState } from "react";
 import Upload from "@spectrum-icons/illustrations/Upload";
-import { DropEvent, FileRejection, useDropzone } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import { CSVFilePreviewer } from "./CSVFilePreviewer";
-import { faAlignJustify } from "@fortawesome/free-solid-svg-icons";
 import { GeoJSONFilePreviewer } from "./GeoJSONFilePreviewer";
 
 export interface NewUploadDatasetFormProps {}
