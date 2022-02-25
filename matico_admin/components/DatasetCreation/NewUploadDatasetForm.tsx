@@ -22,6 +22,7 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
   const [acceptedFiles, setAcceptedFiles] = useState<Array<File> | null>(null);
 
   const onDrop = useCallback((acceptedFiles: Array<File>) => {
+    console.log(acceptedFiles)
     setAcceptedFiles(acceptedFiles);
   }, []);
 
@@ -29,7 +30,7 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
     useDropzone({
       onDrop,
       accept:
-        "application/geo+json,application/json,application/csv,text/csv,text/plain,*.csv,*.geojson",
+        ".csv,.geojson,.json,application/vnd.ms-excel,application/geo+json,application/json,application/csv,text/csv,text/plain",
     });
 
   const previewerForFile = (file: File) => {
