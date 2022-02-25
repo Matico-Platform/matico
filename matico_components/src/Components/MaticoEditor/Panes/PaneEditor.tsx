@@ -37,14 +37,15 @@ const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
   return (
     <Flex direction="row">
       <NumberField
-        width={"size-1200"}
+        width="50%"
         label={label}
         marginEnd={"size-100"}
         value={value}
         onChange={onValueChange}
       />
       <Picker
-        width={"size-1200"} label="units"
+        width="50%"
+        label="units"
         selectedKey={units}
         onSelectionChange={onUnitsChange}
       >
@@ -78,6 +79,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
       name: newName,
     });
   };
+  console.log('POSITION', position)
 
   return (
     <Flex direction="column" width="100%" height="100%">

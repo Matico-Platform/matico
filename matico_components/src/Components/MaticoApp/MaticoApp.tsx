@@ -49,12 +49,14 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 }) => {
   const columns = editActive
     ? {
-        L: ["75%", "25%"],
+        XL: ['80%', '20%'],
+        L: ["70%", "30%"],
         M: ["70%", "30%"],
         S: ["100%"],
         base: ["100%"],
       }
     : {
+        XL: ["100%", "0"],
         L: ["100%", "0"],
         M: ["100%", "0"],
         S: ["100%"],
@@ -63,12 +65,14 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 
   const rows = editActive
     ? {
+        XL: "100%",
         L: "100%",
         M: "100%",
         S: ["60%", "40%"],
         base: ["60%", "40%"],
       }
     : {
+        XL: "100%",
         L: "100%",
         M: "100%",
         S: ["100%", "0"],
@@ -76,6 +80,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
       };
 
   const areas = {
+    XL: ["viewer editor"],
     L: ["viewer editor"],
     M: ["viewer editor"],
     S: ["viewer", "editor"],

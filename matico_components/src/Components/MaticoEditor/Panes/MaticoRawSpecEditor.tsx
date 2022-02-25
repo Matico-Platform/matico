@@ -10,6 +10,7 @@ import { useAppSpec } from "Hooks/useAppSpec";
 import { useMaticoDispatch } from "Hooks/redux";
 import { setSpec } from "Stores/MaticoSpecSlice";
 import { json_error_to_annotation } from "../Utils/Utils";
+import { Flex, View, Well } from "@adobe/react-spectrum";
 
 export const MaticoRawSpecEditor: React.FC = () => {
   const [code, setCode] = useState<string>();
@@ -64,32 +65,30 @@ export const MaticoRawSpecEditor: React.FC = () => {
 
   if (!validatorReady) return <Spinner />;
   return (
-    <Box fill background="white" flex direction="column">
-      <Box flex overflow={{ vertical: "auto" }} style={{ minHeight: "70vh" }}>
-        <AceEditor
-          mode={"json"}
-          theme="github"
-          onChange={(changes: any) => setCode(changes)}
-          value={code}
-          fontSize={20}
-          annotations={annotations}
-          style={{
-            width: "100%",
-            height: "100%",
-            flex: 1,
-          }}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-          }}
-        />
-      </Box>
+    <Flex direction="column" minHeight={{L:"95vh",M:"95vh",S:"35vh",base:"35vh"}} height="auto" position="relative">
+      <AceEditor
+        mode={"json"}
+        theme="github"
+        onChange={(changes: any) => setCode(changes)}
+        value={code}
+        fontSize={20}
+        annotations={annotations}
+        style={{
+          width: "100%",
+          height: "auto",
+          flex: 1,
+        }}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+          enableSnippets: true,
+        }}
+      />
       {(jsonError || validationResult) && (
-        <Box height="small">
+        <View position="absolute" bottom="5%" left="20%" width="60%" backgroundColor="negative">
           <List data={combinedErrors.filter((a) => a)} />
-        </Box>
+        </View>
       )}
-    </Box>
+    </Flex>
   );
 };
