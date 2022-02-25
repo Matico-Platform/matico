@@ -19,6 +19,7 @@ export interface NewDatasetModalProps {}
 
 export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
+  // TODO: on-done notification in this component
   return (
     <DialogTrigger isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
       <Button variant='cta'>New Dataset</Button>
@@ -40,7 +41,7 @@ export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
           </Tabs>
         </Content>
         <ButtonGroup>
-          <ActionButton onPress={() => setIsOpen(false)}>Cancel</ActionButton>
+          <ActionButton onPress={() => setIsOpen(false)}>Cancel</ActionButton> 
         </ButtonGroup>
       </Dialog>
     </DialogTrigger>
