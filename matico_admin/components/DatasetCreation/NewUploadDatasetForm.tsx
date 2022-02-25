@@ -45,7 +45,7 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
     : dropMessage;
 
   return (
-    <View paddingTop="size-400" height="100%">
+    <Flex direction='column' paddingTop="size-400" height="100%">
       {!acceptedFiles && (
         <Flex alignItems="center" justifyContent="center" height="100%">
           <View>
@@ -67,15 +67,15 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
               <Item key={file.name}>{file.name}</Item>
             ))}
           </TabList>
-          <Flex width="100%" height="100%">
             <TabPanels>
               {acceptedFiles.map((file: File) => (
-                <Item key={file.name}>{previewerForFile(file)}</Item>
+                <Item key={file.name}>
+                  {previewerForFile(file)}
+                </Item>
               ))}
             </TabPanels>
-          </Flex>
         </Tabs>
       )}
-    </View>
+    </Flex>
   );
 };

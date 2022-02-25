@@ -45,7 +45,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
         </Content>
       </View>
 
-      <View gridArea="content" padding="size-1000">
+      <Flex gridArea="content" margin="size-1000" direction='column'>
         <Header>
           <Flex
             direction="row"
@@ -59,9 +59,12 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
         <Divider size="S" />
         {datasets && (
           <TableView
+            width="100%"
             aria-label="Example table with static contents"
             selectionMode="multiple"
             marginY="size-40"
+            flex='1'
+            maxHeight='70vh'
           >
             <TableHeader>
               <Column minWidth={colWidth}>Name</Column>
@@ -102,7 +105,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
             </TableBody>
           </TableView>
         )}
-      </View>
+      </Flex>
     </Layout>
   );
 };

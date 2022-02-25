@@ -58,12 +58,12 @@ export const GeoJSONFilePreviewer: React.FC<FilePreviewerInterface> = ({
   }, []);
 
   return (
-    <Flex>
+    <Flex width="100%" height="100%" direction='column'>
       {dataPreview && columns && (
         <TableView height="size-2400">
           <TableHeader>
             {Object.keys(dataPreview[0]).map((column) => (
-              <Column key={column}>{column}</Column>
+              <Column width={150} key={column}>{column}</Column>
             ))}
           </TableHeader>
           <TableBody>
