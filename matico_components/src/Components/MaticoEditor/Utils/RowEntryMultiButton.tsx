@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, ActionButton } from "@adobe/react-spectrum"
+import { Content, Flex, ActionButton, DialogTrigger, Dialog, Heading, View, Button } from "@adobe/react-spectrum"
 import Edit from "@spectrum-icons/workflow/Edit";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
@@ -28,5 +28,30 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({ // TOD
       {duplicateEntry !== undefined && <ActionButton onPress={()=>duplicateEntry(index)} flex><Copy/> </ActionButton>}
       {changeOrder !== undefined && <ActionButton onPress={()=>changeOrder(index, 'up')} flex><ChevronUp/> </ActionButton>}
       {changeOrder !== undefined && <ActionButton onPress={()=>changeOrder(index, 'down')} flex><ChevronDown/></ActionButton>}
-      {deleteEntry !== undefined && <ActionButton onPress={()=>deleteEntry(index)} flex><Delete/></ActionButton>}
+      {deleteEntry !== undefined && <View flex>
+            <DialogTrigger 
+                isDismissable 
+                type="popover"
+                mobileType="tray"
+                containerPadding={1}
+                >
+                    <ActionButton><Delete/></ActionButton>
+                    {(close) => (
+                        <Dialog>
+                            <Heading>Gone, forever?</Heading>
+                            <Content marginTop="size-100">
+                                <Button 
+                                variant="negative"
+                                onPress={()=>{
+                                    deleteEntry(index);
+                                    close();
+                                }}><Delete/> Delete</Button>
+                            </Content>
+                        </Dialog>
+                    )}
+            </DialogTrigger>
+        </View>}
+      
+      
+      
     </Flex>
