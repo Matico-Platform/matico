@@ -1,6 +1,6 @@
 import React from "react";
 import { MaticoPaneInterface } from "../Pane";
-import { MarkdownContnet } from "../../MarkdownContent/MarkdownContent";
+import { MarkdownContent } from "../../MarkdownContent/MarkdownContent";
 import { TextPane } from "@maticoapp/matico_spec";
 import { Box } from "grommet";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
@@ -25,7 +25,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
           <EditButton editPath={`${editPath}.Text`} editType={"Text"} />
         </Box>
       }
-      <MarkdownContnet>{content}</MarkdownContnet>
+      <MarkdownContent>{content}</MarkdownContent>
     </Box>
   );
 };
