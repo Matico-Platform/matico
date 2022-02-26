@@ -1,53 +1,72 @@
-# Modest Map Maker
+# Matico Server 
 
-This repo contains an API server and a front end that should make it easy to manage and build geospatial applications.
+This is the API server for Matico. It is responsible for managing the storage, access, processing and querying of datasets in Matico along with user account management. 
 
-It is a big work in progress
-
-The server is written in rust using actix-web, front end is in react and typescript.
+The server is written in rust using the actix-web framework
 
 ## Setup
 
-You will need a postgis database somewhere, either a docker container or something running locally.
+First thing to do is install rust, you can do this by following the instructions [here](https://www.rust-lang.org/tools/install). 
 
-Update the settings in Settings.toml and in .env to reflect the database location (consolidating these soon). 
-
-Then we need to run the migrations for the database. 
-
-install rust then install diesel_cli
+Once that is done you can run the server by simply running 
 
 ```bash
-cargo install diesel_cli
-diesel migration run 
+cargo run
 ```
 
-install the frontend dependencies 
+from the command line. This will launch the server at the address http://localhost:8000. You can check that the API is running by navigating to http://localhost:8000/api/health
 
-```bash
-cd simple-map-viewer
-yarn 
-```
+## Config 
 
-Start the frontend server 
+Configuration of the API server is accomplished using a .env file. The minimum setup is to specify a metadata database, a data database and an optional testing database.
 
-```bash
-yarn start 
-```
+You also need to include the SERVER\_ADDR variable to let the server know what port to load on. 
 
-Start the api server 
+An example .env file looks like 
 
 ```
-cargo run 
+DB.HOST=localhost
+DB.PORT=5432
+DB.USERNAME=matico
+DB.NAME=matico_meta_db
+
+DATADB.HOST=localhost
+DATADB.PORT=5432
+DATADB.USERNAME=matico
+DATADB.NAME=matic_data_db
+
+TESTDB.HOST=localhost
+TESTDB.PORT= 5432
+TESTDB.USERNAME=matico
+TESTDB.NAME=matico_test_meta_db
+
+TESTDATADB.HOST=localhost
+TESTDATADB.PORT= 5432
+TESTDATADB.USERNAME=matico
+TESTDATADB.NAME=matico_test_data_db
+
+SERVER_ADDR=0.0.0.0:8000
 ```
 
-You will need to create a new user to upload datasets. Do so at /login 
+The server expects the metadata db to simple exist, it should run all pending migrations for the server on startup.
 
-## notable endpoints 
+The data\_db and the testing data\_db require a database to be setup with the [postgis extension](https://postgis.net/install/) installed.
 
-To upload a dataset make a multipart post request with a valid JWT token to /datasets 
+## Testing 
 
-To get the MVT tiles for a dataset you need /tiler/:datasetid/z/x/y
-To get data from the table you can use /datasets/:datasetid/query
+If you have setup the required testing databases, you can run the server tests simple by running.
 
-More details in the /simple-map-viewer/src/api.ts file.
+```
+cargo test
+```
+
+This will also produce Typescript types derived from rust structs required for working with the API 
+
+
+## Api documentation 
+
+API docs can be found at http://localhost:8000/docs 
+
+## Orginization 
+
 

@@ -1,34 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Matico Admin
 
-## Getting Started
+This project contains the code for the Matico Admin interface. This is estentially a frontend for the MaticoServer API and the App builder. Through it a user can 
 
-First, run the development server:
+- Create an account on the server 
+- Login 
+- Upload Datasets 
+- Manage /Share Datasets
+- Modify Datasets 
+- Create Apps 
+- Create APIS 
+
+see [https://matico.app/docs](https://matico.app/docs) for more details on each of the above.
+
+## Installing dependencies
+
+To install all the required dependencies you can simply run 
 
 ```bash
-npm run dev
-# or
-yarn dev
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+this will take a few minutes but when it's done you should be good to go.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Running the admin interface 
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+First, start the API server as described [here](/matico_server/README.md). Then run 
 
-## Learn More
+```bash
+yarn build 
+yarn start
+```
 
-To learn more about Next.js, take a look at the following resources:
+This should start the server at http://localhost:3000
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Running in development 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+If you are helping develop the application, you can run the admin interface in development mode by running 
 
-## Deploy on Vercel
+```bash
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+yarn dev 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
+
+## Connecting to a remote API server 
+
+By default the admin interface will look for a MaticoServer at localhost:8000 . You can point it at a remote API by creating a .env file within this folder with the following 
+
+```
+NEXT_PUBLIC_SERVER_URL=http://my_remote_server_address/api
+```
+
+
