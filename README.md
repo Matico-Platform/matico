@@ -68,7 +68,7 @@ We are working on ways of making this process smoother just now.
 
 To deploy the application to production, you have a few options
 
-1. If deploying to render, we provide a template [render.yml](/render.yml) file which will provision and set up the necessary resources on that system 
+1. If deploying to render, we provide a template [render.yaml](/render.yaml) file which will provision and set up the necessary resources on that system 
 2. Build the docker image locally, push it up to a docker repository and setup your hosting environment to use that image 
 3. Roll your own deploy.
 
