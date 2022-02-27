@@ -55,7 +55,7 @@ export const MaticoSection: React.FC<MaticoSectionInterface> = ({
 }) => {
   let LayoutEngine = selectLayout(section.layout);
   return (
-    <Box fill={true}>
+    <>
       <LayoutEngine>
         {section.panes
           .filter((p: Pane) => p)
@@ -63,6 +63,6 @@ export const MaticoSection: React.FC<MaticoSectionInterface> = ({
             selectPane(pane, `${editPath}.panes.${index}`)
           )}
       </LayoutEngine>
-    </Box>
+    </>
   );
 };

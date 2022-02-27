@@ -6,6 +6,7 @@ import {PieChartPaneEditor} from './Panes/PieChartPaneEditor'
 import {SectionEditor} from './Panes/SectionEditor'
 import {TextPaneEditor} from './Panes/TextPaneEditor'
 import {LayerEditor} from './Panes/LayerEditor'
+import {ControlsPaneEditor} from './Panes/ControlsEditor'
 
 
 export const Editors ={
@@ -16,5 +17,6 @@ export const Editors ={
   Text: TextPaneEditor,
   Histogram: HistogramPaneEditor,
   PieChart: PieChartPaneEditor,
-  Layer: LayerEditor
+  Layer: LayerEditor,
+  Controls:ControlsPaneEditor
 }

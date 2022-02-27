@@ -65,4 +65,10 @@ export const PaneDefaults = {
     content: "New Text Pane",
     name: "Text Pane",
   },
+  Controls:{
+    position: DefaultPosition,
+    name:"Controls",
+    title:"Controls",
+    controls : []
+  }
 };

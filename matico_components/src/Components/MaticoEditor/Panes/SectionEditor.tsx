@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { Section } from "@maticoapp/matico_spec";
@@ -31,7 +31,7 @@ import TextIcon from "@spectrum-icons/workflow/Text";
 import PieChartIcon from "@spectrum-icons/workflow/GraphPie";
 import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
-import traverse from "traverse";
+import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import { DefaultGrid } from "../Utils/DefaultGrid";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 
@@ -51,6 +51,8 @@ const IconForPaneType = (PaneType: string) => {
       return <MapIcon />;
     case "Scatterplot":
       return <ScatterIcon />;
+    case "Controls":
+      return <PropertiesIcon />;
   }
 };
 
@@ -63,10 +65,10 @@ const AvaliablePanes = [
       { name: "PieChart", label: "Pie Chart" },
       { name: "Text", label: "Text" },
       { name: "Scatterplot", label: "Scatter Plot" },
+      { name: "Controls", label: "Controls" },
     ],
   },
 ];
-
 
 interface NewPaneDialogProps {
   validatePaneName?: (name: string) => boolean;
@@ -103,18 +105,18 @@ const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
           <Heading>Select pane to add</Heading>
           <Content>
             {AvaliablePanes.map((section) => (
-              <>
-                <Header marginY="size-100">{section.sectionTitle}</Header>
+              <Flex direction="column" gap="size-150">
                 <TextField
                   label="New pane name"
                   value={newPaneName}
                   onChange={setNewPaneName}
                   errorMessage={errorText}
+                  width="100%"
                 ></TextField>
                 <DefaultGrid
                   columns={repeat(2, "1fr")}
-                  columnGap={"size-50"}
-                  rowGap={"size-50"}
+                  columnGap={"size-150"}
+                  rowGap={"size-150"}
                   autoRows="fit-content"
                   marginBottom="size-200"
                 >
@@ -129,7 +131,7 @@ const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                     </ActionButton>
                   ))}
                 </DefaultGrid>
-              </>
+              </Flex>
             ))}
           </Content>
         </Dialog>
@@ -170,18 +172,19 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     return !existingNames.includes(name);
   };
 
-  
   const incrementPaneName = (paneName: string) => {
     //@ts-ignore
-    const baseName = !isNaN(paneName.slice(-1)[0]) ? paneName.slice(0,-1) : paneName;
+    const baseName = !isNaN(paneName.slice(-1)[0])
+      ? paneName.slice(0, -1)
+      : paneName;
     let tempName = `${baseName}`;
     let suffix = 2;
     do {
       tempName = `${baseName}${suffix}`;
       suffix++;
-    } while (!validateName(tempName))
+    } while (!validateName(tempName));
     return tempName;
-  }    
+  };
 
   const addPane = (paneName: string, paneType: string) => {
     dispatch(
@@ -196,7 +199,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
       })
     );
   };
-  
+
   const duplicatePane = (index: number) => {
     let [[paneType, props]] = Object.entries(section.panes[index]);
     dispatch(
@@ -204,15 +207,15 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
         editPath,
         update: {
           panes: [
-            ...section.panes.slice(0,index),
+            ...section.panes.slice(0, index),
             //@ts-ignore
-            {[paneType]: {...props, name: incrementPaneName(props.name) }},
-            ...section.panes.slice(index)
+            { [paneType]: { ...props, name: incrementPaneName(props.name) } },
+            ...section.panes.slice(index),
           ],
         },
       })
     );
-  }
+  };
 
   const deletePane = (index: number) => {
     dispatch(
@@ -220,33 +223,35 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
         editPath,
         update: {
           panes: [
-            ...section.panes.slice(0,index),
-            ...section.panes.slice(index+1)
+            ...section.panes.slice(0, index),
+            ...section.panes.slice(index + 1),
           ],
         },
       })
     );
-  }
+  };
 
-  const changeOrder = (index: number, direction: 'up'|'down') => {
-    if ((index === 0 && direction === 'up') || (index === section.panes.length - 1 && direction === 'down')) {
+  const changeOrder = (index: number, direction: "up" | "down") => {
+    if (
+      (index === 0 && direction === "up") ||
+      (index === section.panes.length - 1 && direction === "down")
+    ) {
       return;
     }
 
     let panes = [...section.panes];
-    const changedPane = panes.splice(index, 1)[0];    
-    panes.splice(direction === 'up' ? index - 1 : index + 1, 0, changedPane);
+    const changedPane = panes.splice(index, 1)[0];
+    panes.splice(direction === "up" ? index - 1 : index + 1, 0, changedPane);
 
     dispatch(
       setSpecAtPath({
         editPath,
         update: {
-          panes
+          panes,
         },
       })
     );
-  }
-
+  };
 
   if (!section) {
     return <View>Failed to find section in specification</View>;
@@ -279,17 +284,19 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
             />
           </Flex>
         </Heading>
-        <Flex gap={"size-125"} direction="column">
+        <Flex gap={"size-200"} direction="column">
           {section.panes.map((pane, index) => {
             let [paneType, paneSpecs] = Object.entries(pane)[0];
             return (
               <RowEntryMultiButton
                 index={index}
                 key={index}
-                entryName={<>
-                  {IconForPaneType(paneType)}
-                  <Text>{paneSpecs.name}</Text>
-                </>}
+                entryName={
+                  <>
+                    {IconForPaneType(paneType)}
+                    <Text>{paneSpecs.name}</Text>
+                  </>
+                }
                 setEdit={editPane}
                 changeOrder={changeOrder}
                 deleteEntry={deletePane}
