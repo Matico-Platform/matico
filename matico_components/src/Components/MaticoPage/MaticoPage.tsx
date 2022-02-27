@@ -2,8 +2,18 @@ import React from "react";
 import ReactDom from "react-dom";
 import { Page } from "@maticoapp/matico_spec";
 import { Box } from "grommet";
-import { MarkdownContnet } from "../MarkdownContent/MarkdownContent";
+import { MarkdownContent } from "../MarkdownContent/MarkdownContent";
 import { MaticoSection } from "../MaticoSection/MaticoSection";
+import { Route } from "react-router";
+import { useRouteMatch, Switch } from "react-router-dom";
+import {
+  Tabs,
+  View,
+  TabList,
+  TabPanels,
+  Item,
+  Flex,
+} from "@adobe/react-spectrum";
 
 interface MaticoPageInterface {
   page: Page;
@@ -12,19 +22,52 @@ interface MaticoPageInterface {
 export const MaticoPage: React.FC<MaticoPageInterface> = ({
   page,
   editPath,
-}) => (
-  <Box fill={true} overflow={{ vertical: 'auto' }}>
-    {page.content && (
-      <MarkdownContnet key="content">{page.content}</MarkdownContnet>
-    )}
-    {page.sections
-      .filter((section) => section.panes.length > 0)
-      .map((section, index) => (
+}) => {
+  let { path, url } = useRouteMatch();
+
+  let content =
+    page.sections.length > 1 ? (
+      <Tabs width={"100%"} height={"100%"}>
+        <View paddingStart={"size-200"}>
+          <TabList>
+            {page.sections.map((section: any) => (
+              <Item key={section.name}>{section.name}</Item>
+            ))}
+          </TabList>
+        </View>
+        <TabPanels>
+          {page.sections.map((section, index) => (
+            <Item key={section.name}>
+              {page.content && (
+                <MarkdownContent key="content">{page.content}</MarkdownContent>
+              )}
+
+              <MaticoSection
+                key={section.name}
+                section={section}
+                editPath={`${editPath}.sections.${index}`}
+              />
+            </Item>
+          ))}
+        </TabPanels>
+      </Tabs>
+    ) : (
+      <Flex direction="column" width={"100%"} height={"100%"}>
+        {page.content && (
+          <MarkdownContent key="content">{page.content}</MarkdownContent>
+        )}
+
         <MaticoSection
-          key={section.name}
-          section={section}
-          editPath={`${editPath}.sections.${index}`}
+          key={page.sections[0].name}
+          section={page.sections[0]}
+          editPath={`${editPath}.sections.0`}
         />
-      ))}
-  </Box>
-);
+      </Flex>
+    );
+
+  return (
+    <Box fill={true} overflow={{ vertical: "auto" }}>
+      {content}
+    </Box>
+  );
+};

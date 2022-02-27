@@ -30,6 +30,12 @@ export const PaneDefaults = {
     },
     order: 1,
   },
+  Section:{
+    name:"New Section",
+    order:1,
+    panes:[],
+    layout:"free"
+  },
   Map: {
     position: DefaultPosition,
     name: "New Map",

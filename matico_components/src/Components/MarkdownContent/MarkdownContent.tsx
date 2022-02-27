@@ -8,7 +8,7 @@ import rehypeRaw from "rehype-raw";
 import  _ from "lodash";
 import { useAutoVariables } from "../../Hooks/useAutoVariable";
 
-interface MarkdownContentInferface {}
+interface MarkdownContentInterface{}
 
 const regexp = new RegExp("#{([^}]*)}", "g");
 
@@ -41,7 +41,7 @@ const CustomComponents = {
   p: CustomParagraph,
 };
 
-export const MarkdownContnet: React.FC<MarkdownContentInferface> = ({
+export const MarkdownContent: React.FC<MarkdownContentInterface> = ({
   children,
 }) => {
   let content = typeof children === typeof "string" ? (children as string) : "";

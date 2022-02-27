@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { Section } from "@maticoapp/matico_spec";
+import { PaneDefaults } from "../PaneDefaults";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
