@@ -2,8 +2,10 @@ import React from "react";
 import ReactDom from "react-dom";
 import { Page } from "@maticoapp/matico_spec";
 import { Box } from "grommet";
-import { MarkdownContnet } from "../MarkdownContent/MarkdownContent";
+import { MarkdownContent } from "../MarkdownContent/MarkdownContent";
 import { MaticoSection } from "../MaticoSection/MaticoSection";
+import {Route,Switch} from "react-router";
+
 
 interface MaticoPageInterface {
   page: Page;
@@ -15,16 +17,24 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
 }) => (
   <Box fill={true} overflow={{ vertical: 'auto' }}>
     {page.content && (
-      <MarkdownContnet key="content">{page.content}</MarkdownContnet>
+      <MarkdownContent key="content">{page.content}</MarkdownContent>
     )}
+    <Switch>
     {page.sections
       .filter((section) => section.panes.length > 0)
       .map((section, index) => (
-        <MaticoSection
-          key={section.name}
-          section={section}
-          editPath={`${editPath}.sections.${index}`}
-        />
+        <Route
+          path={section.name}
+          exact={true}
+          key={page.path}
+        >
+          <MaticoSection
+            key={section.name}
+            section={section}
+            editPath={`${editPath}.sections.${index}`}
+          />
+        </Route>
       ))}
+      </Switch>
   </Box>
 );
