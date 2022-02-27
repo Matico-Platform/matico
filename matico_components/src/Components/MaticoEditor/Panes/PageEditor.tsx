@@ -24,8 +24,43 @@ import {
   Switch,
   Text,
   ActionButton,
+  DialogTrigger,
+  Dialog,
+  Content,
 } from "@adobe/react-spectrum";
 import * as icons from "@fortawesome/free-solid-svg-icons";
+import { PaneDefaults } from "../PaneDefaults";
+import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
+
+const NewSectionModal: React.FC<{
+  onAddSection: (name: string) => void;
+}> = ({ onAddSection }) => {
+  const [name, setName] = useState("New Section");
+  return (
+    <DialogTrigger type="popover" isDismissable>
+      <ActionButton>Add New</ActionButton>
+      {(close) => (
+        <Dialog>
+          <Content>
+            <Heading>New Section</Heading>
+            <Flex direction="column" gap={"size-200"}>
+              <TextField width={"100%"} value={name} onChange={setName} />
+              <ActionButton
+                width={"100%"}
+                onPress={() => {
+                  onAddSection(name);
+                  close();
+                }}
+              >
+                Add
+              </ActionButton>
+            </Flex>
+          </Content>
+        </Dialog>
+      )}
+    </DialogTrigger>
+  );
+};
 
 export interface PageEditorProps {
   editPath: string;
@@ -47,11 +82,78 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
     dispatch(deleteSpecAtPath({ editPath }));
   };
 
+  const addNewSection = (name: string) => {
+    dispatch(
+      setSpecAtPath({
+        editPath: editPath,
+        update: {
+          sections: [...page.sections, { ...PaneDefaults.Section, name }],
+        },
+      })
+    );
+  };
+
+  const duplicateSection= (index: number) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          sections: [
+            ...page.sections.slice(0, index),
+            //@ts-ignore
+            { ...page.sections[index], name: `${page.sections[index].name}_copy` },
+            ...page.sections.slice(index),
+          ],
+        },
+      })
+    );
+  };
+
   const editSection = (index: number) => {
     dispatch(
       setCurrentEditPath({
         editPath: `${editPath}.sections.${index}`,
         editType: "Section",
+      })
+    );
+  };
+
+  const deleteSection = (index: number) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          sections: [
+            ...page.sections.slice(0, index),
+            ...page.sections.slice(index + 1),
+          ],
+        },
+      })
+    );
+  };
+
+  const changeOrder = (index: number, direction: "up" | "down") => {
+    if (
+      (index === 0 && direction === "up") ||
+      (index === page.sections.length - 1 && direction === "down")
+    ) {
+      return;
+    }
+
+    let sections = [...page.sections];
+    const changedSection = sections.splice(index, 1)[0];
+    sections.splice(
+      direction === "up" ? index - 1 : index + 1,
+      0,
+      changedSection
+    );
+
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          sections,
+        },
       })
     );
   };
@@ -84,9 +186,11 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
           value={page.path}
           onChange={(path: string) => updatePage({ path })}
         />
-          <TextField label='icon'
+        <TextField
+          label="icon"
           value={page.icon}
-          onChange={(icon)=> updatePage({icon})}/>
+          onChange={(icon) => updatePage({ icon })}
+        />
       </Well>
       <Well>
         <Heading>
@@ -107,7 +211,8 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Text>Sections</Text> <ActionButton>Add New</ActionButton>
+            <Text>Sections</Text>
+            <NewSectionModal onAddSection={addNewSection} />
           </Flex>
         </Heading>
         <Flex direction="column">
@@ -117,7 +222,15 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <ActionButton onPress={() => editSection(index)} isQuiet>{section.name}</ActionButton>
+              <RowEntryMultiButton
+                index={index}
+                key={index}
+                entryName={<Text>{section.name}</Text>}
+                setEdit={editSection}
+                changeOrder={changeOrder}
+                deleteEntry={deleteSection}
+                duplicateEntry={duplicateSection}
+              />
             </Flex>
           ))}
         </Flex>
@@ -125,14 +238,23 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
 
       <Well>
         <Heading>Danger Zone</Heading>
-        <Flex direction='row' justifyContent='end' alignItems='center'>
+        <Flex direction="row" justifyContent="end" alignItems="center">
           {confirmDelete ? (
             <ButtonGroup>
-              <Button variant="cta" onPress={deletePage}>Confirm</Button>
-              <Button variant="secondary" onPress={()=>setConfirmDelete(false)}>Cancel</Button>
+              <Button variant="cta" onPress={deletePage}>
+                Confirm
+              </Button>
+              <Button
+                variant="secondary"
+                onPress={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </Button>
             </ButtonGroup>
           ) : (
-          <Button variant="cta" onPress={()=>setConfirmDelete(true)}>Remove Page</Button>
+            <Button variant="cta" onPress={() => setConfirmDelete(true)}>
+              Remove Page
+            </Button>
           )}
         </Flex>
       </Well>
