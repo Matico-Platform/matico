@@ -54,7 +54,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, hasSidebar }) => {
           {...{ areas, columns, rows }}
           height="100vh"
           justifyContent="stretch"
-          width="100vw"
+          width="100%"
         >
           <Nav />
           {children}

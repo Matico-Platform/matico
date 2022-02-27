@@ -47,6 +47,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   editActive = false,
   datasetProviders = [],
 }) => {
+  
   const columns = editActive
     ? {
         XL: ['80%', '20%'],
@@ -56,9 +57,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
         base: ["100%"],
       }
     : {
-        XL: ["100%", "0"],
-        L: ["100%", "0"],
-        M: ["100%", "0"],
+        XL: ["100%"],
+        L: ["100%"],
+        M: ["100%"],
         S: ["100%"],
         base: ["100%"],
       };
@@ -75,16 +76,22 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
         XL: "100%",
         L: "100%",
         M: "100%",
-        S: ["100%", "0"],
-        base: ["100%", "0"],
+        S: "100%",
+        base: "100%",
       };
 
-  const areas = {
+  const areas = editActive ? {
     XL: ["viewer editor"],
     L: ["viewer editor"],
     M: ["viewer editor"],
     S: ["viewer", "editor"],
-    base: ["viewer", "editor"],
+    base: ["viewer", "editor"]
+  } : {
+    XL: ["viewer"],
+    L: ["viewer"],
+    M: ["viewer"],
+    S: ["viewer"],
+    base: ["viewer"]
   };
 
   return (
@@ -103,7 +110,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                   onStateChange={onStateChange}
                 />
               </View>
-              <View gridArea="editor" width="100%">
+              {editActive && <View gridArea="editor" width="100%">
                 <MaticoEditor
                   datasetProviders={[
                     CSVProvider,
@@ -114,7 +121,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                   editActive={editActive}
                   onSpecChange={onSpecChange}
                 />
-              </View>
+              </View>}
             </Grid>
           </SpectrumProvider>
         </Grommet>
