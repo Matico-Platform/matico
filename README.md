@@ -1,32 +1,80 @@
-# Matico Spec
+# Matico 
 
-This repo is a playground to expore defining a spec for Matico in Rust and exposing it through Typescript and WASM. The benifits this hopefully gives 
+Matico is a set of tools and services that allow users to manage geospatial datasets, build APIs that use those datasets and full geospatial applications with little to no code. 
 
-- ability to plug in to Rusts excelent serde system to serialize and deserialize the spec to muliple formats (JSON, TOML, YAML etc)
-- strict validation through the validation crate
-- a single source of truth from the spec which can be used in js, python, r, rust etc through wasm (some issues here but hopeful that they are resolveable)
-- strict typing.
+It is built as a set of loosely coupled packages, that can be consumed individually or all together depending om what you want to do with them.
 
-## Running the playground 
+The app builder can be run without the server as a standalone application that produces the MaticoSpec used to describe an application or can be used with the server to host those applications and get access to persisted datasets and APIS.
 
-The code is in two parts, the spec it'self and a react based editor. 
+## Project layout 
 
-to get running 
+The project is setup as a monorepo with the following workspaces
 
-- Install rust + cargo: https://www.rust-lang.org/tools/install
-- Install wasm-pack : https://rustwasm.github.io/wasm-pack/installer/
+- matico\_spec : A Rust based library that defines the MaticoApplication specification that is used to build applications. This can be consumed by other languages such as javascript and python to build applications in those environments
+- matico\_charts : A Typescript component library which wraps visx and provides various different chart components for use in Matico
+- matico\_admin: The frontend interface that allows users to upload, manage and access geospatial datasets and to build APIS and Apps from those datasets.
+- matico\_components: The code component library for building Matico Apps, can be used all together or you can grab specific components from the library 
+- matico\_sever: The backend server that provides the API that matico\_admin consumes. 
 
-run 
+- editor : A minimal implementation of an application that allows users to create MaticoApps 
+
+Details on each of these components can be found at [https://matico.app/docs](https://matico.app/docs)
+
+## Running the full environment locally 
+
+You have two choices when running the Matico environment locally. You can either use our dockerized solution or you can run each of the components individually. 
+
+
+### Docker 
+
+To run the system in docker, simply 
+
+1. install docker
+2. install docker-compose 
+3. run ```docker-compose up`` from the command line 
+
+This will create a database and start the MaticoServer and MaticoAdmin interfaces 
+
+Once you are done simply halt the docker-compose process to shutdown the server 
+
+### Running individually
+
+To fully run the app individually you can do the following 
+
+```bash
+
+(cd matico_spec; cargo build; wasm-pack build --scope maticoapp)
+
+// In a separate terminal or tmux pane 
+
+(cd matico_charts; yarn build)
+
+// In a separate terminal or tmux pane 
+
+(cd matico_components; yarn build-dev)
+
+// In a separate terminal or tmux pane 
+
+(cd matico_admin; yarn dev)
+
+// In a separate terminal or tmux pane 
+
+(cd matico_server; cargo run)
 ```
-wasm-pack build 
-```
 
-This will produce a pkg file which contains the compiled spec as wasm and include the js and ts bindings 
+We are working on ways of making this process smoother just now. 
 
-Then you can run the editor which lives in wasm_test simply using yarn or npm
+## Deploying the app to production 
 
-```
-cd wasm_test 
-yarn 
-yarn start
-```
+To deploy the application to production, you have a few options
+
+1. If deploying to render, we provide a template [render.yml](/render.yml) file which will provision and set up the necessary resources on that system 
+2. Build the docker image locally, push it up to a docker repository and setup your hosting environment to use that image 
+3. Roll your own deploy.
+
+We are dedicated to making Matico as easy to deploy as possible and so in addition to render we are looking to include other infrastructure as code setups for various environments such as AWS, AZURE etc.
+
+If you would like to help contribute a setup, open up a PR.
+
+
+
