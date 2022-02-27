@@ -21,13 +21,14 @@ export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
   });
 
   const updatePalette = (paletteName:string)=>{
+    console.log('PALETTE NAME', paletteName)
     //@ts-ignore
     onSelectPalette({name: paletteName, colors: colors[paletteName]})
   }
 
 
   return (
-    <Picker label="Palette" placeholder="Custom" selectedKey={selectedPalette?.name} items={colorOptions} onSelectionChange={updatePalette}>
+    <Picker width="100%" label="Palette" placeholder="Custom" selectedKey={selectedPalette?.name} items={colorOptions} onSelectionChange={updatePalette}>
       {(section) => (
         <Section
           key={section.groupName}

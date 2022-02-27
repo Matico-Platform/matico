@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   DialogTrigger,
   Dialog,
@@ -11,6 +11,8 @@ import {
   Picker,
   Item,
   NumberField,
+  Text,
+  Well,
 } from "@adobe/react-spectrum";
 import { DatasetColumnSelector } from "./DatasetColumnSelector";
 import { DatasetSummary, Column, Filter } from "../../../Datasets/Dataset";
@@ -21,6 +23,8 @@ import { ColorPaletteSelector } from "./ColorPaletteSelector";
 import { ColorPickerDialog } from "./ColorPickerDialog";
 import { colors } from "../../../Utils/colors";
 import _ from "lodash";
+import { TwoUpCollapsableGrid } from "./TwoUpCollapsableGrid";
+import { scaleThreshold } from 'd3-scale';
 
 type RangeType = "color" | "value";
 
@@ -200,15 +204,95 @@ const ContinuousDomain: React.FC<{
     });
   };
 
-  const sanitizedHistogramData = histogram?.result?.map((result: any) => ({
+  const sanitizedHistogramData = histogram?.result?.filter(f => f).map((result: any) => ({
     ...result,
     count: isNaN(result.count) ? 0 : result.count,
   }))||[]
-
+  
+  const colorFunc = quantiles?.result && rangeValues 
+    ? scaleThreshold()
+      .domain([...quantiles.result.slice(1,), Math.pow(10, 10)])
+      .range(rangeValues) 
+    : () => 'gray';
+      
   return (
-    <Flex direction="column">
+    <View overflow="hidden auto" marginTop="size-200">
+      <TwoUpCollapsableGrid>
+        <Flex direction="column" width="100%">
+          <TwoUpCollapsableGrid>
+            <Picker
+              width="100%"
+              selectedKey={metric}
+              onSelectionChange={(quant) => updateQuantization(quant as string)}
+              label="Quantization"
+            >
+              <Item key="Quantile">Quantiles</Item>
+              <Item key="Continuous">Continuous</Item>
+              <Item key="EqualInterval">Equal</Item>
+              <Item key="Manual">Manual</Item>
+            </Picker>
+
+            <NumberField
+              width="100%"
+              value={noBins}
+              onChange={updateBins}
+              label="Number of breaks"
+              maxValue={9}
+              minValue={2}
+              step={1}
+            />
+          </TwoUpCollapsableGrid>
+          {rangeType === "color" && (
+            <ColorPaletteSelector
+              selectedPalette={{
+                name: selectedPaletteName,
+                colors: selectedPalette,
+              }}
+              onSelectPalette={(palette) => updatePalette(palette, noBins)}
+            />
+          )}
+        </Flex>
+
+        {["Quantile", "EqualInterval", "Manual"].includes(metric) && (
+          <Well marginStart="size-300">
+            <Flex direction="column">
+              {domainValues &&
+                domainValues.map((bin: number, index: number) => (
+                  <Flex>
+                    {rangeType === "color" && rangeValues && (
+                      <ColorPickerDialog
+                        color={rangeValues[index]}
+                        onColorChange={(color) =>
+                          updateRangeValForBin(color, index)
+                        }
+                        width="size-450"
+                        height="size-350"
+                      />
+                    )}
+                    {metric === "Manual" ? <NumberField
+                      aria-label={`Bin ${index+1}`}
+                      key={index}
+                      value={bin}
+                      labelPosition="side"
+                      isDisabled={metric !== "Manual"}
+                      onChange={(newVal) => updateValueForBin(newVal, index)}
+                    /> : <Text key={index} marginX="size-200" marginTop="size-50">{bin && index === domainValues.length-1 ? `> ${bin && bin.toFixed(1)}` :`${domainValues[index] && domainValues[index].toFixed(1)} to ${domainValues[index+1] && domainValues[index+1].toFixed(1)}`}</Text>}
+                    {rangeType === "value" && rangeValues && (
+                      <NumberField
+                        key={`values ${index}`}
+                        value={rangeValues[index]}
+                        onChange={(newVal) => updateRangeValForBin(newVal, index)}
+                      />
+                    )}
+                  </Flex>
+                ))}
+            </Flex>
+          </Well>
+        )}
+      </TwoUpCollapsableGrid>
+      
       {histogram && histogram.state === "Done" && (
-        <View margin="size-200">
+        <Well marginTop="size-200">
           <MaticoChart
             // width={300}
             height={200}
@@ -222,6 +306,11 @@ const ContinuousDomain: React.FC<{
               scaleType: "linear",
               position: "bottom",
             }}
+            yAxis={{
+              scaleType: "linear",
+              position: "left",
+            }}
+            // yExtent={[0,1500]}
             grid={{ rows: true, columns: false }}
             margin={{
               top: 10,
@@ -232,82 +321,16 @@ const ContinuousDomain: React.FC<{
             layers={[
               {
                 type: "bar",
-                color: "red",
+                color: (d: any) => colorFunc(d.binStart),
                 scale: 1,
-                xAccessor: (d: any) => d.binEnd,
+                padding:0.1,
+                xAccessor: (d: any) => (d.binEnd + d.binStart)/2,
               },
             ]}
           />
-        </View>
+        </Well>
       )}
-
-      <Flex direction="row" gap="size-200" alignItems="end">
-        <Picker
-          selectedKey={metric}
-          onSelectionChange={(quant) => updateQuantization(quant as string)}
-          label="Quantization"
-        >
-          <Item key="Quantile">Quantiles</Item>
-          <Item key="Continuous">Continuous</Item>
-          <Item key="EqualInterval">Equal</Item>
-          <Item key="Manual">Manual</Item>
-        </Picker>
-
-        <NumberField
-          value={noBins}
-          onChange={updateBins}
-          label="Number of breaks"
-          maxValue={9}
-          minValue={2}
-          step={1}
-        />
-        {rangeType === "color" && (
-          <ColorPaletteSelector
-            selectedPalette={{
-              name: selectedPaletteName,
-              colors: selectedPalette,
-            }}
-            onSelectPalette={(palette) => updatePalette(palette, noBins)}
-          />
-        )}
-      </Flex>
-
-      {["Quantile", "EqualInterval", "Manual"].includes(metric) && (
-        <Flex direction="column" gap="size-200">
-          {domainValues &&
-            domainValues.map((bin: number, index: number) => (
-              <Flex>
-                <NumberField
-                  width="size-2000"
-                  label={`Bin ${index}`}
-                  key={index}
-                  value={bin}
-                  labelPosition="side"
-                  isDisabled={metric !== "Manual"}
-                  onChange={(newVal) => updateValueForBin(newVal, index)}
-                />
-                {rangeType === "color" && rangeValues && (
-                  <ColorPickerDialog
-                    color={rangeValues[index]}
-                    onColorChange={(color) =>
-                      updateRangeValForBin(color, index)
-                    }
-                  />
-                )}
-
-                {rangeType === "value" && rangeValues && (
-                  <NumberField
-                    width="size-2000"
-                    key={`values ${index}`}
-                    value={rangeValues[index]}
-                    onChange={(newVal) => updateRangeValForBin(newVal, index)}
-                  />
-                )}
-              </Flex>
-            ))}
-        </Flex>
-      )}
-    </Flex>
+    </View>
   );
 };
 
@@ -354,6 +377,7 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
       <Dialog>
         <Content>
           <Flex direction="column">
+            <Heading>Data Driven Styling</Heading>
             <View>
               <DatasetColumnSelector
                 datasetName={datasetName}
