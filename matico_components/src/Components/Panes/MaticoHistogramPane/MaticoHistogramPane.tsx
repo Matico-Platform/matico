@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 import { useState, useRef, useMemo } from "react";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
-import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
@@ -12,6 +11,7 @@ import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
+import { View } from "@adobe/react-spectrum";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -78,7 +78,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
   const Chart = useMemo(() => {
     if (!chartData || chartData.state !== "Done") {
-      return <Box>loading</Box>;
+      return <View>loading</Box>;
     }
     const data: Array<{ binStart: number; binEnd: number; count: number }> =
       chartData.result;

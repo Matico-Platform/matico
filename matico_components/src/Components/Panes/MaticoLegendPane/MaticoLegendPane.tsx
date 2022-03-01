@@ -1,5 +1,4 @@
 import React from "react";
-import { Box } from "grommet";
 import styled from "styled-components";
 import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
 

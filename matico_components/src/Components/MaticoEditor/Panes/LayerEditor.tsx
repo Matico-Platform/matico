@@ -2,7 +2,6 @@ import React from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { GeomType } from "../../../Datasets/Dataset";
-import { Box } from "grommet";
 import { setSpecAtPath } from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { PaneDefaults } from "../PaneDefaults";
@@ -16,6 +15,8 @@ import {
   Text,
   Well,
   Header,
+  View,
+  StatusLight,
 } from "@adobe/react-spectrum";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
@@ -54,9 +55,9 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
 
   if (!layer) {
     return (
-      <Box background={"white"}>
-        <Text color="status-error">Failed to find component</Text>
-      </Box>
+      <View>
+        <StatusLight variant="negative">Failed to find component</StatusLight>
+      </View>
     );
   }
   const updateDataDriven = (newVal: any, param: string) => {

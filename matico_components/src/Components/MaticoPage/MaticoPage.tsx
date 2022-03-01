@@ -1,6 +1,5 @@
 import React from "react";
 import { Page } from "@maticoapp/matico_spec";
-import { Box } from "grommet";
 import { MarkdownContent } from "../MarkdownContent/MarkdownContent";
 import { MaticoSection } from "../MaticoSection/MaticoSection";
 import {
@@ -65,8 +64,8 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
     );
 
   return (
-    <Box fill={true} overflow={{ vertical: "auto" }}>
+    <View overflow="none auto">
       {content}
-    </Box>
+    </View>
   );
 };

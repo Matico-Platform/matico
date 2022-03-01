@@ -2,9 +2,9 @@ import React from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { MarkdownContent } from "../../MarkdownContent/MarkdownContent";
 import { TextPane } from "@maticoapp/matico_spec";
-import { Box } from "grommet";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { View } from "@adobe/react-spectrum";
 
 export interface MaticoTextPaneInterface extends MaticoPaneInterface {
   font?: string;
@@ -19,13 +19,23 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
 }) => {
   const edit = useIsEditable()
   return (
-    <Box elevation={"large"} fill={true} overflow={{ vertical: 'auto' }}>
+    <View 
+      position="relative"
+      overflow="none auto"
+      >
       {edit &&
-        <Box style={{ position: 'absolute', top: "-24px", left: "-25px", zIndex: 20, width: "48px", height: "48px" }}>
+        <View 
+          position="absolute"
+          top="-24px"
+          left="-25px"
+          zIndex={20}
+          width="48px"
+          height="48px"
+          >
           <EditButton editPath={`${editPath}.Text`} editType={"Text"} />
-        </Box>
+        </View>
       }
       <MarkdownContent>{content}</MarkdownContent>
-    </Box>
+    </View>
   );
 };

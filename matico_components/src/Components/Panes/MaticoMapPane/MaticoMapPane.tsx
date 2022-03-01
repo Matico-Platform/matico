@@ -1,17 +1,17 @@
 import React, { useState, useMemo } from "react";
-import { View } from "@maticoapp/matico_spec";
+import { View as MaticoView} from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
-import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
+import { View } from "@adobe/react-spectrum";
 
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
-  view: View;
+  view: MaticoView;
   //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
   base_map?: any;
   layers?: Array<any>;
@@ -106,19 +106,22 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
   }
 
   return (
-    <Box style={{ position: "relative", overflow: "hidden" }} fill={true}>
+    <View 
+      position="relative"
+      overflow="hidden"
+      >
       {edit && (
-        <Box
-          style={{
-            position: "absolute",
-            zIndex: 20,
-            top: "20px",
-            right: "20px",
-            backgroundColor: "rgba(0,0,0,0.2)",
+        <View
+          position="absolute"
+          zIndex={20}
+          top="20px"
+          right="20px"
+          UNSAFE_style={{
+            backgroundColor: "rgba(0,0,0,0.2)"
           }}
         >
           <EditButton editPath={`${editPath}.Map`} editType="Map" />
-        </Box>
+        </View>
       )}
       {currentView && (
         <>
@@ -172,6 +175,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
           />
         </>
       )}
-    </Box>
+    </View>
   );
 };

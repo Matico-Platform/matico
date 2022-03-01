@@ -1,4 +1,4 @@
-import { Avatar, Box, Text, Button, Nav, Sidebar } from "grommet";
+import { Avatar, Box, Button, Nav, Sidebar } from "grommet";
 import { Link } from "react-router-dom";
 import { Page } from "@maticoapp/matico_spec";
 import React from "react";
@@ -8,6 +8,7 @@ import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
 import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
 import chroma from "chroma-js";
+import { Text } from "@adobe/react-spectrum";
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
@@ -96,11 +97,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
               icon={<NamedButton name={page.icon} />}
               hoverIndicator
             />
-            <Text
-              color="white"
-              size={"small"}
-              style={{ textDecoration: "none" }}
-            >
+            <Text>
               {page.name}
             </Text>
           </Link>

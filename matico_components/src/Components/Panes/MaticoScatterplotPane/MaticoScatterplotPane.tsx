@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { MaticoPaneInterface } from "../Pane";
-import { Box, Button } from "grommet";
 import { DatasetState, Filter } from "Datasets/Dataset";
 import _ from "lodash";
 import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
@@ -14,6 +13,7 @@ import {
   generateColorVar,
   generateNumericVar,
 } from "../MaticoMapPane/LayerUtils";
+import { View } from "@adobe/react-spectrum";
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -169,14 +169,20 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     ]);
 
     return (
-      <Box elevation={"large"} fill={true} pad="small">
-        <Box style={{ position: "absolute", top: "-20px", left: "-20px" }}>
+      <View 
+        position="relative"
+      >
+        <View 
+          position="absolute"
+          left="-20px"
+          top="-20px"
+          >
           <EditButton
             editPath={`${editPath}.Scatterplot`}
             editType={"Scatterplot"}
           />
-        </Box>
+        </View>
         {Chart}
-      </Box>
+      </View>
     );
   };

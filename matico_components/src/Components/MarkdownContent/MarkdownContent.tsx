@@ -1,12 +1,12 @@
 import React, { useContext, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
-import { Box, Heading, Paragraph } from "grommet";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 //import "katex/dist/katex.min.css"; // `rehype-katex`
 import  _ from "lodash";
 import { useAutoVariables } from "../../Hooks/useAutoVariable";
+import { Heading, Text, View } from "@adobe/react-spectrum";
 
 interface MarkdownContentInterface{}
 
@@ -17,7 +17,7 @@ const CustomHeader = ({ children, id, level }) => {
   const align = level === 1 ? "center" : undefined;
   return (
     //@ts-ignore
-    <Heading id={id} level={variant} textAlign={align}>
+    <Heading id={id} level={level} alignSelf={align}>
       {children}
     </Heading>
   );
@@ -25,9 +25,9 @@ const CustomHeader = ({ children, id, level }) => {
 
 const CustomParagraph = ({ children, id }) => {
   return (
-    <Paragraph style={{maxWidth:"none", width:"100%"}} id={id}>
+    <Text maxWidth="none" width="100%" id={id}>
       {children}{" "}
-    </Paragraph>
+    </Text>
   );
 };
 
@@ -88,11 +88,8 @@ export const MarkdownContent: React.FC<MarkdownContentInterface> = ({
   ]);
 
   return (
-    <Box
-      style={{ textAlign: "start" }}
-      pad="small"
-    margin="none"
-      overflow={{ vertical: "auto" }}
+    <View
+      overflow="none auto"
     >
       <ReactMarkdown /*@ts-ignore*/
         components={CustomComponents}
@@ -102,6 +99,6 @@ export const MarkdownContent: React.FC<MarkdownContentInterface> = ({
       >
         {formattedContent}
       </ReactMarkdown>
-    </Box>
+    </View>
   );
 };
