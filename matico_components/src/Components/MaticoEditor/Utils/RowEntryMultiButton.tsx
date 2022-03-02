@@ -38,14 +38,15 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
   deleteEntry,
   duplicateEntry,
 }) => (
-  <Well>
-    <Text>{entryName}</Text>
-    <Flex direction="row" gap="size-100" marginTop="size-100" width="100%">
+  <Well width="100%" marginTop="size-100">
+    <Flex direction="row" gap="size-50" width="100%" alignContent={"center"}>
+     <Text alignSelf="center" justifySelf={"left"} flexGrow={1}>{entryName}</Text>
       <ActionGroup
         isQuiet
         buttonLabelBehavior="hide"
         density="compact"
         overflowMode="collapse"
+        justifySelf={"end"}
         onAction={(action) => {
           switch (action) {
             case "delete":
@@ -93,7 +94,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
       </ActionGroup>
 
       {deleteEntry !== undefined && (
-      <View>
+      <View justifySelf={"end"}>
         <DialogTrigger
           isDismissable
           type="popover"

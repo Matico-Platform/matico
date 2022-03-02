@@ -15,9 +15,14 @@ interface ControlActionBarProps {
   actions?: string[];
 }
 
-const ControlBarContainer = styled.span`
-  opacity:0.25;
+const ControlBarContainer = styled.div`
+  opacity:0.1;
   transition: 250ms opacity ease-in;
+  position:absolute;
+  width:100%;
+  top:0;
+  left:0;
+  z-index:20;
   &:hover {
     opacity:1;
   }
@@ -35,11 +40,9 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
     <ControlBarContainer>
       <View
         backgroundColor="informative"
-        position="absolute"
         width="100%"
-        top="0"
-        left="0"
-        zIndex={500}
+        borderColor="default"
+        borderWidth={"thick"}
       >
         <ActionGroup
           isQuiet

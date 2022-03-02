@@ -113,19 +113,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
       height="100%"
       >
       {edit && <ControlActionBar editPath={`${editPath}.Map`} editType="Map" actions={["edit", "delete"]} />}
-      {edit && (
-        <View
-          position="absolute"
-          zIndex={20}
-          top="20px"
-          right="20px"
-          UNSAFE_style={{
-            backgroundColor: "rgba(0,0,0,0.2)"
-          }}
-        >
-          <ControlButton action="edit" editPath={`${editPath}.Map`} editType="Map" />
-        </View>
-      )}
       {currentView && (
         <>
           <DeckGL
