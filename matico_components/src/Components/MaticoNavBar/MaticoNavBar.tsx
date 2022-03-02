@@ -1,14 +1,14 @@
-import { Avatar, Box, Button, Nav, Sidebar } from "grommet";
 import { Link } from "react-router-dom";
 import { Page } from "@maticoapp/matico_spec";
 import React from "react";
+import styled from "styled-components";
 import * as Icons from "grommet-icons";
 import { useIsEditable } from "../../Hooks/useIsEditable";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import chroma from "chroma-js";
-import { Text } from "@adobe/react-spectrum";
+import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
@@ -18,7 +18,15 @@ const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
   ({ name, color = "white", size = "normal" }) => {
     const NamedIcon = Icons[name] ? Icons[name] : Icons.Document;
     return <NamedIcon color={color} />;
-  };
+};
+
+const HoverLink = styled(Link)`
+  text-decoration: none;
+  padding:.5em 0;
+  &:hover {
+    background:rgba(255,255,255,0.1);
+  }
+`
 
 export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   const editable = useIsEditable();
@@ -69,48 +77,67 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   };
 
   return (
-    <Sidebar
-      background={chromaColor ? chromaColor.hex() : "neutral-2"}
-      style={{textAlign:'center'}}
-      header={
-        <Avatar
-          src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
-          elevation="small"
-          style={{ margin: "0 auto" }}
-        />
-      }
-      elevation="medium"
-      footer={<Button icon={<Icons.Help />} hoverIndicator />}
-    >
-      <Nav gap="small" >
-        {pages.map((page, index) => (
-          <Link
-            style={{ textDecoration: "none" }}
-            key={page.name}
-            to={page.path ? page.path : `/${page.name}`}
-          >
-            <Button
-              badge={
-                <EditButton editPath={`pages.${index}`} editType={"Page"} />
-              }
-              a11yTitle={page.name}
-              icon={<NamedButton name={page.icon} />}
-              hoverIndicator
+    <View 
+      overflow="visible auto"
+      height="100%"
+      backgroundColor={chromaColor ? "" : "indigo-400"}
+      borderWidth="thin"
+      borderColor="dark"
+      UNSAFE_style={{
+        backgroundColor: chromaColor ? chromaColor.hex() : "inherit"
+      }}>
+      <ButtonGroup align="center" maxWidth="100%" marginTop="size-100">
+        <Link to="/" style={{marginBottom: '1em'}}>
+          <Image
+            src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
             />
-            <Text>
-              {page.name}
-            </Text>
-          </Link>
+        </Link>
+        {pages.map((page, index) => (
+          <View position="relative" key={page.path} width="100%" marginY="size-150">
+            <HoverLink
+              to={page.path ? page.path : `/${page.name}`}
+            >
+              <NamedButton name={page.icon} />
+              <Text>
+                {page.name}
+              </Text>
+            </HoverLink>
+            <View position="absolute" right="-20px" top="-20px">
+              <ControlButton action="edit" editPath={`pages.${index}`} editType={"Page"} />
+            </View>
+          </View>
         ))}
         {editable && (
           <Button
-            a11yTitle="Add page"
-            icon={<NamedButton color={"accent-4"} name={"Add"} />}
-            hoverIndicator
-            onClick={() => onAddPage()}
-          />
+            marginY="size-100"
+            marginX="size-100"
+            aria-label="Add page"
+            onPress={() => onAddPage()}
+            UNSAFE_style={{fontSize: '0.75rem', cursor: 'pointer'}}
+            isQuiet
+            variant="overBackground"
+            
+          >
+            <NamedButton name="Add" />
+          </Button>
         )}
-      </Nav>
-    </Sidebar>
+      </ButtonGroup>
+    </View>
+    // <Sidebar
+    //   background={chromaColor ? chromaColor.hex() : "neutral-2"}
+    //   style={{textAlign:'center'}}
+    //   header={
+    //     <Avatar
+    //       src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
+    //       elevation="small"
+    //       style={{ margin: "0 auto" }}
+    //     />
+    //   }
+    //   elevation="medium"
+    //   footer={<Button icon={<Icons.Help />} hoverIndicator />}
+    // >
+    //   <Nav gap="small" >
+    //   </Nav>
+    // </Sidebar>
   );
 };

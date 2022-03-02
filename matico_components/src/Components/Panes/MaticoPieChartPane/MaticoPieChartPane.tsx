@@ -13,7 +13,7 @@ import {
 } from "../../../Utils/chartUtils";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { View } from "@adobe/react-spectrum";
 
 export interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
@@ -224,7 +224,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
           left="-20px"
           top="-20px"
           >
-          <EditButton editPath={`${editPath}.PieChart`} editType={"PieChart"} /> 
+          <ControlButton action="edit" editPath={`${editPath}.PieChart`} editType={"PieChart"} /> 
         </View>
       )}
       <Vega

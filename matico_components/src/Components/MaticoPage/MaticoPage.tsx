@@ -33,7 +33,7 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
         </View>
         <TabPanels>
           {page.sections.map((section, index) => (
-            <Item key={section.name}>
+            <Item key={section.name} width="100%" height="100%">
               {page.content && (
                 <MarkdownContent key="content">{page.content}</MarkdownContent>
               )}
@@ -64,7 +64,7 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
     );
 
   return (
-    <View overflow="none auto">
+    <View overflow="none auto" width="100%" height="100%">
       {content}
     </View>
   );

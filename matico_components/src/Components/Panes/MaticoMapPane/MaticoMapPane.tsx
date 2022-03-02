@@ -6,10 +6,10 @@ import DeckGL from "@deck.gl/react";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
-
+import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
   view: MaticoView;
   //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
@@ -109,7 +109,10 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     <View 
       position="relative"
       overflow="hidden"
+      width="100%"
+      height="100%"
       >
+      {edit && <ControlActionBar editPath={`${editPath}.Map`} editType="Map" actions={["edit", "delete"]} />}
       {edit && (
         <View
           position="absolute"
@@ -120,7 +123,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             backgroundColor: "rgba(0,0,0,0.2)"
           }}
         >
-          <EditButton editPath={`${editPath}.Map`} editType="Map" />
+          <ControlButton action="edit" editPath={`${editPath}.Map`} editType="Map" />
         </View>
       )}
       {currentView && (

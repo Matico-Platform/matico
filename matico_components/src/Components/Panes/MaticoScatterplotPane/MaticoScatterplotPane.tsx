@@ -4,7 +4,7 @@ import { DatasetState, Filter } from "Datasets/Dataset";
 import _ from "lodash";
 import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { useMaticoSelector } from "Hooks/redux";
 import { useRequestData } from "Hooks/useRequestData";
 import { useAutoVariable } from "Hooks/useAutoVariable";
@@ -177,7 +177,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           left="-20px"
           top="-20px"
           >
-          <EditButton
+          <ControlButton
+            action="edit"
             editPath={`${editPath}.Scatterplot`}
             editType={"Scatterplot"}
           />

@@ -63,10 +63,11 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     <Router basename={basename}>
       {appSpec && (
         <Grid
-          areas={["nav", "main"]}
+          areas={["nav main"]}
           gridArea={"viewer"}
-          columns={["static-size-200", "calc(100% - static-size-200)"]}
+          columns={["static-size-700", "calc(100% - static-size-700)"]}
           rows={["flex"]}
+          height="100%"
         >
           <View gridArea="nav">
             <MaticoNavBar pages={appSpec.pages} />
