@@ -102,7 +102,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
               />
             </View>
             {editActive && (
-              <View gridArea="editor" width="100%">
+              <View gridArea="editor" padding="size-200">
                 <MaticoEditor
                   datasetProviders={[
                     CSVProvider,

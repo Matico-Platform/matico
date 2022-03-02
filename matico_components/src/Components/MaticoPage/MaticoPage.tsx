@@ -24,8 +24,8 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
   let content =
     page.sections.length > 1 ? (
       <Tabs width={"100%"} height={"100%"}>
-        <View paddingStart={"size-200"}>
-          <TabList>
+        <View>
+          <TabList marginStart="size-200">
             {page.sections.map((section: any) => (
               <Item key={section.name}>{section.name}</Item>
             ))}

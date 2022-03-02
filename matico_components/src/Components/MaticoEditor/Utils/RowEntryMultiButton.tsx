@@ -38,8 +38,8 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
   deleteEntry,
   duplicateEntry,
 }) => (
-  <Well width="100%" marginTop="size-100">
-    <Flex direction="row" gap="size-50" width="100%" alignContent={"center"}>
+  <Well marginTop="size-100">
+    <Flex direction="row" margin="0" gap="size-50" width="100%" alignContent={"center"}>
      <Text alignSelf="center" justifySelf={"left"} flexGrow={1}>{entryName}</Text>
       <ActionGroup
         isQuiet

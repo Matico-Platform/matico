@@ -78,9 +78,11 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
 
   return (
     <View 
-      overflowX="hidden"
-      overflowY="auto"
+      // overflowX="hidden"
+      // overflowY="auto"
+      overflow="hidden auto"
       height="100%"
+      maxHeight="100vh"
       backgroundColor={chromaColor ? "" : "indigo-400"}
       borderWidth="thin"
       borderColor="dark"
