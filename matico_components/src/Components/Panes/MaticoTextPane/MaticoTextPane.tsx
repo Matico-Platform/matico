@@ -22,9 +22,10 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
   return (
     <View 
       position="relative"
-      overflow="none auto"
+      overflow="hidden auto"
       width="100%"
       height="100%"
+      backgroundColor={edit ? "default" : "transparent"}
       >
       <ControlActionBar editPath={`${editPath}.Text`} editType={"Text"} />
       <Content>

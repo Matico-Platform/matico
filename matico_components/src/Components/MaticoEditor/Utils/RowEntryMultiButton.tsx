@@ -3,11 +3,16 @@ import {
   Content,
   Flex,
   ActionButton,
+  ActionGroup,
   DialogTrigger,
   Dialog,
   Heading,
   View,
   Button,
+  ActionGroup,
+  Item,
+  Text,
+  Well,
 } from "@adobe/react-spectrum";
 import Edit from "@spectrum-icons/workflow/Edit";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
@@ -33,29 +38,61 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
   deleteEntry,
   duplicateEntry,
 }) => (
-  <Flex direction="row" gap="size-100" marginBottom="size-200" width="100%">
-    <ActionButton  onPress={() => setEdit(index)} flex={"1"}>
-      {entryName}
-    </ActionButton>
-    <ActionButton onPress={() => setEdit(index)} >
-      <Edit />
-    </ActionButton>
-    {duplicateEntry !== undefined && (
-      <ActionButton onPress={() => duplicateEntry(index)} >
-        <Copy />{" "}
-      </ActionButton>
-    )}
-    {changeOrder !== undefined && (
-      <ActionButton onPress={() => changeOrder(index, "up")} >
-        <ChevronUp />{" "}
-      </ActionButton>
-    )}
-    {changeOrder !== undefined && (
-      <ActionButton onPress={() => changeOrder(index, "down")} >
-        <ChevronDown />
-      </ActionButton>
-    )}
-    {deleteEntry !== undefined && (
+  <Well>
+    <Text>{entryName}</Text>
+    <Flex direction="row" gap="size-100" marginTop="size-100" width="100%">
+      <ActionGroup
+        isQuiet
+        buttonLabelBehavior="hide"
+        density="compact"
+        overflowMode="collapse"
+        onAction={(action) => {
+          switch (action) {
+            case "delete":
+              dispatch(
+                deleteSpecAtPath({
+                  editPath,
+                })
+              );
+            case "edit":
+              setEdit(index);
+            case "duplicate":
+              duplicateEntry(index);
+            case "moveUp":
+              changeOrder(index, "up");
+            case "moveDown":
+              changeOrder(index, "down");
+            default:
+              return;
+          }
+        }}
+      >
+        <Item key="edit">
+          <Edit />
+          <Text>Edit</Text>
+        </Item>
+
+        {duplicateEntry !== undefined && (
+          <Item key="duplicate">
+            <Copy />
+            <Text>Duplicate</Text>
+          </Item>
+        )}
+        {changeOrder !== undefined && (
+          <Item key="moveUp">
+            <ChevronUp />
+            <Text>Bring to Front</Text>
+          </Item>
+        )}
+        {changeOrder !== undefined && (
+          <Item key="moveDown">
+            <ChevronDown />
+            <Text>Send to Back</Text>
+          </Item>
+        )}
+      </ActionGroup>
+
+      {deleteEntry !== undefined && (
       <View>
         <DialogTrigger
           isDismissable
@@ -63,7 +100,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
           mobileType="tray"
           containerPadding={1}
         >
-          <ActionButton>
+          <ActionButton isQuiet>
             <Delete />
           </ActionButton>
           {(close) => (
@@ -85,6 +122,6 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
         </DialogTrigger>
       </View>
     )}
-  </Flex>
+    </Flex>
+  </Well>
 );
-
