@@ -8,7 +8,8 @@ import {
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import * as Icons from '@fortawesome/free-solid-svg-icons';
+import { Icon } from '@react-spectrum/icon';
 import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
 import {
@@ -28,9 +29,15 @@ import {
   Dialog,
   Content,
 } from "@adobe/react-spectrum";
-import * as icons from "@fortawesome/free-solid-svg-icons";
 import { PaneDefaults } from "../PaneDefaults";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
+
+
+const iconList = Object.keys(Icons)
+  .filter((key) => key !== 'fas' && key !== 'prefix') //@ts-ignore
+  .map((icon: string) => Icons[icon].iconName)
+  .filter((f, i, arr) => f && !!f && f.length && arr.indexOf(f) === i)
+  .map((name, id) => ({id, name}))
 
 const NewSectionModal: React.FC<{
   onAddSection: (name: string) => void;
@@ -93,7 +100,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
     );
   };
 
-  const duplicateSection= (index: number) => {
+  const duplicateSection = (index: number) => {
     dispatch(
       setSpecAtPath({
         editPath,
@@ -159,12 +166,6 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
   };
 
   const page = _.get(spec, editPath);
-
-  const iconOptions = Object.keys(icons)
-    .slice(100, 200)
-    .map((iconName: string) => ({ key: iconName, icon: icons[iconName] }))
-    .filter((a) => a);
-
   if (!page) {
     return (
       <View>
@@ -191,6 +192,18 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
           value={page.icon}
           onChange={(icon) => updatePage({ icon })}
         />
+        {/* <ComboBox
+          label="Icon"
+          onSelectionChange={({name}) => icon && updatePage({ icon: name })}
+          defaultItems={iconList}
+          >
+          {({name}) => <Item>
+            <Icon slot="icon" marginTop="size-50" marginStart="size-50">
+              <FontAwesomeIcon icon={name} size="xs" />
+            </Icon>
+            <Text marginStart="size-300">{name}</Text>
+          </Item>}
+        </ComboBox> */}
       </Well>
       <Well>
         <Heading>

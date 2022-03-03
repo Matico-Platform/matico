@@ -2,22 +2,34 @@ import { Link } from "react-router-dom";
 import { Page } from "@maticoapp/matico_spec";
 import React from "react";
 import styled from "styled-components";
-import * as Icons from "grommet-icons";
 import { useIsEditable } from "../../Hooks/useIsEditable";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
 import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import chroma from "chroma-js";
 import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import {library} from '@fortawesome/fontawesome-svg-core';
+import * as Icons from '@fortawesome/free-solid-svg-icons';
+
+const iconList = Object.keys(Icons)
+  .filter((key) => key !== 'fas' && key !== 'prefix') //@ts-ignore
+  .map((icon: string) => Icons[icon]);
+const flatIconList = iconList.map(f => f.iconName)
+library.add(...iconList);
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
 }
 
-const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
+const NamedButton: React.FC<{ name: IconProp; color?: string; size?: string }> =
   ({ name, color = "white", size = "normal" }) => {
-    const NamedIcon = Icons[name] ? Icons[name] : Icons.Document;
-    return <NamedIcon color={color} />;
+    const iconName = flatIconList.includes(name) ? name : "file";
+    return <>
+      <FontAwesomeIcon icon={iconName} size="lg"/>
+      <br/>
+    </>
 };
 
 const HoverLink = styled(Link)`
@@ -121,7 +133,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
             variant="overBackground"
             
           >
-            <NamedButton name="Add" />
+            <NamedButton name="plus" />
           </Button>
         )}
       </ButtonGroup>

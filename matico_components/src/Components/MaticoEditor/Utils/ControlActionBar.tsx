@@ -84,7 +84,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           </Item>
           <Item key="docs">
               <Info/>
-              <Text>Component Docs</Text>
+              <Text>Pane Documentation</Text>
           </Item>
           <Item key="delete">
               <Delete/>
