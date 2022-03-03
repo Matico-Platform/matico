@@ -8,6 +8,9 @@ import { View, ActionGroup, Item, Text } from "@adobe/react-spectrum";
 import Settings from "@spectrum-icons/workflow/Settings";
 import Delete from "@spectrum-icons/workflow/Delete";
 import styled from "styled-components";
+import Move from "@spectrum-icons/workflow/Move";
+import Info from "@spectrum-icons/workflow/Info";
+import Duplicate from "@spectrum-icons/workflow/Duplicate";
 
 interface ControlActionBarProps {
   editPath: string;
@@ -40,36 +43,48 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
     <ControlBarContainer>
       <View
         backgroundColor="informative"
-        width="100%"
         borderColor="default"
-        borderWidth={"thick"}
+        borderWidth="thin"
       >
         <ActionGroup
           isQuiet
           buttonLabelBehavior="hide"
+          overflowMode="collapse"
           onAction={(action) => {
               switch (action) {
-                  case "delete":
+                case "delete":
                   dispatch(
                       deleteSpecAtPath({
                         editPath,
                       })
                   );
-                  case "edit":
+                case "edit":
                   dispatch(
                       setCurrentEditPath({
                         editPath,
                         editType,
                       })
                   );
-                  default:
+                default:
                   return;
                   }
               }}
           >
+          <Item key="move">
+              <Move />
+              <Text>Move</Text>
+          </Item>
           <Item key="edit">
               <Settings />
               <Text>Edit</Text>
+          </Item>
+          <Item key="duplicate">
+              <Duplicate />
+              <Text>Duplicate</Text>
+          </Item>
+          <Item key="docs">
+              <Info/>
+              <Text>Component Docs</Text>
           </Item>
           <Item key="delete">
               <Delete/>

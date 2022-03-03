@@ -105,7 +105,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
                 {page.name}
               </Text>
             </HoverLink>
-            <View position="absolute" right="-20px" top="-20px">
+            <View position="absolute" right="0px" top="-20px">
               <ControlButton action="edit" editPath={`pages.${index}`} editType={"Page"} />
             </View>
           </View>

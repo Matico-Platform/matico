@@ -24,31 +24,33 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
   let content =
     page.sections.length > 1 ? (
       <Tabs width={"100%"} height={"100%"}>
-        <View>
-          <TabList marginStart="size-200">
-            {page.sections.map((section: any) => (
-              <Item key={section.name}>{section.name}</Item>
-            ))}
-          </TabList>
-        </View>
-        <TabPanels>
-          {page.sections.map((section, index) => (
-            <Item key={section.name} width="100%" height="100%">
-              {page.content && (
-                <MarkdownContent key="content">{page.content}</MarkdownContent>
-              )}
+        <Flex direction="column">
+          <View>
+            <TabList marginStart="size-200">
+              {page.sections.map((section: any) => (
+                <Item key={section.name}>{section.name}</Item>
+              ))}
+            </TabList>
+          </View>
+          <TabPanels>
+            {page.sections.map((section, index) => (
+              <Item key={section.name} width="100%" height="100%">
+                {page.content && (
+                  <MarkdownContent key="content">{page.content}</MarkdownContent>
+                )}
 
-              <MaticoSection
-                key={section.name}
-                section={section}
-                editPath={`${editPath}.sections.${index}`}
-              />
-            </Item>
-          ))}
-        </TabPanels>
+                <MaticoSection
+                  key={section.name}
+                  section={section}
+                  editPath={`${editPath}.sections.${index}`}
+                />
+              </Item>
+            ))}
+          </TabPanels>
+        </Flex>
       </Tabs>
     ) : (
-      <Flex direction="column" width={"100%"} height={"100%"}>
+      <Flex direction="column" width={"100%"} height={"100%"} >
         {page.content && (
           <MarkdownContent key="content">{page.content}</MarkdownContent>
         )}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import { Box, Button, Heading, RangeInput, Text } from "grommet";
 import {
   deleteSpecAtPath,
   setCurrentEditPath,
@@ -11,6 +10,7 @@ import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { SectionHeading } from "../Utils/Utils";
+import { Text, View } from "@adobe/react-spectrum";
 
 export interface PaneEditorProps {
   editPath: string;
@@ -62,6 +62,18 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
       })
     );
   };
+  
+  const updateSpec = (change: any) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          ...piechartPane,
+          ...change,
+        },
+      })
+    );
+  };
 
   // const editPane = (index) => {
   //   console.log("SECTION is ",index)
@@ -77,13 +89,13 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
 
   if (!piechartPane) {
     return (
-      <Box background={'white'}>
-        <Text color="status-error">Failed to find component</Text>
-      </Box>
+      <View>
+        <Text>Failed to find component</Text>
+      </View>
     );
   }
   return (
-    <Box background={'white'} pad="medium">
+    <View>
       <SectionHeading>Pane Details</SectionHeading>
       <PaneEditor
         position={piechartPane.position}
@@ -99,29 +111,11 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
       />
 
       <DatasetColumnSelector
-        dataset={piechartPane.dataset.name}
+        datasetName={piechartPane.dataset.name}
         selectedColumn={piechartPane.column}
         label="Column"
-        onColumnSelected={(column) => updateColumn(column)}
+        onColumnSelected={(column) => updateSpec({ column: column.name })}
       />
-
-      <SectionHeading>Danger Zone</SectionHeading>
-      {confirmDelete ? (
-        <Box direction="row">
-          <Button primary label="DO IT!" onClick={deletePane} />
-          <Button
-            secondary
-            label="Nah I changed my mind"
-            onClick={() => setConfirmDelete(false)}
-          />
-        </Box>
-      ) : (
-        <Button
-          color="neutral-4"
-          label="Delete Pie Pie Chart"
-          onClick={() => setConfirmDelete(true)}
-        />
-      )}
-    </Box>
+    </View>
   );
 };

@@ -19,6 +19,8 @@ import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 import Delete from "@spectrum-icons/workflow/Delete";
 import Copy from "@spectrum-icons/workflow/Copy";
+import Duplicate from "@spectrum-icons/workflow/Duplicate";
+import Settings from "@spectrum-icons/workflow/Settings";
 
 interface RowEntryMultiButtonProps {
   entryName: string | React.ReactNode;
@@ -40,13 +42,15 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
 }) => (
   <Well marginTop="size-100">
     <Flex direction="row" margin="0" gap="size-50" width="100%" alignContent={"center"}>
-     <Text alignSelf="center" justifySelf={"left"} flexGrow={1}>{entryName}</Text>
+      <View maxWidth={"50%"} overflow={"hidden"} flexGrow={1} justifySelf={"left"} alignSelf="center">
+        <Text>{entryName}</Text>
+      </View>
       <ActionGroup
         isQuiet
         buttonLabelBehavior="hide"
-        density="compact"
         overflowMode="collapse"
         justifySelf={"end"}
+        maxWidth="50%"
         onAction={(action) => {
           switch (action) {
             case "delete":
@@ -69,60 +73,60 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
         }}
       >
         <Item key="edit">
-          <Edit />
+          <Settings />
           <Text>Edit</Text>
         </Item>
 
         {duplicateEntry !== undefined && (
           <Item key="duplicate">
-            <Copy />
+            <Duplicate />
             <Text>Duplicate</Text>
           </Item>
         )}
         {changeOrder !== undefined && (
           <Item key="moveUp">
             <ChevronUp />
-            <Text>Bring to Front</Text>
+            <Text>Bring Forward</Text>
           </Item>
         )}
         {changeOrder !== undefined && (
           <Item key="moveDown">
             <ChevronDown />
-            <Text>Send to Back</Text>
+            <Text>Send Backward</Text>
           </Item>
         )}
       </ActionGroup>
 
       {deleteEntry !== undefined && (
-      <View justifySelf={"end"}>
-        <DialogTrigger
-          isDismissable
-          type="popover"
-          mobileType="tray"
-          containerPadding={1}
-        >
-          <ActionButton isQuiet>
-            <Delete />
-          </ActionButton>
-          {(close) => (
-            <Dialog>
-              <Heading>Gone, forever?</Heading>
-              <Content marginTop="size-100">
-                <Button
-                  variant="negative"
-                  onPress={() => {
-                    deleteEntry(index);
-                    close();
-                  }}
-                >
-                  <Delete /> Delete
-                </Button>
-              </Content>
-            </Dialog>
-          )}
-        </DialogTrigger>
-      </View>
-    )}
+        <View justifySelf={"end"}>
+          <DialogTrigger
+            isDismissable
+            type="popover"
+            mobileType="tray"
+            containerPadding={1}
+          >
+            <ActionButton isQuiet>
+              <Delete />
+            </ActionButton>
+            {(close) => (
+              <Dialog>
+                <Heading>Gone, forever?</Heading>
+                <Content marginTop="size-100">
+                  <Button
+                    variant="negative"
+                    onPress={() => {
+                      deleteEntry(index);
+                      close();
+                    }}
+                  >
+                    <Delete /> Delete
+                  </Button>
+                </Content>
+              </Dialog>
+            )}
+          </DialogTrigger>
+        </View>
+      )}
     </Flex>
   </Well>
 );

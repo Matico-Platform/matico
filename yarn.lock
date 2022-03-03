@@ -3603,7 +3603,6 @@ __metadata:
     esbuild-plugin-inline-worker: ^0.1.1
     esbuild-plugin-replace: ^1.0.9
     esbuild-plugin-wasm: ^1.0.0
-    grommet: ^2.19.1
     grommet-icons: ^4.6.2
     katex: ^0.13.18
     lodash: ^4.17.21
@@ -20721,7 +20720,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grommet-icons@npm:^4.6.2, grommet-icons@npm:^4.7.0":
+"grommet-icons@npm:^4.6.2":
   version: 4.7.0
   resolution: "grommet-icons@npm:4.7.0"
   dependencies:
@@ -20742,22 +20741,6 @@ __metadata:
     react-dom: ">= 16.4.1"
     styled-components: ">= 4.X"
   checksum: 7b29e6fd773a29a9f7b48e5b0a163e1c51b3b196891228d88a0e5b99faab4ece03b5410a97665105fe886402016a337237b956d5f46af06ec2e06e2b328a0757
-  languageName: node
-  linkType: hard
-
-"grommet@npm:^2.19.1":
-  version: 2.20.0
-  resolution: "grommet@npm:2.20.0"
-  dependencies:
-    grommet-icons: ^4.7.0
-    hoist-non-react-statics: ^3.2.0
-    markdown-to-jsx: ^7.1.5
-    prop-types: ^15.7.2
-  peerDependencies:
-    react: ^16.6.1 || ^17.0.0
-    react-dom: ^16.6.1 || ^17.0.0
-    styled-components: ">= 5.1"
-  checksum: d13bfd083fbfc50f3c180101a3e5ffce23c10cd109e46b219f8ef9c74380f9124c13d195ed44a5550ac4e272eef11627237eb8d85fb991977147c19fec2d7c37
   languageName: node
   linkType: hard
 
@@ -21372,7 +21355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.2.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -25183,15 +25166,6 @@ __metadata:
   peerDependencies:
     react: ">= 0.14.0"
   checksum: f7d8375f9871f228f2d0a06055f1d01f82c57cbd93fde2b9cb24ccebde741b9ebc0f4b8c52239f7b192c72e7f587cca4d3e752b731539be1936b3290470d119c
-  languageName: node
-  linkType: hard
-
-"markdown-to-jsx@npm:^7.1.5":
-  version: 7.1.5
-  resolution: "markdown-to-jsx@npm:7.1.5"
-  peerDependencies:
-    react: ">= 0.14.0"
-  checksum: dad5c6f427fbd184467a6233a04501007beb8b92f71dfefb859442f6d9872b5e8024381ef41a2874ab8226befe3a0f1043e25af3f9df78b4a86b1b7160910326
   languageName: node
   linkType: hard
 
