@@ -35,6 +35,9 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
   const [selectedDatasetId, setSelectedDatasetId] =
     useState<null | string>(null);
 
+  const [latitudeCol, setLatitudeCol] = useState<string | null>(null);
+  const [longitudeCol, setLongitudeCol] = useState<string | null>(null);
+
   const selectedPortal = portals
     ? portals.find(
         (p: PortalInfo) => p.domain === (selectedPortalKey as string)
@@ -50,18 +53,29 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
     ? datasets.find((d) => d.resource.id === selectedDatasetId)
     : null;
 
-  const attemptToLoadDataset = (dataset: any) => {
-    const dataUrl = `https://${dataset.metadata.domain}/api/geospatial/${dataset.resource.id}?method=export&format=GeoJSON`;
-    onSubmit({
-      GeoJSON: {
-        url: dataUrl,
-        name: dataset.resource.name,
-      },
-    });
+  const attemptToLoadDataset = (dataset: any, format: "CSV" | "GeoJSON") => {
+    if(format==='GeoJSON'){
+      onSubmit({
+        GeoJSON: {
+          url: `https://${dataset.metadata.domain}/api/geospatial/${dataset.resource.id}?method=export&format=GeoJSON`,
+          name: dataset.resource.name,
+        },
+      });
+    }
+    else{
+      onSubmit({
+        CSV: {
+          url: `https://${dataset.metadata.domain}/resource/${dataset.resource.id}.csv`,
+          name: dataset.resource.name,
+          lat_col: latitudeCol,
+          lng_col: longitudeCol
+        },
+      });
+
+    }
   };
 
-
-  console.log("selected dataset ",selectedDataset)
+  console.log("selected dataset ", selectedDataset);
   return (
     <Flex direction="column" gap="size-200" padding="size-100">
       {portals && (
@@ -121,28 +135,70 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
         <Well>
           <Heading>Columns</Heading>
           <View maxHeight="size-2000" overflow="hidden auto">
-          <Flex direction="column" >
-            {selectedDataset.resource.columns_name.map(
-              (name: string, index: number) => (
-                <Flex direction="row">
-                  <Text>{name}</Text>
-                  <Text>{selectedDataset.resource.columns_datatype[index]} </Text>
-                </Flex>
-              )
-            )}
-          </Flex>
-        </View>
+            <Flex direction="column">
+              {selectedDataset.resource.columns_name.map(
+                (name: string, index: number) => (
+                  <Flex
+                    direction="row"
+                    justifyContent="space-between"
+                    margin="size-100"
+                  >
+                    <Text>{name}</Text>
+                    <Text>
+                      {selectedDataset.resource.columns_datatype[index]}{" "}
+                    </Text>
+                  </Flex>
+                )
+              )}
+            </Flex>
+          </View>
         </Well>
       )}
-      {selectedDataset && (
+      {selectedDataset &&
+      selectedDataset.resource.lens_view_type &&
+      selectedDataset.resource.lens_view_type === "geo" ? (
         <Flex direction="row" justifyContent="end">
           <Button
-            onPress={() => attemptToLoadDataset(selectedDataset)}
+            onPress={() => attemptToLoadDataset(selectedDataset, "GeoJSON")}
             variant="cta"
           >
             Load Dataset
           </Button>
         </Flex>
+      ) : (
+        selectedDataset && (
+          <Flex direction="row" justifyContent="end">
+            <Picker
+              label="Latitude Column"
+              selectedKey={latitudeCol}
+              onSelectionChange={setLatitudeCol}
+              items={selectedDataset.resource.columns_name.map((c) => ({
+                id: c,
+                name: c,
+              }))}
+            >
+              {(item) => <Item key={item.id}>{item.name}</Item>}
+            </Picker>
+            <Picker
+              label="Longitude Column"
+              selectedKey={longitudeCol}
+              onSelectionChange={setLongitudeCol}
+              items={selectedDataset.resource.columns_name.map((c) => ({
+                id: c,
+                name: c,
+              }))}
+            >
+              {(item) => <Item key={item.id}>{item.name}</Item>}
+            </Picker>
+            <Button
+              onPress={() => attemptToLoadDataset(selectedDataset, "CSV")}
+              variant="cta"
+              isDisabled={!(latitudeCol && longitudeCol)}
+            >
+              Load Dataset
+            </Button>
+          </Flex>
+        )
       )}
     </Flex>
   );

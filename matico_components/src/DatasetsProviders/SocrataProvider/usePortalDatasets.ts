@@ -27,6 +27,8 @@ const loadDataasets = async (portal : PortalInfo, onProgress? : progressFunc )=>
   return datasets
 }
 
+const cache = {}
+
 export const usePortalDatasets= (portal: PortalInfo | null) => {
   const [datasets, setDatasets] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -34,13 +36,19 @@ export const usePortalDatasets= (portal: PortalInfo | null) => {
 
   useEffect(() => {
     if(portal){
-      setLoading(true);
-      (async()=>{
-        let datasets = await loadDataasets(portal,setProgress)
-        console.log("datasets ", datasets)
-        setDatasets(datasets)
-        setLoading(false)
-      })()
+      if(portal.domain in cache){
+        setDatasets(cache[portal.domain])
+      }
+      else{
+        (async()=>{
+          setLoading(true);
+          let datasets = await loadDataasets(portal,setProgress)
+          console.log("datasets ", datasets)
+          setDatasets(datasets)
+          setLoading(false)
+          cache[portal.domain] = datasets
+        })()
+      }
     }
   },[portal, setLoading]);
 
