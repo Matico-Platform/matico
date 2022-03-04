@@ -1,6 +1,5 @@
 import { Flex, Heading, Text, View } from "@adobe/react-spectrum";
 import React from "react";
-import styled from "styled-components";
 import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
 
 // interface MaicoMapPaneInterface extends MaticoPaneInterface {
@@ -11,7 +10,11 @@ import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
 //     editPath?: string;
 // }
 
+
+
 export const MaticoLegendPane = ({ layers = [] }) => {
+
+  console.log("Layers for legend ", layers)
   return layers && layers.length ? (
     <View
       position="absolute"
@@ -29,31 +32,52 @@ export const MaticoLegendPane = ({ layers = [] }) => {
                 <Flex direction="column-reverse">
                   {"string" == typeof layer.colorScale.range
                     ? getColorScale(layer.colorScale.range)[0]
-                      ? getColorScale(layer.colorScale.range)[0].map((color) => (
-                        <View width="size-150" flexGrow={1} key={color} UNSAFE_style={{ backgroundColor: color }} />
-                      ))
+                      ? getColorScale(layer.colorScale.range)[0].map(
+                          (color) => (
+                            <View
+                              width="size-150"
+                              flexGrow={1}
+                              key={color}
+                              UNSAFE_style={{ backgroundColor: color }}
+                            />
+                          )
+                        )
                       : null
                     : layer?.colorScale?.range
-                      ? layer.colorScale.range.map((d) => {
-
-                        console.log("color is ", d)
-                        return <View
-                          key={`rgb(${generateColor(d, false).slice(0, 3).join(",")})`}
-                          UNSAFE_style={{
-                            backgroundColor: `rgb(${generateColor(d, false).slice(0, 3).join(",")})`,
-                          }}
-                        />
-                      }
-                      )
-                      : null}
+                    ? layer.colorScale.range.map((d) => {
+                       console.log("GETTING MAP ",d)
+                        return (
+                          <View
+                            key={`rgb(${generateColor(d, false)
+                              .slice(0, 3)
+                              .join(",")})`}
+                            UNSAFE_style={{
+                              backgroundColor: `rgb(${generateColor(d, false)
+                                .slice(0, 3)
+                                .join(",")})`,
+                            }}
+                          />
+                        );
+                      })
+                    : null}
                 </Flex>
-                <Flex direction="column-reverse" justifyContent="space-evenly" alignItems="start" marginY={`${100/layer.colorScale.range.length/2}%`} marginStart="size-50">
+                <Flex
+                  direction="column-reverse"
+                  justifyContent="space-evenly"
+                  alignItems="start"
+                  marginY={`${100 / layer.colorScale.range.length / 2}%`}
+                  marginStart="size-50"
+                >
                   {!!layer?.colorScale?.domain &&
                     layer.colorScale.domain
-                      .slice(1)
                       .map((d) => (
+                        "string" === typeof(d) ? 
+                        <Text key={d}>
+                          {d}
+                        </Text>
+                        :
                         <Text key={Math.round(d).toLocaleString("en")}>
-                          {(Math.round(d*10)/10).toLocaleString("en")}
+                          {(Math.round(d * 10) / 10).toLocaleString("en")}
                         </Text>
                       ))}
                 </Flex>
@@ -65,4 +89,3 @@ export const MaticoLegendPane = ({ layers = [] }) => {
     </View>
   ) : null;
 };
-

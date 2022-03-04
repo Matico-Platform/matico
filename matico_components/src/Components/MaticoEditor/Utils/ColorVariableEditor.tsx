@@ -24,7 +24,7 @@ export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
   );
 
   
-  const defaultColumn = dataset?.columns?.find((col)=> col.type==="number")
+  const defaultColumn = dataset?.columns[0];
 
 
   const isDataDriven = style.hasOwnProperty("variable");

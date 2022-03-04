@@ -33,7 +33,7 @@ export const NumericVariableEditor: React.FC<NumericVariableEditorProps> = ({
     (state) => state.datasets.datasets[datasetName]
   );
 
-  const defaultColumn = dataset.columns.find((col) => col.type === "number");
+  const defaultColumn = dataset.columns[0];
 
   const isDataDriven =  style && style.hasOwnProperty("variable");
 

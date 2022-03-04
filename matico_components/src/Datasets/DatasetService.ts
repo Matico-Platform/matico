@@ -67,6 +67,10 @@ export const DatasetService: DatasetServiceInterface = {
             return dataset.getQuantileBins(column, parameters.bins);
           case "Histogram":
             return dataset.getColumnHistogram(column, parameters.bins,filters);
+          case "CategoryCounts":
+            return dataset.getCategoryCounts(column, filters)
+          case "Categories":
+            return dataset.getCategories(column,parameters.no_categories, filters)
           default:
             return null;
         }
