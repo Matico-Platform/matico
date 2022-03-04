@@ -53,6 +53,7 @@ const extractColumns = (geoJSON: any, idCol: string) => {
   }
   return { columns, fields };
 };
+
 const buildDataTable = (
   geoJSON: any,
   idCol: string | null,
@@ -65,6 +66,7 @@ const buildDataTable = (
     nullValues: [null, "n/a"],
   });
   geoJSON.features.forEach((feature: any, id: number) => {
+    if(!feature.geometry) { return }
     const geom = wkx.Geometry.parseGeoJSON(feature.geometry).toWkb();
     //@ts-ignore
     const values = columns.map((c) => feature.properties[c.name]);
@@ -84,7 +86,7 @@ const extractGeomType = (geojson: any) => {
     agg,
     node
   ) {
-    if (this.key === "geometry") {
+    if (this.key === "geometry" && node) {
       const geomType = node.type;
       agg[geomType] = agg[geomType] ? agg[geomType] + 1 : 0;
     }
