@@ -7,30 +7,19 @@ import {
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
 
-import { DatasetSelector } from "../Utils/DatasetSelector";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import { PaneEditor } from "./PaneEditor";
-import { BaseMapSelector } from "../Utils/BaseMapSelector";
 import { DefaultGrid } from "../Utils/DefaultGrid";
-import { PaneDefaults } from "Components/MaticoEditor/PaneDefaults";
 import {
   Flex,
   Heading,
   Well,
-  Grid,
   NumberField,
   ActionButton,
-  Text,
-  Item,
-  Picker,
-  Checkbox,
   DialogTrigger,
   Dialog,
   Content,
   TextField,
-  View,
-  ButtonGroup,
   repeat,
 } from "@adobe/react-spectrum";
 
