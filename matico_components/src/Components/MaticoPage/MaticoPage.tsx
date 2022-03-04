@@ -1,11 +1,8 @@
 import React from "react";
-import ReactDom from "react-dom";
 import { Page } from "@maticoapp/matico_spec";
 import { Box } from "grommet";
 import { MarkdownContent } from "../MarkdownContent/MarkdownContent";
 import { MaticoSection } from "../MaticoSection/MaticoSection";
-import { Route } from "react-router";
-import { useRouteMatch, Switch } from "react-router-dom";
 import {
   Tabs,
   View,
@@ -23,7 +20,7 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
   page,
   editPath,
 }) => {
-  let { path, url } = useRouteMatch();
+  console.log("Page is ", page);
 
   let content =
     page.sections.length > 1 ? (
@@ -57,11 +54,13 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
           <MarkdownContent key="content">{page.content}</MarkdownContent>
         )}
 
-        <MaticoSection
-          key={page.sections[0].name}
-          section={page.sections[0]}
-          editPath={`${editPath}.sections.0`}
-        />
+        {page.sections.length === 1 && (
+          <MaticoSection
+            key={page.sections[0].name}
+            section={page.sections[0]}
+            editPath={`${editPath}.sections.0`}
+          />
+        )}
       </Flex>
     );
 
