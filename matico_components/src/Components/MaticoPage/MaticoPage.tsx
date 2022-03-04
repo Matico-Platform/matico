@@ -23,8 +23,8 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
 
   let content =
     page.sections.length > 1 ? (
-      <Tabs width={"100%"} height={"100%"}>
-        <Flex direction="column">
+      <Tabs width="100%" height="100%">
+        <Flex direction="column" width="100%" height="100%" >
           <View>
             <TabList marginStart="size-200">
               {page.sections.map((section: any) => (
