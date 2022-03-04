@@ -2,16 +2,16 @@ import React, { useContext } from "react";
 import { useState, useRef, useMemo } from "react";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
-import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
+import { View } from "@adobe/react-spectrum";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -78,7 +78,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
   const Chart = useMemo(() => {
     if (!chartData || chartData.state !== "Done") {
-      return <Box>loading</Box>;
+      return <View>loading</View>;
     }
     const data: Array<{ binStart: number; binEnd: number; count: number }> =
       chartData.result;
@@ -136,18 +136,20 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   }, [JSON.stringify({labels, mappedStyle, backgroundColor}), chartData]);
 
   return (
-    <Box
-      background={backgroundColor}
-      elevation={"large"}
-      fill={true}
-      pad="small"
-      style={{ width: "100%", height: "100%" }}
+    <View
+      width="100%"
+      height="100%"
+      padding="size-100"
     >
-      <Box style={{ position: "absolute", top: "-20px", left: "-20px" }}>
-        <EditButton editPath={`${editPath}.Histogram`} editType={"Histogram"} />
-      </Box>
+      <View
+        position="absolute"
+        top="-20px"
+        left="-20px"
+        >
+        <ControlButton action="edit" editPath={`${editPath}.Histogram`} editType={"Histogram"} />
+      </View>
       {!datasetReady && <div>{dataset.name} not found!</div>}
       {Chart}
-    </Box>
+    </View>
   );
 };

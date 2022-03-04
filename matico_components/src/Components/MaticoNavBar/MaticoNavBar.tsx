@@ -1,23 +1,44 @@
-import { Avatar, Box, Text, Button, Nav, Sidebar } from "grommet";
 import { Link } from "react-router-dom";
 import { Page } from "@maticoapp/matico_spec";
 import React from "react";
-import * as Icons from "grommet-icons";
+import styled from "styled-components";
 import { useIsEditable } from "../../Hooks/useIsEditable";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
 import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import chroma from "chroma-js";
+import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import {library} from '@fortawesome/fontawesome-svg-core';
+import * as Icons from '@fortawesome/free-solid-svg-icons';
+
+const iconList = Object.keys(Icons)
+  .filter((key) => key !== 'fas' && key !== 'prefix') //@ts-ignore
+  .map((icon: string) => Icons[icon]);
+const flatIconList = iconList.map(f => f.iconName)
+library.add(...iconList);
 
 interface MaticoNavBarProps {
   pages: Array<Page>;
 }
 
-const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
+const NamedButton: React.FC<{ name: IconProp; color?: string; size?: string }> =
   ({ name, color = "white", size = "normal" }) => {
-    const NamedIcon = Icons[name] ? Icons[name] : Icons.Document;
-    return <NamedIcon color={color} />;
-  };
+    const iconName = flatIconList.includes(name) ? name : "file";
+    return <>
+      <FontAwesomeIcon icon={iconName} size="lg"/>
+      <br/>
+    </>
+};
+
+const HoverLink = styled(Link)`
+  text-decoration: none;
+  padding:.5em 0;
+  &:hover {
+    background:rgba(255,255,255,0.1);
+  }
+`
 
 export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   const editable = useIsEditable();
@@ -68,52 +89,70 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   };
 
   return (
-    <Sidebar
-      background={chromaColor ? chromaColor.hex() : "neutral-2"}
-      style={{textAlign:'center'}}
-      header={
-        <Avatar
-          src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
-          elevation="small"
-          style={{ margin: "0 auto" }}
-        />
-      }
-      elevation="medium"
-      footer={<Button icon={<Icons.Help />} hoverIndicator />}
-    >
-      <Nav gap="small" >
-        {pages.map((page, index) => (
-          <Link
-            style={{ textDecoration: "none" }}
-            key={page.name}
-            to={page.path ? page.path : `/${page.name}`}
-          >
-            <Button
-              badge={
-                <EditButton editPath={`pages.${index}`} editType={"Page"} />
-              }
-              a11yTitle={page.name}
-              icon={<NamedButton name={page.icon} />}
-              hoverIndicator
+    <View 
+      // overflowX="hidden"
+      // overflowY="auto"
+      overflow="hidden auto"
+      height="100%"
+      maxHeight="100vh"
+      backgroundColor={chromaColor ? "" : "indigo-400"}
+      borderWidth="thin"
+      borderColor="dark"
+      UNSAFE_style={{
+        backgroundColor: chromaColor ? chromaColor.hex() : "inherit"
+      }}>
+      <ButtonGroup align="center" maxWidth="100%" marginTop="size-100">
+        <Link to="/" style={{marginBottom: '1em'}}>
+          <Image
+            src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
             />
-            <Text
-              color="white"
-              size={"small"}
-              style={{ textDecoration: "none" }}
+        </Link>
+        {pages.map((page, index) => (
+          <View position="relative" key={page.path} width="100%" marginY="size-150">
+            <HoverLink
+              to={page.path ? page.path : `/${page.name}`}
             >
-              {page.name}
-            </Text>
-          </Link>
+              <NamedButton name={page.icon} />
+              <Text>
+                {page.name}
+              </Text>
+            </HoverLink>
+            <View position="absolute" right="0px" top="-20px">
+              <ControlButton action="edit" editPath={`pages.${index}`} editType={"Page"} />
+            </View>
+          </View>
         ))}
         {editable && (
           <Button
-            a11yTitle="Add page"
-            icon={<NamedButton color={"accent-4"} name={"Add"} />}
-            hoverIndicator
-            onClick={() => onAddPage()}
-          />
+            marginY="size-100"
+            marginX="size-100"
+            aria-label="Add page"
+            onPress={() => onAddPage()}
+            UNSAFE_style={{fontSize: '0.75rem', cursor: 'pointer'}}
+            isQuiet
+            variant="overBackground"
+            
+          >
+            <NamedButton name="plus" />
+          </Button>
         )}
-      </Nav>
-    </Sidebar>
+      </ButtonGroup>
+    </View>
+    // <Sidebar
+    //   background={chromaColor ? chromaColor.hex() : "neutral-2"}
+    //   style={{textAlign:'center'}}
+    //   header={
+    //     <Avatar
+    //       src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
+    //       elevation="small"
+    //       style={{ margin: "0 auto" }}
+    //     />
+    //   }
+    //   elevation="medium"
+    //   footer={<Button icon={<Icons.Help />} hoverIndicator />}
+    // >
+    //   <Nav gap="small" >
+    //   </Nav>
+    // </Sidebar>
   );
 };

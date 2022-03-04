@@ -1,6 +1,5 @@
 import React from "react";
 import { Section } from "@maticoapp/matico_spec";
-import { Box } from "grommet";
 import { MaticoFreeLayout } from "../Layouts/MaticoFreeLayout/MaticoFreeLayout";
 import { MaticoMapPane } from "../Panes/MaticoMapPane/MaticoMapPane";
 import { MaticoTextPane } from "../Panes/MaticoTextPane/MaticoTextPane";

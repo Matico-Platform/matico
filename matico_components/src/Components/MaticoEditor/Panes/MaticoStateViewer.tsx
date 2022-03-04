@@ -1,22 +1,20 @@
-import { Box } from "grommet";
 import React from "react";
 import ReactJson from "react-json-view";
 import { useMaticoSelector } from "Hooks/redux";
+import { Flex, View } from "@adobe/react-spectrum";
 
 export const MaticoStateViewer: React.FC = () => {
   const state = useMaticoSelector((state) => state.variables);
   return (
-    <Box
-      background={"white"}
-      style={{ textAlign: "left" }}
-      fill
-      flex
-    >
-      <ReactJson
-        style={{ fontSize: 15 }}
-        collapsed={3}
-        src={state}
-      />
-    </Box>
+    <Flex>
+      <View backgroundColor="static-white" paddingX="medium" paddingY="medium">
+        <ReactJson
+          style={{ fontSize: 15, textAlign: "left" }}
+          collapsed={3}
+          src={state}
+
+        />
+      </View>
+    </Flex>
   );
 };

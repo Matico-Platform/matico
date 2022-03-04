@@ -3,7 +3,6 @@ import { Vega } from "react-vega";
 import { useState, useRef, useMemo } from "react";
 import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
-import { Box } from "grommet";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
@@ -14,7 +13,8 @@ import {
 } from "../../../Utils/chartUtils";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
+import { View } from "@adobe/react-spectrum";
 
 export interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -210,17 +210,22 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
   }
   
   return (
-    <Box
-      background={backgroundColor}
-      elevation={"large"}
-      fill={true}
+    <View
       ref={containerRef}
-      pad="small"
+      padding="size-50"
+      position="relative"
+      UNSAFE_style={{
+        backgroundColor
+      }}
     >
       {edit && (
-        <Box style={{ position: "absolute", left: "-20px", top: "-20px" }}>
-          <EditButton editPath={`${editPath}.PieChart`} editType={"PieChart"} /> 
-        </Box>
+        <View 
+          position="absolute"
+          left="-20px"
+          top="-20px"
+          >
+          <ControlButton action="edit" editPath={`${editPath}.PieChart`} editType={"PieChart"} /> 
+        </View>
       )}
       <Vega
         ref={chartRef}
@@ -230,6 +235,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         // @ts-ignore
         spec={spec}
       />
-    </Box>
+    </View>
   );
 };

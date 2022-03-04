@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
 import { MaticoPaneInterface } from "../Pane";
-import { Box, Button } from "grommet";
 import { DatasetState, Filter } from "Datasets/Dataset";
 import _ from "lodash";
 import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
-import { EditButton } from "Components/MaticoEditor/Utils/EditButton";
+import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { useMaticoSelector } from "Hooks/redux";
 import { useRequestData } from "Hooks/useRequestData";
 import { useAutoVariable } from "Hooks/useAutoVariable";
@@ -14,6 +13,7 @@ import {
   generateColorVar,
   generateNumericVar,
 } from "../MaticoMapPane/LayerUtils";
+import { View } from "@adobe/react-spectrum";
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -169,14 +169,21 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     ]);
 
     return (
-      <Box elevation={"large"} fill={true} pad="small">
-        <Box style={{ position: "absolute", top: "-20px", left: "-20px" }}>
-          <EditButton
+      <View 
+        position="relative"
+      >
+        <View 
+          position="absolute"
+          left="-20px"
+          top="-20px"
+          >
+          <ControlButton
+            action="edit"
             editPath={`${editPath}.Scatterplot`}
             editType={"Scatterplot"}
           />
-        </Box>
+        </View>
         {Chart}
-      </Box>
+      </View>
     );
   };

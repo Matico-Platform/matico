@@ -8,6 +8,12 @@ const editTypeMapping = {
   // todo: centralize
   pages: "Page",
   sections: "Section",
+  Text: "Text",
+  Map: "Map",
+  Histogram: "Histogram",
+  Scatterplot: "Scatterplot",
+  PieChart: "PieChart",
+  Controls: "Controls"
 };
 
 const BreadCrumbContainer = styled.div`
@@ -41,10 +47,9 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
   //@ts-ignore
   const setEditPath = ({editPath, editType}) => dispatch(setCurrentEditPath({ editPath, editType }));
 
-  console.log("breadCrumbPath ", breadCrumbPath);
+  // console.log("breadCrumbPath ", breadCrumbPath);
 
   const pathSegments = breadCrumbPath
-    .slice(0, -2)
     .map((editItem, index) => ({
       label: editTypeMapping[editItem],
       editPath: breadCrumbPath.slice(0, index + 2).join("."),
@@ -56,7 +61,7 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
     return <></>;
   }
 
-  console.log("path segments ", pathSegments);
+  // console.log("path segments ", pathSegments);
 
   return (
     <Breadcrumbs

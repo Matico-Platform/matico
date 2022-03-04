@@ -8,9 +8,6 @@ import {
   MaticoDataState,
 } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoAppPresenter } from "../MaticoAppPresenter/MaticoAppPresenter";
-import { Grommet } from "grommet";
-import { deepMerge } from "grommet/utils";
-import { grommet } from "grommet/themes";
 import { MaticoEditor } from "../MaticoEditor/MaticoEditor";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 import {
@@ -35,10 +32,6 @@ interface MaticoAppInterface {
   datasetProviders?: Array<DatasetProvider>;
 }
 
-const themeTweaks = {
-  button: { default: undefined },
-};
-
 export const MaticoApp: React.FC<MaticoAppInterface> = ({
   spec,
   onStateChange,
@@ -48,10 +41,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   editActive = false,
   datasetProviders = [],
 }) => {
-  
   const columns = editActive
     ? {
-        XL: ['80%', '20%'],
+        XL: ["80%", "20%"],
         L: ["70%", "30%"],
         M: ["70%", "30%"],
         S: ["100%"],
@@ -81,37 +73,36 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
         base: "100%",
       };
 
-  const areas = editActive ? {
-    XL: ["viewer editor"],
-    L: ["viewer editor"],
-    M: ["viewer editor"],
-    S: ["viewer", "editor"],
-    base: ["viewer", "editor"]
-  } : {
-    XL: ["viewer"],
-    L: ["viewer"],
-    M: ["viewer"],
-    S: ["viewer"],
-    base: ["viewer"]
-  };
+  const areas = editActive
+    ? {
+        XL: ["viewer editor"],
+        L: ["viewer editor"],
+        M: ["viewer editor"],
+        S: ["viewer", "editor"],
+        base: ["viewer", "editor"],
+      }
+    : {
+        XL: ["viewer"],
+        L: ["viewer"],
+        M: ["viewer"],
+        S: ["viewer"],
+        base: ["viewer"],
+      };
 
   return (
     <Provider store={store}>
       <MaticoDataProvider onStateChange={onDataChange}>
-        <Grommet
-          theme={deepMerge(themeTweaks, grommet)}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <SpectrumProvider theme={darkTheme} width="100%" height="100%">
-            <Grid {...{ columns, rows, areas }} height="100%" gap="0">
-              <View gridArea="viewer" width="100%">
-                <MaticoAppPresenter
-                  spec={spec}
-                  basename={basename}
-                  onStateChange={onStateChange}
-                />
-              </View>
-              {editActive && <View gridArea="editor" width="100%">
+        <SpectrumProvider theme={darkTheme} width="100%" height="100%">
+          <Grid {...{ columns, rows, areas }} width="100%" height="100%" gap="0">
+            <View gridArea="viewer" width="100%">
+              <MaticoAppPresenter
+                spec={spec}
+                basename={basename}
+                onStateChange={onStateChange}
+              />
+            </View>
+            {editActive && (
+              <View gridArea="editor" padding="size-200">
                 <MaticoEditor
                   datasetProviders={[
                     CSVProvider,
@@ -123,10 +114,10 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                   editActive={editActive}
                   onSpecChange={onSpecChange}
                 />
-              </View>}
-            </Grid>
-          </SpectrumProvider>
-        </Grommet>
+              </View>
+            )}
+          </Grid>
+        </SpectrumProvider>
       </MaticoDataProvider>
     </Provider>
   );

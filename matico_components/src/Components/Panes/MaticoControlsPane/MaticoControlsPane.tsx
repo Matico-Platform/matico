@@ -5,7 +5,7 @@ import { MaticoSelectControl } from "./MaticoSelectControl";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { View, Flex, Heading, Provider, lightTheme } from "@adobe/react-spectrum";
 import { useIsEditable } from "Hooks/useIsEditable";
-import { EditButton } from "../../MaticoEditor/Utils/EditButton";
+import { ControlButton } from "../../MaticoEditor/Utils/MaticoControlButton";
 
 export interface MaticoControlsPaneInterface extends MaticoPaneInterface {
   controls: Array<any>;
@@ -26,7 +26,7 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
   return (
     <Flex direction="column" alignItems='stretch'>
       <View position="absolute" top="-20px" left="-20px">
-        <EditButton editPath={`${editPath}.Controls`} editType={"Controls"} />
+        <ControlButton action="edit" editPath={`${editPath}.Controls`} editType={"Controls"} />
       </View>
       <Provider theme={lightTheme}>
         <View padding="size-200">

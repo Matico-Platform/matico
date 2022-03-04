@@ -1,9 +1,9 @@
+import { Heading } from "@adobe/react-spectrum";
 import { Ace } from "ace-builds";
 import React from  'react'
-import { Heading } from "grommet";
 
 export const SectionHeading: React.FC = ({ children }) =>(
-  <Heading fill={true} textAlign={"start"} level={3}>
+  <Heading alignSelf={"start"} level={3}>
     {children}
   </Heading>
 );

@@ -1,4 +1,3 @@
-import { Grommet, Grid, Box, Main } from "grommet";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import React, { useEffect, useRef } from "react";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
@@ -10,6 +9,7 @@ import { setSpec } from "../../Stores/MaticoSpecSlice";
 import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
 import { registerDataset } from "Stores/MaticoDatasetSlice";
+import { Content, Grid, View } from "@adobe/react-spectrum";
 
 interface MaticoAppPresenterProps {
   spec?: Dashboard;
@@ -63,16 +63,16 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     <Router basename={basename}>
       {appSpec && (
         <Grid
-          columns={["xsmall", "flex"]}
-          rows={["flex"]}
-          fill={true}
+          areas={["nav main"]}
           gridArea={"viewer"}
-          areas={[["nav", "main"]]}
+          columns={["static-size-700", "calc(100% - static-size-700)"]}
+          rows={["flex"]}
+          height="100%"
         >
-          <Box gridArea="nav" background="light-5">
+          <View gridArea="nav">
             <MaticoNavBar pages={appSpec.pages} />
-          </Box>
-          <Main gridArea="main">
+          </View>
+          <Content gridArea="main">
             <Switch>
               {appSpec.pages.map((page, index) => (
                 <Route
@@ -88,7 +88,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                 </Route>
               ))}
             </Switch>
-          </Main>
+          </Content>
         </Grid>
       )}
     </Router>
