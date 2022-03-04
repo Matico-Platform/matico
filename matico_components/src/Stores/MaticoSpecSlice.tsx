@@ -26,7 +26,7 @@ export const stateSlice = createSlice({
       state.spec = action.payload;
     },
     addDataset: (state, action: PayloadAction<{ dataset: Dataset }>) => {
-      state.spec.datasets.push(action.payload.dataset)
+      state.spec.datasets.push(action.payload.dataset);
     },
     addPage: (state, action: PayloadAction<{ page: Page }>) => {
       state.spec.pages.push(action.payload.page);
@@ -39,7 +39,10 @@ export const stateSlice = createSlice({
     },
     setCurrentEditPath: (
       state,
-      action: PayloadAction<{ editPath: string | null; editType: string | null }>
+      action: PayloadAction<{
+        editPath: string | null;
+        editType: string | null;
+      }>
     ) => {
       state.currentEditPath = action.payload.editPath;
       state.currentEditType = action.payload.editType;
@@ -48,13 +51,19 @@ export const stateSlice = createSlice({
       state,
       action: PayloadAction<{ editPath: string; update: any }>
     ) => {
-      const newSpec = { ...state.spec };
-      const oldEntry = _.get(state.spec, action.payload.editPath);
-      _.set(newSpec, action.payload.editPath, {
-        ...oldEntry,
-        ...action.payload.update,
-      });
+      let newSpec = { ...state.spec };
+      if (action.payload.editPath === "") {
+        newSpec = { ...newSpec, ...action.payload.update };
+      } else {
+        newSpec = { ...state.spec };
+        const oldEntry = _.get(state.spec, action.payload.editPath);
+        _.set(newSpec, action.payload.editPath, {
+          ...oldEntry,
+          ...action.payload.update,
+        });
+      }
       state.spec = newSpec;
+      console.log("New spec is ", newSpec);
     },
     deleteSpecAtPath: (state, action: PayloadAction<{ editPath: string }>) => {
       const newSpec = { ...state.spec };
@@ -72,7 +81,7 @@ export const {
   setCurrentEditPath,
   setSpecAtPath,
   deleteSpecAtPath,
-  addDataset
+  addDataset,
 } = stateSlice.actions;
 
 export const selectSpec = (state: SpecState) => state.spec;

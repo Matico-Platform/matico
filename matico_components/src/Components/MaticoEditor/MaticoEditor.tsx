@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
-import { Accordion, AccordionPanel, Box, Tab, Tabs } from "grommet";
-import { MaticoDatasetsViewer } from "./Utils/MaticoDatasetsViewer";
+import React, { useEffect, useState } from "react";
 import { MaticoRawSpecEditor } from "./Panes/MaticoRawSpecEditor";
 import { MaticoStateViewer } from "./Panes/MaticoStateViewer";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
@@ -18,6 +16,7 @@ import {
   View,
   Flex,
 } from "@adobe/react-spectrum";
+import { AppEditor } from "./Panes/AppEditor";
 
 export interface MaticoEditorProps {
   editActive: boolean;
@@ -31,7 +30,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   datasetProviders,
 }) => {
   const dispatch = useMaticoDispatch();
-  
+
   // eg
   // spec
   // pages.0.sections.0.panes.1.Map
@@ -39,6 +38,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   const { spec, currentEditPath, currentEditType } = useMaticoSelector(
     (state) => state.spec
   );
+  console.log("currentEditPath ", currentEditPath);
   const [tabKey, setTabKey] = useState<string>("Components");
 
   useEffect(() => {
@@ -54,12 +54,13 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     dispatch(setEditing(editActive));
   }, [editActive]);
 
-  const EditPane = Editors[currentEditType];
+  const EditPane = currentEditPath ? Editors[currentEditType] : AppEditor;
+  console.log("edit pane ", EditPane);
 
   if (!editActive) return null;
 
   const height = {
-    L:"95vh",
+    L: "95vh",
     M: "95vh",
     S: "35vh",
     base: "35vh",
@@ -73,20 +74,15 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
         <Item key="Specification">Specification</Item>
         <Item key="State">State</Item>
       </TabList>
-      <View
-        overflow={"hidden auto"}
-        height={height}
-      >
+      <View overflow={"hidden auto"} height={height}>
         <TabPanels>
           <Item key="Components">
-            {currentEditPath && (
-              <Flex height="100%" width="100%" direction="column">
-                <BreadCrumbs editPath={currentEditPath} />
-                <View flex="1">
-                  <EditPane editPath={currentEditPath} />
-                </View>
-              </Flex>
-            )}
+            <Flex height="100%" width="100%" direction="column">
+              <BreadCrumbs editPath={currentEditPath} />
+              <View flex="1">
+                <EditPane editPath={currentEditPath} />
+              </View>
+            </Flex>
           </Item>
           <Item key="Datasets">
             <DatasetsEditor datasetProviders={datasetProviders} />

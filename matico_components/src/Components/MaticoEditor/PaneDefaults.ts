@@ -20,6 +20,14 @@ const DefaultView = {
 };
 
 export const PaneDefaults = {
+  Page:{
+    name:"",
+    path:"/",
+    sections:[],
+    order:2,
+    content:'',
+    icon: "Page"
+  },
   Layer: {
     name: "NewLayer",
     style: {
