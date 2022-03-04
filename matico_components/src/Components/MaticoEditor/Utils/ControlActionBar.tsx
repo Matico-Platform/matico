@@ -72,7 +72,8 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                   break;
                 default:
                   return;
-                  }
+                  
+                }
               }}
           >
           <Item key="move">

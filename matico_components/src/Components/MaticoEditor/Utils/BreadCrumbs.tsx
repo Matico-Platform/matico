@@ -11,9 +11,9 @@ const editTypeMapping = {
   Text: "Text",
   Map: "Map",
   Histogram: "Histogram",
-  Scatterplot: "Scatterplot"
+  Scatterplot: "Scatterplot",
   PieChart: "PieChart",
-  Controls: "Controls",
+  Controls: "Controls"
 };
 
 const BreadCrumbContainer = styled.div`
@@ -47,7 +47,7 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
   //@ts-ignore
   const setEditPath = ({editPath, editType}) => dispatch(setCurrentEditPath({ editPath, editType }));
 
-  console.log("breadCrumbPath ", breadCrumbPath);
+  // console.log("breadCrumbPath ", breadCrumbPath);
 
   const pathSegments = breadCrumbPath
     .map((editItem, index) => ({
@@ -61,7 +61,7 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
     return <></>;
   }
 
-  console.log("path segments ", pathSegments);
+  // console.log("path segments ", pathSegments);
 
   return (
     <Breadcrumbs
