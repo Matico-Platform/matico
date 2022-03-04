@@ -86,9 +86,9 @@ export const MaticoRawSpecEditor: React.FC = () => {
           enableSnippets: true,
         }}
       />
-      {(jsonError || validationResult) && (
+      {(!!jsonError || !!validationResult) && (
         <View position="absolute" bottom="5%" left="20%" width="60%" backgroundColor="negative">
-          {!!combinedErrors && combinedErrors.length && <ul>
+          {!!combinedErrors && !!combinedErrors.length && <ul>
               {combinedErrors.map(err => <li><Text>{err}</Text></li>)}
             </ul>}
         </View>
