@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React  from "react";
 import { Dashboard } from "@maticoapp/matico_spec";
 import { Provider } from "react-redux";
 import { store } from "Stores/MaticoStore";
@@ -23,6 +23,7 @@ import {
 import { GeoJSONProvider } from "DatasetsProviders/GeoJSONProvider";
 import { CSVProvider } from "DatasetsProviders/CSVProvider";
 import { COGProvider } from "DatasetsProviders/COGProvider";
+import { SocrataDatasetProvider} from "DatasetsProviders/SocrataProvider/SocrataProvider";
 
 interface MaticoAppInterface {
   spec?: Dashboard;
@@ -116,6 +117,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                     CSVProvider,
                     GeoJSONProvider,
                     COGProvider,
+                    SocrataDatasetProvider,
                     ...datasetProviders,
                   ]}
                   editActive={editActive}
