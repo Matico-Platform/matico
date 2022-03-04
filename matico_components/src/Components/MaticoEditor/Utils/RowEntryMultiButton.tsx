@@ -54,19 +54,19 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
         onAction={(action) => {
           switch (action) {
             case "delete":
-              dispatch(
-                deleteSpecAtPath({
-                  editPath,
-                })
-              );
+              deleteEntry(index)
             case "edit":
               setEdit(index);
+              break;
             case "duplicate":
               duplicateEntry(index);
+              break;
             case "moveUp":
               changeOrder(index, "up");
+              break;
             case "moveDown":
               changeOrder(index, "down");
+              break;
             default:
               return;
           }

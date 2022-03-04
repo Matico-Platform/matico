@@ -22,6 +22,7 @@
   "scripts": {
     "predeploy": "yarn run build",
     "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
+    "dev-editor": "concurrently \"cd matico_components && yarn build-dev\" \"cd editor && yarn start\" ",
     "build": " (cd matico_spec && wasm-pack build) && yarn workspace matico_components build && yarn workspace editor build",
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
