@@ -11,9 +11,12 @@ import {
   Item,
   NumberField,
   Picker,
+  ActionGroup,
+  Icon,
 } from "@adobe/react-spectrum";
 import { DefaultGrid } from "../Utils/DefaultGrid";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
+import TextStyle from "@spectrum-icons/workflow/TextStyle";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;
@@ -56,6 +59,73 @@ const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
   );
 };
 
+const PositionPresets = [
+  { id: 'full', label: "▣ Full", position: {
+    x:0,
+    y:0,
+    width:100,
+    height:100
+  } },
+  { id: 'half-l', label: "◨ Snap Left", position: {
+    x:0,
+    y:0,
+    width:50,
+    height:100
+  } },
+  { id: 'half-r', label: "◧ Snap Right", position: {
+    x:50,
+    y:0,
+    width:50,
+    height:100
+  } },
+  { id: 'quad-t-l', label: "◰ Snap Top Left", position: {
+    x:0,
+    y:50,
+    width:50,
+    height:50
+  } },
+  { id: 'quad-t-r', label: "◳ Snap Top Right", position: {
+    x:50,
+    y:50,
+    width:50,
+    height:50
+  } },
+  { id: 'quad-b-l', label: "◱ Snap Bottom Left", position: {
+    x:0,
+    y:0,
+    width:50,
+    height:50
+  } },
+  { id: 'quad-b-r', label: "◲ Snap Bottom Right", position: {
+    x:50,
+    y:0,
+    width:50,
+    height:50
+  } }
+]
+
+const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> = ({
+  updatePosition
+}) => {
+  return <ActionGroup
+    overflowMode="collapse"
+    marginTop={"size-150"}
+    summaryIcon={<TextStyle />}
+    aria-label="Text style"
+    isEmphasized
+    onAction={(key) => {
+      const position = PositionPresets.find(f => f.id === key)?.position
+      !!position && updatePosition({...position, height_units: 'Percent', width_units: 'Percent', x_units: 'Percent', y_units: 'Percent'})
+    }}
+  >
+    {PositionPresets.map(({ id, label }) =>
+      <Item key={id} textValue={label.slice(2)}>
+        <Text>{label}</Text>
+      </Item>
+    )}
+  </ActionGroup>
+}
+
 export const PaneEditor: React.FC<PaneEditorProps> = ({
   position,
   background,
@@ -63,7 +133,8 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   name,
 }) => {
   const updatePosition = (change: any) => {
-    console.log("Name ", change);
+    // console.log("Name ", change);
+    // console.log('POSITION', { ...position })
     onChange({
       background,
       //@ts-ignore
@@ -89,7 +160,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
           width="100%"
           label="name"
           value={name}
-          onChange={(name: string) => updateName( name )}
+          onChange={(name: string) => updateName(name)}
         />
         <TwoUpCollapsableGrid>
           <PositionUnitEditor
@@ -123,6 +194,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onUnitsChange={(height_units) => updatePosition({ height_units })}
           />
         </TwoUpCollapsableGrid>
+        <SnapPaneMenu {...{ updatePosition }} />
       </Well>
     </Flex>
   );
