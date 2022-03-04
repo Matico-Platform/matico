@@ -3,7 +3,6 @@ import { MaticoPaneInterface } from "../Pane";
 import { MarkdownContent } from "../../MarkdownContent/MarkdownContent";
 import { TextPane } from "@maticoapp/matico_spec";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { Content, View } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
