@@ -58,6 +58,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                         editPath,
                       })
                   );
+                  break;
                 case "edit":
                   dispatch(
                       setCurrentEditPath({
@@ -65,6 +66,10 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                         editType,
                       })
                   );
+                  break;
+                case "docs":
+                  typeof window !== "undefined" && window.open(`https://matico.app/docs/panes/${editPath.split('.').slice(-1)[0]}`, "_blank")
+                  break;
                 default:
                   return;
                   }
