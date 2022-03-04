@@ -39,7 +39,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
   deleteEntry,
   duplicateEntry,
 }) => (
-  <Well marginTop="size-100">
+  <Well marginTop="size-100" width="100%">
     <Flex direction="row" margin="0" gap="size-50" width="100%" alignContent={"center"}>
       <View maxWidth={"50%"} overflow={"hidden"} flexGrow={1} justifySelf={"left"} alignSelf="center">
         <Text>{entryName}</Text>
