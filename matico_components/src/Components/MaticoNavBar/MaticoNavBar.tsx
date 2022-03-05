@@ -105,7 +105,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       UNSAFE_style={{
         textAlign:"center",
       }}>
-      <ButtonGroup align="center" maxWidth="100%" marginTop="size-100">
+      <ButtonGroup align="center" UNSAFE_style={{display:'flex', flexDirection:'column', alignItems:'center'}} maxWidth="100%" marginTop="size-100">
         <Link to="/" style={{marginBottom: '1em'}}>
           <Image
             alt="Logo"
