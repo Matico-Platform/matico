@@ -344,7 +344,7 @@ export default function ContinuousChartspace({
             brushDirection={brushDirection}
             initialBrushPosition={initialBrushPosition}
             //@ts-ignore
-            onChange={debouncedOnBrushChange}
+            onBrushEnd={debouncedOnBrushChange}
             selectedBoxStyle={{
               fill: `url('#lines')`,
               stroke: "white",

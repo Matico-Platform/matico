@@ -1,0 +1,49 @@
+import React, { Key, useState } from "react";
+import {
+  Item,
+  Picker,
+  View,
+  Text,
+  ActionButton,
+  Switch,
+  Flex,
+  ComboBox,
+} from "@adobe/react-spectrum";
+
+import {
+  DatasetProvider,
+  DatasetRecord,
+  DatasetProviderComponent,
+} from "@maticoapp/matico_components";
+import { usePortals } from "./usePortals";
+
+export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
+  onSubmit,
+}) => {
+  const portals = usePortals();
+  const [selectedPortalKey, setSelectedPortalKey] = useState<null | Key>(null);
+
+  console.log("Portals ", portals);
+  return (
+    <Flex direction="column" gap="size-200">
+      {portals && (
+        <ComboBox
+          label="Select Portal"
+          placeholder="Select a socrata portal to get data from"
+          width="100%"
+          defaultItems={portals.map((p) => ({ id: p.domain, ...p }))}
+          selectedKey={selectedPortalKey}
+          onSelectionChange={setSelectedPortalKey}
+        >
+          {(portal) => <Item key={portal.id}>{portal.domain}</Item>}
+        </ComboBox>
+      )}
+    </Flex>
+  );
+};
+
+export const SocrataDatasetProvider: DatasetProvider = {
+  name: "Socrata Datasets",
+  description: "Import a datasets from socrata",
+  component: SocrataDatasetExplorer,
+};

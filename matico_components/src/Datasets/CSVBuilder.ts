@@ -70,27 +70,30 @@ const extractData = async (
     nullValues: [null, "n/a"],
   });
 
-  let isHeader = true;
   let id = 0;
+  console.log("Extracting data ");
   return new Promise<DataFrame>((resolve, reject) => {
+    console.log("In promise");
     Papa.parse(url, {
       dynamicTyping: true,
       download: true,
-      step: (row: { [col: string]: any }) => {
-        if (!isHeader) {
+      header: true,
+      complete: (results) => {
+        console.log("Results ", JSON.stringify(results));
+        results.data.forEach((row: any) => {
           if (!row) return;
           try {
-            const lng = row.data[lng_index];
-            const lat = row.data[lat_index];
+            const lng = Object.values(row)[lng_index];
+            const lat = Object.values(row)[lat_index];
 
             if (lng === undefined || lat === undefined) {
-              console.log("Bad lat lng ", lng, lat, row.data);
+              console.log("Bad lat lng ", lng, lat, row);
               return;
             }
 
             const geom = new wkx.Point(lng, lat).toWkb();
 
-            let datum = [...row.data, geom];
+            let datum = [...Object.values(row), geom];
 
             if (!id_col) {
               datum.push(id);
@@ -99,13 +102,9 @@ const extractData = async (
             //@ts-ignore
             builder.append(datum);
           } catch (e) {
-            console.log("issue with datum ", row.data, e);
+            console.log("issue with datum ", JSON.stringify(row), e);
           }
-        } else {
-          isHeader = false;
-        }
-      },
-      complete: () => {
+        });
         builder.finish();
         resolve(new DataFrame(Table.fromStruct(builder.toVector())));
       },

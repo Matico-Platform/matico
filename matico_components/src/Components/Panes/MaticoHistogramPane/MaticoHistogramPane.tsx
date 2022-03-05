@@ -56,7 +56,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   );
   const datasetReady = foundDataset && foundDataset.state === "READY";
   const [mappedFilters, filtersReady] = useNormalizeSpec(dataset.filters);
-  
+
   const [mappedStyle, styleReady] = useNormalizeSpec({
     color,
   });
@@ -91,57 +91,59 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     const colorMap = generateColorVar(mappedStyle?.color);
 
     return (
-      <MaticoChart
-        xExtent={extent}
-        xCol="binStart"
-        xLabel={labels?.x_label ?? column}
-        yLabel={labels?.y_label ?? "counts"}
-        yCol="count"
-        title={labels?.title}
-        subtitle={labels?.sub_title}
-        attribution={labels?.attribution}
-        data={data.filter((d) => d.count)}
-        xAxis={{
-          scaleType: "linear",
-          position: "bottom",
-        }}
-        grid={{ rows: true, columns: false }}
-        useBrush={{
-          vertical: false,
-          horizontal: true
-        }}
-        //@ts-ignore
-        onBrush={({x0,x1}) => updateFilter(
-          x0 === x1
-            ? {
-              type: "NoSelection",
-              variable: column
-            } : {
-              type: "SelectionRange",
-              variable: column,
-              min: x0,
-              max: x1,
-            }
-        )}
-        layers={[
-          {
-            type: "bar",
-            color: colorMap,
-            scale: 11,
-            xAccessor: (d: any) => d.binEnd,
-          },
-        ]}
-      />
+        <MaticoChart
+          xExtent={extent}
+          xCol="binStart"
+          xLabel={labels?.x_label ?? column}
+          yLabel={labels?.y_label ?? "counts"}
+          yCol="count"
+          title={labels?.title}
+          subtitle={labels?.sub_title}
+          attribution={labels?.attribution}
+          data={data.filter((d) => d.count)}
+          xAxis={{
+            scaleType: "linear",
+            position: "bottom",
+          }}
+          grid={{ rows: true, columns: false }}
+          useBrush={{
+            vertical: false,
+            horizontal: true,
+          }}
+          //@ts-ignore
+          onBrush={({ x0, x1 }) =>
+            updateFilter(
+              x0 === x1
+                ? {
+                    type: "NoSelection",
+                    variable: column,
+                  }
+                : {
+                    type: "SelectionRange",
+                    variable: column,
+                    min: x0,
+                    max: x1,
+                  }
+            )
+          }
+          layers={[
+            {
+              type: "bar",
+              color: colorMap,
+              scale: 11,
+              xAccessor: (d: any) => d.binEnd,
+            },
+          ]}
+        />
     );
-  }, [JSON.stringify({labels, mappedStyle, backgroundColor}), chartData]);
+  }, [JSON.stringify({ labels, mappedStyle, backgroundColor }), chartData]);
 
   return (
-    <View
-      width="100%"
-      height="100%"
-      position="relative"
-    >
-      <ControlActionBar editPath={`${editPath}.Histogram`} editType={"Histogram"} />
+    <View width="100%" height="100%" position="relative">
+      <ControlActionBar
+        editPath={`${editPath}.Histogram`}
+        editType={"Histogram"}
+      />
       {!datasetReady && <div>{dataset.name} not found!</div>}
       {Chart}
     </View>

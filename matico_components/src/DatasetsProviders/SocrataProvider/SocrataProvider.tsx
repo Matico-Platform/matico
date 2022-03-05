@@ -65,10 +65,10 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
     else{
       onSubmit({
         CSV: {
-          url: `https://${dataset.metadata.domain}/resource/${dataset.resource.id}.csv`,
+          url: `https://${dataset.metadata.domain}/api/views/${dataset.resource.id}/rows.csv?accessType=DOWNLOAD`,
           name: dataset.resource.name,
-          lat_col: latitudeCol.toLowerCase(),
-          lng_col: longitudeCol.toLowerCase()
+          lat_col: latitudeCol,
+          lng_col: longitudeCol
         },
       });
 

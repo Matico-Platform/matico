@@ -293,10 +293,10 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
                 index={index}
                 key={index}
                 entryName={
-                  <>
+                  <Flex direction='row' alignItems='center' gap="size-100">
                     {IconForPaneType(paneType)}
                     <Text>{paneSpecs.name}</Text>
-                  </>
+                  </Flex>
                 }
                 setEdit={editPane}
                 changeOrder={changeOrder}

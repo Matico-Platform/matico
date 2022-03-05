@@ -33,8 +33,13 @@ export const PaneDefaults = {
     style: {
       fillColor: "#FF0000",
       lineColor: "#FFFFFF",
-      size: 20,
-      lineWidth: 2000,
+      size: 10,
+      elevation:0,
+      lineWidth: 4,
+      lineWidthScale:1,
+      lineUnites:'pixels',
+      radiusScale:1,
+      radiusUnits:"pixels"
     },
     order: 1,
   },

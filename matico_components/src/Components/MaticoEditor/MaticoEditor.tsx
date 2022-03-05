@@ -54,6 +54,14 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     dispatch(setEditing(editActive));
   }, [editActive]);
 
+
+  useEffect(()=>{
+    if(editActive){
+      setTabKey("Components")
+    }
+
+  },[editActive,currentEditPath])
+
   const EditPane = currentEditPath ? Editors[currentEditType] : AppEditor;
   console.log("edit pane ", EditPane);
 
