@@ -20,6 +20,7 @@ import {
   Dialog,
   Content,
   TextField,
+  Text,
   repeat,
 } from "@adobe/react-spectrum";
 

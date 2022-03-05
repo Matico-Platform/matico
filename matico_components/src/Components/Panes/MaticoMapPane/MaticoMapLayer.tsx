@@ -115,8 +115,12 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       0, 255, 0, 100,
     ];
     const lineWidth = generateNumericVar(mappedStyle.lineWidth) ?? 10;
+    const lineWidthUnits = mappedStyle.lineUnits ?? 'pixels';
+    const lineWidthScale = mappedStyle.lineWidthScale ?? 1;
     const elevation = generateNumericVar(mappedStyle.elevation) ?? 0;
-
+    const elevationScale = generateNumericVar(mappedStyle.elevationScale) ?? 1;
+    const opacity = mappedStyle.opacity ?? 1;
+    const visible = mappedStyle.visible ?? true;
     const shouldExtrude =
       elevation !== null && (elevation > 0 || typeof elevation === "function");
     const shouldStroke =
@@ -126,9 +130,14 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       getFillColor: fillColor,
       getLineColor: lineColor,
       getLineWidth: lineWidth,
+      lineWidthUnits,
+      lineWidthScale,
       extruded: shouldExtrude,
       stroked: shouldStroke,
       getElevation: elevation,
+      elevationScale,
+      opacity,  
+      visible,    
       onHover: (hoverTarget) => updateHoverVariable(hoverTarget.object),
       onClick: (clickTarget) => updateClickVariable(clickTarget.object),
       pickable: true,
@@ -139,7 +148,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         getLineColor: [JSON.stringify(mappedStyle.lineColor)],
         getRadius: [JSON.stringify(mappedStyle.size)],
         getElevation: [JSON.stringify(mappedStyle.elevation)],
-        getLineWidth: [JSON.stringify(mappedStyle.lineWidth)],
+        getLineWidth: [JSON.stringify(mappedStyle.lineWidth), JSON.stringify(mappedStyle.lineUnits)],
         extruded: [JSON.stringify(shouldExtrude)],
         stroked: [JSON.stringify(shouldStroke)],
       },
@@ -158,6 +167,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
               ? mappedStyle.radiusUnits
               : "meters",
             getRadius: generateNumericVar(mappedStyle.size) ?? 20,
+            radiusScale: generateNumericVar(mappedStyle.radiusScale) ?? 1,
             //@ts-ignore
             getPosition: (d) => d.geom,
             ...common,
@@ -166,9 +176,18 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
           break;
         case GeomType.Line:
           layer = new PathLayer({
-            getColor: [0, 255, 0, 100],
+            widthScale: lineWidthScale,
+            widthUnits: lineWidthUnits,
+            getWidth: lineWidth,
+            getColor: lineColor,
             getPath: (d) => d.geom,
             ...common,
+            updateTriggers: {
+              widthScale: [JSON.stringify(mappedStyle.lineWidthScale)],
+              widthUnits: [JSON.stringify(mappedStyle.lineWidthUnits)],
+              getWidth: [JSON.stringify(mappedStyle.lineWidth)],
+              getColor: [JSON.stringify(mappedStyle.lineColor)],
+            }
           });
           break;
         case GeomType.Polygon:

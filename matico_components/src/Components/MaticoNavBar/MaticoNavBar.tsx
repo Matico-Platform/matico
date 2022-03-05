@@ -104,6 +104,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       <ButtonGroup align="center" maxWidth="100%" marginTop="size-100">
         <Link to="/" style={{marginBottom: '1em'}}>
           <Image
+            alt="Logo"
             src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
             />
         </Link>

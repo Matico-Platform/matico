@@ -6,12 +6,12 @@ import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
+import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -139,15 +139,9 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     <View
       width="100%"
       height="100%"
-      padding="size-100"
+      position="relative"
     >
-      <View
-        position="absolute"
-        top="-20px"
-        left="-20px"
-        >
-        <ControlButton action="edit" editPath={`${editPath}.Histogram`} editType={"Histogram"} />
-      </View>
+      <ControlActionBar editPath={`${editPath}.Histogram`} editType={"Histogram"} />
       {!datasetReady && <div>{dataset.name} not found!</div>}
       {Chart}
     </View>

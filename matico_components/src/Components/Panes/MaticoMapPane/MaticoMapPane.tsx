@@ -6,7 +6,6 @@ import DeckGL from "@deck.gl/react";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";

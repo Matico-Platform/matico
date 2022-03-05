@@ -5,7 +5,7 @@ import { MaticoSelectControl } from "./MaticoSelectControl";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { View, Flex, Heading, Provider, lightTheme } from "@adobe/react-spectrum";
 import { useIsEditable } from "Hooks/useIsEditable";
-import { ControlButton } from "../../MaticoEditor/Utils/MaticoControlButton";
+import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoControlsPaneInterface extends MaticoPaneInterface {
   controls: Array<any>;
@@ -24,31 +24,35 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
   const edit = useIsEditable();
 
   return (
-    <Flex direction="column" alignItems='stretch'>
-      <View position="absolute" top="-20px" left="-20px">
-        <ControlButton action="edit" editPath={`${editPath}.Controls`} editType={"Controls"} />
-      </View>
-      <Provider theme={lightTheme}>
-        <View padding="size-200">
-        <Heading>{title}</Heading>
-          <Flex direction="column" gap="size-200">
-            {mappedControls.map((controlSpec) => {
-              const [type, params] = Object.entries(controlSpec)[0];
-              //@ts-ignore
-              const { name } = params;
-              switch (type) {
-                case "Range":
-                  return <MaticoRangeControl {...params} />;
-                case "Select":
-                  //@ts-ignore
-                  return <MaticoSelectControl {...params} />;
-                default:
-                  throw Error(`Unsupported fitler type ${type}`);
-              }
-            })}
-          </Flex>          
-        </View>
-      </Provider>
-    </Flex>
+    <View
+      width="100%"
+      height="100%"
+      position="relative"
+    >
+      <ControlActionBar editPath={`${editPath}.Controls`} editType={"Controls"} />
+      <Flex direction="column" alignItems='stretch'>
+        <Provider theme={lightTheme}>
+          <View padding="size-200">
+            <Heading>{title}</Heading>
+            <Flex direction="column" gap="size-200">
+              {mappedControls.map((controlSpec) => {
+                const [type, params] = Object.entries(controlSpec)[0];
+                //@ts-ignore
+                const { name } = params;
+                switch (type) {
+                  case "Range":
+                    return <MaticoRangeControl {...params} />;
+                  case "Select":
+                    //@ts-ignore
+                    return <MaticoSelectControl {...params} />;
+                  default:
+                    throw Error(`Unsupported fitler type ${type}`);
+                }
+              })}
+            </Flex>
+          </View>
+        </Provider>
+      </Flex>
+    </View>
   );
 };

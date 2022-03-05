@@ -17,11 +17,14 @@ import {
   Header,
   View,
   StatusLight,
+  Divider,
+  Checkbox,
 } from "@adobe/react-spectrum";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { FilterEditor } from "../Utils/FilterEditor";
-import {Filter} from "Datasets/Dataset";
+import { Filter } from "Datasets/Dataset";
+import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 
 export interface LayerEditorProps {
   editPath: string;
@@ -39,7 +42,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
   );
 
   const isPoint = dataset?.geomType === GeomType.Point;
-  
+
   const updateStyle = (property: string, value: any) => {
     dispatch(
       setSpecAtPath({
@@ -74,12 +77,12 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     );
   };
 
-  const updateFilters = (newFilters: Array<Filter>)=>{
-    console.log("Updating filters ", newFilters )
+  const updateFilters = (newFilters: Array<Filter>) => {
+    console.log("Updating filters ", newFilters)
     dispatch(
       setSpecAtPath({
         editPath,
-        update:{
+        update: {
           source: {
             ...layer.source,
             filters: newFilters
@@ -166,81 +169,161 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
       </Well>
       <Well>
         <Flex direction="column" gap="size-200">
-        <Heading>Style</Heading>
-
-        <ColorVariableEditor
-          label="Line Color"
-          datasetName={dataset.name}
-          style={style.lineColor}
-          onUpdateStyle={(style) => {
-            updateStyle("lineColor", style);
-          }}
-        />
-
-        <NumericVariableEditor
-          label="Line Width"
-          datasetName={dataset.name}
-          style={style.lineWidth}
-          onUpdateStyle={(style) => updateStyle("lineWidth", style)}
-          minVal={0}
-          maxVal={2000}
+          <Heading margin="size-0">Style</Heading>
+          {/* *** LINE SETTING *** */}
+          <Flex gap="size-125" marginTop="size-200">
+            <Divider orientation="vertical" />
+            <Heading margin="size-0">Line</Heading>
+          </Flex>
+          <ColorVariableEditor
+            label="Line Color"
+            datasetName={dataset.name}
+            style={style.lineColor}
+            onUpdateStyle={(style) => {
+              updateStyle("lineColor", style);
+            }}
+          />
+          <NumericVariableEditor
+            label="Line Width"
+            datasetName={dataset.name}
+            style={style.lineWidth}
+            onUpdateStyle={(style) => updateStyle("lineWidth", style)}
+            minVal={0}
+            maxVal={2000}
           // picker={true} TODO: add picker integrated into numberic editor
           // pickerKey={style.lineUnits}
           // pickerOptions={[{ label: "px", value: "px" }, { label: "pt", value: "pt" }]}
           // onPickerChange={(units) =>
           //   updateStyle("lineUnits", units as string)
           // }
-        />
-        <Picker
-          width="size-1200"
-          selectedKey={style.lineUnits}
-          onSelectionChange={(units) =>
-            updateStyle("lineUnits", units as string)
-          }
-        >
-          <Item key="meters">Meters</Item>
-          <Item key="pixels">Pixels</Item>
-        </Picker>
-
-
-        {!!isPoint && <>
-          <NumericVariableEditor
-            label="Point Radius"
-            datasetName={dataset.name}
-            style={style.size}
-            onUpdateStyle={(style) => updateStyle("size", style)}
-            minVal={0}
-            maxVal={2000}
           />
-          <Picker
-            width="size-1200"
-            selectedKey={style.radiusUnits}
-            onSelectionChange={(units) =>
-              updateStyle("radiusUnits", units as string)
-            }
+          <Flex
+            alignContent={"end"}
+            justifyContent={"space-between"}
           >
-            <Item key="meters">Meters</Item>
-            <Item key="pixels">Pixels</Item>
-          </Picker>
-        </>}
+            <NumberField
+              value={style.lineWidthScale}
+              width="size-1200"
+              label="Line Width Multiplier"
+              maxValue={100}
+              minValue={1}
+              onChange={(val) => updateStyle("lineWidthScale", val)}
+            />
+            <Picker
+              label="Line Width Units"
+              alignSelf={"flex-end"}
+              selectedKey={style.lineUnits}
+              onSelectionChange={(units) => updateStyle("lineUnits", units)}
+            >
+              <Item key="meters">Meters</Item>
+              <Item key="pixels">Pixels</Item>
+            </Picker>
+          </Flex>
+          {/* *** POINT SETTINGS *** */}
+          {dataset?.geomType === GeomType.Point && <>
+            <Flex gap="size-125" marginTop="size-200">
+              <Divider orientation="vertical" />
+              <Heading margin="size-0" marginTop="size">Point Sizing</Heading>
+            </Flex>
+            <NumericVariableEditor
+              label="Point Radius"
+              datasetName={dataset.name}
+              style={style.size}
+              onUpdateStyle={(style) => updateStyle("size", style)}
+              minVal={0}
+              maxVal={2000}
+            />
+            <Flex
+              alignContent={"end"}
+              justifyContent={"space-between"}
+            >
+              <NumberField
+                value={style.radiusScale}
+                width="size-1200"
+                label="Point Radius Multiplier"
+                maxValue={100000}
+                minValue={1}
+                onChange={(val) => updateStyle("radiusScale", val)}
+              />
+              <Picker
+                width="size-1200"
+                alignSelf={"flex-end"}
+                label="Point Radius Units"
+                selectedKey={style.radiusUnits}
+                onSelectionChange={(units) =>
+                  updateStyle("radiusUnits", units as string)
+                }
+              >
+                <Item key="meters">Meters</Item>
+                <Item key="pixels">Pixels</Item>
+              </Picker>
+            </Flex>
+          </>}
 
-        <ColorVariableEditor
-          label="Fill Color"
-          datasetName={dataset.name}
-          style={style.fillColor}
-          onUpdateStyle={(style) => {
-            updateStyle("fillColor", style);
-          }}
-        />
+          {/* *** FILL *** */}
+          {dataset?.geomType !== GeomType.Line && <>
+            <Flex gap="size-125" marginTop="size-200">
+              <Divider orientation="vertical" />
+              <Heading margin="size-0" marginTop="size">Fill</Heading>
+            </Flex>
+            <ColorVariableEditor
+              label="Fill Color"
+              datasetName={dataset.name}
+              style={style.fillColor}
+              onUpdateStyle={(style) => {
+                updateStyle("fillColor", style);
+              }}
+            />
+          </>}
+          {/* *** 3D *** */}
+          {dataset?.geomType === GeomType.Polygon && <>
+            <Flex gap="size-125" marginTop="size-200">
+              <Divider orientation="vertical" />
+              <Heading margin="size-0" marginTop="size">3D</Heading>
+            </Flex>
+            <NumericVariableEditor
+              label="Elevation"
+              datasetName={dataset.name}
+              style={style.elevation}
+              onUpdateStyle={(style) => updateStyle("elevation", style)}
+              minVal={0}
+              maxVal={10000}
+            />
+            <NumberField
+              value={style.elevationScale}
+              width="size-1200"
+              label="Elevation Multiplier"
+              maxValue={100000}
+              minValue={1}
+              onChange={(val) => updateStyle("elevationScale", val)}
+            />
+          </>}
+          {/* *** VISIBILITY *** */}
+          <Flex gap="size-125" marginTop="size-200">
+            <Divider orientation="vertical" />
+            <Heading margin="size-0" marginTop="size">Visibility</Heading>
+          </Flex>
 
-        <NumericVariableEditor
-          label="Elevation"
-          datasetName={dataset.name}
-          style={style.elevation}
-          onUpdateStyle={(style) => updateStyle("elevation", style)}
-          minVal={0}
-          maxVal={10000}
-        />
+          <Flex
+            alignContent={"end"}
+            justifyContent={"space-between"}
+          >
+            <Slider
+              value={style.opacity}
+              label="Layer Opacity"
+              onChange={(val) => updateStyle("opacity", val)}
+              maxValue={1}
+              minValue={0}
+              step={.01}
+              showValueLabel={true}
+            />
+            <Checkbox
+              isSelected={!!style.visible}
+              onChange={() => updateStyle("visible", !style.visible)}
+            >
+              Layer Visibility
+            </Checkbox>
+          </Flex>
         </Flex>
       </Well>
     </Flex>

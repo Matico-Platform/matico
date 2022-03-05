@@ -46,11 +46,15 @@ pub struct LayerStyle {
     size: Option<MappingVarOr<f32>>,
     fill_color: Option<MappingVarOr<ColorSpecification>>,
     opacity: Option<MappingVarOr<f32>>,
+    visible: Option<bool>,
     line_color: Option<MappingVarOr<ColorSpecification>>,
     line_width: Option<MappingVarOr<f32>>,
+    line_width_scale: Option<f32>,
     line_units: Option<ScaleType>,
     radius_units: Option<ScaleType>,
+    radius_scale: Option<f32>,
     elevation: Option<MappingVarOr<f32>>,
+    elevation_scale: Option<f32>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]

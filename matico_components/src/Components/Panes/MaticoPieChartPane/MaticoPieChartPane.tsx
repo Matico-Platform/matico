@@ -13,8 +13,8 @@ import {
 } from "../../../Utils/chartUtils";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { View } from "@adobe/react-spectrum";
+import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -218,15 +218,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         backgroundColor
       }}
     >
-      {edit && (
-        <View 
-          position="absolute"
-          left="-20px"
-          top="-20px"
-          >
-          <ControlButton action="edit" editPath={`${editPath}.PieChart`} editType={"PieChart"} /> 
-        </View>
-      )}
+      <ControlActionBar editPath={`${editPath}.PieChart`} editType={"PieChart"} />}
       <Vega
         ref={chartRef}
         data={{ table: chartData }}

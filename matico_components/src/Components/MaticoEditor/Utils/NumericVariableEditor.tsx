@@ -19,6 +19,7 @@ interface NumericVariableEditorProps {
   datasetName?: string;
   minVal: number;
   maxVal: number;
+  showDataDriven?: boolean;
 }
 
 export const NumericVariableEditor: React.FC<NumericVariableEditorProps> = ({
@@ -28,6 +29,7 @@ export const NumericVariableEditor: React.FC<NumericVariableEditorProps> = ({
   label,
   onUpdateStyle,
   datasetName,
+  showDataDriven=true
 }) => {
   const dataset = useMaticoSelector(
     (state) => state.datasets.datasets[datasetName]
@@ -95,13 +97,13 @@ export const NumericVariableEditor: React.FC<NumericVariableEditorProps> = ({
             />
           </>
         )}
-        <ToggleButton
+        {showDataDriven && <ToggleButton
           isEmphasized
           onPress={toggleDataDriven}
           isSelected={isDataDriven}
         >
           <FunctionIcon />
-        </ToggleButton>
+        </ToggleButton>}
       </Flex>
     </View>
   );

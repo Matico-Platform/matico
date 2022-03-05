@@ -4,7 +4,6 @@ import { DatasetState, Filter } from "Datasets/Dataset";
 import _ from "lodash";
 import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
-import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
 import { useMaticoSelector } from "Hooks/redux";
 import { useRequestData } from "Hooks/useRequestData";
 import { useAutoVariable } from "Hooks/useAutoVariable";
@@ -14,6 +13,7 @@ import {
   generateNumericVar,
 } from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
+import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -171,18 +171,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     return (
       <View 
         position="relative"
+        width="100%"
+        height="100%"
       >
-        <View 
-          position="absolute"
-          left="-20px"
-          top="-20px"
-          >
-          <ControlButton
-            action="edit"
-            editPath={`${editPath}.Scatterplot`}
-            editType={"Scatterplot"}
-          />
-        </View>
+        <ControlActionBar editPath={`${editPath}.Scatterplot`} editType={"Scatterplot"}/>
         {Chart}
       </View>
     );
