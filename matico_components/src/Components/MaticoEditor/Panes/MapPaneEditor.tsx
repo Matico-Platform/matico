@@ -249,13 +249,37 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     );
   }
 
+  const startSyncing = (pane) => {
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          view: { var: `${pane}_map_loc`, bind: true },
+        },
+      })
+    );
+  };
+
   const stopSyncing = () => {
-    updateView(syncedMapPaneView.value);
+    dispatch(
+      setSpecAtPath({
+        editPath,
+        update: {
+          view: { ...syncedMapPaneView.value, var: "", bind: null }
+        }
+      })
+    );
   };
 
   const isSynced = syncedMapPaneView ? true : false;
+  const isBound = mapPane?.view?.bind ? true : false;
+  const mapView = isSynced ? syncedMapPaneView.value : mapPane.view;
 
-  const mapView = isSynced ? syncedMapPaneView.view : mapPane.view;
+  const toggleBind = () => {
+    updateView({
+      bind: !isBound,
+    });
+  };
 
   return (
     <Flex direction="column">
@@ -321,19 +345,42 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
             isDisabled={isSynced}
             onChange={(zoom) => updateView({ zoom })}
           />
-          <ActionButton width="100%" onPress={setViewFromMap} marginTop="size-200" marginBottom="size-200">
+          {!isSynced && <ActionButton
+            width="100%"
+            onPress={setViewFromMap}
+            marginTop="size-200"
+            marginBottom="size-200"
+          >
             Set from current view
-          </ActionButton>
+          </ActionButton>}
           {otherMapPanes && otherMapPanes.length > 0 && (
-            <TwoUpCollapsableGrid>
-              <View width="100%">
-                <Picker width="size-2400" items={otherMapPanes}>
-                  {(pane) => <Item key={pane.name}>{pane.name}</Item>}
-                </Picker>
-                <Checkbox name="Bind two ways" />
-              </View>
-              <ActionButton width="100%">Start Syncing</ActionButton>
-            </TwoUpCollapsableGrid>
+            <Picker
+              width="100%"
+              label="Sync Map View"
+              items={otherMapPanes}
+              selectedKey={
+                mapPane?.view?.var && mapPane.view.var.split("_map_loc")[0]
+              }
+              onSelectionChange={startSyncing}
+            >
+              {(pane) => <Item key={pane.name}>{pane.name}</Item>}
+            </Picker>
+          )}
+          {isSynced && (
+            <>
+              <Checkbox isSelected={isBound} onChange={toggleBind}>
+                Sync both maps
+              </Checkbox>
+              <ActionButton
+                width="100%"
+                onPress={stopSyncing}
+                marginTop="size-200"
+                marginBottom="size-200"
+                isDisabled
+              >
+                Stop Syncing Map View
+              </ActionButton>
+            </>
           )}
         </Flex>
       </Well>
