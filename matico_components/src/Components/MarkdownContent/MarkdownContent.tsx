@@ -90,6 +90,8 @@ export const MarkdownContent: React.FC<MarkdownContentInterface> = ({
   return (
     <View
       overflow="none auto"
+      width="100%"
+      height='100%'
     >
       <ReactMarkdown /*@ts-ignore*/
         components={CustomComponents}

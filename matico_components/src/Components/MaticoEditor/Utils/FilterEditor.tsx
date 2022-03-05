@@ -13,6 +13,9 @@ import {
   TextField,
   ToggleButton,
 } from "@adobe/react-spectrum";
+
+import {VariableSelector} from './VariableSelector'
+
 import { DatasetState, Filter, CategoryFilter, Column} from "Datasets/Dataset";
 import { useMaticoSelector } from "Hooks/redux";
 import React from "react";
@@ -85,21 +88,18 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
           }
         />
       ) : (
-        <TextField
-          width={"size-2400"}
-          key="min_val_var"
-          label="Min variable"
-          value={min.var}
-          onChange={(newVar) =>
-            onUpdateFilter({
-              Range: {
-                min: { var: newVar },
-                max,
-                variable: selectedColumn.name,
-              },
-            })
-          }
-        />
+      <VariableSelector 
+        variable={min.var} 
+        onSelectVariable={(newVar)=>
+              onUpdateFilter({
+                Range: {
+                  max,
+                  min:{ var: newVar },
+                  variable: selectedColumn.name,
+                },
+              })
+      } 
+      />
       )}
       <ToggleButton
         isEmphasized
@@ -121,21 +121,18 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
           }
         />
       ) : (
-        <TextField
-          label="Max variable"
-          width={"size-2400"}
-          key={"max_val_var"}
-          value={max.var}
-          onChange={(newVar) =>
-            onUpdateFilter({
-              Range: {
-                max: { var: newVar },
-                min,
-                variable: selectedColumn.name,
-              },
-            })
-          }
-        />
+      <VariableSelector 
+        variable={max.var} 
+        onSelectVariable={(newVar)=>
+              onUpdateFilter({
+                Range: {
+                  max: { var: newVar },
+                  min,
+                  variable: selectedColumn.name,
+                },
+              })
+      } 
+      />
       )}
       <ToggleButton
         isEmphasized

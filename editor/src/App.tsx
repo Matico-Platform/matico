@@ -13,7 +13,7 @@ const isEditActive = () => {
   if (editParam) {
     return editParam[1] === "true";
   } else {
-    return false;
+    return true;
   }
 };
 

@@ -30,7 +30,7 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
       position="relative"
     >
       <ControlActionBar editPath={`${editPath}.Controls`} editType={"Controls"} />
-      <Flex direction="column" alignItems='stretch'>
+      <Flex UNSAFE_style={{backgroundColor:'white', height:"100%"}} direction="column" alignItems='stretch'>
         <Provider theme={lightTheme}>
           <View padding="size-200">
             <Heading>{title}</Heading>

@@ -43,9 +43,9 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 }) => {
   const columns = editActive
     ? {
-        XL: ["80%", "20%"],
-        L: ["70%", "30%"],
-        M: ["70%", "30%"],
+        XL: ["65%", "36%"],
+        L: ["65%", "35%"],
+        M: ["65%", "35%"],
         S: ["100%"],
         base: ["100%"],
       }
