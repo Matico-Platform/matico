@@ -36,8 +36,8 @@ export class LocalDataset implements Dataset {
   local() {
     return true;
   }
-  raster(){
-    return false
+  raster() {
+    return false;
   }
 
   tiled() {
@@ -101,7 +101,7 @@ export class LocalDataset implements Dataset {
       Number.MIN_VALUE,
       filters
     );
-    return Promise.resolve(columnMax)
+    return Promise.resolve(columnMax);
   }
 
   getColumnMin(column: string, filters?: Array<Filter>) {
@@ -111,7 +111,7 @@ export class LocalDataset implements Dataset {
       Number.MAX_VALUE,
       filters
     );
-    return Promise.resolve(columnMin)
+    return Promise.resolve(columnMin);
   }
 
   getColumnSum(column: string, filters?: Array<Filter>) {
@@ -121,7 +121,7 @@ export class LocalDataset implements Dataset {
       0,
       filters
     );
-    return Promise.resolve(columnSum)
+    return Promise.resolve(columnSum);
   }
 
   getCategoryCounts(column: string, filters?: Array<Filter>) {
@@ -134,7 +134,16 @@ export class LocalDataset implements Dataset {
       {},
       filters
     );
-    return Promise.resolve(categoryCounts)
+    return Promise.resolve(categoryCounts);
+  }
+
+  getCategories(column: string, noCategories: number, filters?: Array<Filter>) {
+    return this.getCategoryCounts(column, filters).then((categoryCounts) => {
+      return Object.entries(categoryCounts)
+        .sort((a, b) => (a[1] > b[1] ? 1 : -1))
+        .slice(0, noCategories)
+        .map((cat: any) => cat[0]);
+    });
   }
 
   getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
@@ -148,15 +157,17 @@ export class LocalDataset implements Dataset {
     let intervalBins = _.range(bins).map(
       (i: number) => range[0] + ((range[1] - range[0]) * i) / bins
     );
-    return Promise.resolve(intervalBins)
+    return Promise.resolve(intervalBins);
   }
 
   async getQuantileBins(column: string, bins: number, filters?: Array<Filter>) {
     const data = await this.getData(filters, [column]);
     const vals = data.map((c: any) => c[column]).sort();
     const binSize = 1.0 / bins;
-    const quantileBins = _.range(bins).map((i: number) => d3.quantile(vals, i * binSize));
-    return Promise.resolve(quantileBins)
+    const quantileBins = _.range(bins).map((i: number) =>
+      d3.quantile(vals, i * binSize)
+    );
+    return Promise.resolve(quantileBins);
   }
 
   getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
@@ -196,21 +207,37 @@ export class LocalDataset implements Dataset {
     return combinedPredicate;
   }
 
-  async getColumnHistogram (column: string, noBins: number, filters?:Array<Filter>) {
-    const maxVal = await this.getColumnMax(column, filters)
-    const minVal = await this.getColumnMin(column, filters)
-    const binWidth = (maxVal-minVal)/noBins;
-    const initalBins = [...Array(noBins-1)].map( (_)=>0);
+  async getColumnHistogram(
+    column: string,
+    noBins: number,
+    filters?: Array<Filter>
+  ) {
+    const maxVal = await this.getColumnMax(column, filters);
+    const minVal = await this.getColumnMin(column, filters);
+    const binWidth = (maxVal - minVal) / noBins;
+    const initalBins = [...Array(noBins - 1)].map((_) => 0);
 
-    const counts = this._applyAggregateFunction(column,(agg,value)=>{
-      const bin = Math.floor((value-minVal)/binWidth)
-      agg[bin]+=1;
-      return agg
-    } , [...Array(noBins-1)].map( (_)=> 0), filters) 
-    return counts.map((count:number,index:number)=> ({count, binStart:index*binWidth, binEnd:(index + 1)*binWidth}) ) 
+    const counts = this._applyAggregateFunction(
+      column,
+      (agg, value) => {
+        const bin = Math.floor((value - minVal) / binWidth);
+        agg[bin] += 1;
+        return agg;
+      },
+      [...Array(noBins - 1)].map((_) => 0),
+      filters
+    );
+    return counts.map((count: number, index: number) => ({
+      count,
+      binStart: index * binWidth,
+      binEnd: (index + 1) * binWidth,
+    }));
   }
 
-  async _getResultsFromPredicate(filterPredicate?: any, columns?: Array<string>) {
+  async _getResultsFromPredicate(
+    filterPredicate?: any,
+    columns?: Array<string>
+  ) {
     const filterResults = filterPredicate
       ? this._data.filter(filterPredicate)
       : this._data;
@@ -219,7 +246,9 @@ export class LocalDataset implements Dataset {
       const vars = {};
       let results = [];
 
-      let selectColumns = columns ? columns :  (await this.columns()).map((c) => c.name);
+      let selectColumns = columns
+        ? columns
+        : (await this.columns()).map((c) => c.name);
 
       selectColumns = [...selectColumns, "geom"];
 
@@ -242,7 +271,7 @@ export class LocalDataset implements Dataset {
         }
       );
       return results;
-    } catch (e){
+    } catch (e) {
       console.log(
         `something went wrong applying filters cowardly returning empty array ${e}`
       );

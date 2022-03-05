@@ -24,7 +24,7 @@ import { ColorPickerDialog } from "./ColorPickerDialog";
 import { colors } from "../../../Utils/colors";
 import _ from "lodash";
 import { TwoUpCollapsableGrid } from "./TwoUpCollapsableGrid";
-import { scaleThreshold } from 'd3-scale';
+import { scaleThreshold } from "d3-scale";
 
 type RangeType = "color" | "value";
 
@@ -36,14 +36,149 @@ interface DataDrivenModalProps {
 
 type Color = string | [Number, Number, Number, Number];
 
-const ContinuousDomain: React.FC<{
+interface DomainEditorProps {
   column: Column;
   dataset: DatasetSummary;
   rangeType: RangeType;
   filters: Array<Filter>;
   mapping: any;
   onUpdateMapping: (newMapping: any) => void;
-}> = ({ dataset, mapping, column, filters, rangeType, onUpdateMapping }) => {
+}
+
+const DiscreteDomain: React.FC<DomainEditorProps> = ({
+  dataset,
+  mapping,
+  column,
+  filters,
+  rangeType,
+  onUpdateMapping,
+}) => {
+  const domain = mapping.domain;
+  const range = mapping.range;
+  const [maxCategories, setMaxCategories] = useState(5);
+  const [categories, setCategories] = useState<Array<any>>([])
+
+  const [metric, metricParams] = Array.isArray(domain)
+    ? ["Manual", { no_categories: domain.length }]
+    : Object.entries(domain.metric)[0];
+
+  let noCategories = metricParams.no_categories;
+
+  let selectedPaletteName =
+    typeof range === "string" ? range.split(".")[0] : null;
+
+  let selectedPalette = selectedPaletteName
+    ? //@ts-ignore
+      colors[selectedPaletteName]
+    : null;
+
+  let rangeValues = Array.isArray(range)
+    ? range
+    : //@ts-ignore
+      colors[selectedPaletteName][range.split(".")[1]];
+
+  let categoryCounts = useRequestColumnStat({
+    datasetName: dataset.name,
+    column: domain.column,
+    metric: "CategoryCounts",
+    parameters: {},
+    filters: filters,
+  });
+
+  useEffect(()=>{
+    if(categoryCounts){
+      setCategories(categoryCounts.result)
+    }
+  },[maxCategories,column,categoryCounts])
+
+  const updatePalette = (
+    palette: { colors: Array<Color>; name: string },
+    bins: number
+  ) => {
+    onUpdateMapping({ ...mapping, range: `${palette.name}.${bins}` });
+  };
+
+  const updateRangeValForBin = (newVal: Color | number, binNo: Number) => {
+    const newRange = rangeValues.map((val: Color | number, index: number) =>
+      index === binNo ? newVal : val
+    );
+    console.log("Mapping ", mapping, " range ", newRange);
+    onUpdateMapping({ ...mapping, range: newRange });
+  };
+  return (
+    <View overflow="hidden auto" marginTop="size-200">
+      <h1>Discreate</h1>
+      <TwoUpCollapsableGrid>
+        <Flex direction="column" width="100%">
+          <TwoUpCollapsableGrid>
+            <NumberField
+              width="100%"
+              value={maxCategories}
+              onChange={setMaxCategories}
+              label="Number of categories to use"
+              maxValue={9}
+              minValue={2}
+              step={1}
+            />
+          </TwoUpCollapsableGrid>
+          {rangeType === "color" && (
+            <ColorPaletteSelector
+              selectedPalette={{
+                name: selectedPaletteName,
+                colors: selectedPalette,
+              }}
+              onSelectPalette={(palette) =>
+                updatePalette(palette, maxCategories)
+              }
+            />
+          )}
+        </Flex>
+
+        <Well marginStart="size-300">
+          <Flex direction="column">
+            {categories &&
+              Object.keys(categories)
+                .slice(0, noCategories)
+                .map((category: string, index: number) => (
+                  <Flex>
+                    {rangeType === "color" && rangeValues && (
+                      <ColorPickerDialog
+                        color={rangeValues[index]}
+                        onColorChange={(color) =>
+                          updateRangeValForBin(color, index)
+                        }
+                        width="size-450"
+                        height="size-350"
+                      />
+                    )}
+                    <Text key={index} marginX="size-200" marginTop="size-50">
+                      {category} ({Object.values(categories)[index]})
+                    </Text>
+                    {rangeType === "value" && rangeValues && (
+                      <NumberField
+                        key={`values ${index}`}
+                        value={rangeValues[index]}
+                        onChange={(newVal) =>
+                          updateRangeValForBin(newVal, index)
+                        }
+                      />
+                    )}
+                  </Flex>
+                ))}
+          </Flex>
+        </Well>
+      </TwoUpCollapsableGrid>
+    </View>
+  );
+};
+const ContinuousDomain: React.FC<DomainEditorProps> = ({
+  dataset,
+  mapping,
+  column,
+  filters,
+  rangeType,
+  onUpdateMapping,
+}) => {
   const domain = mapping.domain;
   const range = mapping.range;
 
@@ -191,7 +326,7 @@ const ContinuousDomain: React.FC<{
     const newRange = rangeValues.map((val: Color | number, index: number) =>
       index === binNo ? newVal : val
     );
-    console.log("Mapping ", mapping, " range ", newRange)
+    console.log("Mapping ", mapping, " range ", newRange);
     onUpdateMapping({ ...mapping, range: newRange });
   };
 
@@ -204,19 +339,24 @@ const ContinuousDomain: React.FC<{
     });
   };
 
-  const sanitizedHistogramData = histogram?.result?.filter(f => f).map((result: any) => ({
-    ...result,
-    count: isNaN(result.count) ? 0 : result.count,
-  }))||[]
-  
-  const colorFunc = quantiles?.result && rangeValues 
-    ? scaleThreshold()
-      .domain([...quantiles.result.slice(1,), Math.pow(10, 10)])
-      .range(rangeValues) 
-    : () => 'gray';
-      
+  const sanitizedHistogramData =
+    histogram?.result
+      ?.filter((f) => f)
+      .map((result: any) => ({
+        ...result,
+        count: isNaN(result.count) ? 0 : result.count,
+      })) || [];
+
+  const colorFunc =
+    quantiles?.result && rangeValues
+      ? scaleThreshold()
+          .domain([...quantiles.result.slice(1), Math.pow(10, 10)])
+          .range(rangeValues)
+      : () => "gray";
+
   return (
     <View overflow="hidden auto" marginTop="size-200">
+      <h1>Continuous</h1>
       <TwoUpCollapsableGrid>
         <Flex direction="column" width="100%">
           <TwoUpCollapsableGrid>
@@ -269,19 +409,35 @@ const ContinuousDomain: React.FC<{
                         height="size-350"
                       />
                     )}
-                    {metric === "Manual" ? <NumberField
-                      aria-label={`Bin ${index+1}`}
-                      key={index}
-                      value={bin}
-                      labelPosition="side"
-                      isDisabled={metric !== "Manual"}
-                      onChange={(newVal) => updateValueForBin(newVal, index)}
-                    /> : <Text key={index} marginX="size-200" marginTop="size-50">{bin && index === domainValues.length-1 ? `> ${bin && bin.toFixed(1)}` :`${domainValues[index] && domainValues[index].toFixed(1)} to ${domainValues[index+1] && domainValues[index+1].toFixed(1)}`}</Text>}
+                    {metric === "Manual" ? (
+                      <NumberField
+                        aria-label={`Bin ${index + 1}`}
+                        key={index}
+                        value={bin}
+                        labelPosition="side"
+                        isDisabled={metric !== "Manual"}
+                        onChange={(newVal) => updateValueForBin(newVal, index)}
+                      />
+                    ) : (
+                      <Text key={index} marginX="size-200" marginTop="size-50">
+                        {bin && index === domainValues.length - 1
+                          ? `> ${bin && bin.toFixed(1)}`
+                          : `${
+                              domainValues[index] &&
+                              domainValues[index].toFixed(1)
+                            } to ${
+                              domainValues[index + 1] &&
+                              domainValues[index + 1].toFixed(1)
+                            }`}
+                      </Text>
+                    )}
                     {rangeType === "value" && rangeValues && (
                       <NumberField
                         key={`values ${index}`}
                         value={rangeValues[index]}
-                        onChange={(newVal) => updateRangeValForBin(newVal, index)}
+                        onChange={(newVal) =>
+                          updateRangeValForBin(newVal, index)
+                        }
                       />
                     )}
                   </Flex>
@@ -290,7 +446,7 @@ const ContinuousDomain: React.FC<{
           </Well>
         )}
       </TwoUpCollapsableGrid>
-      
+
       {histogram && histogram.state === "Done" && (
         <Well marginTop="size-200">
           <MaticoChart
@@ -315,16 +471,16 @@ const ContinuousDomain: React.FC<{
             margin={{
               top: 10,
               bottom: 25,
-              left:60,
-              right:50
+              left: 60,
+              right: 50,
             }}
             layers={[
               {
                 type: "bar",
                 color: (d: any) => colorFunc(d.binStart),
                 scale: 1,
-                padding:0.1,
-                xAccessor: (d: any) => (d.binEnd + d.binStart)/2,
+                padding: 0.1,
+                xAccessor: (d: any) => (d.binEnd + d.binStart) / 2,
               },
             ]}
           />
@@ -336,26 +492,43 @@ const ContinuousDomain: React.FC<{
 
 interface DataDrivenModalProps {
   spec: any;
-  label:string;
+  label: string;
   rangeType: RangeType;
   datasetName: string;
   onUpdateSpec: (spec: any) => void;
 }
 
 const baseSpecForCol = (datasetName: string, column: Column) => {
-  return {
-    variable: column.name,
-    domain: {
-      metric: {
-        Quantile: {
-          bins: 5,
+  if(column.type==='number'){
+    return {
+      variable: column.name,
+      domain: {
+        metric: {
+          Quantile: {
+            bins: 5,
+          },
         },
+        dataset: datasetName,
+        column: column.name,
       },
-      dataset: datasetName,
-      column: column.name,
-  },
-    range: "RedOr.5",
-  };
+      range: "RedOr.5",
+    };
+  }
+  else{
+    return {
+      variable: column.name,
+      domain: {
+        metric: {
+          Categories: {
+            no_categories: 7
+          },
+        },
+        dataset: datasetName,
+        column: column.name,
+      },
+      range: "Pastel1.7",
+    };
+  }
 };
 
 export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
@@ -363,13 +536,14 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
   rangeType,
   datasetName,
   onUpdateSpec,
-  label 
+  label,
 }) => {
   const dataset = useMaticoSelector(
     (state) => state.datasets.datasets[datasetName]
   );
 
   const column = dataset?.columns.find((col) => col.name === spec.variable);
+  console.log("COLUMN TYPE IS ", column.type);
 
   return (
     <DialogTrigger isDismissable>
@@ -387,7 +561,7 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
                 }
               />
 
-              {column && spec && (
+              {column && spec && column.type === "number" ? (
                 <ContinuousDomain
                   column={column}
                   dataset={dataset}
@@ -398,6 +572,17 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
                     onUpdateSpec({ ...spec, ...newMapping })
                   }
                 ></ContinuousDomain>
+              ) : (
+                <DiscreteDomain
+                  column={column}
+                  dataset={dataset}
+                  rangeType={rangeType}
+                  filters={[]}
+                  mapping={spec}
+                  onUpdateMapping={(newMapping) =>
+                    onUpdateSpec({ ...spec, ...newMapping })
+                  }
+                ></DiscreteDomain>
               )}
             </View>
           </Flex>

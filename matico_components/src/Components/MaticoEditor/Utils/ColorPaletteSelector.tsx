@@ -3,8 +3,8 @@ import React from "react";
 import { colors } from "../../../Utils/colors";
 
 interface ColorPaletteSelectorInterface {
-  selectedPalette: {name:string, colors:any};
-  onSelectPalette: (palette: {name:string, colors:any}) => void;
+  selectedPalette: { name: string; colors: any };
+  onSelectPalette: (palette: { name: string; colors: any }) => void;
 }
 
 export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
@@ -20,15 +20,21 @@ export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
     return { groupName: group[0], colors: colorGroup };
   });
 
-  const updatePalette = (paletteName:string)=>{
-    console.log('PALETTE NAME', paletteName)
+  const updatePalette = (paletteName: string) => {
+    console.log("PALETTE NAME", paletteName);
     //@ts-ignore
-    onSelectPalette({name: paletteName, colors: colors[paletteName]})
-  }
-
+    onSelectPalette({ name: paletteName, colors: colors[paletteName] });
+  };
 
   return (
-    <Picker width="100%" label="Palette" placeholder="Custom" selectedKey={selectedPalette?.name} items={colorOptions} onSelectionChange={updatePalette}>
+    <Picker
+      width="100%"
+      label="Palette"
+      placeholder="Custom"
+      selectedKey={selectedPalette?.name}
+      items={colorOptions}
+      onSelectionChange={updatePalette}
+    >
       {(section) => (
         <Section
           key={section.groupName}
@@ -47,7 +53,7 @@ export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
                       height: "10px",
                       backgroundColor: `rgba(${color[0]},${color[1]},${color[2]})`,
                     }}
-                    />
+                  />
                 ))}
               </Flex>
             </Item>

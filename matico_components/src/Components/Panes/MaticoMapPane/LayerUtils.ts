@@ -61,7 +61,7 @@ export const generateNumericVar = (numericVar): NumberReturn => {
   if (typeof numericVar === "number") return numericVar;
   if (numericVar.variable) {
     const { variable, domain, range } = numericVar;
-    const ramp = d3.scaleLinear().domain(domain).range(range);
+    const ramp = constructRampFunctionNum(range,domain);
     return (d) => {
       const val = d.hasOwnProperty("properties")
         ? d.properties[variable]
@@ -96,6 +96,32 @@ export const generateColor = (color: any, alpha: boolean) => {
   return null;
 };
 
+const constructRampFunctionNum= (range:Array<any>,domain:Array<any> )=>{
+      if(typeof(domain[0]) === 'string'){
+        return (val:string)=> {
+          return range[domain.indexOf(val)] ?? 20
+        }
+      }
+      else{
+        return d3.scaleLinear().domain(domain).range(range)
+      }
+  
+
+}
+const constructRampFunctionCol = (range:Array<any>,domain:Array<any> )=>{
+      if(typeof(domain[0]) === 'string'){
+        return (val:string)=> {
+          return chroma(range[domain.indexOf(val)]) ?? chroma(211,211,211)
+        }
+      }
+      else{
+        return chroma
+        .scale(range)
+        .domain(domain);
+      }
+  
+
+}
 export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
   if (!colorVar) {
     return null;
@@ -108,10 +134,8 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
     if (Array.isArray(range)) {
       const mappedRange = range.map((c) => generateColor(c,true))
 
-      console.log("Range is ", range, " Mapped range ",mappedRange)
-      const ramp = chroma
-        .scale(mappedRange)
-        .domain(domain);
+      const ramp = constructRampFunctionCol(mappedRange,domain) 
+
       return (d) => {
         let c = ramp(d[variable]).rgba();
         c[3]= c[3]*255
@@ -126,10 +150,8 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
       if (!Array.isArray(brewer)) {
         brewer = brewer[3];
       }
+      const ramp = constructRampFunctionCol(brewer.map((c) => generateColor(c,true)), domain)
 
-      const ramp = chroma
-        .scale(brewer.map((c) => generateColor(c,true)))
-        .domain(domain);
       return (d: any) => {
         const val = d.hasOwnProperty("properties")
           ? d.properties[variable]

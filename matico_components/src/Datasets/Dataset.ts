@@ -70,6 +70,7 @@ export interface Dataset{
   getColumnSum: (column: string) => Promise<number>,
   getColumnHistogram:(column:string)=>Promise<Array<HistogramBin>>,
   getCategoryCounts: (columns: string, filters?: Array<Filter>) => Promise<{[entry: string| number]: number}>,
+  getCategories: (columns: string, noCategories: number, filters?: Array<Filter>) => Promise<Array<string|number>>,
   getEqualIntervalBins:(column: string, bins:number, filters?: Array<Filter>)=> Promise<Array<number>>,
   getQuantileBins:(column: string, bins:number, filters?:Array<Filter>)=>Promise<Array<number>>,
   getJenksBins:(column: string, bins:number, filters?: Array<Filter>)=>Promise<Array<number[]>>

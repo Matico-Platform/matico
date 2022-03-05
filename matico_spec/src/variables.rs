@@ -24,12 +24,18 @@ pub struct EqualIntervalParams {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CategoriesParams {
+    pub no_categories: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum DatasetMetric {
     Min,
     Max,
     Quantile(QuantileParams),
     Jenks(JenksParams),
     EqualInterval(EqualIntervalParams),
+    Categories(CategoriesParams),
     Mean,
     Median,
     Summary,
