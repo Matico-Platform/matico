@@ -54,7 +54,7 @@ function App() {
           basename={process.env.PUBLIC_URL}
           spec={spec}
           //@ts-ignore
-          editActive={true}
+          editActive={edit}
         />
       </div>
     </ErrorBoundary>
