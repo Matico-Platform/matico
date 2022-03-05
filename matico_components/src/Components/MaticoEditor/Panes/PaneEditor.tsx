@@ -66,13 +66,13 @@ const PositionPresets = [
     width:100,
     height:100
   } },
-  { id: 'half-l', label: "◨ Snap Left", position: {
+  { id: 'half-l', label: "◧ Snap Left", position: {
     x:0,
     y:0,
     width:50,
     height:100
   } },
-  { id: 'half-r', label: "◧ Snap Right", position: {
+  { id: 'half-r', label: "◨ Snap Right", position: {
     x:50,
     y:0,
     width:50,
