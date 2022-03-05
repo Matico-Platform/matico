@@ -274,7 +274,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         ...mapping,
         domain: {
           dataset: dataset.name,
-          variable: column.name,
+          column: column.name,
           metric: { EqualInterval: { bins: noBins } },
         },
       });

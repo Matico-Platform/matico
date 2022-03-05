@@ -35,6 +35,7 @@ const NamedButton: React.FC<{ name: IconProp; color?: string; size?: string }> =
 const HoverLink = styled(Link)`
   text-decoration: none;
   padding:.5em 0;
+  color:white;
   &:hover {
     background:rgba(255,255,255,0.1);
   }
@@ -61,6 +62,8 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
     chromaColor = chroma(primaryColor);
   }
 
+  console.log(" icon list  ",iconList, flatIconList)
+
   const onAddPage = () => {
     const firstPage = pages.length === 0;
     const pageNo = firstPage ? 0 : Math.max(...pages.map((p) => p.order)) + 1;
@@ -72,7 +75,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
           name: firstPage ? "Home" : `Page${pageNo}`,
           content: `This page ${pageNo}`,
           path: firstPage ? "/" : `/page_${pageNo}`,
-          icon: firstPage ? "home" : "file",
+          icon: firstPage ? "house" : "file",
           //@ts-ignore
           order: pageNo,
           sections: [
@@ -88,6 +91,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
     );
   };
 
+
   return (
     <View 
       // overflowX="hidden"
@@ -95,12 +99,11 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
       overflow="hidden auto"
       height="100%"
       maxHeight="100vh"
-      backgroundColor={chromaColor ? "" : "indigo-400"}
+      backgroundColor={"blue-600"}
       borderWidth="thin"
       borderColor="dark"
       UNSAFE_style={{
         textAlign:"center",
-        backgroundColor: chromaColor ? chromaColor.hex() : "indigo-400"
       }}>
       <ButtonGroup align="center" maxWidth="100%" marginTop="size-100">
         <Link to="/" style={{marginBottom: '1em'}}>

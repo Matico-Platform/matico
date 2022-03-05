@@ -65,7 +65,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
         <Grid
           areas={["nav main"]}
           gridArea={"viewer"}
-          columns={["static-size-700", "calc(100% - static-size-700)"]}
+          columns={["static-size-900", "calc(100% - static-size-900)"]}
           rows={["flex"]}
           height="100%"
         >

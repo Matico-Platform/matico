@@ -147,6 +147,7 @@ export class LocalDataset implements Dataset {
   }
 
   getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
+    console.log(`getting equal intervals for ${column}`)
     const range = this._applyAggregateFunction(
       column,
       (agg, val) => [val < agg[0] ? val : agg[0], val > agg[1] ? val : agg[1]],

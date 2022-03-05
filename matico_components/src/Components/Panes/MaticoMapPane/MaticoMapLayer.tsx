@@ -55,7 +55,9 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
   const [mappedFilters, filtersReady, filterMapError] = useNormalizeSpec(
     source.filters ? source.filters : []
   );
+  
   const [mappedStyle, styleReady, styleMapError] = useNormalizeSpec(style);
+  console.log("Mapped style is ", style, mappedStyle)
 
   const dataResult = useRequestData(
     filtersReady && dataset.tiled === false ? source.name : null,
