@@ -15,6 +15,51 @@ const initialState: SpecState = {
   editing: false,
 };
 
+const EditTypeMapping = {
+  'pages': 'Page',
+  'layers': 'Layer',
+  'Map': 'Map',
+  'sections': 'Section',
+  'Text': 'Text',
+  'Histogram':'Histogram',
+  'PieChart':'PieChart',
+  'Scatterplot':'Scatterplot',
+  'Controls':'Controls'
+}
+
+const extractEditType = (path: string): string => {
+  const parts = [...path.split(".")].reverse()
+  const lastPart = parts.find(f => isNaN(+f))
+  //@ts-ignore
+  return EditTypeMapping[lastPart] || ''
+}
+
+const getParentPath = (path: string): string => {
+  if (!path?.length) {
+    return path
+  }
+  const parts = path.split(".")
+  const reverseParts = [...parts].reverse()
+  const lastPart = reverseParts.findIndex((f, i) => isNaN(+f) && !isNaN(+reverseParts[i - 1]))
+  //@ts-ignore
+  return parts.slice(0, parts.length-lastPart).join(".")
+}
+
+const incrementName = (name: string, takenNames: string[]): string => {
+  //@ts-ignore
+  const baseName = !isNaN(name.slice(-1)[0])
+    ? name.slice(0, -1)
+    : name;
+
+  let tempName = `${baseName}`;
+  let suffix = 2;
+  do {
+    tempName = `${baseName}${suffix}`;
+    suffix++;
+  } while (takenNames.includes(tempName));
+  return tempName;
+};
+
 export const stateSlice = createSlice({
   name: "variables",
   initialState,
@@ -45,7 +90,7 @@ export const stateSlice = createSlice({
       }>
     ) => {
       state.currentEditPath = action.payload.editPath;
-      state.currentEditType = action.payload.editType;
+      state.currentEditType = extractEditType(action.payload.editPath);
     },
     setSpecAtPath: (
       state,
@@ -75,9 +120,19 @@ export const stateSlice = createSlice({
       action: PayloadAction<{ editPath: string }>
     ) => { 
       const newSpec = { ...state.spec };
+      const parentPath = getParentPath(action.payload.editPath);
+      const takenNames = _.get(state.spec, parentPath)?.map(f => f.name);
       const oldEntry = _.get(state.spec, action.payload.editPath);
-      const newEntry = _.cloneDeep(oldEntry);
-      _.set(newSpec, action.payload.editPath, newEntry);
+      const newEntry = {
+        ..._.cloneDeep(oldEntry),
+        name: incrementName(oldEntry.name, takenNames)
+      }
+      const oldParentEntries = _.get(state.spec, parentPath);
+
+      _.set(newSpec, parentPath, [
+        ...oldParentEntries,
+        newEntry
+      ]);
       state.spec = newSpec;
     },
     reconcileSpecAtPath: (
