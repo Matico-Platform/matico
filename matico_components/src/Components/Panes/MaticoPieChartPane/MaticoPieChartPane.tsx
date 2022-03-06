@@ -218,7 +218,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         backgroundColor
       }}
     >
-      <ControlActionBar editPath={`${editPath}.PieChart`} editType={"PieChart"} />}
+      <ControlActionBar editPath={`${editPath}.PieChart`} editType={"PieChart"} />
       <Vega
         ref={chartRef}
         data={{ table: chartData }}
