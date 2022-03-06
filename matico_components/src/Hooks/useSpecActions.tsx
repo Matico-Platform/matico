@@ -8,7 +8,7 @@ import {
 import { useMaticoDispatch } from "./redux";
 import { useIsEditable } from "./useIsEditable";
 
-export const usePaneActions = (editPath: string): voidFunc[] => {
+export const useSpecActions = (editPath: string): voidFunc[] => {
     const edit = useIsEditable();
     const dispatch = useMaticoDispatch();
     if (!edit) return [];
@@ -17,22 +17,22 @@ export const usePaneActions = (editPath: string): voidFunc[] => {
     // Optional path parameter can overwrite the default hook path, but otherwise called
     // as eg. openEditPane() will just open the pane the hook was called with
 
-    const openEditPane = (editType, path = editPath) =>
+    const openEditor = (editType, path = editPath) =>
         dispatch(setCurrentEditPath({ editPath: path, editType }));
 
-    const deletePane = (path = editPath) =>
+    const remove = (path = editPath) =>
         dispatch(deleteSpecAtPath({ editPath: path }));
 
-    const duplicatePane = (path = editPath) =>
+    const duplicate = (path = editPath) =>
         dispatch(duplicateSpecAtPath({ editPath: path }));
 
-    const updatePaneSpec = (update: any, path = editPath) =>
+    const update = (update: any, path = editPath) =>
         dispatch(setSpecAtPath({ editPath: path, update }));
 
-    const reconcilePaneSpec = (update: any, path = editPath) =>
+    const reconcile = (update: any, path = editPath) =>
         dispatch(reconcileSpecAtPath({ editPath: path, update }));
 
-    const movePane = (position: PositionPropsOptional, path = editPath) =>
+    const move = (position: PositionPropsOptional, path = editPath) =>
         dispatch(
             reconcileSpecAtPath({
                 editPath: path,
@@ -41,12 +41,12 @@ export const usePaneActions = (editPath: string): voidFunc[] => {
         );
 
     return [
-        openEditPane,
-        deletePane,
-        movePane,
-        duplicatePane,
-        updatePaneSpec,
-        reconcilePaneSpec
+        openEditor,
+        remove,
+        duplicate,
+        update,
+        reconcile,
+        move
     ];
 };
 
