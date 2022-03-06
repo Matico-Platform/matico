@@ -70,6 +70,32 @@ export const stateSlice = createSlice({
       _.unset(newSpec, action.payload.editPath);
       state.spec = newSpec;
     },
+    duplicateSpecAtPath: (
+      state,
+      action: PayloadAction<{ editPath: string }>
+    ) => { 
+      const newSpec = { ...state.spec };
+      const oldEntry = _.get(state.spec, action.payload.editPath);
+      const newEntry = _.cloneDeep(oldEntry);
+      _.set(newSpec, action.payload.editPath, newEntry);
+      state.spec = newSpec;
+    },
+    reconcileSpecAtPath: (
+      state,
+      action: PayloadAction<{ editPath: string, update: any }>
+    ) => {
+      let newSpec = { ...state.spec };
+      if (action.payload.editPath === "") {
+        newSpec = { ...newSpec, ...action.payload.update };
+      } else {
+        newSpec = { ...state.spec };
+        const oldEntry = _.get(state.spec, action.payload.editPath);
+        _.set(newSpec, action.payload.editPath, 
+          _.merge(oldEntry, action.payload.update)
+        );
+      }
+      state.spec = newSpec;
+    },
   },
 });
 
@@ -81,6 +107,8 @@ export const {
   setCurrentEditPath,
   setSpecAtPath,
   deleteSpecAtPath,
+  duplicateSpecAtPath,
+  reconcileSpecAtPath,
   addDataset,
 } = stateSlice.actions;
 
