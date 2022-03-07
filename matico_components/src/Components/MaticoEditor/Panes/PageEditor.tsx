@@ -4,6 +4,8 @@ import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { Page } from "@maticoapp/matico_spec";
 import {
   deleteSpecAtPath,
+  duplicateSpecAtPath,
+  removeSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
@@ -86,7 +88,8 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
 
   const deletePage = () => {
     dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
+    console.log(editPath)
+    dispatch(removeSpecAtPath({ editPath }));
   };
 
   const addNewSection = (name: string) => {
@@ -95,71 +98,6 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
         editPath: editPath,
         update: {
           sections: [...page.sections, { ...PaneDefaults.Section, name }],
-        },
-      })
-    );
-  };
-
-  const duplicateSection = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          sections: [
-            ...page.sections.slice(0, index),
-            //@ts-ignore
-            { ...page.sections[index], name: `${page.sections[index].name}_copy` },
-            ...page.sections.slice(index),
-          ],
-        },
-      })
-    );
-  };
-
-  const editSection = (index: number) => {
-    dispatch(
-      setCurrentEditPath({
-        editPath: `${editPath}.sections.${index}`,
-        editType: "Section",
-      })
-    );
-  };
-
-  const deleteSection = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          sections: [
-            ...page.sections.slice(0, index),
-            ...page.sections.slice(index + 1),
-          ],
-        },
-      })
-    );
-  };
-
-  const changeOrder = (index: number, direction: "up" | "down") => {
-    if (
-      (index === 0 && direction === "up") ||
-      (index === page.sections.length - 1 && direction === "down")
-    ) {
-      return;
-    }
-
-    let sections = [...page.sections];
-    const changedSection = sections.splice(index, 1)[0];
-    sections.splice(
-      direction === "up" ? index - 1 : index + 1,
-      0,
-      changedSection
-    );
-
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          sections,
         },
       })
     );
@@ -236,14 +174,11 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
               justifyContent="space-between"
             >
               <RowEntryMultiButton
-                index={index}
-                key={index}
-                entryName={<Text>{section.name}</Text>}
-                setEdit={editSection}
-                changeOrder={changeOrder}
-                deleteEntry={deleteSection}
-                duplicateEntry={duplicateSection}
-              />
+                key={section.name}
+                entryName={section.name}
+                editPath={`${editPath}.sections.${index}`}
+                editType="Section"
+                />
             </Flex>
           ))}
         </Flex>
