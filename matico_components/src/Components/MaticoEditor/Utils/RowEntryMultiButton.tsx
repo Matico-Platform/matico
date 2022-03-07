@@ -20,26 +20,33 @@ import Delete from "@spectrum-icons/workflow/Delete";
 import Copy from "@spectrum-icons/workflow/Copy";
 import Duplicate from "@spectrum-icons/workflow/Duplicate";
 import Settings from "@spectrum-icons/workflow/Settings";
+import { useSpecActions } from "Hooks/useSpecActions";
 
 interface RowEntryMultiButtonProps {
   entryName: string | React.ReactNode;
-  index: number;
-  setEdit: (index: number) => void;
-  changeOrder?: (index: number, direction: "up" | "down") => void;
-  deleteEntry?: (index: number) => void;
-  duplicateEntry?: (index: number) => void;
+  editPath: string;
+  editType: string;
 }
 
 export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
   // TODO: arial labels
-  index,
   entryName,
-  setEdit,
-  changeOrder,
-  deleteEntry,
-  duplicateEntry,
-}) => (
-  <Well marginTop="size-100" width="100%">
+  editPath,
+  editType
+}): any => {
+  
+  const {
+    openEditor,
+    remove,
+    duplicate,
+    move,
+    reorder
+  } = useSpecActions(
+    editPath,
+    editType,
+  );
+
+  return <Well marginTop="size-100" width="100%">
     <Flex direction="row" margin="0" gap="size-50" width="100%" alignContent={"center"}>
       <View maxWidth={"50%"} overflow={"hidden"} flexGrow={1} justifySelf={"left"} alignSelf="center">
         <Text>{entryName}</Text>
@@ -53,18 +60,19 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
         onAction={(action) => {
           switch (action) {
             case "delete":
-              deleteEntry(index)
+              remove()
+              break;
             case "edit":
-              setEdit(index);
+              openEditor();
               break;
             case "duplicate":
-              duplicateEntry(index);
+              duplicate();
               break;
             case "moveUp":
-              changeOrder(index, "up");
+              reorder("forward");
               break;
             case "moveDown":
-              changeOrder(index, "down");
+              reorder("backward");
               break;
             default:
               return;
@@ -76,27 +84,20 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
           <Text>Edit</Text>
         </Item>
 
-        {duplicateEntry !== undefined && (
           <Item key="duplicate">
             <Duplicate />
             <Text>Duplicate</Text>
           </Item>
-        )}
-        {changeOrder !== undefined && (
           <Item key="moveUp">
             <ChevronUp />
             <Text>Bring Forward</Text>
           </Item>
-        )}
-        {changeOrder !== undefined && (
           <Item key="moveDown">
             <ChevronDown />
             <Text>Send Backward</Text>
           </Item>
-        )}
       </ActionGroup>
 
-      {deleteEntry !== undefined && (
         <View justifySelf={"end"}>
           <DialogTrigger
             isDismissable
@@ -114,7 +115,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                   <Button
                     variant="negative"
                     onPress={() => {
-                      deleteEntry(index);
+                      remove();
                       close();
                     }}
                   >
@@ -125,7 +126,6 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
             )}
           </DialogTrigger>
         </View>
-      )}
     </Flex>
   </Well>
-);
+}

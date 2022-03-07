@@ -290,19 +290,16 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
             let [paneType, paneSpecs] = Object.entries(pane)[0];
             return (
               <RowEntryMultiButton
-                index={index}
-                key={index}
+                key={paneSpecs.name}
                 entryName={
                   <Flex direction='row' alignItems='center' gap="size-100">
                     {IconForPaneType(paneType)}
                     <Text>{paneSpecs.name}</Text>
                   </Flex>
                 }
-                setEdit={editPane}
-                changeOrder={changeOrder}
-                deleteEntry={deletePane}
-                duplicateEntry={duplicatePane}
-              />
+                editPath={`${editPath}.panes.${index}.${paneType}`}
+                editType={paneType}
+                />
             );
           })}
         </Flex>

@@ -85,24 +85,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
   const [bindBothWays, setBindBothWays] = useState(false);
   const dispatch = useMaticoDispatch();
 
-  const deletePane = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
-  };
-
-  const updatePane = (change: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          ...mapPane,
-          ...change,
-        },
-      })
-    );
-  };
-
-
   const updatePaneDetails = (change:any)=>{
     dispatch(
       setSpecAtPath({
@@ -208,46 +190,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
       })
     );
   };
-
-  const changeOrder = (index: number, direction: 'up'|'down') => {
-    if ((index === 0 && direction === 'up') || (index === mapPane.layers.length - 1 && direction === 'down')) {
-      return;
-    }
-
-    let layers = [...mapPane.layers];
-    const changedLayer = layers.splice(index, 1)[0];    
-    layers.splice(direction === 'up' ? index - 1 : index + 1, 0, changedLayer);
-
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          layers
-        },
-      })
-    );
-  }
-
-  const duplicateLayer = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          layers: [...mapPane.layers.slice(0,index), mapPane.layers[index], ...mapPane.layers.slice(index)],
-        },
-      })
-    );
-  }
-  const deleteLayer = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          layers: [...mapPane.layers.slice(0,index), ...mapPane.layers.slice(index+1)],
-        },
-      })
-    );
-  }
 
   const startSyncing = (pane) => {
     dispatch(
@@ -393,14 +335,11 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
         </Heading>
         <Flex marginBottom={"size-200"} direction="column">
           {mapPane.layers.map((layer, index) => 
-            <RowEntryMultiButton 
-              key={index} 
-              index={index} 
-              entryName={layer.name} 
-              setEdit={setLayerEdit} 
-              changeOrder={changeOrder} 
-              deleteEntry={deleteLayer} 
-              duplicateEntry={duplicateLayer}
+            <RowEntryMultiButton
+              key={layer.name}
+              entryName={layer.name}
+              editPath={`${editPath}.layers.${index}`}
+              editType="Layer"
               />
           )}
         </Flex>

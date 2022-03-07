@@ -341,6 +341,12 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
         {controlsPane.controls.map((control, index) => {
           const [controlType, controlConfig] = Object.entries(control)[0];
           return (
+            // <RowEntryMultiButton
+            //   key={control.name}
+            //   entryName={control.name}
+            //   editPath={`${editPath}.controls.${index}.${controlType}`}
+            //   editType={controlType}
+            // />
             <RowEntryMultiButton
               index={index}
               key={index}

@@ -63,7 +63,6 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   },[editActive,currentEditPath])
 
   const EditPane = currentEditPath ? Editors[currentEditType] : AppEditor;
-  console.log("edit pane ", EditPane);
 
   if (!editActive) return null;
 
