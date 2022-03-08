@@ -10,7 +10,7 @@ use actix::*;
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{dev::Server, Responder};
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{middleware, web, web::{Data}, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use log::info;
 use scheduler::ImportScheduler;
@@ -53,7 +53,7 @@ pub async fn run(
 
     info!("Running migrations");
     db::run_migrations(&pool);
-    info!("Migrated succestully");
+    info!("Migrated successfully");
 
     let data_db_connection_url = config.data_connection_string().unwrap();
     let data_pool = PgPoolOptions::new()
@@ -73,6 +73,7 @@ pub async fn run(
         ogr_string: ogr_string.clone(),
     });
 
+
     let server = HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_header()
@@ -81,11 +82,11 @@ pub async fn run(
 
         App::new()
             .wrap(cors)
-            .data(State {
+            .app_data(Data::new( State {
                 db: pool.clone(),
                 data_db: data_pool.clone(),
                 ogr_string: ogr_string.clone(),
-            })
+            }))
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
             .route("/api/health", web::get().to(health))
