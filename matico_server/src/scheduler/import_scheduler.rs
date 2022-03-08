@@ -51,7 +51,7 @@ impl Handler<RunImportsMsg> for ImportScheduler {
             info!("All Done")
         });
 
-       // NEED TO FIND A WAY TO EXCUTE THIS. LOOKG LIKE API HAS CHANGED FROM OLD VERSION 
+        ctx.spawn(execution.into_actor(self));  
         // actix::Arbiter::spawn(execution);
     }
 }
