@@ -46,7 +46,7 @@ pub struct AuthService {
 impl FromRequest for AuthService {
     type Error = actix_web::Error;
     type Future = Ready<Result<AuthService, actix_web::Error>>;
-    type Config = ();
+    // type Config = ();
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload) -> Self::Future {
         let token = extract_token_from_req(req);

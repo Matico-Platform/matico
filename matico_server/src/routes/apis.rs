@@ -14,12 +14,14 @@ use crate::utils::{FormatParam, PaginationParams, SortParams};
 use std::collections::HashMap;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
+use actix_web_lab::extract::Path;
+
 use uuid::Uuid;
 
 #[get("/{id}")]
 async fn get_api(
     state: web::Data<State>,
-    web::Path(id): web::Path<Uuid>,
+    Path(id): Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
     let query = Api::find(&state.db, id)?;
     Ok(HttpResponse::Ok().json(query))
@@ -37,7 +39,7 @@ async fn get_apis(
 #[delete("/{id}")]
 async fn delete_api(
     state: web::Data<State>,
-    web::Path(id): web::Path<Uuid>,
+    Path(id): Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
     Api::delete(&state.db, id)?;
     Ok(HttpResponse::Ok().json(format!("Deleted api {}", id)))
@@ -46,7 +48,7 @@ async fn delete_api(
 #[put("/{id}")]
 async fn update_api(
     state: web::Data<State>,
-    web::Path(id): web::Path<Uuid>,
+    Path(id): Path<Uuid>,
     web::Json(update_params): web::Json<UpdateAPIDTO>,
 ) -> Result<HttpResponse, ServiceError> {
     let result = Api::update(&state.db, id, update_params)?;
@@ -100,7 +102,7 @@ async fn run_annon_query(
 #[get("{api_id}/columns/{column_name}/stats")]
 async fn get_column_stats(
     state: web::Data<State>,
-    web::Path((api_id, column_name)): web::Path<(Uuid, String)>,
+    Path((api_id, column_name)): Path<(Uuid, String)>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(request_details): web::Query<ColumnStatRequest>,
 ) -> Result<HttpResponse, ServiceError> {
@@ -122,7 +124,7 @@ async fn get_column_stats(
 #[get("{api_id}/extent")]
 async fn extent(
     state: web::Data<State>,
-    web::Path(api_id): web::Path<Uuid>,
+    Path(api_id): Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
 ) -> Result<HttpResponse, ServiceError> {
     let api= Api::find(&state.db, api_id)?;
@@ -135,7 +137,7 @@ async fn extent(
 #[get("{api_id}/columns/{column_name}")]
 async fn get_column(
     state: web::Data<State>,
-    web::Path((api_id, column_name)): web::Path<(Uuid, String)>,
+    Path((api_id, column_name)): Path<(Uuid, String)>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
 ) -> Result<HttpResponse, ServiceError> {
     let api= Api::find(&state.db, api_id)?;
@@ -148,7 +150,7 @@ async fn get_column(
 #[get("/{api_id}/columns")]
 async fn get_columns(
     state: web::Data<State>,
-    web::Path(query_id): web::Path<Uuid>,
+    Path(query_id): Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(_bounds): web::Query<Bounds>,
@@ -165,7 +167,7 @@ async fn get_columns(
 #[get("/{api_id}/run")]
 async fn run_api(
     state: web::Data<State>,
-    web::Path(query_id): web::Path<Uuid>,
+    Path(query_id): Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(sort): web::Query<SortParams>,

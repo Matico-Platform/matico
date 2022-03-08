@@ -10,6 +10,7 @@ use crate::models::{
 };
 use actix_multipart::{Field, Multipart};
 use actix_web::{delete, get, guard, put, web, Error, HttpResponse};
+use actix_web_lab::extract::Path;
 use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
 use log::{info, warn};
@@ -37,7 +38,7 @@ async fn get_datasets(
 #[get("/{id}")]
 async fn get_dataset(
     state: web::Data<State>,
-    id: web::Path<Uuid>,
+    id: Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, id.into_inner())?;
@@ -55,21 +56,23 @@ async fn get_dataset(
     Ok(HttpResponse::Ok().json(dataset))
 }
 
-async fn upload_dataset_to_tmp_file(mut field: Field, filename: &str) -> Result<String, Error> {
-    let filepath = format!("./tmp{}", sanitize_filename::sanitize(filename));
+async fn upload_dataset_to_tmp_file(mut field: Field) -> Result<String, Error> {
+    let tmp_filename = Uuid::new_v4().to_string(); 
+    let filepath = format!("./tmp{}", tmp_filename );
     let mut file = web::block(move || {
         std::fs::create_dir_all("./tmp").expect("was unable to create dir");
         std::fs::File::create(&filepath)
     })
     .await
+    .unwrap()
     .unwrap();
 
-    while let Some(chunk) = field.next().await {
-        let data = chunk.unwrap();
-        file = web::block(move || file.write_all(&data).map(|_| file)).await?;
-    }
-    //TODO Fix this
-    let filepath = format!("./tmp{}", sanitize_filename::sanitize(filename));
+     while let Some(chunk) = field.try_next().await? {
+            // filesystem operations are blocking, we have to use threadpool
+            file = web::block(move || file.write_all(&chunk).map(|_| file)).await??;
+        }
+
+    let filepath = format!("./tmp{}", tmp_filename );
     Ok(filepath)
 }
 
@@ -108,12 +111,10 @@ async fn create_dataset(
     let mut metadata: Option<CreateDatasetDTO> = None;
 
     while let Ok(Some(field)) = payload.try_next().await {
-        let content_type = field.content_disposition().unwrap();
-        let name = content_type.get_name().unwrap();
-        match name {
+        match field.content_disposition().get_name().unwrap() {
             "file" => {
                 file = Some(
-                    upload_dataset_to_tmp_file(field, name)
+                    upload_dataset_to_tmp_file(field)
                         .await
                         .map_err(|_| ServiceError::UploadFailed)?,
                 );
@@ -230,7 +231,7 @@ async fn create_sync_dataset(
 #[put("{id}")]
 async fn update_dataset(
     state: web::Data<State>,
-    web::Path(id): web::Path<Uuid>,
+    Path(id): Path<Uuid>,
     web::Json(updates): web::Json<UpdateDatasetDTO>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
@@ -246,7 +247,7 @@ async fn update_dataset(
 #[get("{id}/sync_history")]
 async fn sync_history(
     state: web::Data<State>,
-    web::Path(id): web::Path<Uuid>,
+    Path(id): Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let user = logged_in_user
@@ -261,7 +262,7 @@ async fn sync_history(
 #[get("{id}/extent")]
 async fn extent(
     state: web::Data<State>,
-    web::Path(id): web::Path<Uuid>,
+    Path(id): Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
 
@@ -285,7 +286,7 @@ async fn extent(
 #[delete("{id}")]
 async fn delete_dataset(
     state: web::Data<State>,
-    web::Path(id): web::Path<Uuid>,
+    Path(id): Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let user = logged_in_user

@@ -8,6 +8,8 @@ use crate::models::{
 };
 use crate::utils::PaginationParams;
 use actix_web::{delete, get, post, put, web, HttpResponse};
+use actix_web_lab::extract::Path;
+
 use log::info;
 use serde_json::json;
 use uuid::Uuid;
@@ -70,7 +72,7 @@ pub async fn create_app(
 #[delete("/{app_id}")]
 pub async fn delete_app(
     state: web::Data<State>,
-    web::Path(app_id): web::Path<Uuid>,
+    Path(app_id): Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let app = App::find(&state.db, app_id)?;
@@ -90,7 +92,7 @@ pub async fn delete_app(
 #[put("/{app_id}")]
 pub async fn update_app(
     state: web::Data<State>,
-    web::Path(app_id): web::Path<Uuid>,
+    Path(app_id): Path<Uuid>,
     web::Json(update): web::Json<UpdateAppDTO>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
@@ -105,7 +107,7 @@ pub async fn update_app(
 #[get("/{app_id}")]
 pub async fn get_app(
     state: web::Data<State>,
-    web::Path(app_id): web::Path<Uuid>,
+    Path(app_id): Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let app = App::find(&state.db, app_id)?;

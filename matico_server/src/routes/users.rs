@@ -3,6 +3,8 @@ use crate::auth::AuthService;
 use crate::errors::ServiceError;
 use crate::models::User;
 use actix_web::{get, web, Error, HttpResponse};
+use actix_web_lab::extract::Path;
+
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -29,7 +31,7 @@ async fn profile(
 #[get("/{id}")]
 async fn get_user(
     state: web::Data<State>,
-    user_id: web::Path<Uuid>,
+    user_id: Path<Uuid>,
 ) -> Result<HttpResponse, Error> {
     let user = User::find_by_id(&state.db, user_id.into_inner())?;
     Ok(HttpResponse::Found().json(user))
