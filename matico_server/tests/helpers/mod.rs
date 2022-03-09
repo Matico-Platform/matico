@@ -171,9 +171,8 @@ pub async fn spawn_app() -> TestApp {
     config.datadb.name = data_db_name.clone();
 
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    let server = matico_server::run(listener, config)
-        .await
-        .expect("failed to start server");
+    let server = matico_server::run(listener, config).await.unwrap();
+
     let _ = tokio::spawn(server);
 
     TestApp {

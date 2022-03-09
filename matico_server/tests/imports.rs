@@ -5,7 +5,7 @@ use serde_json::{json, Value};
 use sqlx::postgres::PgRow;
 use sqlx::Row;
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn upload_json_dataset_logged_in_with_bad_metadata() {
     let test_server = spawn_app().await;
     let url = test_server.url("/datasets");
@@ -32,7 +32,7 @@ async fn upload_json_dataset_logged_in_with_bad_metadata() {
     );
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn upload_json_dataset_logged_in_good_metadata() {
     let test_server = spawn_app().await;
     let url = test_server.url("/datasets");
@@ -142,7 +142,7 @@ async fn upload_json_dataset_logged_in_good_metadata() {
     );
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
     let test_server = spawn_app().await;
     let url = test_server.url("/datasets");
@@ -164,7 +164,7 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
         "import_params":{
             "Csv":{
                 "x_col":"lngs",
-                "y_vol":"lats",
+                "y_col":"lats",
                 "crs":"EPSG:4326"
             }
         }
@@ -219,7 +219,9 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
     assert_eq!(dataset_body["id_col"], "id", "The id col should be correct");
 
     let query = format!("select category_vars, parseable_numbers, numerical_categorical, numbers, dates from {} limit 1", dataset_body["table_name"]);
-    let result: Result<(String, String, i32, f64, DateTime<Utc>), _> = sqlx::query(&query)
+
+
+    let result: Result<(String, f64, i32, f64, DateTime<Utc>), _> = sqlx::query(&query)
         .map(|row: PgRow| {
             (
                 row.get("category_vars"),
@@ -243,6 +245,8 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
         "select ST_GeometryType(wkb_geometry) as geom_type from {} ",
         dataset_body["table_name"]
     );
+
+
     let result: Result<String, _> = sqlx::query(&query)
         .map(|row: PgRow| row.get("geom_type"))
         .fetch_one(&test_server.data_db)
@@ -256,7 +260,7 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
     );
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn upload_json_dataset_logged_out_good_metadata() {
     let test_server = spawn_app().await;
     let url = test_server.url("/datasets");

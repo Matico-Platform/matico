@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use reqwest;
 
 pub async fn upload_file(
     file_path: &str,
