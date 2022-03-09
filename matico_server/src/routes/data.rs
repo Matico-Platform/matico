@@ -7,12 +7,14 @@ use crate::models::Dataset;
 
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
 use actix_web::{get, put, web, HttpResponse};
+use actix_web_lab::extract::Path;
+
 use uuid::Uuid;
 
 #[get("{dataset_id}/data")]
 async fn get_data(
     state: web::Data<State>,
-    web::Path(dataset_id): web::Path<Uuid>,
+    Path(dataset_id): Path<Uuid>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(_bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
@@ -50,7 +52,7 @@ async fn get_data(
 #[get("{dataset_id}/data/{feature_id}")]
 async fn get_feature(
     state: web::Data<State>,
-    web::Path((dataset_id, feature_id)): web::Path<(Uuid, String)>,
+    Path((dataset_id, feature_id)): Path<(Uuid, String)>,
     web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
@@ -72,7 +74,7 @@ async fn get_feature(
 #[put("{dataset_id}/data/{feature_id}")]
 async fn update_feature(
     state: web::Data<State>,
-    web::Path((dataset_id, feature_id)): web::Path<(Uuid, String)>,
+    Path((dataset_id, feature_id)): Path<(Uuid, String)>,
     web::Json(update): web::Json<serde_json::Value>,
     web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,

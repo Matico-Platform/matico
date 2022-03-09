@@ -4,6 +4,7 @@ use crate::db::{MVTTile, PostgisQueryRunner, TileID, TilerOptions};
 use crate::errors::ServiceError;
 use crate::models::{Dataset,Api};
 use actix_web::{get, web, HttpResponse};
+use actix_web_lab::extract::Path;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -25,7 +26,7 @@ struct ApiID {
 #[get("/{z}/{x}/{y}")]
 async fn get_tile(
     state: web::Data<State>,
-    web::Path(tile_id): web::Path<TileID>,
+    Path(tile_id): Path<TileID>,
     web::Query(query): web::Query<QueryParam>,
     web::Query(tiler_options): web::Query<TilerOptions>,
 ) -> Result<HttpResponse, ServiceError> {
@@ -40,9 +41,9 @@ async fn get_tile(
 #[get("/dataset/{dataset_id}/{z}/{x}/{y}")]
 async fn get_tile_for_dataset(
     state: web::Data<State>,
-    web::Path(dataset): web::Path<DatasetID>,
-    web::Path(tile_id): web::Path<TileID>,
-    web::Path(tiler_options): web::Path<TilerOptions>,
+    Path(dataset): Path<DatasetID>,
+    Path(tile_id): Path<TileID>,
+    Path(tiler_options): Path<TilerOptions>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset.dataset_id)?;
     let query = format!(r#"select * from "{}""#, dataset.table_name);
@@ -57,10 +58,10 @@ async fn get_tile_for_dataset(
 #[get("/api/{api_id}/{z}/{x}/{y}")]
 async fn get_tile_for_query(
     state: web::Data<State>,
-    web::Path(api): web::Path<ApiID>,
-    web::Path(tile_id): web::Path<TileID>,
+    Path(api): Path<ApiID>,
+    Path(tile_id): Path<TileID>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Path(tiler_options): web::Path<TilerOptions>,
+    Path(tiler_options): Path<TilerOptions>,
 )-> Result<HttpResponse, ServiceError>{
    let api = Api::find(&state.db, api.api_id)?;
    let query = api.construct_query(&params)?;

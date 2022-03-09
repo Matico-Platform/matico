@@ -1,10 +1,11 @@
 mod helpers;
 use helpers::{users::*, *};
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn user_signs_up() {
     let test_server = spawn_app().await;
 
+    println!("Test server address {}", test_server.address);
     let response = signup_user(
         "test_user@gmail.com",
         "test_user",
@@ -21,7 +22,7 @@ async fn user_signs_up() {
     assert!(!response.token.is_empty());
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn should_not_allow_duplicate_emails() {
     let test_server = spawn_app().await;
 
@@ -51,7 +52,7 @@ async fn should_not_allow_duplicate_emails() {
     assert!(response.is_err());
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn should_not_allow_duplicate_usernames() {
     let test_server = spawn_app().await;
 
@@ -81,7 +82,7 @@ async fn should_not_allow_duplicate_usernames() {
     assert!(response.is_err());
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn sign_up_user_without_password() {
     let test_server = spawn_app().await;
 
@@ -90,7 +91,7 @@ async fn sign_up_user_without_password() {
     assert!(response.is_err());
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn sign_up_user_without_username() {
     let test_server = spawn_app().await;
 
@@ -99,7 +100,7 @@ async fn sign_up_user_without_username() {
     assert!(response.is_err());
 }
 
-#[actix_rt::test]
+#[actix_web::test]
 async fn sign_up_user_without_email() {
     let test_server = spawn_app().await;
 

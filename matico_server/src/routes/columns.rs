@@ -6,6 +6,7 @@ use crate::models::Dataset;
 use serde::{Deserialize, Serialize};
 
 use actix_web::{get, web, HttpResponse};
+use actix_web_lab::extract::Path;
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]
@@ -17,7 +18,7 @@ pub struct ColumnStatRequest {
 #[get("{dataset_id}/columns")]
 async fn get_columns(
     state: web::Data<State>,
-    web::Path(dataset_id): web::Path<Uuid>,
+    Path(dataset_id): Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
     let columns = dataset.columns(&state.data_db).await?;
@@ -28,7 +29,7 @@ async fn get_columns(
 #[get("{dataset_id}/columns/{column_name}/stats")]
 async fn get_stats(
     state: web::Data<State>,
-    web::Path((dataset_id, column_name)): web::Path<(Uuid, String)>,
+    Path((dataset_id, column_name)): Path<(Uuid, String)>,
     web::Query(request_details): web::Query<ColumnStatRequest>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
@@ -49,7 +50,7 @@ async fn get_stats(
 #[get("{dataset_id}/columns/{column_name}")]
 async fn get_column(
     state: web::Data<State>,
-    web::Path((dataset_id, column_name)): web::Path<(Uuid, String)>,
+    Path((dataset_id, column_name)): Path<(Uuid, String)>,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
 

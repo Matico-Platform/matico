@@ -33,7 +33,7 @@ impl Actor for ImportScheduler {
 
 impl Handler<RunImportsMsg> for ImportScheduler {
     type Result = ();
-    fn handle(&mut self, _msg: RunImportsMsg, _ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, _msg: RunImportsMsg, ctx: &mut Context<Self>) -> Self::Result {
         info!("Running handle");
         let db_pool = self.db.clone();
         let ogr_string = self.ogr_string.clone();
@@ -50,6 +50,8 @@ impl Handler<RunImportsMsg> for ImportScheduler {
             }
             info!("All Done")
         });
-        actix::Arbiter::spawn(execution);
+
+        ctx.spawn(execution.into_actor(self));  
+        // actix::Arbiter::spawn(execution);
     }
 }

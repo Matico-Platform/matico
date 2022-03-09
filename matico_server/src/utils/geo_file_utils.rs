@@ -1,4 +1,3 @@
-use crate::app_config::Config;
 use crate::errors::ServiceError;
 use actix_web::web;
 use diesel_as_jsonb::AsJsonb;

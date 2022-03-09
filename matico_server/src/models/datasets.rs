@@ -244,7 +244,6 @@ impl Dataset {
             self.table_name, set_statement, self.id_col, feature_id
         );
 
-        let query2 = query.clone();
         sqlx::query(&query).execute(db).await.map_err(|e| ServiceError::APIFailed(format!("Failed to update feature {}",e)))?;
 
         self.get_feature(&db,feature_id,format).await
