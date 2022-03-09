@@ -10,6 +10,9 @@ import Move from "@spectrum-icons/workflow/Move";
 import Info from "@spectrum-icons/workflow/Info";
 import Duplicate from "@spectrum-icons/workflow/Duplicate";
 import { useSpecActions } from "Hooks/useSpecActions";
+import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
+import { reorderAtSpec } from "Stores/MaticoSpecSlice";
+import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 
 interface ControlActionBarProps {
   editPath: string;
@@ -40,7 +43,8 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
     openEditor,
     remove,
     duplicate,
-    move
+    move,
+    reorder
   } = useSpecActions(
     editPath,
     editType,
@@ -72,8 +76,18 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                 case "duplicate":
                   duplicate();
                   break
-                case "move":
-                  console.log('MOVING NOT YET IMPLEMENTED')
+                  case "move":
+                    console.log('MOVING NOT YET IMPLEMENTED')
+                    break;
+                  case "reorder-forward":
+                    reorder('forward')
+                    break;
+                  case "reorder-backward":
+                    reorder('backward')
+                    break;
+                  case "move":
+                    console.log('MOVING NOT YET IMPLEMENTED')
+                    break;
                 default:
                   return;
                   
@@ -99,6 +113,14 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           <Item key="delete">
               <Delete/>
               <Text>Delete</Text>
+          </Item>
+          <Item key="reorder-backward">
+              <ChevronUp />
+              <Text>Bring towards Front</Text>
+          </Item>
+          <Item key="reorder-forward">
+              <ChevronDown />
+              <Text>Send towards Back</Text>
           </Item>
         </ActionGroup>
       </View>
