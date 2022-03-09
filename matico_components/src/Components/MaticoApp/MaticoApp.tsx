@@ -22,6 +22,7 @@ import { CSVProvider } from "DatasetsProviders/CSVProvider";
 import { COGProvider } from "DatasetsProviders/COGProvider";
 import { SocrataDatasetProvider} from "DatasetsProviders/SocrataProvider/SocrataProvider";
 
+import "@fortawesome/fontawesome-free/css/all.min.css";
 interface MaticoAppInterface {
   spec?: Dashboard;
   onStateChange?: (state: VariableState) => void;
@@ -43,7 +44,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 }) => {
   const columns = editActive
     ? {
-        XL: ["65%", "36%"],
+        XL: ["65%", "35%"],
         L: ["65%", "35%"],
         M: ["65%", "35%"],
         S: ["100%"],

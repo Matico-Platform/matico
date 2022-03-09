@@ -9,9 +9,6 @@ import {
   setCurrentEditPath,
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as Icons from '@fortawesome/free-solid-svg-icons';
-import { Icon } from '@react-spectrum/icon';
 import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
 import {
@@ -33,13 +30,8 @@ import {
 } from "@adobe/react-spectrum";
 import { PaneDefaults } from "../PaneDefaults";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-
-
-const iconList = Object.keys(Icons)
-  .filter((key) => key !== 'fas' && key !== 'prefix') //@ts-ignore
-  .map((icon: string) => Icons[icon].iconName)
-  .filter((f, i, arr) => f && !!f && f.length && arr.indexOf(f) === i)
-  .map((name, id) => ({id, name}))
+import { iconList } from '../../../Utils/iconUtils'
+import { useIconList } from "Hooks/useIconList";
 
 const NewSectionModal: React.FC<{
   onAddSection: (name: string) => void;
@@ -104,6 +96,14 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
   };
 
   const page = _.get(spec, editPath);
+
+  const {
+    iconList,
+    filterText,
+    setFilterText,
+    loadMoreIcons
+  } = useIconList();
+
   if (!page) {
     return (
       <View>
@@ -125,23 +125,19 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
           value={page.path}
           onChange={(path: string) => updatePage({ path })}
         />
-        <TextField
-          label="icon"
-          value={page.icon}
-          onChange={(icon) => updatePage({ icon })}
-        />
-        {/* <ComboBox
+        <ComboBox
           label="Icon"
-          onSelectionChange={({name}) => icon && updatePage({ icon: name })}
-          defaultItems={iconList}
+          selectedKey={page.icon}
+          onSelectionChange={(icon) => updatePage({icon})}          
+          items={iconList}
+          inputValue={filterText}
+          onInputChange={setFilterText}
+          onLoadMore={loadMoreIcons}
           >
-          {({name}) => <Item>
-            <Icon slot="icon" marginTop="size-50" marginStart="size-50">
-              <FontAwesomeIcon icon={name} size="xs" />
-            </Icon>
-            <Text marginStart="size-300">{name}</Text>
+          {({id, name}) => <Item>
+            <Text><i className={id} style={{marginRight: '1em'}}/>{name}</Text>
           </Item>}
-        </ComboBox> */}
+        </ComboBox>
       </Well>
       <Well>
         <Heading>
