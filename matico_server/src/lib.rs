@@ -89,6 +89,7 @@ pub async fn run(
             }))
             .wrap(middleware::Logger::default())
             .wrap(middleware::Logger::new("%{Content-Type}i"))
+            .wrap(middleware::Compress::default())
             .route("/api/health", web::get().to(health))
             .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
