@@ -17,6 +17,7 @@ import {
   Flex,
 } from "@adobe/react-spectrum";
 import { AppEditor } from "./Panes/AppEditor";
+import { MaticoOutlineViewer } from "./Panes/MaticoOutlineViewer";
 
 export interface MaticoEditorProps {
   editActive: boolean;
@@ -61,9 +62,8 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     }
 
   },[editActive,currentEditPath])
-
+  //@ts-ignore
   const EditPane = currentEditPath ? Editors[currentEditType] : AppEditor;
-  console.log("edit pane ", EditPane);
 
   if (!editActive) return null;
 
@@ -74,11 +74,12 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     base: "35vh",
   };
 
-  return (
+  return ( //@ts-ignore
     <Tabs selectedKey={tabKey} onSelectionChange={setTabKey}>
       <TabList>
         <Item key="Components">Components</Item>
         <Item key="Datasets">Datasets</Item>
+        <Item key="Outline">Outline</Item>
         <Item key="Specification">Specification</Item>
         <Item key="State">State</Item>
       </TabList>
@@ -94,6 +95,9 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
           </Item>
           <Item key="Datasets">
             <DatasetsEditor datasetProviders={datasetProviders} />
+          </Item>
+          <Item key="Outline">
+            <MaticoOutlineViewer />
           </Item>
           <Item key="Specification">
             <MaticoRawSpecEditor />

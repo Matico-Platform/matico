@@ -113,64 +113,6 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
     );
   };
 
-  //const duplicatePage = (index: number) => {
-  //  let [[pageType, props]] = Object.entries(pages[index]);
-  //  dispatch(
-  //    addPage({
-  //      page:
-  //        //@ts-ignore
-  //        { ...props, name: `${props.name}_copy`, path: `${props.path}_copy` },
-  //    })
-  //  );
-  //};
-
-  const deletePage = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          pages: [...pages.slice(0, index), ...pages.slice(index + 1)],
-        },
-      })
-    );
-  };
-
-  const editPage = (index: number) => {
-    const paneType = "Page";
-    dispatch(
-      setCurrentEditPath({
-        editPath: `pages.${index}`,
-        editType: paneType,
-      })
-    );
-  };
-
-  const changePageOrder = (index: number, direction: "up" | "down") => {
-    if (
-      (index === 0 && direction === "up") ||
-      (index === pages.length - 1 && direction === "down")
-    ) {
-      return;
-    }
-
-    let pagesCopy = [...pages];
-    const changedPage = pagesCopy.splice(index, 1)[0];
-    pagesCopy.splice(
-      direction === "up" ? index - 1 : index + 1,
-      0,
-      changedPage
-    );
-
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          pages: pagesCopy,
-        },
-      })
-    );
-  };
-
   const validatePageName = (name: string) => {
     if (pages.find((f) => f.name === name)) {
       return false;
@@ -193,12 +135,10 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
         <Flex marginBottom={"size-200"} direction="column">
           {pages.map((page, index) => (
             <RowEntryMultiButton
-              key={index}
-              index={index}
+              key={page.name}
               entryName={page.name}
-              setEdit={editPage}
-              changeOrder={changePageOrder}
-              deleteEntry={deletePage}
+              editPath={`pages.${index}`}
+              editType={"Page"}
             />
           ))}
         </Flex>

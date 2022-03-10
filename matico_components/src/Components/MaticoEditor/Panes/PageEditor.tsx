@@ -4,12 +4,11 @@ import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { Page } from "@maticoapp/matico_spec";
 import {
   deleteSpecAtPath,
+  duplicateSpecAtPath,
+  removeSpecAtPath,
   setCurrentEditPath,
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as Icons from '@fortawesome/free-solid-svg-icons';
-import { Icon } from '@react-spectrum/icon';
 import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
 import {
@@ -31,13 +30,8 @@ import {
 } from "@adobe/react-spectrum";
 import { PaneDefaults } from "../PaneDefaults";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-
-
-const iconList = Object.keys(Icons)
-  .filter((key) => key !== 'fas' && key !== 'prefix') //@ts-ignore
-  .map((icon: string) => Icons[icon].iconName)
-  .filter((f, i, arr) => f && !!f && f.length && arr.indexOf(f) === i)
-  .map((name, id) => ({id, name}))
+import { iconList } from '../../../Utils/iconUtils'
+import { useIconList } from "Hooks/useIconList";
 
 const NewSectionModal: React.FC<{
   onAddSection: (name: string) => void;
@@ -86,7 +80,8 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
 
   const deletePage = () => {
     dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
+    console.log(editPath)
+    dispatch(removeSpecAtPath({ editPath }));
   };
 
   const addNewSection = (name: string) => {
@@ -100,72 +95,15 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
     );
   };
 
-  const duplicateSection = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          sections: [
-            ...page.sections.slice(0, index),
-            //@ts-ignore
-            { ...page.sections[index], name: `${page.sections[index].name}_copy` },
-            ...page.sections.slice(index),
-          ],
-        },
-      })
-    );
-  };
-
-  const editSection = (index: number) => {
-    dispatch(
-      setCurrentEditPath({
-        editPath: `${editPath}.sections.${index}`,
-        editType: "Section",
-      })
-    );
-  };
-
-  const deleteSection = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          sections: [
-            ...page.sections.slice(0, index),
-            ...page.sections.slice(index + 1),
-          ],
-        },
-      })
-    );
-  };
-
-  const changeOrder = (index: number, direction: "up" | "down") => {
-    if (
-      (index === 0 && direction === "up") ||
-      (index === page.sections.length - 1 && direction === "down")
-    ) {
-      return;
-    }
-
-    let sections = [...page.sections];
-    const changedSection = sections.splice(index, 1)[0];
-    sections.splice(
-      direction === "up" ? index - 1 : index + 1,
-      0,
-      changedSection
-    );
-
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          sections,
-        },
-      })
-    );
-  };
-
   const page = _.get(spec, editPath);
+
+  const {
+    iconList,
+    filterText,
+    setFilterText,
+    loadMoreIcons
+  } = useIconList();
+
   if (!page) {
     return (
       <View>
@@ -187,23 +125,19 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
           value={page.path}
           onChange={(path: string) => updatePage({ path })}
         />
-        <TextField
-          label="icon"
-          value={page.icon}
-          onChange={(icon) => updatePage({ icon })}
-        />
-        {/* <ComboBox
+        <ComboBox
           label="Icon"
-          onSelectionChange={({name}) => icon && updatePage({ icon: name })}
-          defaultItems={iconList}
+          selectedKey={page.icon}
+          onSelectionChange={(icon) => updatePage({icon})}          
+          items={iconList}
+          inputValue={filterText}
+          onInputChange={setFilterText}
+          onLoadMore={loadMoreIcons}
           >
-          {({name}) => <Item>
-            <Icon slot="icon" marginTop="size-50" marginStart="size-50">
-              <FontAwesomeIcon icon={name} size="xs" />
-            </Icon>
-            <Text marginStart="size-300">{name}</Text>
+          {({id, name}) => <Item>
+            <Text><i className={id} style={{marginRight: '1em'}}/>{name}</Text>
           </Item>}
-        </ComboBox> */}
+        </ComboBox>
       </Well>
       <Well>
         <Heading>
@@ -236,14 +170,11 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
               justifyContent="space-between"
             >
               <RowEntryMultiButton
-                index={index}
-                key={index}
-                entryName={<Text>{section.name}</Text>}
-                setEdit={editSection}
-                changeOrder={changeOrder}
-                deleteEntry={deleteSection}
-                duplicateEntry={duplicateSection}
-              />
+                key={section.name}
+                entryName={section.name}
+                editPath={`${editPath}.sections.${index}`}
+                editType="Section"
+                />
             </Flex>
           ))}
         </Flex>

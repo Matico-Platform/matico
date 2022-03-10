@@ -1,6 +1,4 @@
 import React from "react";
-import { setCurrentEditPath, deleteSpecAtPath } from "Stores/MaticoSpecSlice";
-import { useMaticoDispatch } from "Hooks/redux";
 import { useIsEditable } from "Hooks/useIsEditable";
 // import {useHover} from '@react-aria/interactions';
 
@@ -11,6 +9,10 @@ import styled from "styled-components";
 import Move from "@spectrum-icons/workflow/Move";
 import Info from "@spectrum-icons/workflow/Info";
 import Duplicate from "@spectrum-icons/workflow/Duplicate";
+import { useSpecActions } from "Hooks/useSpecActions";
+import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
+import { reorderAtSpec } from "Stores/MaticoSpecSlice";
+import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 
 interface ControlActionBarProps {
   editPath: string;
@@ -34,10 +36,20 @@ const ControlBarContainer = styled.div`
 export const ControlActionBar: React.FC<ControlActionBarProps> = ({
   editPath,
   editType,
-  actions,
+  actions=[''],
 }) => {
-  const dispatch = useMaticoDispatch();
   const edit = useIsEditable();
+  const {
+    openEditor,
+    remove,
+    duplicate,
+    move,
+    reorder
+  } = useSpecActions(
+    editPath,
+    editType,
+  );
+
   if (!edit) return null;
   return (
     <ControlBarContainer>
@@ -53,22 +65,25 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           onAction={(action) => {
               switch (action) {
                 case "delete":
-                  dispatch(
-                      deleteSpecAtPath({
-                        editPath,
-                      })
-                  );
+                  remove();
                   break;
                 case "edit":
-                  dispatch(
-                      setCurrentEditPath({
-                        editPath,
-                        editType,
-                      })
-                  );
+                  openEditor()
                   break;
                 case "docs":
                   typeof window !== "undefined" && window.open(`https://matico.app/docs/panes/${editPath.split('.').slice(-1)[0]}`, "_blank")
+                  break;
+                case "duplicate":
+                  duplicate();
+                  break
+                case "reorder-forward":
+                  reorder('forward')
+                  break;
+                case "reorder-backward":
+                  reorder('backward')
+                  break;
+                case "move":
+                  console.log('MOVING NOT YET IMPLEMENTED')
                   break;
                 default:
                   return;
@@ -95,6 +110,14 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           <Item key="delete">
               <Delete/>
               <Text>Delete</Text>
+          </Item>
+          <Item key="reorder-backward">
+              <ChevronUp />
+              <Text>Bring towards Front</Text>
+          </Item>
+          <Item key="reorder-forward">
+              <ChevronDown />
+              <Text>Send towards Back</Text>
           </Item>
         </ActionGroup>
       </View>
