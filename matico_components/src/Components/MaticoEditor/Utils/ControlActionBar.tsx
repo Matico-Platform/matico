@@ -76,18 +76,15 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                 case "duplicate":
                   duplicate();
                   break
-                  case "move":
-                    console.log('MOVING NOT YET IMPLEMENTED')
-                    break;
-                  case "reorder-forward":
-                    reorder('forward')
-                    break;
-                  case "reorder-backward":
-                    reorder('backward')
-                    break;
-                  case "move":
-                    console.log('MOVING NOT YET IMPLEMENTED')
-                    break;
+                case "reorder-forward":
+                  reorder('forward')
+                  break;
+                case "reorder-backward":
+                  reorder('backward')
+                  break;
+                case "move":
+                  console.log('MOVING NOT YET IMPLEMENTED')
+                  break;
                 default:
                   return;
                   
