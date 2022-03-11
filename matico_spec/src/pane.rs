@@ -54,6 +54,23 @@ impl Validate for Pane {
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+pub struct ContainerPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[validate]
+    pub position: PanePosition,
+
+    #[wasm_bindgen(skip)]
+    pub layout: String,
+
+    #[wasm_bindgen(skip)]
+    #[validate]
+    pub panes: Vec<Pane>,
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
 pub struct ControlsPane {
     #[wasm_bindgen(skip)]
     pub name: String,
