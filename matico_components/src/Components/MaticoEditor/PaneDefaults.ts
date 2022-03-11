@@ -89,5 +89,12 @@ export const PaneDefaults = {
     name:"Controls",
     title:"Controls",
     controls : []
+  },
+  Container:{
+    position: DefaultPosition,
+    name:"Container",
+    title:"Container",
+    layout:"linear",
+    panes:[]
   }
 };

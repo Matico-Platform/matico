@@ -8,7 +8,6 @@ import {
   setCurrentEditPath,
   setSpecAtPath,
 } from "Stores/MaticoSpecSlice";
-import { PaneDefaults } from "../PaneDefaults";
 import {
   Heading,
   Flex,
@@ -33,6 +32,7 @@ import PieChartIcon from "@spectrum-icons/workflow/GraphPie";
 import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import PropertiesIcon from "@spectrum-icons/workflow/Properties";
+import Border from "@spectrum-icons/workflow/Border";
 import { DefaultGrid } from "../Utils/DefaultGrid";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 
@@ -54,6 +54,8 @@ const IconForPaneType = (PaneType: string) => {
       return <ScatterIcon />;
     case "Controls":
       return <PropertiesIcon />;
+    case "Container":
+      return <Border />;
   }
 };
 
@@ -67,6 +69,7 @@ const AvaliablePanes = [
       { name: "Text", label: "Text" },
       { name: "Scatterplot", label: "Scatter Plot" },
       { name: "Controls", label: "Controls" },
+      { name: "Container", label: "Container" },
     ],
   },
 ];
@@ -151,40 +154,11 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
     dispatch(setSpecAtPath({ editPath: editPath, update: change }));
   };
 
-  const deleteSection = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
-  };
-
-  const editPane = (index: number) => {
-    const paneType = Object.entries(section.panes[index])[0][0];
-    dispatch(
-      setCurrentEditPath({
-        editPath: `${editPath}.panes.${index}.${paneType}`,
-        editType: paneType,
-      })
-    );
-  };
-
   const validateName = (name: string) => {
     const existingNames = section.panes.map(
       (pane) => Object.values(pane)[0].name
     );
     return !existingNames.includes(name);
-  };
-
-  const incrementPaneName = (paneName: string) => {
-    //@ts-ignore
-    const baseName = !isNaN(paneName.slice(-1)[0])
-      ? paneName.slice(0, -1)
-      : paneName;
-    let tempName = `${baseName}`;
-    let suffix = 2;
-    do {
-      tempName = `${baseName}${suffix}`;
-      suffix++;
-    } while (!validateName(tempName));
-    return tempName;
   };
 
   const addPane = (paneName: string, paneType: string) => {
@@ -196,59 +170,6 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
             ...section.panes,
             { [paneType]: { ...PaneDefaults[paneType], name: paneName } },
           ],
-        },
-      })
-    );
-  };
-
-  const duplicatePane = (index: number) => {
-    let [[paneType, props]] = Object.entries(section.panes[index]);
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          panes: [
-            ...section.panes.slice(0, index),
-            //@ts-ignore
-            { [paneType]: { ...props, name: incrementPaneName(props.name) } },
-            ...section.panes.slice(index),
-          ],
-        },
-      })
-    );
-  };
-
-  const deletePane = (index: number) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          panes: [
-            ...section.panes.slice(0, index),
-            ...section.panes.slice(index + 1),
-          ],
-        },
-      })
-    );
-  };
-
-  const changeOrder = (index: number, direction: "up" | "down") => {
-    if (
-      (index === 0 && direction === "up") ||
-      (index === section.panes.length - 1 && direction === "down")
-    ) {
-      return;
-    }
-
-    let panes = [...section.panes];
-    const changedPane = panes.splice(index, 1)[0];
-    panes.splice(direction === "up" ? index - 1 : index + 1, 0, changedPane);
-
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          panes,
         },
       })
     );
