@@ -142,8 +142,6 @@ impl TestApp {
 /// ```
 pub async fn spawn_app() -> TestApp {
     dotenv::dotenv().ok();
-    std::env::set_var("TEST_ENV", "true");
-
     let mut config = Config::from_conf().unwrap();
 
     let (db_connection_url, db_name, data_db_connection_url, data_db_name) =
@@ -169,6 +167,11 @@ pub async fn spawn_app() -> TestApp {
 
     config.db.name = db_name.clone();
     config.datadb.name = data_db_name.clone();
+
+    // Set max connections lower to avoid swamping the 
+    // connection pool for concurrent tests
+    config.db.max_connections= Some(3);
+    config.datadb.max_connections= Some(3);
 
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     let server = matico_server::run(listener, config).await.unwrap();
