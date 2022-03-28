@@ -1,4 +1,4 @@
-use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
+use crate::db::{DataDbPool, DbPool, PostgisDataSource, DataSource};
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
 use crate::utils::{Format, PaginationParams,SortParams};
@@ -254,10 +254,10 @@ impl Api {
     ) -> Result<String, ServiceError> {
         let f = format.unwrap_or_default();
 
-        //TODO Move this to PostgisQueryRunner
-        let metadata = PostgisQueryRunner::run_query_meta(pool, &query).await?;
+        //TODO Move this to PostgisDataSource
+        let metadata = PostgisDataSource::run_metadata_query(pool, &query).await?;
 
-        let result = PostgisQueryRunner::run_query(pool, &query, page, sort, f).await?;
+        let result = PostgisDataSource::run_query(pool, &query, page, sort, f).await?;
 
         let result_with_metadata = json!({
             "data":result,
@@ -325,7 +325,7 @@ impl Api {
 
     pub async fn columns(&self, db : &DataDbPool, params: &HashMap<String,serde_json::Value>)->Result<Vec<Column>, ServiceError>{
         let query = self.construct_query(params)?;
-        let columns = PostgisQueryRunner::get_query_column_details(
+        let columns = PostgisDataSource::get_query_column_details(
             db,
             &query,
         )
@@ -345,7 +345,7 @@ impl Api {
         info!("Using format {}",f);
 
         let query = self.construct_query(params)?;
-        let result = PostgisQueryRunner::run_query(pool, &query, page, sort, f).await?;
+        let result = PostgisDataSource::run_query(pool, &query, page, sort, f).await?;
         Ok(result.to_string())
     }
 }

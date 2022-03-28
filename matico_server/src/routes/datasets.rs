@@ -2,7 +2,7 @@ use crate::app_state::State;
 use crate::auth::AuthService;
 use crate::errors::ServiceError;
 use crate::models::permissions::*;
-use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
+use crate::utils::geo_file_utils::load_dataset_to_db;
 
 use crate::models::{
     datasets::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, UpdateDatasetDTO},

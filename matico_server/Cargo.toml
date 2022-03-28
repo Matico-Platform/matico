@@ -54,8 +54,8 @@ matico_spec= {path = "../matico_spec"}
 ts-rs = {version="6.1", features=['chrono-impl', 'uuid-impl']}
 validator="0.12.0"
 cached={version="0.33.0", features=['async']}
+async-trait="0.1.53"
 
 [dev-dependencies]
 tokio = { version = "1.13.1", features = ["rt-multi-thread", "macros"] }
-
 

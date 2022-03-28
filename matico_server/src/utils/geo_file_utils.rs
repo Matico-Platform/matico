@@ -1,11 +1,8 @@
 use crate::errors::ServiceError;
 use actix_web::web;
 use diesel_as_jsonb::AsJsonb;
-use gdal::errors::GdalError;
-use gdal::Dataset;
 use log::info;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 use std::process::Command;
 
 #[derive(Serialize, Deserialize, Debug, AsJsonb, Clone)]
@@ -68,17 +65,6 @@ impl Default for GeoJsonImportParams {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ShpFileImportParams {}
 
-pub fn get_file_info(filepath: &str) -> Result<Vec<(String, u32, i32)>, GdalError> {
-    let dataset = Dataset::open(Path::new(filepath))?;
-    let layer = dataset.layer(0)?;
-    let fields = layer
-        .defn()
-        .fields()
-        .map(|field| (field.name(), field.field_type(), field.width()))
-        .collect::<Vec<_>>();
-    Ok(fields)
-}
-
 pub async fn load_dataset_to_db(
     filepath: String,
     name: String,
@@ -103,7 +89,7 @@ pub async fn load_shp_dataset_to_db(
     _filepath: String,
     _name: String,
     _params: ShpFileImportParams,
-    ogr_string: String,
+    _ogr_string: String,
 ) -> Result<(), ServiceError> {
     Err(ServiceError::InternalServerError(
         "Importing SHP files not implemented just yet".into(),

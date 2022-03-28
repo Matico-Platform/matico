@@ -1,15 +1,14 @@
 use crate::models::User;
-use actix_web::web;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use log::{info, warn};
+use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use uuid::Uuid;
 use sqlx::postgres::PgRow;
 use sqlx::Row;
 
-use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
+use crate::db::{DataDbPool, DbPool, PostgisDataSource, DataSource};
 use crate::errors::ServiceError;
 use crate::models::{columns::Column, Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
@@ -155,10 +154,10 @@ impl Dataset {
             None => format!(r#"select * from "{}""#, self.table_name),
         };
 
-        let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
+        let metadata = PostgisDataSource::run_metadata_query(pool, &q).await?;
         let f = format.unwrap_or_default();
 
-        let result = PostgisQueryRunner::run_query(pool, &q, page, sort, f).await?;
+        let result = PostgisDataSource::run_query(pool, &q, page, sort, f).await?;
         let result_with_metadata = match include_metadata {
             Some(true) => json!({
             "data": result,
@@ -286,6 +285,7 @@ impl Dataset {
 
     }
 
+
     pub async fn get_column(
         &self,
         db: &DataDbPool,
@@ -306,7 +306,7 @@ impl Dataset {
     }
 
     pub async fn columns(&self, db: &DataDbPool) -> Result<Vec<Column>, ServiceError> {
-        let columns = PostgisQueryRunner::get_query_column_details(
+        let columns = PostgisDataSource::get_query_column_details(
             db,
             &format!("select * from {}", self.table_name),
         )

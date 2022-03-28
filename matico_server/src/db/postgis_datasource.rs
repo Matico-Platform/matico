@@ -3,7 +3,6 @@ use crate::db::DataDbPool;
 use crate::errors::ServiceError;
 use crate::models::Column as DatasetColumn;
 use crate::utils::{Format, PaginationParams, QueryMetadata, SortParams};
-use log::info;
 use log::warn;
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgRow;
@@ -11,8 +10,9 @@ use sqlx::Column;
 use sqlx::Row;
 use sqlx::TypeInfo;
 use std::convert::From;
-use std::f64::consts::PI;
 use cached::proc_macro::cached;
+use crate::db::DataSource;
+use async_trait::async_trait;
 
 
 #[derive(Serialize, Deserialize)]
@@ -129,9 +129,9 @@ pub async fn local_run_tile_query(
     Ok(MVTTile { mvt: result })
 }
 
-pub struct PostgisQueryRunner;
+pub struct PostgisDataSource;
 
-impl PostgisQueryRunner {
+impl PostgisDataSource{
     pub fn paginate_query(query: &str, page: Option<PaginationParams>) -> String {
         let page_str = match page {
             Some(page) => page.to_string(),
@@ -156,7 +156,19 @@ impl PostgisQueryRunner {
         )
     }
 
-    pub async fn run_query_meta(
+    pub async fn get_query_column_details(
+        pool: &DataDbPool,
+        query: &str,
+    ) -> Result<Vec<DatasetColumn>, ServiceError> {
+        local_get_query_column_details(pool,query).await
+    }
+
+}
+
+#[async_trait]
+impl DataSource for PostgisDataSource{
+
+    async fn run_metadata_query(
         pool: &DataDbPool,
         query: &str,
     ) -> Result<QueryMetadata, ServiceError> {
@@ -174,7 +186,7 @@ impl PostgisQueryRunner {
         Ok(result)
     }
 
-    pub async fn run_query(
+    async fn run_query(
         pool: &DataDbPool,
         query: &str,
         page: Option<PaginationParams>,
@@ -205,14 +217,8 @@ impl PostgisQueryRunner {
         Ok(json)
     }
 
-    pub async fn get_query_column_details(
-        pool: &DataDbPool,
-        query: &str,
-    ) -> Result<Vec<DatasetColumn>, ServiceError> {
-        local_get_query_column_details(pool,query).await
-    }
 
-    pub async fn run_anon_tile_query(
+    async fn run_tile_query(
         pool: &DataDbPool,
         query: &str,
         tiler_options: TilerOptions,

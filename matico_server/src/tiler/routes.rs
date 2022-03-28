@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use crate::app_state::State;
-use crate::db::{MVTTile, PostgisQueryRunner, TileID, TilerOptions};
+use crate::db::{MVTTile, PostgisDataSource, TileID, TilerOptions, DataSource};
 use crate::errors::ServiceError;
 use crate::models::{Dataset,Api};
 use actix_web::{get, web, HttpResponse};
@@ -31,7 +31,7 @@ async fn get_tile(
     web::Query(tiler_options): web::Query<TilerOptions>,
 ) -> Result<HttpResponse, ServiceError> {
     let mvt_tile: MVTTile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query.q, tiler_options, tile_id)
+        PostgisDataSource::run_tile_query(&state.data_db, &query.q, tiler_options, tile_id)
             .await?;
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
@@ -49,7 +49,7 @@ async fn get_tile_for_dataset(
     let query = format!(r#"select * from "{}""#, dataset.table_name);
 
     let mvt_tile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id)
+        PostgisDataSource::run_tile_query(&state.data_db, &query, tiler_options, tile_id)
             .await?;
 
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
@@ -68,7 +68,7 @@ async fn get_tile_for_query(
 
 
     let mvt_tile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id)
+        PostgisDataSource::run_tile_query(&state.data_db, &query, tiler_options, tile_id)
             .await?;
 
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
