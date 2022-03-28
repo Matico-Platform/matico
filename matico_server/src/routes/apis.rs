@@ -152,9 +152,7 @@ async fn get_columns(
     state: web::Data<State>,
     Path(query_id): Path<Uuid>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(page): web::Query<PaginationParams>,
-    web::Query(_bounds): web::Query<Bounds>,
-    web::Query(format_param): web::Query<FormatParam>)-> Result<HttpResponse,ServiceError>{
+    web::Query(_bounds): web::Query<Bounds>)-> Result<HttpResponse,ServiceError>{
 
     let query = Api::find(&state.db, query_id)?;
     let columns = query.columns(&state.data_db, &params,).await?;

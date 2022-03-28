@@ -5,7 +5,7 @@ use crate::errors::ServiceError;
 use crate::models::permissions::*;
 use crate::models::Dataset;
 
-use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
+use crate::utils::{FormatParam, PaginationParams, SortParams};
 use actix_web::{get, put, web, HttpResponse};
 use actix_web_lab::extract::Path;
 
@@ -80,7 +80,7 @@ async fn update_feature(
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
-
+    
     if let Some(user) = logged_in_user.user {
         Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::Write)?;
     }
@@ -88,6 +88,7 @@ async fn update_feature(
     let result = dataset
         .update_feature(&state.data_db, feature_id, update, format_param.format)
         .await?;
+
     Ok(HttpResponse::Ok().body(result))
 }
 

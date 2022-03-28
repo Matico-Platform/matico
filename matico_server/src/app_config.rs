@@ -10,21 +10,13 @@ pub struct DbConfig {
     pub port: Option<String>,
     pub password: Option<String>,
     pub username: Option<String>,
-}
-
-#[derive(Deserialize, Clone, Debug)]
-pub struct DataDbConfig {
-    pub host: String,
-    pub name: String,
-    pub port: Option<String>,
-    pub password: Option<String>,
-    pub username: Option<String>,
+    pub max_connections: Option<u32>
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub db: DbConfig,
-    pub datadb: DataDbConfig,
+    pub datadb: DbConfig,
     pub server_addr: String,
 }
 

@@ -1,8 +1,8 @@
-use crate::{AutoComplete, Filter, PanePosition, VarOr, Variable, ScreenUnits, ColorSpecification, MappingVarOr, Mapping, Range,DomainVal};
+use crate::{AutoComplete, Filter, PanePosition, VarOr,  ScreenUnits, ColorSpecification, MappingVarOr};
 use matico_spec_derive::AutoCompleteMe;
 use palette::Srgb;
 use serde::{Deserialize, Serialize};
-use validator::{Validate};
+use validator::Validate;
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

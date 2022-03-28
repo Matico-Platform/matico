@@ -1,5 +1,5 @@
-use crate::db::queries::{Bounds, PostgisQueryRunner};
-use crate::db::DataDbPool;
+use crate::db::postgis_datasource::{Bounds, PostgisDataSource};
+use crate::db::{DataDbPool, DataSource};
 use crate::errors::ServiceError;
 use crate::utils::Format;
 use ts_rs::TS;
@@ -192,7 +192,7 @@ impl Column {
                 bins = params.no_bins
             );
 
-        let json = PostgisQueryRunner::run_query(db, &query, None, None, Format::Json).await?;
+        let json = PostgisDataSource::run_query(db, &query, None, None, Format::Json).await?;
         info!("JSON RESPONSE {:?}",json);
         let results: QuantileResults =
             serde_json::from_value(json).expect("Failed to deserialize quantiles response");
@@ -236,7 +236,7 @@ impl Column {
             ),
         };
 
-        let json = PostgisQueryRunner::run_query(db, &query, None, None, Format::Json).await?;
+        let json = PostgisDataSource::run_query(db, &query, None, None, Format::Json).await?;
         let results: HistogramResults =
             serde_json::from_value(json).expect("Failed to deserialize histogram response");
         Ok(StatResults::Histogram(results))
@@ -255,7 +255,7 @@ impl Column {
             order by count DESC",
             self.name, self.source_query, self.name
         );
-        let json = PostgisQueryRunner::run_query(db, &query, None,None, Format::Json).await?;
+        let json = PostgisDataSource::run_query(db, &query, None,None, Format::Json).await?;
         let results: ValueCountsResults =
             serde_json::from_value(json).expect("Failed to deserialize value count response");
         Ok(StatResults::ValueCounts(results))
@@ -280,7 +280,7 @@ impl Column {
         );
 
         let results: Vec<BasicStatsResults> = serde_json::from_value(
-            PostgisQueryRunner::run_query(db, &query, None, None, Format::Json).await?,
+            PostgisDataSource::run_query(db, &query, None, None, Format::Json).await?,
         )
         .expect("Failed to deserialize basic results response");
 

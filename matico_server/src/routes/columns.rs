@@ -1,5 +1,5 @@
 use crate::app_state::State;
-use crate::db::queries::Bounds;
+use crate::db::postgis_datasource::Bounds;
 use crate::errors::ServiceError;
 use crate::models::columns::StatParams;
 use crate::models::Dataset;
