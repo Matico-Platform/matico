@@ -2,6 +2,7 @@ use crate::app_state::State;
 use crate::auth::AuthService;
 use crate::db::Bounds;
 use crate::errors::ServiceError;
+use crate::models::User;
 use crate::models::permissions::*;
 use crate::models::Dataset;
 
@@ -21,7 +22,9 @@ async fn get_data(
     web::Query(sort): web::Query<SortParams>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+
     let dataset = Dataset::find(&state.db, dataset_id)?;
+    let user = User::from_token(&state.db, &logged_in_user.user);
 
     if let Some(user) = logged_in_user.user {
         if !dataset.public && user.id != dataset.owner_id {
@@ -31,13 +34,15 @@ async fn get_data(
                 &dataset.id,
                 &[PermissionType::Read],
             )?;
-        }
+     }
     }
+
 
     let result = dataset
         .query(
             &state.data_db,
             None,
+            &user,
             Some(page),
             Some(sort),
             format_param.format,
@@ -57,6 +62,7 @@ async fn get_feature(
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
+    let user  = User::from_token(&state.db, &logged_in_user.user);
 
     if !dataset.public {
         let user = logged_in_user.user.ok_or_else(|| {
@@ -65,10 +71,11 @@ async fn get_feature(
         Permission::check_permission(&state.db, &user.id, &dataset_id, PermissionType::Read)?;
     }
 
-    let feature = dataset.get_feature(&state.data_db, feature_id , format_param.format).await?;
-    
-    Ok(HttpResponse::Ok().body(feature))
+    let feature = dataset
+        .get_feature(&state.data_db, feature_id, &user, format_param.format)
+        .await?;
 
+    Ok(HttpResponse::Ok().body(feature))
 }
 
 #[put("{dataset_id}/data/{feature_id}")]
@@ -79,14 +86,16 @@ async fn update_feature(
     web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+
     let dataset = Dataset::find(&state.db, dataset_id)?;
-    
+    let user = User::from_token(&state.db, &logged_in_user.user);
+
     if let Some(user) = logged_in_user.user {
         Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::Write)?;
     }
 
     let result = dataset
-        .update_feature(&state.data_db, feature_id, update, format_param.format)
+        .update_feature(&state.data_db, feature_id, &user, update, format_param.format)
         .await?;
 
     Ok(HttpResponse::Ok().body(result))

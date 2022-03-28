@@ -57,8 +57,8 @@ async fn get_dataset(
 }
 
 async fn upload_dataset_to_tmp_file(mut field: Field) -> Result<String, Error> {
-    let tmp_filename = Uuid::new_v4().to_string(); 
-    let filepath = format!("./tmp{}", tmp_filename );
+    let tmp_filename = Uuid::new_v4().to_string();
+    let filepath = format!("./tmp{}", tmp_filename);
     let mut file = web::block(move || {
         std::fs::create_dir_all("./tmp").expect("was unable to create dir");
         std::fs::File::create(&filepath)
@@ -67,12 +67,12 @@ async fn upload_dataset_to_tmp_file(mut field: Field) -> Result<String, Error> {
     .unwrap()
     .unwrap();
 
-     while let Some(chunk) = field.try_next().await? {
-            // filesystem operations are blocking, we have to use threadpool
-            file = web::block(move || file.write_all(&chunk).map(|_| file)).await??;
-        }
+    while let Some(chunk) = field.try_next().await? {
+        // filesystem operations are blocking, we have to use threadpool
+        file = web::block(move || file.write_all(&chunk).map(|_| file)).await??;
+    }
 
-    let filepath = format!("./tmp{}", tmp_filename );
+    let filepath = format!("./tmp{}", tmp_filename);
     Ok(filepath)
 }
 
@@ -87,11 +87,8 @@ async fn parse_dataset_metadata(mut field: Field) -> Result<CreateDatasetDTO, Se
     let metadata_str = std::str::from_utf8(&field_content)
         .map_err(|_| ServiceError::InternalServerError("Failed to parse file metadata".into()))?;
 
-    let metadata: CreateDatasetDTO = serde_json::from_str(metadata_str).map_err(|e| {
-        ServiceError::BadRequest(format!(
-            "Failed to parse metadata: ${:#?}",e
-        ))
-    })?;
+    let metadata: CreateDatasetDTO = serde_json::from_str(metadata_str)
+        .map_err(|e| ServiceError::BadRequest(format!("Failed to parse metadata: ${:#?}", e)))?;
     info!("GOT METADATA AS STRING {:?}", metadata);
     Ok(metadata)
 }
@@ -265,7 +262,6 @@ async fn extent(
     Path(id): Path<Uuid>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-
     let dataset = Dataset::find(&state.db, id)?;
 
     if let Some(user) = logged_in_user.user {
@@ -278,7 +274,7 @@ async fn extent(
             )?;
         }
     }
-    
+
     let extent = dataset.extent(&state.data_db).await?;
     Ok(HttpResponse::Ok().json(extent))
 }

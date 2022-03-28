@@ -1,19 +1,20 @@
 use crate::db::formatters::*;
 use crate::db::DataDbPool;
+use crate::db::DataSource;
 use crate::errors::ServiceError;
 use crate::models::Column as DatasetColumn;
+use crate::models::User;
 use crate::utils::{Format, PaginationParams, QueryMetadata, SortParams};
+use async_trait::async_trait;
+use cached::proc_macro::cached;
 use log::warn;
 use serde::{Deserialize, Serialize};
+use sqlx::postgres::PgArguments;
 use sqlx::postgres::PgRow;
 use sqlx::Column;
 use sqlx::Row;
 use sqlx::TypeInfo;
 use std::convert::From;
-use cached::proc_macro::cached;
-use crate::db::DataSource;
-use async_trait::async_trait;
-
 
 #[derive(Serialize, Deserialize)]
 pub struct BBox {
@@ -42,12 +43,10 @@ pub struct TileID {
     z: f64,
 }
 
-
-#[derive(PartialEq, Debug,Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct MVTTile {
     pub mvt: Vec<u8>,
 }
-
 
 async fn local_get_query_column_details(
     pool: &DataDbPool,
@@ -76,11 +75,13 @@ async fn local_get_query_column_details(
     Ok(columns)
 }
 
-#[cached(size=1,
-         time=86400,
-         result=true,
-         convert=r#"{format!("{}_{:?}_{:?}",query,tiler_options,tile_id) }"#,
-         key="String")]
+#[cached(
+    size = 1,
+    time = 86400,
+    result = true,
+    convert = r#"{format!("{}_{:?}_{:?}",query,tiler_options,tile_id) }"#,
+    key = "String"
+)]
 pub async fn local_run_tile_query(
     pool: &DataDbPool,
     query: &str,
@@ -107,7 +108,7 @@ pub async fn local_run_tile_query(
         Some(column) => column,
         None => String::from("wkb_geometry"),
     };
-    
+
     let formatted_query = format!(
         include_str!("tile_query.sql"),
         columns = select_string,
@@ -131,7 +132,7 @@ pub async fn local_run_tile_query(
 
 pub struct PostgisDataSource;
 
-impl PostgisDataSource{
+impl PostgisDataSource {
     pub fn paginate_query(query: &str, page: Option<PaginationParams>) -> String {
         let page_str = match page {
             Some(page) => page.to_string(),
@@ -143,16 +144,16 @@ impl PostgisDataSource{
             page = page_str
         )
     }
-    
+
     pub fn ordered_query(query: &str, sort: Option<SortParams>) -> String {
-        let sort_str = match sort{
+        let sort_str = match sort {
             Some(sort_options) => sort_options.to_string(),
             None => String::from(""),
         };
         format!(
             "select * from ({sub_query}) as ordered {order}",
             sub_query = query,
-            order = sort_str 
+            order = sort_str
         )
     }
 
@@ -160,17 +161,17 @@ impl PostgisDataSource{
         pool: &DataDbPool,
         query: &str,
     ) -> Result<Vec<DatasetColumn>, ServiceError> {
-        local_get_query_column_details(pool,query).await
+        local_get_query_column_details(pool, query).await
     }
 
 }
 
 #[async_trait]
-impl DataSource for PostgisDataSource{
-
+impl DataSource for PostgisDataSource {
     async fn run_metadata_query(
         pool: &DataDbPool,
         query: &str,
+        user: &Option<User>,
     ) -> Result<QueryMetadata, ServiceError> {
         let result = sqlx::query(&format!("SElECT count(*) as total from ({}) a ", query))
             .map(|row: PgRow| QueryMetadata {
@@ -186,14 +187,16 @@ impl DataSource for PostgisDataSource{
         Ok(result)
     }
 
+
     async fn run_query(
         pool: &DataDbPool,
         query: &str,
+        user: &Option<User>,
         page: Option<PaginationParams>,
-        sort:Option<SortParams>,
+        sort: Option<SortParams>,
         format: Format,
     ) -> Result<serde_json::Value, ServiceError> {
-        let ordered_query = Self::ordered_query(query,sort);
+        let ordered_query = Self::ordered_query(query, sort);
         let paged_query = Self::paginate_query(&ordered_query, page);
 
         let formatted_query = match format {
@@ -217,10 +220,23 @@ impl DataSource for PostgisDataSource{
         Ok(json)
     }
 
+    async fn setup_user(pool: &DataDbPool, user: &User) -> Result<(), ServiceError> {
+        sqlx::query("CREATE USER $1 ")
+            .bind(user.username.clone())
+            .execute(pool)
+            .await
+            .map_err(|e| {
+                warn!("Failed to create user in database {:#?}", e);
+                ServiceError::InternalServerError("Failed to create user on database".into())
+            })?;
+
+        Ok(())
+    }
 
     async fn run_tile_query(
         pool: &DataDbPool,
         query: &str,
+        user: &Option<User>,
         tiler_options: TilerOptions,
         tile_id: TileID,
     ) -> Result<MVTTile, ServiceError> {

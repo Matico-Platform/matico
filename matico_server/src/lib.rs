@@ -10,7 +10,7 @@ use actix::*;
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{dev::Server, Responder};
-use actix_web::{middleware, web, web::{Data}, App, HttpServer};
+use actix_web::{middleware, web, web::Data, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use log::info;
 use scheduler::ImportScheduler;
@@ -73,7 +73,6 @@ pub async fn run(
         ogr_string: ogr_string.clone(),
     });
 
-
     let server = HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_header()
@@ -82,7 +81,7 @@ pub async fn run(
 
         App::new()
             .wrap(cors)
-            .app_data(Data::new( State {
+            .app_data(Data::new(State {
                 db: pool.clone(),
                 data_db: data_pool.clone(),
                 ogr_string: ogr_string.clone(),
