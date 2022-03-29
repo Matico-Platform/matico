@@ -4,6 +4,7 @@ import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { Content, Grid, Heading, View } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { selectPane } from "Utils/paneEngine";
+import { selectLayout } from "Utils/layoutEngine";
 
 export interface MaticoContainerPaneInterface extends MaticoPaneInterface {
     title?: string;
@@ -49,7 +50,7 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
     panes
 }) => {
     const edit = useIsEditable();
-    const InnerContainer = containers[layout];
+    let LayoutEngine = selectLayout(layout);
     return (
         <View
             position="relative"
@@ -64,13 +65,13 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
             />
             <Heading>{title}</Heading>
             <Content>
-                <InnerContainer>
+                <LayoutEngine>
                     {panes
                         .filter((p: Pane) => p)
                         .map((pane: Pane, index: number) =>
                             selectPane(pane, `${editPath}.panes.${index}`)
                         )}
-                </InnerContainer>
+                </LayoutEngine>
             </Content>
         </View>
     );
