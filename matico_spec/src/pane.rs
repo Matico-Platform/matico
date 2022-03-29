@@ -1,5 +1,5 @@
 use crate::{
-    AutoComplete, ChartPane, Control, HistogramPane, MapPane, PieChartPane, ScatterplotPane,
+    AutoComplete, ChartPane, Control, HistogramPane, MapPane, PieChartPane, ScatterplotPane
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -11,6 +11,7 @@ pub enum Pane {
     Map(MapPane),
     Chart(ChartPane),
     Text(TextPane),
+    Container(ContainerPane),
     Histogram(HistogramPane),
     Scatterplot(ScatterplotPane),
     PieChart(PieChartPane),
@@ -36,6 +37,7 @@ impl Validate for Pane {
             Self::Map(map) => ValidationErrors::merge(result, "MapPane", map.validate()),
             Self::Chart(chart) => ValidationErrors::merge(result, "ChartPane", chart.validate()),
             Self::Text(text) => ValidationErrors::merge(result, "TextPane", text.validate()),
+            Self::Container(container) => ValidationErrors::merge(result, "ContainerPane", container.validate()),
             Self::Histogram(histogram) => {
                 ValidationErrors::merge(result, "HistogramPane", histogram.validate())
             }
