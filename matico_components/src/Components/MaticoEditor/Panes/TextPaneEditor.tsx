@@ -19,6 +19,7 @@ export interface PaneEditorProps {
 export const TextPaneEditor: React.FC<PaneEditorProps> = ({
   editPath,
 }) => {
+  console.log('EDITTYPE', editPath)
   const spec = useMaticoSelector((state) => state.spec.spec);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const dispatch = useMaticoDispatch();

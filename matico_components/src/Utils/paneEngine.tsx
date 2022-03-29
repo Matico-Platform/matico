@@ -22,7 +22,6 @@ export function selectPane(pane: any, editPath: string) {
     const paneType = Object.keys(pane)[0]; 
     const paneDetails = pane[paneType];
     const PaneComponent = panes[paneType];
-    console.log('PANETYPE', paneType, paneDetails, PaneComponent)
     if (!PaneComponent) return null;
     return (
         <PaneComponent

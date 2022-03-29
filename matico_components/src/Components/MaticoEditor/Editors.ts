@@ -12,6 +12,7 @@ import {ControlsPaneEditor} from './Panes/ControlsEditor'
 export const Editors ={
   Page: PageEditor,
   Section: SectionEditor,
+  Container: SectionEditor,
   Scatterplot: ScatterplotPaneEditor,
   Map: MapPaneEditor ,
   Text: TextPaneEditor,
