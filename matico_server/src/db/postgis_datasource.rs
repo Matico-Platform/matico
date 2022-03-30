@@ -156,7 +156,7 @@ impl PostgisDataSource {
             order = sort_str
         )
     }
-
+    
     pub async fn get_query_column_details(
         pool: &DataDbPool,
         query: &str,
@@ -164,6 +164,36 @@ impl PostgisDataSource {
         local_get_query_column_details(pool, query).await
     }
 
+    pub fn user_scope_statement(user: &Option<User>)->String{
+        if let Some(user) = user{
+            format!("SET ROLE {}", user.username) 
+        }
+        else{
+            String::from("USE ROLE global_public;")
+        }
+    } 
+
+    pub async fn create_public_user(pool: &DataDbPool)->Result<(),ServiceError>{
+       let user_exists  =sqlx::query("SELECT 1 FROM pg_user WHERE usename= 'global_public'")
+           .fetch_one(pool)
+           .await
+           .is_ok();
+    
+       if !user_exists{
+           sqlx::query("CREATE USER global_public")
+                .execute(pool)
+               .await
+               .map_err(|_| ServiceError::InternalServerError("Failed to create public user".into()))?;
+       }
+       Ok(())
+    }
+
+    pub async fn setup(
+        pool: &DataDbPool,
+    ) ->Result<(),ServiceError>{
+        Self::create_public_user(&pool).await?; 
+        Ok(())
+    }
 }
 
 #[async_trait]
@@ -173,7 +203,10 @@ impl DataSource for PostgisDataSource {
         query: &str,
         user: &Option<User>,
     ) -> Result<QueryMetadata, ServiceError> {
-        let result = sqlx::query(&format!("SElECT count(*) as total from ({}) a ", query))
+
+        let scope_statement = Self::user_scope_statement(user);
+        
+        let result = sqlx::query(&format!("{} SElECT count(*) as total from ({}) a ", scope_statement, query))
             .map(|row: PgRow| QueryMetadata {
                 total: row.get("total"),
             })
@@ -187,7 +220,6 @@ impl DataSource for PostgisDataSource {
         Ok(result)
     }
 
-
     async fn run_query(
         pool: &DataDbPool,
         query: &str,
@@ -198,12 +230,15 @@ impl DataSource for PostgisDataSource {
     ) -> Result<serde_json::Value, ServiceError> {
         let ordered_query = Self::ordered_query(query, sort);
         let paged_query = Self::paginate_query(&ordered_query, page);
+        let scope_statement = Self::user_scope_statement(user);
 
         let formatted_query = match format {
             Format::Csv => Ok(csv_format(&paged_query)),
             Format::Geojson => Ok(geo_json_format(&paged_query)),
             Format::Json => Ok(json_format(&paged_query)),
         }?;
+
+        let formatted_query = format!("{} {}", scope_statement, formatted_query);
 
         println!("running query {}", formatted_query);
 
@@ -215,6 +250,7 @@ impl DataSource for PostgisDataSource {
                 warn!("SQL Query failed: {} {}", e, formatted_query);
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, formatted_query))
             })?;
+
         let json: serde_json::Value = serde_json::from_str(&result)
             .map_err(|_| ServiceError::InternalServerError("failed to parse json".into()))?;
         Ok(json)

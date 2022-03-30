@@ -6,6 +6,7 @@ extern crate diesel_derive_enum;
 #[macro_use]
 extern crate diesel_migrations;
 use crate::app_state::State;
+use crate::db::PostgisDataSource;
 use actix::*;
 use actix_cors::Cors;
 use actix_files as fs;
@@ -49,6 +50,7 @@ pub async fn run(
         .max_size(config.db.max_connections.unwrap_or(50))
         .build(manager)
         .expect("Failed to connect to DB");
+
     info!("Connected to metadata db");
 
     info!("Running migrations");
@@ -61,6 +63,8 @@ pub async fn run(
         .connect(&data_db_connection_url)
         .await
         .expect("FAiled to connect to DB");
+
+    PostgisDataSource::setup(&data_pool).await.expect("To successfully set up the data store");
 
     let ogr_string = config
         .org_connection_string()

@@ -172,9 +172,11 @@ pub async fn load_geojson_dataset_to_db(
         if let Some(target_crs) = params.target_crs {
             cmd.arg(&"-t_srs").arg(&target_crs);
         }
+
         if let Some(input_crs) = params.input_crs {
             cmd.arg(&"-a_srs").arg(&input_crs);
         }
+
         cmd.arg(&filepath).output()
     })
     .await
