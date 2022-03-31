@@ -106,8 +106,6 @@ fn attempt_to_unzip_shp_file(filepath: &str)->Result<(String, String), ServiceEr
             None => continue
         };
 
-        println!("Attempting to extract {:?}",out_name);
-
         if let Some(extension) = out_name.extension(){
             if extension.to_string_lossy() == "shp"{
                shp_file = Some(out_name.to_string_lossy().to_string());
@@ -134,9 +132,8 @@ pub async fn load_shp_dataset_to_db(
     params: ShpFileImportParams,
     ogr_string: String,
 ) -> Result<(), ServiceError> {
-    println!("Attempting to load shpfile {}",filepath);
+
     let (tmp_dir, filepath) = attempt_to_unzip_shp_file(&filepath)?;
-    println!("Extracted and found .shp file {:?} ",filepath);
     let ogr_result= web::block(move || {
         let mut cmd = Command::new("ogr2ogr");
         cmd.arg(&"-f")
@@ -151,7 +148,6 @@ pub async fn load_shp_dataset_to_db(
     })
     .await
     .map_err(|e| ServiceError::InternalServerError(format!("Failed to load shp file to db {:#?}",e)))?;
-    println!("OGR Result is {:#?}",ogr_result);
     std::fs::remove_dir_all(&tmp_dir.clone()).unwrap();
     Ok(())
 }

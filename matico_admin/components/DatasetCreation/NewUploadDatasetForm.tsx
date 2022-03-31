@@ -15,11 +15,12 @@ import Upload from "@spectrum-icons/illustrations/Upload";
 import { useDropzone } from "react-dropzone";
 import { CSVFilePreviewer } from "./CSVFilePreviewer";
 import { GeoJSONFilePreviewer } from "./GeoJSONFilePreviewer";
+import { ShpFilePreviewer } from "./ShpFilePreviwer";
 
 export interface NewUploadDatasetFormProps {}
 
 const VALID_MIME_TYPES = ["application/vnd.ms-excel","application/geo+json","application/json","application/csv","text/csv","text/plain"]
-const VALID_EXTENSIONS = ["csv","geojson","json"]
+const VALID_EXTENSIONS = ["csv","geojson","json","zip"]
 
 export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
   const [acceptedFiles, setAcceptedFiles] = useState<Array<File> | null>(null);
@@ -37,10 +38,10 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
     if (VALID_MIME_TYPES.includes(fileType) || VALID_EXTENSIONS.includes(extension)) {
       return;
     }
-    setFileRejectionError("CSV, GeoJson, and Json files are supported at this time.")
+    setFileRejectionError("CSV, GeoJson, Json and zipped shapefiles are supported at this time.")
     return  {
       code: "File type error",
-      message: "Use a csv, geojson, or json file."
+      message: "Use a csv, geojson, json or zipped shapefile."
     }
   }
 
@@ -49,15 +50,17 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
       onDrop,
       //@ts-ignore
       validator
-      // accept:
-      //   ".csv,.geojson,.json,application/vnd.ms-excel,application/geo+json,application/json,application/csv,text/csv,text/plain",
     });
 
   const previewerForFile = (file: File) => {
-    if (file.type.includes("csv")) {
-      return <CSVFilePreviewer file={file} />;
-    } else {
-      return <GeoJSONFilePreviewer file={file} />;
+    switch(file.type){
+      case "application/csv":
+      case "text/csv":
+        return <CSVFilePreviewer file={file} />;
+      case "application/geo+json":
+        return <GeoJSONFilePreviewer file={file} />
+        case "application/zip":
+        return <ShpFilePreviewer file={file}/>
     }
   };
   
@@ -67,7 +70,7 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
     : dropMessage;
 
   return (
-    <Flex direction='column' paddingTop="size-400" height="100%">
+    <Flex direction='column' marginTop="size-400" height="100%">
       {!acceptedFiles && (
         <div {...getRootProps()} style={{width:"100%", height:"100%"}}>
           <input {...getInputProps()} />
