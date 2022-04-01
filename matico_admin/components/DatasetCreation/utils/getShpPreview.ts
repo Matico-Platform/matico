@@ -1,10 +1,33 @@
-import {ShapefileLoader} from '@loaders.gl/shapefile';
+import * as zip from "@zip.js/zip.js"
+import {DBFLoader} from '@loaders.gl/shapefile';
+import {parseInBatches} from '@loaders.gl/core';
 
-import {parse} from '@loaders.gl/core';
-import shp from "shpjs"
-
-export const getShpPreview = async (file:File) =>{
-  const blob = await file.arrayBuffer();
-  const data = await shp(blob);
-  return { data : data.features.slice(0,10)} 
+async function getDBFPreview(data: Blob){
+  let reader = await parseInBatches(data,DBFLoader );
+  //@ts-ignore
+  let isHeader = true;
+  //@ts-ignore
+  let header = await reader.next()
+  //@ts-ignore
+  let batch = await reader.next()
+  return batch.value
 }
+
+export async function getShpPreview(file:File) {
+  const zipfile = 
+    new zip.ZipReader(
+      new zip.BlobReader(file)
+    );
+  const entries =  await zipfile.getEntries();
+
+  for (const entry of entries){
+    if( entry.filename.split(".").pop()==='dbf'){
+      //@ts-ignore
+      const data = await entry.getData(new zip.BlobWriter()) 
+      const firstBatch = await getDBFPreview(data)    
+      return firstBatch 
+    }
+  }
+
+}
+
