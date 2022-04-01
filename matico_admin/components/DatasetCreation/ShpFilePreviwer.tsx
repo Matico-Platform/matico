@@ -45,15 +45,13 @@ export const ShpFilePreviewer: React.FC<FilePreviewerInterface> = ({
 
   useEffect(() => {
     getShpPreview(file).then((batch) => {
-      const data = batch.data
-        .map((d: any) => d.properties)
-        .filter((d: any) => d);
+      const data = batch .filter((d: any) => d);
       const columns = data.reduce(
         (colSet: Set<string>, row: { [col: string]: any }) =>
           new Set([...colSet, ...Object.keys(row)]),
         new Set()
       );
-      setDataPreview(data);
+      setDataPreview(data.slice(10));
       setColumns(Array.from(columns));
     });
   }, []);
