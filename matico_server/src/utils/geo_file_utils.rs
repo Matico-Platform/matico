@@ -4,6 +4,7 @@ use diesel_as_jsonb::AsJsonb;
 use log::info;
 use serde::{Deserialize, Serialize};
 use std::process::Command;
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, AsJsonb, Clone)]
 pub enum ImportParams {
@@ -22,7 +23,7 @@ pub struct CSVImportParams {
     // Defaults to "latitude"
     y_col: Option<String>,
 
-    // The coodinate reference system (e.g. epsg:4326)
+    // The coordinate reference system (e.g. epsg:4326)
     // Defaults to "epsg:4326"
     crs: Option<String>,
 
@@ -85,15 +86,70 @@ pub async fn load_dataset_to_db(
     }
 }
 
+/// Attempts to unzip a shp file 
+/// Returns the path to the .shp file in the unziped folder
+///
+fn attempt_to_unzip_shp_file(filepath: &str)->Result<(String, String), ServiceError>{
+    let tmp_dir= format!("./tmp/{}",Uuid::new_v4()); 
+    std::fs::create_dir_all(&tmp_dir).map_err(|_| ServiceError::InternalServerError("Failed to create tmp dir on shp import".into()))?;
+
+    // First extract the zip file to a dir
+    let zip_file = std::fs::File::open(&filepath).map_err(|_| ServiceError::InternalServerError("Failed to find the import shp zip".into()))?;
+    let mut zip_archive = zip::ZipArchive::new(zip_file).map_err(|_| ServiceError::InternalServerError("Failed to open zip archive while importing shp".into()))?;
+
+    let mut shp_file: Option<String> = None;
+    
+    for i in 0..zip_archive.len(){
+        let mut file = zip_archive.by_index(i).unwrap();
+        let out_name = match file.enclosed_name(){
+            Some(path) => path.to_owned(),
+            None => continue
+        };
+
+        if let Some(extension) = out_name.extension(){
+            if extension.to_string_lossy() == "shp"{
+               shp_file = Some(out_name.to_string_lossy().to_string());
+            }
+            if ["shp","shx","dbf","prj"].contains(&extension.to_str().unwrap()){
+               let out_path = format!("{}/{}", tmp_dir, out_name.to_string_lossy());
+               let mut out_file = std::fs::File::create(&out_path).unwrap();
+               std::io::copy(&mut file, &mut out_file).unwrap();
+            }
+        }
+    }
+    if let Some(found_shp) = shp_file{
+        Ok((tmp_dir.clone(), format!("{}/{}",tmp_dir, found_shp)))
+    }
+    else{
+        std::fs::remove_dir_all(tmp_dir.clone());
+        Err(ServiceError::InternalServerError("zip file did not contain a file with .shp extension".into()))
+    }
+}
+
 pub async fn load_shp_dataset_to_db(
-    _filepath: String,
-    _name: String,
-    _params: ShpFileImportParams,
-    _ogr_string: String,
+    filepath: String,
+    name: String,
+    params: ShpFileImportParams,
+    ogr_string: String,
 ) -> Result<(), ServiceError> {
-    Err(ServiceError::InternalServerError(
-        "Importing SHP files not implemented just yet".into(),
-    ))
+
+    let (tmp_dir, filepath) = attempt_to_unzip_shp_file(&filepath)?;
+    let ogr_result= web::block(move || {
+        let mut cmd = Command::new("ogr2ogr");
+        cmd.arg(&"-f")
+            .arg(&"PostgreSQL")
+            .arg(ogr_string)
+            .arg(&"-nln")
+            .arg(&name)
+            .arg(&"-nlt")
+            .arg(&"PROMOTE_TO_MULTI")
+            .arg(filepath)
+            .output()
+    })
+    .await
+    .map_err(|e| ServiceError::InternalServerError(format!("Failed to load shp file to db {:#?}",e)))?;
+    std::fs::remove_dir_all(&tmp_dir.clone()).unwrap();
+    Ok(())
 }
 
 pub async fn load_geojson_dataset_to_db(

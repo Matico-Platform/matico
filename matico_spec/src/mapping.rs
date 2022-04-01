@@ -161,15 +161,20 @@ impl Default for MapPane {
 
 #[cfg(test)]
 mod tests {
+    use crate::{Mapping, DatasetVal, DatasetMetric, Range, EqualIntervalParams, VarOr };
+
     use super::*;
 
     #[test]
     fn lng_lat_validate() {
-        let lng_lat = View::default();
-        let validation_result = lng_lat.validate();
+        let view = View{
+            lng : -181.0,
+            ..Default::default()
+        };
+        let validation_result = view.validate();
         assert!(
             validation_result.is_err(),
-            "lng lat validated even through lng  < 0"
+            "lng lat validated even through lng  < -180"
         );
     }
 
@@ -177,25 +182,33 @@ mod tests {
     fn style_with_domain_from_dataset() {
         let fill_color = Some(MappingVarOr::Mapping(Mapping {
             variable: "Test".to_string(),
-            domain: VarOr::DVal(crate::DatasetVal {
+            domain: VarOr::DVal(DatasetVal {
                 dataset: "test".to_string(),
                 column: Some("test_col".to_string()),
+                filters:None,
                 feature_id: None,
-                metric: Some(crate::DatasetMetric::EqualInterval(
-                    crate::EqualIntervalParams { bins: 20 },
+                metric: Some(DatasetMetric::EqualInterval(
+                    EqualIntervalParams { bins: 20 },
                 )),
             }),
             range: VarOr::Value(Range::Range(vec![
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
+                ColorSpecification::Rgba([0.0, 0.0, 0.0, 0.0]),
+                ColorSpecification::Rgba([0.0, 0.0, 0.0, 0.0]),
             ])),
         }));
         let style = LayerStyle {
-            fill_color,
-            line_color: None,
             size: None,
-            line_thickness: None,
+            fill_color,
             opacity: None,
+            visible: Some(true),
+            line_color: None,
+            line_width: None, 
+            line_width_scale: Some(2.0) ,
+            line_units: Some(ScaleType::Pixels),
+            radius_units: Some(ScaleType::Pixels),
+            radius_scale: Some(1.0),
+            elevation: None,
+            elevation_scale:Some(1.0),
         };
         println!("{}", serde_json::to_string_pretty(&style).unwrap());
     }
