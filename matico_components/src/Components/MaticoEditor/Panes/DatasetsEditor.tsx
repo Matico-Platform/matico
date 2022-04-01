@@ -14,17 +14,14 @@ import {
   TabPanels,
   StatusLight,
 } from "@adobe/react-spectrum";
-import React, { useContext, useState } from "react";
-import { MaticoDataContext } from "Contexts/MaticoDataContext/MaticoDataContext";
+import React, {  useState } from "react";
+import {DatasetModal}from "./DatasetModal"
 import {
-  Column,
-  Dataset,
   DatasetState,
   DatasetSummary,
 } from "Datasets/Dataset";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { addDataset } from "Stores/MaticoSpecSlice";
-import styled from "styled-components";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 import { registerDataset } from "Stores/MaticoDatasetSlice";
 
@@ -40,18 +37,12 @@ export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
   };
 
   return (
-    <Flex direction="row" gap="small" width="100%" alignItems="center" justifyContent='space-between'>
-      <Text>{dataset.name}</Text>
-      {dataset.state === DatasetState.READY && (
-        <>
-          <Text>{dataset.geomType}</Text>
-        </>
-      )}
-      <StatusLight variant={statusColors[dataset.state]} />
-      {dataset.state === DatasetState.ERROR && (
-        <Text>Failed to load {dataset.error}</Text>
-      )}
-    </Flex>
+    <DatasetModal dataset={dataset}>
+      <Flex direction="row" gap="small" width="100%" alignItems="center" justifyContent='space-between'>
+        <Text>{dataset.name}</Text>
+        <StatusLight variant={statusColors[dataset.state]} />
+      </Flex>
+    </DatasetModal>
   );
 };
 
