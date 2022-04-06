@@ -116,7 +116,7 @@ export const DataTable: React.FC<DataTableProps> = ({
       </TableHeader>
       <TableBody items={tData}>
         {(param: { [key: string]: any }) => (
-          <Row key={ idCol ? param[idCol] : JSON.stringify(param)}>
+          <Row key={ idCol && param[idCol] ? param[idCol] : JSON.stringify(param)}>
             {(columnKey) => (
               <Cell>
                 {typeof param[columnKey] === "object"
