@@ -61,6 +61,24 @@ module.exports = withPlugins([withTM, optomizedImages], {
   },
   webpack: (config, options) => {
     config.experiments.asyncWebAssembly = true;
+    config.module.rules.push(
+          {
+            test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+            use: [
+              {
+
+                loader: 'file-loader',
+                options:{
+                  outputPath: 'static/webfonts/',
+                  publicPath: '../webfonts/',
+                  // optional, just to prettify file names
+                  name: '[name].[ext]',
+                }
+              },
+            ],
+          }
+        );
+
     return config;
   },
 });

@@ -25,6 +25,13 @@ export const options = {
   format: "esm",
   bundle: true,
   sourcemap: true,
+  loader: {
+   '.eot': 'file',
+    '.woff': 'file',
+    '.woff2': 'file',
+    '.svg': 'file',
+    '.ttf': 'file',
+  },
   plugins: [
     wasmLoader(),
     inlineWorkerPlugin({
