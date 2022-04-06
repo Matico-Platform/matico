@@ -72,7 +72,7 @@ pub async fn load_dataset_to_db(
     params: ImportParams,
     ogr_string: String,
 ) -> Result<(), ServiceError> {
-    println!("Loading to db {:#?} {:#?}",params,ogr_string);
+    println!("Loading to db {:#?} {:#?}", params, ogr_string);
     match params {
         ImportParams::Csv(params) => {
             load_csv_dataset_to_db(filepath, name, params, ogr_string).await
@@ -172,9 +172,11 @@ pub async fn load_geojson_dataset_to_db(
         if let Some(target_crs) = params.target_crs {
             cmd.arg(&"-t_srs").arg(&target_crs);
         }
+
         if let Some(input_crs) = params.input_crs {
             cmd.arg(&"-a_srs").arg(&input_crs);
         }
+
         cmd.arg(&filepath).output()
     })
     .await
@@ -212,11 +214,14 @@ pub async fn load_csv_dataset_to_db(
                 .arg(format!("GEOM_POSSIBLE_NAMES={}", wkx_col));
         }
         cmd.arg("-a_srs").arg("EPSG:4326");
-        cmd.arg(format!("CSV:{}",filepath));
+        cmd.arg(format!("CSV:{}", filepath));
         cmd.output()
     })
     .await
-    .map_err(|e| { println!("FAILED TO RUN OGR {:#?}",e);  ServiceError::UploadFailed})?;
+    .map_err(|e| {
+        println!("FAILED TO RUN OGR {:#?}", e);
+        ServiceError::UploadFailed
+    })?;
 
     println!("Uploaded geo file {:?} ", output);
     Ok(())

@@ -1,6 +1,7 @@
 import {
   Button,
   Content,
+  Flex,
   Form,
   Grid,
   Header,
@@ -46,15 +47,18 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
     updateFeature(featureUpdates);
   };
 
-  useEffect(()=>{
-    setFeatureUpdates({}) 
-  },[feature])
-
+  useEffect(() => {
+    setFeatureUpdates({});
+  }, [feature]);
 
   const fieldForParameter = (column: any) => {
-    const combinedParameters = {...feature[0], ...featureUpdates}
+    const combinedParameters = { ...feature[0], ...featureUpdates };
 
-    if (column.col_type.includes("INT") || column.col_type.includes("FLOAT")) {
+    if (
+      column.col_type.includes("INT") ||
+      column.col_type.includes("FLOAT") ||
+      column.col_type.includes("NUMERIC")
+    ) {
       return (
         <NumberField
           width="size-2400"
@@ -109,40 +113,44 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
 
   return (
     <Well width="100%" height="100%">
-      <Header>Edit the selected features properties</Header>
-      { columns && feature && (
-        <Form>
-          <Grid
-            columns={repeat("auto-fit", "size-2400")}
-            autoRows="size-800"
-            gap="size-100"
-            alignItems="end"
-            justifyContent='space-evenly'
-          >
-            {columns
-              .map((column: any) => fieldForParameter(column))
-              .filter((d) => d)}
-              { Object.keys(featureUpdates).length > 0 && (
-              <>
-                <Button
-                  gridColumnStart={"-3"}
-                  variant="negative"
-                  onPress={discardChanges}
-                >
-                  Discard Changes
-                </Button>
-                <Button
-                  gridColumnStart={"-2"}
-                  variant="cta"
-                  onPress={saveChanges}
-                >
-                  Save Changes
-                </Button>
-              </>
-            )}
-          </Grid>
-        </Form>
-      )}
+      <Flex direction="column" width="100%" height="100%">
+        <Header>Edit the selected features properties</Header>
+        {columns && feature && (
+            <Form width="100%" height="100%">
+              <View height="100%" maxHeight="350px" overflow='auto'>
+              <Grid
+                columns={repeat("auto-fit", "size-2400")}
+                autoRows="size-800"
+                gap="size-100"
+                alignItems="end"
+                justifyContent="space-evenly"
+              >
+                {columns
+                  .map((column: any) => fieldForParameter(column))
+                  .filter((d) => d)}
+                {Object.keys(featureUpdates).length > 0 && (
+                  <>
+                    <Button
+                      gridColumnStart={"-3"}
+                      variant="negative"
+                      onPress={discardChanges}
+                    >
+                      Discard Changes
+                    </Button>
+                    <Button
+                      gridColumnStart={"-2"}
+                      variant="cta"
+                      onPress={saveChanges}
+                    >
+                      Save Changes
+                    </Button>
+                  </>
+                )}
+              </Grid>
+            </View>
+            </Form>
+        )}
+      </Flex>
     </Well>
   );
 };

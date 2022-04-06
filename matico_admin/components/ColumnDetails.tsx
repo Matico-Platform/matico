@@ -22,11 +22,15 @@ interface ColumnDetailProps {
 const statForDataType = (dataType: any) => {
   const histogram = { Histogram: { no_bins: 20 } };
   const categories = { ValueCounts: {} };
+
+  console.log("Data type is ",dataType)
   
   switch (dataType) {
     case "INT4":
       return histogram;
     case "FLOAT":
+      return histogram;
+    case "NUMERIC":
       return histogram;
     case "FLOAT8":
       return histogram;
@@ -94,6 +98,7 @@ export const ColumnDetails: React.FC<ColumnDetailProps> = ({
     colName,
     stat
   );
+  
 
   return (
     <DialogTrigger type="popover">

@@ -25,9 +25,13 @@ export const useTableData = (
     case SourceType.API:
       baseUrl = `${baseUrl}/run`;
       break;
+    case SourceType.Query:
+      baseUrl = baseUrl
+      break
     default:
       baseUrl = null;
   }
+  console.log("URL is ", source, baseUrl)
 
   const { data, error, mutate } = useSWRAPI( source ?  baseUrl: null, {
     params: { ...source?.parameters, ...page, ...sort, include_metadata:true },

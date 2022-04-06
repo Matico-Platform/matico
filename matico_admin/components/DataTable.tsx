@@ -45,13 +45,15 @@ export const DataTable: React.FC<DataTableProps> = ({
     mutate: updateTableData,
   } = useTableData(source, filters, sort, { limit: 15, offset: 0});
 
+  const tData = tableData && tableData.data ? tableData.data : tableData
+
   // This insures we update the table whenever the various options change
   useEffect(()=>{
     updateTableData()
   },[source,filters,sort])
 
-  const columns = tableData
-    ? Object.keys(tableData[0]).map((item) => ({ id: item, name: item }))
+  const columns = tData
+    ? Object.keys(tData[0]).map((item) => ({ id: item, name: item }))
     : [];
 
   const updateSelection = (selection : "all" | Set<Key>)=>{
@@ -61,6 +63,7 @@ export const DataTable: React.FC<DataTableProps> = ({
   }
 
   const setVisCol = (column: string)=>{
+    console.log("setting on vis column ",column)
     if(onVizualizeCol){
       if(visCol === column){
         onVizualizeCol(null)
@@ -78,7 +81,7 @@ export const DataTable: React.FC<DataTableProps> = ({
   });
 
 
-  if (!tableData) {
+  if (!tData) {
     return <div>Loading</div>;
   }
   return (
@@ -111,7 +114,7 @@ export const DataTable: React.FC<DataTableProps> = ({
           </Column>
         )}
       </TableHeader>
-      <TableBody items={tableData}>
+      <TableBody items={tData}>
         {(param: { [key: string]: any }) => (
           <Row key={ idCol ? param[idCol] : JSON.stringify(param)}>
             {(columnKey) => (

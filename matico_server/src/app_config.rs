@@ -10,7 +10,7 @@ pub struct DbConfig {
     pub port: Option<String>,
     pub password: Option<String>,
     pub username: Option<String>,
-    pub max_connections: Option<u32>
+    pub max_connections: Option<u32>,
 }
 
 #[derive(Deserialize, Debug)]

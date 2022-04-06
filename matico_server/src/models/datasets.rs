@@ -4,19 +4,19 @@ use diesel::prelude::*;
 use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use uuid::Uuid;
 use sqlx::postgres::PgRow;
 use sqlx::Row;
+use uuid::Uuid;
 
-use crate::db::{DataDbPool, DbPool, PostgisDataSource, DataSource};
+use crate::db::{DataDbPool, DataSource, DbPool, PostgisDataSource};
 use crate::errors::ServiceError;
 use crate::models::{columns::Column, Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::{Format, ImportParams, PaginationParams, SortParams};
 
-#[derive(Serialize,Deserialize, Clone,Debug)]
-pub struct Extent{
-    pub extent: Vec<f64>
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Extent {
+    pub extent: Vec<f64>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -144,6 +144,7 @@ impl Dataset {
         &self,
         pool: &DataDbPool,
         query: Option<String>,
+        user: &Option<User>,
         page: Option<PaginationParams>,
         sort: Option<SortParams>,
         format: Option<Format>,
@@ -154,10 +155,10 @@ impl Dataset {
             None => format!(r#"select * from "{}""#, self.table_name),
         };
 
-        let metadata = PostgisDataSource::run_metadata_query(pool, &q).await?;
+        let metadata = PostgisDataSource::run_metadata_query(pool, &q, user).await?;
         let f = format.unwrap_or_default();
 
-        let result = PostgisDataSource::run_query(pool, &q, page, sort, f).await?;
+        let result = PostgisDataSource::run_query(pool, &q, user, page, sort, f).await?;
         let result_with_metadata = match include_metadata {
             Some(true) => json!({
             "data": result,
@@ -199,7 +200,7 @@ impl Dataset {
             })
     }
 
-    /// Will set up, or change the parameters for the sync requests for this dataset 
+    /// Will set up, or change the parameters for the sync requests for this dataset
     ///
     /// Any pending syncs should be retired (Not actually implemented yet)
     /// and a new seed SyncImport is generated
@@ -213,25 +214,29 @@ impl Dataset {
         Ok(())
     }
 
-    /// Update a feature within the dataset 
+    /// Update a feature within the dataset
     ///
     /// Based on feature id and a subset of fields to update
     pub async fn update_feature(
         &self,
         db: &DataDbPool,
         feature_id: String,
+        user: &Option<User>,
         update: serde_json::Value,
-        format: Option<Format>
+        format: Option<Format>,
     ) -> Result<String, ServiceError> {
         let obj = update.as_object().unwrap();
         let mut key_vals: Vec<String> = vec![];
 
         for (key, value) in &*obj {
             // TODO FIX THIS ITS SUPER FUCKING HACKY JUST NOW!
-            if value.to_string().contains("coordinates"){
-                key_vals.push(format!("{} = ST_GeomFromGeoJSON('{}')", key, value.to_string().replace("'", "\"")));
-            }
-            else{
+            if value.to_string().contains("coordinates") {
+                key_vals.push(format!(
+                    "{} = ST_GeomFromGeoJSON('{}')",
+                    key,
+                    value.to_string().replace("'", "\"")
+                ));
+            } else {
                 key_vals.push(format!("{} = {}", key, value).replace("\"", "'"));
             }
         }
@@ -243,48 +248,52 @@ impl Dataset {
             self.table_name, set_statement, self.id_col, feature_id
         );
 
-        sqlx::query(&query).execute(db).await.map_err(|e| ServiceError::APIFailed(format!("Failed to update feature {}",e)))?;
+        sqlx::query(&query)
+            .execute(db)
+            .await
+            .map_err(|e| ServiceError::APIFailed(format!("Failed to update feature {}", e)))?;
 
-        self.get_feature(&db,feature_id,format).await
+        self.get_feature(&db, feature_id, &user, format).await
     }
 
     pub async fn get_feature(
         &self,
         db: &DataDbPool,
         feature_id: String,
-        format:Option<Format>
-    ) -> Result<String, ServiceError>{
-        let query = format!(r#"select * from "{}"  where "{}" = {}"#, self.table_name, self.id_col, feature_id );
-        self.query(db,Some(query), None, None, format, None).await
+        user: &Option<User>,
+        format: Option<Format>,
+    ) -> Result<String, ServiceError> {
+        let query = format!(
+            r#"select * from "{}"  where "{}" = {}"#,
+            self.table_name, self.id_col, feature_id
+        );
+        self.query(db, Some(query), &user, None, None, format, None).await
     }
 
-    /// Calculates the extent of the dataset 
+    /// Calculates the extent of the dataset
     ///
-    pub async fn extent(&self, db: &DataDbPool)->Result<Extent,ServiceError>{
-        let query = format!("Select ARRAY [
+    pub async fn extent(&self, db: &DataDbPool) -> Result<Extent, ServiceError> {
+        let query = format!(
+            "Select ARRAY [
                             ST_XMIN(ST_EXTENT({geom_col})),
                             ST_YMIN(ST_EXTENT({geom_col})),
                             ST_XMAX(ST_EXTENT({geom_col})),
                             ST_YMAX(ST_EXTENT({geom_col}))
                             ]
                             as extent from {table_name}",
-                            geom_col=self.geom_col, 
-                            table_name=self.table_name);
-        println!("Extent query : {}",query);
-        let extent= sqlx::query(&query)
-                            .map(|row:PgRow| 
-                                Extent{
-                                 extent : row.get("extent")
-                                })
-                            .fetch_one(db)
-                            .await
-                            .map_err(|e| {
-                                ServiceError::APIFailed(format!("Failed to get bounding box {}",e))
-                            })?;
+            geom_col = self.geom_col,
+            table_name = self.table_name
+        );
+        println!("Extent query : {}", query);
+        let extent = sqlx::query(&query)
+            .map(|row: PgRow| Extent {
+                extent: row.get("extent"),
+            })
+            .fetch_one(db)
+            .await
+            .map_err(|e| ServiceError::APIFailed(format!("Failed to get bounding box {}", e)))?;
         Ok(extent)
-
     }
-
 
     pub async fn get_column(
         &self,

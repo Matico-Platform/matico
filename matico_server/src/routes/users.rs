@@ -29,10 +29,7 @@ async fn profile(
 }
 
 #[get("/{id}")]
-async fn get_user(
-    state: web::Data<State>,
-    user_id: Path<Uuid>,
-) -> Result<HttpResponse, Error> {
+async fn get_user(state: web::Data<State>, user_id: Path<Uuid>) -> Result<HttpResponse, Error> {
     let user = User::find_by_id(&state.db, user_id.into_inner())?;
     Ok(HttpResponse::Found().json(user))
 }

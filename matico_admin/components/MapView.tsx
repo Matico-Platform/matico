@@ -38,6 +38,7 @@ const binsForColType = (type: string | undefined | null) => {
     case "INT8":
     case "FLOAT16":
     case "FLOAT8":
+    case "NUMERIC":
       return quantiles;
     default:
       return null;
@@ -50,7 +51,7 @@ const styleForCol = (
 ) => {
   const statType = colStats ? Object.keys(colStats)[0] : null;
   const common = {
-    getLineColor: [255, 0, 0, 255],
+    getLineColor: [255, 255, 255, 50],
     getLineWidth: 1,
     lineWidthUnits: "pixels",
     getFillColor: [226, 125, 96, 200],

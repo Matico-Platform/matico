@@ -25339,6 +25339,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"matico_buffer_analysis@workspace:matico_buffer_analysis/pkg":
+  version: 0.0.0-use.local
+  resolution: "matico_buffer_analysis@workspace:matico_buffer_analysis/pkg"
+  languageName: unknown
+  linkType: soft
+
 "maxstache-stream@npm:^1.0.0":
   version: 1.0.4
   resolution: "maxstache-stream@npm:1.0.4"

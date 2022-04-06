@@ -220,7 +220,6 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
 
     let query = format!("select category_vars, parseable_numbers, numerical_categorical, numbers, dates from {} limit 1", dataset_body["table_name"]);
 
-
     let result: Result<(String, f64, i32, f64, DateTime<Utc>), _> = sqlx::query(&query)
         .map(|row: PgRow| {
             (
@@ -245,7 +244,6 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
         "select ST_GeometryType(wkb_geometry) as geom_type from {} ",
         dataset_body["table_name"]
     );
-
 
     let result: Result<String, _> = sqlx::query(&query)
         .map(|row: PgRow| row.get("geom_type"))
