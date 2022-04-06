@@ -47,7 +47,7 @@ pub async fn run(
     // Set up the database pool for the system metadata
     info!("Connecting to metadata db");
     let pool = r2d2::Pool::builder()
-        .max_size(config.db.max_connections.unwrap_or(50))
+        .max_size(config.db.max_connections.unwrap_or(10))
         .build(manager)
         .expect("Failed to connect to DB");
 
@@ -59,7 +59,7 @@ pub async fn run(
 
     let data_db_connection_url = config.data_connection_string().unwrap();
     let data_pool = PgPoolOptions::new()
-        .max_connections(config.datadb.max_connections.unwrap_or(50))
+        .max_connections(config.datadb.max_connections.unwrap_or(20))
         .connect(&data_db_connection_url)
         .await
         .expect("FAiled to connect to DB");
