@@ -443,8 +443,10 @@ impl PostgisDataSource {
     }
 
     pub fn user_scope_statement(user: &Option<User>)->String{
+        //# Turning this off for now
+        return "".into();
         if let Some(user) = user{
-            format!("SET ROLE {}", user.username) 
+            format!("SET ROLE {};", user.username) 
         }
         else{
             String::from("USE ROLE global_public;")

@@ -1,6 +1,6 @@
 use crate::app_state::State;
 use crate::auth::AuthService;
-use crate::db::Bounds;
+use crate::db::{Bounds, PostgisDataSource};
 use crate::errors::ServiceError;
 use crate::models::StatParams;
 use crate::routes::columns::ColumnStatRequest;
@@ -109,6 +109,8 @@ async fn run_annon_query(
         .body(result))
 }
 
+
+
 #[get("{api_id}/columns/{column_name}/stats")]
 async fn get_column_stats(
     state: web::Data<State>,
@@ -173,6 +175,72 @@ async fn get_columns(
         .json(columns))
 }
 
+#[get("/run/columns")]
+async fn get_query_columns(
+    state: web::Data<State>,
+    web::Query(query): web::Query<AnnonQuery>,
+    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+    web::Query(_bounds): web::Query<Bounds>,
+) -> Result<HttpResponse, ServiceError> {
+    let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .json(columns))
+}
+
+#[get("/run/columns/{column_name}")]
+async fn get_query_column(
+    state: web::Data<State>,
+    web::Query(query): web::Query<AnnonQuery>,
+    Path(column_name): Path<String>,
+    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+    web::Query(_bounds): web::Query<Bounds>,
+) -> Result<HttpResponse, ServiceError> {
+    let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
+    let result = columns.iter().find(|col| col.name==column_name)
+            .ok_or_else(|| {
+                ServiceError::BadRequest(format!(
+                    "No columns by the name of {} on query {}",
+                    column_name, query.q 
+                ))
+            })?;
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .json(result))
+}
+
+#[get("run/columns/{column_name}/stats")]
+async fn get_query_column_stats(
+    state: web::Data<State>,
+    web::Query(query): web::Query<AnnonQuery>,
+    Path(column_name): Path<String>,
+    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+    web::Query(request_details): web::Query<ColumnStatRequest>,
+    logged_in_user: AuthService
+) -> Result<HttpResponse, ServiceError> {
+    let user = User::from_token(&state.db, &logged_in_user.user);
+
+    let stat_params: StatParams = serde_json::from_str(&request_details.stat).map_err(|e| {
+        ServiceError::BadRequest(format!(
+            "Stat request was miss-specification \n {} \n {}",
+            request_details.stat, e
+        ))
+    })?;
+
+    let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
+    let col = columns.iter().find(|col| col.name==column_name)
+            .ok_or_else(|| {
+                ServiceError::BadRequest(format!(
+                    "No columns by the name of {} on query {}",
+                    column_name, query.q 
+                ))
+            })?;
+
+    let result = col.calc_stat(&state.data_db,  &user, stat_params, None).await?;
+
+    Ok(HttpResponse::Ok().json(result))
+}
+
 #[get("/{api_id}/run")]
 async fn run_api(
     state: web::Data<State>,
@@ -204,6 +272,9 @@ async fn run_api(
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(get_query_column);
+    cfg.service(get_query_columns);
+    cfg.service(get_query_column_stats);
     cfg.service(run_annon_query);
     cfg.service(get_apis);
     cfg.service(get_api);

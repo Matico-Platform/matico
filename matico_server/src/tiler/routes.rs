@@ -60,6 +60,7 @@ async fn get_tile_for_dataset(
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
 
+
 #[get("/api/{api_id}/{z}/{x}/{y}")]
 async fn get_tile_for_query(
     state: web::Data<State>,

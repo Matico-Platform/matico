@@ -16,7 +16,7 @@ export enum SourceType {
   Query = "query",
 }
 export type Source = {
-  id: string;
+  id?: string;
   type: SourceType;
   parameters?: { [param: string]: any };
   query?: string;
@@ -40,18 +40,21 @@ export const tileUrlForSource = (source: Source | undefined) => {
         )
         .join("&")}`;
     case SourceType.Query:
-      return `${baseURL}/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
+      return `${baseURL}/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
         source.query!
       )}`;
   }
 };
 
-export const urlForSource = (source: Source) => {
+export const urlForSource = (source: Source | null, extension: String ="") => {
+  if(!source) return ""
   switch (source?.type) {
     case SourceType.Dataset:
-      return `/datasets/${source?.id}`;
+      return `/datasets/${source?.id}${extension}`;
     case SourceType.API:
-      return `/apis/${source?.id}`;
+      return `/apis/${source?.id}${extension}`;
+    case SourceType.Query:
+      return `/apis/run${extension}?q=${source.query}`;
     default:
       return null;
   }
