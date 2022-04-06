@@ -60,10 +60,10 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const [visCol, setVisCol] = useState<string | null>(null);
   const [query, setQuery] = useState<undefined| string>(undefined);
   const [activeQuery, setActiveQuery] = useState<undefined| string>(undefined);
+  const [queryError, setQueryError] = useState<string | null>(null);
 
   const datasetSource = 
-    {
-      type: SourceType.Dataset,
+    { type: SourceType.Dataset,
       id: datasetId,
     };
   const querySource=
@@ -199,6 +199,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                   onVizualizeCol={setVisCol}
                   idCol={dataset?.id_col}
                   selection={selectedFeatureId}
+                  onError={setQueryError}
                   onSelectionChange={setSelectedFeatureId}
                 />
               )}
@@ -240,7 +241,8 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                       query={query}
                       onQueryChange={setQuery}
                     />
-                      <Flex gap={"10px"} justifyContent={"end"} >
+                      <Flex gap={"10px"} justifyContent={"end"} alignItems='center'>
+                        {queryError && <Text UNSAFE_style={{color:"red"}}>{queryError.replace("Query failed SQL Error: error returned from database: ","").split("Query was")[0]}</Text>}
                         <Button variant={"negative"} onPress={resetQuery}>Clear</Button>
                         <Button variant={"primary"} onPress={runQuery}>
                           Run
