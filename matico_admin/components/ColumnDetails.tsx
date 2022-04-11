@@ -8,7 +8,7 @@ import {
   Grid,
 } from "@adobe/react-spectrum";
 import MoreVertical from "@spectrum-icons/workflow/MoreSmallListVert";
-import React from "react";
+import React, {useState} from "react";
 import { useColumnStat } from "../hooks/useColumnStat";
 import { useDatasetColumn } from "../hooks/useDatasetColumns";
 import { Source } from "../hooks/useTableData";
@@ -23,8 +23,6 @@ const statForDataType = (dataType: any) => {
   const histogram = { Histogram: { no_bins: 20 } };
   const categories = { ValueCounts: {} };
 
-  console.log("Data type is ",dataType)
-  
   switch (dataType) {
     case "INT4":
       return histogram;
@@ -90,25 +88,25 @@ export const ColumnDetails: React.FC<ColumnDetailProps> = ({
   source,
   colName,
 }) => {
+  const [isOpen, setIsOpen] = useState(false)
   const { column , columnError} = useDatasetColumn(source, colName);
 
   const stat = statForDataType(column?.col_type);
   const { data: dataSummary, error: dataSummaryError } = useColumnStat(
-    source,
+    isOpen ? source : null,
     colName,
     stat
   );
-  
 
   return (
-    <DialogTrigger type="popover">
+    <DialogTrigger onOpenChange={setIsOpen} type="popover">
       <ActionButton isQuiet>
         <MoreVertical size="XXS" />
       </ActionButton>
       <Dialog isDismissable>
         <Heading>{colName}</Heading>
         <Content>
-          {dataSummary && chartForSummary(dataSummary, colName)}
+          {(dataSummary && isOpen) && chartForSummary(dataSummary, colName)}
         </Content>
       </Dialog>
     </DialogTrigger>
