@@ -1,16 +1,14 @@
 import { useSWRAPI, Source, urlForSource, SourceType} from "../utils/api";
 
 export const useColumnStat = (
-  source: Source,
+  source: Source | null | undefined,
   colName: string,
   statDetails: any
 ) => {
-  let url = urlForSource(source,`/columns/${colName}/stats`);
+  let url = source ? urlForSource(source,`/columns/${colName}/stats`): null;
 
-  console.log("Attempting to get stat for ", source, colName, statDetails);
-
-  let params = { stat: JSON.stringify(statDetails), ...source.parameters, q:source.query }
-  if(url && source.type===SourceType.Query){
+  let params = source ? { stat: JSON.stringify(statDetails), ...source.parameters, q:source.query } : null
+  if(url && source?.type===SourceType.Query){
     url = url.split("?")[0]
   }
 
