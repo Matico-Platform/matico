@@ -9,8 +9,6 @@ use crate::models::User;
 use crate::utils::{Format, PaginationParams, QueryMetadata, SortParams};
 use async_trait::async_trait;
 use cached::proc_macro::cached;
-use log::info;
-use log::warn;
 use serde::Serializer;
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgRow;
@@ -21,7 +19,7 @@ use std::convert::From;
 use geo_types::Geometry;
 use geozero::wkb;
 use ::wkb::geom_to_wkb;
-
+use log::{info,trace, warn };
 
 #[derive(Serialize, Deserialize)]
 pub struct BBox {
@@ -396,7 +394,10 @@ pub async fn cached_tile_query(
     // if we can easily cache this call in the server. Better would
     // be if postgresql had an exclude keyword or if we can find some
     // other way to do this in the db
+    let time_start = chrono::Utc::now();
+
     let columns = local_get_query_column_details(pool, query).await?;
+    info!(target:"mvt_tile", "Column Query : {}", (chrono::Utc::now() - time_start).num_seconds() );
 
     let column_names: Vec<String> = columns
         .iter()
@@ -420,6 +421,7 @@ pub async fn cached_tile_query(
         z = tile_id.z,
     );
 
+    let time_start_tile = chrono::Utc::now();
     let result: Vec<u8> = sqlx::query(&formatted_query)
         .map(|row: PgRow| row.get("mvt"))
         .fetch_one(pool)
@@ -429,6 +431,8 @@ pub async fn cached_tile_query(
             ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, formatted_query))
         })?;
 
+    info!(target: "mvt_tile", "Tile: {}", (chrono::Utc::now() - time_start_tile).num_seconds() );
+    info!(target: "mvt_tile", "Total {}", (chrono::Utc::now() - time_start).num_seconds());
     Ok(MVTTile { mvt: result })
 }
 
