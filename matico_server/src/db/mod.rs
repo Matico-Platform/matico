@@ -6,7 +6,11 @@ pub mod datasource;
 pub mod formatters;
 pub mod postgis_datasource;
 pub mod setup;
+pub mod query_result;
+pub mod query_builder;
 
+pub use query_result::*;
+pub use query_builder::*;
 pub use datasource::*;
 pub use formatters::*;
 pub use postgis_datasource::*;

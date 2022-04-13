@@ -1,12 +1,9 @@
 use crate::app_state::State;
 use crate::auth::AuthService;
-use crate::db::{Bounds, PostgisDataSource};
 use crate::errors::ServiceError;
-use crate::models::StatParams;
-use crate::routes::columns::ColumnStatRequest;
 
 use crate::models::{
-    apis::{AnnonQuery, Api, CreateAPIDTO, UpdateAPIDTO},
+    apis::{Api, CreateAPIDTO, UpdateAPIDTO},
     permissions::*,
     users::*,
 };
@@ -81,210 +78,210 @@ async fn create_api(
     Ok(HttpResponse::Ok().json(query))
 }
 
-#[get("/run")]
-async fn run_annon_query(
-    state: web::Data<State>,
-    web::Query(query): web::Query<AnnonQuery>,
-    web::Query(page): web::Query<PaginationParams>,
-    web::Query(sort): web::Query<SortParams>,
-    web::Query(_bounds): web::Query<Bounds>,
-    web::Query(format_param): web::Query<FormatParam>,
-    logged_in_user: AuthService
-) -> Result<HttpResponse, ServiceError> {
+// #[get("/run")]
+// async fn run_annon_query(
+//     state: web::Data<State>,
+//     web::Query(query): web::Query<AnnonQuery>,
+//     web::Query(page): web::Query<PaginationParams>,
+//     web::Query(sort): web::Query<SortParams>,
+//     web::Query(_bounds): web::Query<Bounds>,
+//     web::Query(format_param): web::Query<FormatParam>,
+//     logged_in_user: AuthService
+// ) -> Result<HttpResponse, ServiceError> {
 
-    let user = User::from_token(&state.db, &logged_in_user.user);
+//     let user = User::from_token(&state.db, &logged_in_user.user);
 
-    let result = Api::run_raw(
-        &state.data_db,
-        query.q,
-        &user,
-        Some(page),
-        Some(sort),
-        format_param.format,
-    )
-    .await?;
-    // let result = "{\"test\":\"test\"}";
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .body(result))
-}
+//     let result = Api::run_raw(
+//         &state.data_db,
+//         query.q,
+//         &user,
+//         Some(page),
+//         Some(sort),
+//         format_param.format,
+//     )
+//     .await?;
+//     // let result = "{\"test\":\"test\"}";
+//     Ok(HttpResponse::Ok()
+//         .content_type("application/json")
+//         .body(result))
+// }
 
 
 
-#[get("{api_id}/columns/{column_name}/stats")]
-async fn get_column_stats(
-    state: web::Data<State>,
-    Path((api_id, column_name)): Path<(Uuid, String)>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(request_details): web::Query<ColumnStatRequest>,
-    logged_in_user: AuthService
-) -> Result<HttpResponse, ServiceError> {
-    let api = Api::find(&state.db, api_id)?;
+// #[get("{api_id}/columns/{column_name}/stats")]
+// async fn get_column_stats(
+//     state: web::Data<State>,
+//     Path((api_id, column_name)): Path<(Uuid, String)>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+//     web::Query(request_details): web::Query<ColumnStatRequest>,
+//     logged_in_user: AuthService
+// ) -> Result<HttpResponse, ServiceError> {
+//     let api = Api::find(&state.db, api_id)?;
 
-    let user = User::from_token(&state.db, &logged_in_user.user);
+//     let user = User::from_token(&state.db, &logged_in_user.user);
 
-    let stat_params: StatParams = serde_json::from_str(&request_details.stat).map_err(|e| {
-        ServiceError::BadRequest(format!(
-            "Stat request was miss-specification \n {} \n {}",
-            request_details.stat, e
-        ))
-    })?;
+//     let stat_params: StatParams = serde_json::from_str(&request_details.stat).map_err(|e| {
+//         ServiceError::BadRequest(format!(
+//             "Stat request was miss-specification \n {} \n {}",
+//             request_details.stat, e
+//         ))
+//     })?;
 
-    let col = api.get_column(&state.data_db, column_name, &params).await?;
-    let result = col.calc_stat(&state.data_db,  &user, stat_params, None).await?;
+//     let col = api.get_column(&state.data_db, column_name, &params).await?;
+//     let result = col.calc_stat(&state.data_db,  &user, stat_params, None).await?;
 
-    Ok(HttpResponse::Ok().json(result))
-}
+//     Ok(HttpResponse::Ok().json(result))
+// }
 
-#[get("{api_id}/extent")]
-async fn extent(
-    state: web::Data<State>,
-    Path(api_id): Path<Uuid>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-) -> Result<HttpResponse, ServiceError> {
-    let api = Api::find(&state.db, api_id)?;
+// #[get("{api_id}/extent")]
+// async fn extent(
+//     state: web::Data<State>,
+//     Path(api_id): Path<Uuid>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+// ) -> Result<HttpResponse, ServiceError> {
+//     let api = Api::find(&state.db, api_id)?;
 
-    let extent = api.extent(&state.data_db, &params).await?;
-    Ok(HttpResponse::Ok().json(extent))
-}
+//     let extent = api.extent(&state.data_db, &params).await?;
+//     Ok(HttpResponse::Ok().json(extent))
+// }
 
-#[get("{api_id}/columns/{column_name}")]
-async fn get_column(
-    state: web::Data<State>,
-    Path((api_id, column_name)): Path<(Uuid, String)>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-) -> Result<HttpResponse, ServiceError> {
-    let api = Api::find(&state.db, api_id)?;
+// #[get("{api_id}/columns/{column_name}")]
+// async fn get_column(
+//     state: web::Data<State>,
+//     Path((api_id, column_name)): Path<(Uuid, String)>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+// ) -> Result<HttpResponse, ServiceError> {
+//     let api = Api::find(&state.db, api_id)?;
 
-    let col = api.get_column(&state.data_db, column_name, &params).await?;
+//     let col = api.get_column(&state.data_db, column_name, &params).await?;
 
-    Ok(HttpResponse::Ok().json(col))
-}
+//     Ok(HttpResponse::Ok().json(col))
+// }
 
-#[get("/{api_id}/columns")]
-async fn get_columns(
-    state: web::Data<State>,
-    Path(query_id): Path<Uuid>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(_bounds): web::Query<Bounds>,
-) -> Result<HttpResponse, ServiceError> {
-    let query = Api::find(&state.db, query_id)?;
-    let columns = query.columns(&state.data_db, &params).await?;
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .json(columns))
-}
+// #[get("/{api_id}/columns")]
+// async fn get_columns(
+//     state: web::Data<State>,
+//     Path(query_id): Path<Uuid>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+//     web::Query(_bounds): web::Query<Bounds>,
+// ) -> Result<HttpResponse, ServiceError> {
+//     let query = Api::find(&state.db, query_id)?;
+//     let columns = query.columns(&state.data_db, &params).await?;
+//     Ok(HttpResponse::Ok()
+//         .content_type("application/json")
+//         .json(columns))
+// }
 
-#[get("/run/columns")]
-async fn get_query_columns(
-    state: web::Data<State>,
-    web::Query(query): web::Query<AnnonQuery>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(_bounds): web::Query<Bounds>,
-) -> Result<HttpResponse, ServiceError> {
-    let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .json(columns))
-}
+// #[get("/run/columns")]
+// async fn get_query_columns(
+//     state: web::Data<State>,
+//     web::Query(query): web::Query<AnnonQuery>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+//     web::Query(_bounds): web::Query<Bounds>,
+// ) -> Result<HttpResponse, ServiceError> {
+//     let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
+//     Ok(HttpResponse::Ok()
+//         .content_type("application/json")
+//         .json(columns))
+// }
 
-#[get("/run/columns/{column_name}")]
-async fn get_query_column(
-    state: web::Data<State>,
-    web::Query(query): web::Query<AnnonQuery>,
-    Path(column_name): Path<String>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(_bounds): web::Query<Bounds>,
-) -> Result<HttpResponse, ServiceError> {
-    let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
-    let result = columns.iter().find(|col| col.name==column_name)
-            .ok_or_else(|| {
-                ServiceError::BadRequest(format!(
-                    "No columns by the name of {} on query {}",
-                    column_name, query.q 
-                ))
-            })?;
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .json(result))
-}
+// #[get("/run/columns/{column_name}")]
+// async fn get_query_column(
+//     state: web::Data<State>,
+//     web::Query(query): web::Query<AnnonQuery>,
+//     Path(column_name): Path<String>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+//     web::Query(_bounds): web::Query<Bounds>,
+// ) -> Result<HttpResponse, ServiceError> {
+//     let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
+//     let result = columns.iter().find(|col| col.name==column_name)
+//             .ok_or_else(|| {
+//                 ServiceError::BadRequest(format!(
+//                     "No columns by the name of {} on query {}",
+//                     column_name, query.q 
+//                 ))
+//             })?;
+//     Ok(HttpResponse::Ok()
+//         .content_type("application/json")
+//         .json(result))
+// }
 
-#[get("run/columns/{column_name}/stats")]
-async fn get_query_column_stats(
-    state: web::Data<State>,
-    web::Query(query): web::Query<AnnonQuery>,
-    Path(column_name): Path<String>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(request_details): web::Query<ColumnStatRequest>,
-    logged_in_user: AuthService
-) -> Result<HttpResponse, ServiceError> {
-    let user = User::from_token(&state.db, &logged_in_user.user);
+// #[get("run/columns/{column_name}/stats")]
+// async fn get_query_column_stats(
+//     state: web::Data<State>,
+//     web::Query(query): web::Query<AnnonQuery>,
+//     Path(column_name): Path<String>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+//     web::Query(request_details): web::Query<ColumnStatRequest>,
+//     logged_in_user: AuthService
+// ) -> Result<HttpResponse, ServiceError> {
+//     let user = User::from_token(&state.db, &logged_in_user.user);
 
-    let stat_params: StatParams = serde_json::from_str(&request_details.stat).map_err(|e| {
-        ServiceError::BadRequest(format!(
-            "Stat request was miss-specification \n {} \n {}",
-            request_details.stat, e
-        ))
-    })?;
+//     let stat_params: StatParams = serde_json::from_str(&request_details.stat).map_err(|e| {
+//         ServiceError::BadRequest(format!(
+//             "Stat request was miss-specification \n {} \n {}",
+//             request_details.stat, e
+//         ))
+//     })?;
 
-    let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
-    let col = columns.iter().find(|col| col.name==column_name)
-            .ok_or_else(|| {
-                ServiceError::BadRequest(format!(
-                    "No columns by the name of {} on query {}",
-                    column_name, query.q 
-                ))
-            })?;
+//     let columns = PostgisDataSource::get_query_column_details(&state.data_db, &query.q).await?;
+//     let col = columns.iter().find(|col| col.name==column_name)
+//             .ok_or_else(|| {
+//                 ServiceError::BadRequest(format!(
+//                     "No columns by the name of {} on query {}",
+//                     column_name, query.q 
+//                 ))
+//             })?;
 
-    let result = col.calc_stat(&state.data_db,  &user, stat_params, None).await?;
+//     let result = col.calc_stat(&state.data_db,  &user, stat_params, None).await?;
 
-    Ok(HttpResponse::Ok().json(result))
-}
+//     Ok(HttpResponse::Ok().json(result))
+// }
 
-#[get("/{api_id}/run")]
-async fn run_api(
-    state: web::Data<State>,
-    Path(query_id): Path<Uuid>,
-    web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(page): web::Query<PaginationParams>,
-    web::Query(sort): web::Query<SortParams>,
-    web::Query(_bounds): web::Query<Bounds>,
-    web::Query(format_param): web::Query<FormatParam>,
-    logged_in_user: AuthService
-) -> Result<HttpResponse, ServiceError> {
+// #[get("/{api_id}/run")]
+// async fn run_api(
+//     state: web::Data<State>,
+//     Path(query_id): Path<Uuid>,
+//     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
+//     web::Query(page): web::Query<PaginationParams>,
+//     web::Query(sort): web::Query<SortParams>,
+//     web::Query(_bounds): web::Query<Bounds>,
+//     web::Query(format_param): web::Query<FormatParam>,
+//     logged_in_user: AuthService
+// ) -> Result<HttpResponse, ServiceError> {
 
-    let query = Api::find(&state.db, query_id)?;
-    let user = User::from_token(&state.db, &logged_in_user.user);
+//     let query = Api::find(&state.db, query_id)?;
+//     let user = User::from_token(&state.db, &logged_in_user.user);
 
-    let result = query
-        .run(
-            &state.data_db,
-            &params,
-            &user,
-            Some(page),
-            Some(sort),
-            format_param.format,
-        )
-        .await?;
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .body(result))
-}
+//     let result = query
+//         .run(
+//             &state.data_db,
+//             &params,
+//             &user,
+//             Some(page),
+//             Some(sort),
+//             format_param.format,
+//         )
+//         .await?;
+//     Ok(HttpResponse::Ok()
+//         .content_type("application/json")
+//         .body(result))
+// }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(get_query_column);
-    cfg.service(get_query_columns);
-    cfg.service(get_query_column_stats);
-    cfg.service(run_annon_query);
+    // cfg.service(get_query_column);
+    // cfg.service(get_query_columns);
+    // cfg.service(get_query_column_stats);
+    // cfg.service(run_annon_query);
     cfg.service(get_apis);
     cfg.service(get_api);
     cfg.service(delete_api);
     cfg.service(update_api);
     cfg.service(create_api);
-    cfg.service(get_column_stats);
-    cfg.service(get_columns);
-    cfg.service(get_column);
-    cfg.service(extent);
-    cfg.service(run_api);
+    // cfg.service(get_column_stats);
+    // cfg.service(get_columns);
+    // cfg.service(get_column);
+    // cfg.service(extent);
+    // cfg.service(run_api);
     // cfg.service(run_query);
 }

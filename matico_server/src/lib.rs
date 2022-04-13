@@ -6,7 +6,7 @@ extern crate diesel_derive_enum;
 #[macro_use]
 extern crate diesel_migrations;
 use crate::app_state::State;
-use crate::db::PostgisDataSource;
+use crate::db::{PostgisDataSource, DataSource};
 use actix::*;
 use actix_cors::Cors;
 use actix_files as fs;
@@ -29,7 +29,6 @@ mod models;
 mod routes;
 mod scheduler;
 mod schema;
-mod tiler;
 mod utils;
 
 pub async fn health() -> impl Responder {
@@ -94,17 +93,12 @@ pub async fn run(
             .wrap(middleware::Logger::new("%{Content-Type}i"))
             .wrap(middleware::Compress::default())
             .route("/api/health", web::get().to(health))
-            .service(web::scope("/api/tiler").configure(tiler::init_routes))
             .service(web::scope("/api/users").configure(routes::users::init_routes))
             .service(web::scope("/api/auth").configure(routes::auth::init_routes))
             .service(web::scope("/api/apis").configure(routes::apis::init_routes))
             .service(web::scope("/api/apps").configure(routes::apps::init_routes))
-            .service(
-                web::scope("/api/datasets")
-                    .configure(routes::data::init_routes)
-                    .configure(routes::columns::init_routes)
-                    .configure(routes::datasets::init_routes),
-            )
+            .service(web::scope("/api/datasets").configure(routes::datasets::init_routes))
+            .service(web::scope("/api/data").configure(routes::data::init_routes))
             .service(fs::Files::new("/", "static").index_file("index.html"))
     })
     .listen(listener)?

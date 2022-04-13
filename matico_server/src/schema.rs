@@ -1,3 +1,5 @@
+#[allow(dead_code)]
+
 table! {
     use diesel::sql_types::*;
     use crate::models::sync_import::*;
