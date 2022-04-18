@@ -40,7 +40,7 @@ export const tileUrlForSource = (source: Source | undefined) => {
         )
         .join("&")}`;
     case SourceType.Query:
-      return `${baseURL}/tiles/{z}/{x}/{y}?q=${encodeURIComponent(
+      return `${baseURL}/data/query/tiles/{z}/{x}/{y}?q=${encodeURIComponent(
         source.query!
       )}`;
   }
