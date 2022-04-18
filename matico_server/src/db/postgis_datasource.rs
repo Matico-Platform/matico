@@ -270,6 +270,17 @@ impl QueryBuilder<DataDbPool> for  PostgisQueryBuilder{
         cached_tile_query(db, &query, tiler_options, tile_id).await 
     }
 
+     // TODO Try to figure out how to make this work so we can stream results to the frontend 
+     //
+     // fn get_result_stream(&self, db: &DataDbPool)->BoxStream<'_, Result<HashMap<String,QueryVal>, sqlx::Error>>{
+     //    let query = self.build_query().unwrap();
+     //    let stream = sqlx::query(&query)
+     //        .map(row_to_hash_map)
+     //        .fetch(db);
+
+     //    stream
+     // }
+
      async fn get_result(&self, db: &DataDbPool)-> Result<QueryResult, ServiceError>{
         let query = self.build_query()?;
         
@@ -437,7 +448,7 @@ impl PostgisStatRunner{
         let query =format!(
                 "
                 SELECT
-                    ntile as quantile,
+                    ntile::INT as quantile,
                     CAST(min({column}) AS FLOAT) AS bin_start,
                     CAST(max({column}) AS FLOAT) AS bin_end
                     FROM (
@@ -477,7 +488,7 @@ impl PostgisStatRunner{
                         bin_no *(max-min)/{bin_no} as bin_start, 
                         (bin_no +1 ) * (max-min)/{bin_no} as bin_end,
                         (bin_no +0.5 ) * (max-min)/{bin_no} as bin_mid,
-                        count(*) as freq
+                        count(*)::NUMERIC as freq
                 FROM (
                         select width_bucket({col}::NUMERIC, min, max, {bin_no}) as bin_no
                         from ({source_query}) as query,

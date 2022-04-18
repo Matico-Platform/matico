@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use bigdecimal::BigDecimal;
 use sqlx::FromRow;
 use crate::{models::Column as DatasetColumn, errors::ServiceError};
 use serde::{Serialize,Deserialize};
@@ -71,9 +72,9 @@ pub enum StatParams {
 #[derive(Serialize, Deserialize, Debug, TS, FromRow )]
 #[ts(export)]
 pub struct QuantileEntry {
-    pub quantile: u32,
-    pub bin_start: f32,
-    pub bin_end: f32,
+    pub quantile: i32,
+    pub bin_start: f64,
+    pub bin_end: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
@@ -116,10 +117,10 @@ pub struct ValueCountEntry {
 #[derive(Serialize, Deserialize, Debug, TS, FromRow)]
 #[ts(export)]
 pub struct HistogramEntry {
-    bin_start: f64,
-    bin_end: f64,
-    bin_mid: f64,
-    freq: f64,
+    bin_start: BigDecimal,
+    bin_end: BigDecimal,
+    bin_mid: BigDecimal,
+    freq: BigDecimal,
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]

@@ -18,7 +18,7 @@ export const useFeature = (
     data: feature,
     error,
     mutate,
-  } = useSWRAPI( source && featureId  ? `${baseUrl}/data/${featureId}`: null, {
+  } = useSWRAPI( source && featureId  ? `${baseUrl}/feature/${featureId}`: null, {
     params: {...source.parameters, include_metadata:false, format : format ?? 'json'},
     refreshInterval: 0,
   });

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use async_trait::async_trait;
+use futures::stream::{LocalBoxStream, BoxStream};
 
 use crate::{models::{Dataset, Column as DatasetColumn, User, Api, StatParams, StatResults, datasets::Extent}, utils::{PaginationParams, SortParams, MVTTile, QueryMetadata}, errors::ServiceError};
 
@@ -70,6 +71,9 @@ pub trait QueryBuilder<T>{
 
     /// Run the data query and return the result as a QueryResult struct 
      async fn get_result(&self, db: &T)-> Result<QueryResult, ServiceError>;
+
+    /// Run the data query and return the result as a stream 
+     // fn get_result_stream(&self, db: &T)->BoxStream<'_, Result<HashMap<String,QueryVal>, sqlx::Error>>;
 
      async fn get_feature(&self,db: &T, feature_id: &QueryVal , id_col: Option<&str>)->Result<HashMap<String,Option<QueryVal>>, ServiceError>;
 

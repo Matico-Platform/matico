@@ -18,7 +18,7 @@ impl QueryResult{
     pub fn as_format(&self, format: &Format)->Result<String,ServiceError>{
         match format {
             Format::Geojson => self.as_geojson(None),
-            Format::Json => self.as_geojson(None),
+            Format::Json => self.as_json(),
             Format::Csv => self.as_csv(),
         }
     }
@@ -56,6 +56,11 @@ impl QueryResult{
         let data = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
         Ok(data)
 
+    }
+
+    pub fn as_json(&self)->Result<String,ServiceError>{
+        serde_json::to_string(&self.result)
+            .map_err(|e| ServiceError::InternalServerError(format!("Failed to format result as json {}",e)))
     }
 
     pub fn as_geojson(&self, geom_col : Option<&String>)->Result<String,ServiceError>{

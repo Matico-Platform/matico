@@ -13,7 +13,7 @@ use actix_web_lab::extract::Path;
 
 use derive_more::Display;
 use log::info;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Deserialize,Debug)]
@@ -21,7 +21,7 @@ struct QueryString{
     pub q:Option<String>
 }
 
-#[derive(Deserialize,Display)]
+#[derive(Deserialize,Display, Debug)]
 #[serde(rename_all="lowercase")]
 enum SourceType{
     Dataset,
@@ -29,17 +29,11 @@ enum SourceType{
     Query
 }
 
-impl FromStr for SourceType{
-    type Err = ServiceError;
-    fn from_str(input: &str)->Result<Self, Self::Err>{
-        match input{
-            "datasets"=> Ok(Self::Dataset),
-            "apis"=> Ok(Self::Api),
-            "query"=> Ok(Self::Query),
-            _ => Err(ServiceError::InternalServerError("Only datasets, apis and queries valid as data sources".into()))
-        }
-    }
+#[derive(Serialize, Deserialize)]
+pub struct ColumnStatRequest {
+    pub stat: String,
 }
+
 
 
 
@@ -48,15 +42,14 @@ async fn test()->HttpResponse{
     HttpResponse::Ok().body(format!("{}", SourceType::Dataset))
 }
 
-async fn query_for_source(db: &DbPool, source_type_str: String, id: Option<Uuid>, query_str: Option<String>, query_params: HashMap<String, serde_json::Value> ) -> Result<PostgisQueryBuilder, ServiceError>{
+async fn query_for_source(db: &DbPool, source: &Source, query_str: Option<String>, query_params: HashMap<String, serde_json::Value> ) -> Result<PostgisQueryBuilder, ServiceError>{
 
     let mut query = PostgisQueryBuilder::new();
-    let source_type: SourceType = SourceType::from_str(&source_type_str)?;
 
-    info!("Getting data for {} {:#?} {:#?}", source_type, id, query_str);
+    info!("Getting data for {:#?} {:#?}", source, query_str);
     // TODO implement resource check
 
-    match (source_type, id, query_str){
+    match (&source.source_type, source.source_id, query_str){
         (SourceType::Dataset, Some(id),None) => {
             let dataset = Dataset::find(db,id)?;
             query.dataset(dataset)
@@ -77,39 +70,52 @@ async fn query_for_source(db: &DbPool, source_type_str: String, id: Option<Uuid>
 #[get("{source_type}/{source_id}/columns")]
 async fn get_columns(
     state: web::Data<State>,
-    Path((source_type_str, source_id)): Path<(String,Uuid)>,
+    Path(source): Path<Source>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
     )->Result<HttpResponse, ServiceError>{
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
-    let mut query = query_for_source(&state.db, source_type_str, Some(source_id), query_str.q, query_params).await?;
+    let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let columns = query.columns(&state.data_db).await?;
     Ok(HttpResponse::Ok().json(columns)) 
 }
 
-#[get("{source_type}/{source_id}/column/{column_name}")]
+#[derive(Deserialize)]
+struct ColName{
+    pub column_name: String
+}
+
+#[get("{source_type}/{source_id}/columns/{column_name}")]
 async fn get_column(
     state: web::Data<State>,
-    Path((source_type_str, source_id, column_name)): Path<(String,Uuid,String)>,
+    Path(source): Path<Source>,
+    Path(column_name): Path<ColName>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
     )->Result<HttpResponse, ServiceError>{
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
-    let mut query = query_for_source(&state.db, source_type_str, Some(source_id), query_str.q, query_params).await?;
+    let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let columns = query.columns(&state.data_db).await?;
-    let column = columns.iter().find(|c| c.name == column_name);
+    let column = columns.iter().find(|c| c.name == column_name.column_name);
 
     Ok(HttpResponse::Ok().json(column)) 
+}
+
+
+#[derive(Deserialize, Debug )]
+struct Source{
+    pub source_type: SourceType,
+    pub source_id : Option<Uuid>
 }
 
 #[get("{source_type}/{source_id}")]
 async fn get_data(
     state: web::Data<State>,
-    Path((source_type_str, source_id)): Path<(String,Option<Uuid>)>,
+    Path(source): Path<Source>,
     web::Query(page): web::Query<PaginationParams>,
     web::Query(bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
@@ -120,7 +126,7 @@ async fn get_data(
 )->Result<HttpResponse, ServiceError>{
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
-    let mut query = query_for_source(&state.db, source_type_str, source_id, query_str.q, query_params).await?;
+    let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     query.page(page)
          .bounds(bounds)
          .sort(sort);
@@ -136,14 +142,15 @@ async fn get_data(
 #[get("{source_type}/{source_id}/tiles/{z}/{x}/{y}")]
 async fn get_tile(
     state: web::Data<State>,
-    Path((source_type_str, source_id, tile_id)): Path<(String,Option<Uuid>, TileID)>,
+    Path(source): Path<Source>,
+    Path(tile_id) : Path<TileID>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
 )->Result<HttpResponse, ServiceError>{
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
-    let mut query = query_for_source(&state.db, source_type_str, source_id, query_str.q, query_params).await?;
+    let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
     let result = query.get_tile(&state.data_db, TilerOptions::default(), tile_id).await?;
     Ok(HttpResponse::Ok().body(result.mvt))
@@ -153,14 +160,15 @@ async fn get_tile(
 #[get("{source_type}/{source_id}/feature/{feature_id}")]
 async fn get_feature(
     state: web::Data<State>,
-    Path((source_type_str, source_id, feature_id)): Path<(String, Option<Uuid>, QueryVal)>,
+    Path(source) : Path<Source>,
+    Path(feature_id): Path<QueryVal>,
     web::Query(query_str): web::Query<QueryString>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
 
-    let mut query = query_for_source(&state.db, source_type_str, source_id, query_str.q, query_params).await?;
+    let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let user  = User::from_token(&state.db, &logged_in_user.user);
 
     let feature  = query.get_feature(&state.data_db, &feature_id, Some("ogc_id".into())).await?;
@@ -179,13 +187,14 @@ async fn get_feature(
 #[get("{source_type}/{source_id}/extent")]
 async fn get_extent(
     state: web::Data<State>,
-    Path((source_type_str, source_id, feature_id)): Path<(String, Option<Uuid>, QueryVal)>,
+    Path(source) : Path<Source>,
+    Path(feature_id): Path<QueryVal>,
     web::Query(query_str): web::Query<QueryString>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
 
-    let mut query = query_for_source(&state.db, source_type_str, source_id, query_str.q, query_params).await?;
+    let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let user  = User::from_token(&state.db, &logged_in_user.user);
 
     let extent= query.extent(&state.data_db, "wkb_geometry".into()).await?;
@@ -194,20 +203,28 @@ async fn get_extent(
 }
 
 
-#[get("{source_type}/{source_id}/column/{column_name}/stat")]
+#[get("{source_type}/{source_id}/columns/{column_name}/stats")]
 async fn get_column_stat(
     state: web::Data<State>,
-    Path((source_type_str, source_id, column_name)): Path<(String,Uuid,String)>,
+    Path(source) : Path<Source>,
+    Path(col_name): Path<ColName>,
+    web::Query(stat) : web::Query<ColumnStatRequest>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
-    web::Query(stat_params) : web::Query<StatParams>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
     )->Result<HttpResponse, ServiceError>{
 
+    let stat_params: StatParams = serde_json::from_str(&stat.stat).map_err(|e| {
+        ServiceError::BadRequest(format!(
+            "Stat request was miss-specification \n {} \n {}",
+            stat.stat, e
+        ))
+    })?;
+
     let user  = User::from_token(&state.db, &logged_in_user.user);
-    let mut query = query_for_source(&state.db, source_type_str, Some(source_id), query_str.q, query_params).await?;
+    let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let columns = query.columns(&state.data_db).await?;
-    let column = columns.iter().find(|c| c.name == column_name).ok_or_else(|| ServiceError::InternalServerError(format!("invalid column {}",column_name)))?;
+    let column = columns.iter().find(|c| c.name == col_name.column_name).ok_or_else(|| ServiceError::InternalServerError(format!("invalid column {}",col_name.column_name)))?;
     let stat = query.get_stat_for_column(&state.data_db, &column, &stat_params ).await?;
 
     Ok(HttpResponse::Ok().json(stat)) 
@@ -240,6 +257,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     // cfg.service(get_data_query);
     // cfg.service(get_data_query_csv);
     cfg.service(get_data);
+    cfg.service(get_column);
     cfg.service(get_tile);
     cfg.service(get_columns);
     cfg.service(get_feature);
