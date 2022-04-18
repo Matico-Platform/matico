@@ -8,7 +8,7 @@ use crate::errors::ServiceError;
 use crate::models::{Api, User, Dataset, permissions::*, StatParams};
 
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
-use actix_web::{get, put, web, HttpResponse};
+use actix_web::{get, put, web::{self,resource},  HttpResponse};
 use actix_web_lab::extract::Path;
 
 use derive_more::Display;
@@ -67,7 +67,7 @@ async fn query_for_source(db: &DbPool, source: &Source, query_str: Option<String
     Ok(query)
 }
 
-#[get("{source_type}/{source_id}/columns")]
+// {source_type}/{source_id}/columns
 async fn get_columns(
     state: web::Data<State>,
     Path(source): Path<Source>,
@@ -87,7 +87,7 @@ struct ColName{
     pub column_name: String
 }
 
-#[get("{source_type}/{source_id}/columns/{column_name}")]
+// {source_type}/{source_id}/columns/{column_name}
 async fn get_column(
     state: web::Data<State>,
     Path(source): Path<Source>,
@@ -112,7 +112,7 @@ struct Source{
     pub source_id : Option<Uuid>
 }
 
-#[get("{source_type}/{source_id}")]
+// {source_type}/{source_id}
 async fn get_data(
     state: web::Data<State>,
     Path(source): Path<Source>,
@@ -124,6 +124,8 @@ async fn get_data(
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
 )->Result<HttpResponse, ServiceError>{
+
+    info!("source is {:#?}", source );
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
@@ -139,7 +141,7 @@ async fn get_data(
     Ok(HttpResponse::Ok().content_type(format.mime_type()).body(result_str))
 }
 
-#[get("{source_type}/{source_id}/tiles/{z}/{x}/{y}")]
+// {source_type}/{source_id}/tiles/{z}/{x}/{y}
 async fn get_tile(
     state: web::Data<State>,
     Path(source): Path<Source>,
@@ -184,7 +186,7 @@ async fn get_feature(
     Ok(HttpResponse::Ok().content_type(format.mime_type()).body(result))
 }
 
-#[get("{source_type}/{source_id}/extent")]
+// {source_type}/{source_id}/extent
 async fn get_extent(
     state: web::Data<State>,
     Path(source) : Path<Source>,
@@ -203,7 +205,6 @@ async fn get_extent(
 }
 
 
-#[get("{source_type}/{source_id}/columns/{column_name}/stats")]
 async fn get_column_stat(
     state: web::Data<State>,
     Path(source) : Path<Source>,
@@ -256,13 +257,13 @@ async fn get_column_stat(
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     // cfg.service(get_data_query);
     // cfg.service(get_data_query_csv);
-    cfg.service(get_data);
-    cfg.service(get_column);
-    cfg.service(get_tile);
-    cfg.service(get_columns);
+    cfg.service(resource(["{source_type}/{source_id}/columns/{column_name}","{source_type}/columns/{column_name}"]).to(get_column));
+    cfg.service(resource(["{source_type}/{source_id}/tiles/{z}/{x}/{y}","{source_type}/tiles/{z}/{x}/{y}"]).to(get_tile));
+    cfg.service(resource(["{source_type}/{source_id}/columns","{source_type}/columns"]).to(get_columns));
     cfg.service(get_feature);
-    cfg.service(get_extent);
-    cfg.service(get_column_stat);
+    cfg.service(resource(["{source_type}/{source_id}/extent","{source_type}/extent"]).to(get_extent));
+    cfg.service(resource(["{source_type}/{source_id}/columns/{column_name}/stats", "{source_type}/columns/{column_name}/stats"]).to(get_column_stat));
+    cfg.service(resource(["{source_type}", "{source_type}/{source_id}"]).to(get_data));
     cfg.service(test);
     // cfg.service(get_feature);
     // cfg.service(get_data);
