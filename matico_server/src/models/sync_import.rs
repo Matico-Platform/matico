@@ -6,7 +6,6 @@ use crate::utils::geo_file_utils::load_dataset_to_db;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_derive_enum::DbEnum;
-use log::info;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -185,9 +184,9 @@ impl SyncImport {
                 .and_then(|name| if name.is_empty() { None } else { Some(name) })
                 .unwrap_or("tmp.bin");
 
-            info!("file to download: '{}'", fname);
+            tracing::info!("file to download: '{}'", fname);
             let fname = tmp_dir.join(fname);
-            info!("will be located under: '{:?}'", fname);
+            tracing::info!("will be located under: '{:?}'", fname);
             let file = File::create(fname.clone()).map_err(|_| {
                 ServiceError::InternalServerError("Failed to create file on dist".into())
             })?;
@@ -246,7 +245,7 @@ impl SyncImport {
         self.start_processing(pool)?;
         let dataset = Dataset::find(pool, self.dataset_id)?;
 
-        info!("Starting to download dataset {:?} ", dataset);
+        tracing::info!("Starting to download dataset {:?} ", dataset);
         let (_file, filepath) = Self::download_file(&dataset.sync_url.unwrap()).await?;
         println!("file downloaded {:?} ", filepath);
 

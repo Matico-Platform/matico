@@ -1,7 +1,6 @@
 use crate::errors::ServiceError;
 use actix_web::web;
 use diesel_as_jsonb::AsJsonb;
-use log::info;
 use serde::{Deserialize, Serialize};
 use std::process::Command;
 use uuid::Uuid;
@@ -182,7 +181,7 @@ pub async fn load_geojson_dataset_to_db(
     .await
     .map_err(|_| ServiceError::UploadFailed)?;
 
-    info!("Uploaded geo file {:?} ", output);
+    tracing::info!("Uploaded geo file {:?} ", output);
     Ok(())
 }
 

@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use geo_types::Geometry;
 use serde::{Serialize, Deserialize, Serializer};
-use log::info;
 use wkb::geom_to_wkb;
 
 use crate::{utils::Format, errors::ServiceError};
@@ -35,7 +34,7 @@ impl QueryResult{
             if !header_written{
                 let header: Vec<&String> = row.keys().into_iter().collect();
                 header_length=header.len();
-                info!("Header length is {}", header_length);
+                tracing::info!("Header length is {}", header_length);
                 wtr.serialize(header).unwrap();
                 header_written=true;
             }

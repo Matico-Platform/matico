@@ -1,17 +1,11 @@
-use crate::db::{DataDbPool, DbPool, PostgisDataSource};
+use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::columns::Column;
-use crate::models::datasets::Extent;
 use crate::schema::queries::{self, dsl};
-use crate::utils::{Format, PaginationParams, SortParams};
+use crate::utils::PaginationParams;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
-use log::info;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use sqlx::postgres::PgRow;
-use sqlx::Row;
 use std::collections::HashMap;
 use std::convert::From;
 use std::fmt::{Display, Formatter};
@@ -177,7 +171,7 @@ impl Api {
 
     pub fn create_or_update(&self, pool: &DbPool) -> Result<Self, ServiceError> {
         let conn = pool.get().unwrap();
-        info!("Attempting to create api");
+        tracing::info!("Attempting to create api");
 
         diesel::insert_into(dsl::queries)
             .values(self)
@@ -233,7 +227,7 @@ impl Api {
                     let input = params.get(param.name()).ok_or_else(|| {
                         ServiceError::APIFailed(format!("missing param {}", param.name()))
                     })?;
-                    info!("parsing parameter for {}, {}", param.name(), input);
+                    tracing::info!("parsing parameter for {}, {}", param.name(), input);
                     let input_val_str = input.as_str().ok_or_else(|| {
                         ServiceError::APIFailed(format!(
                             "Failed to parse value for {},{:?} ",
@@ -246,7 +240,7 @@ impl Api {
                         .map_err(|_| ServiceError::APIFailed("Failed to parse parameter".into()))?;
 
                     api = param.modify_sql(api, ValueType::Numeric(input_val))?;
-                    info!("current api is {}", api);
+                    tracing::info!("current api is {}", api);
                 }
             }
         }

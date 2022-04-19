@@ -2057,7 +2057,6 @@ dependencies = [
  "geojson",
  "geozero",
  "jsonwebtoken",
- "log",
  "matico_spec",
  "r2d2",
  "rand 0.7.3",
@@ -2069,6 +2068,8 @@ dependencies = [
  "slugify",
  "sqlx",
  "tokio 1.17.0",
+ "tracing",
+ "tracing-actix-web",
  "ts-rs",
  "uuid 0.6.5",
  "validator",
@@ -3824,6 +3825,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-actix-web"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "99bcebac55fba44eadf75a424ee403e756f9165596a613d125876388e5fb4c34"
+dependencies = [
+ "actix-web",
+ "pin-project",
+ "tracing",
+ "tracing-futures",
+ "uuid 0.8.2",
+]
+
+[[package]]
 name = "tracing-attributes"
 version = "0.1.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4008,6 +4022,9 @@ name = "uuid"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
+dependencies = [
+ "getrandom 0.2.6",
+]
 
 [[package]]
 name = "validator"

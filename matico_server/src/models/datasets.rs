@@ -1,7 +1,6 @@
 use crate::models::User;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use log::info;
 use serde::{Deserialize, Serialize};
 use sqlx::{Row, FromRow};
 use uuid::Uuid;
@@ -156,7 +155,7 @@ impl Dataset {
 
     pub fn create_or_update(&self, pool: &DbPool) -> Result<Dataset, ServiceError> {
         let conn = pool.get().unwrap();
-        info!("attempting to save {:?}", self);
+        tracing::info!("attempting to save {:?}", self);
 
         diesel::insert_into(datasets)
             .values(self)

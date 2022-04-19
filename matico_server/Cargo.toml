@@ -46,7 +46,8 @@ csv = "1.1.6"
 uuid = { version = "0.6", features = ["serde", "v4"] }
 actix-cors = "^0.6.0"
 env_logger = "0.8.2"
-log ={version= "0.4.16"}
+tracing-actix-web = "0.5"
+tracing = { version = "0.1", features = ["log"] }
 actix-files = "0.6.0"
 dotenv = "0.15.0"
 diesel_as_jsonb = "0.1.2"

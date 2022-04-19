@@ -12,7 +12,6 @@ use actix_web::{get, put, web::{self,resource},  HttpResponse};
 use actix_web_lab::extract::Path;
 
 use derive_more::Display;
-use log::info;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -42,11 +41,12 @@ async fn test()->HttpResponse{
     HttpResponse::Ok().body(format!("{}", SourceType::Dataset))
 }
 
+// TODO turn this in to an extractor, might make the route functions more readable
 async fn query_for_source(db: &DbPool, source: &Source, query_str: Option<String>, query_params: HashMap<String, serde_json::Value> ) -> Result<PostgisQueryBuilder, ServiceError>{
 
     let mut query = PostgisQueryBuilder::new();
 
-    info!("Getting data for {:#?} {:#?}", source, query_str);
+    tracing::info!("Getting data for {:#?} {:#?}", source, query_str);
     // TODO implement resource check
 
     match (&source.source_type, source.source_id, query_str){
@@ -125,7 +125,7 @@ async fn get_data(
     logged_in_user: AuthService,
 )->Result<HttpResponse, ServiceError>{
 
-    info!("source is {:#?}", source );
+    tracing::info!("source is {:#?}", source );
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;

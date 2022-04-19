@@ -3,7 +3,7 @@ use crate::db::DataSource;
 use crate::errors::ServiceError;
 use crate::models::datasets::Extent;
 use crate::models::{Api, StatParams,  StatResults, StatRunner, Column as DatasetColumn, Dataset ,User, stats::*};
-use crate::utils::{Format, PaginationParams, QueryMetadata, SortParams, MVTTile};
+use crate::utils::{ PaginationParams, QueryMetadata, SortParams, MVTTile};
 use async_trait::async_trait;
 use cached::proc_macro::cached;
 use serde::{Deserialize, Serialize};
@@ -11,7 +11,6 @@ use sqlx::postgres::{PgRow, PgTypeInfo};
 use sqlx::{Column, Row,TypeInfo};
 use std::collections::HashMap;
 use std::convert::From;
-use log::{info, warn};
 use geozero::wkb;
 use super::QueryBuilder;
 use super::QueryResult;
@@ -80,7 +79,7 @@ fn row_to_hash_map(row: PgRow)->HashMap<String,Option<QueryVal>>{
                        }
                        , 
                         _=>{
-                            warn!("Unsupported postgis type {:#?}", type_info);
+                            tracing::warn!("Unsupported postgis type {:#?}", type_info);
                             Some(QueryVal::Unsupported)
                         } 
                     };
@@ -201,7 +200,7 @@ impl QueryBuilder<DataDbPool> for  PostgisQueryBuilder{
             .fetch_one(db)
             .await
             .map_err(|e| {
-                warn!("Failed to get metadata for query, {}", e);
+                tracing::warn!("Failed to get metadata for query, {}", e);
                 ServiceError::QueryFailed(format!("SQL Error: {} Query was  {}", e, base_query))
             })?;
 
@@ -319,7 +318,7 @@ async fn local_get_query_column_details(
         .fetch_one(pool)
         .await
         .map_err(|e| {
-            warn!("SQL Query failed: {} {}", e, query);
+            tracing::warn!("SQL Query failed: {} {}", e, query);
             ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query))
         })?;
 
@@ -349,7 +348,7 @@ pub async fn cached_tile_query(
     let time_start = chrono::Utc::now();
 
     let columns = local_get_query_column_details(pool, query).await?;
-    info!(target:"mvt_tile", "Column Query : {}", (chrono::Utc::now() - time_start).num_seconds() );
+    tracing::info!(target:"mvt_tile", "Column Query : {}", (chrono::Utc::now() - time_start).num_seconds() );
 
     let column_names: Vec<String> = columns
         .iter()
@@ -379,12 +378,12 @@ pub async fn cached_tile_query(
         .fetch_one(pool)
         .await
         .map_err(|e| {
-            warn!("SQL Query failed: {} {}", e, formatted_query);
+            tracing::warn!("SQL Query failed: {} {}", e, formatted_query);
             ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, formatted_query))
         })?;
 
-    info!(target: "mvt_tile", "Tile: {}", (chrono::Utc::now() - time_start_tile).num_seconds() );
-    info!(target: "mvt_tile", "Total {}", (chrono::Utc::now() - time_start).num_seconds());
+    tracing::info!(target: "mvt_tile", "Tile: {}", (chrono::Utc::now() - time_start_tile).num_seconds() );
+    tracing::info!(target: "mvt_tile", "Total {}", (chrono::Utc::now() - time_start).num_seconds());
     Ok(MVTTile { mvt: result })
 }
 
@@ -424,7 +423,7 @@ impl DataSource<DataDbPool> for PostgisDataSource {
             .execute(pool)
             .await
             .map_err(|e| {
-                warn!("Failed to create user in database {:#?}", e);
+                tracing::warn!("Failed to create user in database {:#?}", e);
                 ServiceError::InternalServerError("Failed to create user on database".into())
             })?;
 
@@ -466,7 +465,7 @@ impl PostgisStatRunner{
             .await
             .map_err(|e| ServiceError::InternalServerError(format!("Failed to get quantile result {:#?}",e)))?;
 
-        info!("JSON RESPONSE {:?}", results);
+        tracing::info!("JSON RESPONSE {:?}", results);
 
         Ok(StatResults::Quantiles(QuantileResults(results)))
     }
