@@ -7,7 +7,7 @@ export const useDatasets= ()=>{
 
 export const useDataset= (id:string)=>{
 
-  const {data,error,mutate} = useSWRAPI(`/datasets/${id}`, {refreshInterval:1000}) 
+  const {data,error,mutate} = useSWRAPI(`/datasets/${id}`, {refreshInterval:0}) 
     
   const attemptUpdateDataset= async (update: any) => {
     mutate({ ...data, ...update});

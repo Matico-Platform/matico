@@ -18,8 +18,6 @@ export const useTableData = (
 ) => {
   let baseUrl = urlForSource(source);
 
-  console.log("URL is ", source, baseUrl)
-
   const { data, error, mutate } = useSWRAPI( source ?  baseUrl: null, {
     params: { ...source?.parameters, ...page, ...sort, include_metadata:true, format:'json' },
     refreshInterval: 0,
