@@ -7,7 +7,7 @@ export const useDatasetData = (
 ) => {
   const offset = page ? page * perPage : 0;
   return useSWRAPI(
-    `/datasets/${id}/data?limit=${perPage}&offset=${offset}&includeMetadata=true`, 
+    `/data/datasets/${id}?limit=${perPage}&offset=${offset}&includeMetadata=true`, 
     { refreshInterval: 10000 }
   );
 };

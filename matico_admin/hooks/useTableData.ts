@@ -18,23 +18,8 @@ export const useTableData = (
 ) => {
   let baseUrl = urlForSource(source);
 
-  switch (source?.type) {
-    case SourceType.Dataset:
-      baseUrl = `${baseUrl}/data`;
-      break;
-    case SourceType.API:
-      baseUrl = `${baseUrl}/run`;
-      break;
-    case SourceType.Query:
-      baseUrl = baseUrl
-      break
-    default:
-      baseUrl = null;
-  }
-  console.log("URL is ", source, baseUrl)
-
   const { data, error, mutate } = useSWRAPI( source ?  baseUrl: null, {
-    params: { ...source?.parameters, ...page, ...sort, include_metadata:true },
+    params: { ...source?.parameters, ...page, ...sort, include_metadata:true, format:'json' },
     refreshInterval: 0,
   });
 

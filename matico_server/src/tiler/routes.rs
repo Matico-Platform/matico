@@ -1,6 +1,7 @@
 use crate::app_state::State;
 use crate::auth::AuthService;
-use crate::db::{DataSource, MVTTile, PostgisDataSource, TileID, TilerOptions};
+use crate::utils::MVTTile;
+use crate::db::{DataSource, PostgisDataSource, TileID, TilerOptions};
 use crate::errors::ServiceError;
 use crate::models::{Api, Dataset,User};
 use actix_web::{get, web, HttpResponse};

@@ -30,17 +30,17 @@ export const tileUrlForSource = (source: Source | undefined) => {
   const baseURL = process.env.NEXT_PUBLIC_SERVER_URL ?? "";
   switch (source.type) {
     case SourceType.Dataset:
-      return `${baseURL}/tiler/dataset/${source.id}/{z}/{x}/{y}`;
+      return `${baseURL}/data/dataset/${source.id}/tiles/{z}/{x}/{y}`;
     case SourceType.API:
-      return `${baseURL}/tiler/api/${
+      return `${baseURL}/data/api/${
         source.id
-      }/{z}/{x}/{y}?${Object.keys(source.parameters!)
+      }/tiles/{z}/{x}/{y}?${Object.keys(source.parameters!)
         .map((key: string) =>
           `${encodeURIComponent(key)}=${encodeURIComponent(source.parameters![key])}`
         )
         .join("&")}`;
     case SourceType.Query:
-      return `${baseURL}/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
+      return `${baseURL}/data/query/tiles/{z}/{x}/{y}?q=${encodeURIComponent(
         source.query!
       )}`;
   }
@@ -50,11 +50,11 @@ export const urlForSource = (source: Source | null, extension: String ="") => {
   if(!source) return ""
   switch (source?.type) {
     case SourceType.Dataset:
-      return `/datasets/${source?.id}${extension}`;
+      return `/data/dataset/${source?.id}${extension}`;
     case SourceType.API:
-      return `/apis/${source?.id}${extension}`;
+      return `/data/api/${source?.id}${extension}`;
     case SourceType.Query:
-      return `/apis/run${extension}?q=${source.query}`;
+      return `/data/query${extension}?q=${source.query}`;
     default:
       return null;
   }

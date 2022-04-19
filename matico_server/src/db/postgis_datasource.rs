@@ -1,25 +1,21 @@
-use crate::db::formatters::*;
 use crate::db::DataDbPool;
 use crate::db::DataSource;
 use crate::errors::ServiceError;
-use crate::models::Api;
-use crate::models::Column as DatasetColumn;
-use crate::models::Dataset;
-use crate::models::User;
-use crate::utils::{Format, PaginationParams, QueryMetadata, SortParams};
+use crate::models::datasets::Extent;
+use crate::models::{Api, StatParams,  StatResults, StatRunner, Column as DatasetColumn, Dataset ,User, stats::*};
+use crate::utils::{Format, PaginationParams, QueryMetadata, SortParams, MVTTile};
 use async_trait::async_trait;
 use cached::proc_macro::cached;
-use serde::Serializer;
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgRow;
+use sqlx::postgres::{PgRow, PgTypeInfo};
 use sqlx::{Column, Row,TypeInfo};
-use sqlx::postgres::PgTypeInfo;
 use std::collections::HashMap;
 use std::convert::From;
-use geo_types::Geometry;
+use log::{info, warn};
 use geozero::wkb;
-use ::wkb::geom_to_wkb;
-use log::{info,trace, warn };
+use super::QueryBuilder;
+use super::QueryResult;
+use super::QueryVal;
 
 #[derive(Serialize, Deserialize)]
 pub struct BBox {
@@ -34,12 +30,13 @@ pub struct Bounds {
     bounds: Option<BBox>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct TilerOptions {
     geom_column: Option<String>,
     tollerance: Option<u64>,
     crs: Option<String>,
 }
+
 
 pub struct Filter{}
 
@@ -48,6 +45,48 @@ pub struct TileID {
     x: f64,
     y: f64,
     z: f64,
+}
+
+
+fn row_to_hash_map(row: PgRow)->HashMap<String,Option<QueryVal>>{
+                let mut hash : HashMap<String, Option<QueryVal>> = HashMap::new();
+                for col in row.columns(){
+                    let type_info : &PgTypeInfo = col.type_info();
+                    // info!("Column type is {:#?} {:#?}", type_info, type_info.name() );
+                    let val: Option<QueryVal> = match type_info.name(){
+                       "INT8" | "INT2" | "INT4"   => { 
+                           let val: Option<i32> = row.get(col.name());
+                            val.map(|v| QueryVal::Int(v))
+                       }, 
+                       "FLOAT4" | "FLOAT8"  =>{
+                            let val: Option<f64> = row.get(col.name());
+                            val.map(|v| QueryVal::Float(v))
+                       },
+                       "NUMERIC"=>{
+                            let val : Option<sqlx::types::BigDecimal> = row.get(col.name());
+                            val.map(|v| QueryVal::Numeric(v))
+                       },
+                       "TEXT" | "VARCHAR" =>{
+                            let val : Option<String> = row.get(col.name());
+                            val.map(|v| QueryVal::Text(v))
+                       },
+                       "geometry"=>{
+                           let val: Option<wkb::Decode<geo_types::Geometry<f64>>> = row.get(col.name());
+                           val.map(|v| QueryVal::Geometry(v.geometry.unwrap()))
+                       }
+                       "BOOL"=>{
+                            let val : Option<bool>= row.get(col.name());
+                            val.map(|v| QueryVal::Bool(v))
+                       }
+                       , 
+                        _=>{
+                            warn!("Unsupported postgis type {:#?}", type_info);
+                            Some(QueryVal::Unsupported)
+                        } 
+                    };
+                    hash.insert(col.name().to_string(), val);
+                };
+                hash
 }
 
 
@@ -66,53 +105,56 @@ pub struct PostgisQueryBuilder{
 }
 
 impl PostgisQueryBuilder{
-
     pub fn new()->Self{
         Default::default()
     }
+}
+
+#[async_trait]
+impl QueryBuilder<DataDbPool> for  PostgisQueryBuilder{
     
-    pub fn dataset(&mut self, dataset:Dataset)->&mut Self{
+    fn dataset(&mut self, dataset:Dataset)->&mut Self{
         self.dataset = Some(dataset);
         self
     }
 
-    pub fn api(&mut self, api:Api, params: HashMap<String, serde_json::Value>)->&mut Self{
+    fn api(&mut self, api:Api, params: HashMap<String, serde_json::Value>)->&mut Self{
         self.api = Some(api);
         self.api_params= Some(params);
         self
     }
 
-    pub fn query(&mut self, query:String)->&mut Self{
+    fn query(&mut self, query:String)->&mut Self{
         self.query = Some(query);
         self
     }
 
-    pub fn filters(&mut self,filters:Vec<Filter>)->&mut Self{
+    fn filters(&mut self,filters:Vec<Filter>)->&mut Self{
         self.filters = Some(filters);
         self
     }
 
-    pub fn user(&mut self, user:User)->&mut Self{
+     fn user(&mut self, user:User)->&mut Self{
         self.user = Some(user);
         self
     }
 
-    pub fn bounds(&mut self, bounds: Bounds)->&mut Self{
+     fn bounds(&mut self, bounds: Bounds)->&mut Self{
         self.bounds =Some(bounds);
         self
     }
 
-    pub fn page(&mut self, page:PaginationParams) ->&mut Self{
+     fn page(&mut self, page:PaginationParams) ->&mut Self{
         self.page = Some(page);
         self
     }
 
-    pub fn sort(&mut self, sort:SortParams)->&mut Self{
+     fn sort(&mut self, sort:SortParams)->&mut Self{
         self.sort = Some(sort);
         self
     }
 
-    pub fn tile(&mut self, tile:TileID)->&mut Self{
+     fn tile(&mut self, tile:TileID)->&mut Self{
         self.tile = Some(tile);
         self
     }
@@ -123,8 +165,8 @@ impl PostgisQueryBuilder{
             (None, Some(dataset), None,None)=> Ok(format!("select * from {}", dataset.table_name)),
             (None , None, Some(api),Some(params)) => api.construct_query(&params),
             (None , None, Some(api),None) => Err(ServiceError::InternalServerError("An API was set without specifying parameters".into())),
-            (None, None, None, None) => Err(ServiceError::InternalServerError("Query builder requires at least one of Dataset, API or quert ".into())),
-            _ => Err(ServiceError::InternalServerError("Mutilple sources set for query builder".into()))
+            (None, None, None, None) => Err(ServiceError::InternalServerError("Query builder requires at least one of Dataset, API or query ".into())),
+            _ => Err(ServiceError::InternalServerError("Multiple sources set for query builder".into()))
         }
     }
 
@@ -150,12 +192,77 @@ impl PostgisQueryBuilder{
         Ok(base_query)
     }
     
-    async fn columns(&self, db:&DataDbPool)->Result< Vec<DatasetColumn> , ServiceError>{
+     async fn metadata(&self, db:&DataDbPool)->Result<QueryMetadata, ServiceError>{
+        let base_query = self.build_query()?;
+        let result = sqlx::query(&format!("SElECT count(*) as total from ({}) a ", base_query))
+            .map(|row: PgRow| QueryMetadata {
+                total: row.get("total"),
+            })
+            .fetch_one(db)
+            .await
+            .map_err(|e| {
+                warn!("Failed to get metadata for query, {}", e);
+                ServiceError::QueryFailed(format!("SQL Error: {} Query was  {}", e, base_query))
+            })?;
+
+        Ok(result)
+     }
+
+     async fn extent(&self, db:&DataDbPool, geom_col: &str) -> Result<Extent,ServiceError>{
+         let base_query = self.build_query()?;
+
+       let query = format!(
+           "Select ARRAY [
+                           ST_XMIN(ST_EXTENT({geom_col})),
+                           ST_YMIN(ST_EXTENT({geom_col})),
+                           ST_XMAX(ST_EXTENT({geom_col})),
+                           ST_YMAX(ST_EXTENT({geom_col}))
+                           ]
+                           as extent from ({base_query}) as a",
+           geom_col = geom_col,
+           base_query= base_query 
+       );
+
+       let extent: Extent= sqlx::query_as(&query)
+           .fetch_one(db)
+           .await
+           .map_err(|e| ServiceError::APIFailed(format!("Failed to get bounding box {}", e)))?;
+       Ok(extent)
+     }
+
+     async fn columns(&self, db:&DataDbPool)->Result< Vec<DatasetColumn> , ServiceError>{
         let query = self.build_query()?;
         local_get_query_column_details(&db, &query).await
     }
 
-    pub async fn get_tile(&self, db: &DataDbPool,
+     async fn get_feature(&self,db: &DataDbPool, feature_id: &QueryVal , id_col: Option<&str>)->Result<HashMap<String,Option<QueryVal>>, ServiceError>{
+        let base_query = self.build_query()?;
+
+        // TODO prob a better way to do this
+        let id_col = if let Some(id)= id_col{
+            Some(String::from(id))
+        }
+        else{
+            if let Some(d) = &self.dataset{
+                Some(d.id_col.clone())
+            }
+            else{
+                None
+            }
+        };
+
+        let id_col = id_col.ok_or_else(||ServiceError::QueryFailed("For feature requests on queries or apis, please include an id col".into()))?;
+
+        let query = format!("select * from ({query}) where '{column}' = {id:?}", query=base_query, column=id_col, id=feature_id);
+        let result  = sqlx::query(&query)
+           .map(row_to_hash_map)
+           .fetch_one(db)
+           .await
+           .map_err(|e| ServiceError::QueryFailed(format!("Failed to get feature")))?;
+        Ok(result)
+    }
+
+     async fn get_tile(&self, db: &DataDbPool,
         tiler_options: TilerOptions,
         tile_id: TileID
         )->Result<MVTTile,ServiceError>{
@@ -163,189 +270,35 @@ impl PostgisQueryBuilder{
         cached_tile_query(db, &query, tiler_options, tile_id).await 
     }
 
-    pub async fn get_result(&self, db: &DataDbPool)-> Result<QueryResult, ServiceError>{
+     // TODO Try to figure out how to make this work so we can stream results to the frontend 
+     //
+     // fn get_result_stream(&self, db: &DataDbPool)->BoxStream<'_, Result<HashMap<String,QueryVal>, sqlx::Error>>{
+     //    let query = self.build_query().unwrap();
+     //    let stream = sqlx::query(&query)
+     //        .map(row_to_hash_map)
+     //        .fetch(db);
+
+     //    stream
+     // }
+
+     async fn get_result(&self, db: &DataDbPool)-> Result<QueryResult, ServiceError>{
         let query = self.build_query()?;
         
         let result = sqlx::query(&query)
-            .map(|row: PgRow| {
-                let mut hash : HashMap<String, QueryVal> = HashMap::new();
-                for col in row.columns(){
-                    let type_info : &PgTypeInfo = col.type_info();
-                    // info!("Column type is {:#?} {:#?}", type_info, type_info.name() );
-                    let val: QueryVal = match type_info.name(){
-                       "INT8" | "INT2" | "INT4"   => { 
-                           let val: i32 = row.get(col.name());
-                            QueryVal::Int(val)
-                       }, 
-                       "FLOAT4" | "FLOAT8"  =>{
-                            let val: f64 = row.get(col.name());
-                            QueryVal::Float(val)
-                       },
-                       "NUMERIC"=>{
-                            let val : sqlx::types::BigDecimal = row.get(col.name());
-                            QueryVal::Numeric(val)
-                       },
-                       "TEXT" | "VARCHAR" =>{
-                            let val :String = row.get(col.name());
-                            QueryVal::Text(val)
-                       },
-                       "geometry"=>{
-                           let val: wkb::Decode<geo_types::Geometry<f64>> = row.get(col.name());
-                           QueryVal::Geometry(val.geometry.unwrap())
-                       }
-                       "BOOL"=>{
-                            let val : bool = row.get(col.name());
-                            QueryVal::Bool(val)
-                       }
-                       , 
-                        _=>{
-                            warn!("Unsuported postgis type {:#?}", type_info);
-                            QueryVal::Unsupported
-                        } 
-                    };
-                    hash.insert(col.name().to_string(), val);
-                };
-                hash
-            })
+            .map( row_to_hash_map)
             .fetch_all(db)
             .await
             .map_err(|e| ServiceError::QueryFailed(format!("Query Failed : {}", e)))?;
 
         Ok(QueryResult{result, execution_type:0})
     }
-}
 
-#[derive(Serialize)]
-pub struct QueryResult{
-    pub result: Vec<HashMap<String,QueryVal>>,
-    pub execution_type: u32
-}
-
-impl QueryResult{
-
-/// Return the Result as a CSV string 
-/// This can probably be refactored to work as a stream
-/// also to use geozero more for the conversions
-    pub fn as_csv(&self)->Result<String, ServiceError>{
-        let mut wtr = csv::Writer::from_writer(vec![]);
-        let mut header_written = false;
-        let mut header_length = 0;
-        for row in self.result.iter(){
-
-            if !header_written{
-                let header: Vec<&String> = row.keys().into_iter().collect();
-                header_length=header.len();
-                info!("Header length is {}", header_length);
-                wtr.serialize(header).unwrap();
-                header_written=true;
-            }
-            
-            let row_vals : Vec<QueryVal> = row.values().into_iter().map(|val|
-                if let QueryVal::Geometry(geom) = val{
-                    QueryVal::Text(base64::encode(geom_to_wkb(geom).unwrap()))
-                }
-                else{
-                    val.clone()
-                }
-            ).collect();
-
-            wtr.serialize(row_vals)
-                .map_err(|e| ServiceError::InternalServerError(format!("Result to csv failed {}",e)))?;
-
-        }
-        let data = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
-        Ok(data)
-
+    async fn get_stat_for_column(&self,db:&DataDbPool, column:&DatasetColumn, stat_params: &StatParams)->Result<StatResults, ServiceError>{
+        PostgisStatRunner::calculate_stat(db, column, stat_params, self).await
     }
-
-    pub fn as_geojson(&self, geom_col : Option<&String>)->Result<String,ServiceError>{
-        let mut features : Vec<geojson::Feature> = vec![];
-        for mut row in self.result.iter().cloned(){
-            let geom_key = if geom_col.is_some(){
-                geom_col
-            }
-            else{
-               let key =  row.iter().find(
-                   |(_key,val)| {
-                       if let QueryVal::Geometry(_) = val{
-                           true 
-                        }
-                       else{
-                           false
-                       }
-                   });
-               key.map(|v| v.0)
-            };
-
-            let geom_key = geom_key.ok_or_else(|| ServiceError::InternalServerError("Row had no geometry".into()))?;
-    
-            let geometry: Geometry<f64> = if let QueryVal::Geometry(geom) = row.clone().remove(geom_key).unwrap(){
-                Ok(geom)
-            }
-            else{
-                Err(ServiceError::InternalServerError("Somehow the selected geom column wasnt a geom".into()))
-            }?;
-
-            let properties: serde_json::map::Map<String,serde_json::value::Value> = row.drain().map(|(key,val)| (key,serde_json::to_value(val).unwrap())).collect();
-             
-            let feature = geojson::Feature{
-                bbox:None,
-                geometry: Some(geojson::Geometry::from(&geometry)),
-                id:None,
-                foreign_members:None,
-                properties: Some(properties) 
-            };
-            features.push(feature);
-        };
-        let feature_collection = geojson::FeatureCollection{
-            bbox:None,
-            features,
-            foreign_members:None 
-        };
-        Ok(feature_collection.to_string())
-    }
-
 }
 
 
-#[derive(Serialize, Clone,Debug)]
-#[serde(untagged)]
-pub enum QueryVal{
-    Text(String),
-    Int(i32),
-    Float(f64),
-    Numeric(sqlx::types::BigDecimal),
-    Bool(bool),
-    #[serde(serialize_with = "serialize_geom")]
-    Geometry(geo_types::Geometry<f64>),
-    Unsupported
-}
-
-
-/// This simply passes the serializer to each variant of the geometry type 
-/// Not sure why this isn't implemented in the library
-fn serialize_geom <S> (geom:&geo_types::Geometry<f64>, s:S) -> Result<S::Ok, S::Error>
-where S:Serializer
-{
-    match geom{
-        Geometry::Point(geom)=> geom.serialize(s) ,
-        Geometry::Line(geom) => geom.serialize(s)   ,
-        Geometry::LineString(geom)=>  geom.serialize(s),
-        Geometry::Polygon(geom)=>geom.serialize(s),
-        Geometry::MultiPoint(geom)=>geom.serialize(s),
-        Geometry::MultiLineString(geom)=>geom.serialize(s),
-        Geometry::MultiPolygon(geom)=>geom.serialize(s),
-        Geometry::GeometryCollection(_)=>s.serialize_str("GeomCollection"),
-        Geometry::Rect(geom)=>geom.serialize(s),
-        Geometry::Triangle(geom)=>geom.serialize(s),
-    } 
-}
-
-
-#[derive(PartialEq, Debug, Clone)]
-pub struct MVTTile {
-    pub mvt: Vec<u8>,
-}
 
 async fn local_get_query_column_details(
     pool: &DataDbPool,
@@ -359,7 +312,6 @@ async fn local_get_query_column_details(
                 .map(|col| DatasetColumn {
                     name: col.name().to_string(),
                     col_type: col.type_info().name().into(),
-                    source_query: query.into(),
                 })
                 .collect();
             columns
@@ -439,47 +391,6 @@ pub async fn cached_tile_query(
 pub struct PostgisDataSource;
 
 impl PostgisDataSource {
-    pub async fn get_query_column_details(
-        pool: &DataDbPool,
-        query: &str,
-    ) -> Result<Vec<DatasetColumn>, ServiceError> {
-        local_get_query_column_details(pool, query).await
-    }
-
-    pub fn user_scope_statement(user: &Option<User>)->String{
-        //# Turning this off for now
-        return "".into();
-        if let Some(user) = user{
-            format!("SET ROLE {};", user.username) 
-        }
-        else{
-            String::from("USE ROLE global_public;")
-        }
-    } 
-
-     pub fn paginate_query(query: &str, page: Option<PaginationParams>) -> String {
-        let page_str = match page {
-            Some(page) => page.to_string(),
-            None => String::from(""),
-        };
-        format!(
-            "select * from ({sub_query}) as a {page}",
-            sub_query = query,
-            page = page_str
-        )
-    }
-    
-    pub fn ordered_query(query: &str, sort: Option<SortParams>) -> String {
-        let sort_str = match sort{
-            Some(sort_options) => sort_options.to_string(),
-            None => String::from(""),
-        };
-        format!(
-            "select * from ({sub_query}) as ordered {order}",
-            sub_query = query,
-            order = sort_str 
-        )
-    }
 
     pub async fn create_public_user(pool: &DataDbPool)->Result<(),ServiceError>{
        let user_exists  =sqlx::query("SELECT 1 FROM pg_user WHERE usename= 'global_public'")
@@ -496,74 +407,17 @@ impl PostgisDataSource {
        Ok(())
     }
 
-    pub async fn setup(
+}
+
+#[async_trait]
+impl DataSource<DataDbPool> for PostgisDataSource {
+
+    async fn setup(
         pool: &DataDbPool,
     ) ->Result<(),ServiceError>{
         Self::create_public_user(&pool).await?; 
         Ok(())
     }
-}
-
-#[async_trait]
-impl DataSource for PostgisDataSource {
-    async fn run_metadata_query(
-        pool: &DataDbPool,
-        query: &str,
-        user: &Option<User>,
-    ) -> Result<QueryMetadata, ServiceError> {
-
-        let scope_statement = Self::user_scope_statement(user);
-        
-        let result = sqlx::query(&format!("{} SElECT count(*) as total from ({}) a ", scope_statement, query))
-            .map(|row: PgRow| QueryMetadata {
-                total: row.get("total"),
-            })
-            .fetch_one(pool)
-            .await
-            .map_err(|e| {
-                warn!("Failed to get metadata for query, {}", e);
-                ServiceError::QueryFailed(format!("SQL Error: {} Query was  {}", e, query))
-            })?;
-
-        Ok(result)
-    }
-
-    async fn run_query(
-        pool: &DataDbPool,
-        query: &str,
-        user: &Option<User>,
-        page: Option<PaginationParams>,
-        sort: Option<SortParams>,
-        format: Format,
-    ) -> Result<serde_json::Value, ServiceError> {
-        let ordered_query = Self::ordered_query(query, sort);
-        let paged_query = Self::paginate_query(&ordered_query, page);
-        let scope_statement = Self::user_scope_statement(user);
-
-        let formatted_query = match format {
-            Format::Csv => Ok(csv_format(&paged_query)),
-            Format::Geojson => Ok(geo_json_format(&paged_query)),
-            Format::Json => Ok(json_format(&paged_query)),
-        }?;
-
-        let formatted_query = format!("{} {}", scope_statement, formatted_query);
-
-        println!("running query {}", formatted_query);
-
-        let result: String = sqlx::query(&formatted_query)
-            .map(|row: PgRow| row.get("res"))
-            .fetch_one(pool)
-            .await
-            .map_err(|e| {
-                warn!("SQL Query failed: {} {}", e, formatted_query);
-                ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, formatted_query))
-            })?;
-
-        let json: serde_json::Value = serde_json::from_str(&result)
-            .map_err(|_| ServiceError::InternalServerError("failed to parse json".into()))?;
-        Ok(json)
-    }
-
     async fn setup_user(pool: &DataDbPool, user: &User) -> Result<(), ServiceError> {
         sqlx::query("CREATE USER $1 ")
             .bind(user.username.clone())
@@ -577,13 +431,159 @@ impl DataSource for PostgisDataSource {
         Ok(())
     }
 
-    async fn run_tile_query(
-        pool: &DataDbPool,
-        query: &str,
-        user: &Option<User>,
-        tiler_options: TilerOptions,
-        tile_id: TileID,
-    ) -> Result<MVTTile, ServiceError> {
-        cached_tile_query(pool, query, tiler_options, tile_id).await
+}
+
+pub struct PostgisStatRunner;
+
+impl PostgisStatRunner{
+    async fn calc_quantiles(
+        db: &DataDbPool,
+        column: &DatasetColumn,
+        params: &QuantileParams,
+        query: &PostgisQueryBuilder
+    ) -> Result<StatResults, ServiceError> {
+        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
+        let base_query = query.build_query()?;
+
+        let query =format!(
+                "
+                SELECT
+                    ntile::INT as quantile,
+                    CAST(min({column}) AS FLOAT) AS bin_start,
+                    CAST(max({column}) AS FLOAT) AS bin_end
+                    FROM (
+                        SELECT {column}, ntile({bins}) OVER (ORDER BY {column}) AS ntile FROM ({source_query}) as y ) x
+                    GROUP BY ntile 
+                    ORDER BY ntile
+                ",
+                column =column.name,
+                source_query = base_query,
+                bins = params.no_bins
+            );
+
+        let results: Vec<QuantileEntry> = sqlx::query_as::<_,QuantileEntry>(&query)
+            .fetch_all(db)
+            .await
+            .map_err(|e| ServiceError::InternalServerError(format!("Failed to get quantile result {:#?}",e)))?;
+
+        info!("JSON RESPONSE {:?}", results);
+
+        Ok(StatResults::Quantiles(QuantileResults(results)))
+    }
+
+    async fn calc_histogram(
+        db: &DataDbPool,
+        column: &DatasetColumn,
+        params: &HistogramParams,
+        query: &PostgisQueryBuilder
+    ) -> Result<StatResults, ServiceError> {
+        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
+        let base_query = query.build_query()?;
+
+        let query = match &params.bin_edges {
+            Some(edges) => format!("We have not yet implemented custom bin edges {:?}", edges),
+            None => format!(
+                "
+                select  bin_no,
+                        bin_no *(max-min)/{bin_no} as bin_start, 
+                        (bin_no +1 ) * (max-min)/{bin_no} as bin_end,
+                        (bin_no +0.5 ) * (max-min)/{bin_no} as bin_mid,
+                        count(*)::NUMERIC as freq
+                FROM (
+                        select width_bucket({col}::NUMERIC, min, max, {bin_no}) as bin_no
+                        from ({source_query}) as query,
+                        ( select max({col}::NUMERIC) as max,
+                                 min({col}::NUMERIC) as min
+                          FROM ({source_query}) as sq 
+                        ) as    stats
+                    ) iq,
+                    ( select max({col}::NUMERIC) as max,
+                             min({col}::NUMERIC) as min
+                          FROM ({source_query}) as sq 
+                    ) as    stats
+                        group by bin_no, stats.max, stats.min
+                        order by bin_no
+                ",
+                col = column.name,
+                source_query =base_query,
+                bin_no = params.no_bins
+            ),
+        };
+
+        let results : Vec<HistogramEntry> = sqlx::query_as::<_,HistogramEntry>(&query)
+            .fetch_all(db)
+            .await
+            .map_err(|e| ServiceError::InternalServerError(format!("Failed to get histogram result {:#?}",e)))?;
+
+        Ok(StatResults::Histogram(HistogramResults(results)))
+    }
+
+    async fn calc_value_counts(
+        db: &DataDbPool,
+        column: &DatasetColumn,
+        _params: &ValueCountsParams,
+        query: &PostgisQueryBuilder
+    ) -> Result<StatResults, ServiceError> {
+        
+        let base_query = query.build_query()?;
+        let query = format!(
+            "
+            select COALESCE({}::TEXT,'undefined') as name, count(*) as count 
+            from ({}) a
+            group by COALESCE({}::TEXT,'undefined')
+            order by count DESC",
+            column.name, base_query, column.name
+        );
+        
+        let results : Vec<ValueCountEntry> = sqlx::query_as::<_,ValueCountEntry>(&query)
+            .fetch_all(db)
+            .await
+            .map_err(|e| ServiceError::InternalServerError(format!("Failed to get quantile result {:#?}",e)))?;
+
+
+        Ok(StatResults::ValueCounts(ValueCountsResults(results)))
+    }
+
+    async fn calc_basic_stats(
+        db: &DataDbPool,
+        column: &DatasetColumn,
+        _params: &BasicStatsParams,
+        query: &PostgisQueryBuilder
+    ) -> Result<StatResults, ServiceError> {
+        let base_query = query.build_query()?;
+
+        let query = format!(
+            "select max({col}::NUMERIC) as max,
+                    min({col}::NUMERIC) as min,
+                    avg({col}::NUMERIC) as mean,
+                    sum({col}::NUMERIC) as total,
+                    count({col}::NUMERIC) as count,
+                    avg({col}::NUMERIC) as median
+                    from ({query}) b 
+                    ",
+            col = column.name,
+            query = base_query
+        );
+
+        let result : BasicStatsResults = sqlx::query_as(&query)
+            .fetch_one(db)
+            .await
+            .map_err(|e| ServiceError::InternalServerError(format!("Failed to get basic stats {:#?}",e)))?;
+
+        Ok(StatResults::BasicStats(result))
+    }
+}
+
+#[async_trait]
+impl StatRunner<DataDbPool, PostgisQueryBuilder> for PostgisStatRunner{
+    async fn calculate_stat(db: &DataDbPool, column: &DatasetColumn, stat_params: &StatParams, query : &PostgisQueryBuilder)->Result<StatResults, ServiceError>{
+        match stat_params {
+            // StatParams::Percentiles(params) => self.calc_percentiles(conn, params).await,
+            StatParams::ValueCounts(params) => Self::calc_value_counts(db, column,params, query).await,
+            StatParams::BasicStats(params) => Self::calc_basic_stats(db, column, params, query ).await,
+            StatParams::Histogram(params) => Self::calc_histogram(db, column, params, query ).await,
+            StatParams::Quantiles(params) => Self::calc_quantiles(db, column, params, query).await,
+            _ => Err(ServiceError::BadRequest("Stat not implemented".into()))
+        }
     }
 }
