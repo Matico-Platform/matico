@@ -71,12 +71,14 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   );
 
   const querySource = useMemo(
-    () => ({
+    () => {
+      console.log("RE MEMO source query")
+      return {
       type: SourceType.Query,
       query: activeQuery,
-    }),
+    }},
     [activeQuery]
-  );
+    );
 
   const source: Source = activeQuery ? querySource : datasetSource;
 
@@ -96,6 +98,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   };
 
   const runQuery = () => {
+    console.log("running query ")
     setActiveQuery(query);
   };
 

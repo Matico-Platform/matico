@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
   Tooltip,
 } from "@adobe/react-spectrum";
-import { useTableData } from "../hooks/useTableData";
+import { Page, useTableData } from "../hooks/useTableData";
 import { ColumnDetails } from "./ColumnDetails";
 import MapView from "@spectrum-icons/workflow/MapView";
 import {Source} from '../utils/api'
@@ -38,12 +38,13 @@ export const DataTable: React.FC<DataTableProps> = ({
   idCol
 }) => {
   const [sort, setSort] = useState<null | any>(null);
+  const [page, setPage] = useState<Page>({limit:15, offset:0})
 
   const {
     data: tableData,
     error,
     mutate: updateTableData,
-  } = useTableData(source, filters, sort, { limit: 15, offset: 0});
+  } = useTableData(source, filters, sort,page);
 
   const tData = tableData && tableData.data ? tableData.data : tableData
 
