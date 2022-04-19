@@ -1,4 +1,4 @@
-#[allow(dead_code)]
+#![allow(unused_imports)]
 
 table! {
     use diesel::sql_types::*;

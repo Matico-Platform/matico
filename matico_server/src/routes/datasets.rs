@@ -17,7 +17,15 @@ use slugify::slugify;
 use std::io::Write;
 use uuid::Uuid;
 
+
 #[get("")]
+#[tracing::instrument(
+    name = "GET DATASETS",
+    skip(state),
+    fields(
+        request_id = %Uuid::new_v4(),
+    )
+)]
 async fn get_datasets(
     state: web::Data<State>,
     web::Query(search_criteria): web::Query<DatasetSearch>,

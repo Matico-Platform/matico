@@ -28,13 +28,11 @@ impl QueryResult{
     pub fn as_csv(&self)->Result<String, ServiceError>{
         let mut wtr = csv::Writer::from_writer(vec![]);
         let mut header_written = false;
-        let mut header_length = 0;
+
         for row in self.result.iter(){
 
             if !header_written{
                 let header: Vec<&String> = row.keys().into_iter().collect();
-                header_length=header.len();
-                tracing::info!("Header length is {}", header_length);
                 wtr.serialize(header).unwrap();
                 header_written=true;
             }

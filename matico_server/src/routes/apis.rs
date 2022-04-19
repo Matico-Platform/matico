@@ -7,8 +7,7 @@ use crate::models::{
     permissions::*,
     users::*,
 };
-use crate::utils::{FormatParam, PaginationParams, SortParams};
-use std::collections::HashMap;
+use crate::utils::PaginationParams;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use actix_web_lab::extract::Path;

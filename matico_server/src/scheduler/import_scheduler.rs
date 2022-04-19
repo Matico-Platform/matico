@@ -33,24 +33,28 @@ impl Actor for ImportScheduler {
 impl Handler<RunImportsMsg> for ImportScheduler {
     type Result = ();
     fn handle(&mut self, _msg: RunImportsMsg, ctx: &mut Context<Self>) -> Self::Result {
-        tracing::info!("Running handle");
         let db_pool = self.db.clone();
         let ogr_string = self.ogr_string.clone();
         let execution = Box::pin(async move {
-            tracing::info!("Schduling task");
-            let requests = SyncImport::pending(&db_pool).expect("SOMHOW FAILED TO GET SYNC TABLE");
-            tracing::info!("Pending jobs {:#?}", requests);
+            let sync_span = tracing::info_span!("task_schedule");
+            let _sync_span_guard = sync_span.enter();
 
-            for request in requests {
-                match request.process(&db_pool, ogr_string.clone()).await {
-                    Ok(_) => tracing::info!("Processed request {:?}", request),
-                    Err(e) => tracing::info!("failed to process request {:?} with error {:?}", request, e),
+            if let Ok(requests) = SyncImport::pending(&db_pool){
+                tracing::info!("Got {} pending requests", requests.len());
+                
+                for request in requests {
+                    let _sync_request_span = tracing::info_span!("running_sync");
+                    match request.process(&db_pool, ogr_string.clone()).await {
+                        Ok(_) => tracing::info!("Processed request {:?}", request),
+                        Err(e) => tracing::info!("failed to process request {:?} with error {:?}", request, e),
+                    }
                 }
+            }
+            else{
+                tracing::warn!("Failed to get sync table");
             }
             tracing::info!("All Done")
         });
-
         ctx.spawn(execution.into_actor(self));
-        // actix::Arbiter::spawn(execution);
     }
 }

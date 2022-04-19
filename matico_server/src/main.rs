@@ -1,6 +1,7 @@
 use matico_server::app_config::Config;
 use matico_server::run;
 use std::net::TcpListener;
+use matico_server::telemetry;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -8,8 +9,11 @@ async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     std::env::set_var("RUST_LOG", "info,actix_web=trace, kv_unstable.trace");
 
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    console_subscriber::init();
+    let subscriber = telemetry::get_subscriber("zero2prod".into(), "info".into());
+    telemetry::init_subscriber(subscriber);
+
+    // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    // console_subscriber::init();
 
     let config = Config::from_conf().unwrap();
     let listener = TcpListener::bind(&config.server_addr).expect("Failed to bind to address");

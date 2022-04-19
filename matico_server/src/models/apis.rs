@@ -11,8 +11,6 @@ use std::convert::From;
 use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
-use super::User;
-
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum ValueType {
     Numeric(f64),

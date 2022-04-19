@@ -1,14 +1,13 @@
 use std::collections::HashMap;
-use std::str::FromStr;
 
 use crate::app_state::State;
 use crate::auth::AuthService;
 use crate::db::{Bounds, DbPool, PostgisQueryBuilder, QueryBuilder, TilerOptions, TileID, QueryVal, QueryResult};
 use crate::errors::ServiceError;
-use crate::models::{Api, User, Dataset, permissions::*, StatParams};
+use crate::models::{Api, User, Dataset, StatParams};
 
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
-use actix_web::{get, put, web::{self,resource},  HttpResponse};
+use actix_web::{get,web::{self,resource},  HttpResponse};
 use actix_web_lab::extract::Path;
 
 use derive_more::Display;
@@ -32,8 +31,6 @@ enum SourceType{
 pub struct ColumnStatRequest {
     pub stat: String,
 }
-
-
 
 
 #[get("test")]
@@ -78,6 +75,9 @@ async fn get_columns(
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
+    if let Some(user) =  user{
+        query.user(user);
+    }
     let columns = query.columns(&state.data_db).await?;
     Ok(HttpResponse::Ok().json(columns)) 
 }
@@ -99,6 +99,10 @@ async fn get_column(
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
+
+    if let Some(user)= user{
+        query.user(user);
+    }
     let columns = query.columns(&state.data_db).await?;
     let column = columns.iter().find(|c| c.name == column_name.column_name);
 
@@ -129,9 +133,14 @@ async fn get_data(
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
+
     query.page(page)
          .bounds(bounds)
          .sort(sort);
+
+    if let Some(user) = user{
+        query.user(user);
+    }
 
     let result = query.get_result(&state.data_db).await?;
     let format = format_param.format.unwrap_or_else(|| Format::Geojson );
@@ -154,6 +163,10 @@ async fn get_tile(
     let user  = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
+    if let Some(user) = user{
+        query.user(user);
+    }
+
     let result = query.get_tile(&state.data_db, TilerOptions::default(), tile_id).await?;
     Ok(HttpResponse::Ok().body(result.mvt))
 }
@@ -173,6 +186,10 @@ async fn get_feature(
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let user  = User::from_token(&state.db, &logged_in_user.user);
 
+    if let Some(user) = user{
+        query.user(user);
+    }
+
     let feature  = query.get_feature(&state.data_db, &feature_id, Some("ogc_id".into())).await?;
 
     let result  = QueryResult{
@@ -190,7 +207,6 @@ async fn get_feature(
 async fn get_extent(
     state: web::Data<State>,
     Path(source) : Path<Source>,
-    Path(feature_id): Path<QueryVal>,
     web::Query(query_str): web::Query<QueryString>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     logged_in_user: AuthService,
@@ -199,12 +215,25 @@ async fn get_extent(
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let user  = User::from_token(&state.db, &logged_in_user.user);
 
+    if let Some(user) = user{
+        query.user(user);
+    }
+
     let extent= query.extent(&state.data_db, "wkb_geometry".into()).await?;
 
     Ok(HttpResponse::Ok().json(extent))
 }
 
-
+#[tracing::instrument(
+    name = "Getting stats for column",
+    skip(state,logged_in_user),
+    fields(
+        request_id = %Uuid::new_v4(),
+        col_name,
+        stat,
+        query_params,
+    )
+)]
 async fn get_column_stat(
     state: web::Data<State>,
     Path(source) : Path<Source>,
@@ -224,6 +253,11 @@ async fn get_column_stat(
 
     let user  = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
+
+    if let Some(user) = user{
+        query.user(user);
+    }
+
     let columns = query.columns(&state.data_db).await?;
     let column = columns.iter().find(|c| c.name == col_name.column_name).ok_or_else(|| ServiceError::InternalServerError(format!("invalid column {}",col_name.column_name)))?;
     let stat = query.get_stat_for_column(&state.data_db, &column, &stat_params ).await?;

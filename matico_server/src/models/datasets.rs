@@ -2,7 +2,7 @@ use crate::models::User;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
-use sqlx::{Row, FromRow};
+use sqlx::FromRow;
 use uuid::Uuid;
 
 use crate::db::{ DbPool };

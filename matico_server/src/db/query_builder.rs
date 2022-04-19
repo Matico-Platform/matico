@@ -1,8 +1,5 @@
 use std::collections::HashMap;
-
 use async_trait::async_trait;
-use futures::stream::{LocalBoxStream, BoxStream};
-
 use crate::{models::{Dataset, Column as DatasetColumn, User, Api, StatParams, StatResults, datasets::Extent}, utils::{PaginationParams, SortParams, MVTTile, QueryMetadata}, errors::ServiceError};
 
 use super::{Filter, Bounds, TileID, TilerOptions, QueryResult, QueryVal};

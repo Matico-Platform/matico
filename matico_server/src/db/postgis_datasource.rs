@@ -32,7 +32,7 @@ pub struct Bounds {
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct TilerOptions {
     geom_column: Option<String>,
-    tollerance: Option<u64>,
+    tolerance: Option<u64>,
     crs: Option<String>,
 }
 
@@ -163,7 +163,7 @@ impl QueryBuilder<DataDbPool> for  PostgisQueryBuilder{
             (Some(query), None,None,None)=>  Ok(query.clone()),
             (None, Some(dataset), None,None)=> Ok(format!("select * from {}", dataset.table_name)),
             (None , None, Some(api),Some(params)) => api.construct_query(&params),
-            (None , None, Some(api),None) => Err(ServiceError::InternalServerError("An API was set without specifying parameters".into())),
+            (None , None, Some(_api),None) => Err(ServiceError::InternalServerError("An API was set without specifying parameters".into())),
             (None, None, None, None) => Err(ServiceError::InternalServerError("Query builder requires at least one of Dataset, API or query ".into())),
             _ => Err(ServiceError::InternalServerError("Multiple sources set for query builder".into()))
         }
@@ -257,7 +257,7 @@ impl QueryBuilder<DataDbPool> for  PostgisQueryBuilder{
            .map(row_to_hash_map)
            .fetch_one(db)
            .await
-           .map_err(|e| ServiceError::QueryFailed(format!("Failed to get feature")))?;
+           .map_err(|e| ServiceError::QueryFailed(format!("Failed to get feature {:#?}",e)))?;
         Ok(result)
     }
 

@@ -120,7 +120,7 @@ fn attempt_to_unzip_shp_file(filepath: &str)->Result<(String, String), ServiceEr
         Ok((tmp_dir.clone(), format!("{}/{}",tmp_dir, found_shp)))
     }
     else{
-        std::fs::remove_dir_all(tmp_dir.clone());
+        std::fs::remove_dir_all(tmp_dir.clone()).map_err(|_| ServiceError::InternalServerError("Failed to remove tmp dir".into()))?;
         Err(ServiceError::InternalServerError("zip file did not contain a file with .shp extension".into()))
     }
 }
@@ -128,7 +128,7 @@ fn attempt_to_unzip_shp_file(filepath: &str)->Result<(String, String), ServiceEr
 pub async fn load_shp_dataset_to_db(
     filepath: String,
     name: String,
-    params: ShpFileImportParams,
+    _params: ShpFileImportParams,
     ogr_string: String,
 ) -> Result<(), ServiceError> {
 
