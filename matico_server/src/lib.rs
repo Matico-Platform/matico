@@ -18,7 +18,6 @@ use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
 use tracing;
-
 use std::time::Duration;
 
 pub mod app_config;
@@ -31,6 +30,7 @@ mod routes;
 mod scheduler;
 mod schema;
 mod utils;
+pub mod telemetry;
 
 pub async fn health() -> impl Responder {
     "Everything is fine".to_string()
@@ -40,6 +40,7 @@ pub async fn run(
     listener: TcpListener,
     config: app_config::Config,
 ) -> Result<Server, std::io::Error> {
+
     let startup_span = tracing::info_span!("Start up");
 
     let db_connection_url = config.connection_string().unwrap();
@@ -75,7 +76,7 @@ pub async fn run(
     let sync_pool = pool.clone();
     let _addr = ImportScheduler::create(|_| ImportScheduler {
         db: sync_pool,
-        interval: Duration::new(10, 0),
+        interval: Duration::new(60, 0),
         ogr_string: ogr_string.clone(),
     });
 
