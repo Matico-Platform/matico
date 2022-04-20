@@ -38,6 +38,7 @@ import { DataTable } from "../../components/DataTable";
 import { Source, SourceType } from "../../utils/api";
 import { useExtent } from "../../hooks/useExtent";
 import { FeatureEditor } from "../../components/FeatureEditor";
+import { useRef } from "react";
 
 const QueryEditor = dynamic<QueryEditorProps>(
   () =>
@@ -58,7 +59,8 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const { dataset, datasetError, updateDataset } = useDataset(datasetId);
 
   const [visCol, setVisCol] = useState<string | null>(null);
-  const [query, setQuery] = useState<undefined | string>(undefined);
+  const query = useRef('');
+  const setQuery = (q: string) => query.current = q;
   const [activeQuery, setActiveQuery] = useState<undefined | string>(undefined);
   const [queryError, setQueryError] = useState<string | null>(null);
 
@@ -98,15 +100,15 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   };
 
   const runQuery = () => {
-    console.log("running query ")
-    setActiveQuery(query);
+    console.log("running query " + query.current)
+    setActiveQuery(query.current);
   };
 
   useEffect(() => {
-    if (query === undefined && dataset) {
+    if (query.current === '' && dataset) {
       setQuery(`select * from ${dataset?.table_name}`);
     }
-  }, [dataset, query]);
+  }, [dataset, query.current]);
 
   const { extent, extentError } = useExtent(source);
 
@@ -249,7 +251,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                     <Flex direction="column" gap="size-175">
                       <QueryEditor
                         key={"query_pane"}
-                        query={query}
+                        query={query.current}
                         onQueryChange={setQuery}
                       />
                       <Flex
