@@ -51,7 +51,6 @@ pub struct TileID {
 fn row_to_map(row: PgRow) -> BTreeMap<String, Option<QueryVal>> {
     let mut hash: BTreeMap<String,Option<QueryVal>> = BTreeMap::new();
     for (index,col) in row.columns().iter().enumerate() {
-        println!("col name is {} {}",index, col.name());
         let type_info: &PgTypeInfo = col.type_info();
         // info!("Column type is {:#?} {:#?}", type_info, type_info.name() );
         let val: Option<QueryVal> = match type_info.name() {
@@ -86,7 +85,6 @@ fn row_to_map(row: PgRow) -> BTreeMap<String, Option<QueryVal>> {
         };
         hash.insert(col.name().to_string(), val);
     }
-    println!("final columns {:#?}", hash.keys());
     hash
 }
 
@@ -203,10 +201,9 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
         };
 
         if let Some(columns) = &self.columns{
-            let col_string = columns.iter().map(|c| format!("'{}'",c)).collect::<Vec<String>>().join(",");
+            let col_string = columns.iter().map(|c| format!("\"{}\"",c)).collect::<Vec<String>>().join(",");
             base_query = format!("select {} from  ({}) as final",col_string , base_query );
         }
-
         Ok(base_query)
     }
 

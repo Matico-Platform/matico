@@ -124,6 +124,11 @@ struct Source {
     pub source_id: Option<Uuid>,
 }
 
+#[derive(Deserialize, Debug)]
+struct ColumnSelection{
+    pub columns : Option<String>
+}
+
 // {source_type}/{source_id}
 async fn get_data(
     state: web::Data<State>,
@@ -132,6 +137,7 @@ async fn get_data(
     web::Query(bounds): web::Query<Bounds>,
     web::Query(format_param): web::Query<FormatParam>,
     web::Query(sort): web::Query<SortParams>,
+    web::Query(columns): web::Query<ColumnSelection>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
@@ -141,10 +147,18 @@ async fn get_data(
     let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
-    query.page(page).bounds(bounds).sort(sort);
+    query.page(page)
+         .bounds(bounds)
+         .sort(sort);
 
     if let Some(user) = user {
         query.user(user);
+    }
+
+    //Must be a better way of doing this
+    if let Some(columns) = columns.columns{
+        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+        query.columns(cols);
     }
 
     let result = query.get_result(&state.data_db).await?;
@@ -164,6 +178,7 @@ async fn get_tile(
     Path(tile_id): Path<TileID>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
+    web::Query(columns): web::Query<ColumnSelection>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let user = User::from_token(&state.db, &logged_in_user.user);
@@ -171,6 +186,12 @@ async fn get_tile(
 
     if let Some(user) = user {
         query.user(user);
+    }
+
+    //Must be a better way of doing this
+    if let Some(columns) = columns.columns{
+        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+        query.columns(cols);
     }
 
     let result = query
@@ -187,6 +208,7 @@ async fn get_feature(
     web::Query(query_str): web::Query<QueryString>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(format_param): web::Query<FormatParam>,
+    web::Query(columns): web::Query<ColumnSelection>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
@@ -194,6 +216,12 @@ async fn get_feature(
 
     if let Some(user) = user {
         query.user(user);
+    }
+
+    //Must be a better way of doing this
+    if let Some(columns) = columns.columns{
+        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+        query.columns(cols);
     }
 
     let feature = query

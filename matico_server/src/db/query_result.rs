@@ -63,7 +63,7 @@ impl QueryResult {
 
     pub fn as_geojson(&self, geom_col: Option<&String>) -> Result<String, ServiceError> {
         let mut features: Vec<geojson::Feature> = vec![];
-        for mut row in self.result.iter().cloned() {
+        for row in self.result.iter() {
             let geom_key = if geom_col.is_some() {
                 geom_col
             } else {
@@ -81,16 +81,17 @@ impl QueryResult {
                 .ok_or_else(|| ServiceError::InternalServerError("Row had no geometry".into()))?;
 
             let geometry: Geometry<f64> =
-                if let Some(QueryVal::Geometry(geom)) = row.clone().remove(geom_key).unwrap() {
+                if let Some(QueryVal::Geometry(geom)) = row.get(geom_key).unwrap().clone() {
                     Ok(geom)
                 } else {
                     Err(ServiceError::InternalServerError(
-                        "Somehow the selected geom column wasnt a geom or was null".into(),
+                        "Somehow the selected geom column wasn't a geom or was null".into(),
                     ))
                 }?;
 
             let properties: serde_json::map::Map<String, serde_json::value::Value> = row
                 .iter()
+                .filter(|(key,_val)| *key != geom_key)
                 .map(|(key,val)| (key.clone(), serde_json::to_value(val).unwrap()))
                 .collect();
 
