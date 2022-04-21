@@ -113,12 +113,10 @@ impl UserToken {
 }
 
 impl User {
-
-    pub fn from_token(pool:&DbPool, token: &Option<UserToken>)->Option<User>{
-        if let Some(t) = token{
-            Self::find_by_id(pool,t.id).ok()
-        } 
-        else{
+    pub fn from_token(pool: &DbPool, token: &Option<UserToken>) -> Option<User> {
+        if let Some(t) = token {
+            Self::find_by_id(pool, t.id).ok()
+        } else {
             None
         }
     }

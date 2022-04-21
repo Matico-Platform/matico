@@ -9,12 +9,12 @@ pub enum Format {
     Geojson,
 }
 
-impl Format{
-    pub fn mime_type(&self)->String{
-        match self{
-            Self::Csv=> "application/csv".into(),
-            Self::Json=>"application/json".into(),
-            Self::Geojson=>"application/geo+json".into()
+impl Format {
+    pub fn mime_type(&self) -> String {
+        match self {
+            Self::Csv => "application/csv".into(),
+            Self::Json => "application/json".into(),
+            Self::Geojson => "application/geo+json".into(),
         }
     }
 }
@@ -36,4 +36,3 @@ pub struct FormatParam {
 pub struct MVTTile {
     pub mvt: Vec<u8>,
 }
-

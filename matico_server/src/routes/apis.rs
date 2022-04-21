@@ -7,8 +7,7 @@ use crate::models::{
     permissions::*,
     users::*,
 };
-use crate::utils::{FormatParam, PaginationParams, SortParams};
-use std::collections::HashMap;
+use crate::utils::PaginationParams;
 
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use actix_web_lab::extract::Path;
@@ -106,8 +105,6 @@ async fn create_api(
 //         .body(result))
 // }
 
-
-
 // #[get("{api_id}/columns/{column_name}/stats")]
 // async fn get_column_stats(
 //     state: web::Data<State>,
@@ -198,7 +195,7 @@ async fn create_api(
 //             .ok_or_else(|| {
 //                 ServiceError::BadRequest(format!(
 //                     "No columns by the name of {} on query {}",
-//                     column_name, query.q 
+//                     column_name, query.q
 //                 ))
 //             })?;
 //     Ok(HttpResponse::Ok()
@@ -229,7 +226,7 @@ async fn create_api(
 //             .ok_or_else(|| {
 //                 ServiceError::BadRequest(format!(
 //                     "No columns by the name of {} on query {}",
-//                     column_name, query.q 
+//                     column_name, query.q
 //                 ))
 //             })?;
 

@@ -10,7 +10,6 @@ use crate::utils::PaginationParams;
 use actix_web::{delete, get, post, put, web, HttpResponse};
 use actix_web_lab::extract::Path;
 
-use log::info;
 use serde_json::json;
 use uuid::Uuid;
 
@@ -42,13 +41,13 @@ pub async fn create_app(
     logged_in_user: AuthService,
     web::Json(mut new_app): web::Json<CreateAppDTO>,
 ) -> Result<HttpResponse, ServiceError> {
-    info!("Attpempting to create app");
+    tracing::info!("Attpempting to create app");
     let user: UserToken = logged_in_user
         .user
         .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
 
-    info!("Have user {:?}", user);
-    info!("new app {:?}", new_app);
+    tracing::info!("Have user {:?}", user);
+    tracing::info!("new app {:?}", new_app);
 
     new_app.owner_id = Some(user.id);
 

@@ -1,11 +1,11 @@
+use crate::{errors::ServiceError, models::Column as DatasetColumn};
 use async_trait::async_trait;
 use bigdecimal::BigDecimal;
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use crate::{models::Column as DatasetColumn, errors::ServiceError};
-use serde::{Serialize,Deserialize};
 use ts_rs::TS;
 
-// Input structures 
+// Input structures
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
 pub struct EqualIntervalParams {
@@ -69,7 +69,7 @@ pub enum StatParams {
 
 // Output types for returning results
 
-#[derive(Serialize, Deserialize, Debug, TS, FromRow )]
+#[derive(Serialize, Deserialize, Debug, TS, FromRow)]
 #[ts(export)]
 pub struct QuantileEntry {
     pub quantile: i32,
@@ -81,7 +81,7 @@ pub struct QuantileEntry {
 #[ts(export)]
 pub struct QuantileResults(pub Vec<QuantileEntry>);
 
-#[derive(Serialize, Deserialize, Debug, TS )]
+#[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
 pub struct JenksResults {
     pub bins: Vec<f32>,
@@ -143,6 +143,11 @@ pub enum StatResults {
 }
 
 #[async_trait]
-pub trait StatRunner<T, A>{
-    async fn calculate_stat(db: &T, column: &DatasetColumn, stat_params: &StatParams, query_builder: &A )-> Result<StatResults,ServiceError>;
+pub trait StatRunner<T, A> {
+    async fn calculate_stat(
+        db: &T,
+        column: &DatasetColumn,
+        stat_params: &StatParams,
+        query_builder: &A,
+    ) -> Result<StatResults, ServiceError>;
 }

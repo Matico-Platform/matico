@@ -61,6 +61,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const [query, setQuery] = useState<undefined | string>(undefined);
   const [activeQuery, setActiveQuery] = useState<undefined | string>(undefined);
   const [queryError, setQueryError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Array<any>>([]);
 
   const datasetSource = useMemo(
     () => ({
@@ -71,12 +72,14 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   );
 
   const querySource = useMemo(
-    () => ({
+    () => {
+      console.log("RE MEMO source query")
+      return {
       type: SourceType.Query,
       query: activeQuery,
-    }),
+    }},
     [activeQuery]
-  );
+    );
 
   const source: Source = activeQuery ? querySource : datasetSource;
 
@@ -96,6 +99,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   };
 
   const runQuery = () => {
+    console.log("running query ")
     setActiveQuery(query);
   };
 
@@ -202,7 +206,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
               {dataset && (
                 <DataTable
                   source={source}
-                  filters={[]}
+                  filters={filters}
                   visCol={visCol}
                   onVizualizeCol={setVisCol}
                   idCol={dataset?.id_col}

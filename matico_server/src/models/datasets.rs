@@ -1,14 +1,13 @@
 use crate::models::User;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use log::info;
 use serde::{Deserialize, Serialize};
-use sqlx::{Row, FromRow};
+use sqlx::FromRow;
 use uuid::Uuid;
 
-use crate::db::{ DbPool };
+use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::{ Permission, PermissionType, ResourceType, SyncImport};
+use crate::models::{Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::ImportParams;
 
@@ -138,7 +137,6 @@ impl Dataset {
         Ok(())
     }
 
-
     pub fn update(
         pool: &DbPool,
         dataset_id: Uuid,
@@ -156,7 +154,7 @@ impl Dataset {
 
     pub fn create_or_update(&self, pool: &DbPool) -> Result<Dataset, ServiceError> {
         let conn = pool.get().unwrap();
-        info!("attempting to save {:?}", self);
+        tracing::info!("attempting to save {:?}", self);
 
         diesel::insert_into(datasets)
             .values(self)
@@ -182,6 +180,4 @@ impl Dataset {
         }
         Ok(())
     }
-
-
 }

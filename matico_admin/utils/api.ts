@@ -54,7 +54,12 @@ export const urlForSource = (source: Source | null, extension: String ="") => {
     case SourceType.API:
       return `/data/api/${source?.id}${extension}`;
     case SourceType.Query:
-      return `/data/query${extension}?q=${source.query}`;
+      if(source.query){
+        return `/data/query${extension}?q=${source.query}`;
+      }
+      else{
+        return null
+      }
     default:
       return null;
   }
@@ -229,6 +234,7 @@ export async function runQuery(
 
 export const useSWRAPI = (endpoint: string | null, opts?: any) => {
   const { params, ...swrOpts } = opts;
+  console.log('redoing this')
   return useSWR(
     endpoint ? [endpoint, params] : null,
     (url: string) => a.get(url, { params }).then((res) => res.data),
