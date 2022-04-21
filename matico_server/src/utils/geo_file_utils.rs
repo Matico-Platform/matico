@@ -85,43 +85,51 @@ pub async fn load_dataset_to_db(
     }
 }
 
-/// Attempts to unzip a shp file 
+/// Attempts to unzip a shp file
 /// Returns the path to the .shp file in the unziped folder
 ///
-fn attempt_to_unzip_shp_file(filepath: &str)->Result<(String, String), ServiceError>{
-    let tmp_dir= format!("./tmp/{}",Uuid::new_v4()); 
-    std::fs::create_dir_all(&tmp_dir).map_err(|_| ServiceError::InternalServerError("Failed to create tmp dir on shp import".into()))?;
+fn attempt_to_unzip_shp_file(filepath: &str) -> Result<(String, String), ServiceError> {
+    let tmp_dir = format!("./tmp/{}", Uuid::new_v4());
+    std::fs::create_dir_all(&tmp_dir).map_err(|_| {
+        ServiceError::InternalServerError("Failed to create tmp dir on shp import".into())
+    })?;
 
     // First extract the zip file to a dir
-    let zip_file = std::fs::File::open(&filepath).map_err(|_| ServiceError::InternalServerError("Failed to find the import shp zip".into()))?;
-    let mut zip_archive = zip::ZipArchive::new(zip_file).map_err(|_| ServiceError::InternalServerError("Failed to open zip archive while importing shp".into()))?;
+    let zip_file = std::fs::File::open(&filepath).map_err(|_| {
+        ServiceError::InternalServerError("Failed to find the import shp zip".into())
+    })?;
+    let mut zip_archive = zip::ZipArchive::new(zip_file).map_err(|_| {
+        ServiceError::InternalServerError("Failed to open zip archive while importing shp".into())
+    })?;
 
     let mut shp_file: Option<String> = None;
-    
-    for i in 0..zip_archive.len(){
+
+    for i in 0..zip_archive.len() {
         let mut file = zip_archive.by_index(i).unwrap();
-        let out_name = match file.enclosed_name(){
+        let out_name = match file.enclosed_name() {
             Some(path) => path.to_owned(),
-            None => continue
+            None => continue,
         };
 
-        if let Some(extension) = out_name.extension(){
-            if extension.to_string_lossy() == "shp"{
-               shp_file = Some(out_name.to_string_lossy().to_string());
+        if let Some(extension) = out_name.extension() {
+            if extension.to_string_lossy() == "shp" {
+                shp_file = Some(out_name.to_string_lossy().to_string());
             }
-            if ["shp","shx","dbf","prj"].contains(&extension.to_str().unwrap()){
-               let out_path = format!("{}/{}", tmp_dir, out_name.to_string_lossy());
-               let mut out_file = std::fs::File::create(&out_path).unwrap();
-               std::io::copy(&mut file, &mut out_file).unwrap();
+            if ["shp", "shx", "dbf", "prj"].contains(&extension.to_str().unwrap()) {
+                let out_path = format!("{}/{}", tmp_dir, out_name.to_string_lossy());
+                let mut out_file = std::fs::File::create(&out_path).unwrap();
+                std::io::copy(&mut file, &mut out_file).unwrap();
             }
         }
     }
-    if let Some(found_shp) = shp_file{
-        Ok((tmp_dir.clone(), format!("{}/{}",tmp_dir, found_shp)))
-    }
-    else{
-        std::fs::remove_dir_all(tmp_dir.clone()).map_err(|_| ServiceError::InternalServerError("Failed to remove tmp dir".into()))?;
-        Err(ServiceError::InternalServerError("zip file did not contain a file with .shp extension".into()))
+    if let Some(found_shp) = shp_file {
+        Ok((tmp_dir.clone(), format!("{}/{}", tmp_dir, found_shp)))
+    } else {
+        std::fs::remove_dir_all(tmp_dir.clone())
+            .map_err(|_| ServiceError::InternalServerError("Failed to remove tmp dir".into()))?;
+        Err(ServiceError::InternalServerError(
+            "zip file did not contain a file with .shp extension".into(),
+        ))
     }
 }
 
@@ -131,9 +139,8 @@ pub async fn load_shp_dataset_to_db(
     _params: ShpFileImportParams,
     ogr_string: String,
 ) -> Result<(), ServiceError> {
-
     let (tmp_dir, filepath) = attempt_to_unzip_shp_file(&filepath)?;
-    let ogr_result= web::block(move || {
+    let ogr_result = web::block(move || {
         let mut cmd = Command::new("ogr2ogr");
         cmd.arg(&"-f")
             .arg(&"PostgreSQL")
@@ -146,7 +153,9 @@ pub async fn load_shp_dataset_to_db(
             .output()
     })
     .await
-    .map_err(|e| ServiceError::InternalServerError(format!("Failed to load shp file to db {:#?}",e)))?;
+    .map_err(|e| {
+        ServiceError::InternalServerError(format!("Failed to load shp file to db {:#?}", e))
+    })?;
     std::fs::remove_dir_all(&tmp_dir.clone()).unwrap();
     Ok(())
 }

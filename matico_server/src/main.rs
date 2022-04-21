@@ -1,7 +1,7 @@
 use matico_server::app_config::Config;
 use matico_server::run;
-use std::net::TcpListener;
 use matico_server::telemetry;
+use std::net::TcpListener;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

@@ -1,30 +1,24 @@
+use opentelemetry::sdk::export::trace::stdout;
 use tracing::subscriber::set_global_default;
 use tracing::Subscriber;
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
 use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
-use opentelemetry::sdk::export::trace::stdout;
 
 /// Compose multiple layers into a `tracing`'s subscriber.
 ///
 /// # Implementation Notes
 ///
-/// We are using `impl Subscriber` as return type to avoid having to 
-/// spell out the actual type of the returned subscriber, which is 
+/// We are using `impl Subscriber` as return type to avoid having to
+/// spell out the actual type of the returned subscriber, which is
 /// indeed quite complex.
-/// We need to explicitly call out that the returned subscriber is 
+/// We need to explicitly call out that the returned subscriber is
 /// `Send` and `Sync` to make it possible to pass it to `init_subscriber`
 /// later on.
-pub fn get_subscriber(
-    name: String, 
-    env_filter: String
-) -> impl Subscriber + Send + Sync {
-    let env_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| EnvFilter::new(env_filter));
-    let formatting_layer = BunyanFormattingLayer::new(
-        name, 
-        std::io::stdout
-    );
+pub fn get_subscriber(name: String, env_filter: String) -> impl Subscriber + Send + Sync {
+    let env_filter =
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(env_filter));
+    let formatting_layer = BunyanFormattingLayer::new(name, std::io::stdout);
 
     let honeycomb_config = libhoney::Config {
         options: libhoney::client::Options {
@@ -40,8 +34,8 @@ pub fn get_subscriber(
     // Create a tracing layer with the configured tracer
     let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
 
-
-    let honeycomb_layer = tracing_honeycomb::new_honeycomb_telemetry_layer("matico-server", honeycomb_config);
+    let honeycomb_layer =
+        tracing_honeycomb::new_honeycomb_telemetry_layer("matico-server", honeycomb_config);
 
     Registry::default()
         .with(env_filter)

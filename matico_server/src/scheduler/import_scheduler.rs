@@ -39,18 +39,21 @@ impl Handler<RunImportsMsg> for ImportScheduler {
             let sync_span = tracing::info_span!("task_schedule");
             let _sync_span_guard = sync_span.enter();
 
-            if let Ok(requests) = SyncImport::pending(&db_pool){
+            if let Ok(requests) = SyncImport::pending(&db_pool) {
                 tracing::info!("Got {} pending requests", requests.len());
-                
+
                 for request in requests {
                     let _sync_request_span = tracing::info_span!("running_sync");
                     match request.process(&db_pool, ogr_string.clone()).await {
                         Ok(_) => tracing::info!("Processed request {:?}", request),
-                        Err(e) => tracing::info!("failed to process request {:?} with error {:?}", request, e),
+                        Err(e) => tracing::info!(
+                            "failed to process request {:?} with error {:?}",
+                            request,
+                            e
+                        ),
                     }
                 }
-            }
-            else{
+            } else {
                 tracing::warn!("Failed to get sync table");
             }
             tracing::info!("All Done")

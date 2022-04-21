@@ -2,29 +2,35 @@ use std::collections::HashMap;
 
 use crate::app_state::State;
 use crate::auth::AuthService;
-use crate::db::{Bounds, DbPool, PostgisQueryBuilder, QueryBuilder, TilerOptions, TileID, QueryVal, QueryResult};
+use crate::db::{
+    Bounds, DbPool, PostgisQueryBuilder, QueryBuilder, QueryResult, QueryVal, TileID, TilerOptions,
+};
 use crate::errors::ServiceError;
-use crate::models::{Api, User, Dataset, StatParams};
+use crate::models::{Api, Dataset, StatParams, User};
 
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
-use actix_web::{get,web::{self,resource},  HttpResponse};
+use actix_web::{
+    get,
+    web::{self, resource},
+    HttpResponse,
+};
 use actix_web_lab::extract::Path;
 
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Deserialize,Debug)]
-struct QueryString{
-    pub q:Option<String>
+#[derive(Deserialize, Debug)]
+struct QueryString {
+    pub q: Option<String>,
 }
 
-#[derive(Deserialize,Display, Debug)]
-#[serde(rename_all="lowercase")]
-enum SourceType{
+#[derive(Deserialize, Display, Debug)]
+#[serde(rename_all = "lowercase")]
+enum SourceType {
     Dataset,
     Api,
-    Query
+    Query,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -32,33 +38,38 @@ pub struct ColumnStatRequest {
     pub stat: String,
 }
 
-
 #[get("test")]
-async fn test()->HttpResponse{
+async fn test() -> HttpResponse {
     HttpResponse::Ok().body(format!("{}", SourceType::Dataset))
 }
 
 // TODO turn this in to an extractor, might make the route functions more readable
-async fn query_for_source(db: &DbPool, source: &Source, query_str: Option<String>, query_params: HashMap<String, serde_json::Value> ) -> Result<PostgisQueryBuilder, ServiceError>{
-
+async fn query_for_source(
+    db: &DbPool,
+    source: &Source,
+    query_str: Option<String>,
+    query_params: HashMap<String, serde_json::Value>,
+) -> Result<PostgisQueryBuilder, ServiceError> {
     let mut query = PostgisQueryBuilder::new();
 
     tracing::info!("Getting data for {:#?} {:#?}", source, query_str);
     // TODO implement resource check
 
-    match (&source.source_type, source.source_id, query_str){
-        (SourceType::Dataset, Some(id),None) => {
-            let dataset = Dataset::find(db,id)?;
+    match (&source.source_type, source.source_id, query_str) {
+        (SourceType::Dataset, Some(id), None) => {
+            let dataset = Dataset::find(db, id)?;
             query.dataset(dataset)
-        },
-        (SourceType::Api, Some(id), None) =>{
+        }
+        (SourceType::Api, Some(id), None) => {
             let api = Api::find(db, id)?;
-            query.api(api,query_params)
-        },
-        (SourceType::Query, None, Some(q))=>{
-            query.query(q)
-        },
-        _ => return Err(ServiceError::InternalServerError("Either provide a Dataset or API with an ID or a query without one".into()))
+            query.api(api, query_params)
+        }
+        (SourceType::Query, None, Some(q)) => query.query(q),
+        _ => {
+            return Err(ServiceError::InternalServerError(
+                "Either provide a Dataset or API with an ID or a query without one".into(),
+            ))
+        }
     };
 
     Ok(query)
@@ -71,20 +82,19 @@ async fn get_columns(
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
-    )->Result<HttpResponse, ServiceError>{
-
-    let user  = User::from_token(&state.db, &logged_in_user.user);
+) -> Result<HttpResponse, ServiceError> {
+    let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
-    if let Some(user) =  user{
+    if let Some(user) = user {
         query.user(user);
     }
-    let columns = query.columns(&state.data_db).await?;
-    Ok(HttpResponse::Ok().json(columns)) 
+    let columns = query.get_columns(&state.data_db).await?;
+    Ok(HttpResponse::Ok().json(columns))
 }
 
 #[derive(Deserialize)]
-struct ColName{
-    pub column_name: String
+struct ColName {
+    pub column_name: String,
 }
 
 // {source_type}/{source_id}/columns/{column_name}
@@ -95,25 +105,23 @@ async fn get_column(
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
-    )->Result<HttpResponse, ServiceError>{
-
-    let user  = User::from_token(&state.db, &logged_in_user.user);
+) -> Result<HttpResponse, ServiceError> {
+    let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
-    if let Some(user)= user{
+    if let Some(user) = user {
         query.user(user);
     }
-    let columns = query.columns(&state.data_db).await?;
+    let columns = query.get_columns(&state.data_db).await?;
     let column = columns.iter().find(|c| c.name == column_name.column_name);
 
-    Ok(HttpResponse::Ok().json(column)) 
+    Ok(HttpResponse::Ok().json(column))
 }
 
-
-#[derive(Deserialize, Debug )]
-struct Source{
+#[derive(Deserialize, Debug)]
+struct Source {
     pub source_type: SourceType,
-    pub source_id : Option<Uuid>
+    pub source_id: Option<Uuid>,
 }
 
 // {source_type}/{source_id}
@@ -127,99 +135,100 @@ async fn get_data(
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
-)->Result<HttpResponse, ServiceError>{
+) -> Result<HttpResponse, ServiceError> {
+    tracing::info!("source is {:#?}", source);
 
-    tracing::info!("source is {:#?}", source );
-
-    let user  = User::from_token(&state.db, &logged_in_user.user);
+    let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
-    query.page(page)
-         .bounds(bounds)
-         .sort(sort);
+    query.page(page).bounds(bounds).sort(sort);
 
-    if let Some(user) = user{
+    if let Some(user) = user {
         query.user(user);
     }
 
     let result = query.get_result(&state.data_db).await?;
-    let format = format_param.format.unwrap_or_else(|| Format::Geojson );
+    let format = format_param.format.unwrap_or_else(|| Format::Geojson);
 
     let result_str = result.as_format(&format)?;
 
-    Ok(HttpResponse::Ok().content_type(format.mime_type()).body(result_str))
+    Ok(HttpResponse::Ok()
+        .content_type(format.mime_type())
+        .body(result_str))
 }
 
 // {source_type}/{source_id}/tiles/{z}/{x}/{y}
 async fn get_tile(
     state: web::Data<State>,
     Path(source): Path<Source>,
-    Path(tile_id) : Path<TileID>,
+    Path(tile_id): Path<TileID>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
-)->Result<HttpResponse, ServiceError>{
-
-    let user  = User::from_token(&state.db, &logged_in_user.user);
+) -> Result<HttpResponse, ServiceError> {
+    let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
-    if let Some(user) = user{
+    if let Some(user) = user {
         query.user(user);
     }
 
-    let result = query.get_tile(&state.data_db, TilerOptions::default(), tile_id).await?;
+    let result = query
+        .get_tile(&state.data_db, TilerOptions::default(), tile_id)
+        .await?;
     Ok(HttpResponse::Ok().body(result.mvt))
 }
-
 
 #[get("{source_type}/{source_id}/feature/{feature_id}")]
 async fn get_feature(
     state: web::Data<State>,
-    Path(source) : Path<Source>,
+    Path(source): Path<Source>,
     Path(feature_id): Path<QueryVal>,
     web::Query(query_str): web::Query<QueryString>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
-    let user  = User::from_token(&state.db, &logged_in_user.user);
+    let user = User::from_token(&state.db, &logged_in_user.user);
 
-    if let Some(user) = user{
+    if let Some(user) = user {
         query.user(user);
     }
 
-    let feature  = query.get_feature(&state.data_db, &feature_id, Some("ogc_id".into())).await?;
+    let feature = query
+        .get_feature(&state.data_db, &feature_id, Some("ogc_id".into()))
+        .await?;
 
-    let result  = QueryResult{
+    let result = QueryResult {
         result: vec![feature],
-        execution_type:0
+        execution_type: 0,
     };
 
     let format = format_param.format.unwrap_or(Format::Json);
     let result = result.as_format(&format)?;
 
-    Ok(HttpResponse::Ok().content_type(format.mime_type()).body(result))
+    Ok(HttpResponse::Ok()
+        .content_type(format.mime_type())
+        .body(result))
 }
 
 // {source_type}/{source_id}/extent
 async fn get_extent(
     state: web::Data<State>,
-    Path(source) : Path<Source>,
+    Path(source): Path<Source>,
     web::Query(query_str): web::Query<QueryString>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
-    let user  = User::from_token(&state.db, &logged_in_user.user);
+    let user = User::from_token(&state.db, &logged_in_user.user);
 
-    if let Some(user) = user{
+    if let Some(user) = user {
         query.user(user);
     }
 
-    let extent= query.extent(&state.data_db, "wkb_geometry".into()).await?;
+    let extent = query.get_extent(&state.data_db, "wkb_geometry".into()).await?;
 
     Ok(HttpResponse::Ok().json(extent))
 }
@@ -236,14 +245,13 @@ async fn get_extent(
 )]
 async fn get_column_stat(
     state: web::Data<State>,
-    Path(source) : Path<Source>,
+    Path(source): Path<Source>,
     Path(col_name): Path<ColName>,
-    web::Query(stat) : web::Query<ColumnStatRequest>,
+    web::Query(stat): web::Query<ColumnStatRequest>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(query_str): web::Query<QueryString>,
     logged_in_user: AuthService,
-    )->Result<HttpResponse, ServiceError>{
-
+) -> Result<HttpResponse, ServiceError> {
     let stat_params: StatParams = serde_json::from_str(&stat.stat).map_err(|e| {
         ServiceError::BadRequest(format!(
             "Stat request was miss-specification \n {} \n {}",
@@ -251,18 +259,25 @@ async fn get_column_stat(
         ))
     })?;
 
-    let user  = User::from_token(&state.db, &logged_in_user.user);
+    let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
-    if let Some(user) = user{
+    if let Some(user) = user {
         query.user(user);
     }
 
-    let columns = query.columns(&state.data_db).await?;
-    let column = columns.iter().find(|c| c.name == col_name.column_name).ok_or_else(|| ServiceError::InternalServerError(format!("invalid column {}",col_name.column_name)))?;
-    let stat = query.get_stat_for_column(&state.data_db, &column, &stat_params ).await?;
+    let columns = query.get_columns(&state.data_db).await?;
+    let column = columns
+        .iter()
+        .find(|c| c.name == col_name.column_name)
+        .ok_or_else(|| {
+            ServiceError::InternalServerError(format!("invalid column {}", col_name.column_name))
+        })?;
+    let stat = query
+        .get_stat_for_column(&state.data_db, &column, &stat_params)
+        .await?;
 
-    Ok(HttpResponse::Ok().json(stat)) 
+    Ok(HttpResponse::Ok().json(stat))
 }
 
 // #[put("{dataset_id}/data/{feature_id}")]
@@ -291,12 +306,34 @@ async fn get_column_stat(
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     // cfg.service(get_data_query);
     // cfg.service(get_data_query_csv);
-    cfg.service(resource(["{source_type}/{source_id}/columns/{column_name}","{source_type}/columns/{column_name}"]).to(get_column));
-    cfg.service(resource(["{source_type}/{source_id}/tiles/{z}/{x}/{y}","{source_type}/tiles/{z}/{x}/{y}"]).to(get_tile));
-    cfg.service(resource(["{source_type}/{source_id}/columns","{source_type}/columns"]).to(get_columns));
+    cfg.service(
+        resource([
+            "{source_type}/{source_id}/columns/{column_name}",
+            "{source_type}/columns/{column_name}",
+        ])
+        .to(get_column),
+    );
+    cfg.service(
+        resource([
+            "{source_type}/{source_id}/tiles/{z}/{x}/{y}",
+            "{source_type}/tiles/{z}/{x}/{y}",
+        ])
+        .to(get_tile),
+    );
+    cfg.service(
+        resource(["{source_type}/{source_id}/columns", "{source_type}/columns"]).to(get_columns),
+    );
     cfg.service(get_feature);
-    cfg.service(resource(["{source_type}/{source_id}/extent","{source_type}/extent"]).to(get_extent));
-    cfg.service(resource(["{source_type}/{source_id}/columns/{column_name}/stats", "{source_type}/columns/{column_name}/stats"]).to(get_column_stat));
+    cfg.service(
+        resource(["{source_type}/{source_id}/extent", "{source_type}/extent"]).to(get_extent),
+    );
+    cfg.service(
+        resource([
+            "{source_type}/{source_id}/columns/{column_name}/stats",
+            "{source_type}/columns/{column_name}/stats",
+        ])
+        .to(get_column_stat),
+    );
     cfg.service(resource(["{source_type}", "{source_type}/{source_id}"]).to(get_data));
     cfg.service(test);
     // cfg.service(get_feature);

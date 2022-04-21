@@ -17,7 +17,6 @@ use slugify::slugify;
 use std::io::Write;
 use uuid::Uuid;
 
-
 #[get("")]
 #[tracing::instrument(
     name = "GET DATASETS",
@@ -37,7 +36,6 @@ async fn get_datasets(
     } else {
         search.user_id = None
     }
-
     let datasets = Dataset::search(&state.db, search)?;
     Ok(HttpResponse::Ok().json(datasets))
 }
@@ -262,7 +260,6 @@ async fn sync_history(
     let result = SyncImport::for_dataset(&state.db, &id)?;
     Ok(HttpResponse::Ok().json(result))
 }
-
 
 #[delete("{id}")]
 async fn delete_dataset(

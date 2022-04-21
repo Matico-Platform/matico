@@ -17,13 +17,12 @@ export const useTableData = (
   sort: Sort,
   page: Page
 ) => {
+
   let baseUrl = useMemo(()=> {
-    console.log("re memoing baseUrl");
     return urlForSource(source)
   }, [source]);
 
   const params = useMemo(()=>{
-    console.log("re memoing params ", page,sort)
     return {
      ...source?.parameters, ...page, ...sort, include_metadata:true, format:'json' 
   }},[ source,sort, page ])

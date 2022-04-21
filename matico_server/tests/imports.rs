@@ -288,7 +288,7 @@ async fn upload_json_dataset_logged_out_good_metadata() {
 }
 
 #[actix_web::test]
-async fn upload_shp_file(){
+async fn upload_shp_file() {
     let test_server = spawn_app().await;
     let url = test_server.url("/datasets");
 
@@ -315,12 +315,12 @@ async fn upload_shp_file(){
         "resources/test/shapefile.zip",
         &url,
         metadata.to_string(),
-        Some(&user.token) 
+        Some(&user.token),
     )
     .await
     .unwrap();
-    
-    let response  = file_upload_result.text().await;
+
+    let response = file_upload_result.text().await;
     println!("File upload result {:#?} ", response);
 
     // assert!(
@@ -328,10 +328,13 @@ async fn upload_shp_file(){
     //     "Tried to upload a valid shape file and it failed"
     // );
 
-    let table_result = sqlx::query("select * from test_shp limit 1").execute(&test_server.data_db).await; 
-    println!("Table result {:#?}",table_result);
+    let table_result = sqlx::query("select * from test_shp limit 1")
+        .execute(&test_server.data_db)
+        .await;
+    println!("Table result {:#?}", table_result);
 
     assert!(
-        table_result.is_ok(), "Found resulting table in the database"
+        table_result.is_ok(),
+        "Found resulting table in the database"
     );
 }

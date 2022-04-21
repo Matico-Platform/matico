@@ -64,7 +64,6 @@ export const DataTable: React.FC<DataTableProps> = ({
   }
 
   const setVisCol = (column: string)=>{
-    console.log("setting on vis column ",column)
     if(onVizualizeCol){
       if(visCol === column){
         onVizualizeCol(null)

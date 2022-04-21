@@ -6,7 +6,7 @@ extern crate diesel_derive_enum;
 #[macro_use]
 extern crate diesel_migrations;
 use crate::app_state::State;
-use crate::db::{PostgisDataSource, DataSource};
+use crate::db::{DataSource, PostgisDataSource};
 use actix::*;
 use actix_cors::Cors;
 use actix_files as fs;
@@ -16,9 +16,9 @@ use diesel::r2d2::{self, ConnectionManager};
 use scheduler::ImportScheduler;
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
-use tracing_actix_web::TracingLogger;
-use tracing;
 use std::time::Duration;
+use tracing;
+use tracing_actix_web::TracingLogger;
 
 pub mod app_config;
 mod app_state;
@@ -29,8 +29,8 @@ mod models;
 mod routes;
 mod scheduler;
 mod schema;
-mod utils;
 pub mod telemetry;
+mod utils;
 
 pub async fn health() -> impl Responder {
     "Everything is fine".to_string()
@@ -40,7 +40,6 @@ pub async fn run(
     listener: TcpListener,
     config: app_config::Config,
 ) -> Result<Server, std::io::Error> {
-
     let startup_span = tracing::info_span!("Start up");
 
     let db_connection_url = config.connection_string().unwrap();
@@ -67,7 +66,9 @@ pub async fn run(
         .await
         .expect("FAiled to connect to DB");
 
-    PostgisDataSource::setup(&data_pool).await.expect("To successfully set up the data store");
+    PostgisDataSource::setup(&data_pool)
+        .await
+        .expect("To successfully set up the data store");
 
     let ogr_string = config
         .org_connection_string()

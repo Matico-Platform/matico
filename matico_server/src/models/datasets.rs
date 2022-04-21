@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-use crate::db::{ DbPool };
+use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::{ Permission, PermissionType, ResourceType, SyncImport};
+use crate::models::{Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::ImportParams;
 
@@ -137,7 +137,6 @@ impl Dataset {
         Ok(())
     }
 
-
     pub fn update(
         pool: &DbPool,
         dataset_id: Uuid,
@@ -181,6 +180,4 @@ impl Dataset {
         }
         Ok(())
     }
-
-
 }

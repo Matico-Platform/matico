@@ -4,7 +4,7 @@ use diesel::r2d2::ConnectionManager;
 use diesel::RunQueryDsl;
 use dotenv;
 use matico_server::app_config::Config;
-use matico_server::telemetry::{get_subscriber,init_subscriber};
+use matico_server::telemetry::{get_subscriber, init_subscriber};
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use uuid::Uuid;

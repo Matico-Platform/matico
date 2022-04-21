@@ -61,6 +61,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   const [query, setQuery] = useState<undefined | string>(undefined);
   const [activeQuery, setActiveQuery] = useState<undefined | string>(undefined);
   const [queryError, setQueryError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Array<any>>([]);
 
   const datasetSource = useMemo(
     () => ({
@@ -205,7 +206,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
               {dataset && (
                 <DataTable
                   source={source}
-                  filters={[]}
+                  filters={filters}
                   visCol={visCol}
                   onVizualizeCol={setVisCol}
                   idCol={dataset?.id_col}
