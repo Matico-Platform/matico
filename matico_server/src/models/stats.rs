@@ -1,6 +1,5 @@
 use crate::{errors::ServiceError, models::Column as DatasetColumn};
 use async_trait::async_trait;
-use bigdecimal::BigDecimal;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use ts_rs::TS;
@@ -117,10 +116,10 @@ pub struct ValueCountEntry {
 #[derive(Serialize, Deserialize, Debug, TS, FromRow)]
 #[ts(export)]
 pub struct HistogramEntry {
-    bin_start: BigDecimal,
-    bin_end: BigDecimal,
-    bin_mid: BigDecimal,
-    freq: BigDecimal,
+    bin_start: f64,
+    bin_end: f64,
+    bin_mid: f64,
+    freq: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]

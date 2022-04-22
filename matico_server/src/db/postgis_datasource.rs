@@ -520,11 +520,11 @@ impl PostgisStatRunner {
             Some(edges) => format!("We have not yet implemented custom bin edges {:?}", edges),
             None => format!(
                 "
-                select  bin_no,
-                        bin_no *(max-min)/{bin_no} as bin_start, 
-                        (bin_no +1 ) * (max-min)/{bin_no} as bin_end,
-                        (bin_no +0.5 ) * (max-min)/{bin_no} as bin_mid,
-                        count(*)::NUMERIC as freq
+                select  bin_no::FLOAT,
+                        (bin_no *(max-min)/{bin_no})::FlOAT as bin_start, 
+                        ((bin_no +1 ) * (max-min)/{bin_no})::FLOAT as bin_end,
+                        ((bin_no +0.5 ) * (max-min)/{bin_no})::FLOAT as bin_mid,
+                        count(*)::FLOAT as freq
                 FROM (
                         select width_bucket({col}::NUMERIC, min, max, {bin_no}) as bin_no
                         from ({source_query}) as query,
