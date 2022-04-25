@@ -4,6 +4,7 @@ use diesel::r2d2::ConnectionManager;
 use diesel::RunQueryDsl;
 use dotenv;
 use matico_server::app_config::Config;
+use matico_server::telemetry::{get_subscriber, init_subscriber};
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use uuid::Uuid;
@@ -15,6 +16,13 @@ pub mod imports;
 pub mod users;
 pub use imports::*;
 pub use users::*;
+
+use once_cell::sync::Lazy;
+
+static TRACING: Lazy<()> = Lazy::new(|| {
+    let subscriber = get_subscriber("test".into(), "debug".into());
+    init_subscriber(subscriber);
+});
 
 pub struct TestApp {
     pub address: String,
@@ -142,9 +150,11 @@ impl TestApp {
 /// ```
 pub async fn spawn_app() -> TestApp {
     dotenv::dotenv().ok();
-    std::env::set_var("TEST_ENV", "true");
-
     let mut config = Config::from_conf().unwrap();
+
+    // The first time `initialize` is invoked the code in `TRACING` is executed.
+    // All other invocations will instead skip execution.
+    Lazy::force(&TRACING);
 
     let (db_connection_url, db_name, data_db_connection_url, data_db_name) =
         setup_dbs(&config).await;
@@ -169,6 +179,11 @@ pub async fn spawn_app() -> TestApp {
 
     config.db.name = db_name.clone();
     config.datadb.name = data_db_name.clone();
+
+    // Set max connections lower to avoid swamping the
+    // connection pool for concurrent tests
+    config.db.max_connections = Some(3);
+    config.datadb.max_connections = Some(3);
 
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     let server = matico_server::run(listener, config).await.unwrap();

@@ -39,6 +39,7 @@ fn extract_token_from_req(req: &HttpRequest) -> Option<&str> {
     }
 }
 
+#[derive(Debug)]
 pub struct AuthService {
     pub user: Option<UserToken>,
 }

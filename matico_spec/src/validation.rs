@@ -1,5 +1,5 @@
-use serde::{Serialize};
-use validator::{ValidationErrors};
+use serde::Serialize;
+use validator::ValidationErrors;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -12,8 +12,8 @@ pub struct ValidationResult {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::Dashboard;
+    use validator::Validate;
 
     #[test]
     fn test_validation() {
@@ -21,27 +21,14 @@ mod tests {
             {
                 "name": "Stuarts Dash",
                 "created_at": "2021-09-10T16:11:36.462Z",
-                "sections" :[
-                    {
-                        "name": "First screen",
-                        "order": 1,
-                        "panes":[
-                            {"Map":{
-                                "base_map":{
-                                },
-                                "position": { "width": 20, "height":20, "layer":1, "float":false},
-                                "inital_lng_lat": {"lat":0, "lng":0},
-                                "layers":[]
-                            }
-                            }
-                        ]
-                    }
-                ]
+                "pages":[
+                ],
+                "datasets":[]
             }
         "#;
         let dash: Result<Dashboard, _> = serde_json::from_str(test_str);
 
-        assert!(dash.is_ok(), "Failed to parse json");
+        assert!(dash.is_ok(), "Failed to parse json {:#?}",dash);
         let dash = dash.unwrap();
         assert!(dash.validate().is_ok(), "Specification was invalid");
     }

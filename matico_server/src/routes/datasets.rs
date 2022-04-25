@@ -2,7 +2,7 @@ use crate::app_state::State;
 use crate::auth::AuthService;
 use crate::errors::ServiceError;
 use crate::models::permissions::*;
-use crate::utils::geo_file_utils::{get_file_info, load_dataset_to_db};
+use crate::utils::geo_file_utils::load_dataset_to_db;
 
 use crate::models::{
     datasets::{CreateDatasetDTO, CreateSyncDatasetDTO, Dataset, UpdateDatasetDTO},
@@ -13,12 +13,18 @@ use actix_web::{delete, get, guard, put, web, Error, HttpResponse};
 use actix_web_lab::extract::Path;
 use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
-use log::{info, warn};
 use slugify::slugify;
 use std::io::Write;
 use uuid::Uuid;
 
 #[get("")]
+#[tracing::instrument(
+    name = "GET DATASETS",
+    skip(state),
+    fields(
+        request_id = %Uuid::new_v4(),
+    )
+)]
 async fn get_datasets(
     state: web::Data<State>,
     web::Query(search_criteria): web::Query<DatasetSearch>,
@@ -30,7 +36,6 @@ async fn get_datasets(
     } else {
         search.user_id = None
     }
-
     let datasets = Dataset::search(&state.db, search)?;
     Ok(HttpResponse::Ok().json(datasets))
 }
@@ -57,8 +62,8 @@ async fn get_dataset(
 }
 
 async fn upload_dataset_to_tmp_file(mut field: Field) -> Result<String, Error> {
-    let tmp_filename = Uuid::new_v4().to_string(); 
-    let filepath = format!("./tmp{}", tmp_filename );
+    let tmp_filename = Uuid::new_v4().to_string();
+    let filepath = format!("./tmp{}", tmp_filename);
     let mut file = web::block(move || {
         std::fs::create_dir_all("./tmp").expect("was unable to create dir");
         std::fs::File::create(&filepath)
@@ -67,17 +72,17 @@ async fn upload_dataset_to_tmp_file(mut field: Field) -> Result<String, Error> {
     .unwrap()
     .unwrap();
 
-     while let Some(chunk) = field.try_next().await? {
-            // filesystem operations are blocking, we have to use threadpool
-            file = web::block(move || file.write_all(&chunk).map(|_| file)).await??;
-        }
+    while let Some(chunk) = field.try_next().await? {
+        // filesystem operations are blocking, we have to use threadpool
+        file = web::block(move || file.write_all(&chunk).map(|_| file)).await??;
+    }
 
-    let filepath = format!("./tmp{}", tmp_filename );
+    let filepath = format!("./tmp{}", tmp_filename);
     Ok(filepath)
 }
 
 async fn parse_dataset_metadata(mut field: Field) -> Result<CreateDatasetDTO, ServiceError> {
-    info!("Parsing metadata");
+    tracing::info!("Parsing metadata");
     let field_content = field.next().await.unwrap().map_err(|_| {
         ServiceError::InternalServerError(String::from(
             "Failed to read metadata from mutlipart from",
@@ -87,12 +92,9 @@ async fn parse_dataset_metadata(mut field: Field) -> Result<CreateDatasetDTO, Se
     let metadata_str = std::str::from_utf8(&field_content)
         .map_err(|_| ServiceError::InternalServerError("Failed to parse file metadata".into()))?;
 
-    let metadata: CreateDatasetDTO = serde_json::from_str(metadata_str).map_err(|e| {
-        ServiceError::BadRequest(format!(
-            "Failed to parse metadata: ${:#?}",e
-        ))
-    })?;
-    info!("GOT METADATA AS STRING {:?}", metadata);
+    let metadata: CreateDatasetDTO = serde_json::from_str(metadata_str)
+        .map_err(|e| ServiceError::BadRequest(format!("Failed to parse metadata: ${:#?}", e)))?;
+    tracing::info!("GOT METADATA AS STRING {:?}", metadata);
     Ok(metadata)
 }
 
@@ -105,7 +107,7 @@ async fn create_dataset(
     let user: UserToken = logged_in_user
         .user
         .ok_or_else(|| ServiceError::Unauthorized("No user logged in".into()))?;
-    info!("Starting to try update");
+    tracing::info!("Starting to try update");
 
     let mut file: Option<String> = None;
     let mut metadata: Option<CreateDatasetDTO> = None;
@@ -118,12 +120,12 @@ async fn create_dataset(
                         .await
                         .map_err(|_| ServiceError::UploadFailed)?,
                 );
-                info!("Uploaded file");
+                tracing::info!("Uploaded file");
             }
             "metadata" => {
                 metadata = Some(parse_dataset_metadata(field).await?);
             }
-            _ => warn!("Unexpected form type in upload"),
+            _ => tracing::warn!("Unexpected form type in upload"),
         }
     }
 
@@ -259,30 +261,6 @@ async fn sync_history(
     Ok(HttpResponse::Ok().json(result))
 }
 
-#[get("{id}/extent")]
-async fn extent(
-    state: web::Data<State>,
-    Path(id): Path<Uuid>,
-    logged_in_user: AuthService,
-) -> Result<HttpResponse, ServiceError> {
-
-    let dataset = Dataset::find(&state.db, id)?;
-
-    if let Some(user) = logged_in_user.user {
-        if !dataset.public && user.id != dataset.owner_id {
-            Permission::require_permissions(
-                &state.db,
-                &user.id,
-                &dataset.id,
-                &[PermissionType::Read],
-            )?;
-        }
-    }
-    
-    let extent = dataset.extent(&state.data_db).await?;
-    Ok(HttpResponse::Ok().json(extent))
-}
-
 #[delete("{id}")]
 async fn delete_dataset(
     state: web::Data<State>,
@@ -304,7 +282,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(delete_dataset);
     cfg.service(update_dataset);
     cfg.service(sync_history);
-    cfg.service(extent);
+    // cfg.service(extent);
     cfg.service(
         web::resource("")
             .route(

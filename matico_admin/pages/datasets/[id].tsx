@@ -20,6 +20,7 @@ import {
   Picker,
   Header,
   ToggleButton,
+  Button,
 } from "@adobe/react-spectrum";
 import { GetServerSideProps } from "next";
 import { useDataset } from "../../hooks/useDatasets";
@@ -32,57 +33,95 @@ import SqlQuery from "@spectrum-icons/workflow/SQLQuery";
 import { SyncHistory } from "../../components/SyncHistory";
 import dynamic from "next/dynamic";
 import { QueryEditorProps } from "../../components/QueryEditor";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "../../components/DataTable";
 import { Source, SourceType } from "../../utils/api";
 import { useExtent } from "../../hooks/useExtent";
-import {FeatureEditor} from "../../components/FeatureEditor";
+import { FeatureEditor } from "../../components/FeatureEditor";
+
+const QueryEditor = dynamic<QueryEditorProps>(
+  () =>
+    (import("../../components/QueryEditor") as any).then(
+      (imp: any) => imp.QueryEditor
+    ),
+  { ssr: false }
+);
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { datasetId: query.id } };
 };
 
 const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
-  const source: Source = {
-    type: SourceType.Dataset,
-    id: datasetId,
-  };
-  const { dataset,  datasetError, updateDataset } = useDataset(datasetId);
-  const { columns, columnsError } = useDatasetColumns(source);
-
   const [selectedFeatureId, setSelectedFeatureId] =
     useState<string | number | null>(null);
 
+  const { dataset, datasetError, updateDataset } = useDataset(datasetId);
+
   const [visCol, setVisCol] = useState<string | null>(null);
-  const [query, setQuery] = useState<null | string>(null);
+  const [query, setQuery] = useState<undefined | string>(undefined);
+  const [activeQuery, setActiveQuery] = useState<undefined | string>(undefined);
+  const [queryError, setQueryError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Array<any>>([]);
+
+  const datasetSource = useMemo(
+    () => ({
+      type: SourceType.Dataset,
+      id: datasetId,
+    }),
+    [datasetId]
+  );
+
+  const querySource = useMemo(
+    () => {
+      console.log("RE MEMO source query")
+      return {
+      type: SourceType.Query,
+      query: activeQuery,
+    }},
+    [activeQuery]
+    );
+
+  const source: Source = activeQuery ? querySource : datasetSource;
+
+  const { columns: datasetColumns, columnsError: datasetColumnsError } =
+    useDatasetColumns(datasetSource);
+
+  const { columns: queryColumns, columnsError: queryColumnsError } =
+    useDatasetColumns(querySource);
+
+  const columns = activeQuery ? queryColumns : datasetColumns;
+
+  const resetQuery = () => {
+    if (dataset) {
+      setActiveQuery(undefined);
+      setQuery(`select * from ${dataset?.table_name}`);
+    }
+  };
+
+  const runQuery = () => {
+    console.log("running query ")
+    setActiveQuery(query);
+  };
 
   useEffect(() => {
-    if (query === null && dataset) {
+    if (query === undefined && dataset) {
       setQuery(`select * from ${dataset?.table_name}`);
     }
   }, [dataset, query]);
 
   const { extent, extentError } = useExtent(source);
 
-  const QueryEditor = dynamic<QueryEditorProps>(
-    () =>
-      (import("../../components/QueryEditor") as any).then(
-        (imp: any) => imp.QueryEditor
-      ),
-    { ssr: false }
-  );
+  const setIdColumn = (new_id_col: string) => {
+    updateDataset({ id_col: new_id_col });
+  };
 
-  const setIdColumn = (new_id_col:string)=>{
-    updateDataset({id_col:new_id_col}) 
-  }
+  const setGeomColumn = (new_geom_col: string) => {
+    updateDataset({ geom_col: new_geom_col });
+  };
 
-  const setGeomColumn =(new_geom_col:string)=>{
-    updateDataset({geom_col: new_geom_col})
-  }
-
-  const setPublic = (isPublic:boolean)=>{
-    updateDataset({public: isPublic})
-  }
+  const setPublic = (isPublic: boolean) => {
+    updateDataset({ public: isPublic });
+  };
 
   return (
     <Layout hasSidebar={true}>
@@ -92,40 +131,51 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
         gridArea="sidebar"
         height="100%"
       >
-        <Heading marginBottom={"size-200"}>{dataset ? dataset.name : "Loading..."}</Heading>
+        <Heading marginBottom={"size-200"}>
+          {dataset ? dataset.name : "Loading..."}
+        </Heading>
         {dataset && (
           <Well>
             <Header marginBottom={"size-200"}>Description</Header>
             <Content>{dataset.description}</Content>
           </Well>
         )}
-        {columns && (
+        {datasetColumns && (
           <Well>
             <Header marginBottom={"size-200"}>Column settings</Header>
-            <Flex direction='column'>
-            <Picker
-              width="100%"
-              selectedKey={dataset?.id_col}
-              marginBottom={"size-200"}
-              items={columns}
-              label={"Id Column"}
-              onSelectionChange={(key) => setIdColumn(key as string)}
-            >
-              {(item) => <Item key={item.name}>{item.name}</Item>}
-            </Picker>
-            <Picker
-              width="100%"
-              selectedKey={dataset?.geom_col}
-              marginBottom={"size-200"}
-              items={columns.filter((c) => c.col_type === "geometry")}
-              label={"Geometry Column"}
-              onSelectionChange={(key) => setGeomColumn(key as string)}
-            >
-              {(item) => <Item key={item.name}>{item.name}</Item>}
-            </Picker>
+            <Flex direction="column">
+              <Picker
+                width="100%"
+                selectedKey={dataset?.id_col}
+                marginBottom={"size-200"}
+                items={datasetColumns}
+                isDisabled={activeQuery !== undefined}
+                label={"Id Column"}
+                onSelectionChange={(key) => setIdColumn(key as string)}
+              >
+                {(item) => <Item key={item.name}>{item.name}</Item>}
+              </Picker>
+              <Picker
+                width="100%"
+                selectedKey={dataset?.geom_col}
+                marginBottom={"size-200"}
+                isDisabled={activeQuery !== undefined}
+                items={datasetColumns.filter((c) => c.col_type === "geometry")}
+                label={"Geometry Column"}
+                onSelectionChange={(key) => setGeomColumn(key as string)}
+              >
+                {(item) => <Item key={item.name}>{item.name}</Item>}
+              </Picker>
 
-            <ToggleButton isEmphasized isSelected={dataset.public} onChange={setPublic} >Public</ToggleButton>
-          </Flex>
+              <ToggleButton
+                isEmphasized
+                isSelected={dataset.public}
+                onChange={setPublic}
+                isDisabled={activeQuery !== undefined}
+              >
+                Public
+              </ToggleButton>
+            </Flex>
           </Well>
         )}
 
@@ -156,11 +206,12 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
               {dataset && (
                 <DataTable
                   source={source}
-                  filters={[]}
+                  filters={filters}
                   visCol={visCol}
                   onVizualizeCol={setVisCol}
                   idCol={dataset?.id_col}
                   selection={selectedFeatureId}
+                  onError={setQueryError}
                   onSelectionChange={setSelectedFeatureId}
                 />
               )}
@@ -196,14 +247,44 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
                 </TabList>
                 <TabPanels>
                   <Item key="query">
-                    <QueryEditor
-                      key={"query_pane"}
-                      query={query}
-                      onQueryChange={setQuery}
-                    />
+                    <Flex direction="column" gap="size-175">
+                      <QueryEditor
+                        key={"query_pane"}
+                        query={query}
+                        onQueryChange={setQuery}
+                      />
+                      <Flex
+                        gap={"10px"}
+                        justifyContent={"end"}
+                        alignItems="center"
+                      >
+                        {queryError && (
+                          <Text UNSAFE_style={{ color: "red" }}>
+                            {
+                              queryError
+                                .replace(
+                                  "Query failed SQL Error: error returned from database: ",
+                                  ""
+                                )
+                                .split("Query was")[0]
+                            }
+                          </Text>
+                        )}
+                        <Button variant={"negative"} onPress={resetQuery}>
+                          Clear
+                        </Button>
+                        <Button variant={"primary"} onPress={runQuery}>
+                          Run
+                        </Button>
+                      </Flex>
+                    </Flex>
                   </Item>
                   <Item key="feature">
-                    <FeatureEditor edit={true} featureId={selectedFeatureId} source={source}/>
+                    <FeatureEditor
+                      edit={true}
+                      featureId={selectedFeatureId}
+                      source={source}
+                    />
                   </Item>
                 </TabPanels>
               </Tabs>

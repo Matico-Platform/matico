@@ -1,23 +1,19 @@
 use crate::models::User;
-use actix_web::web;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use log::{info, warn};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use sqlx::FromRow;
 use uuid::Uuid;
-use sqlx::postgres::PgRow;
-use sqlx::Row;
 
-use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
+use crate::db::DbPool;
 use crate::errors::ServiceError;
-use crate::models::{columns::Column, Permission, PermissionType, ResourceType, SyncImport};
+use crate::models::{Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
-use crate::utils::{Format, ImportParams, PaginationParams, SortParams};
+use crate::utils::ImportParams;
 
-#[derive(Serialize,Deserialize, Clone,Debug)]
-pub struct Extent{
-    pub extent: Vec<f64>
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Extent {
+    pub extent: Vec<f64>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -141,35 +137,6 @@ impl Dataset {
         Ok(())
     }
 
-    pub async fn query(
-        &self,
-        pool: &DataDbPool,
-        query: Option<String>,
-        page: Option<PaginationParams>,
-        sort: Option<SortParams>,
-        format: Option<Format>,
-        include_metadata: Option<bool>,
-    ) -> Result<String, ServiceError> {
-        let q = match query {
-            Some(query) => query,
-            None => format!(r#"select * from "{}""#, self.table_name),
-        };
-
-        let metadata = PostgisQueryRunner::run_query_meta(pool, &q).await?;
-        let f = format.unwrap_or_default();
-
-        let result = PostgisQueryRunner::run_query(pool, &q, page, sort, f).await?;
-        let result_with_metadata = match include_metadata {
-            Some(true) => json!({
-            "data": result,
-            "metadata": {
-                "total": metadata.total
-            }}),
-            Some(false) | None => json!(result),
-        };
-        Ok(result_with_metadata.to_string())
-    }
-
     pub fn update(
         pool: &DbPool,
         dataset_id: Uuid,
@@ -187,7 +154,7 @@ impl Dataset {
 
     pub fn create_or_update(&self, pool: &DbPool) -> Result<Dataset, ServiceError> {
         let conn = pool.get().unwrap();
-        info!("attempting to save {:?}", self);
+        tracing::info!("attempting to save {:?}", self);
 
         diesel::insert_into(datasets)
             .values(self)
@@ -200,7 +167,7 @@ impl Dataset {
             })
     }
 
-    /// Will set up, or change the parameters for the sync requests for this dataset 
+    /// Will set up, or change the parameters for the sync requests for this dataset
     ///
     /// Any pending syncs should be retired (Not actually implemented yet)
     /// and a new seed SyncImport is generated
@@ -212,105 +179,5 @@ impl Dataset {
             }
         }
         Ok(())
-    }
-
-    /// Update a feature within the dataset 
-    ///
-    /// Based on feature id and a subset of fields to update
-    pub async fn update_feature(
-        &self,
-        db: &DataDbPool,
-        feature_id: String,
-        update: serde_json::Value,
-        format: Option<Format>
-    ) -> Result<String, ServiceError> {
-        let obj = update.as_object().unwrap();
-        let mut key_vals: Vec<String> = vec![];
-
-        for (key, value) in &*obj {
-            // TODO FIX THIS ITS SUPER FUCKING HACKY JUST NOW!
-            if value.to_string().contains("coordinates"){
-                key_vals.push(format!("{} = ST_GeomFromGeoJSON('{}')", key, value.to_string().replace("'", "\"")));
-            }
-            else{
-                key_vals.push(format!("{} = {}", key, value).replace("\"", "'"));
-            }
-        }
-        let set_statement = key_vals.join(",");
-        let query = format!(
-            r#"UPDATE "{}"
-            SET {}
-            WHERE "{}" = {}"#,
-            self.table_name, set_statement, self.id_col, feature_id
-        );
-
-        sqlx::query(&query).execute(db).await.map_err(|e| ServiceError::APIFailed(format!("Failed to update feature {}",e)))?;
-
-        self.get_feature(&db,feature_id,format).await
-    }
-
-    pub async fn get_feature(
-        &self,
-        db: &DataDbPool,
-        feature_id: String,
-        format:Option<Format>
-    ) -> Result<String, ServiceError>{
-        let query = format!(r#"select * from "{}"  where "{}" = {}"#, self.table_name, self.id_col, feature_id );
-        self.query(db,Some(query), None, None, format, None).await
-    }
-
-    /// Calculates the extent of the dataset 
-    ///
-    pub async fn extent(&self, db: &DataDbPool)->Result<Extent,ServiceError>{
-        let query = format!("Select ARRAY [
-                            ST_XMIN(ST_EXTENT({geom_col})),
-                            ST_YMIN(ST_EXTENT({geom_col})),
-                            ST_XMAX(ST_EXTENT({geom_col})),
-                            ST_YMAX(ST_EXTENT({geom_col}))
-                            ]
-                            as extent from {table_name}",
-                            geom_col=self.geom_col, 
-                            table_name=self.table_name);
-        println!("Extent query : {}",query);
-        let extent= sqlx::query(&query)
-                            .map(|row:PgRow| 
-                                Extent{
-                                 extent : row.get("extent")
-                                })
-                            .fetch_one(db)
-                            .await
-                            .map_err(|e| {
-                                ServiceError::APIFailed(format!("Failed to get bounding box {}",e))
-                            })?;
-        Ok(extent)
-
-    }
-
-    pub async fn get_column(
-        &self,
-        db: &DataDbPool,
-        col_name: String,
-    ) -> Result<Column, ServiceError> {
-        let cols = self.columns(db).await?;
-
-        let result = cols
-            .iter()
-            .find(|col| col.name == col_name)
-            .ok_or_else(|| {
-                ServiceError::BadRequest(format!(
-                    "No columns by the name of {} on table {}",
-                    col_name, self.name
-                ))
-            })?;
-        Ok((*result).clone())
-    }
-
-    pub async fn columns(&self, db: &DataDbPool) -> Result<Vec<Column>, ServiceError> {
-        let columns = PostgisQueryRunner::get_query_column_details(
-            db,
-            &format!("select * from {}", self.table_name),
-        )
-        .await?;
-        Ok(columns)
     }
 }

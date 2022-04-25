@@ -1,12 +1,9 @@
 use crate::errors::ServiceError;
 use actix_web::web;
 use diesel_as_jsonb::AsJsonb;
-use gdal::errors::GdalError;
-use gdal::Dataset;
-use log::info;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 use std::process::Command;
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, AsJsonb, Clone)]
 pub enum ImportParams {
@@ -25,7 +22,7 @@ pub struct CSVImportParams {
     // Defaults to "latitude"
     y_col: Option<String>,
 
-    // The coodinate reference system (e.g. epsg:4326)
+    // The coordinate reference system (e.g. epsg:4326)
     // Defaults to "epsg:4326"
     crs: Option<String>,
 
@@ -68,24 +65,13 @@ impl Default for GeoJsonImportParams {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ShpFileImportParams {}
 
-pub fn get_file_info(filepath: &str) -> Result<Vec<(String, u32, i32)>, GdalError> {
-    let dataset = Dataset::open(Path::new(filepath))?;
-    let layer = dataset.layer(0)?;
-    let fields = layer
-        .defn()
-        .fields()
-        .map(|field| (field.name(), field.field_type(), field.width()))
-        .collect::<Vec<_>>();
-    Ok(fields)
-}
-
 pub async fn load_dataset_to_db(
     filepath: String,
     name: String,
     params: ImportParams,
     ogr_string: String,
 ) -> Result<(), ServiceError> {
-    println!("Loading to db {:#?} {:#?}",params,ogr_string);
+    println!("Loading to db {:#?} {:#?}", params, ogr_string);
     match params {
         ImportParams::Csv(params) => {
             load_csv_dataset_to_db(filepath, name, params, ogr_string).await
@@ -99,15 +85,79 @@ pub async fn load_dataset_to_db(
     }
 }
 
+/// Attempts to unzip a shp file
+/// Returns the path to the .shp file in the unziped folder
+///
+fn attempt_to_unzip_shp_file(filepath: &str) -> Result<(String, String), ServiceError> {
+    let tmp_dir = format!("./tmp/{}", Uuid::new_v4());
+    std::fs::create_dir_all(&tmp_dir).map_err(|_| {
+        ServiceError::InternalServerError("Failed to create tmp dir on shp import".into())
+    })?;
+
+    // First extract the zip file to a dir
+    let zip_file = std::fs::File::open(&filepath).map_err(|_| {
+        ServiceError::InternalServerError("Failed to find the import shp zip".into())
+    })?;
+    let mut zip_archive = zip::ZipArchive::new(zip_file).map_err(|_| {
+        ServiceError::InternalServerError("Failed to open zip archive while importing shp".into())
+    })?;
+
+    let mut shp_file: Option<String> = None;
+
+    for i in 0..zip_archive.len() {
+        let mut file = zip_archive.by_index(i).unwrap();
+        let out_name = match file.enclosed_name() {
+            Some(path) => path.to_owned(),
+            None => continue,
+        };
+
+        if let Some(extension) = out_name.extension() {
+            if extension.to_string_lossy() == "shp" {
+                shp_file = Some(out_name.to_string_lossy().to_string());
+            }
+            if ["shp", "shx", "dbf", "prj"].contains(&extension.to_str().unwrap()) {
+                let out_path = format!("{}/{}", tmp_dir, out_name.to_string_lossy());
+                let mut out_file = std::fs::File::create(&out_path).unwrap();
+                std::io::copy(&mut file, &mut out_file).unwrap();
+            }
+        }
+    }
+    if let Some(found_shp) = shp_file {
+        Ok((tmp_dir.clone(), format!("{}/{}", tmp_dir, found_shp)))
+    } else {
+        std::fs::remove_dir_all(tmp_dir.clone())
+            .map_err(|_| ServiceError::InternalServerError("Failed to remove tmp dir".into()))?;
+        Err(ServiceError::InternalServerError(
+            "zip file did not contain a file with .shp extension".into(),
+        ))
+    }
+}
+
 pub async fn load_shp_dataset_to_db(
-    _filepath: String,
-    _name: String,
+    filepath: String,
+    name: String,
     _params: ShpFileImportParams,
     ogr_string: String,
 ) -> Result<(), ServiceError> {
-    Err(ServiceError::InternalServerError(
-        "Importing SHP files not implemented just yet".into(),
-    ))
+    let (tmp_dir, filepath) = attempt_to_unzip_shp_file(&filepath)?;
+    let ogr_result = web::block(move || {
+        let mut cmd = Command::new("ogr2ogr");
+        cmd.arg(&"-f")
+            .arg(&"PostgreSQL")
+            .arg(ogr_string)
+            .arg(&"-nln")
+            .arg(&name)
+            .arg(&"-nlt")
+            .arg(&"PROMOTE_TO_MULTI")
+            .arg(filepath)
+            .output()
+    })
+    .await
+    .map_err(|e| {
+        ServiceError::InternalServerError(format!("Failed to load shp file to db {:#?}", e))
+    })?;
+    std::fs::remove_dir_all(&tmp_dir.clone()).unwrap();
+    Ok(())
 }
 
 pub async fn load_geojson_dataset_to_db(
@@ -130,15 +180,17 @@ pub async fn load_geojson_dataset_to_db(
         if let Some(target_crs) = params.target_crs {
             cmd.arg(&"-t_srs").arg(&target_crs);
         }
+
         if let Some(input_crs) = params.input_crs {
             cmd.arg(&"-a_srs").arg(&input_crs);
         }
+
         cmd.arg(&filepath).output()
     })
     .await
     .map_err(|_| ServiceError::UploadFailed)?;
 
-    info!("Uploaded geo file {:?} ", output);
+    tracing::info!("Uploaded geo file {:?} ", output);
     Ok(())
 }
 
@@ -170,11 +222,14 @@ pub async fn load_csv_dataset_to_db(
                 .arg(format!("GEOM_POSSIBLE_NAMES={}", wkx_col));
         }
         cmd.arg("-a_srs").arg("EPSG:4326");
-        cmd.arg(format!("CSV:{}",filepath));
+        cmd.arg(format!("CSV:{}", filepath));
         cmd.output()
     })
     .await
-    .map_err(|e| { println!("FAILED TO RUN OGR {:#?}",e);  ServiceError::UploadFailed})?;
+    .map_err(|e| {
+        println!("FAILED TO RUN OGR {:#?}", e);
+        ServiceError::UploadFailed
+    })?;
 
     println!("Uploaded geo file {:?} ", output);
     Ok(())

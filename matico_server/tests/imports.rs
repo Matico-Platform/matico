@@ -220,7 +220,6 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
 
     let query = format!("select category_vars, parseable_numbers, numerical_categorical, numbers, dates from {} limit 1", dataset_body["table_name"]);
 
-
     let result: Result<(String, f64, i32, f64, DateTime<Utc>), _> = sqlx::query(&query)
         .map(|row: PgRow| {
             (
@@ -245,7 +244,6 @@ async fn upload_csv_dataset_logged_in_good_metadata_lat_lng() {
         "select ST_GeometryType(wkb_geometry) as geom_type from {} ",
         dataset_body["table_name"]
     );
-
 
     let result: Result<String, _> = sqlx::query(&query)
         .map(|row: PgRow| row.get("geom_type"))
@@ -285,6 +283,58 @@ async fn upload_json_dataset_logged_out_good_metadata() {
     .unwrap();
     assert!(
         !file_upload_result.status().is_success(),
-        "Tried to upload a valid dataset logged out and it succeded"
+        "Tried to upload a valid dataset logged out and it succeeded"
+    );
+}
+
+#[actix_web::test]
+async fn upload_shp_file() {
+    let test_server = spawn_app().await;
+    let url = test_server.url("/datasets");
+
+    let user = signup_user(
+        "test.test@test.com",
+        "test",
+        "passwword",
+        &test_server.address,
+    )
+    .await
+    .expect("Failed to create user");
+
+    let metadata = json!({
+        "name": "test_shp",
+        "description" : "Some shp file to upload",
+        "geom_col":"wkb_geometry",
+        "id_col":"id",
+        "import_params":{
+            "Shp":{}
+        }
+    });
+
+    let file_upload_result = upload_file(
+        "resources/test/shapefile.zip",
+        &url,
+        metadata.to_string(),
+        Some(&user.token),
+    )
+    .await
+    .unwrap();
+
+    let response = file_upload_result.text().await;
+    println!("File upload result {:#?} ", response);
+
+    // assert!(
+    //     file_upload_result.status().is_success(),
+    //     "Tried to upload a valid shape file and it failed"
+    // );
+
+    let table_result = sqlx::query("select * from test_shp limit 1")
+        .execute(&test_server.data_db)
+        .await;
+    println!("Table result {:#?}", table_result);
+
+    assert!(
+        table_result.is_ok(),
+        "Found resulting table in the database"
     );
 }

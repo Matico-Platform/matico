@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
   Tooltip,
 } from "@adobe/react-spectrum";
-import { useTableData } from "../hooks/useTableData";
+import { Page, useTableData } from "../hooks/useTableData";
 import { ColumnDetails } from "./ColumnDetails";
 import MapView from "@spectrum-icons/workflow/MapView";
 import {Source} from '../utils/api'
@@ -38,20 +38,23 @@ export const DataTable: React.FC<DataTableProps> = ({
   idCol
 }) => {
   const [sort, setSort] = useState<null | any>(null);
+  const [page, setPage] = useState<Page>({limit:15, offset:0})
 
   const {
     data: tableData,
     error,
     mutate: updateTableData,
-  } = useTableData(source, filters, sort, { limit: 15, offset: 0});
+  } = useTableData(source, filters, sort,page);
+
+  const tData = tableData && tableData.data ? tableData.data : tableData
 
   // This insures we update the table whenever the various options change
   useEffect(()=>{
     updateTableData()
   },[source,filters,sort])
 
-  const columns = tableData
-    ? Object.keys(tableData[0]).map((item) => ({ id: item, name: item }))
+  const columns = tData
+    ? Object.keys(tData[0]).map((item) => ({ id: item, name: item }))
     : [];
 
   const updateSelection = (selection : "all" | Set<Key>)=>{
@@ -78,7 +81,7 @@ export const DataTable: React.FC<DataTableProps> = ({
   });
 
 
-  if (!tableData) {
+  if (!tData) {
     return <div>Loading</div>;
   }
   return (
@@ -111,9 +114,9 @@ export const DataTable: React.FC<DataTableProps> = ({
           </Column>
         )}
       </TableHeader>
-      <TableBody items={tableData}>
+      <TableBody items={tData}>
         {(param: { [key: string]: any }) => (
-          <Row key={ idCol ? param[idCol] : JSON.stringify(param)}>
+          <Row key={ idCol && param[idCol] ? param[idCol] : JSON.stringify(param)}>
             {(columnKey) => (
               <Cell>
                 {typeof param[columnKey] === "object"

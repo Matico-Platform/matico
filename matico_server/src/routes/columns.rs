@@ -1,8 +1,8 @@
-use crate::app_state::State;
-use crate::db::queries::Bounds;
+use crate::{app_state::State, auth::AuthService};
+use crate::db::postgis_datasource::Bounds;
 use crate::errors::ServiceError;
 use crate::models::columns::StatParams;
-use crate::models::Dataset;
+use crate::models::{Dataset, User};
 use serde::{Deserialize, Serialize};
 
 use actix_web::{get, web, HttpResponse};
@@ -31,8 +31,10 @@ async fn get_stats(
     state: web::Data<State>,
     Path((dataset_id, column_name)): Path<(Uuid, String)>,
     web::Query(request_details): web::Query<ColumnStatRequest>,
+    logged_in_user : AuthService
 ) -> Result<HttpResponse, ServiceError> {
     let dataset = Dataset::find(&state.db, dataset_id)?;
+    let user  = User::from_token(&state.db, &logged_in_user.user);
 
     let stat_params: StatParams = serde_json::from_str(&request_details.stat).map_err(|e| {
         ServiceError::BadRequest(format!(
@@ -42,7 +44,7 @@ async fn get_stats(
     })?;
 
     let col = dataset.get_column(&state.data_db, column_name).await?;
-    let result = col.calc_stat(&state.data_db, stat_params, None).await?;
+    let result = col.calc_stat(&state.data_db, &user, stat_params, None).await?;
 
     Ok(HttpResponse::Ok().json(result))
 }

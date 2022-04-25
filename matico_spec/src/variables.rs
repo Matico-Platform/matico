@@ -58,9 +58,9 @@ pub enum DomainVal {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Mapping<D, R> {
-    variable: String,
-    domain: VarOr<Vec<D>>,
-    range: VarOr<Range<R>>,
+    pub variable: String,
+    pub domain: VarOr<Vec<D>>,
+    pub range: VarOr<Range<R>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

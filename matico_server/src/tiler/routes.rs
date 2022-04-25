@@ -1,11 +1,13 @@
-use std::collections::HashMap;
 use crate::app_state::State;
-use crate::db::{MVTTile, PostgisQueryRunner, TileID, TilerOptions};
+use crate::auth::AuthService;
+use crate::utils::MVTTile;
+use crate::db::{DataSource, PostgisDataSource, TileID, TilerOptions};
 use crate::errors::ServiceError;
-use crate::models::{Dataset,Api};
+use crate::models::{Api, Dataset,User};
 use actix_web::{get, web, HttpResponse};
 use actix_web_lab::extract::Path;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]
@@ -29,10 +31,12 @@ async fn get_tile(
     Path(tile_id): Path<TileID>,
     web::Query(query): web::Query<QueryParam>,
     web::Query(tiler_options): web::Query<TilerOptions>,
+    logged_in_user: AuthService
 ) -> Result<HttpResponse, ServiceError> {
+
+    let user = User::from_token(&state.db, &logged_in_user.user);
     let mvt_tile: MVTTile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query.q, tiler_options, tile_id)
-            .await?;
+        PostgisDataSource::run_tile_query(&state.data_db, &query.q, &user, tiler_options, tile_id).await?;
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
 
@@ -44,16 +48,19 @@ async fn get_tile_for_dataset(
     Path(dataset): Path<DatasetID>,
     Path(tile_id): Path<TileID>,
     Path(tiler_options): Path<TilerOptions>,
+    logged_in_user: AuthService
 ) -> Result<HttpResponse, ServiceError> {
+    
+    let user = User::from_token(&state.db, &logged_in_user.user);
     let dataset = Dataset::find(&state.db, dataset.dataset_id)?;
     let query = format!(r#"select * from "{}""#, dataset.table_name);
 
     let mvt_tile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id)
-            .await?;
+        PostgisDataSource::run_tile_query(&state.data_db, &query, &user, tiler_options, tile_id).await?;
 
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }
+
 
 #[get("/api/{api_id}/{z}/{x}/{y}")]
 async fn get_tile_for_query(
@@ -62,14 +69,14 @@ async fn get_tile_for_query(
     Path(tile_id): Path<TileID>,
     web::Query(params): web::Query<HashMap<String, serde_json::Value>>,
     Path(tiler_options): Path<TilerOptions>,
-)-> Result<HttpResponse, ServiceError>{
-   let api = Api::find(&state.db, api.api_id)?;
-   let query = api.construct_query(&params)?;
-
+    logged_in_user: AuthService
+) -> Result<HttpResponse, ServiceError> {
+    let api = Api::find(&state.db, api.api_id)?;
+    let query = api.construct_query(&params)?;
+    let user = User::from_token(&state.db, &logged_in_user.user);
 
     let mvt_tile =
-        PostgisQueryRunner::run_anon_tile_query(&state.data_db, &query, tiler_options, tile_id)
-            .await?;
+        PostgisDataSource::run_tile_query(&state.data_db, &query, &user, tiler_options, tile_id).await?;
 
     Ok(HttpResponse::Ok().body(mvt_tile.mvt))
 }

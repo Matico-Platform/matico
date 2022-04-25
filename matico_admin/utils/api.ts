@@ -16,7 +16,7 @@ export enum SourceType {
   Query = "query",
 }
 export type Source = {
-  id: string;
+  id?: string;
   type: SourceType;
   parameters?: { [param: string]: any };
   query?: string;
@@ -30,28 +30,36 @@ export const tileUrlForSource = (source: Source | undefined) => {
   const baseURL = process.env.NEXT_PUBLIC_SERVER_URL ?? "";
   switch (source.type) {
     case SourceType.Dataset:
-      return `${baseURL}/tiler/dataset/${source.id}/{z}/{x}/{y}`;
+      return `${baseURL}/data/dataset/${source.id}/tiles/{z}/{x}/{y}`;
     case SourceType.API:
-      return `${baseURL}/tiler/api/${
+      return `${baseURL}/data/api/${
         source.id
-      }/{z}/{x}/{y}?${Object.keys(source.parameters!)
+      }/tiles/{z}/{x}/{y}?${Object.keys(source.parameters!)
         .map((key: string) =>
           `${encodeURIComponent(key)}=${encodeURIComponent(source.parameters![key])}`
         )
         .join("&")}`;
     case SourceType.Query:
-      return `${baseURL}/api/tiler/{z}/{x}/{y}?q=${encodeURIComponent(
+      return `${baseURL}/data/query/tiles/{z}/{x}/{y}?q=${encodeURIComponent(
         source.query!
       )}`;
   }
 };
 
-export const urlForSource = (source: Source) => {
+export const urlForSource = (source: Source | null, extension: String ="") => {
+  if(!source) return ""
   switch (source?.type) {
     case SourceType.Dataset:
-      return `/datasets/${source?.id}`;
+      return `/data/dataset/${source?.id}${extension}`;
     case SourceType.API:
-      return `/apis/${source?.id}`;
+      return `/data/api/${source?.id}${extension}`;
+    case SourceType.Query:
+      if(source.query){
+        return `/data/query${extension}?q=${source.query}`;
+      }
+      else{
+        return null
+      }
     default:
       return null;
   }
@@ -226,6 +234,7 @@ export async function runQuery(
 
 export const useSWRAPI = (endpoint: string | null, opts?: any) => {
   const { params, ...swrOpts } = opts;
+  console.log('redoing this')
   return useSWR(
     endpoint ? [endpoint, params] : null,
     (url: string) => a.get(url, { params }).then((res) => res.data),

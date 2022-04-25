@@ -1,14 +1,19 @@
-import { useSWRAPI, Source, urlForSource} from "../utils/api";
+import { useSWRAPI, Source, urlForSource, SourceType} from "../utils/api";
 
 export const useColumnStat = (
-  source: Source,
+  source: Source | null | undefined,
   colName: string,
   statDetails: any
 ) => {
-  let url = urlForSource(source);
+  let url = source ? urlForSource(source,`/columns/${colName}/stats`): null;
 
-  return useSWRAPI(source && statDetails && colName ? `${url}/columns/${colName}/stats` : null, {
-    params: { stat: JSON.stringify(statDetails), ...source.parameters },
+  let params = source ? { stat: JSON.stringify(statDetails), ...source.parameters, q:source.query } : null
+  if(url && source?.type===SourceType.Query){
+    url = url.split("?")[0]
+  }
+
+  return useSWRAPI(source && statDetails && colName ? url : null, {
+    params ,
     refreshInterval: 0,
   });
 };

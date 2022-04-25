@@ -1,17 +1,11 @@
-use crate::db::{DataDbPool, DbPool, PostgisQueryRunner};
+use crate::db::DbPool;
 use crate::errors::ServiceError;
 use crate::schema::queries::{self, dsl};
-use crate::utils::{Format, PaginationParams,SortParams};
-use crate::models::columns::Column;
-use crate::models::datasets::Extent;
-use sqlx::postgres::PgRow;
-use sqlx::Row;
+use crate::utils::PaginationParams;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel_as_jsonb::AsJsonb;
-use log::info;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use std::collections::HashMap;
 use std::convert::From;
 use std::fmt::{Display, Formatter};
@@ -36,7 +30,7 @@ pub struct CreateAPIDTO {
     pub description: String,
     pub sql: Option<String>,
     pub parameters: Option<Vec<APIParam>>,
-    pub public: Option<bool>
+    pub public: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug, AsChangeset)]
@@ -46,7 +40,7 @@ pub struct UpdateAPIDTO {
     pub description: Option<String>,
     pub sql: Option<String>,
     pub parameters: Option<Vec<APIParam>>,
-    pub public: Option<bool>
+    pub public: Option<bool>,
 }
 
 impl Display for ValueType {
@@ -125,7 +119,7 @@ pub struct Api {
     pub parameters: Vec<APIParam>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
-    pub public: bool 
+    pub public: bool,
 }
 
 impl From<CreateAPIDTO> for Api {
@@ -135,13 +129,19 @@ impl From<CreateAPIDTO> for Api {
             api.description,
             api.sql.unwrap_or("select * from #{input_table}".into()),
             api.parameters.unwrap_or(vec![]),
-            api.public.unwrap_or(false)
+            api.public.unwrap_or(false),
         )
     }
 }
 
 impl Api {
-    pub fn new(name: String, description: String, sql: String, parameters: Vec<APIParam>, public: bool) -> Self {
+    pub fn new(
+        name: String,
+        description: String,
+        sql: String,
+        parameters: Vec<APIParam>,
+        public: bool,
+    ) -> Self {
         Self {
             id: Uuid::new_v4(),
             name,
@@ -150,7 +150,7 @@ impl Api {
             parameters,
             created_at: Utc::now().naive_utc(),
             updated_at: Utc::now().naive_utc(),
-            public
+            public,
         }
     }
 
@@ -169,7 +169,7 @@ impl Api {
 
     pub fn create_or_update(&self, pool: &DbPool) -> Result<Self, ServiceError> {
         let conn = pool.get().unwrap();
-        info!("Attempting to create api");
+        tracing::info!("Attempting to create api");
 
         diesel::insert_into(dsl::queries)
             .values(self)
@@ -225,7 +225,7 @@ impl Api {
                     let input = params.get(param.name()).ok_or_else(|| {
                         ServiceError::APIFailed(format!("missing param {}", param.name()))
                     })?;
-                    info!("parsing parameter for {}, {}", param.name(), input);
+                    tracing::info!("parsing parameter for {}, {}", param.name(), input);
                     let input_val_str = input.as_str().ok_or_else(|| {
                         ServiceError::APIFailed(format!(
                             "Failed to parse value for {},{:?} ",
@@ -238,114 +238,118 @@ impl Api {
                         .map_err(|_| ServiceError::APIFailed("Failed to parse parameter".into()))?;
 
                     api = param.modify_sql(api, ValueType::Numeric(input_val))?;
-                    info!("current api is {}", api);
+                    tracing::info!("current api is {}", api);
                 }
             }
         }
         Ok(api)
     }
-    
-    pub async fn run_raw(
-        pool: &DataDbPool,
-        query: String,
-        page: Option<PaginationParams>,
-        sort: Option<SortParams>,
-        format: Option<Format>,
-    ) -> Result<String, ServiceError> {
-        let f = format.unwrap_or_default();
 
-        //TODO Move this to PostgisQueryRunner
-        let metadata = PostgisQueryRunner::run_query_meta(pool, &query).await?;
+    //pub async fn run_raw(
+    //    pool: &DataDbPool,
+    //    query: String,
+    //    user: &Option<User>,
+    //    page: Option<PaginationParams>,
+    //    sort: Option<SortParams>,
+    //    format: Option<Format>,
+    //) -> Result<String, ServiceError> {
+    //    let f = format.unwrap_or_default();
 
-        let result = PostgisQueryRunner::run_query(pool, &query, page, sort, f).await?;
+    //    //TODO Move this to PostgisDataSource
+    //    let metadata = PostgisDataSource::run_metadata_query(pool, &query, &user).await?;
+    //    let result = PostgisDataSource::run_query(pool, &query, &user, page, sort, f).await?;
 
-        let result_with_metadata = json!({
-            "data":result,
-            "metadata":{
-                "total": metadata.total
-            }
-        });
+    //    let result_with_metadata = json!({
+    //        "data":result,
+    //        "metadata":{
+    //            "total": metadata.total
+    //        }
+    //    });
 
-        Ok(result_with_metadata.to_string())
-    }
+    //    Ok(result_with_metadata.to_string())
+    //}
 
-    /// Calculates the extent of the dataset 
-    ///
-    pub async fn extent(&self, db: &DataDbPool, params: &HashMap<String,serde_json::Value>)->Result<Extent,ServiceError>{
+    ///// Calculates the extent of the dataset
+    /////
+    //pub async fn extent(
+    //    &self,
+    //    db: &DataDbPool,
+    //    params: &HashMap<String, serde_json::Value>,
+    //) -> Result<Extent, ServiceError> {
+    //    let base_query = self.construct_query(params)?;
+    //    let columns = self.columns(&db, &params).await?;
 
-        let base_query = self.construct_query(params)?;
-        let columns = self.columns(&db, &params).await?;
+    //    let geom_col = columns
+    //        .iter()
+    //        .find(|c| c.col_type == "geometry")
+    //        .ok_or_else(|| ServiceError::APIFailed("Query produced no geom column".into()))?;
 
-        let geom_col = columns.iter().find(|c|c.col_type == "geometry").ok_or_else(|| ServiceError::APIFailed("Query produced no geom column".into()))?;
+    //    let query = format!(
+    //        "Select ARRAY [
+    //                        ST_XMIN(ST_EXTENT({geom_col})),
+    //                        ST_YMIN(ST_EXTENT({geom_col})),
+    //                        ST_XMAX(ST_EXTENT({geom_col})),
+    //                        ST_YMAX(ST_EXTENT({geom_col}))
+    //                        ]
+    //                        as extent from ({query}) as a",
+    //        geom_col = geom_col.name,
+    //        query = base_query
+    //    );
 
-        let query = format!("Select ARRAY [
-                            ST_XMIN(ST_EXTENT({geom_col})),
-                            ST_YMIN(ST_EXTENT({geom_col})),
-                            ST_XMAX(ST_EXTENT({geom_col})),
-                            ST_YMAX(ST_EXTENT({geom_col}))
-                            ]
-                            as extent from ({query}) as a",
-                            geom_col=geom_col.name, 
-                            query=base_query);
+    //    println!("Extent query : {}", query);
+    //    let extent = sqlx::query(&query)
+    //        .map(|row: PgRow| Extent {
+    //            extent: row.get("extent"),
+    //        })
+    //        .fetch_one(db)
+    //        .await
+    //        .map_err(|e| ServiceError::APIFailed(format!("Failed to get bounding box {}", e)))?;
+    //    Ok(extent)
+    //}
 
-        println!("Extent query : {}",query);
-        let extent= sqlx::query(&query)
-                            .map(|row:PgRow| 
-                                Extent{
-                                 extent : row.get("extent")
-                                })
-                            .fetch_one(db)
-                            .await
-                            .map_err(|e| {
-                                ServiceError::APIFailed(format!("Failed to get bounding box {}",e))
-                            })?;
-        Ok(extent)
+    //pub async fn get_column(
+    //    &self,
+    //    db: &DataDbPool,
+    //    col_name: String,
+    //    params: &HashMap<String, serde_json::Value>,
+    //) -> Result<Column, ServiceError> {
+    //    let cols = self.columns(db, params).await?;
 
-    }
+    //    let result = cols
+    //        .iter()
+    //        .find(|col| col.name == col_name)
+    //        .ok_or_else(|| {
+    //            ServiceError::BadRequest(format!(
+    //                "No columns by the name of {} on table {}",
+    //                col_name, self.name
+    //            ))
+    //        })?;
+    //    Ok((*result).clone())
+    //}
 
-    pub async fn get_column(
-        &self,
-        db: &DataDbPool,
-        col_name: String,
-        params: &HashMap<String, serde_json::Value>
-    ) -> Result<Column, ServiceError> {
-        let cols = self.columns(db,params).await?;
+    //pub async fn columns(
+    //    &self,
+    //    db: &DataDbPool,
+    //    params: &HashMap<String, serde_json::Value>,
+    //) -> Result<Vec<Column>, ServiceError> {
+    //    let query = self.construct_query(params)?;
+    //    let columns = PostgisDataSource::get_query_column_details(db, &query).await?;
+    //    Ok(columns)
+    //}
 
-        let result = cols
-            .iter()
-            .find(|col| col.name == col_name)
-            .ok_or_else(|| {
-                ServiceError::BadRequest(format!(
-                    "No columns by the name of {} on table {}",
-                    col_name, self.name
-                ))
-            })?;
-        Ok((*result).clone())
-    }
+    //pub async fn run(
+    //    &self,
+    //    pool: &DataDbPool,
+    //    params: &HashMap<String, serde_json::Value>,
+    //    user: &Option<User>,
+    //    page: Option<PaginationParams>,
+    //    sort: Option<SortParams>,
+    //    format: Option<Format>,
+    //) -> Result<String, ServiceError> {
+    //    let f = format.unwrap_or_default();
 
-    pub async fn columns(&self, db : &DataDbPool, params: &HashMap<String,serde_json::Value>)->Result<Vec<Column>, ServiceError>{
-        let query = self.construct_query(params)?;
-        let columns = PostgisQueryRunner::get_query_column_details(
-            db,
-            &query,
-        )
-        .await?;
-        Ok(columns)
-    }
-
-    pub async fn run(
-        &self,
-        pool: &DataDbPool,
-        params: &HashMap<String, serde_json::Value>,
-        page: Option<PaginationParams>,
-        sort: Option<SortParams>,
-        format: Option<Format>,
-    ) -> Result<String, ServiceError> {
-        let f = format.unwrap_or_default();
-        info!("Using format {}",f);
-
-        let query = self.construct_query(params)?;
-        let result = PostgisQueryRunner::run_query(pool, &query, page, sort, f).await?;
-        Ok(result.to_string())
-    }
+    //    let query = self.construct_query(params)?;
+    //    let result = PostgisDataSource::run_query(pool, &query, user, page, sort, f).await?;
+    //    Ok(result.to_string())
+    //}
 }
