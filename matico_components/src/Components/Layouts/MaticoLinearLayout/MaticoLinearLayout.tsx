@@ -9,8 +9,6 @@ const LinearPane: React.FC<PanePosition> = ({width, height, layer, width_units, 
     width={`${width}${width_units === "Percent" ? '%' : 'px'}`}
     height={`${height}${height_units === "Percent" ? '%' : 'px'}`}
     zIndex={layer}
-    left={`${x}${x_units === "Percent" ? '%' : 'px'}`}
-    bottom={`${y}${y_units === "Percent" ? '%' : 'px'}`}
     UNSAFE_style={{
       transition: 'bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms',
       boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)'

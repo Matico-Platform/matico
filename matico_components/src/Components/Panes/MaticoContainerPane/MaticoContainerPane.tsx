@@ -63,8 +63,7 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
                 editPath={`${editPath}.Container`}
                 editType={"Container"}
             />
-            <Heading>{title}</Heading>
-            <Content>
+            <Content width="100%" height="100%">
                 <LayoutEngine>
                     {panes
                         .filter((p: Pane) => p)

@@ -36,6 +36,7 @@ import Border from "@spectrum-icons/workflow/Border";
 import { DefaultGrid } from "../Utils/DefaultGrid";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
+import { SectionLayoutEditor } from "./SectionLayoutEditor";
 
 export interface SectionEditorProps {
   editPath: string;
@@ -201,17 +202,12 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({ editPath }) 
         background={containerPane.background}
         onChange={updatePaneDetails}
       />
-      <Well>
-        <Heading>Details</Heading>
-        <TextField
-          label="Name"
-          value={containerPane.name}
-          onChange={(name) => updateSection({ name })}
-        />
-        <Picker label="Layout">
-          <Item key="Free">Free</Item>
-        </Picker>
-      </Well>
+      <SectionLayoutEditor
+        name={containerPane.name}
+        layout={containerPane.layout}
+        updateSection={updateSection}
+
+      />
       <Well>
         <Heading>
           <Flex
