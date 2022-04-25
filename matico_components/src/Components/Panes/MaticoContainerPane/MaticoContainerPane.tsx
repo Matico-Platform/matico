@@ -68,7 +68,7 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
                     {panes
                         .filter((p: Pane) => p)
                         .map((pane: Pane, index: number) =>
-                            selectPane(pane, `${editPath}.panes.${index}`)
+                            selectPane(pane, `${editPath}.Container.panes.${index}`)
                         )}
                 </LayoutEngine>
             </Content>
