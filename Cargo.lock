@@ -2275,6 +2275,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9376a4f0340565ad675d11fc1419227faf5f60cd7ac9cb2e7185a471f30af833"
 
 [[package]]
+name = "matico_analysis"
+version = "0.1.0"
+dependencies = [
+ "arrow2",
+ "enum_dispatch",
+ "geo",
+ "geo-types",
+ "geozero 0.7.7",
+ "serde 1.0.136",
+ "serde_json",
+ "wasm-bindgen",
+ "wee_alloc",
+ "wkb",
+]
+
+[[package]]
 name = "matico_area_analysis"
 version = "0.1.0"
 dependencies = [
@@ -2283,6 +2299,8 @@ dependencies = [
  "geo",
  "geo-types",
  "geozero 0.7.7",
+ "matico_analysis",
+ "matico_spec_derive",
  "serde 1.0.136",
  "serde_json",
  "wasm-bindgen",
@@ -2374,6 +2392,7 @@ dependencies = [
 name = "matico_spec_derive"
 version = "0.1.0"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn",
 ]
