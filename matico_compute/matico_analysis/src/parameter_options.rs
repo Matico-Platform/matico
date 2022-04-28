@@ -20,7 +20,8 @@ pub enum ColType {
 
 #[derive(Serialize,Deserialize)]
 pub struct NumericFloatOptions {
-    range: Option<[f64; 2]>,
+    pub range: Option<[f32; 2]>,
+    pub default: Option<i32>
 }
 
 impl ValidateParameter for NumericFloatOptions {
@@ -46,13 +47,14 @@ impl ValidateParameter for NumericFloatOptions {
 
 impl Default for NumericFloatOptions {
     fn default() -> Self {
-        Self { range: None }
+        Self { range: None , default:None}
     }
 }
 
 #[derive(Serialize,Deserialize)]
 pub struct NumericIntOptions {
-    range: Option<[i64; 2]>,
+    pub range: Option<[i32; 2]>,
+    pub default: Option<i32>
 }
 
 impl ValidateParameter for NumericIntOptions {
@@ -78,7 +80,7 @@ impl ValidateParameter for NumericIntOptions {
 
 impl Default for NumericIntOptions {
     fn default() -> Self {
-        Self { range: None }
+        Self { range: None, default:None }
     }
 }
 

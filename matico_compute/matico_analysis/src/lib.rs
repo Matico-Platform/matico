@@ -42,5 +42,5 @@ pub trait MaticoAnalysis {
 
 pub trait MaticoAnalysisRunner{
     fn options() -> HashMap<String, ParameterOptions>;
-    fn run(&mut self) -> Result<(), ProcessError>;
+    fn run(&mut self) -> Result<Vec<u8>, ProcessError>;
 }

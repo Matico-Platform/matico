@@ -12,6 +12,7 @@ import { GeoJSONBuilder } from "./GeoJSONBuilder";
 import { COGBuilder } from "./COGBuilder";
 import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
+import {WasmComputeBuilder} from "./WasmComputeBuilder";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -191,6 +192,21 @@ export const DatasetService: DatasetServiceInterface = {
           raster:false,
           tiled: maticoApi.tiled(),
           mvtUrl: maticoApi.mvtUrl(),
+        };
+      case "WASMCompute":
+        const wasmCompute = await WasmComputeBuilder(datasetDetails);
+        console.log("build local dataset from wasm")
+        this.datasets[wasmCompute.name] = wasmCompute;
+        this._notify(wasmCompute.name);
+        return {
+          name: wasmCompute.name,
+          state: DatasetState.READY,
+          columns: await wasmCompute.columns(),
+          geomType: await wasmCompute.geometryType(),
+          local: true,
+          raster:false,
+          tiled: wasmCompute.tiled(),
+          mvtUrl: null,
         };
       case "COG":
         const cog = await COGBuilder(datasetDetails);

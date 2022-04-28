@@ -1,9 +1,9 @@
 use serde::{Serialize,Deserialize};
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,Debug, Clone)]
 pub enum ParameterValue {
-    NumericFloat(f64),
-    NumericInt(i64),
+    NumericFloat(f32),
+    NumericInt(i32),
     NumericCategory(Vec<u32>),
     TextCategory(Vec<String>),
     Column(String),

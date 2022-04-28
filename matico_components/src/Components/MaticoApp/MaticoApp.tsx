@@ -21,6 +21,7 @@ import { GeoJSONProvider } from "DatasetsProviders/GeoJSONProvider";
 import { CSVProvider } from "DatasetsProviders/CSVProvider";
 import { COGProvider } from "DatasetsProviders/COGProvider";
 import { SocrataDatasetProvider} from "DatasetsProviders/SocrataProvider/SocrataProvider";
+import { ComputeProvider } from "DatasetsProviders/ComputeProvider"
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 interface MaticoAppInterface {
@@ -110,6 +111,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                     GeoJSONProvider,
                     COGProvider,
                     SocrataDatasetProvider,
+                    ComputeProvider,
                     ...datasetProviders,
                   ]}
                   editActive={editActive}

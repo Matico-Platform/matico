@@ -1,0 +1,23 @@
+[package]
+name = "matico_dot_density_analysis"
+version = "0.1.0"
+edition = "2021"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde = { version = "^1.0.130", features = ["derive"] }
+wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
+matico_analysis = { path = "../matico_analysis" }
+matico_spec_derive = { path = "../../matico_spec_derive" }
+serde_json = "1.0.59"
+geozero = "0.7.7"
+geo-types = "0.7.2"
+geo = "0.18.0"
+arrow2 = { version = "0.9.1", features = ["io_ipc", "compute"] }
+wkb = "0.7.1"
+wee_alloc = { version = "0.4.5" }
+rand = { version = "0.8.5" }
+getrandom = { version = "0.2", features = ["js"] }

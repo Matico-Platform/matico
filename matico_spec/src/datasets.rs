@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
 use crate::{VarOr};
-
+use matico_analysis::ParameterValue;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Dataset {
@@ -10,7 +10,8 @@ pub enum Dataset {
     CSV(CSVDataset),
     MaticoRemote(MaticoRemoteDataset),
     MaticoApi(MaticoApiDataset),
-    COG(COGDataset)
+    COG(COGDataset),
+    WASMCompute(WASMCompute)
 }
 
 #[wasm_bindgen]
@@ -30,6 +31,19 @@ pub struct GeoJSONDataset {
 
     #[wasm_bindgen(skip)]
     pub url: String,
+}
+
+#[wasm_bindgen]
+#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+pub struct WASMCompute{
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[wasm_bindgen(skip)]
+    pub url: String,
+    
+    #[wasm_bindgen(skip)]
+    pub params: HashMap<String, ParameterValue>
 }
 
 #[wasm_bindgen]
@@ -78,7 +92,6 @@ pub struct MaticoApiDataset{
 
     #[wasm_bindgen(skip)]
     pub params: HashMap<String, VarOr<f32>>
-
 }
 
 

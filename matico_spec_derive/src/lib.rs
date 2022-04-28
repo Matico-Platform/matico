@@ -125,7 +125,10 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                } 
            }
 
-           pub fn run(&self){
+           pub fn run(&mut self)->Result<Vec<u8>, JsValue>{
+               // Ok(vec![])
+               self.analysis.run()
+                   .map_err(|e| wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
            
            pub fn options(&self)->JsValue{

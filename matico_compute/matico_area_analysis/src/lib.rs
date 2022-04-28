@@ -9,8 +9,8 @@ pub struct AreaAnalysis{}
 
 
 impl MaticoAnalysisRunner for AreaAnalysis{
-    fn run(&mut self) -> Result<(), ProcessError>{
-        Ok(())
+    fn run(&mut self) -> Result<Vec<u8>, ProcessError>{
+        Ok(vec![])
     }
 
     fn options() -> HashMap<String, ParameterOptions>{

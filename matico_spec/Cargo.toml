@@ -5,19 +5,20 @@ authors = ["Stuart Lynn <stuart.lynn@gmail.com>"]
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib","lib"]
+crate-type = ["cdylib", "lib"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = {version = "0.4", features=["serde", "wasmbind"]}
-serde = {version = "^1.0.130", features=["derive"]}
-validator = {version="0.12", features=["derive"]}
-wasm-bindgen = {version = "0.2.77", features = ['serde-serialize']}
+chrono = { version = "0.4", features = ["serde", "wasmbind"] }
+serde = { version = "^1.0.130", features = ["derive"] }
+validator = { version = "0.12", features = ["derive"] }
+wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
 serde_json = "1.0.59"
 serde_yaml = "0.8"
 toml = "0.5.8"
-url = {version = "2.2.2", features=["serde"]} 
-palette = {version="0.6.0", features=["serializing","libm"]} 
-matico_spec_derive = {path = "../matico_spec_derive"}
-ts-rs = {version="6.1", features=['chrono-impl', 'uuid-impl']}
+url = { version = "2.2.2", features = ["serde"] }
+palette = { version = "0.6.0", features = ["serializing", "libm"] }
+matico_spec_derive = { path = "../matico_spec_derive" }
+ts-rs = { version = "6.1", features = ['chrono-impl', 'uuid-impl'] }
+matico_analysis = { path = "../matico_compute/matico_analysis" }

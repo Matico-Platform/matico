@@ -6,4 +6,5 @@ members = [
   "matico_server",
   "matico_compute/matico_area_analysis",
   "matico_compute/matico_analysis",
+  "matico_compute/matico_dot_density_analysis",
 ]
