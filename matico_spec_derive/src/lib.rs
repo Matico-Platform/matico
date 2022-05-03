@@ -41,7 +41,11 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                         }).unwrap());
 
                         fields.named.push(Field::parse_named.parse2(quote!{
-                            pub options: HashMap<String, ParameterOptions>
+                            pub description: Option<String> 
+                        }).unwrap());
+
+                        fields.named.push(Field::parse_named.parse2(quote!{
+                            pub options: ::std::collections::BTreeMap<String, ParameterOptions>
                         }).unwrap());
 
                         fields.named.push(Field::parse_named.parse2(quote!{
@@ -135,6 +139,10 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                 wasm_bindgen::JsValue::from_serde(&self.analysis.options).unwrap()
            }
 
+           pub fn description(&self)->JsValue{
+                wasm_bindgen::JsValue::from_serde(&self.analysis.description).unwrap()
+           }
+
            pub fn set_paramter(&mut self,name: &str, value: &JsValue)->Result<(),wasm_bindgen::JsValue>{
                let param_val: ::matico_analysis::ParameterValue = value.into_serde().unwrap();
                self.analysis.set_parameter(name,param_val)
@@ -147,8 +155,9 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                Ok(wasm_bindgen::JsValue::from_serde(val).unwrap())
            }
 
-           pub fn register_table(){
-
+           pub fn register_table(&mut self,name: &str, data: &[u8])->Result<(),wasm_bindgen::JsValue>{
+              self.analysis.register_table(name,data)
+                  .map_err(|e| wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
         }
     };
@@ -160,6 +169,7 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                 Self{
                     parameter_values: HashMap::new(),
                     options: Self::options(),
+                    description: Self::description(),
                     tables: HashMap::new()
                 } 
             }

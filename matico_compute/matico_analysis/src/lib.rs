@@ -1,6 +1,6 @@
 use serde::{Serialize,Deserialize};
 
-use std::{collections::HashMap, fmt};
+use std::{collections::BTreeMap, fmt};
 mod parameter_options;
 mod parameter_values;
 pub use parameter_options::*;
@@ -41,6 +41,7 @@ pub trait MaticoAnalysis {
 }
 
 pub trait MaticoAnalysisRunner{
-    fn options() -> HashMap<String, ParameterOptions>;
+    fn options() -> BTreeMap<String, ParameterOptions>;
     fn run(&mut self) -> Result<Vec<u8>, ProcessError>;
+    fn description()-> Option<String>;
 }

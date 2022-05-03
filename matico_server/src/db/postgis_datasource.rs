@@ -54,10 +54,15 @@ fn row_to_map(row: PgRow) -> BTreeMap<String, Option<QueryVal>> {
         let type_info: &PgTypeInfo = col.type_info();
         // info!("Column type is {:#?} {:#?}", type_info, type_info.name() );
         let val: Option<QueryVal> = match type_info.name() {
-            "INT8" | "INT2" | "INT4" => {
+             "INT2" | "INT4" => {
                 let val: Option<i32> = row.get(col.name());
+                let val =val.map(|c| c as i64);
                 val.map(|v| QueryVal::Int(v))
             }
+             "INT8"  => {
+                let val: Option<i64> = row.get(col.name());
+                val.map(|v| QueryVal::Int(v))
+             }
             "FLOAT4" | "FLOAT8" => {
                 let val: Option<f64> = row.get(col.name());
                 val.map(|v| QueryVal::Float(v))

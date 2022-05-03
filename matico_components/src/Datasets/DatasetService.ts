@@ -194,7 +194,7 @@ export const DatasetService: DatasetServiceInterface = {
           mvtUrl: maticoApi.mvtUrl(),
         };
       case "WASMCompute":
-        const wasmCompute = await WasmComputeBuilder(datasetDetails);
+        const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
         console.log("build local dataset from wasm")
         this.datasets[wasmCompute.name] = wasmCompute;
         this._notify(wasmCompute.name);

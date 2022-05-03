@@ -117,7 +117,7 @@ impl QueryResult {
 #[serde(untagged)]
 pub enum QueryVal {
     Text(String),
-    Int(i32),
+    Int(i64),
     Float(f64),
     Numeric(sqlx::types::BigDecimal),
     Bool(bool),

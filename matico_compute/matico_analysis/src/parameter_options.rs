@@ -10,6 +10,21 @@ pub trait ValidateParameter {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String>;
 }
 
+#[derive(Serialize,Deserialize)]
+pub struct ParameterOptionDisplayDetails{
+    pub description: Option<String>,
+    pub display_name: Option<String>
+}
+
+impl Default for ParameterOptionDisplayDetails{
+    fn default() -> Self {
+        Self{
+            description:None,
+            display_name:None
+        }
+    }
+}
+
 
 #[derive(Serialize,Deserialize)]
 pub enum ColType {
@@ -21,7 +36,8 @@ pub enum ColType {
 #[derive(Serialize,Deserialize)]
 pub struct NumericFloatOptions {
     pub range: Option<[f32; 2]>,
-    pub default: Option<i32>
+    pub default: Option<i32>,
+    pub display_details: ParameterOptionDisplayDetails
 }
 
 impl ValidateParameter for NumericFloatOptions {
@@ -47,14 +63,15 @@ impl ValidateParameter for NumericFloatOptions {
 
 impl Default for NumericFloatOptions {
     fn default() -> Self {
-        Self { range: None , default:None}
+        Self { range: None , default:None, display_details: Default::default()}
     }
 }
 
 #[derive(Serialize,Deserialize)]
 pub struct NumericIntOptions {
     pub range: Option<[i32; 2]>,
-    pub default: Option<i32>
+    pub default: Option<i32>,
+    pub display_details: ParameterOptionDisplayDetails
 }
 
 impl ValidateParameter for NumericIntOptions {
@@ -80,14 +97,15 @@ impl ValidateParameter for NumericIntOptions {
 
 impl Default for NumericIntOptions {
     fn default() -> Self {
-        Self { range: None, default:None }
+        Self { range: None, default:None, display_details: Default::default()}
     }
 }
 
 #[derive(Serialize,Deserialize)]
 pub struct NumericCategoryOptions {
-    allow_multi: bool,
-    options: Vec<u32>,
+    pub allow_multi: bool,
+    pub options: Vec<u32>,
+    pub display_details: ParameterOptionDisplayDetails
 }
 
 impl ValidateParameter for NumericCategoryOptions {
@@ -111,14 +129,16 @@ impl Default for NumericCategoryOptions {
         Self {
             allow_multi: false,
             options: vec![],
+            display_details: Default::default()
         }
     }
 }
 
 #[derive(Serialize,Deserialize)]
 pub struct TextCategoryOptions {
-    allow_multi: bool,
-    options: Vec<String>,
+    pub allow_multi: bool,
+    pub options: Vec<String>,
+    pub display_details: ParameterOptionDisplayDetails
 }
 
 impl Default for TextCategoryOptions {
@@ -126,6 +146,7 @@ impl Default for TextCategoryOptions {
         Self {
             allow_multi: false,
             options: vec![],
+            display_details: Default::default()
         }
     }
 }
@@ -148,13 +169,17 @@ impl ValidateParameter for TextCategoryOptions {
 
 #[derive(Serialize,Deserialize)]
 pub struct ColumnOptions {
-    allowed_column_types: Option<Vec<ColType>>,
+    pub allowed_column_types: Option<Vec<ColType>>,
+    pub from_dataset: String,
+    pub display_details: ParameterOptionDisplayDetails
 }
 
 impl Default for ColumnOptions {
     fn default() -> Self {
         Self {
             allowed_column_types: Some(vec![ColType::Text, ColType::Numeric, ColType::Geometry]),
+            from_dataset: "".into(),
+            display_details: Default::default()
         }
     }
 }
@@ -168,13 +193,15 @@ impl ValidateParameter for ColumnOptions {
 
 #[derive(Serialize,Deserialize)]
 pub struct TableOptions {
-    must_have_geom: bool,
+    pub must_have_geom: bool,
+    pub display_details : ParameterOptionDisplayDetails
 }
 
 impl Default for TableOptions {
     fn default() -> Self {
         Self {
             must_have_geom: false,
+            display_details: Default::default()
         }
     }
 }
@@ -188,12 +215,17 @@ impl ValidateParameter for TableOptions {
 
 #[derive(Serialize,Deserialize)]
 pub struct TextOptions {
-    max_length: Option<usize>,
+    pub max_length: Option<usize>,
+    pub display_details: ParameterOptionDisplayDetails
+
 }
 
 impl Default for TextOptions {
     fn default() -> Self {
-        Self { max_length: None }
+        Self { 
+            max_length: None,
+            display_details: Default::default()
+        }
     }
 }
 

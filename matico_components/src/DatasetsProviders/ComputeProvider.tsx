@@ -11,24 +11,31 @@ import {
 } from "Datasets/DatasetProvider";
 import { useAnalysis } from "Hooks/useAnalysis";
 import React, { useEffect, useState } from "react";
+import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
+import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
+import {Column} from "Datasets/Dataset";
 
 const ParameterInput: React.FC<{
     name: string;
     options: any;
     value: any;
     onChange: (key: string, value: any) => void;
-}> = ({ name, options, value, onChange }) => {
+    params: { [key: string]: any };
+}> = ({ name, options, value, onChange, params }) => {
     const [type, constraints] = Object.entries(options)[0];
 
-    console.log("Options for name are ", name, constraints )
+    console.log("Options for name are ", name, constraints);
+    const description = constraints.display_details.description;
+    const label = constraints.display_details.display_name ?? name;
 
     switch (type) {
         case "NumericInt":
             return (
                 <NumberField
-                    value={value ? value.NumericInt : constraints.default }
-                    onChange={(v: number) => onChange(name, {NumericInt:v})}
-                    label={name}
+                    value={value ? value.NumericInt : constraints.default}
+                    description={description}
+                    onChange={(v: number) => onChange(name, { NumericInt: v })}
+                    label={label}
                     step={1}
                 />
             );
@@ -36,8 +43,35 @@ const ParameterInput: React.FC<{
             return (
                 <TextField
                     value={value ? value.Text : constraints.default}
-                    onChange={(v: string) => onChange(name, {Text:v})}
-                    label={name}
+                    onChange={(v: string) => onChange(name, { Text: v })}
+                    description={description}
+                    label={label}
+                />
+            );
+        case "Table":
+            return (
+                <DatasetSelector
+                    label={label}
+                    description={description}
+                    onDatasetSelected={(dataset) =>
+                        onChange(name, { Table: dataset })
+                    }
+                />
+            );
+        case "Column":
+            console.log(
+                "column selector dataset",
+                constraints.from_dataset,
+                params
+            );
+            return (
+                <DatasetColumnSelector
+                    label={label}
+                    description={description}
+                    datasetName={params[constraints.from_dataset]?.Table}
+                    onColumnSelected={(column: Column) => {
+                        onChange(name, { Column: column.name });
+                    }}
                 />
             );
         default:
@@ -64,11 +98,10 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
         setOptions({ ...options, ...update });
     };
 
-    const getComputeOptions = () => {
-        console.log("getting options");
-    };
-
     const computeOptions = analysis ? analysis.options() : {};
+    const description = analysis ? analysis.description() : "";
+
+    console.log("Compute options are ", computeOptions);
 
     return (
         <Flex direction="column" gap="size-200">
@@ -85,6 +118,14 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
             )}
             {analysis && (
                 <>
+                    <TextField
+                        value={options.name}
+                        onChange={(name: string) =>
+                            setOptions({ ...options, name })
+                        }
+                        label="Result Dataset Name"
+                    />
+                <p>{description}</p>
                     {Object.keys(computeOptions).map((key) => (
                         <ParameterInput
                             key={key}
@@ -92,9 +133,9 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                             options={computeOptions[key]}
                             value={options.params[key]}
                             onChange={updateComputeParams}
+                            params={options.params}
                         />
                     ))}
-                    <TextField value={options.name} onChange={(name:string)=>setOptions({...options,name })} label="Dataset Name"/>
 
                     <Button
                         variant="cta"

@@ -1560,6 +1560,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "geo"
+version = "0.20.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7e2e3be15682a45e9dfe9a04f84bff275390047204ab22f3c6b2312fcfb9e24"
+dependencies = [
+ "geo-types",
+ "geographiclib-rs",
+ "log",
+ "num-traits 0.2.14",
+ "robust",
+ "rstar",
+]
+
+[[package]]
 name = "geo-types"
 version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2282,7 +2296,7 @@ version = "0.1.0"
 dependencies = [
  "arrow2",
  "enum_dispatch",
- "geo",
+ "geo 0.18.0",
  "geo-types",
  "geozero 0.7.7",
  "serde 1.0.136",
@@ -2298,7 +2312,7 @@ version = "0.1.0"
 dependencies = [
  "arrow2",
  "enum_dispatch",
- "geo",
+ "geo 0.18.0",
  "geo-types",
  "geozero 0.7.7",
  "matico_analysis",
@@ -2315,7 +2329,7 @@ name = "matico_dot_density_analysis"
 version = "0.1.0"
 dependencies = [
  "arrow2",
- "geo",
+ "geo 0.20.1",
  "geo-types",
  "geozero 0.7.7",
  "getrandom 0.2.6",
@@ -2325,6 +2339,7 @@ dependencies = [
  "serde 1.0.136",
  "serde_json",
  "wasm-bindgen",
+ "web-sys",
  "wee_alloc",
  "wkb",
 ]

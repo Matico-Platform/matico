@@ -8,11 +8,13 @@ interface DatasetColumnSelectorProps {
   selectedColumn?: Column | null;
   onColumnSelected: (column: Column) => void;
   label?: string;
+  description?:string
 }
 export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
   datasetName,
   selectedColumn,
   label = "Column",
+  description,
   onColumnSelected,
 }) => {
 
@@ -26,7 +28,9 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
     <Picker
       width="100%"
       items={columns}
-      label={label ?? "Column"}
+      label={label ?? `Column from {datasetName}`}
+      description={description}
+      isDisabled={!datasetName}
       selectedKey={selectedColumn?.name}
       onSelectionChange={(column) =>
         onColumnSelected(columns.find((c) => c.name === column))

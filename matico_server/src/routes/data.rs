@@ -200,7 +200,16 @@ async fn get_tile(
     Ok(HttpResponse::Ok().body(result.mvt))
 }
 
-#[get("{source_type}/{source_id}/feature/{feature_id}")]
+#[tracing::instrument(
+    name = "Getting feature for query",
+    skip(state,logged_in_user),
+    fields(
+        request_id = %Uuid::new_v4(),
+        feature_id,
+        stat,
+        query_params,
+    )
+)]
 async fn get_feature(
     state: web::Data<State>,
     Path(source): Path<Source>,
@@ -351,7 +360,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         resource(["{source_type}/{source_id}/columns", "{source_type}/columns"]).to(get_columns),
     );
-    cfg.service(get_feature);
+    cfg.service(
+        resource(["{source_type}/{source_id}/feature", "{source_type}/feature"]).to(get_feature)
+    );
     cfg.service(
         resource(["{source_type}/{source_id}/extent", "{source_type}/extent"]).to(get_extent),
     );
