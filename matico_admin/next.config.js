@@ -59,6 +59,9 @@ module.exports = withPlugins([withTM, optomizedImages], {
   typescript: {
     ignoreBuildErrors: true,
   },
+   experimental: {
+     urlImports: ['http://localhost:8000/'],
+  },
   webpack: (config, options) => {
     config.experiments.asyncWebAssembly = true;
     config.module.rules.push(
