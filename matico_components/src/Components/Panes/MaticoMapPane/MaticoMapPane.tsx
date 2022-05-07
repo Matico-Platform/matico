@@ -69,7 +69,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     [mapLayers]
   );
 
-  console.log("MAP LAYERS", layers,mapLayers, validMapLayers)
 
   const [currentView, updateView] = useAutoVariable({
     //@ts-ignore

@@ -96,7 +96,7 @@ export const DatasetServiceMiddleWare = () => {
           comlink.proxy(onDataUpdate),
           action.payload.notifierId,
           action.payload.filters,
-          true,
+          action.payload.columns,
         );
         break
       default:

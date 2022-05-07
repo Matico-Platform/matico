@@ -14,7 +14,6 @@ import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
 
 export const MaticoLegendPane = ({ layers = [] }) => {
 
-  console.log("Layers for legend ", layers)
   return layers && layers.length ? (
     <View
       position="absolute"
@@ -45,7 +44,6 @@ export const MaticoLegendPane = ({ layers = [] }) => {
                       : null
                     : layer?.colorScale?.range
                     ? layer.colorScale.range.map((d) => {
-                       console.log("GETTING MAP ",d)
                         return (
                           <View
                             key={`rgb(${generateColor(d, false)

@@ -63,6 +63,7 @@ export const datasetsSlice = createSlice({
         datasetName: string;
         requestHash: string;
         filters?: Array<Filter>;
+        columns?: Array<string>;
         includeGeo?:boolean;
         notifierId:string;
       }>

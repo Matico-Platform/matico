@@ -46,15 +46,17 @@ impl MaticoAnalysisRunner for DotDensityAnalysis {
             Ok(col)
         }
         else{
-            Err(ProcessError{})
+            Err(ProcessError{
+                parameters: self.parameter_values.clone(),
+                error : format!("Failed to get parameter value")
+            })
         }?;
-
-        
 
         console::log_1(&format!("Schema {:#?}",source_table_schema).into());
 
         let value_pos =  source_table_schema.fields.iter().position(|c| c.name == *count_col_name).unwrap();
 
+        console::log_1(&format!("val pos {:#?}",value_pos).into());
 
         let mut rng = rand::thread_rng(); let mut points:Vec<Vec<u8>> = vec![];
         
@@ -62,7 +64,10 @@ impl MaticoAnalysisRunner for DotDensityAnalysis {
             let geoms_raw = chunk.get(geom_pos).unwrap();
             let geoms_raw = match geoms_raw.data_type().to_physical_type(){
                 PhysicalType::Binary => Ok(geoms_raw.as_any().downcast_ref::<BinaryArray<i32>>().unwrap()),
-                _ => Err(ProcessError{})
+                _ => Err(ProcessError{
+                    parameters: self.parameter_values.clone(),
+                    error : format!("Failed to deocode geometry")
+                })
             }?;
 
             let counts_raw = chunk.get(value_pos).unwrap();
@@ -71,13 +76,25 @@ impl MaticoAnalysisRunner for DotDensityAnalysis {
             let counts= match counts_raw.data_type().to_physical_type(){
                 PhysicalType::Primitive(PrimitiveType::Float32) =>{
                     let array = counts_raw.as_any().downcast_ref::<PrimitiveArray<f32>>().unwrap();
+                    let array = arrow2::compute::cast::float_to_decimal(array, 100,1);
+                    Ok(array)
+                },
+                PhysicalType::Primitive(PrimitiveType::Int32) =>{
+                    let array = counts_raw.as_any().downcast_ref::<PrimitiveArray<i32>>().unwrap();
+                    let array = arrow2::compute::cast::integer_to_decimal(&array, 100, 1); 
                     Ok(array)
                 },
                 PhysicalType::Utf8 =>{
                     let array = counts_raw.as_any().downcast_ref::<BinaryArray<i32>>().unwrap();
-                    Err(ProcessError{}) 
+                    Err(ProcessError{
+                        parameters: self.parameter_values.clone(),
+                        error : format!("UTF8 unsupported currently as count value")
+                    }) 
                 },
-                _ => Err(ProcessError{})
+                _ => Err(ProcessError{
+                        parameters: self.parameter_values.clone(),
+                        error : format!("Unsupported type for count column")
+                })
             }?;
 
             for (index,wkb) in geoms_raw.iter().enumerate(){

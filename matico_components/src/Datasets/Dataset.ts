@@ -56,7 +56,6 @@ export interface Dataset{
   idCol: string,
   columns: ()=>Promise<Column[]>,
   getData: (filters?: Array<Filter>, columns?: Array<string>) =>Promise<Datum[]>,
-  getDataWithGeo: (filters?: Array<Filter>, columns?:Array<string>) =>Promise<Datum[]>,
   getFeature: (feature_id: string) => Promise<Datum | undefined>,
   local:()=>boolean,
   tiled:()=>boolean,

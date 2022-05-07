@@ -28,7 +28,7 @@ export interface DatasetServiceInterface {
     callback: (data: Array<any>) => void,
     notifierId:string,
     filters?: Array<Filter>,
-    includeGeo?: boolean
+    columns?: Array<string>,
   ): void;
   registerDataset(
     datasetName: string,
@@ -97,16 +97,21 @@ export const DatasetService: DatasetServiceInterface = {
     callback: (data: Array<any>) => void,
     notifierId: string,
     filters?: Array<Filter>,
-    includeGeo?: boolean,
+    columns?: Array<string>,
   ) {
 
     this._registerNotifier(datasetName,notifierId, async (datasetName: string) => {
       let d = this.datasets[datasetName];
       
       if (d) {
-        let data = includeGeo
-          ? await d.getDataWithGeo(filters)
-          : await d.getData(filters);
+        self.performance.mark("worker_build_start")
+        self.performance.mark(`on_worker_data_request_start_${notifierId}`)
+        let data = await  d.getData(filters,columns);
+        self.performance.mark(`on_worker_data_request_end_${notifierId}`)
+        self.performance.mark("worker_build_end")
+        const perf = self.performance.measure(`on_worker_data_request_${notifierId}`, `on_worker_data_request_start_${notifierId}`, `on_worker_data_request_end_${notifierId}`)
+        self.performance.measure(`worker_build`, `worker_build_start`, `worker_build_end`)
+        console.log(`PERFORMANCE ${JSON.stringify(perf)}`)
         callback(data);
       }
 
@@ -195,7 +200,6 @@ export const DatasetService: DatasetServiceInterface = {
         };
       case "WASMCompute":
         const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
-        console.log("build local dataset from wasm")
         this.datasets[wasmCompute.name] = wasmCompute;
         this._notify(wasmCompute.name);
         return {

@@ -65,6 +65,8 @@ const buildDataTable = (
     type: struct,
     nullValues: [null, "n/a"],
   });
+
+  self.performance.mark("geojson_table_build_start")
   geoJSON.features.forEach((feature: any, id: number) => {
     if(!feature.geometry) { return }
     const geom = wkx.Geometry.parseGeoJSON(feature.geometry).toWkb();
@@ -78,7 +80,10 @@ const buildDataTable = (
     builder.append(datum);
   });
   builder.finish();
-  return new DataFrame(Table.fromStruct(builder.toVector()));
+  let df = new DataFrame(Table.fromStruct(builder.toVector()));
+  self.performance.mark("geojson_table_build_end")
+  self.performance.measure("geojson_table_build", "geojson_table_build_start", "geojson_table_build_end");
+  return df
 };
 
 const extractGeomType = (geojson: any) => {

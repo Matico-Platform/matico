@@ -129,35 +129,35 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                } 
            }
 
-           pub fn run(&mut self)->Result<Vec<u8>, JsValue>{
+           pub fn run(&mut self)->Result<Vec<u8>, ::wasm_bindgen::JsValue>{
                // Ok(vec![])
                self.analysis.run()
-                   .map_err(|e| wasm_bindgen::JsValue::from_serde(&e).unwrap())
+                   .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
            
-           pub fn options(&self)->JsValue{
-                wasm_bindgen::JsValue::from_serde(&self.analysis.options).unwrap()
+           pub fn options(&self)->::wasm_bindgen::JsValue{
+                ::wasm_bindgen::JsValue::from_serde(&self.analysis.options).unwrap()
            }
 
-           pub fn description(&self)->JsValue{
-                wasm_bindgen::JsValue::from_serde(&self.analysis.description).unwrap()
+           pub fn description(&self)->::wasm_bindgen::JsValue{
+                ::wasm_bindgen::JsValue::from_serde(&self.analysis.description).unwrap()
            }
 
-           pub fn set_paramter(&mut self,name: &str, value: &JsValue)->Result<(),wasm_bindgen::JsValue>{
+           pub fn set_parameter(&mut self,name: &str, value: &::wasm_bindgen::JsValue)->Result<(),::wasm_bindgen::JsValue>{
                let param_val: ::matico_analysis::ParameterValue = value.into_serde().unwrap();
                self.analysis.set_parameter(name,param_val)
-                            .map_err(|e| wasm_bindgen::JsValue::from_serde(&e).unwrap())
+                            .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
 
-           pub fn get_parameter(&self, name: &str)->Result<JsValue, JsValue>{
+           pub fn get_parameter(&self, name: &str)->Result<::wasm_bindgen::JsValue, ::wasm_bindgen::JsValue>{
                let val = self.analysis.get_parameter(name)
-                            .map_err(|e| wasm_bindgen::JsValue::from_serde(&e).unwrap())?; 
-               Ok(wasm_bindgen::JsValue::from_serde(val).unwrap())
+                            .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())?; 
+               Ok(::wasm_bindgen::JsValue::from_serde(val).unwrap())
            }
 
            pub fn register_table(&mut self,name: &str, data: &[u8])->Result<(),wasm_bindgen::JsValue>{
               self.analysis.register_table(name,data)
-                  .map_err(|e| wasm_bindgen::JsValue::from_serde(&e).unwrap())
+                  .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
         }
     };

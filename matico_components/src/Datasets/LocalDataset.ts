@@ -8,6 +8,7 @@ import {
   HistogramBin,
 } from "./Dataset";
 
+
 import { predicate, DataFrame } from "@apache-arrow/es5-cjs";
 import _ from "lodash";
 import * as d3 from "d3-array";
@@ -60,10 +61,6 @@ export class LocalDataset implements Dataset {
 
   getArrow() {
     return this._data.serialize();
-  }
-
-  getDataWithGeo(filters?: Array<Filter>) {
-    return Promise.resolve(this.getData(filters));
   }
 
   _applyAggregateFunction<AggType>(
@@ -147,7 +144,6 @@ export class LocalDataset implements Dataset {
   }
 
   getEqualIntervalBins(column: string, bins: number, filters?: Array<Filter>) {
-    console.log(`getting equal intervals for ${column}`)
     const range = this._applyAggregateFunction(
       column,
       (agg, val) => [val < agg[0] ? val : agg[0], val > agg[1] ? val : agg[1]],
@@ -244,33 +240,37 @@ export class LocalDataset implements Dataset {
       : this._data;
 
     try {
-      const vars = {};
-      let results = [];
+      const vars: Array<any> = [];
+      let results : Record<string,any> = [];
 
       let selectColumns = columns
         ? columns
         : (await this.columns()).map((c) => c.name);
 
-      selectColumns = [...selectColumns, "geom"];
-
+      self.performance.mark("filterResults_start")
+      console.log("PERFORMANCE ",selectColumns)
       filterResults.scan(
         (index) => {
+          let row : Record<string,any>= {}
+          for (let i = 0; i < selectColumns.length; i++){
+            let col = selectColumns[i]
+            row[col] = vars[i](index)
+          }
           results.push(
-            selectColumns.reduce((agg, col) => {
-              return {
-                ...agg,
-                //@ts-ignore
-                [col]: vars[col](index),
-              };
-            }, {})
+            row
           );
         },
         (batch) => {
-          selectColumns.forEach((col) => {
-            vars[col] = predicate.col(col).bind(batch);
-          });
+          for( let i = 0 ; i < selectColumns.length; i++) {
+            vars[i] = predicate.col(selectColumns[i]).bind(batch);
+          };
         }
       );
+      self.performance.mark("filterResults_end")
+      let measure = self.performance.measure("filterResults", "filterResults_start","filterResults_end")
+      console.log("PERFORMANCE ",JSON.stringify(measure, null, 2 ))
+
+      
       return results;
     } catch (e) {
       console.log(
@@ -280,18 +280,19 @@ export class LocalDataset implements Dataset {
     }
   }
 
-  getData(filters?: Array<Filter>, columns?: Array<string>) {
+  async getData(filters?: Array<Filter>, columns?: Array<string>) {
     const cacheKey = JSON.stringify([filters, columns]);
     if (this._filterCache[cacheKey]) {
       return this._filterCache[cacheKey];
     }
     if (filters && filters.length) {
       const predicate = this._constructPredicate(filters);
-      const results = this._getResultsFromPredicate(predicate);
+      const results = await this._getResultsFromPredicate(predicate, columns);
+
 
       this._filterCache[JSON.stringify(filters)] = results;
       return results;
     }
-    return Promise.resolve(this._getResultsFromPredicate());
+    return  this._getResultsFromPredicate(null,columns);
   }
 }
