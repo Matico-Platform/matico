@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export const loadAnalysis = async (url:string)=>{
   const wasm = await import(/* webpackIgnore: true */   url)
@@ -7,20 +7,23 @@ export const loadAnalysis = async (url:string)=>{
   return wasm[key].new()
 }
 
-export const useAnalysis = (url:string)=>{
+export const useAnalysis = (url:string | null)=>{
   const [analysis, setAnalysis] = useState<any>(null);
   const [error, setError] = useState<string|null>(null)
   
-  const load = ()=>{
-    loadAnalysis(url).then((module)=>{
-      setAnalysis(module)
-      setError(null)
-    })
-    .catch((e)=>{
-      setAnalysis(null)
-      setError(e.to_string())
-    })
-  }
+  useEffect(()=>{
+    if(url){
+      loadAnalysis(url).then((module)=>{
+        setAnalysis(module)
+        setError(null)
+      })
+      .catch((e)=>{
+        console.log("Error is ", e)
+        setAnalysis(null)
+        setError(e.to_string())
+      })
+    }
+  },[url])
 
-  return {analysis,error, load}
+  return {analysis,error}
 }

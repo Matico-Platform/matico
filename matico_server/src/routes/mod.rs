@@ -5,3 +5,4 @@ pub mod auth;
 pub mod data;
 pub mod datasets;
 pub mod users;
+pub mod compute;

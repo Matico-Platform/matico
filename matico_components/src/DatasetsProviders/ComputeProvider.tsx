@@ -3,7 +3,9 @@ import {
     TextField,
     Button,
     Text,
-    NumberField
+    NumberField,
+    Picker,
+    Item
 } from "@adobe/react-spectrum";
 import {
     DatasetProviderComponent,
@@ -13,7 +15,8 @@ import { useAnalysis } from "Hooks/useAnalysis";
 import React, { useEffect, useState } from "react";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
-import {Column} from "Datasets/Dataset";
+import { Column } from "Datasets/Dataset";
+import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
 
 const ParameterInput: React.FC<{
     name: string;
@@ -23,7 +26,6 @@ const ParameterInput: React.FC<{
     params: { [key: string]: any };
 }> = ({ name, options, value, onChange, params }) => {
     const [type, constraints] = Object.entries(options)[0];
-
     console.log("Options for name are ", name, constraints);
     const description = constraints.display_details.description;
     const label = constraints.display_details.display_name ?? name;
@@ -32,6 +34,7 @@ const ParameterInput: React.FC<{
         case "NumericInt":
             return (
                 <NumberField
+                    width="100%"
                     value={value ? value.NumericInt : constraints.default}
                     description={description}
                     onChange={(v: number) => onChange(name, { NumericInt: v })}
@@ -42,6 +45,7 @@ const ParameterInput: React.FC<{
         case "Text":
             return (
                 <TextField
+                    width="100%"
                     value={value ? value.Text : constraints.default}
                     onChange={(v: string) => onChange(name, { Text: v })}
                     description={description}
@@ -59,11 +63,6 @@ const ParameterInput: React.FC<{
                 />
             );
         case "Column":
-            console.log(
-                "column selector dataset",
-                constraints.from_dataset,
-                params
-            );
             return (
                 <DatasetColumnSelector
                     label={label}
@@ -82,17 +81,25 @@ const ParameterInput: React.FC<{
 export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     onSubmit
 }) => {
+    const [selectedCompute, setSelectedCompute] =
+        useState<Compute | null>(null);
+
     const [options, setOptions] = useState({
-        url: "http://localhost:8000/compute/dot_density_analysis/matico_dot_density_analysis.js",
         name: "",
         params: {}
     });
+
+    const computes = useAvaliableCompute();
 
     const updateComputeParams = (key: string, value: any) => {
         setOptions({ ...options, params: { ...options.params, [key]: value } });
     };
 
-    const { analysis, error, load } = useAnalysis(options.url);
+    const { analysis, error} = useAnalysis(
+        selectedCompute
+            ? `http://localhost:8000/compute${selectedCompute.path}`
+            : null
+    );
 
     const updateOptions = (update: { [option: string]: string }) => {
         setOptions({ ...options, ...update });
@@ -101,20 +108,23 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     const computeOptions = analysis ? analysis.options() : {};
     const description = analysis ? analysis.description() : "";
 
-    console.log("Compute options are ", computeOptions);
+    const setAnalysis= (key: string) =>{
+      setSelectedCompute(computes.find((c) => c.name === key))
+      setOptions({...options, params:{}})
+    }
+
 
     return (
         <Flex direction="column" gap="size-200">
-            <TextField
-                width="100%"
-                label="compute url"
-                value={options.url}
-                onChange={(url) => updateOptions({ url })}
-            />
-            {!analysis && (
-                <Button variant="cta" onPress={load}>
-                    Load
-                </Button>
+            {computes && (
+                <Picker
+                    width={"100%"}
+                    items={computes}
+                    selectedKey={selectedCompute?.name}
+                    onSelectionChange={ setAnalysis}
+                >
+                    {(item) => <Item key={item.name}>{item.name}</Item>}
+                </Picker>
             )}
             {analysis && (
                 <>
@@ -125,7 +135,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                         }
                         label="Result Dataset Name"
                     />
-                <p>{description}</p>
+                    <p>{description}</p>
                     {Object.keys(computeOptions).map((key) => (
                         <ParameterInput
                             key={key}
