@@ -72,7 +72,7 @@ export class MaticoRemoteApi implements Dataset {
     }));
   }
 
-  getData(filters?: Filter[], columns?: string[]) {
+  getData(filters?: Filter[], columns?: string[], limit?: number) {
     return this._queryServer(`/run?${encodeParams(this.params)}`);
   }
 

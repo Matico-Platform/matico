@@ -95,11 +95,9 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
         setOptions({ ...options, params: { ...options.params, [key]: value } });
     };
 
-    const { analysis, error} = useAnalysis(
-        selectedCompute
-            ? `http://localhost:8000/compute${selectedCompute.path}`
-            : null
-    );
+    const computeURL = selectedCompute ?  `http://localhost:8000/compute${selectedCompute.path}` : null
+
+    const { analysis, error} = useAnalysis(computeURL);
 
     const updateOptions = (update: { [option: string]: string }) => {
         setOptions({ ...options, ...update });
@@ -149,7 +147,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
 
                     <Button
                         variant="cta"
-                        onPress={() => onSubmit({ WASMCompute: options })}
+                        onPress={() => onSubmit({ WASMCompute: {...options, url: computeURL }})}
                     >
                         Submit
                     </Button>

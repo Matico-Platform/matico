@@ -233,7 +233,8 @@ export class LocalDataset implements Dataset {
 
   async _getResultsFromPredicate(
     filterPredicate?: any,
-    columns?: Array<string>
+    columns?: Array<string>,
+    limit?:number
   ) {
     const filterResults = filterPredicate
       ? this._data.filter(filterPredicate)
@@ -247,8 +248,6 @@ export class LocalDataset implements Dataset {
         ? columns
         : (await this.columns()).map((c) => c.name);
 
-      self.performance.mark("filterResults_start")
-      console.log("PERFORMANCE ",selectColumns)
       filterResults.scan(
         (index) => {
           let row : Record<string,any>= {}
@@ -266,12 +265,9 @@ export class LocalDataset implements Dataset {
           };
         }
       );
-      self.performance.mark("filterResults_end")
-      let measure = self.performance.measure("filterResults", "filterResults_start","filterResults_end")
-      console.log("PERFORMANCE ",JSON.stringify(measure, null, 2 ))
-
       
-      return results;
+      // Should probably do this in the scan  
+      return limit ? results.slice(0,limit) : results;
     } catch (e) {
       console.log(
         `something went wrong applying filters cowardly returning empty array ${e}`
@@ -280,19 +276,19 @@ export class LocalDataset implements Dataset {
     }
   }
 
-  async getData(filters?: Array<Filter>, columns?: Array<string>) {
+  async getData(filters?: Array<Filter>, columns?: Array<string>,limit?:number) {
     const cacheKey = JSON.stringify([filters, columns]);
     if (this._filterCache[cacheKey]) {
       return this._filterCache[cacheKey];
     }
     if (filters && filters.length) {
       const predicate = this._constructPredicate(filters);
-      const results = await this._getResultsFromPredicate(predicate, columns);
+      const results = await this._getResultsFromPredicate(predicate, columns,limit);
 
 
       this._filterCache[JSON.stringify(filters)] = results;
       return results;
     }
-    return  this._getResultsFromPredicate(null,columns);
+    return  this._getResultsFromPredicate(null,columns,limit);
   }
 }

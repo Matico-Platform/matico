@@ -62,9 +62,9 @@ export const datasetsSlice = createSlice({
       action: PayloadAction<{
         datasetName: string;
         requestHash: string;
+        limit?: number,
         filters?: Array<Filter>;
         columns?: Array<string>;
-        includeGeo?:boolean;
         notifierId:string;
       }>
     ) => {

@@ -97,6 +97,7 @@ export const DatasetServiceMiddleWare = () => {
           action.payload.notifierId,
           action.payload.filters,
           action.payload.columns,
+          action.payload.limit
         );
         break
       default:
