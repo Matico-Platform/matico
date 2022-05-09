@@ -1,6 +1,6 @@
 use serde::{Serialize,Deserialize};
 
-use std::{collections::BTreeMap, fmt};
+use std::{collections::{HashMap, BTreeMap}, fmt};
 mod parameter_options;
 mod parameter_values;
 pub use parameter_options::*;
@@ -32,7 +32,10 @@ impl fmt::Display for ArgError {
 }
 
 #[derive(Serialize,Deserialize)]
-pub struct ProcessError {}
+pub struct ProcessError {
+    pub parameters: HashMap<String, ParameterValue>,
+    pub error: String
+}
 
 pub trait MaticoAnalysis {
     fn get_parameter(&self, param_name: &str) -> Result<&ParameterValue, ArgError>;

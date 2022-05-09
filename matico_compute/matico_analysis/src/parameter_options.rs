@@ -36,7 +36,7 @@ pub enum ColType {
 #[derive(Serialize,Deserialize)]
 pub struct NumericFloatOptions {
     pub range: Option<[f32; 2]>,
-    pub default: Option<i32>,
+    pub default: Option<f32>,
     pub display_details: ParameterOptionDisplayDetails
 }
 
