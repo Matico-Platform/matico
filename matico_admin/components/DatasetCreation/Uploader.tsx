@@ -22,7 +22,7 @@ export const Uploader: React.FC<UploaderProps> = ({
     uploadFile(
       file,
       "/datasets",
-      { ...metadata, geom_col: "", id_col: "" },
+      { ...metadata, geom_col: "wbk_geometry", id_col: "ogc_fid" },
       setProgress
     )
       .then((response  :any) => {
