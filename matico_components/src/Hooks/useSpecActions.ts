@@ -25,8 +25,10 @@ export const useSpecActions = (
     const openEditor = (type = editType, path = editPath) =>
         dispatch(setCurrentEditPath({ editPath: path, editType: type }));
 
-    const remove = (path = editPath) =>
+    const remove = (path = editPath) => {
+        dispatch(setCurrentEditPath({ editPath: null, editType: null }));
         dispatch(removeSpecAtPath({ editPath: path }));
+    }
 
     const duplicate = (path = editPath) => {
         console.log('DUPLICATING', path)
