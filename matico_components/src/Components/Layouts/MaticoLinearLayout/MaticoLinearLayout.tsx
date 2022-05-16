@@ -7,7 +7,8 @@ import { View } from '@adobe/react-spectrum';
 const LinearPane: React.FC<PanePosition> = ({width, height, layer, width_units, height_units, x, x_units, y, y_units, children}) => {
   return <View
     width={`${width}${width_units === "Percent" ? '%' : 'px'}`}
-    height={`${height}${height_units === "Percent" ? '%' : 'px'}`}
+    height={`${height}${height_units === "Percent" ? 'vh' : 'px'}`}
+    maxWidth={"100%"}
     zIndex={layer}
     UNSAFE_style={{
       transition: 'bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms',

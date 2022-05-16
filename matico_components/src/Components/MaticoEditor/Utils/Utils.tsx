@@ -7,6 +7,7 @@ export const SectionHeading: React.FC = ({ children }) =>(
     {children}
   </Heading>
 );
+
 export function json_error_to_annotation(error: string) {
   const rg = /(.*)at line (\d+) column (\d+)/;
   const parts = error.match(rg);
@@ -21,4 +22,18 @@ export function json_error_to_annotation(error: string) {
     ] as Ace.Annotation[];
   }
   return [] as Ace.Annotation[];
+}
+
+export function findParentContainer(path: string) {
+  const parts = path.split(".");
+  // find first container, either a section or container pane
+  const containerIndex = (parts.length-1) - [...parts].reverse().findIndex((part) => ["Container","sections"].includes(part));
+  
+  // if container, slice to the container spec
+  // if section, we need to slice to the section spec + the index of the section
+  const parentPath = parts[containerIndex] === "Container"
+    ? parts.slice(0, containerIndex+1).join(".")
+    : parts.slice(0, containerIndex+2).join(".")
+    
+  return parentPath;
 }

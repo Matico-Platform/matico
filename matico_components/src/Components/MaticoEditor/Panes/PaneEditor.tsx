@@ -20,6 +20,7 @@ import TextStyle from "@spectrum-icons/workflow/TextStyle";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;
+  parentLayout: string;
 }
 
 interface PositionUnitEditorProps {
@@ -131,7 +132,11 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   background,
   onChange,
   name,
+  parentLayout
 }) => {
+  const isLinearLayout = parentLayout === 'linear'
+  const isFreeLayout = parentLayout === 'free'
+
   const updatePosition = (change: any) => {
     // console.log("Name ", change);
     // console.log('POSITION', { ...position })
@@ -162,7 +167,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
           value={name}
           onChange={(name: string) => updateName(name)}
         />
-        <TwoUpCollapsableGrid>
+        {isFreeLayout && <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="x"
             value={position.x}
@@ -177,7 +182,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onValueChange={(y) => updatePosition({ y })}
             onUnitsChange={(y_units) => updatePosition({ y_units })}
           />
-        </TwoUpCollapsableGrid>
+        </TwoUpCollapsableGrid>}
         <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="width"
@@ -194,7 +199,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onUnitsChange={(height_units) => updatePosition({ height_units })}
           />
         </TwoUpCollapsableGrid>
-        <SnapPaneMenu {...{ updatePosition }} />
+        {isFreeLayout && <SnapPaneMenu {...{ updatePosition }} />}
       </Well>
     </Flex>
   );

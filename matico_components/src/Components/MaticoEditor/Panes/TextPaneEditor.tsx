@@ -10,6 +10,9 @@ import { PaneEditor } from "./PaneEditor";
 import ReactMde from "react-mde";
 import {View,Flex,Well,Text,Heading} from "@adobe/react-spectrum"
 import "react-mde/lib/styles/css/react-mde-all.css";
+import { findParentContainer } from "../Utils/Utils";
+import { useMaticoSpec } from "Hooks/useMaticoSpec";
+import { useSpecActions } from "Hooks/useSpecActions";
 
 
 export interface PaneEditorProps {
@@ -19,33 +22,20 @@ export interface PaneEditorProps {
 export const TextPaneEditor: React.FC<PaneEditorProps> = ({
   editPath,
 }) => {
-  console.log('EDITTYPE', editPath)
-  const spec = useMaticoSelector((state) => state.spec.spec);
+  const [
+    textPane,
+    parentLayout
+  ] = useMaticoSpec(editPath)
+
+  const {
+    remove: deletePane,
+    update: updatePane
+  } = useSpecActions(editPath, "Text")
+
+  const handleContent = (content: string) => updatePane({content})
+  const handleUpdate = (change: any) => updatePane({ ...textPane, ...change})
+  
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const dispatch = useMaticoDispatch();
-
-  const deletePane = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
-  };
-
-  const updateContent = (content: string) =>
-    dispatch(setSpecAtPath({ editPath: editPath, update: { content } }));
-
-
-  const updatePane = (change: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          ...textPane,
-          ...change,
-        },
-      })
-    );
-  };
-
-  const textPane= _.get(spec, editPath);
 
   if (!textPane) {
     return (
@@ -61,13 +51,14 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({
         position={textPane.position}
         name={textPane.name}
         background={textPane.background}
-        onChange={(change) => updatePane(change)}
+        onChange={(change) => handleUpdate(change)}
+        parentLayout={parentLayout}
       />
 
       <Well>
         <Heading>Content</Heading>
         
-        <ReactMde value={textPane.content} onChange={updateContent} />
+        <ReactMde value={textPane.content} onChange={handleContent} />
       </Well>
 
     </Flex>
