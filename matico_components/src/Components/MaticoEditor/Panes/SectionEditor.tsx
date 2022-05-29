@@ -4,26 +4,26 @@ import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { Section } from "@maticoapp/matico_spec";
 import { PaneDefaults } from "../PaneDefaults";
 import {
-  deleteSpecAtPath,
-  setCurrentEditPath,
-  setSpecAtPath,
+    deleteSpecAtPath,
+    setCurrentEditPath,
+    setSpecAtPath
 } from "Stores/MaticoSpecSlice";
 import {
-  Heading,
-  Flex,
-  Item,
-  TextField,
-  Well,
-  View,
-  Text,
-  ActionButton,
-  Picker,
-  DialogTrigger,
-  Dialog,
-  Content,
-  Header,
-  repeat,
-  Grid,
+    Heading,
+    Flex,
+    Item,
+    TextField,
+    Well,
+    View,
+    Text,
+    ActionButton,
+    Picker,
+    DialogTrigger,
+    Dialog,
+    Content,
+    Header,
+    repeat,
+    Grid
 } from "@adobe/react-spectrum";
 
 import HistogramIcon from "@spectrum-icons/workflow/Histogram";
@@ -35,196 +35,202 @@ import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Border from "@spectrum-icons/workflow/Border";
 import { DefaultGrid } from "../Utils/DefaultGrid";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
+import { useMaticoSpec } from "Hooks/useMaticoSpec";
+import { useSpecActions } from "Hooks/useSpecActions";
 
 export interface SectionEditorProps {
-  editPath: string;
+    editPath: string;
 }
 
 const IconForPaneType = (PaneType: string) => {
-  switch (PaneType) {
-    case "Histogram":
-      return <HistogramIcon />;
-    case "PieChart":
-      return <PieChartIcon />;
-    case "Text":
-      return <TextIcon />;
-    case "Map":
-      return <MapIcon />;
-    case "Scatterplot":
-      return <ScatterIcon />;
-    case "Controls":
-      return <PropertiesIcon />;
-    case "Container":
-      return <Border />;
-  }
+    switch (PaneType) {
+        case "Histogram":
+            return <HistogramIcon />;
+        case "PieChart":
+            return <PieChartIcon />;
+        case "Text":
+            return <TextIcon />;
+        case "Map":
+            return <MapIcon />;
+        case "Scatterplot":
+            return <ScatterIcon />;
+        case "Controls":
+            return <PropertiesIcon />;
+        case "Container":
+            return <Border />;
+    }
 };
 
 const AvaliablePanes = [
-  {
-    sectionTitle: "Visualizations",
-    panes: [
-      { name: "Map", label: "Map" },
-      { name: "Histogram", label: "Histogram" },
-      { name: "PieChart", label: "Pie Chart" },
-      { name: "Text", label: "Text" },
-      { name: "Scatterplot", label: "Scatter Plot" },
-      { name: "Controls", label: "Controls" },
-      { name: "Container", label: "Container" },
-    ],
-  },
+    {
+        sectionTitle: "Visualizations",
+        panes: [
+            { name: "Map", label: "Map" },
+            { name: "Histogram", label: "Histogram" },
+            { name: "PieChart", label: "Pie Chart" },
+            { name: "Text", label: "Text" },
+            { name: "Scatterplot", label: "Scatter Plot" },
+            { name: "Controls", label: "Controls" },
+            { name: "Container", label: "Container" }
+        ]
+    }
 ];
 
 interface NewPaneDialogProps {
-  validatePaneName?: (name: string) => boolean;
-  onAddPane: (name: string, paneType: String) => void;
+    validatePaneName?: (name: string) => boolean;
+    onAddPane: (name: string, paneType: String) => void;
 }
 const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
-  validatePaneName,
-  onAddPane,
+    validatePaneName,
+    onAddPane
 }) => {
-  const [newPaneName, setNewPaneName] = useState("New Pane");
-  const [errorText, setErrorText] = useState<string | null>(null);
+    const [newPaneName, setNewPaneName] = useState("New Pane");
+    const [errorText, setErrorText] = useState<string | null>(null);
 
-  const attemptToAddPane = (paneType: string, close: () => void) => {
-    if (newPaneName.length === 0) {
-      setErrorText("Please provide a name");
-    }
-    if (validatePaneName) {
-      if (validatePaneName(newPaneName)) {
-        onAddPane(newPaneName, paneType);
-        close();
-      } else {
-        setErrorText(
-          "Another pane with the same name exists, pick something else"
-        );
-      }
-    }
-  };
+    const attemptToAddPane = (paneType: string, close: () => void) => {
+        if (newPaneName.length === 0) {
+            setErrorText("Please provide a name");
+        }
+        if (validatePaneName) {
+            if (validatePaneName(newPaneName)) {
+                onAddPane(newPaneName, paneType);
+                close();
+            } else {
+                setErrorText(
+                    "Another pane with the same name exists, pick something else"
+                );
+            }
+        }
+    };
 
-  return (
-    <DialogTrigger type="popover" isDismissable>
-      <ActionButton isQuiet>Add</ActionButton>
-      {(close: any) => (
-        <Dialog>
-          <Heading>Select pane to add</Heading>
-          <Content>
-            {AvaliablePanes.map((section) => (
-              <Flex direction="column" gap="size-150">
-                <TextField
-                  label="New pane name"
-                  value={newPaneName}
-                  onChange={setNewPaneName}
-                  errorMessage={errorText}
-                  width="100%"
-                ></TextField>
-                <DefaultGrid
-                  columns={repeat(2, "1fr")}
-                  columnGap={"size-150"}
-                  rowGap={"size-150"}
-                  autoRows="fit-content"
-                  marginBottom="size-200"
-                >
-                  {section.panes.map((pane) => (
-                    <ActionButton
-                      onPress={() => {
-                        attemptToAddPane(pane.name, close);
-                      }}
-                    >
-                      {IconForPaneType(pane.name)}
-                      <Text>{pane.label}</Text>
-                    </ActionButton>
-                  ))}
-                </DefaultGrid>
-              </Flex>
-            ))}
-          </Content>
-        </Dialog>
-      )}
-    </DialogTrigger>
-  );
+    return (
+        <DialogTrigger type="popover" isDismissable>
+            <ActionButton isQuiet>Add</ActionButton>
+            {(close: any) => (
+                <Dialog>
+                    <Heading>Select pane to add</Heading>
+                    <Content>
+                        {AvaliablePanes.map((section) => (
+                            <Flex direction="column" gap="size-150">
+                                <TextField
+                                    label="New pane name"
+                                    value={newPaneName}
+                                    onChange={setNewPaneName}
+                                    errorMessage={errorText}
+                                    width="100%"
+                                ></TextField>
+                                <DefaultGrid
+                                    columns={repeat(2, "1fr")}
+                                    columnGap={"size-150"}
+                                    rowGap={"size-150"}
+                                    autoRows="fit-content"
+                                    marginBottom="size-200"
+                                >
+                                    {section.panes.map((pane) => (
+                                        <ActionButton
+                                            onPress={() => {
+                                                attemptToAddPane(
+                                                    pane.name,
+                                                    close
+                                                );
+                                            }}
+                                        >
+                                            {IconForPaneType(pane.name)}
+                                            <Text>{pane.label}</Text>
+                                        </ActionButton>
+                                    ))}
+                                </DefaultGrid>
+                            </Flex>
+                        ))}
+                    </Content>
+                </Dialog>
+            )}
+        </DialogTrigger>
+    );
 };
 
 export const SectionEditor: React.FC<SectionEditorProps> = ({ editPath }) => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const dispatch = useMaticoDispatch();
-  const section = _.get(spec, editPath);
-
-  const updateSection = (change: Section) => {
-    dispatch(setSpecAtPath({ editPath: editPath, update: change }));
-  };
-
-  const validateName = (name: string) => {
-    const existingNames = section.panes.map(
-      (pane) => Object.values(pane)[0].name
+    const [section, parentLayout] = useMaticoSpec(editPath);
+    const { remove: deletePane, update: updatePane } = useSpecActions(
+        editPath,
+        "Section"
     );
-    return !existingNames.includes(name);
-  };
 
-  const addPane = (paneName: string, paneType: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath: editPath,
-        update: {
-          panes: [
-            ...section.panes,
-            { [paneType]: { ...PaneDefaults[paneType], name: paneName } },
-          ],
-        },
-      })
-    );
-  };
+    const updateSection = (change: Section) => {
+        updatePane({ ...section, change });
+    };
 
-  if (!section) {
-    return <View>Failed to find section in specification</View>;
-  }
-  return (
-    <Flex width="100%" height="100%" direction="column">
-      <Well>
-        <Heading>Details</Heading>
-        <TextField
-          label="Name"
-          value={section.name}
-          onChange={(name) => updateSection({ name })}
-        />
-        <Picker label="Layout">
-          <Item key="Free">Free</Item>
-        </Picker>
-      </Well>
-      <Well>
-        <Heading>
-          <Flex
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Text>Panes</Text>
+    const validateName = (name: string) => {
+        const existingNames = section.panes.map(
+            (pane) => Object.values(pane)[0].name
+        );
+        return !existingNames.includes(name);
+    };
 
-            <NewPaneDialog
-              onAddPane={addPane}
-              validatePaneName={validateName}
-            />
-          </Flex>
-        </Heading>
-        <Flex gap={"size-200"} direction="column">
-          {section.panes.map((pane, index) => {
-            let [paneType, paneSpecs] = Object.entries(pane)[0];
-            return (
-              <RowEntryMultiButton
-                key={paneSpecs.name}
-                entryName={
-                  <Flex direction='row' alignItems='center' gap="size-100">
-                    {IconForPaneType(paneType)}
-                    <Text>{paneSpecs.name}</Text>
-                  </Flex>
-                }
-                editPath={`${editPath}.panes.${index}.${paneType}`}
-                editType={paneType}
+    const addPane = (paneName: string, paneType: string) => {
+        updatePane({
+            ...section,
+            panes: [
+                ...section.panes,
+                { [paneType]: { ...PaneDefaults[paneType], name: paneName } }
+            ]
+        });
+    };
+
+    if (!section) {
+        return <View>Failed to find section in specification</View>;
+    }
+    return (
+        <Flex width="100%" height="100%" direction="column">
+            <Well>
+                <Heading>Details</Heading>
+                <TextField
+                    label="Name"
+                    value={section.name}
+                    onChange={(name) => updateSection({ name })}
                 />
-            );
-          })}
+                <Picker label="Layout">
+                    <Item key="Free">Free</Item>
+                </Picker>
+            </Well>
+            <Well>
+                <Heading>
+                    <Flex
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                    >
+                        <Text>Panes</Text>
+
+                        <NewPaneDialog
+                            onAddPane={addPane}
+                            validatePaneName={validateName}
+                        />
+                    </Flex>
+                </Heading>
+                <Flex gap={"size-200"} direction="column">
+                    {section.panes.map((pane, index) => {
+                        let [paneType, paneSpecs] = Object.entries(pane)[0];
+                        return (
+                            <RowEntryMultiButton
+                                key={paneSpecs.name}
+                                entryName={
+                                    <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        gap="size-100"
+                                    >
+                                        {IconForPaneType(paneType)}
+                                        <Text>{paneSpecs.name}</Text>
+                                    </Flex>
+                                }
+                                editPath={`${editPath}.panes.${index}.${paneType}`}
+                                editType={paneType}
+                            />
+                        );
+                    })}
+                </Flex>
+            </Well>
         </Flex>
-      </Well>
-    </Flex>
-  );
+    );
 };

@@ -59,6 +59,7 @@ export const useSpecActions = (
     }
 
     const manuallySetSpec = (...args: any[]) => dispatch(setSpecAtPath(...args));
+    const setEditPath = (...args: any[]) => dispatch(setCurrentEditPath(...args));
 
     return {
         openEditor,
@@ -68,7 +69,8 @@ export const useSpecActions = (
         reconcile,
         reorder,
         move,
-        manuallySetSpec
+        manuallySetSpec,
+        setEditPath
     };
 };
 

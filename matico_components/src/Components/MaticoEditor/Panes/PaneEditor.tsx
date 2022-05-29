@@ -4,17 +4,14 @@ import {
   Flex,
   TextField,
   Well,
-  Grid,
   Text,
   Heading,
-  repeat,
   Item,
   NumberField,
   Picker,
   ActionGroup,
   Icon,
 } from "@adobe/react-spectrum";
-import { DefaultGrid } from "../Utils/DefaultGrid";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import TextStyle from "@spectrum-icons/workflow/TextStyle";
 

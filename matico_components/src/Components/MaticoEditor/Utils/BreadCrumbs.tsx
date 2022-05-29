@@ -56,7 +56,7 @@ export const BreadCrumbs: React.FC<{ editPath: string }> = ({ editPath }) => {
       editType: editTypeMapping[editItem],
     }))
     .filter((a) => a.label);
-
+    console.log('pathSegments', pathSegments)
   if (pathSegments.length === 0) {
     return <></>;
   }
