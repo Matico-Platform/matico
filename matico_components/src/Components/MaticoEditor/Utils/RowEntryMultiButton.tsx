@@ -35,7 +35,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
     entryName,
     editPath,
     editType,
-    inset = "none",
+    inset = 0,
     compact = false
 }): any => {
     const { openEditor, remove, duplicate, move, reorder } = useSpecActions(
@@ -64,6 +64,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                 gap="size-50"
                 width="100%"
                 alignContent={"center"}
+                justifyContent={"space-between"}
             >
                 <View
                     maxWidth={"50%"}
@@ -81,6 +82,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                     overflowMode="collapse"
                     justifySelf={"end"}
                     maxWidth="50%"
+                    marginStart={`-${inset/2}em`}
                     onAction={(action) => {
                         switch (action) {
                             case "delete":
