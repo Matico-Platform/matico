@@ -14,3 +14,4 @@ dist/
 # Local Netlify folder
 .netlify
 matico_charts/package-lock.json
+.vscode/settings.json
