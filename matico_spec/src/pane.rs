@@ -217,7 +217,6 @@ pub struct PanePosition {
     pub float: bool,
     pub x: Option<f32>,
     pub y: Option<f32>,
-
     #[wasm_bindgen(skip)]
     pub x_units: Option<ScreenUnits>,
     #[wasm_bindgen(skip)]
@@ -225,5 +224,9 @@ pub struct PanePosition {
     #[wasm_bindgen(skip)]
     pub width_units: Option<ScreenUnits>,
     #[wasm_bindgen(skip)]
-    pub height_units: Option<ScreenUnits>
+    pub height_units: Option<ScreenUnits>,
+    #[wasm_bindgen(skip)]
+    pub padding: Option<[f32; 4]>,
+    #[wasm_bindgen(skip)]
+    pub padding_units: Option<[ScreenUnits; 4]>
 }

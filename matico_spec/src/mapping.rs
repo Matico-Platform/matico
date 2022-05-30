@@ -150,7 +150,9 @@ impl Default for MapPane {
                 width_units: Some(ScreenUnits::Pixels),
                 height_units: Some(ScreenUnits::Pixels),
                 x_units: Some(ScreenUnits::Pixels),
-                y_units: Some(ScreenUnits::Pixels)
+                y_units: Some(ScreenUnits::Pixels),
+                padding: Some([0.0,0.0,0.0,0.0]),
+                padding_units: Some([ScreenUnits::Pixels,ScreenUnits::Pixels,ScreenUnits::Pixels,ScreenUnits::Pixels]),
             },
             view: VarOr::Value(View::default()),
             layers: vec![],
