@@ -60,10 +60,10 @@ const FreePane: React.FC<PanePosition> = ({
     left={`${x}${handleUnits(x_units)}`}
     bottom={`${y}${handleUnits(y_units)}`}
     backgroundColor={"static-black"}
-    padding={handlePositionalRule(
-      [pad_top, pad_right, pad_bottom,  pad_left],
-      [pad_units_top, pad_units_right, pad_units_bottom, pad_units_left]
-    )}
+    paddingBottom={`${pad_bottom}${handleUnits(pad_units_bottom)}`}
+    paddingStart={`${pad_left}${handleUnits(pad_units_left)}`}
+    paddingEnd={`${pad_right}${handleUnits(pad_units_right)}`}
+    paddingTop={`${pad_top}${handleUnits(pad_units_top)}`}
     UNSAFE_style={{
       transition: 'bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms',
       boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)',
@@ -80,7 +80,6 @@ interface MaticoFreeLayoutInterface {
 }
 
 export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({ children }) => {
-  console.log('FREE PANE CHILDREN', children)
   return <FreeArea>
     {React.Children.map(children, child => {
       //@ts-ignore

@@ -61,13 +61,14 @@ const LinearPane: React.FC<PanePosition> = ({
     height={`${height}${handleVerticalUnits(height_units)}`}
     maxWidth={"100%"}
     zIndex={layer}
-    padding={handlePositionalRule(
-      [pad_top, pad_right, pad_bottom, pad_left],
-      [pad_units_top, pad_units_right, pad_units_bottom, pad_units_left]
-    )}
+    paddingBottom={`${pad_bottom}${handleVerticalUnits(pad_units_bottom)}`}
+    paddingStart={`${pad_left}${handleVerticalUnits(pad_units_left)}`}
+    paddingEnd={`${pad_right}${handleVerticalUnits(pad_units_right)}`}
+    paddingTop={`${pad_top}${handleVerticalUnits(pad_units_top)}`}
     UNSAFE_style={{
       transition: 'bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms',
-      boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)'
+      boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)',
+      boxSizing: 'border-box'
     }}
   >
     {children}
