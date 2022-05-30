@@ -25,7 +25,8 @@ export function json_error_to_annotation(error: string) {
 }
 
 export function findParentContainer(path: string) {
-  const parts = path.split(".");
+  // remove the last part, to prevent self from being identified as parent
+  const parts = path.split(".").slice(0,-1);
   // find first container, either a section or container pane
   const containerIndex = (parts.length-1) - [...parts].reverse().findIndex((part) => ["Container","sections"].includes(part));
   
