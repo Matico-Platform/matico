@@ -1,4 +1,4 @@
-import { MaticoFreeLayout } from "../Components/Layouts/MaticoFreeLayout/MaticoFreeLayout";
+import { MaticoFreeLayout } from "Components/Layouts/MaticoFreeLayout/MaticoFreeLayout";
 import { MaticoLinearLayout } from "Components/Layouts/MaticoLinearLayout/MaticoLinearLayout";
 
 interface LayoutLabel {

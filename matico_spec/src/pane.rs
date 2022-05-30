@@ -204,6 +204,38 @@ impl PanePosition{
             None=> format!("{}",ScreenUnits::default())
         }
     }
+
+    #[wasm_bindgen(getter = pad_units_left)]
+    pub fn get_pad_units_left(&self) -> String {
+        match self.pad_units_left{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
+
+    #[wasm_bindgen(getter = pad_units_right)]
+    pub fn get_pad_units_right(&self) -> String {
+        match self.pad_units_right{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
+
+    #[wasm_bindgen(getter = pad_units_top)]
+    pub fn get_pad_units_top(&self) -> String {
+        match self.pad_units_top{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
+
+    #[wasm_bindgen(getter = pad_units_bottom)]
+    pub fn get_pad_units_bottom(&self) -> String {
+        match self.pad_units_bottom{
+            Some(unit) => format!("{}",unit),
+            None=> format!("{}",ScreenUnits::default())
+        }
+    }
 }
 
 #[wasm_bindgen]
@@ -217,6 +249,10 @@ pub struct PanePosition {
     pub float: bool,
     pub x: Option<f32>,
     pub y: Option<f32>,
+    pub pad_left: Option<f32>,
+    pub pad_right: Option<f32>,
+    pub pad_top: Option<f32>,
+    pub pad_bottom: Option<f32>,
     #[wasm_bindgen(skip)]
     pub x_units: Option<ScreenUnits>,
     #[wasm_bindgen(skip)]
@@ -226,7 +262,11 @@ pub struct PanePosition {
     #[wasm_bindgen(skip)]
     pub height_units: Option<ScreenUnits>,
     #[wasm_bindgen(skip)]
-    pub padding: Option<[f32; 4]>,
+    pub pad_units_left: Option<ScreenUnits>,
     #[wasm_bindgen(skip)]
-    pub padding_units: Option<[ScreenUnits; 4]>
+    pub pad_units_right: Option<ScreenUnits>,
+    #[wasm_bindgen(skip)]
+    pub pad_units_top: Option<ScreenUnits>,
+    #[wasm_bindgen(skip)]
+    pub pad_units_bottom: Option<ScreenUnits>,
 }

@@ -28,7 +28,7 @@ import SwitchIcon from "@spectrum-icons/workflow/Switch";
 import MenuIcon from "@spectrum-icons/workflow/Menu";
 import { findParentContainer } from "../Utils/Utils";
 import { useMaticoSpec } from "Hooks/useMaticoSpec";
-import { useSpecActions } from "../../../../dist/Hooks/useSpecActions";
+import { useSpecActions } from "Hooks/useSpecActions";
 
 interface AddControlModalProps {
     onAddControl: (name: string, controlType: string) => void;

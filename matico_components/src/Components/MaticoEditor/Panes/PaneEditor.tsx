@@ -197,6 +197,40 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
           />
         </TwoUpCollapsableGrid>
         {isFreeLayout && <SnapPaneMenu {...{ updatePosition }} />}
+        
+        <Heading>Pane Padding</Heading>
+        <TwoUpCollapsableGrid>
+          <PositionUnitEditor
+            label="Padding Top"
+            value={position.pad_top}
+            units={position.pad_units_top}
+            onValueChange={(pad_top) => updatePosition({ pad_top })}
+            onUnitsChange={(pad_units_top) => updatePosition({ pad_units_top })}
+          />
+          <PositionUnitEditor
+            label="Padding Bottom"
+            value={position.pad_bottom}
+            units={position.pad_units_bottom}
+            onValueChange={(pad_bottom) => updatePosition({ pad_bottom })}
+            onUnitsChange={(pad_units_bottom) => updatePosition({ pad_units_bottom })}
+          />
+        </TwoUpCollapsableGrid>
+        <TwoUpCollapsableGrid>
+          <PositionUnitEditor
+            label="Padding Left"
+            value={position.pad_left}
+            units={position.pad_units_left}
+            onValueChange={(pad_left) => updatePosition({ pad_left })}
+            onUnitsChange={(pad_units_left) => updatePosition({ pad_units_left })}
+          />
+          <PositionUnitEditor
+            label="Padding Right"
+            value={position.pad_right}
+            units={position.pad_units_right}
+            onValueChange={(pad_right) => updatePosition({ pad_right })}
+            onUnitsChange={(pad_units_right) => updatePosition({ pad_units_right })}
+          />
+        </TwoUpCollapsableGrid>
       </Well>
     </Flex>
   );
