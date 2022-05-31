@@ -16,7 +16,7 @@ export const DatasetServiceMiddleWare = () => {
   return (store: any) => (next: any) => (action: any) => {
     const state = store.getState();
     switch (action.type) {
-      case "datasets/registerDataset":
+      case "datasets/registerOrUpdateDataset":
         if (!state.datasets.datasets[action.payload.name]) {
           worker
             .registerDataset(action.payload)

@@ -41,7 +41,7 @@ export const datasetsSlice = createSlice({
   initialState,
   reducers: {
     // Also triggers middleware 
-    registerDataset: (state, action: PayloadAction<DatasetSummary>) => {
+    registerOrUpdateDataset: (state, action: PayloadAction<DatasetSummary>) => {
       state.datasets[action.payload.name] = action.payload;
     },
     datasetReady: (state, action: PayloadAction<DatasetSummary>) => {
@@ -100,6 +100,6 @@ export const datasetsSlice = createSlice({
   },
 });
 
-export const { registerDataset, registerDataUpdates, registerColumnStatUpdates} = datasetsSlice.actions;
+export const { registerOrUpdateDataset, registerDataUpdates, registerColumnStatUpdates} = datasetsSlice.actions;
 
 export const datasetsReducer = datasetsSlice.reducer;
