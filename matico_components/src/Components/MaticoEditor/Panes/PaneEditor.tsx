@@ -4,22 +4,20 @@ import {
   Flex,
   TextField,
   Well,
-  Grid,
   Text,
   Heading,
-  repeat,
   Item,
   NumberField,
   Picker,
   ActionGroup,
   Icon,
 } from "@adobe/react-spectrum";
-import { DefaultGrid } from "../Utils/DefaultGrid";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import TextStyle from "@spectrum-icons/workflow/TextStyle";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: MaticoPaneInterface) => void;
+  parentLayout: string;
 }
 
 interface PositionUnitEditorProps {
@@ -131,7 +129,11 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   background,
   onChange,
   name,
+  parentLayout
 }) => {
+  const isLinearLayout = parentLayout === 'linear'
+  const isFreeLayout = parentLayout === 'free'
+
   const updatePosition = (change: any) => {
     // console.log("Name ", change);
     // console.log('POSITION', { ...position })
@@ -162,7 +164,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
           value={name}
           onChange={(name: string) => updateName(name)}
         />
-        <TwoUpCollapsableGrid>
+        {isFreeLayout && <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="x"
             value={position.x}
@@ -177,7 +179,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onValueChange={(y) => updatePosition({ y })}
             onUnitsChange={(y_units) => updatePosition({ y_units })}
           />
-        </TwoUpCollapsableGrid>
+        </TwoUpCollapsableGrid>}
         <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="width"
@@ -194,7 +196,41 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             onUnitsChange={(height_units) => updatePosition({ height_units })}
           />
         </TwoUpCollapsableGrid>
-        <SnapPaneMenu {...{ updatePosition }} />
+        {isFreeLayout && <SnapPaneMenu {...{ updatePosition }} />}
+        
+        <Heading>Pane Padding</Heading>
+        <TwoUpCollapsableGrid>
+          <PositionUnitEditor
+            label="Padding Top"
+            value={position.pad_top}
+            units={position.pad_units_top}
+            onValueChange={(pad_top) => updatePosition({ pad_top })}
+            onUnitsChange={(pad_units_top) => updatePosition({ pad_units_top })}
+          />
+          <PositionUnitEditor
+            label="Padding Bottom"
+            value={position.pad_bottom}
+            units={position.pad_units_bottom}
+            onValueChange={(pad_bottom) => updatePosition({ pad_bottom })}
+            onUnitsChange={(pad_units_bottom) => updatePosition({ pad_units_bottom })}
+          />
+        </TwoUpCollapsableGrid>
+        <TwoUpCollapsableGrid>
+          <PositionUnitEditor
+            label="Padding Left"
+            value={position.pad_left}
+            units={position.pad_units_left}
+            onValueChange={(pad_left) => updatePosition({ pad_left })}
+            onUnitsChange={(pad_units_left) => updatePosition({ pad_units_left })}
+          />
+          <PositionUnitEditor
+            label="Padding Right"
+            value={position.pad_right}
+            units={position.pad_units_right}
+            onValueChange={(pad_right) => updatePosition({ pad_right })}
+            onUnitsChange={(pad_units_right) => updatePosition({ pad_units_right })}
+          />
+        </TwoUpCollapsableGrid>
       </Well>
     </Flex>
   );

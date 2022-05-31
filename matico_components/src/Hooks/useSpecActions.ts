@@ -25,8 +25,10 @@ export const useSpecActions = (
     const openEditor = (type = editType, path = editPath) =>
         dispatch(setCurrentEditPath({ editPath: path, editType: type }));
 
-    const remove = (path = editPath) =>
+    const remove = (path = editPath) => {
+        dispatch(setCurrentEditPath({ editPath: null, editType: null }));
         dispatch(removeSpecAtPath({ editPath: path }));
+    }
 
     const duplicate = (path = editPath) => {
         console.log('DUPLICATING', path)
@@ -56,6 +58,9 @@ export const useSpecActions = (
         )
     }
 
+    const manuallySetSpec = (...args: any[]) => dispatch(setSpecAtPath(...args));
+    const setEditPath = (...args: any[]) => dispatch(setCurrentEditPath(...args));
+
     return {
         openEditor,
         remove,
@@ -63,7 +68,9 @@ export const useSpecActions = (
         update,
         reconcile,
         reorder,
-        move
+        move,
+        manuallySetSpec,
+        setEditPath
     };
 };
 

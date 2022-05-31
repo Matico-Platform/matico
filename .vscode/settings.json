@@ -4,5 +4,8 @@
     "**/.pnp.*": true
   },
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "docwriter.progress.trackFunctions": true,
+  "docwriter.progress.trackClasses": true,
+  "docwriter.progress.trackMethods": false
 }

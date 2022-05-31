@@ -1,5 +1,6 @@
 import { PanePosition } from "@maticoapp/matico_spec";
 import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoControlsPane";
+import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
 import { MaticoHistogramPane } from "Components/Panes/MaticoHistogramPane/MaticoHistogramPane";
 import { MaticoPieChartPane } from "Components/Panes/MaticoPieChartPane/MaticoPieChartPane";
 import { MaticoScatterplotPane } from "Components/Panes/MaticoScatterplotPane/MaticoScatterplotPane";
@@ -19,4 +20,5 @@ export type Pane =
   | typeof MaticoMapPane
   | typeof MaticoPieChartPane
   | typeof MaticoScatterplotPane
+  | typeof MaticoContainerPane
   | typeof MaticoTextPane;

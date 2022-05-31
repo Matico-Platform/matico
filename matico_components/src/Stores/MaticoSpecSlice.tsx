@@ -51,7 +51,7 @@ export const stateSlice = createSlice({
       }>
     ) => {
       state.currentEditPath = action.payload.editPath;
-      state.currentEditType = extractEditType(action.payload.editPath);
+      state.currentEditType = action.payload.editType;
     },
     setSpecAtPath: (
       state,

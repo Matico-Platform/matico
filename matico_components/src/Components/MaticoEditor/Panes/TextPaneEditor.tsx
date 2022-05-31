@@ -1,74 +1,53 @@
-import React, { useState} from "react";
+import React from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import {
-  deleteSpecAtPath,
-  setCurrentEditPath,
-  setSpecAtPath,
-} from "Stores/MaticoSpecSlice";
 import { PaneEditor } from "./PaneEditor";
 import ReactMde from "react-mde";
-import {View,Flex,Well,Text,Heading} from "@adobe/react-spectrum"
+import { View, Flex, Well, Text, Heading } from "@adobe/react-spectrum";
 import "react-mde/lib/styles/css/react-mde-all.css";
-
+import { useMaticoSpec } from "Hooks/useMaticoSpec";
+import { useSpecActions } from "Hooks/useSpecActions";
+import { RemovePaneDialog } from "../Utils/RemovePaneDialog";
 
 export interface PaneEditorProps {
-  editPath: string;
+    editPath: string;
 }
 
-export const TextPaneEditor: React.FC<PaneEditorProps> = ({
-  editPath,
-}) => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const dispatch = useMaticoDispatch();
-
-  const deletePane = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
-  };
-
-  const updateContent = (content: string) =>
-    dispatch(setSpecAtPath({ editPath: editPath, update: { content } }));
-
-
-  const updatePane = (change: any) => {
-    dispatch(
-      setSpecAtPath({
+export const TextPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
+    const [textPane, parentLayout] = useMaticoSpec(editPath);
+    const { remove: deletePane, update: updatePane } = useSpecActions(
         editPath,
-        update: {
-          ...textPane,
-          ...change,
-        },
-      })
+        "Text"
     );
-  };
 
-  const textPane= _.get(spec, editPath);
+    const handleContent = (content: string) => updatePane({ content });
+    const handleUpdate = (change: any) => updatePane({ ...textPane, ...change });
 
-  if (!textPane) {
+    if (!textPane) {
+        return (
+            <View>
+                <Text>Failed to find component</Text>
+            </View>
+        );
+    }
+
+    const { position, name, background, content } = textPane;
+
     return (
-      <View>
-        <Text>Failed to find component</Text>
-      </View>
+        <Flex direction="column">
+            <PaneEditor
+                position={position}
+                name={name}
+                background={background}
+                onChange={(change) => handleUpdate(change)}
+                parentLayout={parentLayout}
+            />
+
+            <Well>
+                <Heading>Content</Heading>
+                <ReactMde value={content} onChange={handleContent} />
+            </Well>
+
+            <RemovePaneDialog deletePane={deletePane} />
+        </Flex>
     );
-  }
-  return (
-    <Flex direction='column'>
-
-      <PaneEditor
-        position={textPane.position}
-        name={textPane.name}
-        background={textPane.background}
-        onChange={(change) => updatePane(change)}
-      />
-
-      <Well>
-        <Heading>Content</Heading>
-        
-        <ReactMde value={textPane.content} onChange={updateContent} />
-      </Well>
-
-    </Flex>
-  )
 };

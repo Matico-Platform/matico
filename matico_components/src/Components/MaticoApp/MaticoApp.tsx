@@ -95,7 +95,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
       <MaticoDataProvider onStateChange={onDataChange}>
         <SpectrumProvider theme={darkTheme} width="100%" height="100%">
           <Grid {...{ columns, rows, areas }} width="100%" height="100%" gap="0">
-            <View gridArea="viewer" width="100%">
+            <View gridArea="viewer" width="100%" overflow="hidden">
               <MaticoAppPresenter
                 spec={spec}
                 basename={basename}
