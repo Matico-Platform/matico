@@ -43,7 +43,7 @@ impl MaticoAnalysisRunner for HDBScanAnalysis {
             0.001
         };
 
-        let min_clust= if let Ok(ParameterValue::NumericInt(no)) = self.get_parameter("min_clust")
+        let min_clust= if let Ok(ParameterValue::NumericInt(no)) = self.get_parameter("min_clust_no")
         {
             *no
         } else {
@@ -155,24 +155,6 @@ impl MaticoAnalysisRunner for HDBScanAnalysis {
     fn options() -> BTreeMap<String, ParameterOptions> {
         let mut options: BTreeMap<String, ParameterOptions> = BTreeMap::new();
 
-        options.insert("min_dist".into(), ParameterOptions::NumericFloat(NumericFloatOptions{
-            default: Some(0.0001 ),
-            range: None,
-            display_details:ParameterOptionDisplayDetails{
-                description:Some("Minimum distance between points to include in cluster".into()),
-                display_name:Some("Minimum cluster dist".into())
-            }
-        }));
-
-        options.insert("min_dist".into(), ParameterOptions::NumericInt(NumericIntOptions{
-            default: Some(20),
-            range: None,
-            display_details:ParameterOptionDisplayDetails{
-                description:Some("Minimum no of points in cluster".into()),
-                display_name:Some("Min cluster no".into())
-            }
-        }));
-
         options.insert(
             "source_dataset".into(),
             ParameterOptions::Table(TableOptions {
@@ -185,6 +167,25 @@ impl MaticoAnalysisRunner for HDBScanAnalysis {
                 },
             }),
         );
+
+        options.insert("min_dist".into(), ParameterOptions::NumericFloat(NumericFloatOptions{
+            default: Some(0.0001 ),
+            range: None,
+            display_details:ParameterOptionDisplayDetails{
+                description:Some("Minimum distance between points to include in cluster".into()),
+                display_name:Some("Minimum cluster dist".into())
+            }
+        }));
+
+        options.insert("min_clust_no".into(), ParameterOptions::NumericInt(NumericIntOptions{
+            default: Some(20),
+            range: None,
+            display_details:ParameterOptionDisplayDetails{
+                description:Some("Minimum no of points in cluster".into()),
+                display_name:Some("Min cluster no".into())
+            }
+        }));
+
 
         options
     }
