@@ -40,7 +40,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
         }
     }, []);
 
-
+    // Register the datasets in the spec and keep in sync as changes are made
     useRegisterDatasets()
 
     const appSpec = useAppSpec();

@@ -25,12 +25,17 @@ const arrowTypeToMaticoType= (aType: DataType)=>{
 
 export const WasmComputeBuilder = async (details: WasmComputeBuilderOptions, datasets: Array<Dataset>) => {
   const { name, url ,params } = details;
+  console.log("loading compute file")
   const wasm = await import(/* webpackIgnore: true */   url)
+  console.log("Awiting compute file")
   await wasm.default();
   const key = Object.keys(wasm).find(k => k.includes("Interface"))
+  console.log("loading key ",key)
   const analysis = wasm[key].new()
 
+  console.log("Setting parameters")
   Object.entries(params).forEach(([name,val])=>{
+    console.log("registering variable ",name ,JSON.stringify(val))
     if(val.Table){
          let dataset = datasets[val.Table];
          if(dataset){
@@ -41,13 +46,20 @@ export const WasmComputeBuilder = async (details: WasmComputeBuilderOptions, dat
               console.log("Table register error",JSON.stringify(e))
            } }
     }
-    analysis.set_parameter(name,val)
+
+    try{
+      analysis.set_parameter(name,val)
+    }
+    catch(e){
+        console.log("Variables register error ", JSON.stringify(e))
+    }
   })
 
-   
-
+  console.log("Running Analysis")
   const run_result  = analysis.run();
+  console.log("Analysis done generating table")
   const table = Table.from([run_result])
+  console.log("building dataframe")
   const dataFrame = new DataFrame(table);
   
   console.log("dataFrame fields are ", dataFrame.schema.fields)

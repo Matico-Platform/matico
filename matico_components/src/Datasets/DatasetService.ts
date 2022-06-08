@@ -31,7 +31,7 @@ export interface DatasetServiceInterface {
     columns?: Array<string>,
     limit?: number
   ): void;
-  registerDataset(
+  registerOrUpdateDataset(
     datasetName: string,
     datasetDetails: any
   ): Promise<DatasetSummary>;
@@ -137,7 +137,7 @@ export const DatasetService: DatasetServiceInterface = {
     }
   },
 
-  async registerDataset(datasetDetails: any): Promise<DatasetSummary> {
+  async registerOrUpdateDataset(datasetDetails: any): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
       case "GeoJSON":
         const geoDataset = await GeoJSONBuilder(datasetDetails);
@@ -198,7 +198,9 @@ export const DatasetService: DatasetServiceInterface = {
           spec: datasetDetails
         };
       case "WASMCompute":
+        console.log("REGISTERING WASM COMPUTE")
         const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
+        console.log("GENERATING NEW COMPUTE DATASET")
         this.datasets[wasmCompute.name] = wasmCompute;
         this._notify(wasmCompute.name);
         return {

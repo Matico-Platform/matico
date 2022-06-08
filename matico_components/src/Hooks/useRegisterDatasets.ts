@@ -17,7 +17,9 @@ export const useRegisterDatasets = () => {
     const [normalizedDatasetSpec, loadingDatasetSpec, datasetSpecError] =
         useNormalizeSpec(spec?.datasets);
 
-    const previousDatasetSpec = useRef<Record<string, any>>({});
+    console.log("normalizedDatasetSpec is ", normalizedDatasetSpec, spec?.datasets)
+
+    const previousDatasetSpec = useRef<Record<string, any>>([]);
 
     useEffect(() => {
         if (!normalizedDatasetSpec) {
@@ -30,14 +32,15 @@ export const useRegisterDatasets = () => {
         normalizedDatasetSpec.forEach(
             (datasetDetails: { [type: string]: any }) => {
                 const [type, details] = Object.entries(datasetDetails)[0];
-                const prevSpec = Object.values(
-                    previousDatasetSpec.current
-                ).find((d) => d.name === details.name);
+                const prevSpec =previousDatasetSpec.current.find((d: Record<string,any>) => Object.values(d)[0].name === details.name);
+
 
                 // Skip if this particular dataset needs no update
-                if (_.isEqual(prevSpec, details)) {
+                if (prevSpec && _.isEqual(Object.values(prevSpec)[0], details)) {
+                  console.log("skipping ",details.name)
                     return;
                 }
+                console.log("updating ",details.name)
 
                 dispatch(
                     registerOrUpdateDataset({

@@ -42,4 +42,5 @@ export const GeoJSONProvider: DatasetProvider = {
   name: "GeoJSON Dataset",
   description: "Import a GeoJSON from a public url",
   component: GeoJSONImporter,
+  parameterEditor: ()=><h1>Not Implemented</h1>
 };

@@ -5,11 +5,13 @@ import {
     Text,
     NumberField,
     Picker,
-    Item
+    Item,
+    View
 } from "@adobe/react-spectrum";
 import {
     DatasetProviderComponent,
-    DatasetProvider
+    DatasetProvider,
+    DatasetParameterComponent
 } from "Datasets/DatasetProvider";
 import { useAnalysis } from "Hooks/useAnalysis";
 import React, { useEffect, useState } from "react";
@@ -17,6 +19,36 @@ import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { Column } from "Datasets/Dataset";
 import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
+
+export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
+    spec,
+    onChange
+}) => {
+    console.log("Parameter editor ", spec)
+
+    const { analysis, error } = useAnalysis(spec.url);
+    const parameters = analysis ? analysis.options() : {};
+    const values = spec.params
+
+    console.log("url ", spec.url, " values ", values);
+
+    return (
+        <View>
+            {Object.keys(parameters).map((key) => (
+                <ParameterInput
+                    key={key}
+                    name={key}
+                    options={parameters[key]}
+                    value={values[key]}
+                    onChange={(key, val) =>
+                        onChange({...spec, params:{  ...spec.params, [key]: val }})
+                    }
+                    params={values}
+                />
+            ))}
+        </View>
+    );
+};
 
 const ParameterInput: React.FC<{
     name: string;
@@ -42,6 +74,17 @@ const ParameterInput: React.FC<{
                     step={1}
                 />
             );
+        case "NumericFloat":
+            return (
+                <NumberField
+                    width="100%"
+                    value={value ? value.NumericFloat: constraints.default}
+                    description={description}
+                    onChange={(v: number) => onChange(name, { NumericFloat: v })}
+                    label={label}
+                    step={0.1}
+                />
+            );
         case "Text":
             return (
                 <TextField
@@ -57,6 +100,7 @@ const ParameterInput: React.FC<{
                 <DatasetSelector
                     label={label}
                     description={description}
+                    selectedDataset={value?.Table}
                     onDatasetSelected={(dataset) =>
                         onChange(name, { Table: dataset })
                     }
@@ -67,6 +111,7 @@ const ParameterInput: React.FC<{
                 <DatasetColumnSelector
                     label={label}
                     description={description}
+                    selectedColumn={value?.Column}
                     datasetName={params[constraints.from_dataset]?.Table}
                     onColumnSelected={(column: Column) => {
                         onChange(name, { Column: column.name });
@@ -79,38 +124,41 @@ const ParameterInput: React.FC<{
 };
 
 export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
-    onSubmit
+    onSubmit,
+    parameters = {}
 }) => {
-    const [selectedCompute, setSelectedCompute] =
-        useState<Compute | null>(null);
 
-    const [options, setOptions] = useState({
-        name: "",
-        params: {}
+    const [selectedCompute, setSelectedCompute] = useState<Compute|null>(null)
+
+    const [spec, setSpec] = useState({
+        name:"",
+        url:null,
+        params: parameters
     });
 
     const computes = useAvaliableCompute();
 
-    const updateComputeParams = (key: string, value: any) => {
-        setOptions({ ...options, params: { ...options.params, [key]: value } });
-    };
+    const updateSpec = (update: Record<string,any>)=>{
+      setSpec({...spec, ...update})
+    }
 
-    const computeURL = selectedCompute ?  `http://localhost:8000/compute${selectedCompute.path}` : null
 
-    const { analysis, error} = useAnalysis(computeURL);
+    const { analysis, error } = useAnalysis(spec.url);
+    console.log("analysis ", analysis, " spec ",spec.url)
 
-    const updateOptions = (update: { [option: string]: string }) => {
-        setOptions({ ...options, ...update });
-    };
 
     const computeOptions = analysis ? analysis.options() : {};
     const description = analysis ? analysis.description() : "";
 
-    const setAnalysis= (key: string) =>{
-      setSelectedCompute(computes.find((c) => c.name === key))
-      setOptions({...options, params:{}})
-    }
-
+    const setAnalysis = (key: string) => {
+      
+      const compute =  computes.find((c) => c.name === key)
+      const computeURL = compute 
+          ? `http://localhost:8000/compute${compute.path}`
+          : null;
+        setSpec({url: computeURL, params:{}, name: spec.name})
+        setSelectedCompute(compute);
+    };
 
     return (
         <Flex direction="column" gap="size-200">
@@ -119,7 +167,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                     width={"100%"}
                     items={computes}
                     selectedKey={selectedCompute?.name}
-                    onSelectionChange={ setAnalysis}
+                    onSelectionChange={setAnalysis}
                 >
                     {(item) => <Item key={item.name}>{item.name}</Item>}
                 </Picker>
@@ -127,27 +175,24 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
             {analysis && (
                 <>
                     <TextField
-                        value={options.name}
+                        value={spec.name}
                         onChange={(name: string) =>
-                            setOptions({ ...options, name })
+                            updateSpec({ name })
                         }
                         label="Result Dataset Name"
                     />
+                    <ComputeParameterEditor
+                        spec= {spec}
+                        onChange={updateSpec}
+                    />
                     <p>{description}</p>
-                    {Object.keys(computeOptions).map((key) => (
-                        <ParameterInput
-                            key={key}
-                            name={key}
-                            options={computeOptions[key]}
-                            value={options.params[key]}
-                            onChange={updateComputeParams}
-                            params={options.params}
-                        />
-                    ))}
-
                     <Button
                         variant="cta"
-                        onPress={() => onSubmit({ WASMCompute: {...options, url: computeURL }})}
+                        onPress={() =>
+                            onSubmit({
+                                WASMCompute:spec 
+                            })
+                        }
                     >
                         Submit
                     </Button>
@@ -160,5 +205,6 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
 export const ComputeProvider: DatasetProvider = {
     name: "Compute Dataset",
     description: "Run a computation on one or more datasets",
-    component: ComputeImporter
+    component: ComputeImporter,
+    parameterEditor: ComputeParameterEditor
 };

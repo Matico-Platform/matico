@@ -168,8 +168,6 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
           ? d.properties[variable] 
           : d[variable];
         if(!val){ return [0,0,0,0]}
-        console.log("test ",ramp,val)
-        console.log("test2 ",ramp(val))
         let c = ramp(val).rgba();
         c[3]= c[3]*255
         return c

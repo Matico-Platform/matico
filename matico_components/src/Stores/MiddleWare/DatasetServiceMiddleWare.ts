@@ -17,9 +17,8 @@ export const DatasetServiceMiddleWare = () => {
     const state = store.getState();
     switch (action.type) {
       case "datasets/registerOrUpdateDataset":
-        if (!state.datasets.datasets[action.payload.name]) {
           worker
-            .registerDataset(action.payload)
+            .registerOrUpdateDataset(action.payload)
             .then((datasetSummary: DatasetSummary) => {
               store.dispatch({
                 type: "datasets/datasetReady",
@@ -48,7 +47,6 @@ export const DatasetServiceMiddleWare = () => {
             ...action,
             payload: { name: action.payload.name, state: DatasetState.LOADING },
           });
-        }
         break
       case "datasets/request_query":
         // worker.runQuery(action.payload).then(() => {

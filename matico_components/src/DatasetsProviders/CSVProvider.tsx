@@ -54,4 +54,5 @@ export const CSVProvider: DatasetProvider = {
   name: "CSV Dataset",
   description: "Import a CSV from a public url",
   component: CSVImporter,
+  parameterEditor: ()=> <h1>Not implemented</h1>
 };
