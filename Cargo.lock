@@ -499,7 +499,7 @@ dependencies = [
  "chrono",
  "hash_hasher",
  "itertools 0.10.3",
- "lexical-core 0.8.3",
+ "lexical-core 0.8.5",
  "multiversion",
  "num-traits 0.2.14",
  "regex",
@@ -2139,9 +2139,9 @@ dependencies = [
 
 [[package]]
 name = "lexical-core"
-version = "0.8.3"
+version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92912c4af2e7d9075be3e5e3122c4d7263855fa6cce34fbece4dd08e5884624d"
+checksum = "2cde5de06e8d4c2faabc400238f9ae1c74d5412d03a7bd067645ccbc47070e46"
 dependencies = [
  "lexical-parse-float",
  "lexical-parse-integer",
@@ -2152,9 +2152,9 @@ dependencies = [
 
 [[package]]
 name = "lexical-parse-float"
-version = "0.8.3"
+version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f518eed87c3be6debe6d26b855c97358d8a11bf05acec137e5f53080f5ad2dd8"
+checksum = "683b3a5ebd0130b8fb52ba0bdc718cc56815b6a097e28ae5a6997d0ad17dc05f"
 dependencies = [
  "lexical-parse-integer",
  "lexical-util",
@@ -2163,9 +2163,9 @@ dependencies = [
 
 [[package]]
 name = "lexical-parse-integer"
-version = "0.8.3"
+version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afc852ec67c6538bbb2b9911116a385b24510e879a69ab516e6a151b15a79168"
+checksum = "6d0994485ed0c312f6d965766754ea177d07f9c00c9b82a5ee62ed5b47945ee9"
 dependencies = [
  "lexical-util",
  "static_assertions",
@@ -2173,18 +2173,18 @@ dependencies = [
 
 [[package]]
 name = "lexical-util"
-version = "0.8.3"
+version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c72a9d52c5c4e62fa2cdc2cb6c694a39ae1382d9c2a17a466f18e272a0930eb1"
+checksum = "5255b9ff16ff898710eb9eb63cb39248ea8a5bb036bea8085b1a767ff6c4e3fc"
 dependencies = [
  "static_assertions",
 ]
 
 [[package]]
 name = "lexical-write-float"
-version = "0.8.4"
+version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a89ec1d062e481210c309b672f73a0567b7855f21e7d2fae636df44d12e97f9"
+checksum = "accabaa1c4581f05a3923d1b4cfd124c329352288b7b9da09e766b0668116862"
 dependencies = [
  "lexical-util",
  "lexical-write-integer",
@@ -2193,9 +2193,9 @@ dependencies = [
 
 [[package]]
 name = "lexical-write-integer"
-version = "0.8.3"
+version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "094060bd2a7c2ff3a16d5304a6ae82727cb3cc9d1c70f813cc73f744c319337e"
+checksum = "e1b6f3d1f4422866b68192d62f77bc5c700bee84f3069f2469d7bc8c77852446"
 dependencies = [
  "lexical-util",
  "static_assertions",
@@ -2394,6 +2394,7 @@ dependencies = [
  "geo 0.18.0",
  "geo-types",
  "geozero 0.7.7",
+ "matico_common",
  "serde 1.0.136",
  "serde_json",
  "wasm-bindgen",
@@ -2417,6 +2418,20 @@ dependencies = [
  "wasm-bindgen",
  "wee_alloc",
  "wkb",
+]
+
+[[package]]
+name = "matico_common"
+version = "0.1.0"
+dependencies = [
+ "matico_spec_derive",
+ "serde 1.0.136",
+ "serde_json",
+ "serde_yaml",
+ "toml",
+ "ts-rs",
+ "validator",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -2495,6 +2510,7 @@ dependencies = [
  "geo-types",
  "geojson",
  "geozero 0.8.0",
+ "glob",
  "jsonwebtoken",
  "libhoney-rust",
  "matico_spec",
@@ -2530,6 +2546,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "matico_analysis",
+ "matico_common",
  "matico_spec_derive",
  "palette",
  "serde 1.0.136",

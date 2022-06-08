@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
 use crate::{VarOr};
-use matico_analysis::ParameterValue;
+use matico_analysis::SpecParameterValue;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Dataset {
@@ -43,7 +43,7 @@ pub struct WASMCompute{
     pub url: String,
     
     #[wasm_bindgen(skip)]
-    pub params: HashMap<String, ParameterValue>
+    pub params: HashMap<String, SpecParameterValue>
 }
 
 #[wasm_bindgen]
