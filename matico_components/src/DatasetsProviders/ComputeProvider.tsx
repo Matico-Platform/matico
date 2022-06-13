@@ -19,16 +19,18 @@ import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { Column } from "Datasets/Dataset";
 import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
+import { VariableSelector } from "../../dist/Components/MaticoEditor/Utils/VariableSelector";
+import {ValueOrVariableInput} from "Components/MaticoEditor/Utils/ValueOrVariableInput";
 
 export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     spec,
     onChange
 }) => {
-    console.log("Parameter editor ", spec)
+    console.log("Parameter editor ", spec);
 
     const { analysis, error } = useAnalysis(spec.url);
     const parameters = analysis ? analysis.options() : {};
-    const values = spec.params
+    const values = spec.params;
 
     console.log("url ", spec.url, " values ", values);
 
@@ -41,7 +43,10 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
                     options={parameters[key]}
                     value={values[key]}
                     onChange={(key, val) =>
-                        onChange({...spec, params:{  ...spec.params, [key]: val }})
+                        onChange({
+                            ...spec,
+                            params: { ...spec.params, [key]: val }
+                        })
                     }
                     params={values}
                 />
@@ -64,37 +69,27 @@ const ParameterInput: React.FC<{
 
     switch (type) {
         case "NumericInt":
-            return (
-                <NumberField
-                    width="100%"
-                    value={value ? value.NumericInt : constraints.default}
-                    description={description}
-                    onChange={(v: number) => onChange(name, { NumericInt: v })}
-                    label={label}
-                    step={1}
-                />
-            );
+            return  (<ValueOrVariableInput
+                value={value? value.NumericInt: constraints.default}
+                label={label}
+                defaultValue={constraints.default}
+                onChange={(newVal)=> onChange(name, {NumericInt: newVal})} 
+              />)
+
         case "NumericFloat":
-            return (
-                <NumberField
-                    width="100%"
-                    value={value ? value.NumericFloat: constraints.default}
-                    description={description}
-                    onChange={(v: number) => onChange(name, { NumericFloat: v })}
-                    label={label}
-                    step={0.1}
-                />
-            );
+            return  (<ValueOrVariableInput
+                value={value? value.NumericFloat : constraints.default}
+                label={label}
+                defaultValue={constraints.default}
+                onChange={(newVal)=> onChange(name, {NumericFloat: newVal})} 
+              />)
         case "Text":
-            return (
-                <TextField
-                    width="100%"
-                    value={value ? value.Text : constraints.default}
-                    onChange={(v: string) => onChange(name, { Text: v })}
-                    description={description}
-                    label={label}
-                />
-            );
+          return (<ValueOrVariableInput
+                value={value? value.NumericFloat : constraints.default}
+                label={label}
+                defaultValue={constraints.default}
+                onChange={(newVal)=> onChange(name, {NumericFloat: newVal})} 
+              />)
         case "Table":
             return (
                 <DatasetSelector
@@ -127,36 +122,33 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     onSubmit,
     parameters = {}
 }) => {
-
-    const [selectedCompute, setSelectedCompute] = useState<Compute|null>(null)
+    const [selectedCompute, setSelectedCompute] =
+        useState<Compute | null>(null);
 
     const [spec, setSpec] = useState({
-        name:"",
-        url:null,
+        name: "",
+        url: null,
         params: parameters
     });
 
     const computes = useAvaliableCompute();
 
-    const updateSpec = (update: Record<string,any>)=>{
-      setSpec({...spec, ...update})
-    }
-
+    const updateSpec = (update: Record<string, any>) => {
+        setSpec({ ...spec, ...update });
+    };
 
     const { analysis, error } = useAnalysis(spec.url);
-    console.log("analysis ", analysis, " spec ",spec.url)
-
+    console.log("analysis ", analysis, " spec ", spec.url);
 
     const computeOptions = analysis ? analysis.options() : {};
     const description = analysis ? analysis.description() : "";
 
     const setAnalysis = (key: string) => {
-      
-      const compute =  computes.find((c) => c.name === key)
-      const computeURL = compute 
-          ? `http://localhost:8000/compute${compute.path}`
-          : null;
-        setSpec({url: computeURL, params:{}, name: spec.name})
+        const compute = computes.find((c) => c.name === key);
+        const computeURL = compute
+            ? `http://localhost:8000/compute${compute.path}`
+            : null;
+        setSpec({ url: computeURL, params: {}, name: spec.name });
         setSelectedCompute(compute);
     };
 
@@ -176,21 +168,16 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                 <>
                     <TextField
                         value={spec.name}
-                        onChange={(name: string) =>
-                            updateSpec({ name })
-                        }
+                        onChange={(name: string) => updateSpec({ name })}
                         label="Result Dataset Name"
                     />
-                    <ComputeParameterEditor
-                        spec= {spec}
-                        onChange={updateSpec}
-                    />
+                    <ComputeParameterEditor spec={spec} onChange={updateSpec} />
                     <p>{description}</p>
                     <Button
                         variant="cta"
                         onPress={() =>
                             onSubmit({
-                                WASMCompute:spec 
+                                WASMCompute: spec
                             })
                         }
                     >
