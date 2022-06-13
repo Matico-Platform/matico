@@ -103,6 +103,7 @@ pub async fn run(
             .service(web::scope("/api/apps").configure(routes::apps::init_routes))
             .service(web::scope("/api/datasets").configure(routes::datasets::init_routes))
             .service(web::scope("/api/data").configure(routes::data::init_routes))
+            .service(web::scope("/api/compute").configure(routes::compute::init_routes))
             .service(fs::Files::new("/", "static").index_file("index.html"))
     })
     .listen(listener)?

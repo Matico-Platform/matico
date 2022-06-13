@@ -16,10 +16,9 @@ export const DatasetServiceMiddleWare = () => {
   return (store: any) => (next: any) => (action: any) => {
     const state = store.getState();
     switch (action.type) {
-      case "datasets/registerDataset":
-        if (!state.datasets.datasets[action.payload.name]) {
+      case "datasets/registerOrUpdateDataset":
           worker
-            .registerDataset(action.payload)
+            .registerOrUpdateDataset(action.payload)
             .then((datasetSummary: DatasetSummary) => {
               store.dispatch({
                 type: "datasets/datasetReady",
@@ -48,7 +47,6 @@ export const DatasetServiceMiddleWare = () => {
             ...action,
             payload: { name: action.payload.name, state: DatasetState.LOADING },
           });
-        }
         break
       case "datasets/request_query":
         // worker.runQuery(action.payload).then(() => {
@@ -96,7 +94,8 @@ export const DatasetServiceMiddleWare = () => {
           comlink.proxy(onDataUpdate),
           action.payload.notifierId,
           action.payload.filters,
-          true,
+          action.payload.columns,
+          action.payload.limit
         );
         break
       default:

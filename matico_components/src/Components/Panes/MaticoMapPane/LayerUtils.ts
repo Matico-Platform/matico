@@ -73,7 +73,6 @@ export const generateNumericVar = (numericVar): NumberReturn => {
 };
 
 export const generateColor = (color: any, alpha: boolean) => {
-  console.log("Generating color ", color)
   if (Array.isArray(color)) {
     console.log("as array ", color)
     if(color.length===4){
@@ -111,7 +110,17 @@ const constructRampFunctionNum= (range:Array<any>,domain:Array<any> )=>{
 const constructRampFunctionCol = (range:Array<any>,domain:Array<any> )=>{
       if(typeof(domain[0]) === 'string'){
         return (val:string)=> {
-          return chroma(range[domain.indexOf(val)]) ?? chroma(211,211,211)
+          console.log("domain ",domain ,val)
+          const index = domain.indexOf(`${val}`)
+        
+          if(index >=0){
+            const r = range[index]
+            console.log("r is ",r, index, range )
+            return chroma(r)
+          } 
+          else{
+            return  chroma(211,211,211)
+          }
         }
       }
       else{
@@ -130,6 +139,8 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
   // from an array of color values or a named pallet
   if (colorVar.variable) {
     const { variable, domain, range } = colorVar;
+
+    console.log("variable domain range ", variable,domain, range )
 
     if (Array.isArray(range)) {
       const mappedRange = range.map((c) => generateColor(c,true))
@@ -154,8 +165,9 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
 
       return (d: any) => {
         const val = d.hasOwnProperty("properties")
-          ? d.properties[variable]
+          ? d.properties[variable] 
           : d[variable];
+        if(!val){ return [0,0,0,0]}
         let c = ramp(val).rgba();
         c[3]= c[3]*255
         return c

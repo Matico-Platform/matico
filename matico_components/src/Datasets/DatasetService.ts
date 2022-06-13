@@ -12,6 +12,7 @@ import { GeoJSONBuilder } from "./GeoJSONBuilder";
 import { COGBuilder } from "./COGBuilder";
 import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
+import {WasmComputeBuilder} from "./WasmComputeBuilder";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -27,9 +28,10 @@ export interface DatasetServiceInterface {
     callback: (data: Array<any>) => void,
     notifierId:string,
     filters?: Array<Filter>,
-    includeGeo?: boolean
+    columns?: Array<string>,
+    limit?: number
   ): void;
-  registerDataset(
+  registerOrUpdateDataset(
     datasetName: string,
     datasetDetails: any
   ): Promise<DatasetSummary>;
@@ -96,16 +98,15 @@ export const DatasetService: DatasetServiceInterface = {
     callback: (data: Array<any>) => void,
     notifierId: string,
     filters?: Array<Filter>,
-    includeGeo?: boolean,
+    columns?: Array<string>,
+    limit?:number
   ) {
 
     this._registerNotifier(datasetName,notifierId, async (datasetName: string) => {
       let d = this.datasets[datasetName];
       
       if (d) {
-        let data = includeGeo
-          ? await d.getDataWithGeo(filters)
-          : await d.getData(filters);
+        let data = await  d.getData(filters,columns,limit);
         callback(data);
       }
 
@@ -136,7 +137,7 @@ export const DatasetService: DatasetServiceInterface = {
     }
   },
 
-  async registerDataset(datasetDetails: any): Promise<DatasetSummary> {
+  async registerOrUpdateDataset(datasetDetails: any): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
       case "GeoJSON":
         const geoDataset = await GeoJSONBuilder(datasetDetails);
@@ -150,6 +151,7 @@ export const DatasetService: DatasetServiceInterface = {
           local: true,
           raster:false,
           tiled: geoDataset.tiled(),
+          spec: datasetDetails
         };
       case "CSV":
         const csvDataset = await CSVBuilder(datasetDetails);
@@ -163,6 +165,7 @@ export const DatasetService: DatasetServiceInterface = {
           raster:false,
           local: true,
           tiled: csvDataset.tiled(),
+          spec: datasetDetails
         };
       case "MaticoRemote":
         const maticoDataset = await MaticoRemoteBuilder(datasetDetails);
@@ -177,6 +180,7 @@ export const DatasetService: DatasetServiceInterface = {
           tiled: maticoDataset.tiled(),
           raster:false,
           mvtUrl: maticoDataset.mvtUrl(),
+          spec: datasetDetails
         };
       case "MaticoApi":
         const maticoApi= await MaticoRemoteApiBuilder(datasetDetails);
@@ -191,6 +195,24 @@ export const DatasetService: DatasetServiceInterface = {
           raster:false,
           tiled: maticoApi.tiled(),
           mvtUrl: maticoApi.mvtUrl(),
+          spec: datasetDetails
+        };
+      case "WASMCompute":
+        console.log("REGISTERING WASM COMPUTE")
+        const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
+        console.log("GENERATING NEW COMPUTE DATASET")
+        this.datasets[wasmCompute.name] = wasmCompute;
+        this._notify(wasmCompute.name);
+        return {
+          name: wasmCompute.name,
+          state: DatasetState.READY,
+          columns: await wasmCompute.columns(),
+          geomType: await wasmCompute.geometryType(),
+          local: true,
+          raster:false,
+          tiled: wasmCompute.tiled(),
+          mvtUrl: null,
+          spec: datasetDetails
         };
       case "COG":
         const cog = await COGBuilder(datasetDetails);
@@ -205,6 +227,7 @@ export const DatasetService: DatasetServiceInterface = {
           raster: true,
           tiled: cog.tiled(),
           mvtUrl: cog.mvtUrl(),
+          spec: datasetDetails
         };
     }
   },

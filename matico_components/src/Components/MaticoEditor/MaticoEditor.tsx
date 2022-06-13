@@ -39,7 +39,6 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   const { spec, currentEditPath, currentEditType } = useMaticoSelector(
     (state) => state.spec
   );
-  console.log("currentEditPath ", currentEditPath);
   const [tabKey, setTabKey] = useState<string>("Components");
 
   useEffect(() => {

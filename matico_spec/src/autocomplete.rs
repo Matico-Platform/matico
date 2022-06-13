@@ -1,8 +1,5 @@
 use crate::*;
-
-pub trait AutoComplete {
-    fn autocomplete_json() -> String;
-}
+use matico_common::AutoComplete;
 
 pub fn autocomplete(expression: &str) -> Option<String> {
     match expression {

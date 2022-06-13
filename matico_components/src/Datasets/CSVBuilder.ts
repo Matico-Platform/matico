@@ -71,15 +71,12 @@ const extractData = async (
   });
 
   let id = 0;
-  console.log("Extracting data ");
   return new Promise<DataFrame>((resolve, reject) => {
-    console.log("In promise");
     Papa.parse(url, {
       dynamicTyping: true,
       download: true,
       header: true,
       complete: (results) => {
-        console.log("Results ", JSON.stringify(results));
         results.data.forEach((row: any) => {
           if (!row) return;
           try {
@@ -87,7 +84,7 @@ const extractData = async (
             const lat = Object.values(row)[lat_index];
 
             if (lng === undefined || lat === undefined) {
-              console.log("Bad lat lng ", lng, lat, row);
+              console.warn("Bad lat lng ", lng, lat, row);
               return;
             }
 
@@ -102,7 +99,7 @@ const extractData = async (
             //@ts-ignore
             builder.append(datum);
           } catch (e) {
-            console.log("issue with datum ", JSON.stringify(row), e);
+            console.warn("issue with datum ", JSON.stringify(row), e);
           }
         });
         builder.finish();

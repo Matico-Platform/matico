@@ -54,10 +54,15 @@ fn row_to_map(row: PgRow) -> BTreeMap<String, Option<QueryVal>> {
         let type_info: &PgTypeInfo = col.type_info();
         // info!("Column type is {:#?} {:#?}", type_info, type_info.name() );
         let val: Option<QueryVal> = match type_info.name() {
-            "INT8" | "INT2" | "INT4" => {
+             "INT2" | "INT4" => {
                 let val: Option<i32> = row.get(col.name());
+                let val =val.map(|c| c as i64);
                 val.map(|v| QueryVal::Int(v))
             }
+             "INT8"  => {
+                let val: Option<i64> = row.get(col.name());
+                val.map(|v| QueryVal::Int(v))
+             }
             "FLOAT4" | "FLOAT8" => {
                 let val: Option<f64> = row.get(col.name());
                 val.map(|v| QueryVal::Float(v))
@@ -292,7 +297,7 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
     async fn get_feature(
         &self,
         db: &DataDbPool,
-        feature_id: &QueryVal,
+        feature_id: i32,
         id_col: Option<&str>,
     ) -> Result<BTreeMap<String, Option<QueryVal>>, ServiceError> {
         let base_query = self.build_query()?;
@@ -315,11 +320,14 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
         })?;
 
         let query = format!(
-            "select * from ({query}) where '{column}' = {id:?}",
+            "select * from ({query}) as orig where ogc_fid = {id:?}",
             query = base_query,
-            column = id_col,
+            // column = id_col,
             id = feature_id
         );
+
+        tracing::info!("Query is {}",query );
+
         let result = sqlx::query(&query)
             .map(row_to_map)
             .fetch_one(db)

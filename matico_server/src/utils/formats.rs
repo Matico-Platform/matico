@@ -1,7 +1,7 @@
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Display)]
+#[derive(Serialize, Deserialize, Display, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum Format {
     Csv,
@@ -25,7 +25,7 @@ impl Default for Format {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatParam {
     pub format: Option<Format>,

@@ -40,4 +40,5 @@ export const COGProvider: DatasetProvider = {
   name: "COG Dataset",
   description: "Setup a COG tile layer from a public url",
   component: COGImporter,
+  parameterEditor: ()=><h1>NOt Implemented</h1>
 };

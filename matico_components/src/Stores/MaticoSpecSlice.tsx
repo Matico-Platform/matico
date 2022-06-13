@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, current } from "@reduxjs/toolkit";
 import { Dashboard, Page } from "@maticoapp/matico_spec";
 import _ from "lodash";
 import { Dataset } from "../Datasets/Dataset";
@@ -120,6 +120,16 @@ export const stateSlice = createSlice({
       state.spec = newSpec;
 
     },
+    updateDatasetSpec:(
+      state,
+      action: PayloadAction<{name:string, datasetSpec:any}>)=>{
+        const {name,datasetSpec} = action.payload;
+        let datasetToUpdate = state.spec.datasets.find((d:any)=>Object.values(d)[0].name===name)
+        let dType = Object.keys(datasetToUpdate)[0]
+        let newDatasets = state.spec.datasets.map((d:any)=> Object.values(d)[0].name === name ? {[dType]: datasetSpec} : d )
+        state.spec.datasets=newDatasets;
+      }
+    ,
     duplicateSpecAtPath: (
       state,
       action: PayloadAction<{ editPath: string }>
@@ -193,6 +203,7 @@ export const {
   duplicateSpecAtPath,
   reconcileSpecAtPath,
   reorderAtSpec,
+  updateDatasetSpec,
   addDataset,
 } = stateSlice.actions;
 

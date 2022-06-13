@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import { GeomType } from "../../../Datasets/Dataset";
 import { AutoVariableInterface, useAutoVariable } from "Hooks/useAutoVariable";
+import traverse from 'traverse';
 import {
   ScatterplotLayer,
   PathLayer,
@@ -57,12 +58,22 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
   );
   
   const [mappedStyle, styleReady, styleMapError] = useNormalizeSpec(style);
-  console.log("Mapped style is ", style, mappedStyle)
+  let requiredCols: Array<string>= []
+  traverse(mappedStyle).forEach(function (node: any){
+    if(this && this.key === 'variable'){
+      requiredCols.push(node)
+    }
+  })
+
 
   const dataResult = useRequestData(
     filtersReady && dataset.tiled === false ? source.name : null,
-    mappedFilters
+    mappedFilters,
+    [...requiredCols,'geom']
   );
+
+
+  console.log("Data result is ", dataResult)
 
   const preparedData = useMemo(() => {
     if (!styleReady) {
@@ -80,12 +91,20 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
 
     switch (dataset.geomType) {
       case GeomType.Point:
-        return dataResult.result.map((d: any) => ({
+        self.performance.mark("prep_geom_point_start")
+        let points_result = dataResult.result.map((d: any) => ({
           ...d,
           geom: convertPoint(d.geom),
         }));
+        self.performance.mark("prep_geom_point_end")
+        self.performance.measure('prep_point_geom', 'prep_geom_point_start', "prep_geom_point_end")
+        return points_result
       case GeomType.Polygon:
-        return expandMultiAndConvertPoly(dataResult.result);
+        self.performance.mark("prep_geom_polygon_start")
+        let poly_result = expandMultiAndConvertPoly(dataResult.result);
+        self.performance.mark("prep_geom_polygon_end")
+        self.performance.measure('prep_polygon_geom', 'prep_geom_polygon_start', "prep_geom_polygon_end")
+        return poly_result
       case GeomType.Line:
         return dataResult.result.map((d: any) => ({
           ...d,
@@ -129,7 +148,15 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       lineWidth !== null && (lineWidth > 0 || typeof lineWidth === "function");
 
     const common = {
-      getFillColor: fillColor,
+      getFillColor: (d)=> {
+        try{
+          const col = fillColor(d)
+          return col
+        }
+        catch{
+          return [0,0,0,0] 
+        }
+      },
       getLineColor: lineColor,
       getLineWidth: lineWidth,
       lineWidthUnits,
@@ -228,8 +255,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         });
       }
     }
-
-    console.log("Layer is ",layer, dataset.mvtUrl)
 
     onUpdate(layer);
   }, [

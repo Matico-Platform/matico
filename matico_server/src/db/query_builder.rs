@@ -85,8 +85,7 @@ pub trait QueryBuilder<T> {
     async fn get_feature(
         &self,
         db: &T,
-
-        feature_id: &QueryVal,
+        feature_id: i32,
         id_col: Option<&str>,
     ) -> Result<BTreeMap<String, Option<QueryVal>>, ServiceError>;
 

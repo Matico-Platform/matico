@@ -40,6 +40,7 @@ pub struct ColumnStatRequest {
 
 #[get("test")]
 async fn test() -> HttpResponse {
+    println!("PRINT TEST");
     HttpResponse::Ok().body(format!("{}", SourceType::Dataset))
 }
 
@@ -200,17 +201,35 @@ async fn get_tile(
     Ok(HttpResponse::Ok().body(result.mvt))
 }
 
-#[get("{source_type}/{source_id}/feature/{feature_id}")]
+
+#[derive(Serialize,Deserialize)]
+struct FeatureDetails{
+    pub feature_id: i32 
+}
+
+#[tracing::instrument(
+    name = "Getting feature for query",
+    skip(state,logged_in_user),
+    fields(
+        request_id = %Uuid::new_v4(),
+        feature_id,
+        stat,
+        query_params,
+    )
+)]
 async fn get_feature(
     state: web::Data<State>,
     Path(source): Path<Source>,
-    Path(feature_id): Path<QueryVal>,
+    Path(feature_id): Path<FeatureDetails>,
     web::Query(query_str): web::Query<QueryString>,
     web::Query(query_params): web::Query<HashMap<String, serde_json::Value>>,
     web::Query(format_param): web::Query<FormatParam>,
     web::Query(columns): web::Query<ColumnSelection>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
+
+    println!("HERE!!!!!!!");
+
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let user = User::from_token(&state.db, &logged_in_user.user);
 
@@ -225,7 +244,7 @@ async fn get_feature(
     }
 
     let feature = query
-        .get_feature(&state.data_db, &feature_id, Some("ogc_id".into()))
+        .get_feature(&state.data_db, feature_id.feature_id, Some("ogc_fid".into()))
         .await?;
 
     let result = QueryResult {
@@ -342,6 +361,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
         .to(get_column),
     );
     cfg.service(
+        resource(["{source_type}/{source_id}/feature/{feature_id}", "{source_type}/feature/{feature_id}"]).to(get_feature)
+    );
+    cfg.service(
         resource([
             "{source_type}/{source_id}/tiles/{z}/{x}/{y}",
             "{source_type}/tiles/{z}/{x}/{y}",
@@ -351,7 +373,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         resource(["{source_type}/{source_id}/columns", "{source_type}/columns"]).to(get_columns),
     );
-    cfg.service(get_feature);
     cfg.service(
         resource(["{source_type}/{source_id}/extent", "{source_type}/extent"]).to(get_extent),
     );

@@ -5,16 +5,16 @@ import { useMaticoDispatch, useMaticoSelector } from "./redux";
 //@ts-ignore
 import { v4 as uuid } from 'uuid';
 
-export const useRequestData = (datasetName: string, filters?: Array<Filter>,includeGeo? : boolean) =>{
+export const useRequestData = (datasetName: string, filters?: Array<Filter>, columns?: Array<string>, limit?: number) =>{
   const dispatch = useMaticoDispatch()
-  const requestHash = JSON.stringify({datasetName,filters, includeGeo})
+  const requestHash = JSON.stringify({datasetName,filters,columns, limit })
   const result : Query | null = useMaticoSelector((state)=>state.datasets.queries[requestHash])
+
   const notifierId = useMemo(() => uuid(),[])
-  console.log("in hoook notifierid ", notifierId)
   
   useEffect(()=>{
     if(!result && datasetName){
-      dispatch(registerDataUpdates({datasetName,requestHash,filters, includeGeo, notifierId}))
+      dispatch(registerDataUpdates({datasetName,requestHash,filters, columns, limit,  notifierId}))
     }
   },[requestHash, result])
 

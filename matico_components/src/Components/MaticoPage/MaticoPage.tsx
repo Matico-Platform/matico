@@ -19,8 +19,6 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
   page,
   editPath,
 }) => {
-  console.log("Page is ", page);
-
   let content =
     page.sections.length > 1 ? (
       <Tabs width="100%" height="100%">

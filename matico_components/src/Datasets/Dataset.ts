@@ -42,7 +42,8 @@ export interface DatasetSummary{
   error?: string,
   tiled: boolean,
   raster:boolean,
-  mvtUrl?: string
+  mvtUrl?: string,
+  spec: any
 }
 
 export type HistogramBin={
@@ -55,8 +56,7 @@ export interface Dataset{
   name: string,
   idCol: string,
   columns: ()=>Promise<Column[]>,
-  getData: (filters?: Array<Filter>, columns?: Array<string>) =>Promise<Datum[]>,
-  getDataWithGeo: (filters?: Array<Filter>, columns?:Array<string>) =>Promise<Datum[]>,
+  getData: (filters?: Array<Filter>, columns?: Array<string>, limit?:number) =>Promise<Datum[]>,
   getFeature: (feature_id: string) => Promise<Datum | undefined>,
   local:()=>boolean,
   tiled:()=>boolean,
