@@ -1,0 +1,16 @@
+{
+  "name": "@maticoapp/matico_spec",
+  "collaborators": [
+    "Stuart Lynn <stuart.lynn@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "matico_spec_bg.wasm",
+    "matico_spec.js",
+    "matico_spec_bg.js",
+    "matico_spec.d.ts"
+  ],
+  "module": "matico_spec.js",
+  "types": "matico_spec.d.ts",
+  "sideEffects": false
+}
