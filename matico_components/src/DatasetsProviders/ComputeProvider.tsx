@@ -26,13 +26,9 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     spec,
     onChange
 }) => {
-    console.log("Parameter editor ", spec);
-
     const { analysis, error } = useAnalysis(spec.url);
     const parameters = analysis ? analysis.options() : {};
     const values = spec.params;
-
-    console.log("url ", spec.url, " values ", values);
 
     return (
         <View>
@@ -63,7 +59,6 @@ const ParameterInput: React.FC<{
     params: { [key: string]: any };
 }> = ({ name, options, value, onChange, params }) => {
     const [type, constraints] = Object.entries(options)[0];
-    console.log("Options for name are ", name, constraints);
     const description = constraints.display_details.description;
     const label = constraints.display_details.display_name ?? name;
 
@@ -138,7 +133,6 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     };
 
     const { analysis, error } = useAnalysis(spec.url);
-    console.log("analysis ", analysis, " spec ", spec.url);
 
     const computeOptions = analysis ? analysis.options() : {};
     const description = analysis ? analysis.description() : "";
