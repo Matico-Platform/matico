@@ -20,6 +20,8 @@ ADD ./Cargo.toml ./Cargo.toml /app/
 ADD ./matico_spec /app/matico_spec
 ADD ./matico_spec_derive /app/matico_spec_derive
 ADD ./matico_server /app/matico_server
+ADD ./matico_common /app/matico_common
+ADD ./matico_compute /app/matico_compute
 
 WORKDIR /app 
 RUN ls 
