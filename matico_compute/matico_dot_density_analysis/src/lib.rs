@@ -74,11 +74,11 @@ impl MaticoAnalysisRunner for DotDensityAnalysis {
             console::log_1(&format!("count physical val is {:#?}",counts_raw.data_type().to_physical_type()).into());
 
             let counts= match counts_raw.data_type().to_physical_type(){
-                PhysicalType::Primitive(PrimitiveType::Float32) =>{
-                    let array = counts_raw.as_any().downcast_ref::<PrimitiveArray<f32>>().unwrap();
-                    let array = arrow2::compute::cast::float_to_decimal(array, 100,1);
-                    Ok(array)
-                },
+                // PhysicalType::Primitive(PrimitiveType::Float32) =>{
+                //     let array = counts_raw.as_any().downcast_ref::<PrimitiveArray<f32>>().unwrap();
+                //     let array = arrow2::compute::cast::float_to_decimal(array, 100,1);
+                //     Ok(array)
+                // },
                 PhysicalType::Primitive(PrimitiveType::Int32) =>{
                     let array = counts_raw.as_any().downcast_ref::<PrimitiveArray<i32>>().unwrap();
                     let array = arrow2::compute::cast::integer_to_decimal(&array, 100, 1); 
@@ -100,7 +100,7 @@ impl MaticoAnalysisRunner for DotDensityAnalysis {
             for (index,wkb) in geoms_raw.iter().enumerate(){
                 if wkb.is_some(){
                     let no_points = counts.values()[index];
-                    let no_points = no_points/(dot_per as f32);
+                    let no_points = (no_points as f32)/(dot_per as f32);
                     console::log_1(&format!("generating {} points",no_points).into());
 
                     let mut cursor = Cursor::new(wkb.unwrap());
@@ -145,7 +145,7 @@ impl MaticoAnalysisRunner for DotDensityAnalysis {
     }
 
     fn description()->Option<String>{
-        Some("This generates a number of points randonly placed within each polygon based on some input number".into()) 
+        Some("This generates a number of points randomly placed within each polygon based on some input number".into()) 
     }
 
     fn options() -> BTreeMap<String, ParameterOptions> {
