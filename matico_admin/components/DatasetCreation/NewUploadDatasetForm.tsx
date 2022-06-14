@@ -52,15 +52,31 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
       validator
     });
 
+
+  // todo: refactor this to enumerations of file types and map MIME types to file types
   const previewerForFile = (file: File) => {
-    switch(file.type){
-      case "application/csv":
-      case "text/csv":
-        return <CSVFilePreviewer file={file} />;
-      case "application/geo+json":
-        return <GeoJSONFilePreviewer file={file} />
-        case "application/zip":
-        return <ShpFilePreviewer file={file}/>
+    if (file.type.length){
+      switch(file.type){
+        case "application/csv":
+        case "text/csv":
+          return <CSVFilePreviewer file={file} />;
+        case "application/geo+json":
+          return <GeoJSONFilePreviewer file={file} />
+          case "application/zip":
+          return <ShpFilePreviewer file={file}/>
+      }
+    } else if (file.name.length) {
+      const fileType = file.name.split('.').slice(-1)[0].toLowerCase()
+      switch(fileType){
+        case "csv":
+          return <CSVFilePreviewer file={file} />
+        case "geojson":
+          return <GeoJSONFilePreviewer file={file} />
+        case "zip":
+          return <ShpFilePreviewer file={file}/>
+      } 
+    } else {
+      return null
     }
   };
   
