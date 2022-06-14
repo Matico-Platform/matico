@@ -31,8 +31,10 @@ RUN cargo build --release
 WORKDIR /app/matico_spec
 RUN wasm-pack build  --release --scope maticoapp
 
-RUN cp -r /app/matico_compute/matico_hdbscam_analysis/pkg /app/matico_server/static/compute/hdbscan
-RUN cp -r /app/matico_compute/matico_dot_density_analysis/pkg  /app/matico_server/static/compute/dot_density
+WORKDIR /app/matico_compute/matico_hdbscam_analysis
+RUN ./build.sh
+WORKDIR /app/matico_compute/matico_dot_density_analysis
+RUN ./build.sh
 
 # Install the dependencies for javascript
 #--------------------------------------------------------------------------------
