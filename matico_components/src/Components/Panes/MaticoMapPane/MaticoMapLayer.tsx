@@ -72,8 +72,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     [...requiredCols,'geom']
   );
 
-
-  console.log("Data result is ", dataResult)
+  // console.log("Data result is ", dataResult)
 
   const preparedData = useMemo(() => {
     if (!styleReady) {
@@ -183,8 +182,22 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
       },
       _legend: {
         name: name,
-        domain: mappedStyle?.fillColor?.domain,
-        range: mappedStyle?.fillColor?.range,
+        fillColor: {
+          domain: mappedStyle?.fillColor?.domain,
+          range: mappedStyle?.fillColor?.range
+        },
+        lineColor: {
+          domain: mappedStyle?.lineColor?.domain,
+          range: mappedStyle?.lineColor?.range
+        },
+        lineWidth: {
+          domain: mappedStyle?.lineWidth?.domain,
+          range: mappedStyle?.lineWidth?.range
+        },
+        size: {
+          domain: mappedStyle?.size?.domain,
+          range: mappedStyle?.size?.range
+        }
       },
     };
     if (!dataset.tiled) {

@@ -17,7 +17,7 @@ export const useRegisterDatasets = () => {
     const [normalizedDatasetSpec, loadingDatasetSpec, datasetSpecError] =
         useNormalizeSpec(spec?.datasets);
 
-    console.log("normalizedDatasetSpec is ", normalizedDatasetSpec, spec?.datasets)
+    // console.log("normalizedDatasetSpec is ", normalizedDatasetSpec, spec?.datasets)
 
     const previousDatasetSpec = useRef<Record<string, any>>([]);
 
@@ -37,10 +37,10 @@ export const useRegisterDatasets = () => {
 
                 // Skip if this particular dataset needs no update
                 if (prevSpec && _.isEqual(Object.values(prevSpec)[0], details)) {
-                  console.log("skipping ",details.name)
+                //   console.log("skipping ",details.name)
                     return;
                 }
-                console.log("updating ",details.name)
+                // console.log("updating ",details.name)
 
                 dispatch(
                     registerOrUpdateDataset({

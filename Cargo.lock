@@ -2403,24 +2403,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "matico_area_analysis"
-version = "0.1.0"
-dependencies = [
- "arrow2",
- "enum_dispatch",
- "geo 0.18.0",
- "geo-types",
- "geozero 0.7.7",
- "matico_analysis",
- "matico_spec_derive",
- "serde 1.0.136",
- "serde_json",
- "wasm-bindgen",
- "wee_alloc",
- "wkb",
-]
-
-[[package]]
 name = "matico_common"
 version = "0.1.0"
 dependencies = [

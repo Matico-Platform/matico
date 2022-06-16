@@ -52,11 +52,13 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
 
   const updateLayer = (layer) => {
     if (!layer) return;
-    if (mapLayers.map((l) => l.id).includes(layer.id)) {
-      setMapLayers(mapLayers.map((l) => (l.id === layer.id ? layer : l)));
-    } else {
-      setMapLayers([...mapLayers, layer]);
-    }
+    setMapLayers(mapLayers => {
+      if (mapLayers.map((l) => l.id).includes(layer.id)) {
+        return mapLayers.map((l) => (l.id === layer.id ? layer : l));
+      } else {
+        return [...mapLayers, layer];
+      }
+    })
   };
 
   const validMapLayers: any = useMemo(
@@ -66,7 +68,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             .map((layer) => mapLayers.find((ml) => ml.id === layer.name))
             .filter((a) => a)
         : [],
-    [mapLayers]
+    [mapLayers, JSON.stringify(layers)]
   );
 
 
@@ -152,14 +154,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             />
           ))}
           <MaticoLegendPane
-            layers={
-              validMapLayers
-                ? validMapLayers.map((layer) => ({
-                    name: layer?.props?.id,
-                    colorScale: layer?.props?._legend,
-                  }))
-                : []
-            }
+            layers={validMapLayers}
           />
         </>
       )}

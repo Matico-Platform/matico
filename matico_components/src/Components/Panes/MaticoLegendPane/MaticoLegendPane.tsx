@@ -1,6 +1,28 @@
-import { Flex, Heading, Text, View } from "@adobe/react-spectrum";
-import React from "react";
+import { Divider, Flex, Heading, Text, View } from "@adobe/react-spectrum";
+import React, { useMemo } from "react";
 import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
+import {
+    scaleLinear,
+    scaleOrdinal,
+    scaleThreshold,
+    scaleQuantile
+} from "@visx/scale";
+import {
+    // Legend,
+    LegendLinear,
+    LegendQuantile,
+    LegendOrdinal,
+    LegendSize,
+    LegendThreshold,
+    LegendItem,
+    LegendLabel,
+    RectShape,
+    CircleShape,
+    LineShape
+} from "@visx/legend";
+import { colors } from "Utils/colors";
+import _ from "lodash";
+import styled from "styled-components";
 
 // interface MaicoMapPaneInterface extends MaticoPaneInterface {
 //     view: View;
@@ -10,80 +32,252 @@ import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
 //     editPath?: string;
 // }
 
+export function nicelyFormatNumber(x: number | string) {
+    const val = +x;
+    if (!x || isNaN(val)) return x;
+    if (val < 0.0001) return val.toExponential();
+    if (val < 0.01) return val.toFixed(4);
+    if (val < 1) return val.toFixed(3);
+    if (val < 10) return val.toFixed(2);
+    if (val < 100) return val.toFixed(1);
+    if (val < 1_000) return val.toFixed(0);
+    if (val < 10_000) return `${(val / 1_000).toFixed(1)}K`;
+    if (val < 1_000_000) return `${(val / 1_000).toFixed(0)}K`;
+    if (val < 1_000_000_000) return `${(val / 1_000_000).toFixed(1)}M`;
+    if (val < 1_000_000_000_000) return `${(val / 1_000_000).toFixed(1)}B`;
+    return val.toExponential();
+}
 
+export const sanitizeColor = (color: string | number[] | undefined) => {
+    if (!color) return null;
+    if (typeof color === "string") return color;
+    if (Array.isArray(color)) {
+        return `rgb${color.length === 4 ? "a" : ""}(${color.join(",")})`;
+    }
+    return null;
+};
 
-export const MaticoLegendPane = ({ layers = [] }) => {
+const Rect: React.FC<{ children: React.ReactChildren }> = ({ children }) => (
+    <rect>{children}</rect>
+);
+const Circle: React.FC<{ children: React.ReactChildren }> = ({ children }) => (
+    <circle>{children}</circle>
+);
+const Line: React.FC<{ children: React.ReactChildren }> = ({ children }) => (
+    <line>{children}</line>
+);
 
-  return layers && layers.length ? (
-    <View
-      position="absolute"
-      right=".75em"
-      bottom="1.5em"
-      backgroundColor="default"
-      padding="size-100"
-    >
-      <Flex direction="row">
-        {layers.map((layer) =>
-          layer?.colorScale?.domain && layer?.colorScale?.range ? (
-            <View key={layer.name}>
-              <Text>{layer.name}</Text>
-              <Flex direction="row">
-                <Flex direction="column-reverse">
-                  {"string" == typeof layer.colorScale.range
-                    ? getColorScale(layer.colorScale.range)[0]
-                      ? getColorScale(layer.colorScale.range)[0].map(
-                          (color) => (
-                            <View
-                              width="size-150"
-                              flexGrow={1}
-                              key={color}
-                              UNSAFE_style={{ backgroundColor: color }}
-                            />
-                          )
-                        )
-                      : null
-                    : layer?.colorScale?.range
-                    ? layer.colorScale.range.map((d) => {
-                        return (
-                          <View
-                            key={`rgb(${generateColor(d, false)
-                              .slice(0, 3)
-                              .join(",")})`}
-                            UNSAFE_style={{
-                              backgroundColor: `rgb(${generateColor(d, false)
-                                .slice(0, 3)
-                                .join(",")})`,
-                            }}
-                          />
-                        );
-                      })
-                    : null}
-                </Flex>
-                <Flex
-                  direction="column-reverse"
-                  justifyContent="space-evenly"
-                  alignItems="start"
-                  marginY={`${100 / layer.colorScale.range.length / 2}%`}
-                  marginStart="size-50"
-                >
-                  {!!layer?.colorScale?.domain &&
-                    layer.colorScale.domain
-                      .map((d) => (
-                        "string" === typeof(d) ? 
-                        <Text key={d}>
-                          {d}
-                        </Text>
-                        :
-                        <Text key={Math.round(d).toLocaleString("en")}>
-                          {(Math.round(d * 10) / 10).toLocaleString("en")}
-                        </Text>
-                      ))}
-                </Flex>
-              </Flex>
+const ENTRY_SYMBOL_WIDTH = 20;
+const ENTRY_SYMBOL_HEIGHT = 20;
+
+type ScaleFunc = (x: number) => { [key: string]: any };
+//@ts-ignore
+const useLegend = (
+    layer: any
+): {
+    name: string;
+    legendEl: string;
+    getLegendItemProps: (value: number) => { [key: string]: any };
+    scale: any;
+} => {
+    let legendEl = "rect";
+    const name = layer?.props?.id;
+    const style = layer?.props?._legend;
+
+    const { fillColor, lineColor, lineWidth, size } = style;
+
+    let steps: { scale: any; operation: ScaleFunc }[] = [];
+
+    if (fillColor?.domain) {
+        const { domain, range: valuesOrName } = fillColor;
+        const range = Array.isArray(valuesOrName)
+            ? valuesOrName
+            : _.get(colors, valuesOrName);
+
+        const scale = scaleThreshold<number>({
+            domain: [...domain.slice(1), Math.pow(10, 10)],
+            range
+        });
+
+        steps.push({
+            scale,
+            operation: (value: number) => ({
+                fill: sanitizeColor(scale(value) as string | number[])
+            })
+        });
+    }
+    if (lineColor?.domain) {
+        const { domain, range: valuesOrName } = lineColor;
+        const range = Array.isArray(valuesOrName)
+            ? valuesOrName
+            : _.get(colors, valuesOrName);
+        const scale = scaleThreshold<number>({
+            domain: [...domain.slice(1), Math.pow(10, 10)],
+            range
+        });
+        steps.push({
+            scale,
+            operation: (value: number) => ({
+                stroke: sanitizeColor(scale(value) as string | number[])
+            })
+        });
+    }
+    if (lineWidth?.domain) {
+        const { domain } = lineWidth;
+        if (domain) {
+            const max = Math.max(...domain);
+
+            const range = domain.map(
+                //@ts-ignore
+                (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 4 - 1) + 1
+            );
+            const scale = scaleThreshold<number>({
+                domain: [...domain.slice(1), Math.pow(10, 10)],
+                range
+            });
+            steps.push({
+                scale,
+                operation: (value: number) => ({
+                    strokeWidth: scale(value) as string | number[]
+                })
+            });
+        }
+    }
+    if (size?.domain) {
+        legendEl = "circle";
+        const { domain } = size;
+        if (domain) {
+            const max = Math.max(...domain);
+
+            const range = domain.map(
+                //@ts-ignore
+                (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 2 - 3) + 3
+            );
+            const scale = scaleThreshold<number>({
+                domain: [...domain.slice(1), Math.pow(10, 10)],
+                range
+            });
+            steps.push({
+                scale,
+                operation: (value: number) => ({
+                    r: scale(value) as string | number[],
+                    cx: ENTRY_SYMBOL_WIDTH / 2,
+                    cy: ENTRY_SYMBOL_HEIGHT / 2
+                })
+            });
+        }
+    } else {
+        steps.push({
+            scale: null,
+            operation: (value: number) => ({
+                width: 20,
+                height: 20
+            })
+        });
+    }
+
+    const getLegendItemProps = (value: number) =>
+        steps.reduce(
+            (props, step) => ({
+                ...props,
+                ...step.operation(value)
+            }),
+            {}
+        );
+
+    return {
+        name,
+        legendEl,
+        scale: steps[0]?.scale,
+        getLegendItemProps
+    };
+};
+
+const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
+    const { name, legendEl, scale, getLegendItemProps } = useLegend(layer);
+
+    if (!scale) {
+        return null;
+    } else {
+        return (
+            <View>
+                <Text UNSAFE_style={{ fontWeight: "bold" }}>{name}</Text>
+                <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
+                    {(labels) => {
+                        console.log(labels.sort((a,b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)))
+                        //@ts-ignore
+                        return labels.sort((a,b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)).reverse().map((label, i) => {
+                            const val: number =
+                                label.datum !== undefined
+                                    ? (label.datum as number)
+                                    : //@ts-ignore
+                                      (label?.extent[1] || 0) - 0.000000001;
+
+                            return (
+                                <LegendItem
+                                    key={`legend-quantile-${i}`}
+                                    margin="1px 0"
+                                    // onClick={() => {
+                                    //   if (events) alert(`clicked: ${JSON.stringify(label)}`);
+                                    // }}
+                                >
+                                    <svg
+                                        width={ENTRY_SYMBOL_WIDTH}
+                                        height={ENTRY_SYMBOL_HEIGHT}
+                                    >
+                                        {legendEl === "rect" ? (
+                                            <rect
+                                                {...getLegendItemProps(val)}
+                                            />
+                                        ) : (
+                                            <circle
+                                                {...getLegendItemProps(val)}
+                                            />
+                                        )}
+                                    </svg>
+                                    <Text marginStart={"size-100"}>
+                                        {i > 0 ? label.text : `> ${val}`}
+                                    </Text>
+                                </LegendItem>
+                            );
+                        });
+                    }}
+                </LegendThreshold>
             </View>
-          ) : null
-        )}
-      </Flex>
-    </View>
-  ) : null;
+        );
+    }
+};
+
+export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
+    layers = []
+}) => {
+    const legends = useMemo(
+        () =>
+            layers.map((layer, i) => (
+                <Flex key={i} direction="row">
+                    <Legend layer={layer} />
+                    {layers?.length > 1 && i < layers.length - 1 && (
+                        <Divider
+                            orientation="vertical"
+                            size="M"
+                            marginX="size-100"
+                        />
+                    )}
+                </Flex>
+            )),
+        // @ts-ignore
+        [JSON.stringify(layers.map((layer) => layer?.props?._legend))]
+    );
+
+    return layers && layers.length ? (
+        <View
+            position="absolute"
+            right=".75em"
+            bottom="1.5em"
+            backgroundColor="default"
+            padding="size-100"
+        >
+            <Flex direction="row">{legends}</Flex>
+        </View>
+    ) : null;
 };
