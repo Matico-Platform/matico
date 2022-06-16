@@ -15,10 +15,14 @@ import {
     LegendSize,
     LegendThreshold,
     LegendItem,
-    LegendLabel
+    LegendLabel,
+    RectShape,
+    CircleShape,
+    LineShape
 } from "@visx/legend";
 import { colors } from "Utils/colors";
 import _ from "lodash";
+import styled from "styled-components";
 
 // interface MaicoMapPaneInterface extends MaticoPaneInterface {
 //     view: View;
@@ -53,53 +57,195 @@ export const sanitizeColor = (color: string | number[] | undefined) => {
     return null;
 };
 
+const Rect: React.FC<{ children: React.ReactChildren }> = ({ children }) => (
+    <rect>{children}</rect>
+);
+const Circle: React.FC<{ children: React.ReactChildren }> = ({ children }) => (
+    <circle>{children}</circle>
+);
+const Line: React.FC<{ children: React.ReactChildren }> = ({ children }) => (
+    <line>{children}</line>
+);
+
+const ENTRY_SYMBOL_WIDTH = 20;
+const ENTRY_SYMBOL_HEIGHT = 20;
+
+type ScaleFunc = (x: number) => { [key: string]: any };
+//@ts-ignore
+const useLegend = (
+    layer: any
+): {
+    name: string;
+    legendEl: string;
+    getLegendItemProps: (value: number) => { [key: string]: any };
+    scale: any;
+} => {
+    let legendEl = "rect";
+    const name = layer?.props?.id;
+    const style = layer?.props?._legend;
+
+    const { fillColor, lineColor, lineWidth, size } = style;
+
+    let steps: { scale: any; operation: ScaleFunc }[] = [];
+
+    if (fillColor?.domain) {
+        const { domain, range: valuesOrName } = fillColor;
+        const range = Array.isArray(valuesOrName)
+            ? valuesOrName
+            : _.get(colors, valuesOrName);
+
+        const scale = scaleThreshold<number>({
+            domain: [...domain.slice(1), Math.pow(10, 10)],
+            range
+        });
+
+        steps.push({
+            scale,
+            operation: (value: number) => ({
+                fill: sanitizeColor(scale(value) as string | number[])
+            })
+        });
+    }
+    if (lineColor?.domain) {
+        const { domain, range: valuesOrName } = lineColor;
+        const range = Array.isArray(valuesOrName)
+            ? valuesOrName
+            : _.get(colors, valuesOrName);
+        const scale = scaleThreshold<number>({
+            domain: [...domain.slice(1), Math.pow(10, 10)],
+            range
+        });
+        steps.push({
+            scale,
+            operation: (value: number) => ({
+                stroke: sanitizeColor(scale(value) as string | number[])
+            })
+        });
+    }
+    if (lineWidth?.domain) {
+        const { domain } = lineWidth;
+        if (domain) {
+            const max = Math.max(...domain);
+
+            const range = domain.map(
+                //@ts-ignore
+                (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 4 - 1) + 1
+            );
+            const scale = scaleThreshold<number>({
+                domain: [...domain.slice(1), Math.pow(10, 10)],
+                range
+            });
+            steps.push({
+                scale,
+                operation: (value: number) => ({
+                    strokeWidth: scale(value) as string | number[]
+                })
+            });
+        }
+    }
+    if (size?.domain) {
+        legendEl = "circle";
+        const { domain } = size;
+        if (domain) {
+            const max = Math.max(...domain);
+
+            const range = domain.map(
+                //@ts-ignore
+                (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 2 - 3) + 3
+            );
+            const scale = scaleThreshold<number>({
+                domain: [...domain.slice(1), Math.pow(10, 10)],
+                range
+            });
+            steps.push({
+                scale,
+                operation: (value: number) => ({
+                    r: scale(value) as string | number[],
+                    cx: ENTRY_SYMBOL_WIDTH / 2,
+                    cy: ENTRY_SYMBOL_HEIGHT / 2
+                })
+            });
+        }
+    } else {
+        steps.push({
+            scale: null,
+            operation: (value: number) => ({
+                width: 20,
+                height: 20
+            })
+        });
+    }
+
+    const getLegendItemProps = (value: number) =>
+        steps.reduce(
+            (props, step) => ({
+                ...props,
+                ...step.operation(value)
+            }),
+            {}
+        );
+
+    return {
+        name,
+        legendEl,
+        scale: steps[0]?.scale,
+        getLegendItemProps
+    };
+};
+
 const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
-    const { name, colorScale } = layer;
+    const { name, legendEl, scale, getLegendItemProps } = useLegend(layer);
 
-    const { range: colorsOrName, domain } = colorScale;
+    if (!scale) {
+        return null;
+    } else {
+        return (
+            <View>
+                <Text UNSAFE_style={{ fontWeight: "bold" }}>{name}</Text>
+                <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
+                    {(labels) => {
+                        console.log(labels.sort((a,b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)))
+                        //@ts-ignore
+                        return labels.sort((a,b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)).reverse().map((label, i) => {
+                            const val: number =
+                                label.datum !== undefined
+                                    ? (label.datum as number)
+                                    : //@ts-ignore
+                                      (label?.extent[1] || 0) - 0.000000001;
 
-    const range = Array.isArray(colorsOrName)
-        ? colorsOrName
-        : _.get(colors, colorsOrName);
-        
-    if (!domain || !range) return null;
-
-    const scale = scaleThreshold<number>({
-        domain,
-        range
-    });
-
-    return (
-        <View>
-            <Text UNSAFE_style={{fontWeight: 'bold'}}>{name}</Text>
-            <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
-                {(labels) => {
-                    return labels.reverse().map((label, i) => (
-                        <LegendItem
-                            key={`legend-quantile-${i}`}
-                            margin="1px 0"
-                            // onClick={() => {
-                            //   if (events) alert(`clicked: ${JSON.stringify(label)}`);
-                            // }}
-                        >
-                            <svg width={20} height={20}>
-                                <circle
-                                    // @ts-ignore
-                                    fill={sanitizeColor(label?.value)}
-                                    r={8}
-                                    cx={10}
-                                    cy={10}
-                                />
-                            </svg>
-                            <Text marginStart={"size-100"}>
-                                {label.text}
-                            </Text>
-                        </LegendItem>
-                    ));
-                }}
-            </LegendThreshold>
-        </View>
-    );
+                            return (
+                                <LegendItem
+                                    key={`legend-quantile-${i}`}
+                                    margin="1px 0"
+                                    // onClick={() => {
+                                    //   if (events) alert(`clicked: ${JSON.stringify(label)}`);
+                                    // }}
+                                >
+                                    <svg
+                                        width={ENTRY_SYMBOL_WIDTH}
+                                        height={ENTRY_SYMBOL_HEIGHT}
+                                    >
+                                        {legendEl === "rect" ? (
+                                            <rect
+                                                {...getLegendItemProps(val)}
+                                            />
+                                        ) : (
+                                            <circle
+                                                {...getLegendItemProps(val)}
+                                            />
+                                        )}
+                                    </svg>
+                                    <Text marginStart={"size-100"}>
+                                        {i > 0 ? label.text : `> ${val}`}
+                                    </Text>
+                                </LegendItem>
+                            );
+                        });
+                    }}
+                </LegendThreshold>
+            </View>
+        );
+    }
 };
 
 export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
@@ -119,7 +265,8 @@ export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
                     )}
                 </Flex>
             )),
-        [JSON.stringify(layers)]
+        // @ts-ignore
+        [JSON.stringify(layers.map((layer) => layer?.props?._legend))]
     );
 
     return layers && layers.length ? (

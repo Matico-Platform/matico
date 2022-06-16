@@ -154,14 +154,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             />
           ))}
           <MaticoLegendPane
-            layers={
-              validMapLayers
-                ? validMapLayers.map((layer) => ({
-                    name: layer?.props?.id,
-                    colorScale: layer?.props?._legend,
-                  }))
-                : []
-            }
+            layers={validMapLayers}
           />
         </>
       )}
