@@ -14,8 +14,8 @@ export const MaticoSection: React.FC<MaticoSectionInterface> = ({
   editPath,
 }) => {
   let LayoutEngine = selectLayout(section.layout);
-  console.log('SECTION', section.panes, section.panes.length && selectPane(section.panes[0], ''))
-  console.log(section.panes)
+  // console.log('SECTION', section.panes, section.panes.length && selectPane(section.panes[0], ''))
+  // console.log(section.panes)
   return (
     <>
       <LayoutEngine>

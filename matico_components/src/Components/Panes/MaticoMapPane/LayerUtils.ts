@@ -74,7 +74,7 @@ export const generateNumericVar = (numericVar): NumberReturn => {
 
 export const generateColor = (color: any, alpha: boolean) => {
   if (Array.isArray(color)) {
-    console.log("as array ", color)
+    // console.log("as array ", color)
     if(color.length===4){
       let c  = chroma(...color.slice(0,3), color[3]/255.0, "rgb").rgba()
       return c 
@@ -110,12 +110,12 @@ const constructRampFunctionNum= (range:Array<any>,domain:Array<any> )=>{
 const constructRampFunctionCol = (range:Array<any>,domain:Array<any> )=>{
       if(typeof(domain[0]) === 'string'){
         return (val:string)=> {
-          console.log("domain ",domain ,val)
+          // console.log("domain ",domain ,val)
           const index = domain.indexOf(`${val}`)
         
           if(index >=0){
             const r = range[index]
-            console.log("r is ",r, index, range )
+            // console.log("r is ",r, index, range )
             return chroma(r)
           } 
           else{
@@ -140,7 +140,7 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
   if (colorVar.variable) {
     const { variable, domain, range } = colorVar;
 
-    console.log("variable domain range ", variable,domain, range )
+    // console.log("variable domain range ", variable,domain, range )
 
     if (Array.isArray(range)) {
       const mappedRange = range.map((c) => generateColor(c,true))

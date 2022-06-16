@@ -8,7 +8,7 @@ const isEditActive = () => {
     .replace("?", "")
     .split("&")
     .map((p) => p.split("="));
-  console.log("params are ", params);
+  // console.log("params are ", params);
   const editParam = params.find((p) => p[0] === "edit");
   if (editParam) {
     return editParam[1] === "true";

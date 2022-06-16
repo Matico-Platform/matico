@@ -87,7 +87,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
   const dispatch = useMaticoDispatch();
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  console.log("Spec is ", spec);
+  // console.log("Spec is ", spec);
 
   const app = spec;
   const pages = app.pages;

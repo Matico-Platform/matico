@@ -72,8 +72,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     [...requiredCols,'geom']
   );
 
-
-  console.log("Data result is ", dataResult)
+  // console.log("Data result is ", dataResult)
 
   const preparedData = useMemo(() => {
     if (!styleReady) {
