@@ -12,7 +12,7 @@ export const TwoUpCollapsableGrid: React.FC<TwoUpCollapsableGridProps> = ({child
     base: ["button1", "button2"],
     }}
     columns={{
-        L: ["50%", "50%"],
+        L: ["48%", "48%"],
         M: ["100%"],
         S: ["100%"],
         base: ["100%"],

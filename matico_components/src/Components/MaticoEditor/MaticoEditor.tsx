@@ -85,12 +85,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
       <View overflow={"hidden auto"} height={height}>
         <TabPanels>
           <Item key="Components">
-            <Flex height="100%" width="100%" direction="column">
-              <BreadCrumbs editPath={currentEditPath} />
-              <View flex="1">
-                <EditPane editPath={currentEditPath} />
-              </View>
-            </Flex>
+            <EditPane editPath={currentEditPath} />
           </Item>
           <Item key="Datasets">
             <DatasetsEditor datasetProviders={datasetProviders} />

@@ -24,6 +24,7 @@ export const BaseMapSelector: React.FC<BaseMapSelectorProps> = ({
   return (
     <Picker
       label='Basemap'
+      labelPosition="side"
       width="100%"
       items={BaseMaps.map((bm) => ({ key: bm }))}
       selectedKey={baseMap}

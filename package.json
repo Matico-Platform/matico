@@ -38,6 +38,7 @@
     "@nebula.gl/layers": "^1.0.2-alpha.1",
     "@nebula.gl/overlays": "^1.0.2-alpha.1",
     "@parcel/transformer-react-refresh-wrap": "^2.0.0",
+    "@react-types/button": "^3.5.1",
     "@zip.js/zip.js": "^2.4.9",
     "immer": "^9.0.6",
     "logrocket": "^2.2.0",

@@ -23,11 +23,18 @@ import {
     Content,
     TextField,
     View,
-    ButtonGroup
+    ButtonGroup,
+    Divider
     // repeat,
 } from "@adobe/react-spectrum";
 import { useMaticoSpec } from "Hooks/useMaticoSpec";
 import { useSpecActions } from "Hooks/useSpecActions";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { DetailsEditor } from "./DetailsEditor";
+import { GeoBoundsSelector } from "../EditorComponents/GeoBoundsSelector";
+import { OptionsPopper } from "../EditorComponents/OptionsPopper";
+import { NumericEditor } from "../EditorComponents/NumericEditor";
+import { ParentSize } from "@visx/responsive";
 
 interface AddPaneModalProps {
     onAddLayer: (name: string, dataset: string) => void;
@@ -38,36 +45,61 @@ const AddPaneModal: React.FC<AddPaneModalProps> = ({ onAddLayer }) => {
     const [layerName, setLayerName] = useState<string>("New layer name");
 
     return (
-        <DialogTrigger isDismissable type="popover">
-            <ActionButton>Add</ActionButton>
-            {(close) => (
-                <Dialog>
-                    <Heading>Add layer</Heading>
-                    <Content>
-                        <TextField
-                            width="100%"
-                            label="Layer name"
-                            value={layerName}
-                            onChange={setLayerName}
-                        />
-                        <DatasetSelector
-                            selectedDataset={dataset}
-                            onDatasetSelected={setDataset}
-                        />
-                    </Content>
-                    <ButtonGroup>
-                        <ActionButton
-                            onPress={() => {
-                                onAddLayer(dataset, layerName);
-                                close();
+        <ParentSize>
+            {({ width }) => {
+                return <DialogTrigger 
+                    isDismissable
+                    type="popover" 
+                    containerPadding={0}
+                    hideArrow>
+                    <ActionButton width="100%">Add Map Layer</ActionButton>
+                    {(close) => (
+                        <View
+                            width={width}
+                            backgroundColor="gray-75"
+                            borderColor="informative"
+                            borderWidth="thick"
+                            UNSAFE_style={{
+                                boxShadow: "0px 0px 8px 4px rgba(0,0,0,0.5)"
                             }}
                         >
-                            Add
-                        </ActionButton>
-                    </ButtonGroup>
-                </Dialog>
-            )}
-        </DialogTrigger>
+                            <Flex
+                                direction="column"
+                                margin="size-150"
+                            >
+                                <Text>Add layer</Text>
+                                <Divider size="M" />
+                                <TextField
+                                    width="100%"
+                                    label="Layer name"
+                                    labelPosition="side"
+                                    value={layerName}
+                                    onChange={setLayerName}
+                                    marginY="size-50"
+                                />
+                                <DatasetSelector
+                                    selectedDataset={dataset}
+                                    onDatasetSelected={setDataset}
+                                />
+                                <ButtonGroup>
+                                    <ActionButton
+                                        type="submit"
+                                        width="100%"
+                                        marginY="size-50"
+                                        onPress={() => {
+                                            onAddLayer(dataset, layerName);
+                                            close();
+                                        }}
+                                    >
+                                        Add to Map
+                                    </ActionButton>
+                                </ButtonGroup>
+                            </Flex>
+                        </View>
+                    )}
+                </DialogTrigger>
+            }}
+        </ParentSize>
     );
 };
 
@@ -76,6 +108,7 @@ export interface PaneEditorProps {
 }
 export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     const [mapPane, parentLayout] = useMaticoSpec(editPath);
+
     const {
         remove: deletePane,
         update: updatePane,
@@ -145,6 +178,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     if (!mapPane) {
         return (
             <View>
+                {/* @ts-ignore */}
                 <Text color="status-error">Failed to find component</Text>
             </View>
         );
@@ -195,126 +229,131 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
 
     return (
         <Flex direction="column">
-            <PaneEditor
-                position={mapPane.position}
-                name={mapPane.name}
-                background={mapPane.background}
-                onChange={updatePaneDetails}
-                parentLayout={parentLayout}
-            />
-
-            <Well>
-                <Heading>
-                    <Flex
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="end"
+            <CollapsibleSection title="Details">
+                <DetailsEditor
+                    name={mapPane.name}
+                    pane={mapPane}
+                    updatePane={updatePane}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Sizing" isOpen={true}>
+                <PaneEditor
+                    position={mapPane.position}
+                    name={mapPane.name}
+                    background={mapPane.background}
+                    onChange={updatePaneDetails}
+                    parentLayout={parentLayout}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection
+                title="Map Bounds"
+                isOpen={true}
+            >
+                <GeoBoundsSelector
+                    updateView={updateView}
+                    mapView={mapView}
+                />
+                {!isSynced && (
+                    <ActionButton
+                        width="100%"
+                        onPress={setViewFromMap}
+                        marginTop="size-50"
                     >
-                        <Text>Map Bounds</Text>
-                    </Flex>
-                </Heading>
-                <Flex direction="column">
+                        Set Map Bounds from Current View
+                    </ActionButton>
+                )}
+                <TextField
+                    width="100%"
+                    label="Geocoder"
+                    labelPosition="side"
+                    marginY={"size-50"}
+                    value={"Coming soon..."}
+                    onChange={(name: string) => { }}
+                />
+                {otherMapPanes && otherMapPanes.length > 0 && (
+                    <Picker
+                        width="100%"
+                        label="Sync to Another Map View"
+                        labelPosition="side"
+                        items={otherMapPanes}
+                        selectedKey={
+                            mapPane?.view?.var &&
+                            mapPane.view.var.split("_map_loc")[0]
+                        }
+                        onSelectionChange={startSyncing}
+                    >
+                        {(pane) => <Item key={pane.name}>{pane.name}</Item>}
+                    </Picker>
+                )}
+                <OptionsPopper
+                    title="More Map Bounds Options"
+                >
                     <TwoUpCollapsableGrid>
-                        <NumberField
-                            width="100%"
-                            label="lat"
+                        <NumericEditor
+                            label="Lat"
                             step={0.001}
                             value={mapView.lat}
                             isDisabled={isSynced}
-                            onChange={(lat) => updateView({ lat })}
+                            onValueChange={(lat) => updateView({ lat })}
                         />
-                        <NumberField
-                            width="100%"
-                            label="lng"
+                        <NumericEditor
+                            label="Lon"
                             step={0.001}
                             value={mapView.lng}
                             isDisabled={isSynced}
-                            onChange={(lng) => updateView({ lng })}
+                            onValueChange={(lng) => updateView({ lng })}
                         />
                     </TwoUpCollapsableGrid>
                     <TwoUpCollapsableGrid>
-                        <NumberField
-                            width="100%"
-                            label="bearing"
+                        <NumericEditor
+                            label="Bearing"
                             step={1}
                             value={mapView.bearing}
                             isDisabled={isSynced}
-                            onChange={(bearing) => updateView({ bearing })}
+                            onValueChange={(bearing) => updateView({ bearing })}
                         />
-                        <NumberField
-                            width="100%"
-                            label="pitch"
+                        <NumericEditor
+                            label="Pitch"
                             step={1}
                             value={mapView.pitch}
                             isDisabled={isSynced}
-                            onChange={(pitch) => updateView({ pitch })}
+                            onValueChange={(pitch) => updateView({ pitch })}
                         />
                     </TwoUpCollapsableGrid>
-                    <NumberField
-                        width={{ L: "50%", M: "100%", S: "100%", base: "100%" }}
-                        label="zoom"
-                        step={1}
-                        value={mapView.zoom}
-                        isDisabled={isSynced}
-                        onChange={(zoom) => updateView({ zoom })}
-                    />
-                    {!isSynced && (
+                    <TwoUpCollapsableGrid>
+                        <NumericEditor
+                            label="Zoom"
+                            step={1}
+                            value={mapView.zoom}
+                            isDisabled={isSynced}
+                            onValueChange={(zoom) => updateView({ zoom })}
+                        />
+                    </TwoUpCollapsableGrid>
+                </OptionsPopper>
+                {isSynced && (
+                    <>
+                        <Checkbox
+                            isSelected={isBound}
+                            onChange={toggleBind}
+                        >
+                            Sync both maps
+                        </Checkbox>
                         <ActionButton
                             width="100%"
-                            onPress={setViewFromMap}
+                            onPress={stopSyncing}
                             marginTop="size-200"
                             marginBottom="size-200"
+                            isDisabled
                         >
-                            Set from current view
+                            Stop Syncing Map View
                         </ActionButton>
-                    )}
-                    {otherMapPanes && otherMapPanes.length > 0 && (
-                        <Picker
-                            width="100%"
-                            label="Sync Map View"
-                            items={otherMapPanes}
-                            selectedKey={
-                                mapPane?.view?.var &&
-                                mapPane.view.var.split("_map_loc")[0]
-                            }
-                            onSelectionChange={startSyncing}
-                        >
-                            {(pane) => <Item key={pane.name}>{pane.name}</Item>}
-                        </Picker>
-                    )}
-                    {isSynced && (
-                        <>
-                            <Checkbox
-                                isSelected={isBound}
-                                onChange={toggleBind}
-                            >
-                                Sync both maps
-                            </Checkbox>
-                            <ActionButton
-                                width="100%"
-                                onPress={stopSyncing}
-                                marginTop="size-200"
-                                marginBottom="size-200"
-                                isDisabled
-                            >
-                                Stop Syncing Map View
-                            </ActionButton>
-                        </>
-                    )}
-                </Flex>
-            </Well>
-            <Well>
-                <Heading>
-                    <Flex
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="end"
-                    >
-                        <Text>Layers</Text>
-                        <AddPaneModal onAddLayer={addLayer} />
-                    </Flex>
-                </Heading>
+                    </>
+                )}
+            </CollapsibleSection>
+            <CollapsibleSection title="Layers">
+                <AddPaneModal onAddLayer={addLayer} />
                 <Flex marginBottom={"size-200"} direction="column">
+                    {/* @ts-ignore */}
                     {mapPane.layers.map((layer, index) => (
                         <RowEntryMultiButton
                             key={layer.name}
@@ -328,7 +367,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                     baseMap={mapPane?.base_map?.Named}
                     onChange={(baseMap) => updateBaseMap(baseMap)}
                 />
-            </Well>
+            </CollapsibleSection>
         </Flex>
     );
 };
