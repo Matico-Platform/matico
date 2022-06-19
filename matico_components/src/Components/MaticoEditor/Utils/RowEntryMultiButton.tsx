@@ -53,23 +53,11 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
             gap="size-50"
             position={"relative"}
         >
-            {inset > 0 && <Divider
-                orientation="vertical"
-                position="absolute"
-                left={`${inset}em`}
-                top={0}
-                size="M"
-                height="100%"
-                UNSAFE_style={{
-                    pointerEvents: "none"
-                }}
-            />}
             <Button
                 onPress={() => openEditor()}
                 variant="primary"
                 isQuiet
                 flex="1 1 auto"
-                maxWidth={"calc(100% - 80px)"}
                 UNSAFE_style={{
                     paddingLeft: `calc(${inset}em + 6px)`,
                     borderRadius: 0,
@@ -85,13 +73,28 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                     {entryName}
                 </Text>
             </Button>
+            {inset > 0 && <Divider
+                orientation="vertical"
+                position="absolute"
+                left={`${inset}em`}
+                top={0}
+                size="M"
+                height="100%"
+                UNSAFE_style={{
+                    pointerEvents: "none"
+                }}
+            />}
             <DialogTrigger
                 isDismissable
                 type="popover"
                 mobileType="tray"
                 containerPadding={1}
+
             >
-                <ActionButton isQuiet>
+                <ActionButton
+                    isQuiet
+                    flex="0 0 auto"
+                >
                     <Delete />
                 </ActionButton>
                 {(close) => (
@@ -117,7 +120,6 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                 overflowMode="collapse"
                 flex="0 0 auto"
                 maxWidth={40}
-                width={40}
                 onAction={(action) => {
                     switch (action) {
                         case "duplicate":
