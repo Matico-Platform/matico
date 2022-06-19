@@ -71,7 +71,6 @@ export const MaticoOutlineViewer: React.FC = () => {
     const { pages } = useAppSpec();
     const rowComponents = useMemo(() => {
         const panes = handleTraversal(pages)
-        console.log('TRAVERSE', panes)
         return panes.map((entry: PaneSpec, i: number) => {
             const {
                 name,
@@ -90,5 +89,5 @@ export const MaticoOutlineViewer: React.FC = () => {
             />
         })
     },[JSON.stringify(pages)])
-    return <View>{...rowComponents}</View>;
+    return <View maxWidth={"100%"}>{...rowComponents}</View>;
 };

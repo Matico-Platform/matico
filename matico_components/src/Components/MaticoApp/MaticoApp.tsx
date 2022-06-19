@@ -34,6 +34,7 @@ import VisibilityOff from '@spectrum-icons/workflow/VisibilityOff';
 import DeviceDesktop from '@spectrum-icons/workflow/DeviceDesktop';
 import DeviceTablet from '@spectrum-icons/workflow/DeviceTablet';
 import DevicePhone from '@spectrum-icons/workflow/DevicePhone';
+import { NavigatorBar } from "Components/MaticoEditor/EditorComponents/NavigatorBar";
 
 interface ResponsiveScreeenLimits {
   height: null | number;
@@ -102,8 +103,8 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
       XL: "100%",
       L: "100%",
       M: "100%",
-      S: ["60%", "40%"],
-      base: ["60%", "40%"],
+      S: ['2em', "calc(60% - 2em)", "40%"],
+      base: ['2em', "calc(60% - 2em)", "40%"],
     }
     : {
       XL: "100%",
@@ -136,7 +137,17 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
           <Grid {...{ columns, rows, areas }} width="100%" height="100%" gap="0">
 
             {showEditor && <View gridArea="navigator">
-              stuff here
+              <NavigatorBar 
+                datasetProviders={[
+                    CSVProvider,
+                    GeoJSONProvider,
+                    COGProvider,
+                    // @ts-ignore
+                    SocrataDatasetProvider,
+                    ComputeProvider,
+                    ...datasetProviders,
+                  ]}
+              />
             </View>}
             <View gridArea="viewer" width="100%" overflow="hidden">
               <Flex
