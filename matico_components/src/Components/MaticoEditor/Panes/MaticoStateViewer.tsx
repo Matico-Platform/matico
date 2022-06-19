@@ -10,9 +10,9 @@ export const MaticoStateViewer: React.FC = () => {
       <View backgroundColor="static-white" paddingX="medium" paddingY="medium">
         <ReactJson
           style={{ fontSize: 15, textAlign: "left" }}
-          collapsed={3}
+          theme="tomorrow"
           src={state}
-
+          indentWidth={2}
         />
       </View>
     </Flex>
