@@ -3777,6 +3777,7 @@ __metadata:
     polished: ^4.1.3
     query-string: ^7.0.1
     react-ace: ^9.5.0
+    react-click-away-listener: ^2.2.1
     react-color: ^2.19.3
     react-dom: ^17.0.2
     react-draggable: ^4.4.4
@@ -30743,6 +30744,16 @@ __metadata:
     lodash.flow: ^3.3.0
     pure-color: ^1.2.0
   checksum: 00a12dddafc8a9025cca933b0dcb65fca41c81fa176d1fc3a6a9d0242127042e2c0a604f4c724a3254dd2c6aeb5ef55095522ff22f5462e419641c1341a658e4
+  languageName: node
+  linkType: hard
+
+"react-click-away-listener@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "react-click-away-listener@npm:2.2.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: e28a822ef65cade5a76affd6ba44aeaa848e9434190c5bc33f8660ff503dd1fa603c52038142eb88b00918bbf9c309bad4c60ae9539fe80e5ef9463da46b020b
   languageName: node
   linkType: hard
 
