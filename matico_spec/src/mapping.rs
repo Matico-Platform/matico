@@ -1,29 +1,32 @@
 use crate::{AutoComplete, Filter, PanePosition, VarOr,  ScreenUnits, ColorSpecification, MappingVarOr};
 use matico_spec_derive::AutoCompleteMe;
-use palette::Srgb;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub enum LayerContentType {
     Vector,
     Raster,
 }
 
-#[derive(Serialize, Clone, Deserialize, Debug)]
+#[derive(Serialize, Clone, Deserialize, Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct TiledLayer {
     url_template: String,
     layer_content_type: LayerContentType,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize,TS)]
 #[serde(tag="type", rename_all="camelCase")]
+#[ts(export)]
 pub enum BaseMap {
-    Color(Srgb),
+    Color(ColorSpecification),
     TiledLayer(TiledLayer),
     Image(String),
     Named(String),
@@ -32,20 +35,22 @@ pub enum BaseMap {
 
 impl Default for BaseMap {
     fn default() -> Self {
-        Self::Color(Srgb::new(0.0, 0.0, 0.0))
+        Self::Color(ColorSpecification::Rgb([0.0, 0.0, 0.0]))
     }
 }
 
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize,TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum ScaleType {
     Pixels,
     Meters,
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe,TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct LayerStyle {
     size: Option<MappingVarOr<f32>>,
     fill_color: Option<MappingVarOr<ColorSpecification>>,
@@ -61,15 +66,17 @@ pub struct LayerStyle {
     elevation_scale: Option<f32>,
 }
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct DatasetRef {
     name: String,
     filters: Option<Vec<Filter>>,
 }
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct Layer {
     name: String,
     source: DatasetRef,
@@ -78,8 +85,9 @@ pub struct Layer {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe)]
+#[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct View {
     #[validate(range(min=-90.0,max=90.0, message="lat needs to be between -90 and 90"))]
     pub lat: f32,
@@ -112,8 +120,9 @@ impl Default for View {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe)]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct MapPane {
     #[validate]
     pub position: PanePosition,

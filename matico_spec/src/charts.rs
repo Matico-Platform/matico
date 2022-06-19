@@ -1,12 +1,14 @@
 use crate::{AutoComplete, DatasetRef, PanePosition, ColorSpecification, MappingVarOr};
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -41,8 +43,9 @@ impl HistogramPane {
 }
 
 #[wasm_bindgen]
-#[derive(Default,Serialize,Deserialize,Validate,Debug,Clone)]
+#[derive(Default,Serialize,Deserialize,Validate,Debug,Clone, TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct Labels{
     #[wasm_bindgen(skip)]
     pub title: Option<String>,
@@ -57,8 +60,9 @@ pub struct Labels{
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct ScatterplotPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -94,8 +98,9 @@ impl ScatterplotPane {
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct PieChartPane {
     #[wasm_bindgen(skip)]
     pub name: String,

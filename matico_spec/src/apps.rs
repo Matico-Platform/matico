@@ -2,14 +2,16 @@ use crate::{AutoComplete, Dataset, Page, Theme, ValidationResult, Pane};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 // use toml;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug)]
+#[derive(Serialize, Deserialize, Validate, Debug, TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct Metadata{
     name: String,
     created_at: DateTime<Utc>,
@@ -17,8 +19,9 @@ pub struct Metadata{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug)]
+#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug, TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct App {
     pages: Vec<Page>,
     panes: Vec<Pane>,
@@ -171,7 +174,7 @@ impl App{
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ChartPane, MapPane, Pane, PanePosition, View};
+    use crate::{MapPane, Pane, PanePosition, View};
 
     fn test_dash_builder() -> App{
         let map_pane: MapPane = Default::default();

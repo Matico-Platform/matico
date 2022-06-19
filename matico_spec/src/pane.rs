@@ -3,11 +3,13 @@ use crate::{
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use validator::{Validate, ValidationErrors};
 use wasm_bindgen::prelude::*;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone,TS)]
 #[serde(tag="type", rename_all="camelCase")]
+#[ts(export)]
 pub enum PaneRef{
    Map(String),
    Text(String),
@@ -63,8 +65,9 @@ impl From<Pane> for PaneRef{
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, AutoCompleteMe)]
+#[derive(Serialize, Deserialize, Clone, Debug, AutoCompleteMe,TS)]
 #[serde(tag="type", rename_all="camelCase")]
+#[ts(export)]
 pub enum Pane {
     Map(MapPane),
     Text(TextPane),
@@ -111,8 +114,9 @@ impl Validate for Pane {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct ContainerPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -175,8 +179,9 @@ impl ContainerPane{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct ControlsPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -195,8 +200,9 @@ pub struct ControlsPane {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct TextPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -260,8 +266,9 @@ impl TextPane {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Debug, Clone, Copy,AutoCompleteMe)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy,AutoCompleteMe,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub enum ScreenUnits{
     Pixels,
     Percent
@@ -351,8 +358,9 @@ impl PanePosition{
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe, Default)]
+#[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe, Default,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct PanePosition {
     #[validate(range(min = 0, max = 100))]
     pub width: usize,

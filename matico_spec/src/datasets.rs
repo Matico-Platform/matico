@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
 use crate::{VarOr};
 use matico_analysis::SpecParameterValue;
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug,TS)]
 #[serde(rename_all="camelCase", tag="type")]
+#[ts(export)]
 pub enum Dataset {
     GeoJSON(GeoJSONDataset),
     CSV(CSVDataset),
@@ -16,8 +18,9 @@ pub enum Dataset {
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct COGDataset{
     #[wasm_bindgen(skip)]
     pub name:String,
@@ -26,8 +29,9 @@ pub struct COGDataset{
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct GeoJSONDataset {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -37,8 +41,9 @@ pub struct GeoJSONDataset {
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct WASMCompute{
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -64,8 +69,9 @@ impl GeoJSONDataset {
 }
 
 #[wasm_bindgen]
-#[derive(Default,Serialize,Deserialize, Clone,Debug)]
+#[derive(Default,Serialize,Deserialize, Clone,Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct MaticoRemoteDataset{
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -81,8 +87,9 @@ pub struct MaticoRemoteDataset{
 }
 
 #[wasm_bindgen]
-#[derive(Default,Serialize,Deserialize, Clone,Debug)]
+#[derive(Default,Serialize,Deserialize, Clone,Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct MaticoApiDataset{
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -146,8 +153,9 @@ impl MaticoRemoteDataset{
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct CSVDataset {
     #[wasm_bindgen(skip)]
     pub name: String,

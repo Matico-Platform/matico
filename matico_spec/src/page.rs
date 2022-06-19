@@ -1,12 +1,14 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 use crate::{PaneRef, Layout};
 
 
 #[wasm_bindgen]
-#[derive(Default, Debug, Validate, Serialize, Deserialize, Clone)]
+#[derive(Default, Debug, Validate, Serialize, Deserialize, Clone,TS)]
 #[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct Page {
     name: String,
     icon: Option<String>,

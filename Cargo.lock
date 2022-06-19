@@ -2397,6 +2397,7 @@ dependencies = [
  "matico_common",
  "serde 1.0.136",
  "serde_json",
+ "ts-rs",
  "wasm-bindgen",
  "wee_alloc",
  "wkb",
@@ -2537,6 +2538,7 @@ dependencies = [
  "toml",
  "ts-rs",
  "url",
+ "uuid 0.6.5",
  "validator",
  "wasm-bindgen",
 ]

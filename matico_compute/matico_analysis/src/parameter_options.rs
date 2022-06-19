@@ -1,16 +1,18 @@
 use enum_dispatch::enum_dispatch;
 use serde::{Serialize,Deserialize};
 use crate::parameter_values::ParameterValue;
+use ts_rs::TS;
 
 
-struct ValidationError(String);
 
 #[enum_dispatch]
 pub trait ValidateParameter {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String>;
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct ParameterOptionDisplayDetails{
     pub description: Option<String>,
     pub display_name: Option<String>
@@ -26,14 +28,18 @@ impl Default for ParameterOptionDisplayDetails{
 }
 
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase" )]
+#[ts(export)]
 pub enum ColType {
     Text,
     Numeric,
     Geometry,
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct NumericFloatOptions {
     pub range: Option<[f32; 2]>,
     pub default: Option<f32>,
@@ -67,7 +73,9 @@ impl Default for NumericFloatOptions {
     }
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct NumericIntOptions {
     pub range: Option<[i32; 2]>,
     pub default: Option<i32>,
@@ -101,7 +109,9 @@ impl Default for NumericIntOptions {
     }
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct NumericCategoryOptions {
     pub allow_multi: bool,
     pub options: Vec<u32>,
@@ -134,7 +144,9 @@ impl Default for NumericCategoryOptions {
     }
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct TextCategoryOptions {
     pub allow_multi: bool,
     pub options: Vec<String>,
@@ -167,7 +179,9 @@ impl ValidateParameter for TextCategoryOptions {
     }
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct ColumnOptions {
     pub allowed_column_types: Option<Vec<ColType>>,
     pub from_dataset: String,
@@ -191,7 +205,9 @@ impl ValidateParameter for ColumnOptions {
     }
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct TableOptions {
     pub must_have_geom: bool,
     pub display_details : ParameterOptionDisplayDetails
@@ -213,7 +229,9 @@ impl ValidateParameter for TableOptions {
     }
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
 pub struct TextOptions {
     pub max_length: Option<usize>,
     pub display_details: ParameterOptionDisplayDetails
@@ -252,7 +270,9 @@ impl ValidateParameter for TextOptions {
 }
 
 #[enum_dispatch(ValidateParameter)]
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase", tag="type")]
+#[ts(export)]
 pub enum ParameterOptions {
     NumericFloat(NumericFloatOptions),
     NumericInt(NumericIntOptions),

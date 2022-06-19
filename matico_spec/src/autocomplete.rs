@@ -18,7 +18,7 @@ mod tests {
     #[test]
     fn test_autocomplete() {
         assert!(
-            autocomplete("Dashboard").is_some(),
+            autocomplete("App").is_some(),
             "failed to autocomplete dashboard"
         );
         assert!(

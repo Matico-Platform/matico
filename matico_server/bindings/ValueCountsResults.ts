@@ -1,3 +1,3 @@
-import type { ValCountEntry } from "./ValCountEntry";
+import type { ValueCountEntry } from "./ValueCountEntry";
 
-export type ValueCountsResults = Array<ValCountEntry>;
+export type ValueCountsResults = Array<ValueCountEntry>;
