@@ -8,59 +8,21 @@ export enum ScreenUnits {
 }
 /**
 */
-export class COGDataset {
-  free(): void;
-}
-/**
-*/
-export class CSVDataset {
-  free(): void;
-/**
-* @returns {string}
-*/
-  name: string;
-}
-/**
-*/
-export class ChartPane {
-  free(): void;
-/**
-*/
-  position: PanePosition;
-}
-/**
-*/
-export class ContainerPane {
-  free(): void;
-/**
-*/
-  position: PanePosition;
-}
-/**
-*/
-export class ControlsPane {
-  free(): void;
-/**
-*/
-  position: PanePosition;
-}
-/**
-*/
-export class Dashboard {
+export class App {
   free(): void;
 /**
 */
   constructor();
 /**
 * @param {any} val
-* @returns {Dashboard}
+* @returns {App}
 */
-  static from_js(val: any): Dashboard;
+  static from_js(val: any): App;
 /**
 * @param {string} val
-* @returns {Dashboard}
+* @returns {App}
 */
-  static from_json(val: string): Dashboard;
+  static from_json(val: string): App;
 /**
 * @returns {any}
 */
@@ -88,6 +50,10 @@ export class Dashboard {
 /**
 * @returns {string}
 */
+  description: string;
+/**
+* @returns {string}
+*/
   name: string;
 /**
 * @returns {any}
@@ -96,7 +62,41 @@ export class Dashboard {
 /**
 * @returns {any}
 */
+  panes: any;
+/**
+* @returns {any}
+*/
   theme: any;
+}
+/**
+*/
+export class COGDataset {
+  free(): void;
+}
+/**
+*/
+export class CSVDataset {
+  free(): void;
+/**
+* @returns {string}
+*/
+  name: string;
+}
+/**
+*/
+export class ContainerPane {
+  free(): void;
+/**
+*/
+  position: PanePosition;
+}
+/**
+*/
+export class ControlsPane {
+  free(): void;
+/**
+*/
+  position: PanePosition;
 }
 /**
 */
@@ -164,12 +164,49 @@ export class MaticoRemoteDataset {
 }
 /**
 */
+export class Metadata {
+  free(): void;
+}
+/**
+*/
 export class Page {
   free(): void;
 /**
-* @returns {string | undefined}
+* @param {string} pane_type
+* @param {string} pane_id
 */
-  content: string;
+  add_pane(pane_type: string, pane_id: string): void;
+/**
+* @param {string} before_pane_id
+* @param {string} pane_type
+* @param {string} pane_id
+*/
+  add_pane_before(before_pane_id: string, pane_type: string, pane_id: string): void;
+/**
+* @param {string} after_pane_id
+* @param {string} pane_type
+* @param {string} pane_id
+*/
+  add_pane_after(after_pane_id: string, pane_type: string, pane_id: string): void;
+/**
+* @param {string} pane_id
+* @param {number} new_pos
+*/
+  move_pane_to_position(pane_id: string, new_pos: number): void;
+/**
+* @param {string} pane_type
+* @param {string} pane_id
+* @param {number} index
+*/
+  add_pane_at_position(pane_type: string, pane_id: string, index: number): void;
+/**
+* @param {number} index
+*/
+  remove_pane_at_position(index: number): void;
+/**
+* @param {string} pane_id
+*/
+  remove_pane(pane_id: string): void;
 /**
 * @returns {string | undefined}
 */
@@ -179,16 +216,9 @@ export class Page {
 */
   name: string;
 /**
-*/
-  order: number;
-/**
 * @returns {string | undefined}
 */
   path: string;
-/**
-* @returns {any}
-*/
-  sections: any;
 }
 /**
 */
@@ -207,6 +237,34 @@ export class PanePosition {
 /**
 */
   layer: number;
+/**
+*/
+  pad_bottom?: number;
+/**
+*/
+  pad_left?: number;
+/**
+*/
+  pad_right?: number;
+/**
+*/
+  pad_top?: number;
+/**
+* @returns {string}
+*/
+  readonly pad_units_bottom: string;
+/**
+* @returns {string}
+*/
+  readonly pad_units_left: string;
+/**
+* @returns {string}
+*/
+  readonly pad_units_right: string;
+/**
+* @returns {string}
+*/
+  readonly pad_units_top: string;
 /**
 */
   width: number;
@@ -257,22 +315,6 @@ export class ScatterplotPane {
 /**
 */
   position: PanePosition;
-}
-/**
-*/
-export class Section {
-  free(): void;
-/**
-* @returns {string}
-*/
-  layout: string;
-/**
-*/
-  order: number;
-/**
-* @returns {any}
-*/
-  panes: any;
 }
 /**
 */
@@ -347,4 +389,9 @@ export class View {
 /**
 */
   zoom: number;
+}
+/**
+*/
+export class WASMCompute {
+  free(): void;
 }

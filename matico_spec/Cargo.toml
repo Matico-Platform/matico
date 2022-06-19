@@ -17,6 +17,7 @@ wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
 serde_json = "1.0.59"
 serde_yaml = "0.8"
 toml = "0.5.8"
+uuid = { version = "0.6", features = ["serde", "v4"] }
 url = { version = "2.2.2", features = ["serde"] }
 palette = { version = "0.6.0", features = ["serializing", "libm"] }
 matico_spec_derive = { path = "../matico_spec_derive" }

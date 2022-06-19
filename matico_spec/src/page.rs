@@ -1,17 +1,15 @@
-use crate::Section;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
+use crate::PaneRef;
+
 
 #[wasm_bindgen]
 #[derive(Default, Debug, Validate, Serialize, Deserialize, Clone)]
 pub struct Page {
     name: String,
     icon: Option<String>,
-    content: Option<String>,
-    #[validate]
-    sections: Option<Vec<Section>>,
-    pub order: usize,
+    panes: Vec<PaneRef>,
     path: Option<String>,
 }
 
@@ -47,24 +45,44 @@ impl Page {
         self.icon = Some(icon);
     }
 
-    #[wasm_bindgen(getter = content)]
-    pub fn get_content(&self) -> Option<String> {
-        self.content.clone()
+    pub fn add_pane(&mut self, pane_type:&str, pane_id:&str){
+        let pane_ref:PaneRef = (pane_type,pane_id).try_into().unwrap();
+        self.panes.push(pane_ref.into());
+    }
+     
+    pub fn add_pane_before(&mut self, before_pane_id: &str, pane_type: &str, pane_id: &str){
+       let pane_ref :PaneRef = (pane_type,pane_id).try_into().unwrap();
+       let before_pane_pos = self.panes.iter().position(|p| p.id() == before_pane_id).unwrap();
+       self.panes.insert(before_pane_pos, pane_ref)
     }
 
-    #[wasm_bindgen(setter= content)]
-    pub fn set_content(&mut self, content: String) {
-        self.content = Some(content);
+    pub fn add_pane_after(&mut self, after_pane_id: &str, pane_type: &str, pane_id: &str){
+       let pane_ref :PaneRef = (pane_type,pane_id).try_into().unwrap();
+       let after_pane_pos= self.panes.iter().position(|p| p.id() == after_pane_id).unwrap();
+       self.panes.insert(after_pane_pos+1, pane_ref)
     }
 
-    #[wasm_bindgen(getter=sections)]
-    pub fn get_sections(&self) -> JsValue {
-        JsValue::from_serde(&self.sections).unwrap()
+    pub fn move_pane_to_position(&mut self, pane_id:&str, new_pos: usize){
+        let pos= self.panes.iter().position(|p| p.id()== pane_id).unwrap();
+        let pane = self.panes.remove(pos);
+        if new_pos <= pos {
+            self.panes.insert(new_pos,pane);
+        }
+        else{
+           self.panes.insert(new_pos -1, pane) 
+        }
     }
 
-    #[wasm_bindgen(setter=sections)]
-    pub fn set_sections(&mut self, sections: JsValue) {
-        let sections_real = sections.into_serde().unwrap();
-        self.sections = sections_real;
+    pub fn add_pane_at_position(&mut self,pane_type: &str, pane_id:&str, index: usize){
+       let pane_ref :PaneRef = (pane_type,pane_id).try_into().unwrap();
+        self.panes.insert(index,pane_ref);
+    }
+
+    pub fn remove_pane_at_position(&mut self, index: usize){
+        self.panes.remove(index);
+    }
+
+    pub fn remove_pane(&mut self, pane_id: &str){
+        self.panes.retain(|pane| pane.id() == pane_id );
     }
 }

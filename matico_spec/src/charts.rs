@@ -3,18 +3,14 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe)]
-pub struct ChartPane {
-    #[validate]
-    pub position: PanePosition,
-}
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
 pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub name: String,
+    #[wasm_bindgen(skip)]
+    pub id: String,
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]
@@ -63,6 +59,8 @@ pub struct Labels{
 pub struct ScatterplotPane {
     #[wasm_bindgen(skip)]
     pub name: String,
+    #[wasm_bindgen(skip)]
+    pub id: String,
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]
@@ -97,6 +95,10 @@ impl ScatterplotPane {
 pub struct PieChartPane {
     #[wasm_bindgen(skip)]
     pub name: String,
+
+    #[wasm_bindgen(skip)]
+    pub id: String,
+
     #[validate]
     pub position: PanePosition,
     #[wasm_bindgen(skip)]

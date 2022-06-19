@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Dataset, Page, Theme, ValidationResult};
+use crate::{AutoComplete, Dataset, Page, Theme, ValidationResult, Pane};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -6,30 +6,39 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 
+
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug)]
-pub struct Dashboard {
+#[derive(Serialize, Deserialize, Validate, Debug)]
+pub struct Metadata{
     name: String,
     created_at: DateTime<Utc>,
-    pages: Vec<Page>,
-    datasets: Vec<Dataset>,
-    theme: Option<Theme>,
+    description: String 
 }
 
-impl Default for Dashboard {
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug)]
+pub struct App {
+    pages: Vec<Page>,
+    panes: Vec<Pane>,
+    datasets: Vec<Dataset>,
+    theme: Option<Theme>,
+    metadata: Metadata
+}
+
+impl Default for App{
     fn default() -> Self {
         Self {
-            name: "New Dashboard".into(),
-            created_at: Utc::now(),
             pages: vec![],
+            panes: vec![],
             datasets: vec![],
             theme: None,
+            metadata: Metadata { name: "New App".into(), created_at: Utc::now(), description: "My amazing new app".into() }
         }
     }
 }
 
 #[wasm_bindgen]
-impl Dashboard {
+impl App{
     #[wasm_bindgen(constructor)]
     pub fn new_dash() -> Self {
         Default::default()
@@ -44,6 +53,17 @@ impl Dashboard {
     pub fn set_pages(&mut self, pages: JsValue) {
         let pages_real = pages.into_serde().unwrap();
         self.pages = pages_real;
+    }
+
+    #[wasm_bindgen(getter=panes)]
+    pub fn get_panes(&self) -> JsValue {
+        JsValue::from_serde(&self.panes).unwrap()
+    }
+
+    #[wasm_bindgen(setter=panes)]
+    pub fn set_panes(&mut self, panes: JsValue) {
+        let panes_real = panes.into_serde().unwrap();
+        self.panes = panes_real;
     }
 
     #[wasm_bindgen(getter=theme)]
@@ -69,33 +89,43 @@ impl Dashboard {
 
     #[wasm_bindgen(getter = name)]
     pub fn get_name(&self) -> String {
-        self.name.clone()
+        self.metadata.name.clone()
     }
 
     #[wasm_bindgen(setter= name)]
     pub fn set_name(&mut self, name: String) {
-        self.name = name;
+        self.metadata.name = name;
+    }
+
+    #[wasm_bindgen(getter = description)]
+    pub fn get_description(&self) -> String {
+        self.metadata.description.clone()
+    }
+
+    #[wasm_bindgen(setter= description)]
+    pub fn set_description(&mut self, description: String) {
+        self.metadata.description = description;
     }
 
     #[wasm_bindgen(getter = created_at)]
     pub fn get_created_at(&self) -> JsValue {
-        JsValue::from_serde(&self.created_at).unwrap()
+        JsValue::from_serde(&self.metadata.created_at).unwrap()
         // JsValue::from_serde(&self.created_at).unwrap()
     }
 
     #[wasm_bindgen(setter= created_at)]
     pub fn set_created_at(&mut self, created_at: JsValue) {
         let date: chrono::DateTime<Utc> = created_at.into_serde().unwrap();
-        self.created_at = date;
+        self.metadata.created_at = date;
     }
 
-    pub fn from_js(val: &JsValue) -> Result<Dashboard, JsValue> {
-        let dash: Result<Dashboard, _> = val.into_serde();
+    pub fn from_js(val: &JsValue) -> Result<App, JsValue> {
+        let dash: Result<Self, _> = val.into_serde();
         dash.map_err(|e| JsValue::from_serde(&format!("{}", e)).unwrap())
     }
 
-    pub fn from_json(val: String) -> Result<Dashboard, JsValue> {
-        let dash: Result<Dashboard, _> = serde_json::from_str(&val);
+    pub fn from_json(val: String) -> Result<App, JsValue> {
+        let dash: Result<Self, _> = serde_json::from_str(&val);
         dash.map_err(|e| JsValue::from_serde(&format!("{}", e)).unwrap())
     }
 
@@ -141,16 +171,12 @@ mod tests {
     use super::*;
     use crate::{ChartPane, MapPane, Pane, PanePosition, View};
 
-    fn test_dash_builder() -> Dashboard {
+    fn test_dash_builder() -> App{
         let map_pane: MapPane = Default::default();
 
-        let dash = Dashboard {
-            name: "Test Dash".into(),
-            created_at: chrono::Utc::now(),
-            pages: vec![],
-            datasets: vec![],
-            theme: None,
-        };
+        let dash : App = App{
+            panes: vec![Pane::Map(map_pane)],
+            ..Default::default()};
         dash
     }
 
@@ -173,7 +199,7 @@ mod tests {
 
     #[test]
     fn test_autocomplete() {
-        let autocomplete = Dashboard::autocomplete_json();
+        let autocomplete = App::autocomplete_json();
         println!("autocomplete result {}", autocomplete);
         assert!(true, "successfully automated")
     }

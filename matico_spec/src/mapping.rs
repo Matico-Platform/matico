@@ -4,6 +4,7 @@ use palette::Srgb;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum LayerContentType {
@@ -114,6 +115,9 @@ pub struct MapPane {
     pub name: String,
 
     #[wasm_bindgen(skip)]
+    pub id: String,
+
+    #[wasm_bindgen(skip)]
     pub view: VarOr<View>,
 
     #[wasm_bindgen(skip)]
@@ -140,6 +144,7 @@ impl Default for MapPane {
     fn default() -> Self {
         Self {
             name: "MapPane".into(),
+            id: Uuid::new_v4().to_string(), 
             position: PanePosition {
                 width: 100,
                 height: 100,
