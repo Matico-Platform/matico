@@ -21,11 +21,9 @@ import ClickAwayListener from 'react-click-away-listener';
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
 }) => {
-    const [showPanel, setShowPanel] = useState<boolean>(true);
-
+    const [showPanel, setShowPanel] = useState<boolean>(false);
     const handleShowPanel = () => setShowPanel(true);
     const handleHidePanel = () => setShowPanel(false);
-
     const { spec, currentEditPath, currentEditType } = useMaticoSelector(
         (state) => state.spec
     );
@@ -57,6 +55,9 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                         overflow="hidden"
                         minWidth={`20em`}
                         zIndex={500}
+                        UNSAFE_style={{
+                            pointerEvents: showPanel ? "all" : "none",
+                        }}
 
                     >
                         {showPanel && <View
