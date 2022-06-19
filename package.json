@@ -11,6 +11,7 @@
     "./matico_spec/pkg",
     "./matico_buffer_analysis/pkg",
     "./matico_components",
+    "./matico/types",
     "./matico_admin",
     "./matico_charts",
     "./editor"

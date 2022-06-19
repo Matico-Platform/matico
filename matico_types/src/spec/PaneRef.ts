@@ -1,0 +1,2 @@
+
+export type PaneRef = { type: "map" } & string | { type: "text" } & string | { type: "container" } & string | { type: "histogram" } & string | { type: "scatterplot" } & string | { type: "pieChart" } & string | { type: "controls" } & string;
