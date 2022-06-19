@@ -5,6 +5,7 @@ use crate::{VarOr};
 use matico_analysis::SpecParameterValue;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all="camelCase", tag="type")]
 pub enum Dataset {
     GeoJSON(GeoJSONDataset),
     CSV(CSVDataset),
@@ -16,6 +17,7 @@ pub enum Dataset {
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct COGDataset{
     #[wasm_bindgen(skip)]
     pub name:String,
@@ -25,6 +27,7 @@ pub struct COGDataset{
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct GeoJSONDataset {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -35,6 +38,7 @@ pub struct GeoJSONDataset {
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct WASMCompute{
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -61,6 +65,7 @@ impl GeoJSONDataset {
 
 #[wasm_bindgen]
 #[derive(Default,Serialize,Deserialize, Clone,Debug)]
+#[serde(rename_all="camelCase")]
 pub struct MaticoRemoteDataset{
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -77,6 +82,7 @@ pub struct MaticoRemoteDataset{
 
 #[wasm_bindgen]
 #[derive(Default,Serialize,Deserialize, Clone,Debug)]
+#[serde(rename_all="camelCase")]
 pub struct MaticoApiDataset{
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -141,6 +147,7 @@ impl MaticoRemoteDataset{
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct CSVDataset {
     #[wasm_bindgen(skip)]
     pub name: String,

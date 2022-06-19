@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all="camelCase", tag="type")]
 pub enum Control {
     Select(SelectControl),
     Range(RangeControl),
@@ -10,6 +11,7 @@ pub enum Control {
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all="camelCase")]
 pub struct SelectControl {
     name: String,
     options: VarOr<Vec<String>>,
@@ -17,6 +19,7 @@ pub struct SelectControl {
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all="camelCase")]
 pub struct RangeControl {
     name: String,
     max: VarOr<f32>,

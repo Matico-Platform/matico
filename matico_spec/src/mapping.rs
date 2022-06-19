@@ -7,18 +7,21 @@ use wasm_bindgen::prelude::*;
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all="camelCase")]
 pub enum LayerContentType {
     Vector,
     Raster,
 }
 
 #[derive(Serialize, Clone, Deserialize, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct TiledLayer {
     url_template: String,
     layer_content_type: LayerContentType,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag="type", rename_all="camelCase")]
 pub enum BaseMap {
     Color(Srgb),
     TiledLayer(TiledLayer),
@@ -59,12 +62,14 @@ pub struct LayerStyle {
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub struct DatasetRef {
     name: String,
     filters: Option<Vec<Filter>>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub struct Layer {
     name: String,
     source: DatasetRef,
@@ -74,6 +79,7 @@ pub struct Layer {
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub struct View {
     #[validate(range(min=-90.0,max=90.0, message="lat needs to be between -90 and 90"))]
     pub lat: f32,
@@ -107,6 +113,7 @@ impl Default for View {
 
 #[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub struct MapPane {
     #[validate]
     pub position: PanePosition,

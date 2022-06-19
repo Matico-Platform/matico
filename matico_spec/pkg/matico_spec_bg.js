@@ -119,14 +119,6 @@ function _assertClass(instance, klass) {
     return instance.ptr;
 }
 
-let stack_pointer = 32;
-
-function addBorrowedObject(obj) {
-    if (stack_pointer == 1) throw new Error('out of js stack');
-    heap[--stack_pointer] = obj;
-    return stack_pointer;
-}
-
 let cachegetFloat32Memory0 = null;
 function getFloat32Memory0() {
     if (cachegetFloat32Memory0 === null || cachegetFloat32Memory0.buffer !== wasm.memory.buffer) {
@@ -138,9 +130,20 @@ function getFloat32Memory0() {
 function isLikeNone(x) {
     return x === undefined || x === null;
 }
+
+let stack_pointer = 32;
+
+function addBorrowedObject(obj) {
+    if (stack_pointer == 1) throw new Error('out of js stack');
+    heap[--stack_pointer] = obj;
+    return stack_pointer;
+}
 /**
 */
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
+/**
+*/
+export const LinearLayoutDirection = Object.freeze({ Horizontal:0,"0":"Horizontal",Vertical:1,"1":"Vertical", });
 /**
 */
 export class App {
@@ -524,6 +527,22 @@ export class GeoJSONDataset {
 }
 /**
 */
+export class GridLayout {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_gridlayout_free(ptr);
+    }
+}
+/**
+*/
 export class HistogramPane {
 
     __destroy_into_raw() {
@@ -590,6 +609,22 @@ export class Labels {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_labels_free(ptr);
+    }
+}
+/**
+*/
+export class LinearLayout {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_linearlayout_free(ptr);
     }
 }
 /**

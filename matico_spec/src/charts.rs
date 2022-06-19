@@ -6,6 +6,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -41,6 +42,7 @@ impl HistogramPane {
 
 #[wasm_bindgen]
 #[derive(Default,Serialize,Deserialize,Validate,Debug,Clone)]
+#[serde(rename_all="camelCase")]
 pub struct Labels{
     #[wasm_bindgen(skip)]
     pub title: Option<String>,
@@ -56,6 +58,7 @@ pub struct Labels{
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub struct ScatterplotPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -92,6 +95,7 @@ impl ScatterplotPane {
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub struct PieChartPane {
     #[wasm_bindgen(skip)]
     pub name: String,

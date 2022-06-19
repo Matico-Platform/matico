@@ -1,16 +1,18 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use wasm_bindgen::prelude::*;
-use crate::PaneRef;
+use crate::{PaneRef, Layout};
 
 
 #[wasm_bindgen]
 #[derive(Default, Debug, Validate, Serialize, Deserialize, Clone)]
+#[serde(rename_all="camelCase")]
 pub struct Page {
     name: String,
     icon: Option<String>,
     panes: Vec<PaneRef>,
     path: Option<String>,
+    layout: Layout 
 }
 
 #[wasm_bindgen]

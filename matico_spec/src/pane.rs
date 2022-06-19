@@ -1,5 +1,5 @@
 use crate::{
-    AutoComplete, Control, HistogramPane, MapPane, PieChartPane, ScatterplotPane
+    AutoComplete, Control, HistogramPane, MapPane, PieChartPane, ScatterplotPane, Layout
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -7,7 +7,7 @@ use validator::{Validate, ValidationErrors};
 use wasm_bindgen::prelude::*;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(tag="type")]
+#[serde(tag="type", rename_all="camelCase")]
 pub enum PaneRef{
    Map(String),
    Text(String),
@@ -64,7 +64,7 @@ impl From<Pane> for PaneRef{
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, AutoCompleteMe)]
-#[serde(tag="type")]
+#[serde(tag="type", rename_all="camelCase")]
 pub enum Pane {
     Map(MapPane),
     Text(TextPane),
@@ -112,6 +112,7 @@ impl Validate for Pane {
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+#[serde(rename_all="camelCase")]
 pub struct ContainerPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -123,7 +124,7 @@ pub struct ContainerPane {
     pub position: PanePosition,
 
     #[wasm_bindgen(skip)]
-    pub layout: String,
+    pub layout: Layout,
 
     #[wasm_bindgen(skip)]
     pub panes: Vec<PaneRef>,
@@ -175,6 +176,7 @@ impl ContainerPane{
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+#[serde(rename_all="camelCase")]
 pub struct ControlsPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -194,6 +196,7 @@ pub struct ControlsPane {
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, Default)]
+#[serde(rename_all="camelCase")]
 pub struct TextPane {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -258,6 +261,7 @@ impl TextPane {
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone, Copy,AutoCompleteMe)]
+#[serde(rename_all="camelCase")]
 pub enum ScreenUnits{
     Pixels,
     Percent
@@ -348,6 +352,7 @@ impl PanePosition{
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe, Default)]
+#[serde(rename_all="camelCase")]
 pub struct PanePosition {
     #[validate(range(min = 0, max = 100))]
     pub width: usize,

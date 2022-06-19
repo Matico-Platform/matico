@@ -9,6 +9,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct Metadata{
     name: String,
     created_at: DateTime<Utc>,
@@ -17,6 +18,7 @@ pub struct Metadata{
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct App {
     pages: Vec<Page>,
     panes: Vec<Pane>,

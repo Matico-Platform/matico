@@ -8,6 +8,12 @@ export enum ScreenUnits {
 }
 /**
 */
+export enum LinearLayoutDirection {
+  Horizontal,
+  Vertical,
+}
+/**
+*/
 export class App {
   free(): void;
 /**
@@ -109,6 +115,11 @@ export class GeoJSONDataset {
 }
 /**
 */
+export class GridLayout {
+  free(): void;
+}
+/**
+*/
 export class HistogramPane {
   free(): void;
 /**
@@ -122,6 +133,11 @@ export class HistogramPane {
 /**
 */
 export class Labels {
+  free(): void;
+}
+/**
+*/
+export class LinearLayout {
   free(): void;
 }
 /**
