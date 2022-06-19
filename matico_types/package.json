@@ -1,4 +1,11 @@
 {
   "name": "@maticoapp/matico_types",
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.2.1",
+  "types":"./types",
+  "scripts":{
+      "build":"tsc"
+  },
+  "devDependencies": {
+    "typescript": "4.1.3"
+  }
 }
