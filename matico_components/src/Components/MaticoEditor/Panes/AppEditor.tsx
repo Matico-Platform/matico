@@ -90,7 +90,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
   // console.log("Spec is ", spec);
 
   const app = spec;
-  const pages = app.pages;
+  const pages = app?.pages || [];
   const editPath = "";
 
   const addNewPage = (pageName: string) => {
