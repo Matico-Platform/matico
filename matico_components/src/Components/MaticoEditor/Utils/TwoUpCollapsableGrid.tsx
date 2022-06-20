@@ -11,6 +11,7 @@ export const TwoUpCollapsableGrid: React.FC<TwoUpCollapsableGridProps> = ({ chil
     return (
         <Grid
             maxWidth={"100%"}
+            width="100%"
             areas={{
                 L: ["button1 button2"],
                 M: ["button1", "button2"],
