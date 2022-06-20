@@ -350,7 +350,10 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                     </>
                 )}
             </CollapsibleSection>
-            <CollapsibleSection title="Layers">
+            <CollapsibleSection 
+                title="Layers" 
+                isOpen={true}
+                >
                 <AddPaneModal onAddLayer={addLayer} />
                 <Flex marginBottom={"size-200"} direction="column">
                     {/* @ts-ignore */}
