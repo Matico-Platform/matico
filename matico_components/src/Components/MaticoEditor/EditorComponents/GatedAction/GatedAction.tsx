@@ -1,19 +1,22 @@
 import React from "react";
-import { OptionsPopperProps } from "./types";
+import { GatedActionProps } from "./types";
 import {
     DialogTrigger,
     ActionButton,
     View,
     Flex,
-    Text
+    Text,
+    Button
 } from '@adobe/react-spectrum'
 import { ParentSize } from "@visx/responsive";
 
-export const OptionsPopper: React.FC<OptionsPopperProps> = ({
-    title,
-    children
+export const GatedAction: React.FC<GatedActionProps> = ({
+    buttonText,
+    confirmText,
+    confirmButtonText,
+    onConfirm,
+    confirmBackgroundColor = "informative"
 }) => {
-
     return (<ParentSize>
         {({ width }) => (
             <DialogTrigger
@@ -26,11 +29,10 @@ export const OptionsPopper: React.FC<OptionsPopperProps> = ({
                     width={"100%"}
                     marginTop="size-50"
                 >
-                    {title}
+                    {buttonText}
                 </ActionButton>
                 <View
-                    width="100%"
-                    maxWidth={width}
+                    width={width}
                     backgroundColor="gray-75"
                     borderColor="informative"
                     borderWidth="thin"
@@ -39,12 +41,20 @@ export const OptionsPopper: React.FC<OptionsPopperProps> = ({
                     }}
                     padding="size-150"
                 >
-                    <Text>{title}</Text>
-                    <Flex
-                        direction="column"
+                    <Text>{confirmText}</Text>
+                    <View
+                        width="100%"
+                        backgroundColor={confirmBackgroundColor}
                     >
-                        {children}
-                    </Flex>
+                        <ActionButton
+                            onPress={onConfirm}
+                            width="100%"
+                            isQuiet>
+                            {confirmButtonText}
+                        </ActionButton>
+
+                    </View>
+
                 </View>
             </DialogTrigger>
         )}

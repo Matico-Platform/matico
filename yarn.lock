@@ -3735,6 +3735,7 @@ __metadata:
     "@parcel/transformer-react-refresh-wrap": ^2.0.0
     "@react-hook/resize-observer": ^1.2.4
     "@react-spectrum/color": 3.0.0-beta.6
+    "@react-types/shared": ^3.13.1
     "@reduxjs/toolkit": ^1.6.2
     "@spectrum-icons/workflow": ^3.2.1
     "@swc/helpers": ^0.2.13
