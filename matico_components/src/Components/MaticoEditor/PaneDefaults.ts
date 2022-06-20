@@ -72,6 +72,7 @@ export const PaneDefaults = {
     color: "#417505",
     step: 140,
     dataset: { name: "unknown" },
+    maxbins: 10
   },
   PieChart: {
     position: DefaultPosition,
