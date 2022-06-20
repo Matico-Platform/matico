@@ -29,6 +29,7 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
       width="100%"
       items={columns}
       label={label ?? `Column from {datasetName}`}
+      labelPosition="side"
       description={description}
       isDisabled={!datasetName}
       selectedKey={selectedColumn?.name}

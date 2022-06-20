@@ -16,6 +16,7 @@ import {
 } from "@adobe/react-spectrum";
 import { DatasetColumnSelector } from "./DatasetColumnSelector";
 import { DatasetSummary, Column, Filter } from "../../../Datasets/Dataset";
+// @ts-ignore
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { useMaticoSelector } from "Hooks/redux";
@@ -61,7 +62,7 @@ const DiscreteDomain: React.FC<DomainEditorProps> = ({
   const [metric, metricParams] = Array.isArray(domain)
     ? ["Manual", { no_categories: domain.length }]
     : Object.entries(domain.metric)[0];
-
+  //@ts-ignore
   let noCategories = metricParams.no_categories;
 
   let selectedPaletteName =
@@ -340,7 +341,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
   };
 
   const sanitizedHistogramData =
-    histogram?.result
+    histogram?.result //@ts-ignore
       ?.filter((f) => f)
       .map((result: any) => ({
         ...result,
