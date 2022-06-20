@@ -6,4 +6,5 @@ export type GatedActionProps = {
     confirmButtonText: string;
     onConfirm: () => void;
     confirmBackgroundColor?: BackgroundColorValue;
+    children?: React.ReactNode;
 };

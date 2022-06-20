@@ -29,8 +29,7 @@ export const OptionsPopper: React.FC<OptionsPopperProps> = ({
                     {title}
                 </ActionButton>
                 <View
-                    width="100%"
-                    maxWidth={width}
+                    width={width}
                     backgroundColor="gray-75"
                     borderColor="informative"
                     borderWidth="thin"
@@ -39,7 +38,6 @@ export const OptionsPopper: React.FC<OptionsPopperProps> = ({
                     }}
                     padding="size-150"
                 >
-                    <Text>{title}</Text>
                     <Flex
                         direction="column"
                     >
