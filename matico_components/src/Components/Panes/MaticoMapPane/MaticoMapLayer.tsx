@@ -134,7 +134,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     const lineColor = generateColorVar(mappedStyle.lineColor, true) ?? [
       0, 255, 0, 100,
     ];
-    const lineWidth = generateNumericVar(mappedStyle.lineWidth) ?? 10;
+    const lineWidth = generateNumericVar(mappedStyle.lineWidth);
     const lineWidthUnits = mappedStyle.lineUnits ?? 'pixels';
     const lineWidthScale = mappedStyle.lineWidthScale ?? 1;
     const elevation = generateNumericVar(mappedStyle.elevation) ?? 0;
@@ -157,7 +157,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         }
       },
       getLineColor: lineColor,
-      getLineWidth: lineWidth,
+      getLineWidth: lineWidth === null ? 10 : lineWidth,
       lineWidthUnits,
       lineWidthScale,
       extruded: shouldExtrude,
@@ -203,13 +203,16 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     if (!dataset.tiled) {
       switch (dataset.geomType) {
         case GeomType.Point:
+          
+          const getRadius = generateNumericVar(mappedStyle.size);
+          const radiusScale = generateNumericVar(mappedStyle.radiusScale)
           layer = new ScatterplotLayer({
             filled: true,
             radiusUnits: mappedStyle.radiusUnits
               ? mappedStyle.radiusUnits
               : "meters",
-            getRadius: generateNumericVar(mappedStyle.size) ?? 20,
-            radiusScale: generateNumericVar(mappedStyle.radiusScale) ?? 1,
+            getRadius: getRadius === null ? 20 : getRadius,
+            radiusScale: radiusScale === null ? 1 : radiusScale,
             //@ts-ignore
             getPosition: (d) => d.geom,
             ...common,
