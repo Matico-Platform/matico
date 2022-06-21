@@ -355,7 +355,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                 isOpen={true}
                 >
                 <AddPaneModal onAddLayer={addLayer} />
-                <Flex marginBottom={"size-200"} direction="column">
+                <Flex marginBottom={"size-200"} direction="column" width="100%">
                     {/* @ts-ignore */}
                     {mapPane.layers.map((layer, index) => (
                         <RowEntryMultiButton
