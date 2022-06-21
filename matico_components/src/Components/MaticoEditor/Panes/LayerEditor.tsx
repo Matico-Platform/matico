@@ -184,36 +184,39 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
           columns={columns}
           style={style.fillColor}
           onUpdateStyle={(style) => {
-            console.log('FILLCOLOR', style)
             updateStyle("fillColor", style);
           }}
         />
       </CollapsibleSection>}
       {dataset?.geomType === GeomType.Point && <CollapsibleSection title="Radius" isOpen={true}>
-        <NumericVariableEditor
+        <SliderVariableEditor
           label="Point Radius"
-          datasetName={dataset.name}
           style={style.size}
-          onUpdateStyle={(style) => updateStyle("size", style)}
-          minVal={0}
-          maxVal={2000}
+          datasetName={dataset.name}
+          columns={columns}
+          onUpdateValue={(style) => updateStyle("size", style)}
+          sliderMin={0}
+          sliderMax={2000}
         />
-        <Flex
-          alignContent={"end"}
-          justifyContent={"space-between"}
+        <TwoUpCollapsableGrid 
+          gridProps={{
+            marginTop: 'size-100'
+          }}
         >
           <NumberField
             value={style.radiusScale}
-            width="size-1200"
-            label="Point Radius Multiplier"
+            label="Multiplier"
+            labelPosition="side"
+            arial-label="Point radius multiplier"
             maxValue={100000}
-            minValue={1}
+            minValue={.001}
             onChange={(val) => updateStyle("radiusScale", val)}
           />
           <Picker
-            width="size-1200"
             alignSelf={"flex-end"}
-            label="Point Radius Units"
+            label="Units"
+            labelPosition="side"
+            aria-label="Point radius units"
             selectedKey={style.radiusUnits}
             onSelectionChange={(units) =>
               updateStyle("radiusUnits", units as string)
@@ -222,7 +225,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
             <Item key="meters">Meters</Item>
             <Item key="pixels">Pixels</Item>
           </Picker>
-        </Flex>
+        </TwoUpCollapsableGrid>
       </CollapsibleSection>}
       <CollapsibleSection title="Line" isOpen={true}>
         <ColorVariableEditor

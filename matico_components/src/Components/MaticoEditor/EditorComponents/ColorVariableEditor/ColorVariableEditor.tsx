@@ -14,13 +14,11 @@ export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
   columns,
   onUpdateStyle,
 }) => {
-  console.log(style)
   const isDataDriven = style && style.hasOwnProperty("variable");
   const isNone = !isDataDriven && JSON.stringify(style) === '[0,0,0,0]'
   const isManual = (!isDataDriven && !isNone) && (typeof style === 'string' || Array.isArray(style))
 
   const handleComboBoxChange = (newVal: string) => {
-    console.log(newVal)
     if (newVal === `manual${label}`) {
       onUpdateStyle(isManual ? style : [120, 120, 255]);
     } else if (newVal === `no${label}`) {
