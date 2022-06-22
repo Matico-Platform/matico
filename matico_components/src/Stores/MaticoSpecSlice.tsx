@@ -4,11 +4,12 @@ import {
     Pane,
     PaneRef,
     Page,
-    Dataset
+    Dataset,
+    Layer
 } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
 import { findPagesForPane } from "Utils/specUtils/specUtils";
-import { PanePosition } from "@maticoapp/matico_spec";
+import { ContainerPane, PanePosition } from "@maticoapp/matico_spec";
 
 export type EditElement = {
     id?: string;
@@ -28,9 +29,13 @@ const initialState: SpecState = {
 
 export const findParent = (app: App, paneRefId: string) => {
     const parent =
+
         app.pages.find((page: Page) =>
             page.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
-        ) ||
+        ) 
+        
+        ||
+
         app.panes.find(
             (pane: Pane) =>
                 pane.type === "container" &&
@@ -76,18 +81,25 @@ export const stateSlice = createSlice({
         removePane: (state, action: PayloadAction<{ id: string }>) => {
             _.remove(state.spec.pages, (p: Page) => p.id === action.payload.id);
         },
-        setPaneOrderOnPage: (
+        setPaneOrder: (
             state,
             action: PayloadAction<{
-                pageId: string;
+                parentId: string;
                 paneRef: PaneRef;
                 newIndex: number;
             }>
         ) => {
-            const page = state.spec.pages.find(
-                (p: Page) => p.id === action.payload.pageId
-            );
-            //TODO
+
+            const {parentId, paneRef, newIndex} = action.payload
+            const parent  = findParent(state.spec, paneRef.id);
+
+            if(parent){
+              //@ts-ignore if parent is found it is known to be of type ContainerPane or Page 
+              const panes = parent.panes
+              const pane = _.remove(panes, (p:PaneRef)=> p.id === paneRef.id)
+              panes.slice(newIndex,0, newIndex)
+            }
+
         },
 
         addPaneToPage: (
@@ -205,6 +217,53 @@ export const stateSlice = createSlice({
         setCurrentEditElement: (state, action: PayloadAction<EditElement>) => {
             state.currentEditElement = action.payload;
         },
+        setLayerOrder:(
+            state,
+            action: PayloadAction<{
+              newIndex: number, 
+              layerId: string,
+              mapId: string,
+            }>
+
+        )=>{
+            const {mapId, layerId, newIndex} = action.payload;
+            const map = state.spec.panes.find((p:Pane)=> p.id === mapId && p.type==='map');
+
+            //@ts-ignore
+            let layers  = map.layers
+            let layer = _.remove(layers,(layers: Layer)=>layers.id === layerId)
+            layers.slice(newIndex, 0 , layer)
+
+        },
+        updateLayer:(
+            state,
+            action: PayloadAction<{
+              mapId: string,
+              layerId: string,
+              update: Partial<Layer>
+            }>
+        )=>{
+            const {mapId, layerId, update} = action.payload;
+            const map = state.spec.panes.find((p:Pane)=> p.id === mapId && p.type==='map');
+            //@ts-ignore
+            let layer = map.layers.find((layer:Layer)=> layer.id === layerId);
+            layer = {...layer, layer}
+        },
+        removeLayer:(
+            state,
+            action:PayloadAction<{
+              mapId:string,
+              layerId:string
+            }>
+        )=>{
+            const {mapId, layerId } = action.payload;
+            const map = state.spec.panes.find((p:Pane)=> p.id === mapId && p.type==='map');
+
+            //@ts-ignore
+            let layers  = map.layers
+            _.remove(layers,(layers: Layer)=>layers.id === layerId)
+
+        },
         updateDatasetSpec: (
             state,
             action: PayloadAction<{
@@ -234,6 +293,10 @@ export const {
     updatePaneDetails,
     updatePanePosition,
     addDataset,
+    updateLayer,
+    setLayerOrder,
+    removeLayer,
+    setPaneOrder,
     setCurrentEditElement,
     addPane,
     addPaneRefToContainer,

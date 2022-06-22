@@ -16,7 +16,8 @@ import {
 
 import {VariableSelector} from './VariableSelector'
 
-import { DatasetState, Filter, CategoryFilter, Column} from "Datasets/Dataset";
+import {Filter, CategoryFilter } from "@maticoapp/matico_types/spec"
+import { DatasetState, Column} from "Datasets/Dataset";
 import { useMaticoSelector } from "Hooks/redux";
 import React from "react";
 import FunctionIcon from "@spectrum-icons/workflow/Function";

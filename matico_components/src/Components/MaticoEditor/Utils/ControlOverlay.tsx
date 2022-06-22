@@ -1,18 +1,13 @@
 import React from "react";
-import { setCurrentEditPath, deleteSpecAtPath } from "Stores/MaticoSpecSlice";
 import { useMaticoDispatch } from "Hooks/redux";
 import { useIsEditable } from "Hooks/useIsEditable";
-// import {useHover} from '@react-aria/interactions';
-
-import { View, ActionGroup, Item, Text, Flex } from "@adobe/react-spectrum";
-import Settings from "@spectrum-icons/workflow/Settings";
-import Delete from "@spectrum-icons/workflow/Delete";
+import { View, Flex } from "@adobe/react-spectrum";
 import styled from "styled-components";
 import { ControlButton } from "./MaticoControlButton";
+import {PaneRef} from "@maticoapp/matico_types/spec";
 
 interface ControlActionBarProps {
-  editPath: string;
-  editType?: string;
+  paneRef: PaneRef,
   actions?: string[];
 }
 
@@ -34,11 +29,10 @@ const ControlBarContainer = styled.span`
   }
 `
 export const ControlActionBar: React.FC<ControlActionBarProps> = ({
-  editPath,
-  editType,
+  paneRef,
   actions = ["edit", "delete", "move", "resize", "docs"],
 }) => {
-  const dispatch = useMaticoDispatch();
+
   const edit = useIsEditable();
   if (!edit) return null;
   return (
@@ -53,7 +47,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
         borderWidth="thin"
       >
         <ControlButton
-          editPath={editPath}
+          paneRef={paneRef}
           action="move"
         />
       </View>
@@ -71,8 +65,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           borderWidth="thin"
         >
           <ControlButton
-            editPath={editPath}
-            editType={editType}
+            paneRef={paneRef}
             action="edit"
           />
         </View>
@@ -83,7 +76,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           borderWidth="thin"
         >
           <ControlButton
-            editPath={editPath}
+            paneRef={paneRef}
             action="delete"
           />
         </View>
@@ -99,7 +92,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           bottom="size-50"
         >
           <ControlButton
-            editPath={editPath}
+            paneRef={paneRef}
             action="resize"
           />
         </View>
@@ -114,7 +107,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           bottom="0px"
         >
           <ControlButton
-            editPath={editPath}
+            paneRef={paneRef}
             action="resizeY"
           />
         </View>
@@ -129,49 +122,10 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           right="0px"
         >
           <ControlButton
-            editPath={editPath}
+            paneRef={paneRef}
             action="resizeX"
           />
         </View>
-      {/* <View
-        backgroundColor="informative"
-        width="100%"
-        borderColor="default"
-        borderWidth={"thick"}
-      >
-        <ActionGroup
-          isQuiet
-          buttonLabelBehavior="hide"
-          onAction={(action) => {
-              switch (action) {
-                  case "delete":
-                  dispatch(
-                      deleteSpecAtPath({
-                        editPath,
-                      })
-                  );
-                  case "edit":
-                  dispatch(
-                      setCurrentEditPath({
-                        editPath,
-                        editType,
-                      })
-                  );
-                  default:
-                  return;
-                  }
-              }}
-          >
-          <Item key="edit">
-              <Settings />
-              <Text>Edit</Text>
-          </Item>
-          <Item key="delete">
-              <Delete/>
-              <Text>Delete</Text>
-          </Item>
-        </ActionGroup>
-      </View> */}
     </ControlBarContainer>
   );
 };

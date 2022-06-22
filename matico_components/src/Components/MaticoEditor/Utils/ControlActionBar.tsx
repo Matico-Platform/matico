@@ -9,14 +9,13 @@ import styled from "styled-components";
 import Move from "@spectrum-icons/workflow/Move";
 import Info from "@spectrum-icons/workflow/Info";
 import Duplicate from "@spectrum-icons/workflow/Duplicate";
-import { useSpecActions } from "Hooks/useSpecActions";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
-import { reorderAtSpec } from "Stores/MaticoSpecSlice";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
-import {useSpecElement} from "Hooks/useSpecElement";
+import {usePane} from "Hooks/usePane";
+import {PaneRef} from "@maticoapp/matico_types/spec";
 
 interface ControlActionBarProps {
-  targetId: string;
+  paneRef: PaneRef,
   actions?: string[];
 }
 
@@ -34,21 +33,12 @@ const ControlBarContainer = styled.div`
 `
 
 export const ControlActionBar: React.FC<ControlActionBarProps> = ({
-  targetId,
+  paneRef,
   actions=[''],
 }) => {
-  const edit = useIsEditable();
-  const [pane,type]= useSpecElement(targetId);
 
-  const {
-    openEditor,
-    remove,
-    duplicate,
-    move,
-    reorder
-  } = useSpecActions(
-    {id: targetId,  type} 
-  );
+  const edit = useIsEditable();
+  const {pane,removePane, raisePane, lowerPane, selectPane} = usePane(paneRef)
 
 
   if (!edit) return null;
@@ -66,22 +56,22 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
           onAction={(action) => {
               switch (action) {
                 case "delete":
-                  remove();
+                  removePane();
                   break;
                 case "edit":
-                  openEditor()
+                  selectPane()
                   break;
                 case "docs":
-                  typeof window !== "undefined" && window.open(`https://matico.app/docs/panes/${specElement.type}`, "_blank")
+                  typeof window !== "undefined" && window.open(`https://matico.app/docs/panes/${pane.type}`, "_blank")
                   break;
                 case "duplicate":
-                  duplicate();
+                  console.log("NOT IMPLEMENTED YER")
                   break
                 case "reorder-forward":
-                  reorder('forward')
+                  raisePane()
                   break;
                 case "reorder-backward":
-                  reorder('backward')
+                  lowerPane() 
                   break;
                 case "move":
                   console.log('MOVING NOT YET IMPLEMENTED')

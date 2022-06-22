@@ -11,64 +11,40 @@ import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { DatasetSummary } from "Datasets/Dataset";
 import { LabelEditor } from "../Utils/LabelEditor";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
-import { useSpecActions } from "Hooks/useSpecActions";
-import { useMaticoSpec } from "Hooks/useMaticoSpec";
+import {usePane} from "Hooks/usePane";
+import {Labels, PaneRef} from "@maticoapp/matico_types/spec";
 
 export interface PaneEditorProps {
-    editPath: string;
+    paneRef: PaneRef;
 }
 
 export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
-    editPath
+   paneRef 
 }) => {
-    const [scatterPlotPane, parentLayout] = useMaticoSpec(editPath);
-    const {
-        remove: deletePane,
-        update: updatePane,
-        setEditPath
-    } = useSpecActions(editPath, "Scatterplot");
+    const {pane, updatePane, updatePanePosition, parent} = usePane(paneRef)
 
-    const updateLabels = (change: { [name: string]: string }) => {
-        const labels = scatterPlotPane.labels ?? {};
+    const scatterplotPane  = pane.type==='scatterplot' ? pane : null
+
+    const updateLabels = (change: Partial<Labels>) => {
         updatePane({
-            ...scatterPlotPane,
-            labels: { ...labels, ...change }
+            labels: { ...scatterplotPane?.labels, ...change }
         });
     };
 
     const updateDataset = (dataset: string) => {
         updatePane({
-            ...scatterPlotPane,
-            dataset: { ...scatterPlotPane.dataset, name: dataset },
-            x_column: null,
-            y_column: null
-        });
-    };
-
-    const updateSpec = (change: any) => {
-        updatePane({
-            ...scatterPlotPane,
-            ...change
-        });
-    };
-
-    const updatePaneDetails = (change: any) => {
-        updatePane({
-            ...scatterPlotPane,
-            name: change.name,
-            position: {
-                ...scatterPlotPane.position,
-                ...change.position
-            }
+            dataset: { ...scatterplotPane?.dataset, name: dataset },
+            xColumn: null,
+            yColumn: null
         });
     };
 
     const dataset: DatasetSummary = useMaticoSelector(
-        (state) => state.datasets.datasets[scatterPlotPane.dataset.name]
+        (state) => state.datasets.datasets[scatterplotPane?.dataset.name]
     );
-    console.log("Scatter plot pane is ", scatterPlotPane);
 
-    if (!scatterPlotPane) {
+
+    if (!pane) {
         return (
             <View>
                 <Text>Failed to find component</Text>
@@ -79,38 +55,39 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     return (
         <Flex direction="column">
             <PaneEditor
-                position={scatterPlotPane.position}
-                name={scatterPlotPane.name}
-                background={scatterPlotPane.background}
-                onChange={updatePaneDetails}
-                parentLayout={parentLayout}
-            />
+              position={paneRef.position}
+              name={pane.name}
+              background={"white"}
+              onChange={updatePanePosition}
+              parentLayout={parent.layout} 
+              id={paneRef.id}
+             />
             <Well>
                 <Heading>Source</Heading>
                 <DatasetSelector
-                    selectedDataset={scatterPlotPane.dataset.name}
+                    selectedDataset={scatterplotPane?.dataset.name}
                     onDatasetSelected={updateDataset}
                 />
                 {dataset && (
                     <TwoUpCollapsableGrid>
                         <DatasetColumnSelector
                             label="X Column"
-                            datasetName={scatterPlotPane.dataset.name}
+                            datasetName={scatterplotPane?.dataset.name}
                             selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.x_column
+                                (c) => c.name === scatterplotPane.xColumn
                             )}
-                            onColumnSelected={(x_column) =>
-                                updateSpec({ x_column: x_column.name })
+                            onColumnSelected={(xColumn) =>
+                                updatePane({ xColumn: xColumn.name })
                             }
                         />
                         <DatasetColumnSelector
                             label="Y Column"
-                            datasetName={scatterPlotPane.dataset.name}
+                            datasetName={scatterplotPane?.dataset.name}
                             selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.y_column
+                                (c) => c.name === scatterplotPane.yColumn
                             )}
-                            onColumnSelected={(y_column) =>
-                                updateSpec({ y_column: y_column.name })
+                            onColumnSelected={(yColumn) =>
+                                updatePane({ yColumn: yColumn.name })
                             }
                         />
                     </TwoUpCollapsableGrid>
@@ -122,10 +99,10 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                         <Heading>Style</Heading>
                         <NumericVariableEditor
                             label="Dot Size"
-                            datasetName={scatterPlotPane.dataset.name}
-                            style={scatterPlotPane.dot_size}
-                            onUpdateStyle={(dot_size) =>
-                                updateSpec({ dot_size })
+                            datasetName={scatterplotPane?.dataset.name}
+                            style={scatterplotPane.dotSize}
+                            onUpdateStyle={(dotSize) =>
+                                updatePane({ dotSize })
                             }
                             minVal={0}
                             maxVal={100}
@@ -133,15 +110,15 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
 
                         <ColorVariableEditor
                             label="Dot Color"
-                            datasetName={scatterPlotPane.dataset.name}
-                            style={scatterPlotPane.dot_color}
-                            onUpdateStyle={(dot_color) =>
-                                updateSpec({ dot_color })
+                            datasetName={scatterplotPane?.dataset.name}
+                            style={scatterplotPane?.dotColor}
+                            onUpdateStyle={(dotColor) =>
+                                updatePane({ dotColor })
                             }
                         />
                     </Well>
                     <LabelEditor
-                        labels={scatterPlotPane.labels}
+                        labels={scatterplotPane?.labels}
                         onUpdateLabels={updateLabels}
                     />
                 </>
@@ -152,22 +129,22 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                     <>
                         <DatasetColumnSelector
                             label="X Column"
-                            datasetName={scatterPlotPane.dataset.name}
+                            datasetName={scatterplotPane.dataset.name}
                             selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.x_column
+                                (c) => c.name === scatterplotPane.xColumn
                             )}
-                            onColumnSelected={(x_column) =>
-                                updateSpec({ x_column: x_column.name })
+                            onColumnSelected={(xColumn) =>
+                                updatePane({ xColumn: xColumn.name })
                             }
                         />
                         <DatasetColumnSelector
                             label="Y Column"
-                            datasetName={scatterPlotPane.dataset.name}
+                            datasetName={scatterplotPane.dataset.name}
                             selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.y_column
+                                (c) => c.name === scatterplotPane.yColumn
                             )}
-                            onColumnSelected={(y_column) =>
-                                updateSpec({ y_column: y_column.name })
+                            onColumnSelected={(yColumn) =>
+                                updatePane({ yColumn: yColumn.name })
                             }
                         />
                     </>

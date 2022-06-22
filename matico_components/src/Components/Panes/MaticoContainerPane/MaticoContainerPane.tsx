@@ -1,21 +1,21 @@
 import React from "react";
-import { MaticoPaneInterface, Pane } from "../Pane";
+import { MaticoPaneInterface } from "../Pane";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
-import { Content, Grid, Heading, View } from "@adobe/react-spectrum";
+import { Content,  View } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { selectPane } from "Utils/paneEngine";
 import { selectLayout } from "Utils/layoutEngine";
 import {Layout, PaneRef} from "@maticoapp/matico_types/spec";
 
 export interface MaticoContainerPaneInterface extends MaticoPaneInterface {
-    id:string;
+    paneRef:PaneRef;
     title?: string;
     panes: PaneRef[];
     layout: Layout;
 }
 
 export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
-    id,
+    paneRef,
     layout,
     panes
 }) => {
@@ -30,7 +30,7 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
             backgroundColor={edit ? "default" : "transparent"}
         >
             <ControlActionBar
-                targetId={id}
+                paneRef={paneRef}
             />
             <Content width="100%" height="100%">
                 <LayoutEngine>

@@ -1,6 +1,4 @@
 import React from "react";
-import { setCurrentEditPath, deleteSpecAtPath } from "Stores/MaticoSpecSlice";
-import { useMaticoDispatch } from "Hooks/redux";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { ActionButton, Button } from "@adobe/react-spectrum";
 import Settings from "@spectrum-icons/workflow/Settings";
@@ -9,8 +7,10 @@ import Move from "@spectrum-icons/workflow/Move";
 import Resize from "@spectrum-icons/workflow/Resize";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 import ChevronRight from "@spectrum-icons/workflow/ChevronRight";
+import {PaneRef} from "@maticoapp/matico_types/spec";
+import {usePane} from "Hooks/usePane";
 
-const Icons = {
+const Icons : Record<string, any> = {
   "delete": Delete,
   "edit": Settings,
   "move": Move,
@@ -20,19 +20,20 @@ const Icons = {
 }
 
 interface ControlButtonProps {
-  editPath: string;
-  editType?: string;
+  paneRef: PaneRef,
   action: string;
 }
 
 export const ControlButton: React.FC<ControlButtonProps> = ({
-  editPath,
-  editType,
+  paneRef,
   action,
 }) => {
-  const dispatch = useMaticoDispatch();
+
+  const {removePane, selectPane} = usePane(paneRef)
+
   const edit = useIsEditable();
   const Icon = Icons[action];
+
   if (!edit) return null;
 
   return (
@@ -41,18 +42,11 @@ export const ControlButton: React.FC<ControlButtonProps> = ({
       onPress={() => {
         switch (action) {
           case "delete":
-            dispatch(
-              deleteSpecAtPath({
-                editPath,
-              })
-            );
+            removePane()
+            break;
           case "edit":
-            dispatch(
-              setCurrentEditPath({
-                editPath,
-                editType,
-              })
-            );
+            selectPane()
+            break
           default:
             return;
         }

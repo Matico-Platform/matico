@@ -1,4 +1,4 @@
-import React, {ReactComponentElement} from "react";
+import React from "react";
 import {
     Content,
     Flex,
@@ -11,9 +11,6 @@ import {
     ActionGroup,
     Item,
     Text,
-    Well,
-    Divider,
-    DialogContainer
 } from "@adobe/react-spectrum";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";

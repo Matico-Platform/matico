@@ -4,20 +4,18 @@ import { PaneEditor } from "./PaneEditor";
 import ReactMde from "react-mde";
 import { View, Flex, Well, Text, Heading } from "@adobe/react-spectrum";
 import "react-mde/lib/styles/css/react-mde-all.css";
-import { useMaticoSpec } from "Hooks/useMaticoSpec";
-import { useSpecActions } from "Hooks/useSpecActions";
 import { RemovePaneDialog } from "../Utils/RemovePaneDialog";
+import {PaneRef} from "@maticoapp/matico_types/spec";
+import {usePane} from "Hooks/usePane";
 
 export interface PaneEditorProps {
-    editPath: string;
+    paneRef: PaneRef;
 }
 
-export const TextPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
-    const [textPane, parentLayout] = useMaticoSpec(editPath);
-    const { remove: deletePane, update: updatePane } = useSpecActions(
-        editPath,
-        "Text"
-    );
+export const TextPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
+    const {pane, updatePane, updatePanePosition, parent, removePane} = usePane(paneRef)
+
+    const textPane = pane.type==='text' ? pane : null
 
     const handleContent = (content: string) => updatePane({ content });
     const handleUpdate = (change: any) => updatePane({ ...textPane, ...change });
@@ -30,24 +28,23 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
         );
     }
 
-    const { position, name, background, content } = textPane;
-
     return (
         <Flex direction="column">
-            <PaneEditor
-                position={position}
-                name={name}
-                background={background}
-                onChange={(change) => handleUpdate(change)}
-                parentLayout={parentLayout}
+              <PaneEditor
+                position={paneRef.position}
+                name={pane.name}
+                background={"white"}
+                onChange={updatePanePosition}
+                parentLayout={parent.layout}
+                id={paneRef.id}
             />
 
             <Well>
                 <Heading>Content</Heading>
-                <ReactMde value={content} onChange={handleContent} />
+                <ReactMde value={textPane.content} onChange={handleContent} />
             </Well>
 
-            <RemovePaneDialog deletePane={deletePane} />
+            <RemovePaneDialog deletePane={removePane} />
         </Flex>
     );
 };

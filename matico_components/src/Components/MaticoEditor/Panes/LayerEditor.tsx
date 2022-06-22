@@ -4,7 +4,7 @@ import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { GeomType } from "../../../Datasets/Dataset";
 import { setSpecAtPath } from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
-import { PaneDefaults } from "../PaneDefaults";
+import { DefaultLayer} from "../PaneDefaults";
 import {
   Flex,
   Heading,
@@ -25,7 +25,7 @@ import {
 import { ColorVariableEditor } from "Components/MaticoEditor/EditorComponents/ColorVariableEditor";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { FilterEditor } from "../Utils/FilterEditor";
-import { Filter } from "Datasets/Dataset";
+import { Filter } from "@maticoapp/matico_types/spec";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import { sanitizeColor } from "Utils/sanitizeColor";
 import RemoveCircle from '@spectrum-icons/workflow/RemoveCircle';
@@ -35,18 +35,18 @@ import OneTwoThree from '@spectrum-icons/workflow/123';
 import { SliderVariableEditor } from "../EditorComponents/SliderVariableEditor";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { SliderUnitSelector } from "../EditorComponents/SliderUnitSelector";
+import {useLayer} from "Hooks/useLayer";
 
 export interface LayerEditorProps {
-  editPath: string;
+  mapId:string;
+  layerId:string;
 }
 
-export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
-  const dispatch = useMaticoDispatch();
+export const LayerEditor: React.FC<LayerEditorProps> = ({ mapId, layerId}) => {
 
-  const layer = _.get(spec, editPath);
+  const {layer, updateLayer, removeLayer, raiseLayer, lowerLayer} = useLayer(layerId,mapId)
 
-  const defaults = PaneDefaults.Layer;
+  const defaults = DefaultLayer;
   const dataset = useMaticoSelector(
     (state) => state.datasets.datasets[layer.source.name]
   );
@@ -55,20 +55,14 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
     geomType,
   } = dataset;
 
+  const { style } = layer;
   const isPoint = geomType === GeomType.Point;
 
   const updateStyle = (property: string, value: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
+      updateLayer({
           style: { ...layer.style, [property]: value },
-        },
       })
-    );
-  };
-
-  const { style } = layer;
+  }
 
   if (!layer) {
     return (
@@ -77,45 +71,22 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
       </View>
     );
   }
-  const updateDataDriven = (newVal: any, param: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          style: {
-            ...layer.style,
-            [param]: newVal,
-          },
-        },
-      })
-    );
-  };
 
   const updateFilters = (newFilters: Array<Filter>) => {
     console.log("Updating filters ", newFilters)
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          source: {
+    updateLayer(
+      {      source: {
             ...layer.source,
             filters: newFilters
-          }
-        }
-      })
+          }}
     )
   }
 
   const updateDataset = (dataset: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
+    updateLayer({
           source: { name: dataset, filters: [] },
           style: defaults.style,
-        },
-      })
-    );
+        })
   };
   const toggleDataDriven = (
     param: string,
@@ -138,32 +109,23 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ editPath }) => {
         },
         range: "Peach.5",
       };
-      dispatch(
-        setSpecAtPath({
-          editPath,
-          update: {
+      updateLayer({
             style: {
               ...layer.style,
               [param]: dataSpecs,
             },
-          },
-        })
-      );
+
+      })
     } else {
-      dispatch(
-        setSpecAtPath({
-          editPath,
-          update: {
+      updateLayer({
             style: {
               ...layer.style,
               [param]: defaults.style[param],
             },
-          },
-        })
-      );
-    }
-  };
 
+      })
+  };
+  }
   return (
     <Flex direction="column">
       <CollapsibleSection title="Datasource" isOpen={true}>
