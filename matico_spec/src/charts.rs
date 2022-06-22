@@ -1,21 +1,19 @@
-use crate::{AutoComplete, DatasetRef, PanePosition, ColorSpecification, MappingVarOr};
+use crate::{AutoComplete, ColorSpecification, DatasetRef, MappingVarOr, PanePosition};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 
-
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub name: String,
     #[wasm_bindgen(skip)]
     pub id: String,
-    #[validate]
-    pub position: PanePosition,
+
     #[wasm_bindgen(skip)]
     pub dataset: DatasetRef,
     #[wasm_bindgen(skip)]
@@ -23,10 +21,10 @@ pub struct HistogramPane {
     #[wasm_bindgen(skip)]
     pub color: Option<MappingVarOr<ColorSpecification>>,
     #[wasm_bindgen(skip)]
-    pub maxbins: Option<i64>,
+    pub maxbins: Option<i32>,
 
     #[wasm_bindgen(skip)]
-    pub labels: Option<Labels>
+    pub labels: Option<Labels>,
 }
 
 #[wasm_bindgen]
@@ -43,33 +41,31 @@ impl HistogramPane {
 }
 
 #[wasm_bindgen]
-#[derive(Default,Serialize,Deserialize,Validate,Debug,Clone, TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct Labels{
+pub struct Labels {
     #[wasm_bindgen(skip)]
     pub title: Option<String>,
     #[wasm_bindgen(skip)]
     pub sub_title: Option<String>,
     #[wasm_bindgen(skip)]
-    pub attribution: Option<String>, 
+    pub attribution: Option<String>,
     #[wasm_bindgen(skip)]
-    pub x_label: Option<String>, 
+    pub x_label: Option<String>,
     #[wasm_bindgen(skip)]
-    pub y_label: Option<String>, 
+    pub y_label: Option<String>,
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ScatterplotPane {
     #[wasm_bindgen(skip)]
     pub name: String,
     #[wasm_bindgen(skip)]
     pub id: String,
-    #[validate]
-    pub position: PanePosition,
     #[wasm_bindgen(skip)]
     pub dataset: DatasetRef,
     #[wasm_bindgen(skip)]
@@ -81,7 +77,7 @@ pub struct ScatterplotPane {
     #[wasm_bindgen(skip)]
     pub dot_size: Option<MappingVarOr<u32>>,
     #[wasm_bindgen(skip)]
-    pub labels: Option<Labels>
+    pub labels: Option<Labels>,
 }
 
 #[wasm_bindgen]
@@ -98,8 +94,8 @@ impl ScatterplotPane {
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct PieChartPane {
     #[wasm_bindgen(skip)]
@@ -108,8 +104,6 @@ pub struct PieChartPane {
     #[wasm_bindgen(skip)]
     pub id: String,
 
-    #[validate]
-    pub position: PanePosition,
     #[wasm_bindgen(skip)]
     pub dataset: DatasetRef,
     #[wasm_bindgen(skip)]
@@ -117,7 +111,7 @@ pub struct PieChartPane {
     #[wasm_bindgen(skip)]
     pub theme: Option<String>, // todo: add mapping for categorical but numbered values (eg. 0,1 )
     #[wasm_bindgen(skip)]
-    pub labels: Option<Labels>
+    pub labels: Option<Labels>,
 }
 
 #[wasm_bindgen]

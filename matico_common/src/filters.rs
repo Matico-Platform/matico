@@ -2,10 +2,10 @@ use crate::{AutoComplete, VarOr};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use validator::{Validate};
+use validator::Validate;
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct RangeFilter {
     variable: String,
@@ -14,7 +14,7 @@ pub struct RangeFilter {
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct CategoryFilter {
     variable: String,
@@ -22,8 +22,8 @@ pub struct CategoryFilter {
     is_not_one_of: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
 pub enum Filter {
     NoFilter,

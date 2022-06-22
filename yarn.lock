@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 5
+  version: 6
   cacheKey: 8
 
 "@adobe/react-spectrum-ui@npm:^1.0.0":
@@ -313,6 +313,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-create-class-features-plugin@npm:^7.17.12":
+  version: 7.18.0
+  resolution: "@babel/helper-create-class-features-plugin@npm:7.18.0"
+  dependencies:
+    "@babel/helper-annotate-as-pure": ^7.16.7
+    "@babel/helper-environment-visitor": ^7.16.7
+    "@babel/helper-function-name": ^7.17.9
+    "@babel/helper-member-expression-to-functions": ^7.17.7
+    "@babel/helper-optimise-call-expression": ^7.16.7
+    "@babel/helper-replace-supers": ^7.16.7
+    "@babel/helper-split-export-declaration": ^7.16.7
+  peerDependencies:
+    "@babel/core": ^7.0.0
+  checksum: 9a6ef175350f1cf87abe7a738e8c9b603da7fcdb153c74e49af509183f8705278020baddb62a12c7f9ca059487fef97d75a4adea6a1446598ad9901d010e4296
+  languageName: node
+  linkType: hard
+
 "@babel/helper-create-regexp-features-plugin@npm:^7.16.7":
   version: 7.16.7
   resolution: "@babel/helper-create-regexp-features-plugin@npm:7.16.7"
@@ -390,6 +407,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-function-name@npm:^7.17.9":
+  version: 7.17.9
+  resolution: "@babel/helper-function-name@npm:7.17.9"
+  dependencies:
+    "@babel/template": ^7.16.7
+    "@babel/types": ^7.17.0
+  checksum: a59b2e5af56d8f43b9b0019939a43774754beb7cb01a211809ca8031c71890999d07739e955343135ec566c4d8ff725435f1f60fb0af3bb546837c1f9f84f496
+  languageName: node
+  linkType: hard
+
 "@babel/helper-get-function-arity@npm:^7.16.7":
   version: 7.16.7
   resolution: "@babel/helper-get-function-arity@npm:7.16.7"
@@ -414,6 +441,15 @@ __metadata:
   dependencies:
     "@babel/types": ^7.16.7
   checksum: e275378022278a7e7974a3f65566690f1804ac88c5f4e848725cf936f61cd1e2557e88cfb6cb4fea92ae5a95ad89d78dbccc9a53715d4363f84c9fd109272c18
+  languageName: node
+  linkType: hard
+
+"@babel/helper-member-expression-to-functions@npm:^7.17.7":
+  version: 7.17.7
+  resolution: "@babel/helper-member-expression-to-functions@npm:7.17.7"
+  dependencies:
+    "@babel/types": ^7.17.0
+  checksum: 70f361bab627396c714c3938e94a569cb0da522179328477cdbc4318e4003c2666387ad4931d6bd5de103338c667c9e4bbe3e917fc8c527b3f3eb6175b888b7d
   languageName: node
   linkType: hard
 
@@ -462,6 +498,13 @@ __metadata:
   version: 7.16.7
   resolution: "@babel/helper-plugin-utils@npm:7.16.7"
   checksum: d08dd86554a186c2538547cd537552e4029f704994a9201d41d82015c10ed7f58f9036e8d1527c3760f042409163269d308b0b3706589039c5f1884619c6d4ce
+  languageName: node
+  linkType: hard
+
+"@babel/helper-plugin-utils@npm:^7.17.12":
+  version: 7.17.12
+  resolution: "@babel/helper-plugin-utils@npm:7.17.12"
+  checksum: 4813cf0ddb0f143de032cb88d4207024a2334951db330f8216d6fa253ea320c02c9b2667429ef1a34b5e95d4cfbd085f6cb72d418999751c31d0baf2422cc61d
   languageName: node
   linkType: hard
 
@@ -824,6 +867,20 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 1d3aef6f1818278d257ed6f1a90ec3b0cfe85e1b24cabf1bcd0d2a0033f8ae15f9cb36140ec2adc2a317f63fc78095ce0b5c154f73128e0f84480879a4b64269
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-proposal-private-property-in-object@npm:^7.16.0":
+  version: 7.17.12
+  resolution: "@babel/plugin-proposal-private-property-in-object@npm:7.17.12"
+  dependencies:
+    "@babel/helper-annotate-as-pure": ^7.16.7
+    "@babel/helper-create-class-features-plugin": ^7.17.12
+    "@babel/helper-plugin-utils": ^7.17.12
+    "@babel/plugin-syntax-private-property-in-object": ^7.14.5
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 056cb77994b2ee367301cdf8c5b7ed71faf26d60859bbba1368b342977481b0884712a1b97fbd9b091750162923d0265bf901119d46002775aa66e4a9f30f411
   languageName: node
   linkType: hard
 
@@ -3664,6 +3721,7 @@ __metadata:
     "@mapbox/rehype-prism": ^0.8.0
     "@maticoapp/matico_charts": "workspace:matico_charts"
     "@maticoapp/matico_spec": "workspace:matico_spec/pkg"
+    "@maticoapp/matico_types": "workspace:matico_types"
     "@parcel/transformer-react-refresh-wrap": ^2.0.0
     "@react-hook/resize-observer": ^1.2.4
     "@react-spectrum/color": 3.0.0-beta.6
@@ -3681,6 +3739,7 @@ __metadata:
     "@types/react-router-dom": ^5.3.2
     "@types/styled-components": ^5.1.18
     "@types/traverse": ^0.6.32
+    "@types/uuid": ^8.3.4
     "@uiw/react-md-editor": ^3.7
     "@visx/legend": ^2.10.0
     "@visx/scale": ^2.2.2
@@ -3740,6 +3799,12 @@ __metadata:
 "@maticoapp/matico_spec@workspace:matico_spec/pkg":
   version: 0.0.0-use.local
   resolution: "@maticoapp/matico_spec@workspace:matico_spec/pkg"
+  languageName: unknown
+  linkType: soft
+
+"@maticoapp/matico_types@workspace:matico_types":
+  version: 0.0.0-use.local
+  resolution: "@maticoapp/matico_types@workspace:matico_types"
   languageName: unknown
   linkType: soft
 
@@ -10830,6 +10895,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+  languageName: node
+  linkType: hard
+
 "@types/viewport-mercator-project@npm:*":
   version: 6.1.2
   resolution: "@types/viewport-mercator-project@npm:6.1.2"
@@ -11747,6 +11819,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: e0f79409d68923fbf1aa6d4166f3eedc47955320d25c89a20cc822e6ba7c48c5963d5bc657bc242d68f7a4ac9faf96eef033e8f73656da6c640d4219935fdfd0
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.5.0":
+  version: 8.7.1
+  resolution: "acorn@npm:8.7.1"
+  bin:
+    acorn: bin/acorn
+  checksum: aca0aabf98826717920ac2583fdcad0a6fbe4e583fdb6e843af2594e907455aeafe30b1e14f1757cd83ce1776773cf8296ffc3a4acf13f0bd3dfebcf1db6ae80
   languageName: node
   linkType: hard
 
@@ -35273,17 +35354,17 @@ __metadata:
 
 "typescript@patch:typescript@4.5.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.1.2#~builtin<compat/typescript>, typescript@patch:typescript@^4.1.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.3#~builtin<compat/typescript>":
   version: 4.5.4
-  resolution: "typescript@patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=ddd1e8"
+  resolution: "typescript@patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=7ad353"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 270255355c3236076dbbd0900ff0b7b159fac7e6a95f9ed8c59f57361c7dace9f1fbffd3b5eb21377c7f636027382ad89eb64b2acfbcd9e08574f04cfc75ca3d
+  checksum: eda87927f9cfb94aca9b5e47842daf37347ad3073133e17f556fbb6c18f3493c5b551eedab0f4b26774235ddb7acbe0087250d5285f72ce6819a0891dd5a74ed
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^3.9.7#~builtin<compat/typescript>":
   version: 3.9.10
-  resolution: "typescript@patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=ddd1e8"
+  resolution: "typescript@patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=7ad353"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
@@ -35293,11 +35374,11 @@ __metadata:
 
 "typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
   version: 4.5.5
-  resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=ddd1e8"
+  resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=7ad353"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 9cdde4aae20b2904431f3f2ca8acaf3b0cc52faddf68aa88b288c9d0520221817da43783a756fce7ab9360033ada0371c3ff93dfc4bdb4b13f6e9bac64e1658d
+  checksum: 858c61fa63f7274ca4aaaffeced854d550bf416cff6e558c4884041b3311fb662f476f167cf5c9f8680c607239797e26a2ee0bcc6467fbc05bfcb218e1c6c671
   languageName: node
   linkType: hard
 

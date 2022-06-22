@@ -1,36 +1,62 @@
-use crate::{AutoComplete, Filter, PanePosition, VarOr,  ScreenUnits, ColorSpecification, MappingVarOr};
+use crate::{
+    AutoComplete, ColorSpecification, Filter, MappingVarOr, PanePosition, ScreenUnits, VarOr,
+};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use uuid::Uuid;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
-use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Clone, Debug,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum LayerContentType {
     Vector,
     Raster,
 }
 
-#[derive(Serialize, Clone, Deserialize, Debug,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Clone, Deserialize, Debug, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TiledLayer {
     url_template: String,
     layer_content_type: LayerContentType,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize,TS)]
-#[serde(tag="type", rename_all="camelCase")]
+#[derive(Serialize, Clone, Deserialize, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct NamedBaseMap{
+    name: String,
+    affiliation: Option<String>
+}
+
+#[derive(Serialize, Clone, Deserialize, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct StyleJSONBaseMap{
+    url: String,
+    affiliation: Option<String>
+}
+
+#[derive(Serialize, Clone, Deserialize, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ImageBaseMap{
+    url: String,
+    affiliation: Option<String>
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", tag="type")]
 #[ts(export)]
 pub enum BaseMap {
     Color(ColorSpecification),
     TiledLayer(TiledLayer),
-    Image(String),
-    Named(String),
-    StileJSON(String),
+    Image(ImageBaseMap),
+    Named(NamedBaseMap),
+    StyleJSON(StyleJSONBaseMap),
 }
 
 impl Default for BaseMap {
@@ -39,8 +65,7 @@ impl Default for BaseMap {
     }
 }
 
-
-#[derive(Debug, Clone, Serialize, Deserialize,TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum ScaleType {
@@ -48,7 +73,7 @@ pub enum ScaleType {
     Meters,
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe,TS)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct LayerStyle {
@@ -66,27 +91,27 @@ pub struct LayerStyle {
     elevation_scale: Option<f32>,
 }
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct DatasetRef {
     name: String,
     filters: Option<Vec<Filter>>,
 }
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Layer {
     name: String,
+    id: String,
     source: DatasetRef,
-    order: usize,
     style: LayerStyle,
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Validate, Debug, Copy, Clone, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct View {
     #[validate(range(min=-90.0,max=90.0, message="lat needs to be between -90 and 90"))]
@@ -120,8 +145,8 @@ impl Default for View {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct MapPane {
     #[validate]
@@ -160,7 +185,7 @@ impl Default for MapPane {
     fn default() -> Self {
         Self {
             name: "MapPane".into(),
-            id: Uuid::new_v4().to_string(), 
+            id: Uuid::new_v4().to_string(),
             position: PanePosition {
                 width: 100,
                 height: 100,
@@ -190,14 +215,14 @@ impl Default for MapPane {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Mapping, DatasetVal, DatasetMetric, Range, EqualIntervalParams, VarOr };
+    use crate::{DatasetMetric, DatasetVal, EqualIntervalParams, Mapping, Range, VarOr};
 
     use super::*;
 
     #[test]
     fn lng_lat_validate() {
-        let view = View{
-            lng : -181.0,
+        let view = View {
+            lng: -181.0,
             ..Default::default()
         };
         let validation_result = view.validate();
@@ -214,11 +239,11 @@ mod tests {
             domain: VarOr::DVal(DatasetVal {
                 dataset: "test".to_string(),
                 column: Some("test_col".to_string()),
-                filters:None,
+                filters: None,
                 feature_id: None,
-                metric: Some(DatasetMetric::EqualInterval(
-                    EqualIntervalParams { bins: 20 },
-                )),
+                metric: Some(DatasetMetric::EqualInterval(EqualIntervalParams {
+                    bins: 20,
+                })),
             }),
             range: VarOr::Value(Range::Range(vec![
                 ColorSpecification::Rgba([0.0, 0.0, 0.0, 0.0]),
@@ -231,13 +256,13 @@ mod tests {
             opacity: None,
             visible: Some(true),
             line_color: None,
-            line_width: None, 
-            line_width_scale: Some(2.0) ,
+            line_width: None,
+            line_width_scale: Some(2.0),
             line_units: Some(ScaleType::Pixels),
             radius_units: Some(ScaleType::Pixels),
             radius_scale: Some(1.0),
             elevation: None,
-            elevation_scale:Some(1.0),
+            elevation_scale: Some(1.0),
         };
         println!("{}", serde_json::to_string_pretty(&style).unwrap());
     }

@@ -3,44 +3,44 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use validator::{Validate, ValidationErrors};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Validate,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, Validate, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Variable {
     var: String,
     bind: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct QuantileParams {
     bins: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct JenksParams {
     bins: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct EqualIntervalParams {
     pub bins: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct CategoriesParams {
     pub no_categories: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
 pub enum DatasetMetric {
     Min,
@@ -54,7 +54,7 @@ pub enum DatasetMetric {
     Summary,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize,TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase", untagged)]
 #[ts(export)]
 pub enum Range<T> {
@@ -62,8 +62,7 @@ pub enum Range<T> {
     Named(String),
 }
 
-
-#[derive(Debug, Clone, Serialize, Deserialize,TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(untagged)]
 #[ts(export)]
 pub enum DomainVal {
@@ -71,8 +70,8 @@ pub enum DomainVal {
     Value(f32),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Mapping<D, R> {
     pub variable: String,
@@ -80,8 +79,8 @@ pub struct Mapping<D, R> {
     pub range: VarOr<Range<R>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize,TS)]
-#[serde(untagged, rename_all="camelCase")]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[serde(untagged, rename_all = "camelCase")]
 #[ts(export)]
 pub enum MappingVarOr<T> {
     Var(Variable),
@@ -89,8 +88,8 @@ pub enum MappingVarOr<T> {
     Value(T),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Validate,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, Validate, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct DatasetVal {
     pub dataset: String,
@@ -100,7 +99,7 @@ pub struct DatasetVal {
     pub feature_id: Option<String>,
 }
 
-#[derive(Serialize, Debug, Deserialize, Clone,TS)]
+#[derive(Serialize, Debug, Deserialize, Clone, TS)]
 #[serde(untagged)]
 #[ts(export)]
 pub enum VarOr<T> {

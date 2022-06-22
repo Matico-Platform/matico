@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use wasm_bindgen::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
 pub enum Control {
     Select(SelectControl),
@@ -12,17 +12,18 @@ pub enum Control {
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct SelectControl {
     name: String,
     options: VarOr<Vec<String>>,
+    default_value: Option<String>
 }
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Debug, Clone,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct RangeControl {
     name: String,

@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Dataset, Page, Theme, ValidationResult, Pane};
+use crate::{AutoComplete, Dataset, Page, Pane, Theme, ValidationResult};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -7,43 +7,46 @@ use ts_rs::TS;
 use validator::Validate;
 use wasm_bindgen::prelude::*;
 
-
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct Metadata{
+pub struct Metadata {
     name: String,
     created_at: DateTime<Utc>,
-    description: String 
+    description: String,
 }
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct App {
     pages: Vec<Page>,
     panes: Vec<Pane>,
     datasets: Vec<Dataset>,
     theme: Option<Theme>,
-    metadata: Metadata
+    metadata: Metadata,
 }
 
-impl Default for App{
+impl Default for App {
     fn default() -> Self {
         Self {
             pages: vec![],
             panes: vec![],
             datasets: vec![],
             theme: None,
-            metadata: Metadata { name: "New App".into(), created_at: Utc::now(), description: "My amazing new app".into() }
+            metadata: Metadata {
+                name: "New App".into(),
+                created_at: Utc::now(),
+                description: "My amazing new app".into(),
+            },
         }
     }
 }
 
 #[wasm_bindgen]
-impl App{
+impl App {
     #[wasm_bindgen(constructor)]
     pub fn new_dash() -> Self {
         Default::default()
@@ -176,12 +179,13 @@ mod tests {
     use super::*;
     use crate::{MapPane, Pane, PanePosition, View};
 
-    fn test_dash_builder() -> App{
+    fn test_dash_builder() -> App {
         let map_pane: MapPane = Default::default();
 
-        let dash : App = App{
+        let dash: App = App {
             panes: vec![Pane::Map(map_pane)],
-            ..Default::default()};
+            ..Default::default()
+        };
         dash
     }
 

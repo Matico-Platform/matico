@@ -4,7 +4,7 @@ use ts_rs::TS;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Default, Debug, Serialize, Deserialize, Clone,TS)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Theme {
