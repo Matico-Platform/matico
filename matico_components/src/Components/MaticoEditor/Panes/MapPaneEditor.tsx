@@ -7,7 +7,7 @@ import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import { PaneEditor } from "./PaneEditor";
 import { BaseMapSelector } from "../Utils/BaseMapSelector";
-import { PaneDefaults } from "Components/MaticoEditor/PaneDefaults";
+import { DefaultLayer, PaneDefaults } from "Components/MaticoEditor/PaneDefaults";
 import {
     Flex,
     Heading,
@@ -26,8 +26,10 @@ import {
     ButtonGroup
     // repeat,
 } from "@adobe/react-spectrum";
-import { useMaticoSpec } from "Hooks/useMaticoSpec";
-import { useSpecActions } from "Hooks/useSpecActions";
+import {MapPane, PaneRef, BaseMap, VarOr, View as MapView, Layer, Variable} from "@maticoapp/matico_types/spec";
+import {usePane} from "Hooks/usePane";
+import {setCurrentEditElement} from "Stores/MaticoSpecSlice";
+import {v4 as uuidv4} from 'uuid'
 
 interface AddPaneModalProps {
     onAddLayer: (name: string, dataset: string) => void;
@@ -72,55 +74,38 @@ const AddPaneModal: React.FC<AddPaneModalProps> = ({ onAddLayer }) => {
 };
 
 export interface PaneEditorProps {
-    editPath: string;
+    paneRef: PaneRef;
 }
-export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
-    const [mapPane, parentLayout] = useMaticoSpec(editPath);
-    const {
-        remove: deletePane,
-        update: updatePane,
-        setEditPath
-    } = useSpecActions(editPath, "Map");
+export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
+
+    const {pane, updatePane, updatePanePosition, removePane, parent, }=  usePane(paneRef)
+
+    const mapPane = pane as MapPane
+
     const mapPaneCurrentView = useMaticoSelector(
         (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
     );
 
-    const [confirmDelete, setConfirmDelete] = useState(false);
-    const [bindBothWays, setBindBothWays] = useState(false);
 
-    const updatePaneDetails = (change: any) => {
+    const updateBaseMap = (baseMap: BaseMap) => {
         updatePane({
-            ...mapPane,
-            name: change.name,
-            position: { ...mapPane.position, ...change.position }
+            baseMap
         });
     };
 
-    const updateBaseMap = (basemap: any) => {
+    const updateView = (viewUpdate: Partial<VarOr<MapView>>) => {
         updatePane({
-            ...mapPane,
-            base_map: {
-                Named: basemap
-            }
-        });
-    };
-
-    const updateView = (viewUpdate: any) => {
-        updatePane({
-            ...mapPane,
             view: { ...mapPane.view, ...viewUpdate }
         });
     };
 
-    // @ts-ignore
-    const updateSyncedView = (view) => {
+    const updateSyncedView = (view: VarOr<MapView>) => {
         if (view.var) {
             updatePane({
-                ...mapPane,
                 view: {
                     var: `${view.var}_map_loc`,
                     bind: view.bind
-                }
+                } as Variable
             });
         }
     };
@@ -145,26 +130,27 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     if (!mapPane) {
         return (
             <View>
-                <Text color="status-error">Failed to find component</Text>
+                <Text>Failed to find component</Text>
             </View>
         );
     }
 
+
     const setLayerEdit = (index: number) => {
-        setEditPath({
-            editPath: `${editPath}.layers.${index}`,
-            editType: "Layer"
+        setCurrentEditElement({
+          type:"layer",
+           
         });
     };
 
     const addLayer = (dataset: string, layerName: string) => {
-        const newLayer = {
-            ...PaneDefaults.Layer,
-            source: { name: dataset },
-            name: layerName
-        };
+        const newLayer : Layer= {
+            ...DefaultLayer,
+            source: { name: dataset, filters:[] },
+            name: layerName,
+            id : uuidv4()
+        } ;
         updatePane({
-            ...mapPane,
             layers: [...mapPane.layers, newLayer]
         });
     };
@@ -196,12 +182,13 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     return (
         <Flex direction="column">
             <PaneEditor
-                position={mapPane.position}
-                name={mapPane.name}
-                background={mapPane.background}
-                onChange={updatePaneDetails}
-                parentLayout={parentLayout}
-            />
+              position={paneRef.position}
+              name={mapPane.name}
+              background={"white"}
+              onChange={updatePanePosition}
+              parentLayout={parent.layout} 
+              id={paneRef.id}           
+          />
 
             <Well>
                 <Heading>
@@ -315,18 +302,21 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
                     </Flex>
                 </Heading>
                 <Flex marginBottom={"size-200"} direction="column">
-                    {mapPane.layers.map((layer, index) => (
+                    {mapPane.layers.map((layer: Layer) => (
                         <RowEntryMultiButton
-                            key={layer.name}
-                            entryName={layer.name}
-                            editPath={`${editPath}.layers.${index}`}
-                            editType="Layer"
+                          key={layer.name}
+                          entryName={layer.name}
+                          onSelect={() => setCurrentEditElement({type: "layer", id: layer.id})} 
+                          onRemove={()=>{} } 
+                          onDuplicate={()=>{}} 
+                          onRaise={()=>{}} 
+                          onLower={()=>{}}
                         />
                     ))}
                 </Flex>
                 <BaseMapSelector
-                    baseMap={mapPane?.base_map?.Named}
-                    onChange={(baseMap) => updateBaseMap(baseMap)}
+                    baseMap={mapPane?.baseMap}
+                    onChange={updateBaseMap}
                 />
             </Well>
         </Flex>

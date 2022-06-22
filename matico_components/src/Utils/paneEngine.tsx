@@ -7,6 +7,8 @@ import { MaticoPieChartPane } from "Components/Panes/MaticoPieChartPane/MaticoPi
 import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoControlsPane";
 import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
 import { Pane } from "Components/Panes/Pane";
+import {PaneRef} from '@maticoapp/matico_types/spec';
+import {useMaticoSelector} from 'Hooks/redux';
 
 export const panes: { [paneType: string]: Pane } = {
     Map: MaticoMapPane,
@@ -18,16 +20,17 @@ export const panes: { [paneType: string]: Pane } = {
     Container: MaticoContainerPane
 };
 
-export function selectPane(pane: any, editPath: string) {
-    const paneType = Object.keys(pane)[0]; 
-    const paneDetails = pane[paneType];
+export function selectPane(paneRef: PaneRef) {
+    const paneType = paneRef.type; 
+    const pane = useMaticoSelector((state)=> state.spec.spec.panes.find((f:PaneRef)=>f.id===paneRef.id))
     const PaneComponent = panes[paneType];
+
     if (!PaneComponent) return null;
     return (
         <PaneComponent
-            key={paneDetails.name}
-            {...paneDetails}
-            editPath={`${editPath}`}
+            key={pane.id}
+            position={paneRef.position}
+            {...pane}
         />
     );
 }

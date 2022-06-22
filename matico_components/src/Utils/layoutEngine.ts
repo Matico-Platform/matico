@@ -1,3 +1,4 @@
+import {Layout} from "@maticoapp/matico_types/spec/Layout";
 import { MaticoFreeLayout } from "Components/Layouts/MaticoFreeLayout/MaticoFreeLayout";
 import { MaticoLinearLayout } from "Components/Layouts/MaticoLinearLayout/MaticoLinearLayout";
 
@@ -17,8 +18,8 @@ export const availableLayouts: LayoutLabel[] = [
     }
 ]
 
-export function selectLayout(layout_name: string) {
-    switch (layout_name) {
+export function selectLayout(layout: Layout) {
+    switch (layout.type) {
         case "free":
             return MaticoFreeLayout;
         case "linear":

@@ -3,75 +3,58 @@ import { View } from "@adobe/react-spectrum";
 import { useAppSpec } from "Hooks/useAppSpec";
 import { RowEntryMultiButton, RowEntryMultiButtonProps } from "../Utils/RowEntryMultiButton";
 import {isArray, isObject} from 'lodash'
+import {useApp} from "Hooks/useApp";
+import {ContainerPane, Page, PaneRef} from "@maticoapp/matico_types/spec";
 
-const EDIT_TYPE_MAPPINGS = {
-  "pages":"Page",
-  "sections":"Section",
-  "Container": "Container",
-  "Map": "Map",
-  "layers":"Layer",
-  "Scatterplot": "Scatterplot",
-  "Text":"Text",
-  "Histogram":"Histogram",
-  "PieChart":"PieChart"
-}
+function addForContainer( container: ContainerPane, inset: number ){
+  let containerPanes: Array<RowEntryMultiButtonProps> = [];
 
-function traverseObj(obj: any, parentPrefix: any, mutableObject: any){
-    if (isArray(obj)){
-      obj.forEach((entry, idx) => {
-          if (isObject(entry) && Object.keys(entry).length === 1){
-            mutableObject.push({
-                // @ts-ignore
-              name: entry[Object.keys(entry)[0]].name, 
-              editPath:`${parentPrefix}.${idx}.${Object.keys(entry)[0]}`,
-              // @ts-ignore
-              editType: EDIT_TYPE_MAPPINGS[Object.keys(entry)[0]]
-            })
-            traverseObj(
-                // @ts-ignore
-              entry[Object.keys(entry)[0]], 
-              `${parentPrefix}.${idx}.${Object.keys(entry)[0]}`, 
-              mutableObject
-            )
-          } else {
-            mutableObject.push({
-              name:entry.name,
-              editPath:`${parentPrefix}.${idx}`,
-              // @ts-ignore
-              editType: EDIT_TYPE_MAPPINGS[parentPrefix.split('.').slice(-1)[0]]
-            })
-            traverseObj(entry, `${parentPrefix}.${idx}`, mutableObject)     
-          } 
-      })
-    } else if (isObject(obj)){
-      Object.entries(obj).forEach(([key, val],idx) => {
-        if (isArray(val)){
-          traverseObj(val, `${parentPrefix}.${key}`, mutableObject)
-        } else if (isObject(val)) {
-          
-        }
-      })
-    }
-    return mutableObject
-}
-
-const handleTraversal = (pages: any[]) => {
-  let mutableObject: any = []
-  traverseObj(pages, 'pages', mutableObject)
-  return mutableObject
-}
-interface PaneSpec {
-    name: string,
-    type: string,
-    editPath: string,
-    editType: string
+    rowComponents.push(
+                {entryName : page.name,
+                 inset:inset,
+                 compact:true,
+                 onSelect: ()=> setEditPage(page.id),
+                 onRemove: ()=> removePage(page.id),
+                 onRaise: ()=>{},
+                 onLower: ()=>{},
+                 onDuplicate: ()=>{}
+                }
+      
+    ) 
+    inset +=1 
 }
 
 export const MaticoOutlineViewer: React.FC = () => {
-    const { pages } = useAppSpec();
+    const { pages, panes, setEditPage, removePage} = useApp();
     const rowComponents = useMemo(() => {
-        const panes = handleTraversal(pages)
-        console.log('TRAVERSE', panes)
+      const rowComponents: Array<RowEntryMultiButtonProps> = []
+      let inset = 0
+
+      pages.forEach((page:Page)=>{
+              rowComponents.push(
+                {entryName : page.name,
+                 inset:inset,
+                 compact:true,
+                 onSelect: ()=> setEditPage(page.id),
+                 onRemove: ()=> removePage(page.id),
+                 onRaise: ()=>{},
+                 onLower: ()=>{},
+                 onDuplicate: ()=>{}
+                }
+              )
+
+              inset +=1;
+              
+              page.panes.forEach((paneRef:PaneRef)=>{
+                const pane = panes.find((p:Pane)=> p.id = paneRef.paneId)
+                if(pane.type==="container"){
+                
+                }
+                else{
+
+                }
+              })
+      })
         return panes.map((entry: PaneSpec, i: number) => {
             const {
                 name,

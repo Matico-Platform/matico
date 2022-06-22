@@ -4,23 +4,20 @@ import {
   Picker,
   View,
   Text,
-  ActionButton,
-  Switch,
   Flex,
   ComboBox,
   Well,
   Link,
   ProgressBar,
   Button,
-  Header,
   Heading,
 } from "@adobe/react-spectrum";
 
 import {
-  DatasetProvider,
-  DatasetRecord,
   DatasetProviderComponent,
-} from "@maticoapp/matico_components";
+  DatasetProvider,
+} from "Datasets/DatasetProvider";
+
 import { PortalInfo, usePortals } from "./usePortals";
 import { usePortalDatasets } from "./usePortalDatasets";
 
@@ -45,9 +42,6 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
     : null;
 
   const { datasets, loading, progress } = usePortalDatasets(selectedPortal);
-  console.log("POrtals", portals);
-  console.log("Datasets ", datasets);
-  console.log("selected portal ", selectedPortal);
 
   const selectedDataset = datasets
     ? datasets.find((d) => d.resource.id === selectedDatasetId)

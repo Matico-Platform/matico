@@ -1,7 +1,7 @@
 import React from "react";
 import { useMaticoSelector } from "Hooks/redux";
 import { Picker, Item } from "@adobe/react-spectrum";
-import { Column } from "Datasets/Dataset";
+import { Column } from "@maticoapp/matico_types/spec";
 
 interface DatasetColumnSelectorProps {
   datasetName?: string;

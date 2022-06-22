@@ -5,47 +5,17 @@ import { Content, Grid, Heading, View } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { selectPane } from "Utils/paneEngine";
 import { selectLayout } from "Utils/layoutEngine";
+import {Layout, PaneRef} from "@maticoapp/matico_types/spec";
 
 export interface MaticoContainerPaneInterface extends MaticoPaneInterface {
+    id:string;
     title?: string;
-    editPath?: string;
-    panes: Pane[];
-    layout: string;
+    panes: PaneRef[];
+    layout: Layout;
 }
 
-const LinearContainer: React.FC = ({ children, ...rest }) => {
-    return (
-        <View overflow="hidden auto" width="100%" height="100%" {...rest}>
-            {children}
-        </View>
-    );
-};
-
-const GridContainer: React.FC = ({ children, ...rest }) => {
-    return (
-        <Grid width="100%" height="100%" {...rest}>
-            {children}
-        </Grid>
-    );
-};
-
-const FreeContainer: React.FC = ({ children, ...rest }) => {
-    return (
-        <View position="relative" width="100%" height="100%" {...rest}>
-            {children}
-        </View>
-    );
-};
-
-const containers = {
-    linear: LinearContainer,
-    grid: GridContainer,
-    free: FreeContainer
-};
-
 export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
-    editPath,
-    title,
+    id,
     layout,
     panes
 }) => {
@@ -60,15 +30,13 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
             backgroundColor={edit ? "default" : "transparent"}
         >
             <ControlActionBar
-                editPath={`${editPath}.Container`}
-                editType={"Container"}
+                targetId={id}
             />
             <Content width="100%" height="100%">
                 <LayoutEngine>
                     {panes
-                        .filter((p: Pane) => p)
-                        .map((pane: Pane, index: number) =>
-                            selectPane(pane, `${editPath}.Container.panes.${index}`)
+                        .map((pane: PaneRef) =>
+                            selectPane(pane)
                         )}
                 </LayoutEngine>
             </Content>

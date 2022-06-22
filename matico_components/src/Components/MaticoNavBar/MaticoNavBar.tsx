@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Page } from "@maticoapp/matico_spec";
+import { Page } from "@maticoapp/matico_types/spec";
 import React from "react";
 import styled from "styled-components";
 import { useIsEditable } from "../../Hooks/useIsEditable";

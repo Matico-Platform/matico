@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactComponentElement} from "react";
 import {
     Content,
     Flex,
@@ -13,19 +13,19 @@ import {
     Text,
     Well
 } from "@adobe/react-spectrum";
-import Edit from "@spectrum-icons/workflow/Edit";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 import Delete from "@spectrum-icons/workflow/Delete";
-import Copy from "@spectrum-icons/workflow/Copy";
 import Duplicate from "@spectrum-icons/workflow/Duplicate";
 import Settings from "@spectrum-icons/workflow/Settings";
-import { useSpecActions } from "Hooks/useSpecActions";
 
 export interface RowEntryMultiButtonProps {
-    entryName: string | React.ReactNode;
-    editPath: string;
-    editType: string;
+    entryName: string | React.ReactNode,
+    onRemove: ()=>void,
+    onDuplicate: ()=>void,
+    onRaise: ()=>void,
+    onLower:()=>void,
+    onSelect:()=>void,
     inset?: number;
     compact?: boolean;
 }
@@ -33,15 +33,14 @@ export interface RowEntryMultiButtonProps {
 export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
     // TODO: arial labels
     entryName,
-    editPath,
-    editType,
     inset = 0,
-    compact = false
+    compact = false,
+    onSelect,
+    onRemove,
+    onLower,
+    onRaise,
+    onDuplicate
 }): any => {
-    const { openEditor, remove, duplicate, move, reorder } = useSpecActions(
-        editPath,
-        editType
-    );
 
     return (
         <View
@@ -86,19 +85,19 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                     onAction={(action) => {
                         switch (action) {
                             case "delete":
-                                remove();
+                                onRemove();
                                 break;
                             case "edit":
-                                openEditor();
+                                onSelect();
                                 break;
                             case "duplicate":
-                                duplicate();
+                                onDuplicate();
                                 break;
                             case "moveUp":
-                                reorder("forward");
+                                onRaise();
                                 break;
                             case "moveDown":
-                                reorder("backward");
+                                onLower();
                                 break;
                             default:
                                 return;
@@ -141,7 +140,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                                     <Button
                                         variant="negative"
                                         onPress={() => {
-                                            remove();
+                                            onRemove();
                                             close();
                                         }}
                                     >

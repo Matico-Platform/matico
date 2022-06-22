@@ -1,93 +1,38 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import {
-  deleteSpecAtPath,
-  setCurrentEditPath,
-  setSpecAtPath,
-} from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { SectionHeading } from "../Utils/Utils";
 import { Text, View } from "@adobe/react-spectrum";
+import {usePane} from "Hooks/usePane";
+import {PaneRef} from "@maticoapp/matico_types/spec";
 
 export interface PaneEditorProps {
-  editPath: string;
+  paneRef:PaneRef
 }
 
 export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
-  editPath,
+  paneRef,
 }) => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const dispatch = useMaticoDispatch();
-
-  const deletePane = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
-  };
+  const {id,position} = paneRef
+  const {pane, updatePane, updatePanePosition} = usePane(paneRef) 
 
   const updateDataset = (dataset: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          dataset: { ...piechartPane.dataset, name: dataset },
+      updatePane({
+          dataset: { ...pane.dataset, name: dataset },
           column: null
-        },
       })
-    );
   };
 
   const updateColumn = (column: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
+      updatePane({
           column: column,
-        },
       })
-    );
   };
 
-  const updatePane = (change: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          ...piechartPane,
-          ...change,
-        },
-      })
-    );
-  };
-  
-  const updateSpec = (change: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          ...piechartPane,
-          ...change,
-        },
-      })
-    );
-  };
-
-  // const editPane = (index) => {
-  //   console.log("SECTION is ",index)
-  //   dispatch(
-  //     setCurrentEditPath({
-  //       editPath: `${editPath}.${index}`,
-  //       editType: "Pane",
-  //     })
-  //   );
-  // };
-
-  const piechartPane = _.get(spec, editPath);
-
-  if (!piechartPane) {
+  if (!pane) {
     return (
       <View>
         <Text>Failed to find component</Text>
@@ -98,23 +43,25 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
     <View>
       <SectionHeading>Pane Details</SectionHeading>
       <PaneEditor
-        position={piechartPane.position}
-        name={piechartPane.name}
-        background={piechartPane.background}
-        onChange={(change) => updatePane(change)}
+        id={pane.id}
+        position={position}
+        name={pane.name}
+        background={pane.background}
+        onChange={updatePanePosition} 
+        parentLayout={""}      
       />
 
       <SectionHeading>Source</SectionHeading>
       <DatasetSelector
-        selectedDataset={piechartPane.dataset.name}
+        selectedDataset={pane.dataset.name}
         onDatasetSelected={updateDataset}
       />
 
       <DatasetColumnSelector
-        datasetName={piechartPane.dataset.name}
-        selectedColumn={piechartPane.column}
+        datasetName={pane.dataset.name}
+        selectedColumn={pane.column}
         label="Column"
-        onColumnSelected={(column) => updateSpec({ column: column.name })}
+        onColumnSelected={(column) => updateColumn( column.name) }
       />
     </View>
   );

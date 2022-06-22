@@ -3,11 +3,9 @@ import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { Page } from "@maticoapp/matico_spec";
 import {
-  deleteSpecAtPath,
-  duplicateSpecAtPath,
-  removeSpecAtPath,
-  setCurrentEditPath,
-  setSpecAtPath,
+  updatePage,
+  deletePage,
+  setCurrentEditElement,
 } from "Stores/MaticoSpecSlice";
 import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
@@ -30,8 +28,8 @@ import {
 } from "@adobe/react-spectrum";
 import { PaneDefaults } from "../PaneDefaults";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { iconList } from '../../../Utils/iconUtils'
 import { useIconList } from "Hooks/useIconList";
+import {usePage} from "Hooks/usePage";
 
 const NewSectionModal: React.FC<{
   onAddSection: (name: string) => void;
@@ -64,38 +62,11 @@ const NewSectionModal: React.FC<{
 };
 
 export interface PageEditorProps {
-  editPath: string;
+  id: string;
 }
-export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
+export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const dispatch = useMaticoDispatch();
-
-  const updatePage = (change: Page) => {
-    dispatch(setSpecAtPath({ editPath: editPath, update: change }));
-  };
-
-  const updateContent = (content: string) =>
-    dispatch(setSpecAtPath({ editPath: editPath, update: { content } }));
-
-  const deletePage = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    console.log(editPath)
-    dispatch(removeSpecAtPath({ editPath }));
-  };
-
-  const addNewSection = (name: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath: editPath,
-        update: {
-          sections: [...page.sections, { ...PaneDefaults.Section, name }],
-        },
-      })
-    );
-  };
-
-  const page = _.get(spec, editPath);
+  const {page,updatePage}= usePage(id)
 
   const {
     iconList,
@@ -128,7 +99,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
         <ComboBox
           label="Icon"
           selectedKey={page.icon}
-          onSelectionChange={(icon) => updatePage({icon})}          
+          onSelectionChange={(icon: string) => updatePage({icon})}          
           items={iconList}
           inputValue={filterText}
           onInputChange={setFilterText}
@@ -139,47 +110,6 @@ export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
           </Item>}
         </ComboBox>
       </Well>
-      <Well>
-        <Heading>
-          <Flex
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Text>Content</Text> <Switch>Simple</Switch>
-          </Flex>
-        </Heading>
-        <ReactMde value={page.content} onChange={updateContent} />
-      </Well>
-      <Well>
-        <Heading>
-          <Flex
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Text>Sections</Text>
-            <NewSectionModal onAddSection={addNewSection} />
-          </Flex>
-        </Heading>
-        <Flex direction="column">
-          {page.sections.map((section, index) => (
-            <Flex
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <RowEntryMultiButton
-                key={section.name}
-                entryName={section.name}
-                editPath={`${editPath}.sections.${index}`}
-                editType="Section"
-                />
-            </Flex>
-          ))}
-        </Flex>
-      </Well>
-
       <Well>
         <Heading>Danger Zone</Heading>
         <Flex direction="row" justifyContent="end" alignItems="center">

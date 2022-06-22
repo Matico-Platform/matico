@@ -1,29 +1,18 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import { Section } from "@maticoapp/matico_spec";
 import { PaneDefaults } from "../PaneDefaults";
-import {
-    deleteSpecAtPath,
-    setCurrentEditPath,
-    setSpecAtPath
-} from "Stores/MaticoSpecSlice";
 import {
     Heading,
     Flex,
-    Item,
     TextField,
     Well,
     View,
     Text,
     ActionButton,
-    Picker,
     DialogTrigger,
     Dialog,
     Content,
-    Header,
     repeat,
-    Grid
 } from "@adobe/react-spectrum";
 
 import HistogramIcon from "@spectrum-icons/workflow/Histogram";
@@ -37,30 +26,30 @@ import { DefaultGrid } from "../Utils/DefaultGrid";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
 import { SectionLayoutEditor } from "./SectionLayoutEditor";
-import { findParentContainer } from "../Utils/Utils";
-import { useMaticoSpec } from "Hooks/useMaticoSpec";
-import { useSpecActions } from "Hooks/useSpecActions";
+import { useContainer} from "Hooks/useContainer"
 import { RemovePaneDialog } from "../Utils/RemovePaneDialog";
+import {v4 as uuidv4} from 'uuid'
+import {Pane, PaneRef} from "@maticoapp/matico_types/spec";
 
 export interface SectionEditorProps {
-    editPath: string;
+    paneRef: PaneRef;
 }
 
 const IconForPaneType = (PaneType: string) => {
     switch (PaneType) {
-        case "Histogram":
+        case "histogram":
             return <HistogramIcon />;
-        case "PieChart":
+        case "pieChart":
             return <PieChartIcon />;
-        case "Text":
+        case "text":
             return <TextIcon />;
-        case "Map":
+        case "map":
             return <MapIcon />;
-        case "Scatterplot":
+        case "scatterplot":
             return <ScatterIcon />;
-        case "Controls":
+        case "controls":
             return <PropertiesIcon />;
-        case "Container":
+        case "container":
             return <Border />;
     }
 };
@@ -82,7 +71,7 @@ const AvaliablePanes = [
 
 interface NewPaneDialogProps {
     validatePaneName?: (name: string) => boolean;
-    onAddPane: (name: string, paneType: String) => void;
+    onAddPane: (pane:Pane) => void;
 }
 const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
     validatePaneName,
@@ -97,7 +86,12 @@ const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
         }
         if (validatePaneName) {
             if (validatePaneName(newPaneName)) {
-                onAddPane(newPaneName, paneType);
+                const pane = {
+                  type:paneType,
+                  id: uuidv4(),
+                  ...PaneDefaults[paneType]
+                }
+                onAddPane(pane);
                 close();
             } else {
                 setErrorText(
@@ -154,55 +148,26 @@ const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
 };
 
 export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
-    editPath
+   paneRef 
 }) => {
-    const [containerPane, parentLayout] = useMaticoSpec(editPath);
-    const { remove: deletePane, update: updatePane } = useSpecActions(
-        editPath,
-        "Container"
-    );
-    const validateName = (name: string) => {
-        const existingNames = containerPane.panes.map(
-            // @ts-ignore
-            (pane) => Object.values(pane)[0].name
-        );
-        return !existingNames.includes(name);
-    };
-    const handleUpdate = (change: Section) => updatePane({ ...change });
-    const handleAddPane = (paneName: string, paneType: string) => {
-        handleUpdate({
-            ...containerPane,
-            panes: [
-                ...containerPane.panes,
-                // @ts-ignore
-                { [paneType]: { ...PaneDefaults[paneType], name: paneName } }
-            ]
-        });
-    };
-    const handleUpdateDetails = (change: any) => {
-        handleUpdate({
-            ...containerPane,
-            name: change.name,
-            position: { ...containerPane.position, ...change.position }
-        });
-    };
 
-    if (!containerPane) {
-        return <View>Failed to find section in specification</View>;
-    }
+    const {container ,removePane, updatePane, updatePanePosition, parent, addPaneToContainer, removePaneFromContainer, subPanes, selectSubPane} = useContainer(paneRef)
+    
+
     return (
         <Flex width="100%" height="100%" direction="column">
             <PaneEditor
-                position={containerPane.position}
-                name={containerPane.name}
-                background={containerPane.background}
-                onChange={handleUpdateDetails}
-                parentLayout={parentLayout}
+              position={paneRef.position}
+              name={container.name}
+              background={"white"}
+              onChange={updatePanePosition}
+              parentLayout={parent.layout} 
+              id={paneRef.id}      
             />
             <SectionLayoutEditor
-                name={containerPane.name}
-                layout={containerPane.layout}
-                updateSection={handleUpdate}
+                name={container.name}
+                layout={container.layout}
+                updateSection={updatePane}
             />
             <Well>
                 <Heading>
@@ -214,37 +179,36 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
                         <Text>Panes</Text>
 
                         <NewPaneDialog
-                            onAddPane={handleAddPane}
-                            validatePaneName={validateName}
+                            onAddPane={addPaneToContainer}
                         />
                     </Flex>
                 </Heading>
                 <Flex gap={"size-200"} direction="column">
-                    {containerPane.panes.map((pane: any, index: number) => {
-                        let [paneType, paneSpecs] = Object.entries(pane)[0];
+                    {subPanes.map((pane:Pane, index:number) => {
                         return (
                             <RowEntryMultiButton
-                                // @ts-ignore
-                                key={paneSpecs.name}
-                                entryName={
-                                    <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        gap="size-100"
-                                    >
-                                        {IconForPaneType(paneType)}
-                                        {/* @ts-ignore */}
-                                        <Text>{paneSpecs.name}</Text>
-                                    </Flex>
-                                }
-                                editPath={`${editPath}.panes.${index}.${paneType}`}
-                                editType={paneType}
+                            // @ts-ignore
+                            key={pane.name}
+                            entryName={<Flex
+                              direction="row"
+                              alignItems="center"
+                              gap="size-100"
+                            >
+                              {IconForPaneType(pane.type)}
+                              {/* @ts-ignore */}
+                              <Text>{pane.name}</Text>
+                            </Flex>}
+                            onRemove={() => removePaneFromContainer(container.panes[index]) }
+                            onRaise={() => {} }
+                            onLower={() => {} }
+                            onDuplicate={() => {} } 
+                            onSelect={()=> selectSubPane( container.panes[index]) }
                             />
                         );
                     })}
                 </Flex>
             </Well>
-            <RemovePaneDialog deletePane={deletePane} />
+            <RemovePaneDialog deletePane={removePane} />
         </Flex>
     );
 };

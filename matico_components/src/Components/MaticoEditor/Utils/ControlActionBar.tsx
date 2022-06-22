@@ -13,10 +13,10 @@ import { useSpecActions } from "Hooks/useSpecActions";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
 import { reorderAtSpec } from "Stores/MaticoSpecSlice";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
+import {useSpecElement} from "Hooks/useSpecElement";
 
 interface ControlActionBarProps {
-  editPath: string;
-  editType?: string;
+  targetId: string;
   actions?: string[];
 }
 
@@ -34,11 +34,12 @@ const ControlBarContainer = styled.div`
 `
 
 export const ControlActionBar: React.FC<ControlActionBarProps> = ({
-  editPath,
-  editType,
+  targetId,
   actions=[''],
 }) => {
   const edit = useIsEditable();
+  const [pane,type]= useSpecElement(targetId);
+
   const {
     openEditor,
     remove,
@@ -46,9 +47,9 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
     move,
     reorder
   } = useSpecActions(
-    editPath,
-    editType,
+    {id: targetId,  type} 
   );
+
 
   if (!edit) return null;
   return (
@@ -71,7 +72,7 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                   openEditor()
                   break;
                 case "docs":
-                  typeof window !== "undefined" && window.open(`https://matico.app/docs/panes/${editPath.split('.').slice(-1)[0]}`, "_blank")
+                  typeof window !== "undefined" && window.open(`https://matico.app/docs/panes/${specElement.type}`, "_blank")
                   break;
                 case "duplicate":
                   duplicate();

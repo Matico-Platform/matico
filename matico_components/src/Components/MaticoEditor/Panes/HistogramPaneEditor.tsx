@@ -9,33 +9,30 @@ import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { LabelEditor } from "../Utils/LabelEditor";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
-import { useMaticoSpec } from "Hooks/useMaticoSpec";
-import { useSpecActions } from "Hooks/useSpecActions";
+import {usePane} from "Hooks/usePane";
+import {HistogramPane, Labels, PaneRef} from "@maticoapp/matico_types/spec";
 
 export interface PaneEditorProps {
-    editPath: string;
+    paneRef: PaneRef;
 }
 
 export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
-    editPath
+   paneRef 
 }) => {
-    const [histogramPane, parentLayout] = useMaticoSpec(editPath);
-    const { remove: deletePane, update: updatePane } = useSpecActions(
-        editPath,
-        "Histogram"
-    );
 
-    const updateLabels = (change: { [name: string]: string }) => {
-        const labels = histogramPane.labels ?? {};
+    const {pane, updatePane, parent, updatePanePosition} = usePane(paneRef)
+
+    const histogramPane = pane as HistogramPane;
+
+    const updateLabels = (change: Partial<Labels>) => {
+        const labels = histogramPane.labels ?? {} as Labels;
         updatePane({
-            ...histogramPane,
             labels: { ...labels, ...change }
         });
     };
 
     const updateDataset = (dataset: string) => {
         updatePane({
-            ...histogramPane,
             dataset: { ...histogramPane.dataset, name: dataset },
             column: null
         });
@@ -43,18 +40,10 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
 
     const updateColumn = (column: string) => {
         updatePane({
-            ...histogramPane,
             column: column
         });
     };
 
-    const updatePaneDetails = (change: any) => {
-        updatePane({
-            ...histogramPane,
-            name: change.name,
-            position: { ...histogramPane.position, ...change.position }
-        });
-    };
 
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[histogramPane.dataset.name]
@@ -71,12 +60,13 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
     return (
         <Flex direction="column">
             <PaneEditor
-                position={histogramPane.position}
-                name={histogramPane.name}
-                background={histogramPane.background}
-                onChange={(change) => updatePaneDetails(change)}
-                parentLayout={parentLayout}
-            />
+              position={paneRef.position}
+              name={histogramPane.name}
+              background={"white"}
+              onChange={(change) => updatePanePosition(change)}
+              parentLayout={parent.layout} 
+              id={paneRef.id}
+              />
             <Well>
                 <Heading>Data Source</Heading>
                 <TwoUpCollapsableGrid>

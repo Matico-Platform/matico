@@ -1,3 +1,5 @@
+import {Layer, Pane} from "@maticoapp/matico_types/spec";
+
 const DefaultPosition = {
   x: 25,
   y: 25,
@@ -19,82 +21,65 @@ const DefaultView = {
   pitch: 0,
 };
 
-export const PaneDefaults = {
-  Page:{
-    name:"",
-    path:"/",
-    sections:[],
-    order:2,
-    content:'',
-    icon: "Page"
-  },
-  Layer: {
+
+export const DefaultLayer: Partial<Layer>= {
     name: "NewLayer",
     style: {
-      fillColor: "#FF0000",
-      lineColor: "#FFFFFF",
+      fillColor: {rgb:[255.0,0.0,0.0]},
+      lineColor: {rgb:[255.0,255.0,255.0]},
       size: 10,
       elevation:0,
       lineWidth: 4,
       lineWidthScale:1,
-      lineUnites:'pixels',
+      lineUnits:'pixels',
       radiusScale:1,
-      radiusUnits:"pixels"
+      radiusUnits:"pixels",
+      visible:true,
+      opacity:1.0,
+      elevationScale:1.0
     },
-    order: 1,
-  },
-  Section:{
-    name:"New Section",
-    order:1,
-    panes:[],
-    layout:"free"
-  },
-  Map: {
-    position: DefaultPosition,
+}
+
+export const PaneDefaults :Record<string, Partial<Pane>> = {
+  map: {
     name: "New Map",
     view: DefaultView,
     layers: [],
-    base_map: { Named: "Terrain" },
+    baseMap: { type: "named", name: "CartoDBVoyager"  },
   },
-  Scatterplot: {
-    position: DefaultPosition,
+  scatterplot: {
     name: "New Scatter",
-    x_column: null,
-    y_column: null,
-    dot_color: "#417505",
-    dot_size: 14,
-    dataset: { name: "uknown" },
+    xColumn: null,
+    yColumn: null,
+    dotColor: "#417505",
+    dotSize: 14,
+    dataset: { name: "uknown", filters:[]},
   },
-  Histogram: {
-    position: DefaultPosition,
+  histogram: {
     name: "New Histogram",
     column: null,
     color: "#417505",
-    step: 140,
-    dataset: { name: "unknown" },
+    maxbins: 20,
+    dataset: { name: "unknown", filters:[] },
   },
-  PieChart: {
-    position: DefaultPosition,
+  pieChart: {
     name: "New Pie chart",
     column: null,
-    dataset: { name: "uknown" },
+    dataset: { name: "unknown", filters:[] },
   },
-  Text: {
-    position: DefaultPosition,
+  text: {
     content: "New Text Pane",
     name: "Text Pane",
   },
-  Controls:{
-    position: DefaultPosition,
+  controls:{
     name:"Controls",
     title:"Controls",
-    controls : []
+    controls:[]
   },
-  Container:{
-    position: DefaultPosition,
+  container:{
     name:"Container",
     title:"Container",
-    layout:"linear",
+    layout:{"type":"free"},
     panes:[]
   }
 };

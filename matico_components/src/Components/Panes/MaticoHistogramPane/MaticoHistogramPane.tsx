@@ -1,11 +1,9 @@
-import React, { useContext } from "react";
-import { useState, useRef, useMemo } from "react";
-import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
+import React  from "react";
+import { useState, useMemo } from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
-import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
@@ -18,7 +16,6 @@ export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   column: string;
   color?: string;
   maxbins?: number;
-  editPath?: string;
   labels?: { [name: string]: string };
 }
 
@@ -29,8 +26,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   column = "",
   color,
   maxbins,
-  editPath,
   labels,
+  id
 }) => {
   const [view, setView] = useState({});
 
@@ -49,7 +46,6 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     bind: true,
   });
 
-  const edit = useIsEditable();
 
   const foundDataset = useMaticoSelector(
     (state) => state.datasets.datasets[dataset.name]
@@ -141,8 +137,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   return (
     <View width="100%" height="100%" position="relative">
       <ControlActionBar
-        editPath={`${editPath}.Histogram`}
-        editType={"Histogram"}
+        targetId={id}
       />
       {!datasetReady && <div>{dataset.name} not found!</div>}
       {Chart}

@@ -22,7 +22,6 @@ export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dot_color?: string;
   // backgroundColor: string;
   dot_size?: number;
-  editPath?: string;
   labels?: { [label: string]: string };
 }
 
@@ -33,7 +32,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     y_column = "",
     dot_color = "#ff0000",
     dot_size = 1,
-    editPath,
+    id,
     labels,
   }) => {
     const edit = useIsEditable();
@@ -174,7 +173,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         width="100%"
         height="100%"
       >
-        <ControlActionBar editPath={`${editPath}.Scatterplot`} editType={"Scatterplot"}/>
+        <ControlActionBar targetId={id} />
         {Chart}
       </View>
     );

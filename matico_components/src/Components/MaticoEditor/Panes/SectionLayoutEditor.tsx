@@ -7,10 +7,11 @@ import {
     Item
 } from '@adobe/react-spectrum';
 import { availableLayouts } from 'Utils/layoutEngine';
+import {Layout} from '@maticoapp/matico_types/spec';
 
 interface SectionLayoutEditorProps {
     name: string;
-    layout: string;
+    layout: Layout;
     updateSection: ({ change }: { [key: string]: any }) => void;
 }
 

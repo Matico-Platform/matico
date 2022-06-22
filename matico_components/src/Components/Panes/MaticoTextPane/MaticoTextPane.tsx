@@ -9,13 +9,12 @@ import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar
 export interface MaticoTextPaneInterface extends MaticoPaneInterface {
   font?: string;
   content: string;
-  editPath?: string;
 }
 
 export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
   content,
+  id,
   font,
-  editPath
 }) => {
   const edit = useIsEditable()
   return (
@@ -26,7 +25,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
       height="100%"
       backgroundColor={edit ? "default" : "transparent"}
       >
-      <ControlActionBar editPath={`${editPath}.Text`} editType={"Text"} />
+      <ControlActionBar targetId={id}  />
       <Content>
         <MarkdownContent>{content}</MarkdownContent>
       </Content>

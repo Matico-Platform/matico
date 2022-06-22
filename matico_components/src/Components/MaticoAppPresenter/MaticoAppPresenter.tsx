@@ -4,18 +4,17 @@ import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { MaticoDataState } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { VariableState } from "../../Stores/MaticoVariableSlice";
 import { MaticoNavBar } from "../MaticoNavBar/MaticoNavBar";
-import { Dashboard } from "@maticoapp/matico_spec";
 import { setSpec } from "../../Stores/MaticoSpecSlice";
 import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
-import { registerDataset } from "Stores/MaticoDatasetSlice";
 import { Content, Grid, View } from "@adobe/react-spectrum";
-import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
+import {App, Page} from '@maticoapp/matico_types/spec'
+
 import _ from "lodash";
 import {useRegisterDatasets} from "Hooks/useRegisterDatasets";
 
 interface MaticoAppPresenterProps {
-    spec?: Dashboard;
+    spec?: App;
     basename?: string;
     onStateChange?: (state: VariableState) => void;
     onDataChange?: (data: MaticoDataState) => void;
@@ -71,10 +70,9 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                     </View>
                     <Content gridArea="main">
                         <Switch>
-                            {appSpec.pages.map((page, index: number) => (
+                            {appSpec.pages.map((page: Page, index: number) => (
                                 <Route
                                     path={page.path ? page.path : page.name}
-                                    exact={true}
                                     key={page.path}
                                 >
                                     <MaticoPage

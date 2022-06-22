@@ -1,5 +1,4 @@
 import React  from "react";
-import { Dashboard } from "@maticoapp/matico_spec";
 import { Provider } from "react-redux";
 import { store } from "Stores/MaticoStore";
 import { VariableState } from "Stores/MaticoVariableSlice";
@@ -22,13 +21,14 @@ import { CSVProvider } from "DatasetsProviders/CSVProvider";
 import { COGProvider } from "DatasetsProviders/COGProvider";
 import { SocrataDatasetProvider} from "DatasetsProviders/SocrataProvider/SocrataProvider";
 import { ComputeProvider } from "DatasetsProviders/ComputeProvider"
+import {App} from "@maticoapp/matico_types/spec"
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 interface MaticoAppInterface {
-  spec?: Dashboard;
+  spec?: App;
   onStateChange?: (state: VariableState) => void;
   onDataChange?: (data: MaticoDataState) => void;
-  onSpecChange?: (data: Dashboard) => void;
+  onSpecChange?: (data: App) => void;
   basename?: string;
   editActive?: boolean;
   datasetProviders?: Array<DatasetProvider>;

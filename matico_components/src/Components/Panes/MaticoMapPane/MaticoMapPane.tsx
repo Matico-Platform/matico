@@ -9,12 +9,12 @@ import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
+
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
   view: MaticoView;
   //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
   base_map?: any;
   layers?: Array<any>;
-  editPath?: string;
 }
 
 function getNamedStyleJSON(style: string) {
@@ -45,7 +45,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
   base_map,
   name,
   layers,
-  editPath,
+  id,
 }) => {
   const [mapLayers, setMapLayers] = useState([]);
   const edit = useIsEditable();
@@ -112,7 +112,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
       width="100%"
       height="100%"
       >
-      {edit && <ControlActionBar editPath={`${editPath}.Map`} editType="Map" actions={["edit", "delete"]} />}
+      {edit && <ControlActionBar targetId={id}  actions={["edit", "delete"]} />}
       {currentView && (
         <>
           <DeckGL

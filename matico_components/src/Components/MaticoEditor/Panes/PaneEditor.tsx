@@ -10,20 +10,21 @@ import {
   NumberField,
   Picker,
   ActionGroup,
-  Icon,
 } from "@adobe/react-spectrum";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import TextStyle from "@spectrum-icons/workflow/TextStyle";
+import {Layout, ScreenUnits} from "@maticoapp/matico_types/spec";
+import {PanePosition} from "@maticoapp/matico_spec";
 
 interface PaneEditorProps extends MaticoPaneInterface {
-  onChange: (update: MaticoPaneInterface) => void;
-  parentLayout: string;
+  onChange: (update: PanePosition) => void;
+  parentLayout: Layout;
 }
 
 interface PositionUnitEditorProps {
   label: string;
   value: number;
-  units: "Percent" | "Pixels";
+  units: ScreenUnits;
   onValueChange: (value: number) => void;
   onUnitsChange: (units: "Percent" | "Pixels") => void;
 }
@@ -126,9 +127,7 @@ const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> = ({
 
 export const PaneEditor: React.FC<PaneEditorProps> = ({
   position,
-  background,
   onChange,
-  name,
   parentLayout
 }) => {
   const isLinearLayout = parentLayout === 'linear'
@@ -138,44 +137,28 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
     // console.log("Name ", change);
     // console.log('POSITION', { ...position })
     onChange({
-      background,
       //@ts-ignore
       position: { ...position, ...change },
-      name,
     });
   };
 
-  const updateName = (newName: string) => {
-    onChange({
-      background,
-      position,
-      name: newName,
-    });
-  };
-  console.log('POSITION', position)
 
   return (
     <Flex direction="column" width="100%" height="100%">
       <Well>
         <Heading>Pane Details</Heading>
-        <TextField
-          width="100%"
-          label="name"
-          value={name}
-          onChange={(name: string) => updateName(name)}
-        />
         {isFreeLayout && <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="x"
             value={position.x}
-            units={position.x_units}
+            units={position.xUnits}
             onValueChange={(x) => updatePosition({ x })}
             onUnitsChange={(x_units) => updatePosition({ x_units })}
           />
           <PositionUnitEditor
             label="y"
             value={position.y}
-            units={position.y_units}
+            units={position.yUnits}
             onValueChange={(y) => updatePosition({ y })}
             onUnitsChange={(y_units) => updatePosition({ y_units })}
           />
@@ -184,14 +167,14 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
           <PositionUnitEditor
             label="width"
             value={position.width}
-            units={position.width_units}
+            units={position.widthUnits}
             onValueChange={(width) => updatePosition({ width })}
             onUnitsChange={(width_units) => updatePosition({ width_units })}
           />
           <PositionUnitEditor
             label="height"
             value={position.height}
-            units={position.height_units}
+            units={position.heightUnits}
             onValueChange={(height) => updatePosition({ height })}
             onUnitsChange={(height_units) => updatePosition({ height_units })}
           />
@@ -202,15 +185,15 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
         <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="Padding Top"
-            value={position.pad_top}
-            units={position.pad_units_top}
+            value={position.padTop}
+            units={position.padUnitsTop}
             onValueChange={(pad_top) => updatePosition({ pad_top })}
             onUnitsChange={(pad_units_top) => updatePosition({ pad_units_top })}
           />
           <PositionUnitEditor
             label="Padding Bottom"
-            value={position.pad_bottom}
-            units={position.pad_units_bottom}
+            value={position.padBottom}
+            units={position.padUnitsBottom}
             onValueChange={(pad_bottom) => updatePosition({ pad_bottom })}
             onUnitsChange={(pad_units_bottom) => updatePosition({ pad_units_bottom })}
           />
@@ -218,15 +201,15 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
         <TwoUpCollapsableGrid>
           <PositionUnitEditor
             label="Padding Left"
-            value={position.pad_left}
-            units={position.pad_units_left}
+            value={position.padLeft}
+            units={position.padUnitsLeft}
             onValueChange={(pad_left) => updatePosition({ pad_left })}
             onUnitsChange={(pad_units_left) => updatePosition({ pad_units_left })}
           />
           <PositionUnitEditor
             label="Padding Right"
-            value={position.pad_right}
-            units={position.pad_units_right}
+            value={position.padRight}
+            units={position.padUnitsRight}
             onValueChange={(pad_right) => updatePosition({ pad_right })}
             onUnitsChange={(pad_units_right) => updatePosition({ pad_units_right })}
           />

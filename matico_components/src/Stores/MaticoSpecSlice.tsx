@@ -1,210 +1,244 @@
 import { createSlice, PayloadAction, current } from "@reduxjs/toolkit";
-import { Dashboard, Page } from "@maticoapp/matico_spec";
-import _ from "lodash";
-import { Dataset } from "../Datasets/Dataset";
 import {
-  extractEditType,
-  getPathIndex,
-  getParentPath,
-  incrementName
-} from '../Utils/specUtils';
+    App,
+    Pane,
+    PaneRef,
+    Page,
+    Dataset
+} from "@maticoapp/matico_types/spec";
+import _ from "lodash";
+import { findPagesForPane } from "Utils/specUtils/specUtils";
+import { PanePosition } from "@maticoapp/matico_spec";
+
+export type EditElement = {
+    id?: string;
+    type: "page" | "pane" | "metadata" | "dataset" | "dataview" | "layer";
+};
 
 export interface SpecState {
-  spec: Dashboard | undefined;
-  editing: boolean;
-  currentEditPath?: string;
-  currentEditType?: string;
+    spec: App | undefined;
+    editing: boolean;
+    currentEditElement?: EditElement;
 }
 
 const initialState: SpecState = {
-  spec: undefined,
-  editing: false,
+    spec: undefined,
+    editing: false
+};
+
+export const findParent = (app: App, paneRefId: string) => {
+    const parent =
+        app.pages.find((page: Page) =>
+            page.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
+        ) ||
+        app.panes.find(
+            (pane: Pane) =>
+                pane.type === "container" &&
+                pane.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
+        );
+    return parent;
 };
 
 export const stateSlice = createSlice({
-  name: "variables",
-  initialState,
-  reducers: {
-    setEditing: (state, action: PayloadAction<boolean>) => {
-      state.editing = action.payload;
-    },
-    setSpec: (state, action: PayloadAction<Dashboard>) => {
-      state.spec = action.payload;
-    },
-    addDataset: (state, action: PayloadAction<{ dataset: Dataset }>) => {
-      state.spec.datasets.push(action.payload.dataset);
-    },
-    addPage: (state, action: PayloadAction<{ page: Page }>) => {
-      state.spec.pages.push(action.payload.page);
-    },
-    removePage: (state, action: PayloadAction<{ pageName: string }>) => {
-      const newPages = state.spec.pages.filter(
-        (p) => p.name !== action.payload.pageName
-      );
-      state.spec.pages = newPages;
-    },
-    setCurrentEditPath: (
-      state,
-      action: PayloadAction<{
-        editPath: string | null;
-        editType: string | null;
-      }>
-    ) => {
-      state.currentEditPath = action.payload.editPath;
-      state.currentEditType = action.payload.editType;
-    },
-    setSpecAtPath: (
-      state,
-      action: PayloadAction<{ editPath: string; update: any }>
-    ) => {
-      let newSpec = { ...state.spec };
-      if (action.payload.editPath === "") {
-        newSpec = { ...newSpec, ...action.payload.update };
-      } else {
-        newSpec = { ...state.spec };
-        const oldEntry = _.get(state.spec, action.payload.editPath);
-        _.set(newSpec, action.payload.editPath, {
-          ...oldEntry,
-          ...action.payload.update,
-        });
-      }
-      state.spec = newSpec;
-      console.log("New spec is ", newSpec);
-    },
-    deleteSpecAtPath: (state, action: PayloadAction<{ editPath: string }>) => {
-      // delete entry, but retains an empty objtect
-      const newSpec = { ...state.spec };
-      _.unset(newSpec, action.payload.editPath);
-      state.spec = newSpec;
-    },
-    removeSpecAtPath: (state, action: PayloadAction<{ editPath: string }>) => {
-      const newSpec = { ...state.spec };
-      const parentPath = getParentPath(action.payload.editPath);
-      const parentEntries = _.get(state.spec, parentPath);
-      const entryIndex = getPathIndex(action.payload.editPath);
+    name: "variables",
+    initialState,
+    reducers: {
+        setEditing: (state, action: PayloadAction<boolean>) => {
+            state.editing = action.payload;
+        },
+        setSpec: (state, action: PayloadAction<App>) => {
+            state.spec = action.payload;
+        },
+        addDataset: (state, action: PayloadAction<{ dataset: Dataset }>) => {
+            state.spec.datasets.push(action.payload.dataset);
+        },
+        addPage: (state, action: PayloadAction<{ page: Page }>) => {
+            state.spec.pages.push(action.payload.page);
+        },
+        removePage: (
+            state,
+            action: PayloadAction<{ id: string; removeOrphanPanes: boolean }>
+        ) => {
+            const { id, removeOrphanPanes } = action.payload;
+            const page = state.spec.pages.find((p: Page) => p.id === id);
 
-      parentEntries.splice(entryIndex, 1);
-      _.set(newSpec, parentPath, parentEntries);
-      
-      state.spec = newSpec;
-    },
-    reorderAtSpec: (state, action: PayloadAction<{ editPath: string, direction: string }>) => {
-      const newSpec = { ...state.spec };
-      const parentPath = getParentPath(action.payload.editPath);
-      const parentEntries = _.get(state.spec, parentPath);
-      const entryIndex = getPathIndex(action.payload.editPath);
+            if (removeOrphanPanes) {
+                let orphanPanes = page.panes.filter(
+                    (p: PaneRef) => findPagesForPane(state.spec, p).length === 0
+                );
+                orphanPanes.forEach((orphan: PaneRef) =>
+                    _.remove(state.spec.panes, (p: Pane) => p.id === orphan.id)
+                );
+            }
 
-      if (
-        (entryIndex === 0 && action.payload.direction === "forward") ||
-        (entryIndex === parentEntries.length - 1 && action.payload.direction === "backward")
-      ) {
-        return;
-      }
+            _.remove(state.spec.pages, (p: Page) => p.id === action.payload.id);
+        },
+        removePane: (state, action: PayloadAction<{ id: string }>) => {
+            _.remove(state.spec.pages, (p: Page) => p.id === action.payload.id);
+        },
+        setPaneOrderOnPage: (
+            state,
+            action: PayloadAction<{
+                pageId: string;
+                paneRef: PaneRef;
+                newIndex: number;
+            }>
+        ) => {
+            const page = state.spec.pages.find(
+                (p: Page) => p.id === action.payload.pageId
+            );
+            //TODO
+        },
 
-      const movingEntry = parentEntries.splice(entryIndex, 1)[0];
-      switch(action.payload.direction) {
-        case 'forward':
-          parentEntries.splice(entryIndex - 1, 0, movingEntry);
-          break;
-        case 'toFront':
-          parentEntries.splice(0, 0, movingEntry);
-          break;
-        case 'toBack':
-          parentEntries.splice(parentEntries.length, 0, movingEntry);
-          break;
-        case 'backward':
-          parentEntries.splice(entryIndex + 1, 0, movingEntry);
-          break;
-      }
-      _.set(newSpec, parentPath, parentEntries);
-      state.spec = newSpec;
+        addPaneToPage: (
+            state,
+            action: PayloadAction<{
+                pageId: string;
+                paneRef: PaneRef;
+                index?: number;
+            }>
+        ) => {
+            const page = state.spec.pages.find(
+                (p: Page) => p.id === action.payload.pageId
+            );
+            if (action.payload.index) {
+                page.panes.splice(
+                    action.payload.index,
+                    0,
+                    action.payload.paneRef
+                );
+            } else {
+                page.panes.push(action.payload.paneRef);
+            }
+        },
+        removePaneFromPage: (
+            state,
+            action: PayloadAction<{ pageId: string; paneRefId: string }>
+        ) => {
+            const page = state.spec.pages.find(
+                (p: Page) => p.id === action.payload.pageId
+            );
+            _.remove(
+                page.panes,
+                (p: PaneRef) => p.id === action.payload.paneRefId
+            );
+        },
+        addPaneRefToContainer: (
+            state,
+            action: PayloadAction<{
+                containerId: string;
+                paneRef: PaneRef;
+                index?: number;
+            }>
+        ) => {
+            const { containerId, paneRef, index } = action.payload;
+            const container = state.spec.panes.find(
+                (p: Pane) =>
+                    p.id == action.payload.containerId && p.type === "container"
+            );
+            if (index) {
+                //@ts-ignore
+                container.panes.splice(
+                    action.payload.index,
+                    0,
+                    action.payload.paneRef
+                );
+            } else {
+                //@ts-ignore
+                container.panes.push(action.payload.paneRef);
+            }
+        },
+        removePaneFromContainer: (
+            state,
+            action: PayloadAction<{ containerId: string; paneRefId: string }>
+        ) => {
+            const container = state.spec.panes.find(
+                (p: Pane) => p.id == action.payload.containerId
+            );
+            if (container && container.type === "container") {
+                _.remove(
+                    container.panes,
+                    (p: PaneRef) => p.id === action.payload.paneRefId
+                );
+            }
+        },
+        addPane:(
+          state,
+          action: PayloadAction<{pane:Pane}>
+        )=>{
+          state.spec.panes.push(action.payload.pane)
+        },
+        updatePaneDetails: (
+            state,
+            action: PayloadAction<{ id: string; update: Partial<Pane> }>
+        ) => {
+            let pane: Pane = state.spec.panes.find(
+                (p: Pane) => p.id === action.payload.id)
 
-    },
-    updateDatasetSpec:(
-      state,
-      action: PayloadAction<{name:string, datasetSpec:any}>)=>{
-        const {name,datasetSpec} = action.payload;
-        let datasetToUpdate = state.spec.datasets.find((d:any)=>Object.values(d)[0].name===name)
-        let dType = Object.keys(datasetToUpdate)[0]
-        let newDatasets = state.spec.datasets.map((d:any)=> Object.values(d)[0].name === name ? {[dType]: datasetSpec} : d )
-        state.spec.datasets=newDatasets;
-      }
-    ,
-    duplicateSpecAtPath: (
-      state,
-      action: PayloadAction<{ editPath: string }>
-    ) => { 
-      const newSpec = { ...state.spec };
-
-      const parentPath = getParentPath(action.payload.editPath);
-      const oldParentEntries = _.get(state.spec, parentPath);
-      const entryIndex = getPathIndex(action.payload.editPath);
-      const outerTagged = !('name' in oldParentEntries[entryIndex]);
-      //@ts-ignore
-      const takenNames = outerTagged
-        ? oldParentEntries.map(entry => Object.entries(entry)[0][1]?.name)
-        : oldParentEntries.map(entry => entry.name)
-      
-      const [
-        entryType,
-        entryContent
-      ] = outerTagged 
-        ? Object.entries(oldParentEntries[entryIndex])[0]
-        : [null, oldParentEntries[entryIndex]];
-      
-      const newEntry = 
-        outerTagged
-        ? {
-          [entryType]: {
-            ..._.cloneDeep(entryContent),
-            name:incrementName(entryContent.name, takenNames)
-          }
+            //@ts-ignore
+            pane = { ...pane, ...action.payload.update };
+        },
+        updatePageDetails: (
+            state,
+            action: PayloadAction<{ id: string; update: Partial<Page> }>
+        ) => {
+            let { id, update } = action.payload;
+            let page = state.spec.pages.find((p: Page) => p.id === id);
+            page = { ...page, ...update };
+        },
+        updatePanePosition: (
+            state,
+            action: PayloadAction<{
+                paneRefId: string;
+                update: Partial<PanePosition>;
+            }>
+        ) => {
+            const { paneRefId, update } = action.payload;
+            const parent = findParent(state.spec, paneRefId);
+            //@ts-ignore
+            parent.panes = parent.panes.map((p: PaneRef) =>
+                p.id === paneRefId
+                    ? { ...p, position: { ...p.position, ...update } }
+                    : p
+            );
+        },
+        setCurrentEditElement: (state, action: PayloadAction<EditElement>) => {
+            state.currentEditElement = action.payload;
+        },
+        updateDatasetSpec: (
+            state,
+            action: PayloadAction<{
+                name: string;
+                datasetSpec: Partial<Dataset>;
+            }>
+        ) => {
+            const { name, datasetSpec } = action.payload;
+            let datasetToUpdate = state.spec.datasets.find(
+                (d: Dataset) => d.name === name
+            );
+            //@ts-ignore
+            datasetToUpdate = { ...datasetToUpdate, ...datasetSpec };
         }
-        : {
-          ..._.cloneDeep(entryContent),
-          name:incrementName(entryContent.name, takenNames)
-        }
-      
-      _.set(newSpec, parentPath, [
-        ...oldParentEntries,
-        newEntry
-      ]);
-      
-      state.spec = newSpec;
-    },
-    reconcileSpecAtPath: (
-      state,
-      action: PayloadAction<{ editPath: string, update: any }>
-    ) => {
-      let newSpec = { ...state.spec };
-      if (action.payload.editPath === "") {
-        newSpec = { ...newSpec, ...action.payload.update };
-      } else {
-        newSpec = { ...state.spec };
-        const oldEntry = _.get(state.spec, action.payload.editPath);
-        _.set(newSpec, action.payload.editPath, 
-          _.merge(oldEntry, action.payload.update)
-        );
-      }
-      state.spec = newSpec;
-    },
-  },
+    }
 });
 
 export const {
-  setEditing,
-  setSpec,
-  addPage,
-  removePage,
-  setCurrentEditPath,
-  setSpecAtPath,
-  deleteSpecAtPath,
-  removeSpecAtPath,
-  duplicateSpecAtPath,
-  reconcileSpecAtPath,
-  reorderAtSpec,
-  updateDatasetSpec,
-  addDataset,
+    setEditing,
+    setSpec,
+    addPage,
+    removePage,
+    removePane,
+    addPaneToPage,
+    removePaneFromPage,
+    updateDatasetSpec,
+    updatePaneDetails,
+    updatePanePosition,
+    addDataset,
+    setCurrentEditElement,
+    addPane,
+    addPaneRefToContainer,
+    removePaneFromContainer,
+    updatePageDetails
 } = stateSlice.actions;
 
 export const selectSpec = (state: SpecState) => state.spec;

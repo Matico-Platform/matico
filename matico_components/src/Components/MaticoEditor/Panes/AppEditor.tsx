@@ -12,13 +12,8 @@ import {
   DialogTrigger,
 } from "@adobe/react-spectrum";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import {
-  setCurrentEditPath,
-  setSpecAtPath,
-  addPage,
-} from "Stores/MaticoSpecSlice";
-import { useMaticoSelector, useMaticoDispatch } from "Hooks/redux";
-import { PaneDefaults } from "../PaneDefaults";
+import {Page} from "@maticoapp/matico_types/spec";
+import {useApp} from "Hooks/useApp";
 
 interface AddPageModalProps {
   onAddPage: (pageName: string) => void;
@@ -83,38 +78,16 @@ const AddPageModal: React.FC<AddPageModalProps> = ({
 interface AppEditorProps {}
 
 export const AppEditor: React.FC<AppEditorProps> = () => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
-  const dispatch = useMaticoDispatch();
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const {pages, addPage, removePage, setEditPage} = useApp();
 
   // console.log("Spec is ", spec);
 
-  const app = spec;
-  const pages = app.pages;
-  const editPath = "";
-
   const addNewPage = (pageName: string) => {
-    const firstPage = pages.length === 0;
-    const pageNo = firstPage ? 0 : Math.max(...pages.map((p) => p.order)) + 1;
-
-    dispatch(
-      addPage({
-        //@ts-ignore
-        page: {
-          name: pageName,
-          content: ``,
-          path: "/" + pageName.split(" ").join("_"),
-          icon: firstPage ? "Home" : "Page",
-          //@ts-ignore
-          order: pageNo,
-          sections: [],
-        },
-      })
-    );
+    addPage(pageName, {'type':"free"})
   };
 
   const validatePageName = (name: string) => {
-    if (pages.find((f) => f.name === name)) {
+    if (pages.find((p:Page) => p.name === name)) {
       return false;
     }
     return true;
@@ -133,12 +106,15 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
           </Flex>
         </Heading>
         <Flex marginBottom={"size-200"} direction="column">
-          {pages.map((page, index) => (
+          {pages.map((page:Page) => (
             <RowEntryMultiButton
               key={page.name}
               entryName={page.name}
-              editPath={`pages.${index}`}
-              editType={"Page"}
+              onRemove={() => removePage(page.id)}
+              onLower={() => {} }
+              onRaise={() => {} }
+              onDuplicate={() => {} } 
+              onSelect={ () => setEditPage(page.id) } 
             />
           ))}
         </Flex>
