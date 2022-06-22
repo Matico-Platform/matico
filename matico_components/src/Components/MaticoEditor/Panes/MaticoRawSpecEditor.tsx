@@ -9,7 +9,12 @@ import { useAppSpec } from "Hooks/useAppSpec";
 import { useMaticoDispatch } from "Hooks/redux";
 import { setSpec } from "Stores/MaticoSpecSlice";
 import { json_error_to_annotation } from "../Utils/Utils";
-import { Flex, ProgressCircle, Text, View, Well } from "@adobe/react-spectrum";
+import { Flex, Heading, ProgressCircle, Text, View, Well } from "@adobe/react-spectrum";
+
+import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/theme-tomorrow_night";
+import "ace-builds/src-noconflict/ext-language_tools"
+
 
 export const MaticoRawSpecEditor: React.FC = () => {
   const [code, setCode] = useState<string>();
@@ -68,22 +73,28 @@ export const MaticoRawSpecEditor: React.FC = () => {
   if (!validatorReady) return <ProgressCircle aria-label="Loading…" isIndeterminate />;
   return (
     <Flex direction="column" minHeight={{L:"95vh",M:"95vh",S:"35vh",base:"35vh"}} height="auto" position="relative">
+      <Heading
+        margin="size-150"
+        alignSelf="start"
+      >
+        Matico Specification
+        </Heading>
       <AceEditor
-        mode={"json"}
-        theme="github"
+        mode="json"
+        theme="tomorrow_night"
         onChange={(changes: any) => setCode(changes)}
         value={code}
-        fontSize={20}
+        fontSize={12}
         annotations={annotations}
         style={{
           width: "100%",
           height: "auto",
-          flex: 1,
+          flex: 1
         }}
         setOptions={{
           enableBasicAutocompletion: true,
           enableLiveAutocompletion: true,
-          enableSnippets: true,
+          enableSnippets: true
         }}
       />
       {(!!jsonError || !!validationResult) && (

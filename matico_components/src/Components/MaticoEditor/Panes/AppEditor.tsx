@@ -80,8 +80,6 @@ interface AppEditorProps {}
 export const AppEditor: React.FC<AppEditorProps> = () => {
   const {pages, addPage, removePage, setEditPage} = useApp();
 
-  // console.log("Spec is ", spec);
-
   const addNewPage = (pageName: string) => {
     addPage(pageName, {'type':"free"})
   };

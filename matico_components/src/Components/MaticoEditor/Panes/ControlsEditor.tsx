@@ -22,6 +22,8 @@ import SwitchIcon from "@spectrum-icons/workflow/Switch";
 import MenuIcon from "@spectrum-icons/workflow/Menu";
 import {usePane} from 'Hooks/usePane'
 import {Control, ControlsPane, PaneRef} from "@maticoapp/matico_types/spec";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { DetailsEditor } from "./DetailsEditor";
 
 interface AddControlModalProps {
     onAddControl: (name: string, controlType: string) => void;
@@ -160,7 +162,7 @@ const AddControlModal: React.FC<AddControlModalProps> = ({
     };
     return (
         <DialogTrigger type="popover" isDismissable>
-            <ActionButton isQuiet>Add</ActionButton>
+            <ActionButton width="100%">Add New Control</ActionButton>
             {(close: any) => (
                 <Dialog>
                     <Heading>Select control to add</Heading>
@@ -207,9 +209,7 @@ export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
-    const {pane, updatePane, updatePanePosition, removePane, parent } = usePane(paneRef)
-
-
+    const {pane, updatePane, updatePanePosition,  parent } = usePane(paneRef)
     const controlsPane = pane as ControlsPane;
 
     const handleAddControl = (
@@ -272,28 +272,25 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
 
     return (
         <Flex direction="column">
-            <PaneEditor
-              position={paneRef.position}
-              name={pane.name}
-              background={"white"}
-              onChange={updatePanePosition} 
-              parentLayout={parent.layout} 
-              id={paneRef.id}
-            />
-            <Well>
-                <Heading>
-                    <Flex
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="end"
-                    >
-                        <Text>Controls</Text>
-                        <AddControlModal onAddControl={handleAddControl} />
-                    </Flex>
-                </Heading>
-                {
-                  // @ts-ignore
-                  pane.controls.map((control, index) => {
+            <CollapsibleSection title="Details" isOpen={true}>
+                <DetailsEditor
+                    pane={pane}
+                    updatePane={updatePane}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Sizing" isOpen={true}>
+              <PaneEditor
+                position={paneRef.position}
+                name={pane.name}
+                background={"white"}
+                onChange={updatePanePosition} 
+                parentLayout={parent.layout} 
+                id={paneRef.id}
+              />
+            </CollapsibleSection>
+            <CollapsibleSection title="Controls" isOpen={true}>
+                <AddControlModal onAddControl={handleAddControl} />
+                {controlsPane.controls.map((control: any, index: number) => {
                     const [controlType, controlConfig] =
                         Object.entries(control)[0];
                     return (
@@ -330,7 +327,7 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
                         />
                     );
                 })}
-            </Well>
+            </CollapsibleSection>
         </Flex>
     );
 };

@@ -179,7 +179,7 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
 
   let c= generateColor(colorVar, alpha);
   c[3]= c[3]*255
-  return c
+  return () => c
 };
 
 export const getColorScale = (range: any) => {

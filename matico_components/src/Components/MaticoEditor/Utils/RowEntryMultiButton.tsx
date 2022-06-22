@@ -11,7 +11,9 @@ import {
     ActionGroup,
     Item,
     Text,
-    Well
+    Well,
+    Divider,
+    DialogContainer
 } from "@adobe/react-spectrum";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
@@ -40,13 +42,9 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
     onLower,
     onRaise,
     onDuplicate
-}): any => {
-
-    return (
+}) => {
+   return (
         <View
-            // UNSAFE_style={{
-            //   padding: compact ? ".25em 1em" : "inherit",
-            // }}
             paddingX="size-150"
             paddingY={compact ? "size-50" : "size-100"}
             marginTop="size-100"

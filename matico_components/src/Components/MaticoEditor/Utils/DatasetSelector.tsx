@@ -24,7 +24,9 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
       selectedKey={selectedDataset}
       onSelectionChange={(dataset) => onDatasetSelected(dataset as string)}
       label={label ?? "Dataset"}
+      labelPosition="side"
       description={description}
+      marginY="size-50"
       width="100%"
     >
       {(dataset) => <Item key={dataset.name}>{dataset.name}</Item>}

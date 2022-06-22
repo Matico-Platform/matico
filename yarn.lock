@@ -3668,6 +3668,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@math.gl/web-mercator@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@math.gl/web-mercator@npm:3.6.0"
+  dependencies:
+    "@babel/runtime": ^7.12.0
+    gl-matrix: ^3.4.0
+  checksum: 62078a6b42c80c16cd36b588f4a8710b4f8603d569dc1a5bebdaf03b1cf8484aefa3a5322fbf2a5d733dd7c9f9e6908e0221e86081d74b8f47fc5d51c876f3b1
+  languageName: node
+  linkType: hard
+
 "@maticoapp/matico_charts@workspace:matico_charts":
   version: 0.0.0-use.local
   resolution: "@maticoapp/matico_charts@workspace:matico_charts"
@@ -3719,12 +3729,14 @@ __metadata:
     "@loaders.gl/wkt": 3.0.11
     "@luma.gl/core": ^8.5.10
     "@mapbox/rehype-prism": ^0.8.0
+    "@math.gl/web-mercator": ^3.6.0
     "@maticoapp/matico_charts": "workspace:matico_charts"
     "@maticoapp/matico_spec": "workspace:matico_spec/pkg"
     "@maticoapp/matico_types": "workspace:matico_types"
     "@parcel/transformer-react-refresh-wrap": ^2.0.0
     "@react-hook/resize-observer": ^1.2.4
     "@react-spectrum/color": 3.0.0-beta.6
+    "@react-types/shared": ^3.13.1
     "@reduxjs/toolkit": ^1.6.2
     "@spectrum-icons/workflow": ^3.2.1
     "@swc/helpers": ^0.2.13
@@ -3741,7 +3753,9 @@ __metadata:
     "@types/traverse": ^0.6.32
     "@types/uuid": ^8.3.4
     "@uiw/react-md-editor": ^3.7
+    "@visx/geo": ^2.10.0
     "@visx/legend": ^2.10.0
+    "@visx/responsive": ^2.10.0
     "@visx/scale": ^2.2.2
     "@visx/shape": ^2.10.0
     ace-builds: ^1.4.13
@@ -3752,6 +3766,7 @@ __metadata:
     chroma-js: ^2.1.2
     comlink: ^4.3.1
     d3-array: ^3.1.1
+    d3-geo: ^3.0.1
     d3-scale: ^4.0.2
     deck.gl: ^8.6.0
     esbuild: ^0.14.5
@@ -3765,6 +3780,7 @@ __metadata:
     polished: ^4.1.3
     query-string: ^7.0.1
     react-ace: ^9.5.0
+    react-click-away-listener: ^2.2.1
     react-color: ^2.19.3
     react-dom: ^17.0.2
     react-draggable: ^4.4.4
@@ -7743,6 +7759,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-types/button@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "@react-types/button@npm:3.5.1"
+  dependencies:
+    "@react-types/shared": ^3.13.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 9ca5e4e8f4df30f1a52f6c60a93a78e70c15087ad1616de79ca5a8818794d2d8e4312d2f83d6fea2f4dcf38c19fe0ce83d3488f754c49db67e3fee2acbf855f0
+  languageName: node
+  linkType: hard
+
 "@react-types/buttongroup@npm:^3.1.2":
   version: 3.1.2
   resolution: "@react-types/buttongroup@npm:3.1.2"
@@ -8117,6 +8144,15 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1
   checksum: 6c4b7c6d43f84994521c4780f3b969a70c6b2ce69892f03c309f88b5d5d3c862a1a0d07f6060f9f650dbdd834cd16568db957c03543028eb8e52eb7dc97c58ea
+  languageName: node
+  linkType: hard
+
+"@react-types/shared@npm:^3.13.1":
+  version: 3.13.1
+  resolution: "@react-types/shared@npm:3.13.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 61eb674df29502292f7664aee55fa230609310a6cb92b5c07052155a50772e5407464a898c1dbaf6cbff7018ed26fa83045f78af557fbdc0a9c3df4994434b2e
   languageName: node
   linkType: hard
 
@@ -10115,6 +10151,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/d3-geo@npm:^1.11.1":
+  version: 1.12.3
+  resolution: "@types/d3-geo@npm:1.12.3"
+  dependencies:
+    "@types/geojson": "*"
+  checksum: f06fde83cae3ff5915a1dcc5ce5600c4a8212296d6cc14246081524c44d82cd93e3734246726c1eaed5800ac2d8155bfe2648ba573f25fa8082a91ec44f61768
+  languageName: node
+  linkType: hard
+
 "@types/d3-interpolate@npm:^1.3.1":
   version: 1.4.2
   resolution: "@types/d3-interpolate@npm:1.4.2"
@@ -11319,6 +11364,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@visx/geo@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "@visx/geo@npm:2.10.0"
+  dependencies:
+    "@types/d3-geo": ^1.11.1
+    "@types/geojson": "*"
+    "@types/react": "*"
+    "@visx/group": 2.10.0
+    classnames: ^2.3.1
+    d3-geo: ^1.11.3
+    prop-types: ^15.5.10
+  peerDependencies:
+    react: ^16.3.0-0 || ^17.0.0-0 || ^18.0.0-0
+  checksum: 9eeccd265b2cdc74e5fd8c96fc91934d17a6839b723602a07a3787327e630d6e9469d49cb7b2c248d9955e3b7a61058696b9d4238c4536309aad3135c9f88dea
+  languageName: node
+  linkType: hard
+
 "@visx/grid@npm:^2.6.0":
   version: 2.6.0
   resolution: "@visx/grid@npm:2.6.0"
@@ -11409,6 +11471,21 @@ __metadata:
   version: 2.6.0
   resolution: "@visx/point@npm:2.6.0"
   checksum: 56be8e31abaf10a182d328141a0929ea28d2956d4c06469fc51cde3f30f64ae035aaa0771f44010c3484ae63c7cd1bc9b782cde6cfcf9713190c20b301ab181e
+  languageName: node
+  linkType: hard
+
+"@visx/responsive@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "@visx/responsive@npm:2.10.0"
+  dependencies:
+    "@juggle/resize-observer": ^3.3.1
+    "@types/lodash": ^4.14.172
+    "@types/react": "*"
+    lodash: ^4.17.21
+    prop-types: ^15.6.1
+  peerDependencies:
+    react: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
+  checksum: 05271fe02c7fbf76ccb727694ebb418c79e9cce597804086d2a4523360f58af522ffb9a0f58acaa35c46c72fec569ff92833ed22671fdea09a7666f1fed80184
   languageName: node
   linkType: hard
 
@@ -16345,12 +16422,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-geo@npm:3":
+"d3-geo@npm:3, d3-geo@npm:^3.0.1":
   version: 3.0.1
   resolution: "d3-geo@npm:3.0.1"
   dependencies:
     d3-array: 2.5.0 - 3
   checksum: e0f7e6a2f0d4c26efe08a7aa2c40b9a1a5a037220c6aaa51fb527035597e6e8841222b433e5681f9b5588b5b6f9a1c2d7f032a76ccbac3a17b0c1cbfffd05c1b
+  languageName: node
+  linkType: hard
+
+"d3-geo@npm:^1.11.3":
+  version: 1.12.1
+  resolution: "d3-geo@npm:1.12.1"
+  dependencies:
+    d3-array: 1
+  checksum: 8ede498e5fce65c127403646f5cc6181a858a1e401e23e2856ce50ad27e6fdf8b49aeb88d2fad02696879d5825a45420ca1b5db9fa9c935ee413fe15b5bc37c4
   languageName: node
   linkType: hard
 
@@ -20636,7 +20722,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.2.0, gl-matrix@npm:^3.2.1, gl-matrix@npm:^3.3.0":
+"gl-matrix@npm:^3.0.0, gl-matrix@npm:^3.2.0, gl-matrix@npm:^3.2.1, gl-matrix@npm:^3.3.0, gl-matrix@npm:^3.4.0":
   version: 3.4.3
   resolution: "gl-matrix@npm:3.4.3"
   checksum: c47830ba727f3d0fab635c48135af96aef66274079a3e0afd6f68b68c98eae9fc1bcfdc7312fe2301e4fd22dd24c5e0f1b5d025960a208e50d07101ed8d940f9
@@ -25500,6 +25586,7 @@ __metadata:
     "@nebula.gl/layers": ^1.0.2-alpha.1
     "@nebula.gl/overlays": ^1.0.2-alpha.1
     "@parcel/transformer-react-refresh-wrap": ^2.0.0
+    "@react-types/button": ^3.5.1
     "@zip.js/zip.js": ^2.4.9
     concurrently: ^6.3.0
     immer: ^9.0.6
@@ -30673,6 +30760,16 @@ __metadata:
     lodash.flow: ^3.3.0
     pure-color: ^1.2.0
   checksum: 00a12dddafc8a9025cca933b0dcb65fca41c81fa176d1fc3a6a9d0242127042e2c0a604f4c724a3254dd2c6aeb5ef55095522ff22f5462e419641c1341a658e4
+  languageName: node
+  linkType: hard
+
+"react-click-away-listener@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "react-click-away-listener@npm:2.2.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: e28a822ef65cade5a76affd6ba44aeaa848e9434190c5bc33f8660ff503dd1fa603c52038142eb88b00918bbf9c309bad4c60ae9539fe80e5ef9463da46b020b
   languageName: node
   linkType: hard
 

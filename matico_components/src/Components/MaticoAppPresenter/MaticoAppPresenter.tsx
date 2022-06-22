@@ -18,12 +18,20 @@ interface MaticoAppPresenterProps {
     basename?: string;
     onStateChange?: (state: VariableState) => void;
     onDataChange?: (data: MaticoDataState) => void;
+    maxDimensions?: {
+        height: number|null,
+        width: number|null
+    }
 }
 
 export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     spec,
     basename,
-    onStateChange
+    onStateChange,
+    maxDimensions = {
+        height: null,
+        width: null
+    }
 }) => {
     const dispatch = useMaticoDispatch();
 
@@ -57,13 +65,18 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
             {appSpec && (
                 <Grid
                     areas={["nav main"]}
-                    gridArea={"viewer"}
                     columns={[
                         "static-size-900",
                         "calc(100% - static-size-900)"
                     ]}
                     rows={["flex"]}
+                    gridArea={"viewer"}
                     height="100%"
+                    maxWidth={maxDimensions.width ? `${maxDimensions.width}px` : "100%"}
+                    maxHeight={maxDimensions.height ? `${maxDimensions.height}px` : "100%"}
+                    margin="0 auto"
+                    width="100%"
+                    
                 >
                     <View gridArea="nav">
                         <MaticoNavBar pages={appSpec.pages} />

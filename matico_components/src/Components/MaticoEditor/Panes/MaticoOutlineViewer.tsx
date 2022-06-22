@@ -73,5 +73,5 @@ export const MaticoOutlineViewer: React.FC = () => {
             />
         })
     },[JSON.stringify(pages)])
-    return <View>{...rowComponents}</View>;
+    return <View maxWidth={"100%"}>{...rowComponents}</View>;
 };

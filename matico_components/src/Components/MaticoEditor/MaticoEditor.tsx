@@ -55,12 +55,12 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   }, [editActive]);
 
 
-  useEffect(()=>{
-    if(editActive){
+  useEffect(() => {
+    if (editActive) {
       setTabKey("Components")
     }
 
-  },[editActive,currentEditPath])
+  }, [editActive, currentEditPath])
   //@ts-ignore
   const EditPane = currentEditPath ? Editors[currentEditType] : AppEditor;
 
@@ -74,38 +74,9 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   };
 
   return ( //@ts-ignore
-    <Tabs selectedKey={tabKey} onSelectionChange={setTabKey}>
-      <TabList>
-        <Item key="Components">Components</Item>
-        <Item key="Datasets">Datasets</Item>
-        <Item key="Outline">Outline</Item>
-        <Item key="Specification">Specification</Item>
-        <Item key="State">State</Item>
-      </TabList>
-      <View overflow={"hidden auto"} height={height}>
-        <TabPanels>
-          <Item key="Components">
-            <Flex height="100%" width="100%" direction="column">
-              <BreadCrumbs editPath={currentEditPath} />
-              <View flex="1">
-                <EditPane editPath={currentEditPath} />
-              </View>
-            </Flex>
-          </Item>
-          <Item key="Datasets">
-            <DatasetsEditor datasetProviders={datasetProviders} />
-          </Item>
-          <Item key="Outline">
-            <MaticoOutlineViewer />
-          </Item>
-          <Item key="Specification">
-            <MaticoRawSpecEditor />
-          </Item>
-          <Item key="State">
-            <MaticoStateViewer />
-          </Item>
-        </TabPanels>
-      </View>
-    </Tabs>
+
+    <View overflow={"hidden auto"} height={height} paddingTop="3em">
+      <EditPane editPath={currentEditPath} />
+    </View>
   );
 };

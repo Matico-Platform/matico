@@ -10,6 +10,7 @@ import {
 } from "@adobe/react-spectrum";
 import chroma from 'chroma-js'
 import { ColorSlider } from "@react-spectrum/color";
+import ColorFill from '@spectrum-icons/workflow/ColorFill';
 
 interface ColorPickerDialogInterface {
   // label: string;
@@ -20,7 +21,7 @@ interface ColorPickerDialogInterface {
 }
 
 export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
-color, onColorChange, height="size-300", width="size-600" }) => {
+color, onColorChange, height="size-400", width="size-600" }) => {
   let chromaColor;
 
   if (Array.isArray(color)) {
@@ -47,8 +48,15 @@ color, onColorChange, height="size-300", width="size-600" }) => {
 
   return (
     <DialogTrigger type="popover">
-      <View width={width} height={height} UNSAFE_style={{backgroundColor : spectrumColor}}>
-        <ActionButton width="100%" height="100%" staticColor="white"></ActionButton>
+      <View 
+        width={'100%'} 
+        height={height}
+        UNSAFE_style={{backgroundColor : spectrumColor}}
+        >
+        <ActionButton width="100%" height="100%" staticColor="white">
+          <ColorFill size="S" />
+          <Text>Select Color</Text>
+        </ActionButton>
       </View>
       {(close) => (
         <Dialog>
