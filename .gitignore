@@ -15,3 +15,5 @@ dist/
 .netlify
 matico_charts/package-lock.json
 .vscode/settings.json
+matico_spec/bindings
+matico_common
