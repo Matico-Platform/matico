@@ -126,8 +126,8 @@ struct Source {
 }
 
 #[derive(Deserialize, Debug)]
-struct ColumnSelection{
-    pub columns : Option<String>
+struct ColumnSelection {
+    pub columns: Option<String>,
 }
 
 // {source_type}/{source_id}
@@ -148,17 +148,15 @@ async fn get_data(
     let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
-    query.page(page)
-         .bounds(bounds)
-         .sort(sort);
+    query.page(page).bounds(bounds).sort(sort);
 
     if let Some(user) = user {
         query.user(user);
     }
 
     //Must be a better way of doing this
-    if let Some(columns) = columns.columns{
-        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+    if let Some(columns) = columns.columns {
+        let cols: Vec<String> = columns.split(",").map(|s| String::from(s)).collect();
         query.columns(cols);
     }
 
@@ -190,8 +188,8 @@ async fn get_tile(
     }
 
     //Must be a better way of doing this
-    if let Some(columns) = columns.columns{
-        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+    if let Some(columns) = columns.columns {
+        let cols: Vec<String> = columns.split(",").map(|s| String::from(s)).collect();
         query.columns(cols);
     }
 
@@ -201,10 +199,9 @@ async fn get_tile(
     Ok(HttpResponse::Ok().body(result.mvt))
 }
 
-
-#[derive(Serialize,Deserialize)]
-struct FeatureDetails{
-    pub feature_id: i32 
+#[derive(Serialize, Deserialize)]
+struct FeatureDetails {
+    pub feature_id: i32,
 }
 
 #[tracing::instrument(
@@ -227,7 +224,6 @@ async fn get_feature(
     web::Query(columns): web::Query<ColumnSelection>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-
     println!("HERE!!!!!!!");
 
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
@@ -238,13 +234,17 @@ async fn get_feature(
     }
 
     //Must be a better way of doing this
-    if let Some(columns) = columns.columns{
-        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+    if let Some(columns) = columns.columns {
+        let cols: Vec<String> = columns.split(",").map(|s| String::from(s)).collect();
         query.columns(cols);
     }
 
     let feature = query
-        .get_feature(&state.data_db, feature_id.feature_id, Some("ogc_fid".into()))
+        .get_feature(
+            &state.data_db,
+            feature_id.feature_id,
+            Some("ogc_fid".into()),
+        )
         .await?;
 
     let result = QueryResult {
@@ -275,7 +275,9 @@ async fn get_extent(
         query.user(user);
     }
 
-    let extent = query.get_extent(&state.data_db, "wkb_geometry".into()).await?;
+    let extent = query
+        .get_extent(&state.data_db, "wkb_geometry".into())
+        .await?;
 
     Ok(HttpResponse::Ok().json(extent))
 }
@@ -361,7 +363,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
         .to(get_column),
     );
     cfg.service(
-        resource(["{source_type}/{source_id}/feature/{feature_id}", "{source_type}/feature/{feature_id}"]).to(get_feature)
+        resource([
+            "{source_type}/{source_id}/feature/{feature_id}",
+            "{source_type}/feature/{feature_id}",
+        ])
+        .to(get_feature),
     );
     cfg.service(
         resource([

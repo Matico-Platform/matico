@@ -6,7 +6,7 @@ use crate::{
     utils::{MVTTile, PaginationParams, QueryMetadata, SortParams},
 };
 use async_trait::async_trait;
-use std::collections::{HashMap,BTreeMap};
+use std::collections::{BTreeMap, HashMap};
 
 use super::{Bounds, Filter, QueryResult, QueryVal, TileID, TilerOptions};
 
@@ -45,9 +45,8 @@ pub trait QueryBuilder<T> {
     /// within that tile ID
     fn tile(&mut self, tile: TileID) -> &mut Self;
 
-
-    /// Set the columns to return from the query 
-    fn columns(&mut self, columns: Vec<String>)->&mut Self;
+    /// Set the columns to return from the query
+    fn columns(&mut self, columns: Vec<String>) -> &mut Self;
 
     /// This function should construct the base query depending on pervious config
     /// For example if a Dataset is passed the base query should select from that base datasource

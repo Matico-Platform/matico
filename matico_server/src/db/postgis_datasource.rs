@@ -49,20 +49,20 @@ pub struct TileID {
 }
 
 fn row_to_map(row: PgRow) -> BTreeMap<String, Option<QueryVal>> {
-    let mut hash: BTreeMap<String,Option<QueryVal>> = BTreeMap::new();
-    for (index,col) in row.columns().iter().enumerate() {
+    let mut hash: BTreeMap<String, Option<QueryVal>> = BTreeMap::new();
+    for (index, col) in row.columns().iter().enumerate() {
         let type_info: &PgTypeInfo = col.type_info();
         // info!("Column type is {:#?} {:#?}", type_info, type_info.name() );
         let val: Option<QueryVal> = match type_info.name() {
-             "INT2" | "INT4" => {
+            "INT2" | "INT4" => {
                 let val: Option<i32> = row.get(col.name());
-                let val =val.map(|c| c as i64);
+                let val = val.map(|c| c as i64);
                 val.map(|v| QueryVal::Int(v))
             }
-             "INT8"  => {
+            "INT8" => {
                 let val: Option<i64> = row.get(col.name());
                 val.map(|v| QueryVal::Int(v))
-             }
+            }
             "FLOAT4" | "FLOAT8" => {
                 let val: Option<f64> = row.get(col.name());
                 val.map(|v| QueryVal::Float(v))
@@ -99,7 +99,7 @@ pub struct PostgisQueryBuilder {
     api: Option<Api>,
     api_params: Option<HashMap<String, serde_json::Value>>,
     query: Option<String>,
-    columns:Option<Vec<String>>,
+    columns: Option<Vec<String>>,
     filters: Option<Vec<Filter>>,
     user: Option<User>,
     bounds: Option<Bounds>,
@@ -163,7 +163,7 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
     }
 
     fn columns(&mut self, columns: Vec<String>) -> &mut Self {
-        self.columns= Some(columns);
+        self.columns = Some(columns);
         self
     }
 
@@ -205,9 +205,13 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
             base_query = format!("{} {}", base_query, page)
         };
 
-        if let Some(columns) = &self.columns{
-            let col_string = columns.iter().map(|c| format!("\"{}\"",c)).collect::<Vec<String>>().join(",");
-            base_query = format!("select {} from  ({}) as final",col_string , base_query );
+        if let Some(columns) = &self.columns {
+            let col_string = columns
+                .iter()
+                .map(|c| format!("\"{}\"", c))
+                .collect::<Vec<String>>()
+                .join(",");
+            base_query = format!("select {} from  ({}) as final", col_string, base_query);
         }
         Ok(base_query)
     }
@@ -326,7 +330,7 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
             id = feature_id
         );
 
-        tracing::info!("Query is {}",query );
+        tracing::info!("Query is {}", query);
 
         let result = sqlx::query(&query)
             .map(row_to_map)

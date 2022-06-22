@@ -4,8 +4,8 @@ extern crate syn;
 extern crate quote;
 use proc_macro::TokenStream;
 
-use syn::parse::Parser ;
-use syn::{Field,parse_macro_input, };
+use syn::parse::Parser;
+use syn::{parse_macro_input, Field};
 
 use syn::DeriveInput;
 
@@ -28,44 +28,54 @@ pub fn derive_auto_complete(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
+pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(input as DeriveInput);
 
-    // modify the struct deff to include the params we need 
-    let out_ast = match &mut ast.data {
-        syn::Data::Struct(ref mut struct_data) => {           
-            match &mut struct_data.fields {
-                syn::Fields::Named(fields) => {
-                        fields.named.push(Field::parse_named.parse2(quote!{
-                            pub parameter_values: HashMap<String,ParameterValue>
-                        }).unwrap());
+    // modify the struct deff to include the params we need
+    let out_ast =
+        match &mut ast.data {
+            syn::Data::Struct(ref mut struct_data) => {
+                match &mut struct_data.fields {
+                    syn::Fields::Named(fields) => {
+                        fields.named.push(
+                            Field::parse_named
+                                .parse2(quote! {
+                                    pub parameter_values: HashMap<String,ParameterValue>
+                                })
+                                .unwrap(),
+                        );
 
-                        fields.named.push(Field::parse_named.parse2(quote!{
-                            pub description: Option<String> 
-                        }).unwrap());
+                        fields.named.push(
+                            Field::parse_named
+                                .parse2(quote! {
+                                    pub description: Option<String>
+                                })
+                                .unwrap(),
+                        );
 
                         fields.named.push(Field::parse_named.parse2(quote!{
                             pub options: ::std::collections::BTreeMap<String, ParameterOptions>
                         }).unwrap());
 
-                        fields.named.push(Field::parse_named.parse2(quote!{
-                            #[serde(skip)]
-                            pub tables:HashMap<String, (Schema, Vec<Chunk<Arc<dyn Array>>>)>
-                        }).unwrap())
-
-                },
-                _ => {
-                    ()
+                        fields.named.push(
+                            Field::parse_named
+                                .parse2(quote! {
+                                    #[serde(skip)]
+                                    pub tables:HashMap<String, (Schema, Vec<Chunk<Arc<dyn Array>>>)>
+                                })
+                                .unwrap(),
+                        )
+                    }
+                    _ => (),
                 }
+                ast
             }
-            ast    
-        }
-        _ => panic!("`add_field` has to be used with structs "),
-    };
+            _ => panic!("`add_field` has to be used with structs "),
+        };
 
     let name = &out_ast.ident;
 
-    let impl_result = quote!{
+    let impl_result = quote! {
         impl MaticoAnalysis for #name{
                 fn get_parameter(&self, parameter_name: &str) -> Result<&::matico_analysis::ParameterValue, ::matico_analysis::ArgError> {
                     self.parameter_values
@@ -111,11 +121,11 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
 
     };
 
-    let interface_name = format!("{}Interface",name);
+    let interface_name = format!("{}Interface", name);
 
-    let interface_name  = syn::Ident::new(interface_name.as_str(), proc_macro2::Span::call_site() );
+    let interface_name = syn::Ident::new(interface_name.as_str(), proc_macro2::Span::call_site());
 
-    let wasm_interface= quote!{
+    let wasm_interface = quote! {
         #[wasm_bindgen]
         pub struct #interface_name{
             analysis: #name
@@ -126,7 +136,7 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
            pub fn new()->Self{
                Self{
                     analysis: #name::new()
-               } 
+               }
            }
 
            pub fn run(&mut self)->Result<Vec<u8>, ::wasm_bindgen::JsValue>{
@@ -134,7 +144,7 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                self.analysis.run()
                    .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
-           
+
            pub fn options(&self)->::wasm_bindgen::JsValue{
                 ::wasm_bindgen::JsValue::from_serde(&self.analysis.options).unwrap()
            }
@@ -151,7 +161,7 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
 
            pub fn get_parameter(&self, name: &str)->Result<::wasm_bindgen::JsValue, ::wasm_bindgen::JsValue>{
                let val = self.analysis.get_parameter(name)
-                            .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())?; 
+                            .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())?;
                Ok(::wasm_bindgen::JsValue::from_serde(val).unwrap())
            }
 
@@ -162,8 +172,7 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
         }
     };
 
-
-    let impl_new = quote!{
+    let impl_new = quote! {
         impl #name{
             fn new()->Self{
                 Self{
@@ -171,19 +180,19 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
                     options: Self::options(),
                     description: Self::description(),
                     tables: HashMap::new()
-                } 
+                }
             }
         }
     };
 
-    let mut output : TokenStream = quote!{
+    let mut output: TokenStream = quote! {
         #[derive(Serialize,Deserialize)]
         #out_ast
-    }.into();
+    }
+    .into();
 
     output.extend(TokenStream::from(impl_result));
     output.extend(TokenStream::from(impl_new));
     output.extend(TokenStream::from(wasm_interface));
     output
-
 }
