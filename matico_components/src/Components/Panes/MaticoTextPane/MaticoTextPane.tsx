@@ -1,10 +1,9 @@
 import React from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { MarkdownContent } from "../../MarkdownContent/MarkdownContent";
-import { TextPane } from "@maticoapp/matico_spec";
+import { TextPane } from "@maticoapp/matico_types/spec";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { Content, View } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoTextPaneInterface extends MaticoPaneInterface {
   font?: string;
@@ -25,7 +24,6 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
       height="100%"
       backgroundColor={edit ? "default" : "transparent"}
       >
-      <ControlActionBar targetId={id}  />
       <Content>
         <MarkdownContent>{content}</MarkdownContent>
       </Content>

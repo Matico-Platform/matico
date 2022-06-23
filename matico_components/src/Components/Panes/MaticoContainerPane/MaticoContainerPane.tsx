@@ -2,8 +2,6 @@ import React from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { Content,  View } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
-import { selectPane } from "Utils/paneEngine";
 import { selectLayout } from "Utils/layoutEngine";
 import {Layout, PaneRef} from "@maticoapp/matico_types/spec";
 
@@ -29,16 +27,8 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
             height="100%"
             backgroundColor={edit ? "default" : "transparent"}
         >
-            <ControlActionBar
-                paneRef={paneRef}
-            />
             <Content width="100%" height="100%">
-                <LayoutEngine>
-                    {panes
-                        .map((pane: PaneRef) =>
-                            selectPane(pane)
-                        )}
-                </LayoutEngine>
+              <LayoutEngine paneRefs={panes} />
             </Content>
         </View>
     );

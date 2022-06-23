@@ -9,7 +9,6 @@ import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -136,9 +135,6 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
   return (
     <View width="100%" height="100%" position="relative">
-      <ControlActionBar
-        targetId={id}
-      />
       {!datasetReady && <div>{dataset.name} not found!</div>}
       {Chart}
     </View>

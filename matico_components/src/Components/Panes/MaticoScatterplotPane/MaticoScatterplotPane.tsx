@@ -13,7 +13,6 @@ import {
   generateNumericVar,
 } from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -173,7 +172,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         width="100%"
         height="100%"
       >
-        <ControlActionBar targetId={id} />
         {Chart}
       </View>
     );
