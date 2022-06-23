@@ -149,9 +149,6 @@ impl Default for View {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct MapPane {
-    #[validate]
-    pub position: PanePosition,
-
     #[wasm_bindgen(skip)]
     pub name: String,
 
@@ -186,26 +183,6 @@ impl Default for MapPane {
         Self {
             name: "MapPane".into(),
             id: Uuid::new_v4().to_string(),
-            position: PanePosition {
-                width: 100,
-                height: 100,
-                float: false,
-                layer: 1,
-                x: Some(0.0),
-                y: Some(0.0),
-                width_units: Some(ScreenUnits::Pixels),
-                height_units: Some(ScreenUnits::Pixels),
-                x_units: Some(ScreenUnits::Pixels),
-                y_units: Some(ScreenUnits::Pixels),
-                pad_left: Some(0.0),
-                pad_right: Some(0.0),
-                pad_top: Some(0.0),
-                pad_bottom: Some(0.0),
-                pad_units_left: Some(ScreenUnits::Pixels),
-                pad_units_right: Some(ScreenUnits::Pixels),
-                pad_units_top: Some(ScreenUnits::Pixels),
-                pad_units_bottom: Some(ScreenUnits::Pixels),
-            },
             view: VarOr::Value(View::default()),
             layers: vec![],
             base_map: Some(BaseMap::default()),

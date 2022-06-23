@@ -112,13 +112,6 @@ function addHeapObject(obj) {
     return idx;
 }
 
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
-    return instance.ptr;
-}
-
 let cachegetFloat32Memory0 = null;
 function getFloat32Memory0() {
     if (cachegetFloat32Memory0 === null || cachegetFloat32Memory0.buffer !== wasm.memory.buffer) {
@@ -439,21 +432,6 @@ export class ContainerPane {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_containerpane_free(ptr);
     }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_containerpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_containerpane_position(this.ptr, ptr0);
-    }
 }
 /**
 */
@@ -469,21 +447,6 @@ export class ControlsPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_controlspane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_controlspane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_controlspane_position(this.ptr, ptr0);
     }
 }
 /**
@@ -557,21 +520,6 @@ export class HistogramPane {
         wasm.__wbg_histogrampane_free(ptr);
     }
     /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_histogrampane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_histogrampane_position(this.ptr, ptr0);
-    }
-    /**
     * @returns {string}
     */
     get name() {
@@ -641,21 +589,6 @@ export class MapPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_mappane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_mappane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_mappane_position(this.ptr, ptr0);
     }
     /**
     * @returns {string}
@@ -996,13 +929,6 @@ export class Page {
 */
 export class PanePosition {
 
-    static __wrap(ptr) {
-        const obj = Object.create(PanePosition.prototype);
-        obj.ptr = ptr;
-
-        return obj;
-    }
-
     __destroy_into_raw() {
         const ptr = this.ptr;
         this.ptr = 0;
@@ -1313,27 +1239,12 @@ export class PieChartPane {
         wasm.__wbg_piechartpane_free(ptr);
     }
     /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_piechartpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_piechartpane_position(this.ptr, ptr0);
-    }
-    /**
     * @returns {string}
     */
     get name() {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.piechartpane_get_name(retptr, this.ptr);
+            wasm.histogrampane_get_name(retptr, this.ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             return getStringFromWasm0(r0, r1);
@@ -1348,7 +1259,7 @@ export class PieChartPane {
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.piechartpane_set_name(this.ptr, ptr0, len0);
+        wasm.histogrampane_set_name(this.ptr, ptr0, len0);
     }
 }
 /**
@@ -1383,27 +1294,12 @@ export class ScatterplotPane {
         wasm.__wbg_scatterplotpane_free(ptr);
     }
     /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_piechartpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_piechartpane_position(this.ptr, ptr0);
-    }
-    /**
     * @returns {string}
     */
     get name() {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.piechartpane_get_name(retptr, this.ptr);
+            wasm.histogrampane_get_name(retptr, this.ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             return getStringFromWasm0(r0, r1);
@@ -1418,7 +1314,7 @@ export class ScatterplotPane {
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.piechartpane_set_name(this.ptr, ptr0, len0);
+        wasm.histogrampane_set_name(this.ptr, ptr0, len0);
     }
 }
 /**
@@ -1451,21 +1347,6 @@ export class TextPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_textpane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_containerpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_containerpane_position(this.ptr, ptr0);
     }
     /**
     * @returns {string}

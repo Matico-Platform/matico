@@ -92,17 +92,11 @@ export class CSVDataset {
 */
 export class ContainerPane {
   free(): void;
-/**
-*/
-  position: PanePosition;
 }
 /**
 */
 export class ControlsPane {
   free(): void;
-/**
-*/
-  position: PanePosition;
 }
 /**
 */
@@ -126,9 +120,6 @@ export class HistogramPane {
 * @returns {string}
 */
   name: string;
-/**
-*/
-  position: PanePosition;
 }
 /**
 */
@@ -148,9 +139,6 @@ export class MapPane {
 * @returns {string}
 */
   name: string;
-/**
-*/
-  position: PanePosition;
 }
 /**
 */
@@ -311,9 +299,6 @@ export class PieChartPane {
 * @returns {string}
 */
   name: string;
-/**
-*/
-  position: PanePosition;
 }
 /**
 */
@@ -328,9 +313,6 @@ export class ScatterplotPane {
 * @returns {string}
 */
   name: string;
-/**
-*/
-  position: PanePosition;
 }
 /**
 */
@@ -357,9 +339,6 @@ export class TextPane {
 * @returns {string}
 */
   name: string;
-/**
-*/
-  position: PanePosition;
 }
 /**
 */
