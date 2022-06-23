@@ -4,7 +4,7 @@ import { PanePosition } from '@maticoapp/matico_spec'
 import Draggable from "react-draggable";
 import { View } from '@adobe/react-spectrum';
 import {PaneRef} from '@maticoapp/matico_types/spec';
-import {selectPane} from 'Utils/paneEngine';
+import {PaneSelector} from 'Utils/paneEngine';
 import {ControlActionBar} from 'Components/MaticoEditor/Utils/ControlActionBar';
 
 const FreeArea = styled.div`
@@ -91,7 +91,7 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({paneRefs}
         {...paneRef.position}
       >
         <ControlActionBar paneRef={paneRef} />
-        {selectPane(paneRef)}
+        <PaneSelector paneRef={paneRef}/>
       </FreePane>
     )}
   </FreeArea>

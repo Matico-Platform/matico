@@ -8,7 +8,6 @@ import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoCo
 import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
 import { Pane } from "Components/Panes/Pane";
 import {PaneRef} from '@maticoapp/matico_types/spec';
-import {useMaticoSelector} from 'Hooks/redux';
 import {usePane} from 'Hooks/usePane';
 
 export const panes: { [paneType: string]: Pane } = {
@@ -21,11 +20,10 @@ export const panes: { [paneType: string]: Pane } = {
     container: MaticoContainerPane
 };
 
-export function selectPane(paneRef: PaneRef) {
+export const PaneSelector: React.FC<{paneRef:PaneRef}> = ({paneRef}) =>{
     const paneType = paneRef.type; 
     const {pane} = usePane(paneRef)
     const PaneComponent = panes[paneType];
-    console.log("pane type ", paneRef.type, PaneComponent)
     
 
     if (!PaneComponent) return null;

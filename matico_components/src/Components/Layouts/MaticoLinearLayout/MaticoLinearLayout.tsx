@@ -5,7 +5,7 @@ import Draggable from "react-draggable";
 import { View } from '@adobe/react-spectrum';
 import {PaneRef} from '@maticoapp/matico_types/spec';
 import {ControlActionBar} from 'Components/MaticoEditor/Utils/ControlActionBar';
-import {selectPane} from 'Utils/paneEngine';
+import {PaneSelector, selectPane} from 'Utils/paneEngine';
 
 /**
  * If the unit is percent, return percent, otherwise return pixels.
@@ -90,7 +90,7 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({ pane
         {...paneRef.position}
       >
         <ControlActionBar paneRef={paneRef}/>
-        {selectPane(paneRef)}
+        <PaneSelector paneRef={paneRef}/>
       </LinearPane>
     )}
   </View>

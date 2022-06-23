@@ -1,7 +1,5 @@
 import React from "react";
-import {Page, PaneRef, Layout} from '@maticoapp/matico_types/spec'
-import { selectPane } from "Utils/paneEngine";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
+import {Page, Layout} from '@maticoapp/matico_types/spec'
 import {
   View,
   Flex
