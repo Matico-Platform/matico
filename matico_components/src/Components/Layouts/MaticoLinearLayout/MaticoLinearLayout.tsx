@@ -3,6 +3,9 @@ import styled from 'styled-components'
 import { PanePosition } from '@maticoapp/matico_spec'
 import Draggable from "react-draggable";
 import { View } from '@adobe/react-spectrum';
+import {PaneRef} from '@maticoapp/matico_types/spec';
+import {ControlActionBar} from 'Components/MaticoEditor/Utils/ControlActionBar';
+import {selectPane} from 'Utils/paneEngine';
 
 /**
  * If the unit is percent, return percent, otherwise return pixels.
@@ -76,26 +79,19 @@ const LinearPane: React.FC<PanePosition> = ({
 }
 
 interface MaticoLinearLayoutInterface {
-  children: React.ReactNode[];
+  paneRefs:Array<PaneRef>
 }
 
-export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({ children }) => {
+export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({ paneRefs}) => {
   return <View position="relative" width="100%" height="100%">
-    {React.Children.map(children, child => {
-      //@ts-ignore
-      const positionProps = child.props.position;
-      //@ts-ignore
-      //TODO Make this properly typed. Properly check to ensure that the child nodes implement MaticoPaneInterface 
-      const pane = <LinearPane
-        //@ts-ignore
-        key={child.props.name}
-        {...positionProps}
+    {paneRefs.map((paneRef:PaneRef)=> 
+      <LinearPane
+        key={paneRef.id}
+        {...paneRef.position}
       >
-        {child}
+        <ControlActionBar paneRef={paneRef}/>
+        {selectPane(paneRef)}
       </LinearPane>
-      //@ts-ignore
-      return child.props.float ? <Draggable>{pane}</Draggable> : pane
-
-    })}
+    )}
   </View>
 }

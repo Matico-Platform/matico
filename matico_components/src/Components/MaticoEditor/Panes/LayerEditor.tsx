@@ -1,37 +1,22 @@
 import React from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
+import { useMaticoSelector } from "Hooks/redux";
 import { GeomType } from "../../../Datasets/Dataset";
-import { setSpecAtPath } from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
-import { DefaultLayer} from "../PaneDefaults";
+import { DefaultLayer} from "Components/MaticoEditor/Utils/PaneDetails";
 import {
   Flex,
-  Heading,
   NumberField,
   Picker,
-  Slider,
   Item,
-  Text,
-  Well,
-  Header,
   View,
   StatusLight,
-  Divider,
   Checkbox,
-  Section,
-  ComboBox,
 } from "@adobe/react-spectrum";
 import { ColorVariableEditor } from "Components/MaticoEditor/EditorComponents/ColorVariableEditor";
-import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { FilterEditor } from "../Utils/FilterEditor";
 import { Filter } from "@maticoapp/matico_types/spec";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
-import { sanitizeColor } from "Utils/sanitizeColor";
-import RemoveCircle from '@spectrum-icons/workflow/RemoveCircle';
-import ColorFill from '@spectrum-icons/workflow/ColorFill';
-import Abc from '@spectrum-icons/workflow/ABC';
-import OneTwoThree from '@spectrum-icons/workflow/123';
 import { SliderVariableEditor } from "../EditorComponents/SliderVariableEditor";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { SliderUnitSelector } from "../EditorComponents/SliderUnitSelector";

@@ -10,53 +10,16 @@ import {
     Content,
     repeat,
 } from "@adobe/react-spectrum";
-
-import HistogramIcon from "@spectrum-icons/workflow/Histogram";
-import TextIcon from "@spectrum-icons/workflow/Text";
-import PieChartIcon from "@spectrum-icons/workflow/GraphPie";
-import MapIcon from "@spectrum-icons/workflow/MapView";
-import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
-import PropertiesIcon from "@spectrum-icons/workflow/Properties";
-import Border from "@spectrum-icons/workflow/Border";
 import { DefaultGrid } from "Components/MaticoEditor/Utils/DefaultGrid";
+import {Pane} from "@maticoapp/matico_types/spec";
+import {v4 as uuidv4} from 'uuid'
+import {PaneDefaults, IconForPaneType, AvaliablePanes} from "Components/MaticoEditor/Utils/PaneDetails" 
 
-const IconForPaneType = (PaneType: string) => {
-    switch (PaneType) {
-        case "Histogram":
-            return <HistogramIcon />;
-        case "PieChart":
-            return <PieChartIcon />;
-        case "Text":
-            return <TextIcon />;
-        case "Map":
-            return <MapIcon />;
-        case "Scatterplot":
-            return <ScatterIcon />;
-        case "Controls":
-            return <PropertiesIcon />;
-        case "Container":
-            return <Border />;
-    }
-};
 
-const AvaliablePanes = [
-    {
-        sectionTitle: "Visualizations",
-        panes: [
-            { name: "map", label: "Map" },
-            { name: "histogram", label: "Histogram" },
-            { name: "pieChart", label: "Pie Chart" },
-            { name: "text", label: "Text" },
-            { name: "scatterplot", label: "Scatter Plot" },
-            { name: "controls", label: "Controls" },
-            { name: "container", label: "Container" }
-        ]
-    }
-];
 
 interface NewPaneDialogProps {
     validatePaneName?: (name: string) => boolean;
-    onAddPane: (name: string, paneType: String) => void;
+    onAddPane: (pane: Pane) => void;
 }
 
 export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
@@ -72,13 +35,21 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
         }
         if (validatePaneName) {
             if (validatePaneName(newPaneName)) {
-                onAddPane(newPaneName, paneType);
-                close();
             } else {
                 setErrorText(
                     "Another pane with the same name exists, pick something else"
                 );
             }
+        }
+        else{
+              onAddPane({
+                id: uuidv4(),
+                name: newPaneName,
+                //@ts-ignore
+                type: paneType,
+                ...PaneDefaults[paneType]
+              });
+                close();
         }
     };
 

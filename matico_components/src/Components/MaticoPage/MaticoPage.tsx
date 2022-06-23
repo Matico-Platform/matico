@@ -1,10 +1,12 @@
 import React from "react";
 import {Page, PaneRef, Layout} from '@maticoapp/matico_types/spec'
 import { selectPane } from "Utils/paneEngine";
+import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import {
   View,
   Flex
 } from "@adobe/react-spectrum";
+import {selectLayout} from "Utils/layoutEngine";
 
 interface MaticoPageInterface {
   page: Page;
@@ -16,14 +18,14 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({
 }) =>{
 
   let layout : Layout = page.layout;
+  let LayoutEngine = selectLayout(layout)
+
+  console.log("rendering page ", page)
 
   return(
     <View overflow="none auto" width="100%" height="100%">
       <Flex direction="column" width={"100%"} height={"100%"} >
-            {page.panes
-              .map((pane: PaneRef ) =>
-                selectPane(pane)
-              )}
+        <LayoutEngine paneRefs={page.panes} />
       </Flex>
     </View>
   )

@@ -14,12 +14,16 @@ import { useIconList } from "Hooks/useIconList";
 import { usePage } from "Hooks/usePage";
 import { GatedAction } from "../EditorComponents/GatedAction";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import {Pane, PaneRef} from "@maticoapp/matico_types/spec";
+import {RowEntryMultiButton} from "../Utils/RowEntryMultiButton";
+import {IconForPaneType} from "../Utils/PaneDetails";
+import {NewPaneDialog} from "../EditorComponents/NewPaneDialog/NewPaneDialog";
 
 export interface PageEditorProps {
     id: string;
 }
 export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
-    const { page, updatePage, removePage } = usePage(id);
+    const { page, updatePage, removePage, panes, addPaneToPage} = usePage(id);
 
     const { iconList, filterText, setFilterText, loadMoreIcons } =
         useIconList();
@@ -78,26 +82,40 @@ export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
 
             <CollapsibleSection title="Panes" isOpen={true}>
                 <Flex gap={"size-200"} direction="column">
-                    {panes.map((pane:PaneRef) => {
-                        let [paneType, paneSpecs] = Object.entries(pane)[0];
-                        return (
+                    {page.panes.map((pane:PaneRef,index:number) => 
                             <RowEntryMultiButton
-                                key={paneSpecs.name}
+                                key={pane.id}
+                                onRaise={()=>{
+
+                                }} 
+                                onSelect={()=>{
+
+                                }}
+                                onLower={()=>{
+
+                                }}
+                                onRemove={()=>{
+
+                                }}
+                                onDuplicate={()=>{
+
+                                }}
                                 entryName={
                                     <Flex
                                         direction="row"
                                         alignItems="center"
                                         gap="size-100"
                                     >
-                                        {IconForPaneType(paneType)}
-                                        <Text>{paneSpecs.name}</Text>
+                                        {IconForPaneType(pane.type)}
+                                        <Text>{panes[index].name}</Text>
                                     </Flex>
                                 }
-                                editPath={`${editPath}.panes.${index}.${paneType}`}
-                                editType={paneType}
                             />
-                        );
-                    })}
+                        )
+                    }
+                    <NewPaneDialog onAddPane={(pane:Pane)=>
+                        addPaneToPage(pane)
+                    }/>
                 </Flex>
             </CollapsibleSection>
 

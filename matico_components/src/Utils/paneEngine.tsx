@@ -9,21 +9,24 @@ import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/Matico
 import { Pane } from "Components/Panes/Pane";
 import {PaneRef} from '@maticoapp/matico_types/spec';
 import {useMaticoSelector} from 'Hooks/redux';
+import {usePane} from 'Hooks/usePane';
 
 export const panes: { [paneType: string]: Pane } = {
-    Map: MaticoMapPane,
-    Text: MaticoTextPane,
-    Histogram: MaticoHistogramPane,
-    Scatterplot: MaticoScatterplotPane,
-    PieChart: MaticoPieChartPane,
-    Controls: MaticoControlsPane,
-    Container: MaticoContainerPane
+    map: MaticoMapPane,
+    text: MaticoTextPane,
+    histogram: MaticoHistogramPane,
+    scatterplot: MaticoScatterplotPane,
+    pieChart: MaticoPieChartPane,
+    controls: MaticoControlsPane,
+    container: MaticoContainerPane
 };
 
 export function selectPane(paneRef: PaneRef) {
     const paneType = paneRef.type; 
-    const pane = useMaticoSelector((state)=> state.spec.spec.panes.find((f:PaneRef)=>f.id===paneRef.id))
+    const {pane} = usePane(paneRef)
     const PaneComponent = panes[paneType];
+    console.log("pane type ", paneRef.type, PaneComponent)
+    
 
     if (!PaneComponent) return null;
     return (

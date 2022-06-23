@@ -8,7 +8,7 @@ import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
+import {Layer} from "@maticoapp/matico_types/spec"
 
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
   view: MaticoView;
@@ -50,7 +50,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
   const [mapLayers, setMapLayers] = useState([]);
   const edit = useIsEditable();
 
-  const updateLayer = (layer) => {
+  const updateLayer = (layer:Layer) => {
     if (!layer) return;
     setMapLayers(mapLayers => {
       if (mapLayers.map((l) => l.id).includes(layer.id)) {
@@ -112,7 +112,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
       width="100%"
       height="100%"
       >
-      {edit && <ControlActionBar targetId={id}  actions={["edit", "delete"]} />}
       {currentView && (
         <>
           <DeckGL

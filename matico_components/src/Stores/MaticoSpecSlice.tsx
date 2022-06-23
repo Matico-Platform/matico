@@ -10,7 +10,6 @@ import {
 import _ from "lodash";
 import { findPagesForPane } from "Utils/specUtils/specUtils";
 import { ContainerPane, PanePosition } from "@maticoapp/matico_spec";
-import {current} from 'immer'
 
 export type EditElement = {
     id?: string;
@@ -30,13 +29,9 @@ const initialState: SpecState = {
 
 export const findParent = (app: App, paneRefId: string) => {
     const parent =
-
         app.pages.find((page: Page) =>
             page.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
-        ) 
-        
-        ||
-
+        ) ||
         app.panes.find(
             (pane: Pane) =>
                 pane.type === "container" &&
@@ -63,7 +58,10 @@ export const stateSlice = createSlice({
         },
         removePage: (
             state,
-            action: PayloadAction<{ pageId: string; removeOrphanPanes: boolean }>
+            action: PayloadAction<{
+                pageId: string;
+                removeOrphanPanes: boolean;
+            }>
         ) => {
             const { pageId, removeOrphanPanes } = action.payload;
             const page = state.spec.pages.find((p: Page) => p.id === pageId);
@@ -90,17 +88,18 @@ export const stateSlice = createSlice({
                 newIndex: number;
             }>
         ) => {
+            const { parentId, paneRef, newIndex } = action.payload;
+            const parent = findParent(state.spec, paneRef.id);
 
-            const {parentId, paneRef, newIndex} = action.payload
-            const parent  = findParent(state.spec, paneRef.id);
-
-            if(parent){
-              //@ts-ignore if parent is found it is known to be of type ContainerPane or Page 
-              const panes = parent.panes
-              const pane = _.remove(panes, (p:PaneRef)=> p.id === paneRef.id)
-              panes.slice(newIndex,0, newIndex)
+            if (parent) {
+                //@ts-ignore if parent is found it is known to be of type ContainerPane or Page
+                const panes = parent.panes;
+                const pane = _.remove(
+                    panes,
+                    (p: PaneRef) => p.id === paneRef.id
+                );
+                panes.slice(newIndex, 0, newIndex);
             }
-
         },
 
         addPaneToPage: (
@@ -175,18 +174,32 @@ export const stateSlice = createSlice({
                 );
             }
         },
-        addPane:(
-          state,
-          action: PayloadAction<{pane:Pane}>
-        )=>{
-          state.spec.panes.push(action.payload.pane)
+        addPane: (state, action: PayloadAction<{ pane: Pane }>) => {
+            state.spec.panes.push(action.payload.pane);
+        },
+        addPaneRefToPage: (
+            state,
+            action: PayloadAction<{
+                pageId: string;
+                paneRef: PaneRef;
+                index?: number;
+            }>
+        ) => {
+            const { pageId, paneRef, index } = action.payload;
+            let page = state.spec.pages.find((p) => p.id == pageId);
+            if (index) {
+                page.panes.splice(index, 0, action.payload.paneRef);
+            } else {
+                page.panes.push(paneRef);
+            }
         },
         updatePaneDetails: (
             state,
             action: PayloadAction<{ id: string; update: Partial<Pane> }>
         ) => {
             let pane: Pane = state.spec.panes.find(
-                (p: Pane) => p.id === action.payload.id)
+                (p: Pane) => p.id === action.payload.id
+            );
 
             //@ts-ignore
             pane = { ...pane, ...action.payload.update };
@@ -197,7 +210,7 @@ export const stateSlice = createSlice({
         ) => {
             let { pageId, update } = action.payload;
             let page = state.spec.pages.find((p: Page) => p.id === pageId);
-            Object.assign(page,update)
+            Object.assign(page, update);
         },
         updatePanePosition: (
             state,
@@ -218,52 +231,58 @@ export const stateSlice = createSlice({
         setCurrentEditElement: (state, action: PayloadAction<EditElement>) => {
             state.currentEditElement = action.payload;
         },
-        setLayerOrder:(
+        setLayerOrder: (
             state,
             action: PayloadAction<{
-              newIndex: number, 
-              layerId: string,
-              mapId: string,
+                newIndex: number;
+                layerId: string;
+                mapId: string;
             }>
-
-        )=>{
-            const {mapId, layerId, newIndex} = action.payload;
-            const map = state.spec.panes.find((p:Pane)=> p.id === mapId && p.type==='map');
+        ) => {
+            const { mapId, layerId, newIndex } = action.payload;
+            const map = state.spec.panes.find(
+                (p: Pane) => p.id === mapId && p.type === "map"
+            );
 
             //@ts-ignore
-            let layers  = map.layers
-            let layer = _.remove(layers,(layers: Layer)=>layers.id === layerId)
-            layers.slice(newIndex, 0 , layer)
-
+            let layers = map.layers;
+            let layer = _.remove(
+                layers,
+                (layers: Layer) => layers.id === layerId
+            );
+            layers.slice(newIndex, 0, layer);
         },
-        updateLayer:(
+        updateLayer: (
             state,
             action: PayloadAction<{
-              mapId: string,
-              layerId: string,
-              update: Partial<Layer>
+                mapId: string;
+                layerId: string;
+                update: Partial<Layer>;
             }>
-        )=>{
-            const {mapId, layerId, update} = action.payload;
-            const map = state.spec.panes.find((p:Pane)=> p.id === mapId && p.type==='map');
+        ) => {
+            const { mapId, layerId, update } = action.payload;
+            const map = state.spec.panes.find(
+                (p: Pane) => p.id === mapId && p.type === "map"
+            );
             //@ts-ignore
-            let layer = map.layers.find((layer:Layer)=> layer.id === layerId);
-            layer = {...layer, layer}
+            let layer = map.layers.find((layer: Layer) => layer.id === layerId);
+            layer = { ...layer, layer };
         },
-        removeLayer:(
+        removeLayer: (
             state,
-            action:PayloadAction<{
-              mapId:string,
-              layerId:string
+            action: PayloadAction<{
+                mapId: string;
+                layerId: string;
             }>
-        )=>{
-            const {mapId, layerId } = action.payload;
-            const map = state.spec.panes.find((p:Pane)=> p.id === mapId && p.type==='map');
+        ) => {
+            const { mapId, layerId } = action.payload;
+            const map = state.spec.panes.find(
+                (p: Pane) => p.id === mapId && p.type === "map"
+            );
 
             //@ts-ignore
-            let layers  = map.layers
-            _.remove(layers,(layers: Layer)=>layers.id === layerId)
-
+            let layers = map.layers;
+            _.remove(layers, (layers: Layer) => layers.id === layerId);
         },
         updateDatasetSpec: (
             state,
@@ -300,6 +319,7 @@ export const {
     setPaneOrder,
     setCurrentEditElement,
     addPane,
+    addPaneRefToPage,
     addPaneRefToContainer,
     removePaneFromContainer,
     updatePageDetails

@@ -7,7 +7,8 @@ import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import { PaneEditor } from "./PaneEditor";
 import { BaseMapSelector } from "../Utils/BaseMapSelector";
-import { DefaultLayer} from "Components/MaticoEditor/PaneDefaults";
+import { DefaultLayer} from "Components/MaticoEditor/Utils/PaneDetails";
+
 import {
     Flex,
     ActionButton,

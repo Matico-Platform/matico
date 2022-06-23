@@ -3,6 +3,9 @@ import styled from 'styled-components'
 import { PanePosition } from '@maticoapp/matico_spec'
 import Draggable from "react-draggable";
 import { View } from '@adobe/react-spectrum';
+import {PaneRef} from '@maticoapp/matico_types/spec';
+import {selectPane} from 'Utils/paneEngine';
+import {ControlActionBar} from 'Components/MaticoEditor/Utils/ControlActionBar';
 
 const FreeArea = styled.div`
   position: relative;
@@ -76,26 +79,20 @@ const FreePane: React.FC<PanePosition> = ({
 }
 
 interface MaticoFreeLayoutInterface {
-
+  paneRefs: Array<PaneRef>
 }
 
-export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({ children }) => {
+export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({paneRefs}) => {
   return <FreeArea>
-    {React.Children.map(children, child => {
-      //@ts-ignore
-      const positionProps = child.props.position;
-      //@ts-ignore
-      //TODO Make this properly typed. Properly check to ensure that the child nodes implement MaticoPaneInterface 
-      const pane = <FreePane
+    {paneRefs.map( (paneRef) => 
+      <FreePane
         //@ts-ignore
-        key={child.props.name}
-        {...positionProps}
+        key={paneRef.id}
+        {...paneRef.position}
       >
-        {child}
+        <ControlActionBar paneRef={paneRef} />
+        {selectPane(paneRef)}
       </FreePane>
-      //@ts-ignore
-      return child.props.float ? <Draggable>{pane}</Draggable> : pane
-
-    })}
+    )}
   </FreeArea>
 }
