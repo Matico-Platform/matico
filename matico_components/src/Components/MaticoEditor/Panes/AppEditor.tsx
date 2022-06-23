@@ -23,8 +23,7 @@ interface AddPageModalProps {
 const AddPageModal: React.FC<AddPageModalProps> = ({
   onAddPage,
   validatePageName,
-}) => {
-  const [newPageName, setNewPageName] = useState("New Page");
+}) => { const [newPageName, setNewPageName] = useState("New Page");
   const [errorText, setErrorText] = useState<string | null>(null);
 
   const attemptToAddPage = (pageName: string, close: () => void) => {
@@ -79,9 +78,14 @@ interface AppEditorProps {}
 
 export const AppEditor: React.FC<AppEditorProps> = () => {
   const {pages, addPage, removePage, setEditPage} = useApp();
+  console.log("rendering app editor ", pages)
 
   const addNewPage = (pageName: string) => {
-    addPage(pageName, {'type':"free"})
+    addPage({
+      name: pageName, 
+      layout: {'type':"free"},
+      path: `/${pageName}`
+    })
   };
 
   const validatePageName = (name: string) => {

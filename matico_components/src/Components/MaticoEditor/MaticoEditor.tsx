@@ -1,42 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { MaticoRawSpecEditor } from "./Panes/MaticoRawSpecEditor";
-import { MaticoStateViewer } from "./Panes/MaticoStateViewer";
 import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
-import { setEditing } from "../../Stores/MaticoSpecSlice";
+import { EditElement, setEditing } from "../../Stores/MaticoSpecSlice";
 import { Editors } from "./Editors";
-import { DatasetsEditor } from "./Panes/DatasetsEditor";
-import { BreadCrumbs } from "./Utils/BreadCrumbs";
-import { Dashboard } from "@maticoapp/matico_spec";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 import {
-  Tabs,
-  TabList,
-  Item,
-  TabPanels,
   View,
-  Flex,
 } from "@adobe/react-spectrum";
 import { AppEditor } from "./Panes/AppEditor";
-import { MaticoOutlineViewer } from "./Panes/MaticoOutlineViewer";
+import {PageEditor} from "./Panes/PageEditor";
+import {App, Page,PaneRef} from "@maticoapp/matico_types/spec";
 
 export interface MaticoEditorProps {
   editActive: boolean;
-  onSpecChange?: (dashboard: Dashboard) => void;
-  datasetProviders?: Array<DatasetProvider>;
+  onSpecChange?: (app: App) => void;
+}
+
+const EditPane: React.FC<{element: EditElement | null}>= ({element})=>{
+
+  const pages = useMaticoSelector(
+    (state) => state.spec.spec.pages
+  );
+
+  console.log("Rendering edit pane for element ", element)
+
+  if(element?.type==='page'){
+    return(
+      <PageEditor id={element.id} />
+    )
+  }
+  else if(element?.type==='pane'){
+    const page = pages.find((p:Page)=>p.panes.find(pane=>pane.id===element.id)) 
+    const paneRef = page.panes.find((p:PaneRef)=>p.id===element.id)
+    const Editor  = Editors[paneRef.type]
+    return <Editor paneRef={paneRef} />
+  }
+  else{
+    return <AppEditor/>
+  }
 }
 
 export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   editActive,
   onSpecChange,
-  datasetProviders,
 }) => {
   const dispatch = useMaticoDispatch();
 
-  // eg
-  // spec
-  // pages.0.sections.0.panes.1.Map
-  // Map
-  const { spec, currentEditPath, currentEditType } = useMaticoSelector(
+  const { spec, currentEditElement } = useMaticoSelector(
     (state) => state.spec
   );
   const [tabKey, setTabKey] = useState<string>("Components");
@@ -60,9 +69,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
       setTabKey("Components")
     }
 
-  }, [editActive, currentEditPath])
-  //@ts-ignore
-  const EditPane = currentEditPath ? Editors[currentEditType] : AppEditor;
+  }, [editActive, currentEditElement])
 
   if (!editActive) return null;
 
@@ -76,7 +83,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
   return ( //@ts-ignore
 
     <View overflow={"hidden auto"} height={height} paddingTop="3em">
-      <EditPane editPath={currentEditPath} />
+      <EditPane element={currentEditElement}/>
     </View>
   );
 };

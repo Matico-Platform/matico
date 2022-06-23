@@ -26,6 +26,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
 
   const spec = useAppSpec();
   const dispatch = useMaticoDispatch();
+  console.log("Got app spec as ", spec)
 
   //Need to figure out how to make sure this updates with other spec changes
   useEffect(() => {
@@ -39,7 +40,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
   useEffect(() => {
     if (validatorReady) {
       try {
-        const dash = validator.Dashboard.from_json(code);
+        const dash = validator.App.from_json(code);
         const { is_valid: specValid, errors } = dash.is_valid();
         if (specValid) {
           dispatch(setSpec(dash.to_js()));

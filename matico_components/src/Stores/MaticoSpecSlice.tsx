@@ -10,6 +10,7 @@ import {
 import _ from "lodash";
 import { findPagesForPane } from "Utils/specUtils/specUtils";
 import { ContainerPane, PanePosition } from "@maticoapp/matico_spec";
+import {current} from 'immer'
 
 export type EditElement = {
     id?: string;
@@ -62,10 +63,10 @@ export const stateSlice = createSlice({
         },
         removePage: (
             state,
-            action: PayloadAction<{ id: string; removeOrphanPanes: boolean }>
+            action: PayloadAction<{ pageId: string; removeOrphanPanes: boolean }>
         ) => {
-            const { id, removeOrphanPanes } = action.payload;
-            const page = state.spec.pages.find((p: Page) => p.id === id);
+            const { pageId, removeOrphanPanes } = action.payload;
+            const page = state.spec.pages.find((p: Page) => p.id === pageId);
 
             if (removeOrphanPanes) {
                 let orphanPanes = page.panes.filter(
@@ -76,7 +77,7 @@ export const stateSlice = createSlice({
                 );
             }
 
-            _.remove(state.spec.pages, (p: Page) => p.id === action.payload.id);
+            _.remove(state.spec.pages, (p: Page) => p.id === pageId);
         },
         removePane: (state, action: PayloadAction<{ id: string }>) => {
             _.remove(state.spec.pages, (p: Page) => p.id === action.payload.id);
@@ -192,11 +193,11 @@ export const stateSlice = createSlice({
         },
         updatePageDetails: (
             state,
-            action: PayloadAction<{ id: string; update: Partial<Page> }>
+            action: PayloadAction<{ pageId: string; update: Partial<Page> }>
         ) => {
-            let { id, update } = action.payload;
-            let page = state.spec.pages.find((p: Page) => p.id === id);
-            page = { ...page, ...update };
+            let { pageId, update } = action.payload;
+            let page = state.spec.pages.find((p: Page) => p.id === pageId);
+            Object.assign(page,update)
         },
         updatePanePosition: (
             state,

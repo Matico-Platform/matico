@@ -1,16 +1,12 @@
 import { Link } from "react-router-dom";
-import { Page } from "@maticoapp/matico_types/spec";
 import React from "react";
 import styled from "styled-components";
 import { useIsEditable } from "../../Hooks/useIsEditable";
-import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
-import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
-import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
+import {useApp} from "Hooks/useApp"
 import chroma from "chroma-js";
 import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
 
 interface MaticoNavBarProps {
-  pages: Array<Page>;
 }
 
 const NamedButton: React.FC<{ name: IconProp; color?: string; size?: string }> =
@@ -32,14 +28,15 @@ const HoverLink = styled(Link)`
   }
 `
 
-export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
+export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
   const editable = useIsEditable();
-  const dispatch = useMaticoDispatch();
-  const theme = useMaticoSelector((state) => state.spec.spec.theme);
+  const {pages, addPage, removePage,theme, setEditPage} = useApp()
+
   const primaryColor = theme?.primaryColor;
   const logo = theme?.logoUrl;
 
   let chromaColor;
+
   if (Array.isArray(primaryColor)) {
     if (primaryColor.length === 4) {
       chromaColor = chroma.rgb([
@@ -54,37 +51,18 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
   }
 
   const onAddPage = () => {
-    const firstPage = pages.length === 0;
-    const pageNo = firstPage ? 0 : Math.max(...pages.map((p) => p.order)) + 1;
-
-    dispatch(
-      addPage({
-        //@ts-ignore
-        page: {
-          name: firstPage ? "Home" : `Page${pageNo}`,
-          content: `This page ${pageNo}`,
-          path: firstPage ? "/" : `/page_${pageNo}`,
-          icon: firstPage ? "house" : "file",
-          //@ts-ignore
-          order: pageNo,
-          sections: [
-            {
-              name: "First Section",
-              layout: "free",
-              panes: [],
-              order: 1,
-            },
-          ],
-        },
-      })
-    );
+    addPage({})
   };
+
+  const setEditorPath =(pageId:string)=>{
+    if(editable){
+      setEditPage(pageId) 
+    }
+  }
 
 
   return (
     <View 
-      // overflowX="hidden"
-      // overflowY="auto"
       overflow="hidden auto"
       height="100%"
       maxHeight="100vh"
@@ -105,15 +83,13 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
           <View position="relative" key={page.path} width="100%" marginY="size-150">
             <HoverLink
               to={page.path ? page.path : `/${page.name}`}
+              onClick={()=>setEditorPath(page.id)}
             >
               <NamedButton name={page.icon} />
               <Text>
                 {page.name}
               </Text>
             </HoverLink>
-            <View position="absolute" right="0px" top="-20px">
-              <ControlButton action="edit" editPath={`pages.${index}`} editType={"Page"} />
-            </View>
           </View>
         ))}
         {editable && (
@@ -132,21 +108,5 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
         )}
       </ButtonGroup>
     </View>
-    // <Sidebar
-    //   background={chromaColor ? chromaColor.hex() : "neutral-2"}
-    //   style={{textAlign:'center'}}
-    //   header={
-    //     <Avatar
-    //       src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
-    //       elevation="small"
-    //       style={{ margin: "0 auto" }}
-    //     />
-    //   }
-    //   elevation="medium"
-    //   footer={<Button icon={<Icons.Help />} hoverIndicator />}
-    // >
-    //   <Nav gap="small" >
-    //   </Nav>
-    // </Sidebar>
   );
 };
