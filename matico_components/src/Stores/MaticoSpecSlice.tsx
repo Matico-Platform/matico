@@ -9,7 +9,7 @@ import {
 } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
 import { findPagesForPane } from "Utils/specUtils/specUtils";
-import { ContainerPane, PanePosition } from "@maticoapp/matico_spec";
+import { ContainerPane, PanePosition } from "@maticoapp/matico_types/spec";
 
 export type EditElement = {
     id?: string;
@@ -28,16 +28,18 @@ const initialState: SpecState = {
 };
 
 export const findParent = (app: App, paneRefId: string) => {
-    const parent =
+    const potentialPage =
         app.pages.find((page: Page) =>
             page.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
-        ) ||
+                      )
+    const potentialPane=
         app.panes.find(
             (pane: Pane) =>
                 pane.type === "container" &&
                 pane.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
         );
-    return parent;
+    const container = potentialPane?.type==='container' ? potentialPane  as ContainerPane : null 
+    return potentialPage || container;
 };
 
 export const stateSlice = createSlice({
@@ -197,12 +199,12 @@ export const stateSlice = createSlice({
             state,
             action: PayloadAction<{ id: string; update: Partial<Pane> }>
         ) => {
+            const {id, update} = action.payload
             let pane: Pane = state.spec.panes.find(
-                (p: Pane) => p.id === action.payload.id
+                (p: Pane) => p.id === id
             );
 
-            //@ts-ignore
-            pane = { ...pane, ...action.payload.update };
+            Object.assign(pane, update)
         },
         updatePageDetails: (
             state,
@@ -221,12 +223,11 @@ export const stateSlice = createSlice({
         ) => {
             const { paneRefId, update } = action.payload;
             const parent = findParent(state.spec, paneRefId);
-            //@ts-ignore
-            parent.panes = parent.panes.map((p: PaneRef) =>
+            const pane = parent.panes.find((p: PaneRef) =>
                 p.id === paneRefId
-                    ? { ...p, position: { ...p.position, ...update } }
-                    : p
             );
+            const position  = pane.position
+            Object.assign(position,update)
         },
         setCurrentEditElement: (state, action: PayloadAction<EditElement>) => {
             state.currentEditElement = action.payload;

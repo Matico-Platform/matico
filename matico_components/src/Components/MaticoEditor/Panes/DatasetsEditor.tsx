@@ -23,13 +23,14 @@ import {
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { addDataset } from "Stores/MaticoSpecSlice";
 import { DatasetProvider } from "Datasets/DatasetProvider";
+import {Dataset as DatasetSpec} from '@maticoapp/matico_types/spec'
 
 interface DatasetEditorProps {
   dataset: DatasetSummary;
 }
 
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
-  let statusColors = {
+  let statusColors: Record<DatasetState,"yellow" | "negative" | "positive"> = {
     [DatasetState.LOADING]: "yellow",
     [DatasetState.ERROR]: "negative",
     [DatasetState.READY]: "positive",
@@ -46,7 +47,7 @@ export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
 };
 
 interface NewDatasetModalProps {
-  onSubmit: (datasetParams: any) => void;
+  onSubmit: (datasetParams: DatasetSpec) => void;
   datasetProviders?: Array<DatasetProvider>;
 }
 

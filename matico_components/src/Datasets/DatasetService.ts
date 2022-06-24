@@ -13,6 +13,7 @@ import { COGBuilder } from "./COGBuilder";
 import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
 import {WasmComputeBuilder} from "./WasmComputeBuilder";
+import {Dataset as DatasetSpec} from "@maticoapp/matico_types/spec"
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -137,7 +138,7 @@ export const DatasetService: DatasetServiceInterface = {
     }
   },
 
-  async registerOrUpdateDataset(datasetDetails: any): Promise<DatasetSummary> {
+  async registerOrUpdateDataset(datasetDetails: DatasetSpec): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
       case "GeoJSON":
         const geoDataset = await GeoJSONBuilder(datasetDetails);

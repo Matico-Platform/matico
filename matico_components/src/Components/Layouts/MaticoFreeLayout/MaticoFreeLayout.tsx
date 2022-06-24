@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { PanePosition } from '@maticoapp/matico_spec'
+import { PanePosition } from '@maticoapp/matico_types/spec'
 import Draggable from "react-draggable";
 import { View } from '@adobe/react-spectrum';
 import {PaneRef} from '@maticoapp/matico_types/spec';
@@ -33,7 +33,6 @@ const handlePositionalRule = (values: Array<number | undefined>, units: Array<st
     return values.map((value, index) => `${value || 0}${handleUnits(units[index] || '')}`).join(' ')
   }
 }
-
 
 const FreePane: React.FC<PanePosition> = ({ 
   width, 
@@ -87,7 +86,6 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({paneRefs}
   return <FreeArea>
     {paneRefs.map( (paneRef) => 
       <FreePane
-        //@ts-ignore
         key={paneRef.id}
         {...paneRef.position}
       >

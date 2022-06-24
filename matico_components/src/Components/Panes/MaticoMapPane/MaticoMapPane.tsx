@@ -13,7 +13,7 @@ import {Layer} from "@maticoapp/matico_types/spec"
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
   view: MaticoView;
   //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
-  base_map?: any;
+  baseMap?: any;
   layers?: Array<any>;
 }
 
@@ -42,7 +42,7 @@ function getNamedStyleJSON(style: string) {
 
 export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
   view,
-  base_map,
+  baseMap,
   name,
   layers,
   id,
@@ -97,11 +97,11 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
 
   let styleJSON = null;
 
-  if (base_map) {
-    if (base_map.Named) {
-      styleJSON = getNamedStyleJSON(base_map.Named);
-    } else if (base_map.StyleJSON) {
-      styleJSON = base_map.StyleJSON;
+  if (baseMap) {
+    if (baseMap.type==='named') {
+      styleJSON = getNamedStyleJSON(baseMap.name);
+    } else if (baseMap.StyleJSON) {
+      styleJSON = baseMap.StyleJSON;
     }
   }
 

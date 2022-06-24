@@ -1,3 +1,4 @@
+import {Dataset as DatasetSpec} from "@maticoapp/matico_types/spec"
 export interface DatasetRecord {
   name: string;
   id: string;
@@ -5,7 +6,7 @@ export interface DatasetRecord {
 }
 
 export interface DatasetProviderComponent{
-  onSubmit : (datasetDetails: any) =>void,
+  onSubmit : (datasetDetails: DatasetSpec) =>void,
   parameters?:{[param:string]:any}
 }
 

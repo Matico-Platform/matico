@@ -7,5 +7,6 @@ use ts_rs::TS;
 pub enum ColorSpecification {
     Rgba([f32; 4]),
     Rgb([f32; 3]),
-    Name(String),
+    Named(String),
+    Hex(String),
 }

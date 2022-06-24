@@ -35,11 +35,11 @@ import { OptionsPopper } from "../EditorComponents/OptionsPopper";
 import { NumericEditor } from "../EditorComponents/NumericEditor";
 import { ParentSize } from "@visx/responsive";
 
-interface AddPaneModalProps {
+interface AddLayerMOdal{
     onAddLayer: (name: string, dataset: string) => void;
 }
 
-const AddPaneModal: React.FC<AddPaneModalProps> = ({ onAddLayer }) => {
+const AddLayerModal: React.FC<AddLayerModalProps> = ({ onAddLayer }) => {
     const [dataset, setDataset] = useState<string | null>(null);
     const [layerName, setLayerName] = useState<string>("New layer name");
 
@@ -118,6 +118,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
 
 
     const updateBaseMap = (baseMap: BaseMap) => {
+        console.log("Updating base map", baseMap)
         updatePane({
             baseMap
         });
@@ -175,6 +176,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
     };
 
     const addLayer = (dataset: string, layerName: string) => {
+      debugger
         const newLayer : Layer= {
             ...DefaultLayer,
             source: { name: dataset, filters:[] },
@@ -329,7 +331,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
                 title="Layers" 
                 isOpen={true}
                 >
-                <AddPaneModal onAddLayer={addLayer} />
+                <AddLayerModal onAddLayer={addLayer} />
                 <Flex marginBottom={"size-200"} direction="column" width="100%">
                     {/* @ts-ignore */}
                     {mapPane.layers.map((layer) => (

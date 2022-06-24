@@ -1,4 +1,4 @@
-
+import {Dataset as DatasetSpec} from '@maticoapp/matico_types/spec'
 export enum DatasetState{
   LOADING = "LOADING",
   ERROR = "ERROR",
@@ -43,7 +43,7 @@ export interface DatasetSummary{
   tiled: boolean,
   raster:boolean,
   mvtUrl?: string,
-  spec: any
+  spec: DatasetSpec 
 }
 
 export type HistogramBin={

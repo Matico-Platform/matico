@@ -6,6 +6,7 @@ import { RGBAColor } from "@deck.gl/core";
 import * as d3 from "d3-scale";
 import { colors } from "../../../Utils/colors";
 import lodash from "lodash";
+import {ColorSpecification} from "@maticoapp/matico_types/spec";
 
 export function chunkCoords(coords: Array<Number>) {
   return coords.reduce((result, coord, index) => {
@@ -72,26 +73,22 @@ export const generateNumericVar = (numericVar): NumberReturn => {
   return null;
 };
 
-export const generateColor = (color: any, alpha: boolean) => {
-  if (Array.isArray(color)) {
-    // console.log("as array ", color)
-    if(color.length===4){
-      let c  = chroma(...color.slice(0,3), color[3]/255.0, "rgb").rgba()
+export const chromaColorFromColorSpecification= (color: ColorSpecification, alpha: boolean) => {
+    if(color.hasOwnProperty("rgba")){
+      let c  = chroma(...color.rgba.slice(0,3), color.rgba[3]/255.0, "rgb").rgba()
       return c 
     }
-    else{
-    let c= chroma(...color,'rgb').rgba()
-    if(alpha){ c[3] = 0.7} 
+    else if (color.hasOwnProperty("rgb")){
+      let c= chroma(...color.rgb,'rgb').rgba()
+      if(alpha){ c[3] = 0.7} 
     return c 
     }
-  }
-  if (typeof color === "string") {
-    if (chroma.valid(color)) {
-      let c = chroma(color).rgba()
-      if(alpha){ c[3] = 0.7} 
-      return c
+    else if (color.hasOwnProperty("hex")){
+      let c = chroma.hex(color.hex)
     }
-  }
+    else if (color.hasOwnProperty("named")){
+      let c = chroma.hex(color.named)
+    }
   return null;
 };
 
@@ -143,7 +140,7 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
     // console.log("variable domain range ", variable,domain, range )
 
     if (Array.isArray(range)) {
-      const mappedRange = range.map((c) => generateColor(c,true))
+      const mappedRange = range.map((c) => chromaColorFromColorSpecification(c,true))
 
       const ramp = constructRampFunctionCol(mappedRange,domain) 
 
@@ -161,7 +158,7 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
       if (!Array.isArray(brewer)) {
         brewer = brewer[3];
       }
-      const ramp = constructRampFunctionCol(brewer.map((c) => generateColor(c,true)), domain)
+      const ramp = constructRampFunctionCol(brewer.map((c) => chromaColorFromColorSpecification(c,true)), domain)
 
       return (d: any) => {
         const val = d.hasOwnProperty("properties")
@@ -177,7 +174,8 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
     }
   }
 
-  let c= generateColor(colorVar, alpha);
+  let c= chromaColorFromColorSpecification(colorVar, alpha);
+  console.log("color is ", c)
   c[3]= c[3]*255
   return () => c
 };

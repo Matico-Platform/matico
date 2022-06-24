@@ -6,6 +6,7 @@ import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Border from "@spectrum-icons/workflow/Border";
+import {Layer, Pane, PanePosition} from "@maticoapp/matico_types/spec";
 
 export const IconForPaneType = (PaneType: string) => {
     switch (PaneType) {
@@ -49,18 +50,26 @@ export const AvaliablePanes : Array<AvaliablePanesSection> = [
     }
 ];
 
-import {Layer, Pane} from "@maticoapp/matico_types/spec";
 
-export const DefaultPosition = {
+export const DefaultPosition : PanePosition = {
   x: 25,
   y: 25,
   width: 300,
   height: 300,
   float: false,
   layer: 1,
-  x_units:"Percent",
-  y_units:"Percent", width_units:"Pixels",
-  height_units:"Pixels"
+  xUnits: "percent",
+  yUnits: "percent",
+  widthUnits: "pixels",
+  heightUnits: "pixels",
+  padLeft: 0,
+  padRight: 0,
+  padTop: 0,
+  padBottom: 0,
+  padUnitsLeft: 'pixels',
+  padUnitsRight: 'pixels',
+  padUnitsTop: 'pixels',
+  padUnitsBottom: 'pixels'
 };
 
 const DefaultView = {

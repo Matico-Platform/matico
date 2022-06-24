@@ -31,7 +31,7 @@ export const COGImporter: React.FC<DatasetProviderComponent> = ({
         value={options.name}
         onChange={(name) => updateOptions({ name })}
       />
-      <Button variant="cta" onPress={() => onSubmit({ COG: options })}>Submit</Button>
+      <Button variant="cta" onPress={() => onSubmit({ type:"cog",  ...options })}>Submit</Button>
     </Flex>
   );
 };

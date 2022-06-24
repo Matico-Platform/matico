@@ -14,8 +14,7 @@ import {
 
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import TextStyle from "@spectrum-icons/workflow/TextStyle";
-import {Layout, ScreenUnits} from "@maticoapp/matico_types/spec";
-import {PanePosition} from "@maticoapp/matico_spec";
+import {Layout, ScreenUnits, PanePosition} from "@maticoapp/matico_types/spec";
 
 interface PaneEditorProps extends MaticoPaneInterface {
   onChange: (update: PanePosition) => void;
@@ -27,7 +26,7 @@ interface PositionUnitEditorProps {
   value: number;
   units: ScreenUnits;
   onValueChange: (value: number) => void;
-  onUnitsChange: (units: "Percent" | "Pixels") => void;
+  onUnitsChange: (units: ScreenUnits) => void;
 }
 
 const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
@@ -175,18 +174,10 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   const isLinearLayout = parentLayout.type === 'linear'
   const isFreeLayout = parentLayout.type === 'free'
 
-  const updatePosition = (change: any) => {
-    // console.log("Name ", change);
-    // console.log('POSITION', { ...position })
-    onChange({...change});
-  };
-
-  const updateName = (newName: string) => {
-    onChange({
-      background,
-      position,
-      name: newName,
-    });
+  const updatePosition = (change: Partial<PanePosition>) => {
+    onChange(
+       { ...position, ...change },
+    );
   };
 
   return (

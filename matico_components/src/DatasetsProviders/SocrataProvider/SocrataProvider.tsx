@@ -50,20 +50,18 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
   const attemptToLoadDataset = (dataset: any, format: "CSV" | "GeoJSON") => {
     if(format==='GeoJSON'){
       onSubmit({
-        GeoJSON: {
+          type:'geoJSON',
           url: `https://${dataset.metadata.domain}/api/geospatial/${dataset.resource.id}?method=export&format=GeoJSON`,
           name: dataset.resource.name,
-        },
       });
     }
     else{
       onSubmit({
-        CSV: {
+          type: 'csv',
           url: `https://${dataset.metadata.domain}/api/views/${dataset.resource.id}/rows.csv?accessType=DOWNLOAD`,
           name: dataset.resource.name,
           lat_col: latitudeCol,
           lng_col: longitudeCol
-        },
       });
 
     }
