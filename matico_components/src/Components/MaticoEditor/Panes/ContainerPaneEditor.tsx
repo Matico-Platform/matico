@@ -15,6 +15,8 @@ import { RemovePaneDialog } from "../Utils/RemovePaneDialog";
 import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
 import { IconForPaneType } from "../Utils/PaneDetails";
 import {NewPaneDialog} from "../EditorComponents/NewPaneDialog/NewPaneDialog";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { GatedAction } from "../EditorComponents/GatedAction";
 
 export interface SectionEditorProps {
     paneRef: PaneRef;
@@ -38,31 +40,26 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
 
     return (
         <Flex width="100%" height="100%" direction="column">
-            <PaneEditor
-                position={paneRef.position}
-                name={container.name}
-                background={"white"}
-                onChange={updatePanePosition}
-                parentLayout={parent.layout}
-                id={paneRef.id}
-            />
-            <SectionLayoutEditor
-                name={container.name}
-                layout={container.layout}
-                updateSection={updatePane}
-            />
-            <Well>
-                <Heading>
-                    <Flex
-                        direction="row"
-                        alignItems="center"
-                        justifyContent="space-between"
-                    >
-                        <Text>Panes</Text>
+            <CollapsibleSection title="Size" isOpen={true}>
+                <PaneEditor
+                    position={paneRef.position}
+                    name={container.name}
+                    background={"white"}
+                    onChange={updatePanePosition}
+                    parentLayout={parent.layout}
+                    id={paneRef.id}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Container Layout" isOpen={true}>
+                <SectionLayoutEditor
+                    name={container.name}
+                    layout={container.layout}
+                    updateSection={updatePane}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Panes" isOpen={true}>
+                <NewPaneDialog onAddPane={addPaneToContainer} />
 
-                        <NewPaneDialog onAddPane={addPaneToContainer} />
-                    </Flex>
-                </Heading>
                 <Flex gap={"size-200"} direction="column">
                     {subPanes.map((pane: Pane, index: number) => {
                         return (
@@ -95,8 +92,16 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
                         );
                     })}
                 </Flex>
-            </Well>
-            <RemovePaneDialog deletePane={removePane} />
+            </CollapsibleSection>
+            <CollapsibleSection title="Danger Zone">
+                <GatedAction
+                    buttonText="Delete this pane"
+                    confirmText={`Are you sure you want to delete ${container.name}?`}
+                    confirmButtonText="Delete Page"
+                    onConfirm={removePane}
+                    confirmBackgroundColor="negative"
+                />
+            </CollapsibleSection>
         </Flex>
     );
 };

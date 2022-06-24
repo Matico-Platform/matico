@@ -11,19 +11,19 @@ import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { DatasetSummary } from "Datasets/Dataset";
 import { LabelEditor } from "../Utils/LabelEditor";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
-import {usePane} from "Hooks/usePane";
-import {Labels, PaneRef} from "@maticoapp/matico_types/spec";
+import { usePane } from "Hooks/usePane";
+import { Labels, PaneRef, ScatterplotPane } from "@maticoapp/matico_types/spec";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 
 export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
-   paneRef 
+    paneRef
 }) => {
-    const {pane, updatePane, updatePanePosition, parent} = usePane(paneRef)
-
-    const scatterplotPane  = pane.type==='scatterplot' ? pane : null
+    const { pane, updatePane, updatePanePosition, parent } = usePane(paneRef);
+    const scatterplotPane = pane as ScatterplotPane;
 
     const updateLabels = (change: Partial<Labels>) => {
         updatePane({
@@ -43,8 +43,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
         (state) => state.datasets.datasets[scatterplotPane?.dataset.name]
     );
 
-
-    if (!pane) {
+    if (!scatterplotPane) {
         return (
             <View>
                 <Text>Failed to find component</Text>
@@ -53,22 +52,23 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     }
 
     return (
-        <Flex direction="column">
-            <PaneEditor
-              position={paneRef.position}
-              name={pane.name}
-              background={"white"}
-              onChange={updatePanePosition}
-              parentLayout={parent.layout} 
-              id={paneRef.id}
-             />
-            <Well>
-                <Heading>Source</Heading>
+        <View>
+            <CollapsibleSection title="Sizing" isOpen={true}>
+                <PaneEditor
+                    position={paneRef.position}
+                    name={scatterplotPane.name}
+                    background={"white"}
+                    onChange={(change) => updatePanePosition(change)}
+                    parentLayout={parent.layout}
+                    id={paneRef.id}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Data Source" isOpen={true}>
                 <DatasetSelector
                     selectedDataset={scatterplotPane?.dataset.name}
                     onDatasetSelected={updateDataset}
                 />
-                {dataset && (
+                {dataset ? (
                     <TwoUpCollapsableGrid>
                         <DatasetColumnSelector
                             label="X Column"
@@ -91,41 +91,33 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                             }
                         />
                     </TwoUpCollapsableGrid>
+                ) : (
+                    <Text>Select a dataset to see column options.</Text>
                 )}
-            </Well>
-            {dataset && (
-                <>
-                    <Well>
-                        <Heading>Style</Heading>
-                        <NumericVariableEditor
-                            label="Dot Size"
-                            datasetName={scatterplotPane?.dataset.name}
-                            style={scatterplotPane.dotSize}
-                            onUpdateStyle={(dotSize) =>
-                                updatePane({ dotSize })
-                            }
-                            minVal={0}
-                            maxVal={100}
-                        />
+            </CollapsibleSection>
+            <CollapsibleSection title="Chart Styles" isOpen={true}>
+                <NumericVariableEditor
+                    label="Dot Size"
+                    datasetName={scatterplotPane?.dataset.name}
+                    style={scatterplotPane.dotSize}
+                    onUpdateStyle={(dotSize) => updatePane({ dotSize })}
+                    minVal={0}
+                    maxVal={100}
+                />
 
-                        <ColorVariableEditor
-                            label="Dot Color"
-                            datasetName={scatterplotPane?.dataset.name}
-                            style={scatterplotPane?.dotColor}
-                            onUpdateStyle={(dotColor) =>
-                                updatePane({ dotColor })
-                            }
-                        />
-                    </Well>
-                    <LabelEditor
-                        labels={scatterplotPane?.labels}
-                        onUpdateLabels={updateLabels}
-                    />
-                </>
-            )}
-            <Well>
-                <Heading>Interaction</Heading>
-                {dataset && (
+                <ColorVariableEditor
+                    label="Dot Color"
+                    datasetName={scatterplotPane?.dataset.name}
+                    style={scatterplotPane?.dotColor}
+                    onUpdateStyle={(dotColor) => updatePane({ dotColor })}
+                />
+                <LabelEditor
+                    labels={scatterplotPane?.labels}
+                    onUpdateLabels={updateLabels}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Interaction" isOpen={true}>
+                {dataset ? (
                     <>
                         <DatasetColumnSelector
                             label="X Column"
@@ -148,8 +140,10 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                             }
                         />
                     </>
+                ) : (
+                    <Text>Select a dataset to see interaction options.</Text>
                 )}
-            </Well>
-        </Flex>
+            </CollapsibleSection>
+        </View>
     );
 };
