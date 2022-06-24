@@ -155,7 +155,7 @@ const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> = ({
     isEmphasized
     onAction={(key) => {
       const position = PositionPresets.find(f => f.id === key)?.position
-      !!position && updatePosition({ ...position, heightUnits: 'Percent', widthUnits: 'Percent', xUnits: 'Percent', yUnits: 'Percent' })
+      !!position && updatePosition({ ...position, heightUnits: 'percent', widthUnits: 'percent', xUnits: 'percent', yUnits: 'percent' })
     }}
   >
     {PositionPresets.map(({ id, label }) =>
@@ -178,10 +178,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
   const updatePosition = (change: any) => {
     // console.log("Name ", change);
     // console.log('POSITION', { ...position })
-    onChange({
-      //@ts-ignore
-      position: { ...position, ...change },
-    });
+    onChange({...change});
   };
 
   const updateName = (newName: string) => {
@@ -203,14 +200,14 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             value={position.x}
             units={position.xUnits}
             onValueChange={(x) => updatePosition({ x })}
-            onUnitsChange={(x_units) => updatePosition({ x_units })}
+            onUnitsChange={(xUnits) => updatePosition({ xUnits })}
           />
           <PositionUnitEditor
             label="Top"
             value={position.y}
             units={position.yUnits}
             onValueChange={(y) => updatePosition({ y })}
-            onUnitsChange={(y_units) => updatePosition({ y_units })}
+            onUnitsChange={(yUnits) => updatePosition({ yUnits })}
           />
           </TwoUpCollapsableGrid>
           </React.Fragment>
@@ -221,14 +218,14 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             value={position.width}
             units={position.widthUnits}
             onValueChange={(width) => updatePosition({ width })}
-            onUnitsChange={(width_units) => updatePosition({ width_units })}
+            onUnitsChange={(widthUnits) => updatePosition({ widthUnits })}
           />
           <PositionUnitEditor
             label="height"
             value={position.height}
             units={position.heightUnits}
             onValueChange={(height) => updatePosition({ height })}
-            onUnitsChange={(height_units) => updatePosition({ height_units })}
+            onUnitsChange={(heightUnits) => updatePosition({ heightUnits })}
           />
         </TwoUpCollapsableGrid>
       {isFreeLayout && <SnapPaneMenu {...{ updatePosition }} />}

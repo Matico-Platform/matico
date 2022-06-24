@@ -17,7 +17,7 @@ const FreeArea = styled.div`
  * If the unit is Percent, return %, otherwise return px.
  * @param {string} unit - The unit of the value.
  */
-const handleUnits = (unit: string) => unit === "Percent" ? '%' : 'px'
+const handleUnits = (unit: string) => unit === "percent" ? '%' : 'px'
 
 /**
  * If the values and units are not undefined, then map over the values and units and join them together
@@ -39,34 +39,35 @@ const FreePane: React.FC<PanePosition> = ({
   width, 
   height, 
   layer, 
-  width_units, 
-  height_units, 
+  widthUnits, 
+  heightUnits, 
   x, 
-  x_units, 
+  xUnits, 
   y, 
-  y_units, 
-  pad_left, 
-  pad_right, 
-  pad_bottom, 
-  pad_top, 
-  pad_units_left, 
-  pad_units_right, 
-  pad_units_bottom, 
-  pad_units_top, 
+  yUnits, 
+  padBottom, 
+  padLeft, 
+  padRight, 
+  padTop, 
+  padUnitsBottom, 
+  padUnitsLeft, 
+  padUnitsRight, 
+  padUnitsTop, 
   children 
 }) => {
+  console.log('width', widthUnits, heightUnits)
   return <View
     position="absolute"
-    width={`${width}${handleUnits(width_units)}`}
-    height={`${height}${handleUnits(height_units)}`}
+    width={`${width}${handleUnits(widthUnits)}`}
+    height={`${height}${handleUnits(heightUnits)}`}
     zIndex={layer}
-    left={`${x}${handleUnits(x_units)}`}
-    bottom={`${y}${handleUnits(y_units)}`}
+    left={`${x}${handleUnits(xUnits)}`}
+    bottom={`${y}${handleUnits(yUnits)}`}
     backgroundColor={"static-black"}
-    paddingBottom={`${pad_bottom}${handleUnits(pad_units_bottom)}`}
-    paddingStart={`${pad_left}${handleUnits(pad_units_left)}`}
-    paddingEnd={`${pad_right}${handleUnits(pad_units_right)}`}
-    paddingTop={`${pad_top}${handleUnits(pad_units_top)}`}
+    paddingBottom={`${padBottom}${handleUnits(padUnitsBottom)}`}
+    paddingStart={`${padLeft}${handleUnits(padUnitsLeft)}`}
+    paddingEnd={`${padRight}${handleUnits(padUnitsRight)}`}
+    paddingTop={`${padTop}${handleUnits(padUnitsTop)}`}
     UNSAFE_style={{
       transition: 'bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms',
       boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)',
