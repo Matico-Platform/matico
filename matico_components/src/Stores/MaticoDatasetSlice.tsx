@@ -1,10 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { DatasetState, DatasetSummary, Filter } from "Datasets/Dataset";
+import { DatasetState, DatasetSummary } from "Datasets/Dataset";
+import {Filter} from "@maticoapp/matico_types/spec"
+import {Dataset as DatasetSpec } from "@maticoapp/matico_types/spec"
 import _ from "lodash";
-// import { Dataset } from "../Datasets/Dataset";
-
-// export type DatasetLoader = (config: any)=> Dataset;
-//
 
 export interface Query {
   state: "Loading" | "Error" | "Done";
@@ -41,8 +39,13 @@ export const datasetsSlice = createSlice({
   initialState,
   reducers: {
     // Also triggers middleware 
-    registerOrUpdateDataset: (state, action: PayloadAction<DatasetSummary>) => {
-      state.datasets[action.payload.name] = action.payload;
+    registerOrUpdateDataset: (state, action: PayloadAction<DatasetSpec>) => {
+      console.log("HERE ", action.payload)
+      state.datasets[action.payload.name] = {
+        name:  action.payload.name,
+        state: DatasetState.LOADING,
+        spec : action.payload
+      };
     },
     datasetReady: (state, action: PayloadAction<DatasetSummary>) => {
       state.datasets[action.payload.name] = action.payload;

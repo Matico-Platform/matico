@@ -1,14 +1,9 @@
 import React from 'react';
 import {COGDataset} from './COGDataset'
+import {COGDataset as COGDatasetSpec} from '@maticoapp/matico_types/spec'
 
-interface COGBuilderOptions{
-  name: string;
-  url: string;
-  description: string;
-}
+export const COGBuilder= (details: COGDatasetSpec)=>{
+  const {name,url} = details
 
-export const COGBuilder= (details: COGBuilderOptions)=>{
-  const {name,url,description} = details
-
-  return new COGDataset(name,url,description)
+  return new COGDataset(name,url,"")
 }

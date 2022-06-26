@@ -10,10 +10,13 @@ use wasm_bindgen::prelude::*;
 #[ts(export)]
 pub enum Dataset {
     GeoJSON(GeoJSONDataset),
+    #[serde(rename="csv")]
     CSV(CSVDataset),
     MaticoRemote(MaticoRemoteDataset),
     MaticoApi(MaticoApiDataset),
+    #[serde(rename="cog")]
     COG(COGDataset),
+    #[serde(rename="wasmCompute")]
     WASMCompute(WASMCompute),
 }
 

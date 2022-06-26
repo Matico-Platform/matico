@@ -1,6 +1,6 @@
 import {useEffect, useMemo} from "react";
 import {Query, registerDataUpdates} from "Stores/MaticoDatasetSlice";
-import {Filter} from "Datasets/Dataset";
+import {Filter} from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 //@ts-ignore
 import { v4 as uuid } from 'uuid';

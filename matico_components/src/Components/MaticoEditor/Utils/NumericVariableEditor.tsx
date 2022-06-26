@@ -35,11 +35,12 @@ export const NumericVariableEditor: React.FC<NumericVariableEditorProps> = ({
     (state) => state.datasets.datasets[datasetName]
   );
 
-  const defaultColumn = dataset.columns[0];
-
   const isDataDriven =  style && style.hasOwnProperty("variable");
 
   const toggleDataDriven = () => {
+
+    const defaultColumn = dataset?.columns[0];
+
     if (isDataDriven) {
       onUpdateStyle((minVal + maxVal) * 0.5);
     } else {

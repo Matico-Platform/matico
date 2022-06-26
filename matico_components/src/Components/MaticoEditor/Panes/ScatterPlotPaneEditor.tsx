@@ -39,6 +39,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
         });
     };
 
+
     const dataset: DatasetSummary = useMaticoSelector(
         (state) => state.datasets.datasets[scatterplotPane?.dataset.name]
     );

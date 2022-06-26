@@ -2,12 +2,7 @@ import {LocalDataset} from './LocalDataset'
 import {Table,DataFrame} from "@apache-arrow/es5-cjs";
 import {Column, Dataset, GeomType} from "./Dataset"
 import {DataType} from '@apache-arrow/es5-cjs'
-
-interface WasmComputeBuilderOptions {
-  name: string;
-  url:string;
-  params: {[param:string]:any};
-}
+import {WASMCompute} from "@maticoapp/matico_types/spec"
 
 
 const arrowTypeToMaticoType= (aType: DataType)=>{
@@ -23,7 +18,7 @@ const arrowTypeToMaticoType= (aType: DataType)=>{
   return "unknown"
 }
 
-export const WasmComputeBuilder = async (details: WasmComputeBuilderOptions, datasets: Array<Dataset>) => {
+export const WasmComputeBuilder = async (details: WASMCompute, datasets: Array<Dataset>) => {
   const { name, url ,params } = details;
   console.log("loading compute file")
   const wasm = await import(/* webpackIgnore: true */   url)

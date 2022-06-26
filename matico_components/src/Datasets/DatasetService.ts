@@ -34,7 +34,7 @@ export interface DatasetServiceInterface {
   ): void;
   registerOrUpdateDataset(
     datasetName: string,
-    datasetDetails: any
+    datasetDetails: DatasetSpec
   ): Promise<DatasetSummary>;
 
   registerColumnData(
@@ -140,7 +140,7 @@ export const DatasetService: DatasetServiceInterface = {
 
   async registerOrUpdateDataset(datasetDetails: DatasetSpec): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
-      case "GeoJSON":
+      case "geoJSON":
         const geoDataset = await GeoJSONBuilder(datasetDetails);
         this.datasets[geoDataset.name] = geoDataset;
         this._notify(geoDataset.name);
@@ -154,10 +154,12 @@ export const DatasetService: DatasetServiceInterface = {
           tiled: geoDataset.tiled(),
           spec: datasetDetails
         };
-      case "CSV":
+      case "csv":
+        console.log("BUILDING CSV DATASET ")
         const csvDataset = await CSVBuilder(datasetDetails);
         this.datasets[csvDataset.name] = csvDataset;
         this._notify(csvDataset.name);
+        console.log("BUILDING CSV DATASET ", csvDataset)
         return {
           name: csvDataset.name,
           state: DatasetState.READY,
@@ -168,7 +170,7 @@ export const DatasetService: DatasetServiceInterface = {
           tiled: csvDataset.tiled(),
           spec: datasetDetails
         };
-      case "MaticoRemote":
+      case "maticoRemote":
         const maticoDataset = await MaticoRemoteBuilder(datasetDetails);
         this.datasets[maticoDataset.name] = maticoDataset;
         this._notify(maticoDataset.name);
@@ -183,7 +185,7 @@ export const DatasetService: DatasetServiceInterface = {
           mvtUrl: maticoDataset.mvtUrl(),
           spec: datasetDetails
         };
-      case "MaticoApi":
+      case "maticoApi":
         const maticoApi= await MaticoRemoteApiBuilder(datasetDetails);
         this.datasets[maticoApi.name] = maticoApi;
         this._notify(maticoApi.name);
@@ -198,7 +200,7 @@ export const DatasetService: DatasetServiceInterface = {
           mvtUrl: maticoApi.mvtUrl(),
           spec: datasetDetails
         };
-      case "WASMCompute":
+      case "wasmCompute":
         console.log("REGISTERING WASM COMPUTE")
         const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
         console.log("GENERATING NEW COMPUTE DATASET")
@@ -215,8 +217,8 @@ export const DatasetService: DatasetServiceInterface = {
           mvtUrl: null,
           spec: datasetDetails
         };
-      case "COG":
-        const cog = await COGBuilder(datasetDetails);
+      case "cog":
+        const cog = COGBuilder(datasetDetails);
         this.datasets[cog.name] = cog;
         this._notify(cog.name);
         return {

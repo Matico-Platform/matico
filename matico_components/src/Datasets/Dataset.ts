@@ -40,8 +40,8 @@ export interface DatasetSummary{
   local?:boolean,
   state: DatasetState,
   error?: string,
-  tiled: boolean,
-  raster:boolean,
+  tiled?: boolean,
+  raster?:boolean,
   mvtUrl?: string,
   spec: DatasetSpec 
 }

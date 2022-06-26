@@ -17,6 +17,7 @@ export const DatasetServiceMiddleWare = () => {
     const state = store.getState();
     switch (action.type) {
       case "datasets/registerOrUpdateDataset":
+          console.log("dataset instructions " ,action)
           worker
             .registerOrUpdateDataset(action.payload)
             .then((datasetSummary: DatasetSummary) => {

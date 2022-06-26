@@ -4,6 +4,7 @@ import { registerOrUpdateDataset } from "../Stores/MaticoDatasetSlice";
 import { useMaticoDispatch } from "./redux";
 import { useAppSpec } from "./useAppSpec";
 import { useNormalizeSpec } from "./useNormalizeSpec";
+import {Dataset as DatasetSpec} from '@maticoapp/matico_types/spec'
 
 /**
  * Registers and keeps datasets in sync with the specification
@@ -19,7 +20,7 @@ export const useRegisterDatasets = () => {
 
     // console.log("normalizedDatasetSpec is ", normalizedDatasetSpec, spec?.datasets)
 
-    const previousDatasetSpec = useRef<Record<string, any>>([]);
+    const previousDatasetSpec = useRef<Array<DatasetSpec>>([]);
 
     useEffect(() => {
         if (!normalizedDatasetSpec) {
@@ -30,13 +31,11 @@ export const useRegisterDatasets = () => {
             return;
         }
         normalizedDatasetSpec.forEach(
-            (datasetDetails: { [type: string]: any }) => {
-                const [type, details] = Object.entries(datasetDetails)[0];
-                const prevSpec =previousDatasetSpec.current.find((d: Record<string,any>) => Object.values(d)[0].name === details.name);
-
+            (datasetDetails: DatasetSpec) => {
+                const prevSpec =previousDatasetSpec.current.find((d: DatasetSpec) => d.name === datasetDetails.name);
 
                 // Skip if this particular dataset needs no update
-                if (prevSpec && _.isEqual(Object.values(prevSpec)[0], details)) {
+                if (prevSpec && _.isEqual(prevSpec, datasetDetails)) {
                 //   console.log("skipping ",details.name)
                     return;
                 }
@@ -44,8 +43,7 @@ export const useRegisterDatasets = () => {
 
                 dispatch(
                     registerOrUpdateDataset({
-                        ...details,
-                        type
+                        ...datasetDetails
                     })
                 );
             }

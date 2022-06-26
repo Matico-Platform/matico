@@ -13,24 +13,25 @@ import {
   generateNumericVar,
 } from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
+import {ColorSpecification, DatasetRef, Labels} from "@maticoapp/matico_types/spec";
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
-  dataset: { name: string; filters: Array<Filter> };
-  x_column: string;
-  y_column: string;
-  dot_color?: string;
+  dataset: DatasetRef;
+  xColumn: string;
+  yColumn: string;
+  dotColor?: ColorSpecification;
   // backgroundColor: string;
-  dot_size?: number;
-  labels?: { [label: string]: string };
+  dotSize?: number;
+  labels?: Labels;
 }
 
 export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
   ({
     dataset = {},
-    x_column = "",
-    y_column = "",
-    dot_color = "#ff0000",
-    dot_size = 1,
+    xColumn = "",
+    yColumn = "",
+    dotColor ={ hex:"#ff0000"},
+    dotSize = 1,
     id,
     labels,
   }) => {
@@ -43,12 +44,12 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       foundDataset && foundDataset.state === DatasetState.READY;
 
     const [mappedStyle, styleReady] = useNormalizeSpec({
-      dot_color,
-      dot_size,
+      dotColor,
+      dotSize,
     });
 
     const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
-    const chartData = useRequestData(dataset.name, dataset.filters, [x_column,y_column]);
+    const chartData = useRequestData(dataset.name, dataset.filters, [xColumn,yColumn]);
 
     const [
       xFilter,
@@ -56,7 +57,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       //@ts-ignore
     ] = useAutoVariable({
       //@ts-ignore
-      name: `${x_column}_range`,
+      name: `${xColumn}_range`,
       //@ts-ignore
       type: "NoSelection",
       initialValue: {
@@ -70,7 +71,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       //@ts-ignore
     ] = useAutoVariable({
       //@ts-ignore
-      name: `${y_column}_range`,
+      name: `${yColumn}_range`,
       //@ts-ignore
       type: "NoSelection",
       initialValue: {
@@ -84,15 +85,15 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
 
       if (!filtersReady) return <h1>Loading</h1>;
 
-      const dotSize = generateNumericVar(mappedStyle?.dot_size);
-      const dotColor = generateColorVar(mappedStyle?.dot_color);
+      const dotSize = generateNumericVar(mappedStyle?.dotSize);
+      const dotColor = generateColorVar(mappedStyle?.dotColor);
 
       const [xExtent, yExtent] = data.reduce(
         (agg, val) => {
-          agg[0][0] = Math.min(agg[0][0], val[x_column]);
-          agg[0][1] = Math.max(agg[0][1], val[x_column]);
-          agg[1][0] = Math.min(agg[1][0], val[y_column]);
-          agg[1][1] = Math.max(agg[1][1], val[y_column]);
+          agg[0][0] = Math.min(agg[0][0], val[xColumn]);
+          agg[0][1] = Math.max(agg[0][1], val[xColumn]);
+          agg[1][0] = Math.min(agg[1][0], val[yColumn]);
+          agg[1][1] = Math.max(agg[1][1], val[yColumn]);
           return agg;
         },
         [
@@ -105,12 +106,12 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         <MaticoChart
           xExtent={xExtent}
           yExtent={yExtent}
-          xLabel={labels?.x_label ?? x_column}
-          yLabel={labels?.y_label ?? y_column}
-          xCol={x_column}
-          yCol={y_column}
-          title={labels?.title ?? `${x_column} vs ${y_column}`}
-          subtitle={labels?.sub_title}
+          xLabel={labels?.xLabel ?? xColumn}
+          yLabel={labels?.yLabel ?? yColumn}
+          xCol={xColumn}
+          yCol={yColumn}
+          title={labels?.title ?? `${xColumn} vs ${yColumn}`}
+          subtitle={labels?.subTitle}
           attribution={labels?.attribution}
           data={data}
           xAxis={{
@@ -140,10 +141,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
               x0 === x1
               ? {
                 type: "NoSelection",
-                variable: x_column
+                variable: xColumn
               } : {
                   type: "SelectionRange",
-                  variable: x_column,
+                  variable: xColumn,
                   min: x0,
                   max: x1,
               });
@@ -151,10 +152,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
               y0 === y1 
               ? {
                 type: "NoSelection",
-                variable: y_column
+                variable: yColumn
               } : {
                   type: "SelectionRange",
-                  variable: y_column,
+                  variable: yColumn,
                   min: y0,
                   max: y1,
               });
@@ -162,7 +163,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         />
       );
     }, [
-      JSON.stringify({ labels, x_column, y_column, mappedStyle }),
       chartData,
     ]);
 

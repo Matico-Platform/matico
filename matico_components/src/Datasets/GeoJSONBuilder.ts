@@ -21,15 +21,12 @@ import {
 import traverse from "traverse";
 import wkx from "wkx";
 import { LocalDataset } from "./LocalDataset";
+import {GeoJSONDataset} from "@maticoapp/matico_types/spec";
 
-interface GeoJSONBuilderOptions {
-  name: string;
-  url?: string;
-  idCol: string;
-}
 
-export const GeoJSONBuilder = async (details: GeoJSONBuilderOptions) => {
-  const { name, url, idCol } = details;
+export const GeoJSONBuilder = async (details: GeoJSONDataset) => {
+  const { name, url } = details;
+  const idCol : null | string = null
   const result = await fetch(url).then((r) => r.json());
   const geometryType = extractGeomType(result);
   const { columns, fields } = extractColumns(result, idCol);

@@ -60,8 +60,9 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
           type: 'csv',
           url: `https://${dataset.metadata.domain}/api/views/${dataset.resource.id}/rows.csv?accessType=DOWNLOAD`,
           name: dataset.resource.name,
-          lat_col: latitudeCol,
-          lng_col: longitudeCol
+          latCol: latitudeCol,
+          lngCol: longitudeCol,
+          idColumn:""
       });
 
     }
