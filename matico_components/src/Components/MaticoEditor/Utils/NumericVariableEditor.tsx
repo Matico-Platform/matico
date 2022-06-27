@@ -11,11 +11,12 @@ import { useMaticoSelector } from "Hooks/redux";
 import FunctionIcon from "@spectrum-icons/workflow/Function";
 import _ from "lodash";
 import { DataDrivenModal } from "./DataDrivenModal";
+import {MappingVarOr} from '@maticoapp/matico_types/spec'
 
-interface NumericVariableEditorProps {
-  style: any;
+export interface NumericVariableEditorProps{
+  style: MappingVarOr<number>;
   label: string;
-  onUpdateStyle: (style: any) => void;
+  onUpdateStyle: (style: MappingVarOr<number>) => void;
   datasetName?: string;
   minVal: number;
   maxVal: number;
@@ -50,9 +51,8 @@ export const NumericVariableEditor: React.FC<NumericVariableEditorProps> = ({
           dataset: datasetName,
           column: defaultColumn.name,
           metric: {
-            Quantile: {
+              type:"quantile",
               bins: 5,
-            },
           },
         },
         range: _.range(5).map((i) => minVal + ((maxVal - minVal) * i) / 5.0),

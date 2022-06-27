@@ -86,9 +86,8 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ mapId, layerId}) => {
         domain: {
           dataset: layer.source.name,
           metric: {
-            Quantile: {
+              "type":"quantile",
               bins: 5,
-            },
           },
           column: variable?.name,
         },

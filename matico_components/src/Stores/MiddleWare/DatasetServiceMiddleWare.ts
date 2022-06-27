@@ -17,7 +17,6 @@ export const DatasetServiceMiddleWare = () => {
     const state = store.getState();
     switch (action.type) {
       case "datasets/registerOrUpdateDataset":
-          console.log("dataset instructions " ,action)
           worker
             .registerOrUpdateDataset(action.payload)
             .then((datasetSummary: DatasetSummary) => {
@@ -69,6 +68,11 @@ export const DatasetServiceMiddleWare = () => {
             },
           });
         };
+
+        console.log("Registering for Column Data",
+                  action.payload.args,
+                  action.payload.notifierId
+                   )
 
         worker.registerColumnData(
           action.payload.args,

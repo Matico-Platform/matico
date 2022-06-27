@@ -38,9 +38,8 @@ export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
           dataset: datasetName,
           column: defaultColumn.name,
           metric:{
-            Quantile:{
+              type:"quantile",
               bins:5
-            }
           }
         },
         range:"RedOr.5"

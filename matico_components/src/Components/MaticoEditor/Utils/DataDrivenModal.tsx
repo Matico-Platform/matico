@@ -26,6 +26,7 @@ import { colors } from "../../../Utils/colors";
 import _ from "lodash";
 import { TwoUpCollapsableGrid } from "./TwoUpCollapsableGrid";
 import { scaleThreshold } from "d3-scale";
+import {Mapping} from "@maticoapp/matico_types/spec";
 
 type RangeType = "color" | "value";
 
@@ -42,7 +43,7 @@ interface DomainEditorProps {
   dataset: DatasetSummary;
   rangeType: RangeType;
   filters: Array<Filter>;
-  mapping: any;
+  mapping: Mapping<number,number>;
   onUpdateMapping: (newMapping: any) => void;
 }
 
@@ -60,8 +61,9 @@ const DiscreteDomain: React.FC<DomainEditorProps> = ({
   const [categories, setCategories] = useState<Array<any>>([])
 
   const [metric, metricParams] = Array.isArray(domain)
-    ? ["Manual", { no_categories: domain.length }]
-    : Object.entries(domain.metric)[0];
+    ? ["manual", { no_categories: domain.length }]
+    : [domain.type, domain];
+
   //@ts-ignore
   let noCategories = metricParams.no_categories;
 
@@ -81,7 +83,7 @@ const DiscreteDomain: React.FC<DomainEditorProps> = ({
   let categoryCounts = useRequestColumnStat({
     datasetName: dataset.name,
     column: domain.column,
-    metric: "CategoryCounts",
+    metric: "categoryCounts",
     parameters: {},
     filters: filters,
   });
@@ -184,8 +186,8 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
   const range = mapping.range;
 
   const [metric, metricParams] = Array.isArray(domain)
-    ? ["Manual", { bins: domain.length }]
-    : Object.entries(domain.metric)[0];
+    ? ["manual", { bins: domain.length }]
+    : [domain.type, domain];
 
   //@ts-ignore
   const noBins = metricParams.bins;
@@ -210,7 +212,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
   const histogram = useRequestColumnStat({
     datasetName: dataset.name,
     column: domain.column,
-    metric: "Histogram",
+    metric: "histogram",
     parameters: { bins: 20 },
     filters: filters,
   });
@@ -218,7 +220,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
   const quantiles = useRequestColumnStat({
     datasetName: dataset.name,
     column: column.name,
-    metric: "Quantile",
+    metric: "quantile",
     parameters: { bins: noBins },
     filters: filters,
   });
@@ -226,23 +228,23 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
   const equalInterval = useRequestColumnStat({
     datasetName: dataset.name,
     column: column.name,
-    metric: "EqualInterval",
+    metric: "equalInterval",
     parameters: { bins: noBins },
     filters: filters,
   });
 
   useEffect(() => {
-    if (metric === "Quantile" && quantiles && quantiles.state === "Done") {
+    if (metric === "quantile" && quantiles && quantiles.state === "Done") {
       setDomainValues(quantiles.result);
     }
     if (
-      metric === "EqualInterval" &&
+      metric === "equalInterval" &&
       equalInterval &&
       equalInterval.state === "Done"
     ) {
       setDomainValues(equalInterval.result);
     }
-    if (metric === "Manual") {
+    if (metric === "manual") {
       setDomainValues(domain);
     }
   }, [metric, noBins, quantiles, equalInterval, column]);
@@ -257,26 +259,26 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
       : [];
 
   const updateQuantization = (quantization: string) => {
-    if (quantization === "Manual") {
+    if (quantization === "manual") {
       onUpdateMapping({ ...mapping, domain: domainValues });
     }
-    if (quantization === "Quantile") {
+    if (quantization === "quantile") {
       onUpdateMapping({
         ...mapping,
         domain: {
           dataset: dataset.name,
           column: column.name,
-          metric: { Quantile: { bins: noBins } },
+          metric: { type:"quantile", bins: noBins },
         },
       });
     }
-    if (quantization === "EqualInterval") {
+    if (quantization === "equalInterval") {
       onUpdateMapping({
         ...mapping,
         domain: {
           dataset: dataset.name,
           column: column.name,
-          metric: { EqualInterval: { bins: noBins } },
+          metric: { type:"equalInterval", bins: noBins } ,
         },
       });
     }
@@ -290,7 +292,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
     } else {
       newRange = `${selectedPaletteName}.${bins}`;
     }
-    if (metric === "Manual") {
+    if (metric === "manual") {
       onUpdateMapping({
         ...mapping,
         range: newRange,
@@ -299,19 +301,19 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         ),
       });
     }
-    if (metric === "Quantile") {
+    if (metric === "quantile") {
       const newMapping = {
         ...mapping,
         range: newRange,
-        domain: { ...domain, metric: { Quantile: { bins } } },
+        domain: { ...domain, metric: { type:'quantile', bins  } },
       };
       onUpdateMapping(newMapping);
     }
-    if (metric === "EqualInterval") {
+    if (metric === "equalInterval") {
       onUpdateMapping({
         ...mapping,
         range: newRange,
-        domain: { ...domain, metric: { EqualInterval: { bins } } },
+        domain: { ...domain, metric: { type: 'quantile', bins  } },
       });
     }
   };
@@ -367,10 +369,10 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
               onSelectionChange={(quant) => updateQuantization(quant as string)}
               label="Quantization"
             >
-              <Item key="Quantile">Quantiles</Item>
-              <Item key="Continuous">Continuous</Item>
-              <Item key="EqualInterval">Equal</Item>
-              <Item key="Manual">Manual</Item>
+              <Item key="quantile">Quantiles</Item>
+              <Item key="continuous">Continuous</Item>
+              <Item key="equalInterval">Equal</Item>
+              <Item key="manual">Manual</Item>
             </Picker>
 
             <NumberField
@@ -394,7 +396,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
           )}
         </Flex>
 
-        {["Quantile", "EqualInterval", "Manual"].includes(metric) && (
+        {["quantile", "equalInterval", "manual"].includes(metric) && (
           <Well marginStart="size-300">
             <Flex direction="column">
               {domainValues &&
@@ -410,7 +412,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                         height="size-350"
                       />
                     )}
-                    {metric === "Manual" ? (
+                    {metric === "manual" ? (
                       <NumberField
                         aria-label={`Bin ${index + 1}`}
                         key={index}
@@ -504,11 +506,12 @@ const baseSpecForCol = (datasetName: string, column: Column) => {
     return {
       variable: column.name,
       domain: {
-        metric: {
-          Quantile: {
+        metric: 
+          {
+            type:"quantile",
             bins: 5,
           },
-        },
+        
         dataset: datasetName,
         column: column.name,
       },
@@ -520,9 +523,8 @@ const baseSpecForCol = (datasetName: string, column: Column) => {
       variable: column.name,
       domain: {
         metric: {
-          Categories: {
+            type:"categories",
             no_categories: 7
-          },
         },
         dataset: datasetName,
         column: column.name,

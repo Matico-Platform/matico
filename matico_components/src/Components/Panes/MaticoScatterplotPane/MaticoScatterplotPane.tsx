@@ -51,6 +51,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
     const chartData = useRequestData(dataset.name, dataset.filters, [xColumn,yColumn]);
 
+
     const [
       xFilter,
       updateXFilter,
@@ -88,19 +89,20 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       const dotSize = generateNumericVar(mappedStyle?.dotSize);
       const dotColor = generateColorVar(mappedStyle?.dotColor);
 
-      const [xExtent, yExtent] = data.reduce(
-        (agg, val) => {
-          agg[0][0] = Math.min(agg[0][0], val[xColumn]);
-          agg[0][1] = Math.max(agg[0][1], val[xColumn]);
-          agg[1][0] = Math.min(agg[1][0], val[yColumn]);
-          agg[1][1] = Math.max(agg[1][1], val[yColumn]);
-          return agg;
-        },
-        [
-          [Number.MAX_VALUE, Number.MIN_VALUE],
-          [Number.MAX_VALUE, Number.MIN_VALUE],
-        ]
-      );
+      const xVals = data.map((d: Record<string,unknown>)=>d[xColumn])
+      const yVals = data.map((d: Record<string,unknown>)=>d[yColumn])
+
+      const xExtent = [
+        Math.min(...xVals),
+        Math.max(...xVals),
+      ]
+
+      const yExtent =[
+        Math.min(...yVals),
+        Math.max(...yVals)
+      ]
+
+      console.log("X Columns is ", xColumn, " y column is ",yColumn, " xExtent ", xExtent, " yExtent ", yExtent)
 
       return (
         <MaticoChart

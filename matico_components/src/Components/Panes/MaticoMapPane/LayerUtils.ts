@@ -73,21 +73,21 @@ export const generateNumericVar = (numericVar): NumberReturn => {
   return null;
 };
 
+
 export const chromaColorFromColorSpecification= (color: ColorSpecification, alpha: boolean) => {
     if(color.hasOwnProperty("rgba")){
-      let c  = chroma(...color.rgba.slice(0,3), color.rgba[3]/255.0, "rgb").rgba()
-      return c 
+      return  chroma(...color.rgba.slice(0,3), color.rgba[3]/255.0, "rgb").rgba()
     }
     else if (color.hasOwnProperty("rgb")){
       let c= chroma(...color.rgb,'rgb').rgba()
       if(alpha){ c[3] = 0.7} 
-    return c 
+      return c 
     }
     else if (color.hasOwnProperty("hex")){
-      let c = chroma.hex(color.hex)
+      return chroma.hex(color.hex)
     }
     else if (color.hasOwnProperty("named")){
-      let c = chroma.hex(color.named)
+      return chroma.hex(color.named)
     }
   return null;
 };
@@ -158,7 +158,7 @@ export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
       if (!Array.isArray(brewer)) {
         brewer = brewer[3];
       }
-      const ramp = constructRampFunctionCol(brewer.map((c) => chromaColorFromColorSpecification(c,true)), domain)
+      const ramp = constructRampFunctionCol(brewer.map((c:string) => chromaColorFromColorSpecification({hex:c},true)), domain)
 
       return (d: any) => {
         const val = d.hasOwnProperty("properties")

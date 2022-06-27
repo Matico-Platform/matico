@@ -176,7 +176,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
     };
 
     const addLayer = (dataset: string, layerName: string) => {
-      debugger
         const newLayer : Layer= {
             ...DefaultLayer,
             source: { name: dataset, filters:[] },

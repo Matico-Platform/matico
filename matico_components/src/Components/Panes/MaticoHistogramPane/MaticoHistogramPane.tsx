@@ -56,12 +56,14 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     color,
   });
 
+  console.log("Histogram color is ", color, mappedStyle)
+
   const dataRequest =
     foundDataset && filtersReady
       ? {
           datasetName: dataset.name,
           column,
-          metric: "Histogram",
+          metric: "histogram",
           filters: mappedFilters,
           parameters: { bins: maxbins },
         }
@@ -70,6 +72,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
   console.log("data request ", dataRequest);
 
   const chartData = useRequestColumnStat(dataRequest);
+  
+  console.log("Chart data ", chartData)
 
   const Chart = useMemo(() => {
     if (!chartData || chartData.state !== "Done") {

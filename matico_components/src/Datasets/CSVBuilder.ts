@@ -121,7 +121,6 @@ const extractGeomType = (lat_col: string, lng_col: string) => {
 export const CSVBuilder = async (details: CSVDataset) => {
   console.log("HERE IN CSV BUILDER")
   const { url, latCol, lngCol,  name } = details;
-  debugger
   const idCol: string | null = null
   const { columns, fields, lat_index, lng_index } = await extractHeader(
     url,

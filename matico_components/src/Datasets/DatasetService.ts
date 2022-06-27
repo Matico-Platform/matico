@@ -39,7 +39,8 @@ export interface DatasetServiceInterface {
 
   registerColumnData(
     args: ColumnStatRequest,
-    callback: (data: any) => void
+    notifierId: string,
+    callback: (data: unknown) => void
   ): void;
 }
 
@@ -51,28 +52,29 @@ export const DatasetService: DatasetServiceInterface = {
   async registerColumnData(
     args: ColumnStatRequest,
     notifierId: string,
-    callback: (data: any) => void,
+    callback: (data: unknown) => void,
   ) {
 
     const { datasetName, metric, column, parameters, filters } = args;
+    console.log("REGISTERING COLUMN DATA ", args)
     
     const getMetric = async (datasetName: string) => {
       let dataset = this.datasets[datasetName];
       if (dataset) {
         switch (metric) {
-          case "Max":
+          case "max":
             return await dataset.getColumnMax(column);
-          case "Min":
+          case "min":
             return dataset.getColumnMin(column);
-          case "EqualInterval":
+          case "equalInterval":
             return dataset.getEqualIntervalBins(column, parameters.bins);
-          case "Quantile":
+          case "quantile":
             return dataset.getQuantileBins(column, parameters.bins);
-          case "Histogram":
+          case "histogram":
             return dataset.getColumnHistogram(column, parameters.bins,filters);
-          case "CategoryCounts":
+          case "categoryCounts":
             return dataset.getCategoryCounts(column, filters)
-          case "Categories":
+          case "categories":
             return dataset.getCategories(column,parameters.no_categories, filters)
           default:
             return null;
@@ -86,6 +88,7 @@ export const DatasetService: DatasetServiceInterface = {
     if (metricVal) {
       callback(metricVal);
     }
+    console.log("METRIC VAL IS", metricVal)
 
     this._registerNotifier(datasetName, notifierId, async () => {
       const metricVal = await getMetric(datasetName);
@@ -107,7 +110,7 @@ export const DatasetService: DatasetServiceInterface = {
       let d = this.datasets[datasetName];
       
       if (d) {
-        let data = await  d.getData(filters,columns,limit);
+        let data = await d.getData(filters,columns,limit);
         callback(data);
       }
 

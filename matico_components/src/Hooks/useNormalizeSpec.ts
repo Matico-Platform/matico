@@ -20,12 +20,11 @@ const getRequiredDatasetMetrics = (struct: any)=>{
   traverse(struct).forEach((node:any)=>{
     if(node && node.dataset){
       const {dataset,column,feature_id,metric, filters} = node;
-      const [metricName, parameters] = Object.entries(metric)[0];
       const requiredMetric = {
         datasetName: dataset,
         column ,
-        metric: metricName,
-        parameters ,
+        metric: metric.type,
+        parameters: metric ,
         filters  
       }
       requiredDataMetrics.push(requiredMetric)
