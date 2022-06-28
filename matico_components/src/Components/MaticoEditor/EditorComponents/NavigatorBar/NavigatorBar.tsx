@@ -1,4 +1,4 @@
-import { View, Tabs, Item, TabPanels, TabList } from "@adobe/react-spectrum";
+import { View, Tabs, Item, TabPanels, TabList, Button } from "@adobe/react-spectrum";
 import React, { useState } from "react";
 import { NavigatorBarProps } from "./types";
 import Layers from "@spectrum-icons/workflow/Layers";
@@ -14,7 +14,6 @@ import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
 import { Editors } from "Components/MaticoEditor/Editors";
 import { AppEditor } from "Components/MaticoEditor/Panes/AppEditor";
-import ClickAwayListener from "react-click-away-listener";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -24,90 +23,106 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     const handleHidePanel = () => setShowPanel(false);
 
     return (
-        <ClickAwayListener onClickAway={handleHidePanel}>
-            <div>
-                <View
-                    position="relative"
-                    maxHeight="100vh"
-                    overflow="visible"
-                    paddingTop="3em"
+        <div>
+            <View
+                position="relative"
+                maxHeight="100vh"
+                overflow="visible"
+                paddingTop="3em"
+            >
+                <Tabs
+                    aria-labelledby="label-3"
+                    orientation="vertical"
+                    onSelectionChange={handleShowPanel}
                 >
-                    <Tabs
-                        aria-labelledby="label-3"
-                        orientation="vertical"
-                        onSelectionChange={handleShowPanel}
+                    <TabList>
+                        <Item key="outline">
+                            <Layers size="XL" />
+                        </Item>
+                        <Item key="datasets">
+                            <Data size="L" />
+                        </Item>
+                        <Item key="dataviews">
+                            <Curate size="L" />
+                        </Item>
+                        <Item key="state">
+                            <Channel size="L" />
+                        </Item>
+                        <Item key="spec">
+                            <DocumentOutline size="L" />
+                        </Item>
+                    </TabList>
+                    <View
+                        position="absolute"
+                        left="100%"
+                        top="3em"
+                        height="calc(100vh - 3em)"
+                        overflow="hidden"
+                        minWidth={`20em`}
+                        zIndex={500}
+                        UNSAFE_style={{
+                            pointerEvents: showPanel ? "all" : "none"
+                        }}
                     >
-                        <TabList>
-                            <Item key="outline">
-                                <Layers size="XL" />
-                            </Item>
-                            <Item key="datasets">
-                                <Data size="L" />
-                            </Item>
-                            <Item key="dataviews">
-                                <Curate size="L" />
-                            </Item>
-                            <Item key="state">
-                                <Channel size="L" />
-                            </Item>
-                            <Item key="spec">
-                                <DocumentOutline size="L" />
-                            </Item>
-                        </TabList>
-                        <View
-                            position="absolute"
-                            left="100%"
-                            top="3em"
-                            height="calc(100vh - 3em)"
-                            overflow="hidden"
-                            minWidth={`20em`}
-                            zIndex={500}
-                            UNSAFE_style={{
-                                pointerEvents: showPanel ? "all" : "none"
-                            }}
-                        >
-                            {showPanel && (
-                                <View
-                                    position="relative"
+                        {showPanel && (
+                            <View
+                                position="relative"
+                                width="100%"
+                                height="100%"
+                                overflow="hidden auto"
+                                padding="size-50"
+                                UNSAFE_style={{
+                                    resize: "horizontal",
+                                    backgroundColor: 'rgba(26,26,26,0.95)',
+                                    backdropFilter: `blur(2px)`,
+                                    boxSizing: 'border-box'
+                                }}
+                            >
+                                <TabPanels
                                     width="100%"
-                                    height="100%"
-                                    overflow="hidden auto"
-                                    backgroundColor={"gray-75"}
+                                    height="calc(100% - 2em)"
+                                >
+                                    <Item key="datasets">
+                                        <DatasetsEditor
+                                            datasetProviders={
+                                                datasetProviders
+                                            }
+                                        />
+                                    </Item>
+                                    <Item key="outline">
+                                        <MaticoOutlineViewer />
+                                    </Item>
+                                    <Item key="spec">
+                                        <MaticoRawSpecEditor />
+                                    </Item>
+                                    <Item key="state">
+                                        <MaticoStateViewer />
+                                    </Item>
+                                    <Item key="dataviews">
+                                        <p>Data views, coming soon...</p>
+                                    </Item>
+                                </TabPanels>
+                                <Button
+                                    onPress={handleHidePanel}
+                                    variant="primary"
+                                    isQuiet
+                                    position="absolute"
+                                    top=".375em"
+                                    right="0px"
+                                    aria-label="Close panel"
                                     UNSAFE_style={{
-                                        resize: "horizontal"
+                                        minWidth:0,
+                                        fontSize: '2em'
                                     }}
                                 >
-                                    <TabPanels
-                                        width="100%"
-                                        height="calc(100% - 2em)"
-                                    >
-                                        <Item key="datasets">
-                                            <DatasetsEditor
-                                                datasetProviders={
-                                                    datasetProviders
-                                                }
-                                            />
-                                        </Item>
-                                        <Item key="outline">
-                                            <MaticoOutlineViewer />
-                                        </Item>
-                                        <Item key="spec">
-                                            <MaticoRawSpecEditor />
-                                        </Item>
-                                        <Item key="state">
-                                            <MaticoStateViewer />
-                                        </Item>
-                                        <Item key="dataviews">
-                                            <p>Data views, coming soon...</p>
-                                        </Item>
-                                    </TabPanels>
-                                </View>
-                            )}
-                        </View>
-                    </Tabs>
-                </View>
-            </div>
-        </ClickAwayListener>
+                                    &times;
+                                </Button>
+                            </View>
+                        )}
+                    </View>
+                </Tabs>
+            </View>
+        </div>
     );
 };
 

@@ -90,7 +90,8 @@ export const MaticoRawSpecEditor: React.FC = () => {
         style={{
           width: "100%",
           height: "auto",
-          flex: 1
+          flex: 1,
+          background:'none'
         }}
         setOptions={{
           enableBasicAutocompletion: true,
