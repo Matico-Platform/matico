@@ -54,7 +54,6 @@ const FreePane: React.FC<PanePosition> = ({
   padUnitsTop, 
   children 
 }) => {
-  console.log('width', widthUnits, heightUnits)
   return <View
     position="absolute"
     width={`${width}${handleUnits(widthUnits)}`}

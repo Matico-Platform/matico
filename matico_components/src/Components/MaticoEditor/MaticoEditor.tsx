@@ -8,35 +8,49 @@ import {
 } from "@adobe/react-spectrum";
 import { AppEditor } from "./Panes/AppEditor";
 import {PageEditor} from "./Panes/PageEditor";
-import {App, Page,PaneRef} from "@maticoapp/matico_types/spec";
+import {App, Page,Pane,PaneRef, ContainerPane} from "@maticoapp/matico_types/spec";
 
 export interface MaticoEditorProps {
   editActive: boolean;
   onSpecChange?: (app: App) => void;
 }
 
-const EditPane: React.FC<{element: EditElement | null}>= ({element})=>{
-
+const EditPane: React.FC<{element: EditElement | null}> = ({element})=>{
   const pages = useMaticoSelector(
     (state) => state.spec.spec.pages
   );
+  const panes = useMaticoSelector(
+    (state) => state.spec.spec.panes
+  );
+
+  if (!element){
+    return <AppEditor/>
+  }
+  const {
+    type,
+    id,
+    parentId
+  } = element
 
   console.log("Rendering edit pane for element ", element)
 
-  if(element?.type==='page'){
+  if(type === 'page'){
     return(
-      <PageEditor id={element.id} />
+      <PageEditor id={id} />
     )
-  }
-  else if(element?.type==='pane'){
-    const page = pages.find((p:Page)=>p.panes.find(pane=>pane.id===element.id)) 
-    const paneRef = page.panes.find((p:PaneRef)=>p.id===element.id)
-    const Editor  = Editors[paneRef.type]
-    return <Editor paneRef={paneRef} />
-  }
-  else{
-    return <AppEditor/>
-  }
+  } else if(type==='pane'){
+    const parent = parentId 
+      ? panes.find((p: Pane) => p.id === parentId) as ContainerPane
+      : pages.find((p:Page)=>p.panes.find(pane => pane.id === id)) 
+
+    const paneRef = parent?.panes.find((p:PaneRef) => p.id === id)
+
+    if (parent && paneRef) {
+      const Editor = Editors[paneRef.type]
+      return <Editor paneRef={paneRef} />
+    }
+  } 
+  return <AppEditor/>
 }
 
 export const MaticoEditor: React.FC<MaticoEditorProps> = ({

@@ -42,6 +42,12 @@ export const usePane = (paneRef: PaneRef) => {
         dispatch(removePane({ id: paneRef.paneId }));
     };
 
+    const reparentPane = (newParentId: string, position?: any) => {
+        // dispatch
+        // ...
+        //
+    }
+
     const raisePane = () => {
         if (currentIndex < parent.panes.length) {
             dispatch(
@@ -77,9 +83,17 @@ export const usePane = (paneRef: PaneRef) => {
             })
         );
     };
-
+    
     const selectPane = () => {
-        dispatch(setCurrentEditElement({ type: "pane", id: paneRef.id }));
+        dispatch(
+            setCurrentEditElement(
+                { 
+                    type: "pane", 
+                    id: paneRef.id,
+                    parentId: !('path' in parent) && parent.id
+                }
+            )
+        );
     };
 
     return {

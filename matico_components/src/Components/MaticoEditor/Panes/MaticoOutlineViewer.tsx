@@ -13,6 +13,10 @@ import { GatedAction } from "../EditorComponents/GatedAction";
 import Delete from "@spectrum-icons/workflow/Delete";
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import styled from "styled-components";
+import { usePane } from "Hooks/usePane";
+import { Container } from "react-dom";
+import { useContainer } from "Hooks/useContainer";
+import { VgNonUnionDomain } from "vega-lite/build/src/vega.schema";
 // function addForContainer(container: ContainerPane, inset: number) {
 //   let containerPanes: Array<RowEntryMultiButtonProps> = [];
 
@@ -135,43 +139,92 @@ const PageList: React.FC<PageListProps> = ({
   )
 }
 
+const PaneRow: React.FC<{ rowPane: PaneRef }> = ({
+  rowPane
+}) => {
+  const {
+    pane,
+    updatePane,
+    removePane,
+    updatePanePosition,
+    parent,
+    raisePane,
+    lowerPane,
+    setPaneOrder,
+    selectPane
+  } = usePane(rowPane);
 
-type MaticoOutlineViewerProps = RouteComponentProps & {
+  return <HoverableRow>
+    <Flex direction="row">
+      <Button
+        variant="primary"
+        onPress={selectPane}
+        isQuiet
+      >
+        {pane.name}
+      </Button>
+    </Flex>
+
+  </HoverableRow>
 }
+
+const ContainerPaneRow: React.FC<{ 
+  rowPane: PaneRef
+}> = ({
+  rowPane
+}) => {
+  const { pane } = usePane(rowPane);
+  const {addPaneToContainer } = useContainer(rowPane);
+  const { panes } = pane as ContainerPane;
+  
+  return <>
+    <PaneRow 
+      rowPane={rowPane} 
+      />
+    <PaneList 
+      panes={panes} 
+      addPaneRefToParent={addPaneToContainer}
+      />
+  </>
+}
+
+
+const PaneList: React.FC<{ 
+    panes: PaneRef[],
+    addPaneRefToParent: (paneRef: PaneRef, index?:number) => void
+  }> = ({
+  panes,
+  addPaneRefToParent
+}) => {
+  return (
+    <View
+      borderStartColor={"gray-500"}
+      borderStartWidth={"thick"}
+      marginStart="size-50"
+    >
+      {
+        panes.map(pane => {
+          if (pane.type === 'container') {
+            return <ContainerPaneRow 
+            rowPane={pane}
+            />
+          } else {
+            return <PaneRow 
+              rowPane={pane}
+              />
+          }
+        })
+      }
+    </View>)
+}
+
+type MaticoOutlineViewerProps = RouteComponentProps & {}
 type MutableList = {
   name: string,
   id: string,
   type: string
   depth: number
 }[]
-
-
-const traversePane = (pane: Pane, mutableList: MutableList, depth: number) => {
-  const {
-    name,
-    id,
-    type,
-    // @ts-ignore
-    panes,
-    // @ts-ignore
-    layers
-  } = pane;
-  mutableList.push({
-    name,
-    id,
-    type,
-    depth
-  })
-  if (panes) {
-    panes.forEach((pane: Pane) => traversePane(pane, mutableList, depth + 1))
-  }
-}
-
-const traversePanes = (panes: Pane[]) => {
-  let mutableList: MutableList = []
-  panes.forEach(pane => traversePane(pane, mutableList, 1))
-  return mutableList
-}
 
 export const MaticoOutlineViewer: React.FC = withRouter(
   (
@@ -183,10 +236,11 @@ export const MaticoOutlineViewer: React.FC = withRouter(
     // list pages
     const { pages, setEditPage, removePage } = useApp();
     const currentPage = pages.find(({ path }) => path === location.pathname);
+    if (!currentPage) {
+      return null
+    }
+    const { panes, id, name: pageName } = currentPage;
     // list panes
-    const { page, panes } = usePage(currentPage.id)
-    const nestedPaneList = traversePanes(panes)
-    console.log('nestedPaneList', nestedPaneList)
 
     const handlePageAction = (action: string, id: string) => {
       switch (action) {
@@ -207,23 +261,6 @@ export const MaticoOutlineViewer: React.FC = withRouter(
       }
     }
 
-    // const handlePaneAction = (action: string, id: string) => {
-    //   switch (action) {
-    //     case 'edit':
-    //       setEditPath(id);
-    //       break;
-    //     case 'duplicate':
-    //       // do duplication;
-    //       break;
-    //     case 'delete':
-    //       removePage(id);
-    //       history.push('')
-    //       break
-    //     default:
-    //       break;
-    //   }
-    // }
-
     return (
       <Flex
         direction="column"
@@ -239,8 +276,14 @@ export const MaticoOutlineViewer: React.FC = withRouter(
           currentPage={currentPage}
           handlePageAction={handlePageAction}
         />
-        {nestedPaneList.map(pane => <p>{JSON.stringify(pane)}</p>)}
-
+        <Heading
+          margin="size-150"
+          alignSelf="start"
+          level={4}
+        >
+          {pageName}
+        </Heading>
+        <PaneList panes={panes} />
       </Flex>
     )
   });

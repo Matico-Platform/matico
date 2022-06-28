@@ -13,6 +13,7 @@ import { ContainerPane, PanePosition } from "@maticoapp/matico_types/spec";
 
 export type EditElement = {
     id?: string;
+    parentId?: string;
     type: "page" | "pane" | "metadata" | "dataset" | "dataview" | "layer";
 };
 
@@ -148,18 +149,21 @@ export const stateSlice = createSlice({
             const { containerId, paneRef, index } = action.payload;
             const container = state.spec.panes.find(
                 (p: Pane) =>
-                    p.id == action.payload.containerId && p.type === "container"
+                    p.id == containerId && p.type === "container"
             );
-            if (index) {
+            if (!container) {
+                console.log('container', JSON.stringify(state.spec.panes, null, 2), containerId)
+                return;
+            } else if (index) {
                 //@ts-ignore
                 container.panes.splice(
-                    action.payload.index,
+                    index,
                     0,
-                    action.payload.paneRef
+                    paneRef
                 );
             } else {
                 //@ts-ignore
-                container.panes.push(action.payload.paneRef);
+                container.panes.push(paneRef);
             }
         },
         removePaneFromContainer: (
