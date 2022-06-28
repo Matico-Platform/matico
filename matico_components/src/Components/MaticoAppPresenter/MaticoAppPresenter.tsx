@@ -62,7 +62,8 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     }, [onStateChange, JSON.stringify(appState)]);
 
     return (
-        <Router basename={basename}>
+        <> 
+        {/* <Router basename={basename}> */}
             {appSpec && (
                 <Grid
                     areas={["nav main"]}
@@ -100,6 +101,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                     </Content>
                 </Grid>
             )}
-        </Router>
+        {/* </Router> */}
+        </>
     );
 };

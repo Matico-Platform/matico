@@ -37,6 +37,7 @@ import DeviceDesktop from '@spectrum-icons/workflow/DeviceDesktop';
 import DeviceTablet from '@spectrum-icons/workflow/DeviceTablet';
 import DevicePhone from '@spectrum-icons/workflow/DevicePhone';
 import { NavigatorBar } from "Components/MaticoEditor/EditorComponents/NavigatorBar";
+import { BrowserRouter as Router } from 'react-router-dom';
 
 interface ResponsiveScreeenLimits {
   height: null | number;
@@ -135,6 +136,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
   return (
     <Provider store={store}>
       <MaticoDataProvider onStateChange={onDataChange}>
+        <Router basename={basename}>
         <SpectrumProvider theme={darkTheme} width="100%" height="100%">
           <Grid {...{ columns, rows, areas }} width="100%" height="100%" gap="0">
 
@@ -218,6 +220,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
             )}
           </Grid>
         </SpectrumProvider>
+        </Router>
       </MaticoDataProvider>
     </Provider>
   );
