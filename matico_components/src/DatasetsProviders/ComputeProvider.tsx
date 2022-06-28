@@ -3,7 +3,6 @@ import {
     TextField,
     Button,
     Text,
-    NumberField,
     Picker,
     Item,
     View
@@ -14,12 +13,11 @@ import {
     DatasetParameterComponent
 } from "Datasets/DatasetProvider";
 import { useAnalysis } from "Hooks/useAnalysis";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { Column } from "Datasets/Dataset";
 import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
-import { VariableSelector } from "../../dist/Components/MaticoEditor/Utils/VariableSelector";
 import {ValueOrVariableInput} from "Components/MaticoEditor/Utils/ValueOrVariableInput";
 
 export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
@@ -171,7 +169,8 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                         variant="cta"
                         onPress={() =>
                             onSubmit({
-                                WASMCompute: spec
+                                  type:"maticoCompute",
+                                 ...spec
                             })
                         }
                     >
