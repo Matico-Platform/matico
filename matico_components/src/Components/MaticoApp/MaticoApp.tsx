@@ -179,9 +179,10 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                                             margin="size-100"
                                         >
                                             <ActionGroup
-                                            {/* @ts-ignore */}
-                                                onAction={
-                                                    setResponsiveViewportLimit
+                                                onAction={(key: string) =>
+                                                    setResponsiveViewportLimit(
+                                                        key
+                                                    )
                                                 }
                                             >
                                                 <Item key="desktop">

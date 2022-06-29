@@ -38,8 +38,6 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
 
     const logo = theme?.logoUrl;
 
-    let color = chromaColorFromColorSpecification(theme.primaryColor, false);
-
     const onAddPage = () => {
         addPage({});
     };
