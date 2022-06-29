@@ -18,8 +18,8 @@ geojson = { version = "0.22.3", features = ["geo-types"] }
 wkb = "0.7.1"
 base64 = "0.13.0"
 actix-multipart = "0.4"
-actix-web = "4.0.1"
-actix-web-lab = "0.12.0"
+actix-web = "4.1.0"
+actix-web-lab = "0.16.1"
 actix = "0.13.0"
 cron = "0.9.0"
 diesel-derive-enum = { version = "1", features = ["postgres"] }
@@ -45,7 +45,7 @@ rand = "0.7"
 csv = "1.1.6"
 uuid = { version = "0.6", features = ["serde", "v4"] }
 actix-cors = "^0.6.0"
-actix-files = "0.6.0"
+actix-files = "0.6.1"
 dotenv = "0.15.0"
 diesel_as_jsonb = "0.1.2"
 geo-types = { version = "0.7", features = ["serde"] }
@@ -58,7 +58,7 @@ sqlx = { version = "0.5.11", features = [
   "json",
   "bigdecimal",
 ] }
-zip = "0.6"
+zip = "0.6.2"
 bigdecimal = { version = "0.2.2", features = ["serde"] }
 slugify = "0.1.0"
 matico_spec = { path = "../matico_spec" }
