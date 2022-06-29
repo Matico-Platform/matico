@@ -50,7 +50,7 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
 
                         fields.named.push(Field::parse_named.parse2(quote!{
                             #[serde(skip)]
-                            pub tables:HashMap<String, (Schema, Vec<Chunk<Arc<dyn Array>>>)>
+                            pub tables:HashMap<String, Arc<DataFrame>>)>
                         }).unwrap())
 
                 },
@@ -92,19 +92,8 @@ pub fn matico_compute(_attr: TokenStream, input:TokenStream)->TokenStream{
 
                 fn register_table(&mut self, table_name: &str, data: &[u8]) -> Result<(), ::matico_analysis::ArgError> {
                     let mut reader = ::std::io::Cursor::new(data);
-                    let metadata = ::arrow2::io::ipc::read::read_file_metadata(&mut reader)
-                        .map_err(|e| ::matico_analysis::ArgError::new(table_name, &format!("Failed to load table {:#?}", e)))?;
-
-                    let schema = metadata.schema.clone();
-                    let reader = ::arrow2::io::ipc::read::FileReader::new(reader, metadata, None);
-
-                    println!("Schema is {:#?}",schema);
-
-                    let columns = reader
-                        .collect::<::arrow2::error::Result<Vec<_>>>()
-                        .map_err(|e| ::matico_analysis::ArgError::new(table_name, &format!("Failed to get columns of table {:#?}",e)))?;
-
-                    self.tables.insert(table_name.into(), (schema, columns));
+                    let df = IpcReader::new(file).finish()?;
+                    self.tables.insert(table_name.into(), Arc::new(df));
                     Ok(())
                 }
         }
