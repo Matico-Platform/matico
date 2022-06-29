@@ -46,7 +46,7 @@ for f in $FILES
 do
   filename=$(basename -- "$f")
   extension="${filename##*.}"
-  filename="${basename%.*}"
+  filename="${filename%.*}"
   echo "export * from \"./$filename\"" >> matico_types/api/index.ts
 done
 

@@ -8,10 +8,10 @@ import { setSpec } from "../../Stores/MaticoSpecSlice";
 import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
 import { Content, Grid, View } from "@adobe/react-spectrum";
-import {App, Page} from '@maticoapp/matico_types/spec'
+import { App, Page } from "@maticoapp/matico_types/spec";
 
 import _ from "lodash";
-import {useRegisterDatasets} from "Hooks/useRegisterDatasets";
+import { useRegisterDatasets } from "Hooks/useRegisterDatasets";
 
 interface MaticoAppPresenterProps {
     spec?: App;
@@ -19,9 +19,9 @@ interface MaticoAppPresenterProps {
     onStateChange?: (state: VariableState) => void;
     onDataChange?: (data: MaticoDataState) => void;
     maxDimensions?: {
-        height: number|null,
-        width: number|null
-    }
+        height: number | null;
+        width: number | null;
+    };
 }
 
 export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
@@ -48,10 +48,10 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     }, []);
 
     // Register the datasets in the spec and keep in sync as changes are made
-    useRegisterDatasets()
+    useRegisterDatasets();
 
     const appSpec = useAppSpec();
-    console.log("App spec ", appSpec)
+    console.log("App spec ", appSpec);
 
     const appState = useMaticoSelector((state) => state.variables);
 
@@ -74,11 +74,18 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                     rows={["flex"]}
                     gridArea={"viewer"}
                     height="100%"
-                    maxWidth={maxDimensions.width ? `${maxDimensions.width}px` : "100%"}
-                    maxHeight={maxDimensions.height ? `${maxDimensions.height}px` : "100%"}
+                    maxWidth={
+                        maxDimensions.width
+                            ? `${maxDimensions.width}px`
+                            : "100%"
+                    }
+                    maxHeight={
+                        maxDimensions.height
+                            ? `${maxDimensions.height}px`
+                            : "100%"
+                    }
                     margin="0 auto"
                     width="100%"
-                    
                 >
                     <View gridArea="nav">
                         <MaticoNavBar />
@@ -90,11 +97,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                                     path={page.path ? page.path : page.name}
                                     key={page.path}
                                 >
-                                    <MaticoPage
-                                        key={page.path}
-                                        page={page}
-                                        editPath={`pages.${index}`}
-                                    />
+                                    <MaticoPage key={page.path} page={page} />
                                 </Route>
                             ))}
                         </Switch>

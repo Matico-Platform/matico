@@ -10,7 +10,7 @@ import {
     Button,
     ActionGroup,
     Item,
-    Text,
+    Text
 } from "@adobe/react-spectrum";
 import ChevronUp from "@spectrum-icons/workflow/ChevronUp";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
@@ -19,12 +19,12 @@ import Duplicate from "@spectrum-icons/workflow/Duplicate";
 import Settings from "@spectrum-icons/workflow/Settings";
 
 export interface RowEntryMultiButtonProps {
-    entryName: string | React.ReactNode,
-    onRemove: ()=>void,
-    onDuplicate: ()=>void,
-    onRaise: ()=>void,
-    onLower:()=>void,
-    onSelect:()=>void,
+    entryName: string | React.ReactNode;
+    onRemove: () => void;
+    onDuplicate: () => void;
+    onRaise: () => void;
+    onLower: () => void;
+    onSelect: () => void;
     inset?: number;
     compact?: boolean;
 }
@@ -40,7 +40,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
     onRaise,
     onDuplicate
 }) => {
-   return (
+    return (
         <View
             paddingX="size-150"
             paddingY={compact ? "size-50" : "size-100"}
@@ -66,7 +66,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                     flexGrow={1}
                     justifySelf={"left"}
                     alignSelf="center"
-                    UNSAFE_style={{textAlign: 'left'}}
+                    UNSAFE_style={{ textAlign: "left" }}
                 >
                     <Text justifySelf="left">{entryName}</Text>
                 </View>
@@ -76,7 +76,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                     overflowMode="collapse"
                     justifySelf={"end"}
                     maxWidth="50%"
-                    marginStart={`-${inset/2}em`}
+                    marginStart={`-${inset / 2}em`}
                     onAction={(action) => {
                         switch (action) {
                             case "delete":

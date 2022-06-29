@@ -8,24 +8,21 @@ import { PaneEditor } from "./PaneEditor";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { LabelEditor } from "../Utils/LabelEditor";
-import {usePane} from "Hooks/usePane";
-import {HistogramPane, Labels, PaneRef} from "@maticoapp/matico_types/spec";
+import { usePane } from "Hooks/usePane";
+import { HistogramPane, Labels, PaneRef } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 
-export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
-   paneRef 
-}) => {
-
-    const {pane, updatePane, parent, updatePanePosition} = usePane(paneRef)
+export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
+    const { pane, updatePane, parent, updatePanePosition } = usePane(paneRef);
 
     const histogramPane = pane as HistogramPane;
 
     const updateLabels = (change: Partial<Labels>) => {
-        const labels = histogramPane.labels ?? {} as Labels;
+        const labels = histogramPane.labels ?? ({} as Labels);
         updatePane({
             labels: { ...labels, ...change }
         });
@@ -44,7 +41,6 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
         });
     };
 
-
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[histogramPane.dataset.name]
     );
@@ -60,13 +56,13 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({
     return (
         <Flex direction="column">
             <CollapsibleSection title="Sizing" isOpen={true}>
-              <PaneEditor
-                position={paneRef.position}
-                name={histogramPane.name}
-                background={"white"}
-                onChange={(change) => updatePanePosition(change)}
-                parentLayout={parent.layout} 
-                id={paneRef.id}
+                <PaneEditor
+                    position={paneRef.position}
+                    name={histogramPane.name}
+                    background={"white"}
+                    onChange={(change) => updatePanePosition(change)}
+                    parentLayout={parent.layout}
+                    id={paneRef.id}
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Data Source" isOpen={true}>

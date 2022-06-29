@@ -1,4 +1,9 @@
-import { Page, Pane, ContainerPane, PaneRef } from "@maticoapp/matico_types/spec";
+import {
+    Page,
+    Pane,
+    ContainerPane,
+    PaneRef
+} from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import {
     updatePageDetails,
@@ -24,8 +29,8 @@ export const useApp = () => {
                     id: uuidv4(),
                     layout: { type: "free" },
                     panes: [],
-                    icon: pages.length ===0 ? "faHome" : "faPage",
-                    path: pages.length ===0 ? "/" : `/page_${pages.length}`,
+                    icon: pages.length === 0 ? "faHome" : "faPage",
+                    path: pages.length === 0 ? "/" : `/page_${pages.length}`,
                     ...page
                 }
             })
@@ -41,14 +46,12 @@ export const useApp = () => {
         );
     };
 
-    const updatePage = (pageId: string, update:Partial<Page>)=>{
-      dispatch(
-        updatePageDetails({pageId, update})
-      ) 
-    }
+    const updatePage = (pageId: string, update: Partial<Page>) => {
+        dispatch(updatePageDetails({ pageId, update }));
+    };
 
-    const removePageLocal = (id: string) => {
-        dispatch(removePage({ id, removeOrphanPanes: false }));
+    const removePageLocal = (pageId: string) => {
+        dispatch(removePage({ pageId, removeOrphanPanes: false }));
     };
 
     const reparentPane = (
@@ -56,24 +59,29 @@ export const useApp = () => {
         parent: ContainerPane | Page,
         target: ContainerPane | Page
     ) => {
-        const paneRef = parent.panes.find((parentPane: PaneRef) => parentPane.paneId === pane.id)
-        console.log(parent)
+        const paneRef = parent.panes.find(
+            (parentPane: PaneRef) => parentPane.paneId === pane.id
+        );
+        console.log(parent);
         dispatch(
             removePaneFromContainer({
-                containerId:parent.id, 
-                paneRefId:paneRef.id
-            }))
+                containerId: parent.id,
+                paneRefId: paneRef.id
+            })
+        );
         dispatch(
             addPaneRefToContainer({
                 containerId: target.id,
                 paneRef
-        }))
-    }
+            })
+        );
+    };
 
     return {
         pages,
         panes,
         theme,
+        metadata,
         removePage: removePageLocal,
         addPage: addPageLocal,
         updatePage,

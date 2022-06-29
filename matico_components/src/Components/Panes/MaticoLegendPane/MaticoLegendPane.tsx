@@ -177,43 +177,56 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
                 <Text UNSAFE_style={{ fontWeight: "bold" }}>{name}</Text>
                 <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
                     {(labels) => {
-                        console.log(labels.sort((a, b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)))
+                        console.log(
+                            labels.sort(
+                                (a, b) =>
+                                    (isNaN(+a?.datum) ? 0 : +a?.datum) -
+                                    (isNaN(+b?.datum) ? 0 : +b?.datum)
+                            )
+                        );
                         //@ts-ignore
-                        return labels.sort((a, b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)).reverse().map((label, i) => {
-                            const val: number =
-                                label.datum !== undefined
-                                    ? (label.datum as number)
-                                    : //@ts-ignore
-                                    (label?.extent[1] || 0) - 0.000000001;
+                        return labels
+                            .sort(
+                                (a, b) =>
+                                    (isNaN(+a?.datum) ? 0 : +a?.datum) -
+                                    (isNaN(+b?.datum) ? 0 : +b?.datum)
+                            )
+                            .reverse()
+                            .map((label, i) => {
+                                const val: number =
+                                    label.datum !== undefined
+                                        ? (label.datum as number)
+                                        : //@ts-ignore
+                                          (label?.extent[1] || 0) - 0.000000001;
 
-                            return (
-                                <LegendItem
-                                    key={`legend-quantile-${i}`}
-                                    margin="1px 0"
-                                // onClick={() => {
-                                //   if (events) alert(`clicked: ${JSON.stringify(label)}`);
-                                // }}
-                                >
-                                    <svg
-                                        width={ENTRY_SYMBOL_WIDTH}
-                                        height={ENTRY_SYMBOL_HEIGHT}
+                                return (
+                                    <LegendItem
+                                        key={`legend-quantile-${i}`}
+                                        margin="1px 0"
+                                        // onClick={() => {
+                                        //   if (events) alert(`clicked: ${JSON.stringify(label)}`);
+                                        // }}
                                     >
-                                        {legendEl === "rect" ? (
-                                            <rect
-                                                {...getLegendItemProps(val)}
-                                            />
-                                        ) : (
-                                            <circle
-                                                {...getLegendItemProps(val)}
-                                            />
-                                        )}
-                                    </svg>
-                                    <Text marginStart={"size-100"}>
-                                        {i > 0 ? label.text : `> ${val}`}
-                                    </Text>
-                                </LegendItem>
-                            );
-                        });
+                                        <svg
+                                            width={ENTRY_SYMBOL_WIDTH}
+                                            height={ENTRY_SYMBOL_HEIGHT}
+                                        >
+                                            {legendEl === "rect" ? (
+                                                <rect
+                                                    {...getLegendItemProps(val)}
+                                                />
+                                            ) : (
+                                                <circle
+                                                    {...getLegendItemProps(val)}
+                                                />
+                                            )}
+                                        </svg>
+                                        <Text marginStart={"size-100"}>
+                                            {i > 0 ? label.text : `> ${val}`}
+                                        </Text>
+                                    </LegendItem>
+                                );
+                            });
                     }}
                 </LegendThreshold>
             </View>

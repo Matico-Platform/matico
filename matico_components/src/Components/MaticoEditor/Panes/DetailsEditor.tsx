@@ -1,9 +1,6 @@
 import React from "react";
-import {
-    Flex,
-    TextField,
-} from "@adobe/react-spectrum";
-import {Pane} from "@maticoapp/matico_types/spec";
+import { Flex, TextField } from "@adobe/react-spectrum";
+import { Pane } from "@maticoapp/matico_types/spec";
 
 interface DetailsEditorProps {
     updatePane: (update: Partial<Pane>) => void;
@@ -12,12 +9,11 @@ interface DetailsEditorProps {
 
 export const DetailsEditor: React.FC<DetailsEditorProps> = ({
     updatePane,
-    pane,
+    pane
 }) => {
-
     const updateName = (name: string) => {
         updatePane({
-            name,
+            name
         });
     };
 

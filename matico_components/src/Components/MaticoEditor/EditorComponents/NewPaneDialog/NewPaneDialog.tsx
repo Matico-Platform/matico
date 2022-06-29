@@ -8,14 +8,16 @@ import {
     DialogTrigger,
     Dialog,
     Content,
-    repeat,
+    repeat
 } from "@adobe/react-spectrum";
 import { DefaultGrid } from "Components/MaticoEditor/Utils/DefaultGrid";
-import {Pane} from "@maticoapp/matico_types/spec";
-import {v4 as uuidv4} from 'uuid'
-import {PaneDefaults, IconForPaneType, AvaliablePanes} from "Components/MaticoEditor/Utils/PaneDetails" 
-
-
+import { Pane } from "@maticoapp/matico_types/spec";
+import { v4 as uuidv4 } from "uuid";
+import {
+    PaneDefaults,
+    IconForPaneType,
+    AvaliablePanes
+} from "Components/MaticoEditor/Utils/PaneDetails";
 
 interface NewPaneDialogProps {
     validatePaneName?: (name: string) => boolean;
@@ -40,16 +42,15 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                     "Another pane with the same name exists, pick something else"
                 );
             }
-        }
-        else{
-              onAddPane({
+        } else {
+            onAddPane({
                 id: uuidv4(),
                 name: newPaneName,
                 //@ts-ignore
                 type: paneType,
                 ...PaneDefaults[paneType]
-              });
-                close();
+            });
+            close();
         }
     };
 

@@ -7,7 +7,6 @@ import { DefaultGrid } from "../Utils/DefaultGrid";
 import {
     Flex,
     Heading,
-    Well,
     NumberField,
     ActionButton,
     DialogTrigger,
@@ -20,8 +19,8 @@ import {
 
 import SwitchIcon from "@spectrum-icons/workflow/Switch";
 import MenuIcon from "@spectrum-icons/workflow/Menu";
-import {usePane} from 'Hooks/usePane'
-import {Control, ControlsPane, PaneRef} from "@maticoapp/matico_types/spec";
+import { usePane } from "Hooks/usePane";
+import { Control, ControlsPane, PaneRef } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { DetailsEditor } from "./DetailsEditor";
 
@@ -46,7 +45,7 @@ const IconForControlType = (ControlType: string) => {
 
 const DefaultForControl: Record<"range" | "select", any> = {
     range: {
-        type:'range',
+        type: "range",
         name: "RangeControl",
         max: 100,
         min: 0,
@@ -54,7 +53,7 @@ const DefaultForControl: Record<"range" | "select", any> = {
         default_value: 50
     },
     select: {
-        type:'select',
+        type: "select",
         name: "SelectControl",
         options: []
     }
@@ -151,9 +150,9 @@ const AddControlModal: React.FC<AddControlModalProps> = ({
                 onAddControl(newControlName, controlType);
                 close();
             } else {
-                    setErrorText(
-                        "Another pane with the same name exists, pick something else"
-                    );
+                setErrorText(
+                    "Another pane with the same name exists, pick something else"
+                );
             }
         } else {
             onAddControl(newControlName, controlType);
@@ -208,8 +207,8 @@ const AddControlModal: React.FC<AddControlModalProps> = ({
 export interface PaneEditorProps {
     paneRef: PaneRef;
 }
-export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
-    const {pane, updatePane, updatePanePosition,  parent } = usePane(paneRef)
+export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
+    const { pane, updatePane, updatePanePosition, parent } = usePane(paneRef);
     const controlsPane = pane as ControlsPane;
 
     const handleAddControl = (
@@ -262,31 +261,28 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
         updatePane({ controls });
     };
 
-    const updateControlAtIndex = (
-        update: Partial<Control>,
-        index: number,
-    ) => {
-      const controls = controlsPane.controls.map((control:Control, i: number)=> index ===i ? {...control, update}: control);
-      updatePane({controls})
+    const updateControlAtIndex = (update: Partial<Control>, index: number) => {
+        const controls = controlsPane.controls.map(
+            (control: Control, i: number) =>
+                index === i ? { ...control, update } : control
+        );
+        updatePane({ controls });
     };
 
     return (
         <Flex direction="column">
             <CollapsibleSection title="Details" isOpen={true}>
-                <DetailsEditor
-                    pane={pane}
-                    updatePane={updatePane}
-                />
+                <DetailsEditor pane={pane} updatePane={updatePane} />
             </CollapsibleSection>
             <CollapsibleSection title="Sizing" isOpen={true}>
-              <PaneEditor
-                position={paneRef.position}
-                name={pane.name}
-                background={"white"}
-                onChange={updatePanePosition} 
-                parentLayout={parent.layout} 
-                id={paneRef.id}
-              />
+                <PaneEditor
+                    position={paneRef.position}
+                    name={pane.name}
+                    background={"white"}
+                    onChange={updatePanePosition}
+                    parentLayout={parent.layout}
+                    id={paneRef.id}
+                />
             </CollapsibleSection>
             <CollapsibleSection title="Controls" isOpen={true}>
                 <AddControlModal onAddControl={handleAddControl} />
@@ -301,29 +297,23 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
                                     <EditRangeModal
                                         rangeProps={controlConfig}
                                         onUpdate={(update) =>
-                                            updateControlAtIndex(
-                                                update,
-                                                index
-                                            )
+                                            updateControlAtIndex(update, index)
                                         }
                                     />
                                 ) : (
                                     <EditSelectModal
                                         selectProps={controlConfig}
                                         onUpdate={(update) =>
-                                            updateControlAtIndex(
-                                                update,
-                                                index
-                                            )
+                                            updateControlAtIndex(update, index)
                                         }
                                     />
                                 )
                             }
-                            onRemove = {()=>deleteControl(index)}
-                            onRaise= {()=> handleChangeOrder(index, "up")}
-                            onLower= {()=> handleChangeOrder(index, "down")}
-                            onDuplicate={()=> duplicateControl(index)}
-                            onSelect={()=>{}}
+                            onRemove={() => deleteControl(index)}
+                            onRaise={() => handleChangeOrder(index, "up")}
+                            onLower={() => handleChangeOrder(index, "down")}
+                            onDuplicate={() => duplicateControl(index)}
+                            onSelect={() => {}}
                         />
                     );
                 })}

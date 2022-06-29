@@ -1,19 +1,22 @@
-import { View, Tabs, Item, TabPanels, TabList, Button } from "@adobe/react-spectrum";
+import {
+    View,
+    Tabs,
+    Item,
+    TabPanels,
+    TabList,
+    Button
+} from "@adobe/react-spectrum";
 import React, { useState } from "react";
 import { NavigatorBarProps } from "./types";
 import Layers from "@spectrum-icons/workflow/Layers";
-import Pattern from "@spectrum-icons/workflow/Pattern";
 import Curate from "@spectrum-icons/workflow/Curate";
 import Data from "@spectrum-icons/workflow/Data";
 import Channel from "@spectrum-icons/workflow/Channel";
 import DocumentOutline from "@spectrum-icons/workflow/DocumentOutline";
 import { MaticoRawSpecEditor } from "Components/MaticoEditor/Panes/MaticoRawSpecEditor";
 import { MaticoStateViewer } from "Components/MaticoEditor/Panes/MaticoStateViewer";
-import { useMaticoSelector } from "Hooks/redux";
 import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
-import { Editors } from "Components/MaticoEditor/Editors";
-import { AppEditor } from "Components/MaticoEditor/Panes/AppEditor";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -73,9 +76,9 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                 padding="size-50"
                                 UNSAFE_style={{
                                     resize: "horizontal",
-                                    backgroundColor: 'rgba(26,26,26,0.95)',
+                                    backgroundColor: "rgba(26,26,26,0.95)",
                                     backdropFilter: `blur(2px)`,
-                                    boxSizing: 'border-box'
+                                    boxSizing: "border-box"
                                 }}
                             >
                                 <TabPanels
@@ -84,9 +87,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                 >
                                     <Item key="datasets">
                                         <DatasetsEditor
-                                            datasetProviders={
-                                                datasetProviders
-                                            }
+                                            datasetProviders={datasetProviders}
                                         />
                                     </Item>
                                     <Item key="outline">
@@ -111,8 +112,8 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                     right="0px"
                                     aria-label="Close panel"
                                     UNSAFE_style={{
-                                        minWidth:0,
-                                        fontSize: '2em'
+                                        minWidth: 0,
+                                        fontSize: "2em"
                                     }}
                                 >
                                     &times;
@@ -125,4 +126,3 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
         </div>
     );
 };
-

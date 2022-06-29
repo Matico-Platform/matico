@@ -1,2 +1,2 @@
 
-export interface ValueCountsParams { ignore_null: boolean | null, }
+export interface ValueCountsParams { ignoreNull: boolean | null, }

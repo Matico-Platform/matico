@@ -1,15 +1,3 @@
-import {
-    EditTypeMapping,
-    extractEditType,
-    getPathIndex,
-    getParentPath,
-    incrementName
-} from './specUtils'
+import { findPagesForPane, findPaneParents } from "./specUtils";
 
-export {
-    EditTypeMapping,
-    extractEditType,
-    getPathIndex,
-    getParentPath,
-    incrementName
-}
+export { findPagesForPane, findPaneParents };

@@ -1,2 +1,2 @@
 
-export interface LogorithmicParams { no_bins: number, base: number | null, treat_null_as_zero: boolean | null, }
+export interface LogorithmicParams { noBins: number, base: number | null, treatNullAsZero: boolean | null, }

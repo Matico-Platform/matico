@@ -10,7 +10,6 @@ import {
     Provider,
     lightTheme
 } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { Control } from "@maticoapp/matico_types/spec";
 
 export interface MaticoControlsPaneInterface extends MaticoPaneInterface {
@@ -28,7 +27,6 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
 
     return (
         <View width="100%" height="100%" position="relative">
-            <ControlActionBar targetId={id} />
             <Flex
                 UNSAFE_style={{ backgroundColor: "white", height: "100%" }}
                 direction="column"
@@ -43,18 +41,32 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
                                     case "range":
                                         return (
                                             <MaticoRangeControl
-                                                {...controlSpec}
+                                                min={controlSpec.min as number}
+                                                max={controlSpec.max as number}
+                                                step={
+                                                    controlSpec.step as number
+                                                }
+                                                name={controlSpec.name}
                                             />
                                         );
                                     case "select":
                                         //@ts-ignore
                                         return (
                                             <MaticoSelectControl
-                                                {...controlSpec}
+                                                options={
+                                                    controlSpec.options as Array<
+                                                        string | number
+                                                    >
+                                                }
+                                                name={controlSpec.name}
+                                                defaultValue={
+                                                    controlSpec.defaultValue
+                                                }
                                             />
                                         );
                                     default:
                                         throw Error(
+                                            //@ts-ignore
                                             `Unsupported filter type ${controlSpec.type}`
                                         );
                                 }

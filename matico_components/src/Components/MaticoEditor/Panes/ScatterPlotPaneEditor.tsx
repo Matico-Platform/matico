@@ -1,11 +1,10 @@
 import React from "react";
 import _ from "lodash";
 import { useMaticoSelector } from "Hooks/redux";
-import { Well, Text, Heading, Flex, View } from "@adobe/react-spectrum";
+import { Text, View } from "@adobe/react-spectrum";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-// import { ColorPicker } from "../Utils/ColorPicker";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { DatasetSummary } from "Datasets/Dataset";
@@ -38,7 +37,6 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
             yColumn: null
         });
     };
-
 
     const dataset: DatasetSummary = useMaticoSelector(
         (state) => state.datasets.datasets[scatterplotPane?.dataset.name]
@@ -74,9 +72,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                         <DatasetColumnSelector
                             label="X Column"
                             datasetName={scatterplotPane?.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterplotPane.xColumn
-                            )}
+                            selectedColumn={scatterplotPane.xColumn}
                             onColumnSelected={(xColumn) =>
                                 updatePane({ xColumn: xColumn.name })
                             }
@@ -84,9 +80,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                         <DatasetColumnSelector
                             label="Y Column"
                             datasetName={scatterplotPane?.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterplotPane.yColumn
-                            )}
+                            selectedColumn={scatterplotPane.yColumn}
                             onColumnSelected={(yColumn) =>
                                 updatePane({ yColumn: yColumn.name })
                             }
@@ -123,9 +117,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                         <DatasetColumnSelector
                             label="X Column"
                             datasetName={scatterplotPane.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterplotPane.xColumn
-                            )}
+                            selectedColumn={scatterplotPane.xColumn}
                             onColumnSelected={(xColumn) =>
                                 updatePane({ xColumn: xColumn.name })
                             }
@@ -133,9 +125,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                         <DatasetColumnSelector
                             label="Y Column"
                             datasetName={scatterplotPane.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterplotPane.yColumn
-                            )}
+                            selectedColumn={scatterplotPane.yColumn}
                             onColumnSelected={(yColumn) =>
                                 updatePane({ yColumn: yColumn.name })
                             }

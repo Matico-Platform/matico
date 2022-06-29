@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import HistogramIcon from "@spectrum-icons/workflow/Histogram";
 import TextIcon from "@spectrum-icons/workflow/Text";
 import PieChartIcon from "@spectrum-icons/workflow/GraphPie";
@@ -6,7 +6,7 @@ import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Border from "@spectrum-icons/workflow/Border";
-import {Layer, Pane, PanePosition} from "@maticoapp/matico_types/spec";
+import { Layer, Pane, PanePosition } from "@maticoapp/matico_types/spec";
 
 export const IconForPaneType = (PaneType: string) => {
     switch (PaneType) {
@@ -27,15 +27,22 @@ export const IconForPaneType = (PaneType: string) => {
     }
 };
 
+type AvaliablePanesSection = {
+    sectionTitle: string;
+    panes: Array<{
+        name:
+            | "map"
+            | "histogram"
+            | "pieChart"
+            | "text"
+            | "scatterplot"
+            | "controls"
+            | "container";
+        label: string;
+    }>;
+};
 
-
-
-type AvaliablePanesSection= {
-  sectionTitle:string, 
-  panes: Array<{name: "map"| "histogram" | "pieChart" | "text" | "scatterplot" | "controls" | "container", label:string}>
-}
-
-export const AvaliablePanes : Array<AvaliablePanesSection> = [
+export const AvaliablePanes: Array<AvaliablePanesSection> = [
     {
         sectionTitle: "Visualizations",
         panes: [
@@ -50,95 +57,93 @@ export const AvaliablePanes : Array<AvaliablePanesSection> = [
     }
 ];
 
-
-export const DefaultPosition : PanePosition = {
-  x: 25,
-  y: 25,
-  width: 300,
-  height: 300,
-  float: false,
-  layer: 1,
-  xUnits: "percent",
-  yUnits: "percent",
-  widthUnits: "pixels",
-  heightUnits: "pixels",
-  padLeft: 0,
-  padRight: 0,
-  padTop: 0,
-  padBottom: 0,
-  padUnitsLeft: 'pixels',
-  padUnitsRight: 'pixels',
-  padUnitsTop: 'pixels',
-  padUnitsBottom: 'pixels'
+export const DefaultPosition: PanePosition = {
+    x: 25,
+    y: 25,
+    width: 300,
+    height: 300,
+    float: false,
+    layer: 1,
+    xUnits: "percent",
+    yUnits: "percent",
+    widthUnits: "pixels",
+    heightUnits: "pixels",
+    padLeft: 0,
+    padRight: 0,
+    padTop: 0,
+    padBottom: 0,
+    padUnitsLeft: "pixels",
+    padUnitsRight: "pixels",
+    padUnitsTop: "pixels",
+    padUnitsBottom: "pixels"
 };
 
 const DefaultView = {
-  lat: 40.794983,
-  lng: -73.96772,
-  zoom: 13,
-  bearing: 0,
-  pitch: 0,
+    lat: 40.794983,
+    lng: -73.96772,
+    zoom: 13,
+    bearing: 0,
+    pitch: 0
 };
 
-
-export const DefaultLayer: Partial<Layer>= {
+export const DefaultLayer: Partial<Layer> = {
     name: "NewLayer",
     style: {
-      fillColor: {rgb:[255.0,0.0,0.0]},
-      lineColor: {rgb:[255.0,255.0,255.0]},
-      size: 10,
-      elevation:0,
-      lineWidth: 4,
-      lineWidthScale:1,
-      lineUnits:'pixels',
-      radiusScale:1,
-      radiusUnits:"pixels",
-      visible:true,
-      opacity:1.0,
-      elevationScale:1.0
-    },
-}
+        fillColor: { rgb: [255.0, 0.0, 0.0] },
+        lineColor: { rgb: [255.0, 255.0, 255.0] },
+        size: 10,
+        elevation: 0,
+        lineWidth: 4,
+        lineWidthScale: 1,
+        lineUnits: "pixels",
+        radiusScale: 1,
+        radiusUnits: "pixels",
+        visible: true,
+        opacity: 1.0,
+        elevationScale: 1.0
+    }
+};
 
-export const PaneDefaults :Record<string, Partial<Pane>> = {
-  map: {
-    name: "New Map",
-    view: DefaultView,
-    layers: [],
-    baseMap: { type: "named", name: "CartoDBVoyager", affiliation:"" },
-  },
-  scatterplot: {
-    name: "New Scatter",
-    xColumn: null,
-    yColumn: null,
-    dotColor: {rgb:[1.0,0.0,0.0]},
-    dotSize: 14,
-    dataset: { name: "uknown", filters:[]},
-  },
-  histogram: {
-    name: "New Histogram",
-    column: null,
-    color: {rgb:[1.0,0,0,0,0]},
-    maxbins: 20,
-    dataset: { name: "unknown", filters:[] },
-  },
-  pieChart: {
-    name: "New Pie chart",
-    column: null,
-    dataset: { name: "unknown", filters:[] },
-  },
-  text: {
-    content: "New Text Pane",
-    name: "Text Pane",
-  },
-  controls:{
-    name:"Controls",
-    title:"Controls",
-    controls:[]
-  },
-  container:{
-    name:"Container",
-    title:"Container",
-    layout:{"type":"free"},
-    panes:[]
-  }
+export const PaneDefaults: Record<string, Partial<Pane>> = {
+    map: {
+        name: "New Map",
+        view: DefaultView,
+        layers: [],
+        baseMap: { type: "named", name: "CartoDBVoyager", affiliation: "" }
+    },
+    scatterplot: {
+        name: "New Scatter",
+        xColumn: null,
+        yColumn: null,
+        dotColor: { rgb: [1.0, 0.0, 0.0] },
+        dotSize: 14,
+        dataset: { name: "uknown", filters: [] }
+    },
+    histogram: {
+        name: "New Histogram",
+        column: null,
+        color: { rgb: [1.0, 0, 0, 0, 0] },
+        maxbins: 20,
+        dataset: { name: "unknown", filters: [] }
+    },
+    pieChart: {
+        name: "New Pie chart",
+        column: null,
+        dataset: { name: "unknown", filters: [] }
+    },
+    text: {
+        content: "New Text Pane",
+        name: "Text Pane"
+    },
+    controls: {
+        name: "Controls",
+        title: "Controls",
+        controls: []
+    },
+    container: {
+        name: "Container",
+        title: "Container",
+        layout: { type: "free" },
+        panes: []
+    }
 };

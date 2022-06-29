@@ -17,7 +17,6 @@ import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
 
 export const usePane = (paneRef: PaneRef) => {
-
     const dispatch = useMaticoDispatch();
 
     const pane = useMaticoSelector((selector) =>

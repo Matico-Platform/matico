@@ -5,11 +5,12 @@ import {
     PaneRef,
     Page,
     Dataset,
-    Layer
+    Layer,
+    ContainerPane,
+    PanePosition
 } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
 import { findPagesForPane } from "Utils/specUtils/specUtils";
-import { ContainerPane, PanePosition } from "@maticoapp/matico_types/spec";
 
 export type EditElement = {
     id?: string;
@@ -29,17 +30,18 @@ const initialState: SpecState = {
 };
 
 export const findParent = (app: App, paneRefId: string) => {
-    const potentialPage =
-        app.pages.find((page: Page) =>
-            page.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
-                      )
-    const potentialPane=
-        app.panes.find(
-            (pane: Pane) =>
-                pane.type === "container" &&
-                pane.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
-        );
-    const container = potentialPane?.type==='container' ? potentialPane  as ContainerPane : null 
+    const potentialPage = app.pages.find((page: Page) =>
+        page.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
+    );
+    const potentialPane = app.panes.find(
+        (pane: Pane) =>
+            pane.type === "container" &&
+            pane.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
+    );
+    const container =
+        potentialPane?.type === "container"
+            ? (potentialPane as ContainerPane)
+            : null;
     return potentialPage || container;
 };
 
@@ -91,7 +93,7 @@ export const stateSlice = createSlice({
                 newIndex: number;
             }>
         ) => {
-            const { parentId, paneRef, newIndex } = action.payload;
+            const { paneRef, newIndex } = action.payload;
             const parent = findParent(state.spec, paneRef.id);
 
             if (parent) {
@@ -101,7 +103,7 @@ export const stateSlice = createSlice({
                     panes,
                     (p: PaneRef) => p.id === paneRef.id
                 );
-                panes.slice(newIndex, 0, newIndex);
+                panes.splice(newIndex, 0, pane[0]);
             }
         },
 
@@ -202,12 +204,10 @@ export const stateSlice = createSlice({
             state,
             action: PayloadAction<{ id: string; update: Partial<Pane> }>
         ) => {
-            const {id, update} = action.payload
-            let pane: Pane = state.spec.panes.find(
-                (p: Pane) => p.id === id
-            );
+            const { id, update } = action.payload;
+            let pane: Pane = state.spec.panes.find((p: Pane) => p.id === id);
 
-            Object.assign(pane, update)
+            Object.assign(pane, update);
         },
         updatePageDetails: (
             state,
@@ -226,11 +226,9 @@ export const stateSlice = createSlice({
         ) => {
             const { paneRefId, update } = action.payload;
             const parent = findParent(state.spec, paneRefId);
-            const pane = parent.panes.find((p: PaneRef) =>
-                p.id === paneRefId
-            );
-            const position  = pane.position
-            Object.assign(position,update)
+            const pane = parent.panes.find((p: PaneRef) => p.id === paneRefId);
+            const position = pane.position;
+            Object.assign(position, update);
         },
         setCurrentEditElement: (state, action: PayloadAction<EditElement>) => {
             state.currentEditElement = action.payload;

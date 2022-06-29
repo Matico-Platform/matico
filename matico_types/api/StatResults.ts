@@ -5,4 +5,4 @@ import type { LogorithmicParams } from "./LogorithmicParams";
 import type { QuantileResults } from "./QuantileResults";
 import type { ValueCountsResults } from "./ValueCountsResults";
 
-export type StatResults = { Quantiles: QuantileResults } | { Jenks: JenksResults } | { Logotithmic: LogorithmicParams } | { BasicStats: BasicStatsResults } | { ValueCounts: ValueCountsResults } | { Histogram: HistogramResults };
+export type StatResults = { type: "quantiles" } & QuantileResults | { type: "jenks" } & JenksResults | { type: "logotithmic" } & LogorithmicParams | { type: "basicStats" } & BasicStatsResults | { type: "valueCounts" } & ValueCountsResults | { type: "histogram" } & HistogramResults;

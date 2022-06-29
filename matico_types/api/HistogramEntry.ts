@@ -1,2 +1,2 @@
 
-export interface HistogramEntry { bin_start: number, bin_end: number, bin_mid: number, freq: number, }
+export interface HistogramEntry { binStart: number, binEnd: number, binMid: number, freq: number, }

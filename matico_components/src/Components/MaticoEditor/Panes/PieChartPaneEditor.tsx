@@ -3,20 +3,16 @@ import _ from "lodash";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-import { SectionHeading } from "../Utils/Utils";
 import { Text, View } from "@adobe/react-spectrum";
 import { usePane } from "Hooks/usePane";
-import { PaneRef } from "@maticoapp/matico_types/spec";
+import { PaneRef, PieChartPane } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
-import { PieChartPane } from "@maticoapp/matico_types/spec";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 
 export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
-    const [confirmDelete, setConfirmDelete] = useState(false);
-    const { id, position } = paneRef;
     const { pane, updatePane, parent, updatePanePosition } = usePane(paneRef);
 
     const pieChartPane = pane as PieChartPane;

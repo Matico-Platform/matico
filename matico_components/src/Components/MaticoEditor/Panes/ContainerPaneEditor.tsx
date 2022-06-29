@@ -1,27 +1,20 @@
 import React from "react";
 import _ from "lodash";
-import {
-    Heading,
-    Flex,
-    Well,
-    Text,
-} from "@adobe/react-spectrum";
+import { Flex, Text } from "@adobe/react-spectrum";
 
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
 import { SectionLayoutEditor } from "./SectionLayoutEditor";
 import { useContainer } from "Hooks/useContainer";
-import { RemovePaneDialog } from "../Utils/RemovePaneDialog";
 import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
 import { IconForPaneType } from "../Utils/PaneDetails";
-import {NewPaneDialog} from "../EditorComponents/NewPaneDialog/NewPaneDialog";
+import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { GatedAction } from "../EditorComponents/GatedAction";
 
 export interface SectionEditorProps {
     paneRef: PaneRef;
 }
-
 
 export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
     paneRef

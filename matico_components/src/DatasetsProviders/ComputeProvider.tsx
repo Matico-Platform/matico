@@ -18,7 +18,7 @@ import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { Column } from "Datasets/Dataset";
 import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
-import {ValueOrVariableInput} from "Components/MaticoEditor/Utils/ValueOrVariableInput";
+import { ValueOrVariableInput } from "Components/MaticoEditor/Utils/ValueOrVariableInput";
 
 export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     spec,
@@ -62,27 +62,39 @@ const ParameterInput: React.FC<{
 
     switch (type) {
         case "NumericInt":
-            return  (<ValueOrVariableInput
-                value={value? value.NumericInt: constraints.default}
-                label={label}
-                defaultValue={constraints.default}
-                onChange={(newVal)=> onChange(name, {NumericInt: newVal})} 
-              />)
+            return (
+                <ValueOrVariableInput
+                    value={value ? value.NumericInt : constraints.default}
+                    label={label}
+                    defaultValue={constraints.default}
+                    onChange={(newVal) =>
+                        onChange(name, { NumericInt: newVal })
+                    }
+                />
+            );
 
         case "NumericFloat":
-            return  (<ValueOrVariableInput
-                value={value? value.NumericFloat : constraints.default}
-                label={label}
-                defaultValue={constraints.default}
-                onChange={(newVal)=> onChange(name, {NumericFloat: newVal})} 
-              />)
+            return (
+                <ValueOrVariableInput
+                    value={value ? value.NumericFloat : constraints.default}
+                    label={label}
+                    defaultValue={constraints.default}
+                    onChange={(newVal) =>
+                        onChange(name, { NumericFloat: newVal })
+                    }
+                />
+            );
         case "Text":
-          return (<ValueOrVariableInput
-                value={value? value.NumericFloat : constraints.default}
-                label={label}
-                defaultValue={constraints.default}
-                onChange={(newVal)=> onChange(name, {NumericFloat: newVal})} 
-              />)
+            return (
+                <ValueOrVariableInput
+                    value={value ? value.NumericFloat : constraints.default}
+                    label={label}
+                    defaultValue={constraints.default}
+                    onChange={(newVal) =>
+                        onChange(name, { NumericFloat: newVal })
+                    }
+                />
+            );
         case "Table":
             return (
                 <DatasetSelector
@@ -169,8 +181,8 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                         variant="cta"
                         onPress={() =>
                             onSubmit({
-                                  type:"maticoCompute",
-                                 ...spec
+                                type: "maticoCompute",
+                                ...spec
                             })
                         }
                     >

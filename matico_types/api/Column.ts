@@ -1,2 +1,2 @@
 
-export interface Column { name: string, col_type: string, }
+export interface Column { name: string, colType: string, }

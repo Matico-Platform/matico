@@ -1,5 +1,5 @@
-import {Layout} from "@maticoapp/matico_types/spec/Layout";
-import { MaticoFreeLayout } from "Components/Layouts/MaticoFreeLayout/MaticoFreeLayout";
+import { Layout } from "@maticoapp/matico_types/spec";
+import { MaticoFreeLayout } from "../Components/Layouts/MaticoFreeLayout/MaticoFreeLayout";
 import { MaticoLinearLayout } from "Components/Layouts/MaticoLinearLayout/MaticoLinearLayout";
 
 interface LayoutLabel {
@@ -10,13 +10,13 @@ interface LayoutLabel {
 export const availableLayouts: LayoutLabel[] = [
     {
         name: "free",
-        label: "Free Layout",
+        label: "Free Layout"
     },
     {
         name: "linear",
-        label: "Linear Layout",
+        label: "Linear Layout"
     }
-]
+];
 
 export function selectLayout(layout: Layout) {
     switch (layout.type) {

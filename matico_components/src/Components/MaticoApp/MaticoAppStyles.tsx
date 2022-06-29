@@ -1,12 +1,11 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
-const MaticoApp= styled.div`
-  width:100%;
-  heigth:100%;
-  backgroundcolor: #eef8f7;
+const MaticoApp = styled.div`
+    width: 100%;
+    height: 100%;
+    background-color: #eef8f7;
+`;
 
-`
-
-export const Styles={
-  MaticoApp
-}
+export const Styles = {
+    MaticoApp
+};

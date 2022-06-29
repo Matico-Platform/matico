@@ -9,103 +9,124 @@ import { useAppSpec } from "Hooks/useAppSpec";
 import { useMaticoDispatch } from "Hooks/redux";
 import { setSpec } from "Stores/MaticoSpecSlice";
 import { json_error_to_annotation } from "../Utils/Utils";
-import { Flex, Heading, ProgressCircle, Text, View, Well } from "@adobe/react-spectrum";
+import {
+    Flex,
+    Heading,
+    ProgressCircle,
+    Text,
+    View,
+    Well
+} from "@adobe/react-spectrum";
 
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-tomorrow_night";
-import "ace-builds/src-noconflict/ext-language_tools"
-
+import "ace-builds/src-noconflict/ext-language_tools";
 
 export const MaticoRawSpecEditor: React.FC = () => {
-  const [code, setCode] = useState<string>();
-  const [isValid, setIsValid] = useState<boolean>(true);
-  const [jsonError, setJsonError] = useState<any | null>(null);
-  const [validationResult, setValidationResult] = useState<any[] | null>(null);
+    const [code, setCode] = useState<string>();
+    const [isValid, setIsValid] = useState<boolean>(true);
+    const [jsonError, setJsonError] = useState<any | null>(null);
+    const [validationResult, setValidationResult] =
+        useState<any[] | null>(null);
 
-  const { validator, validatorReady, error: validatorError} = useValidator();
+    const { validator, validatorReady, error: validatorError } = useValidator();
 
-  const spec = useAppSpec();
-  const dispatch = useMaticoDispatch();
-  console.log("Got app spec as ", spec)
+    const spec = useAppSpec();
+    const dispatch = useMaticoDispatch();
+    console.log("Got app spec as ", spec);
 
-  //Need to figure out how to make sure this updates with other spec changes
-  useEffect(() => {
-    setCode(JSON.stringify(spec, null, 2));
-  }, []);
+    //Need to figure out how to make sure this updates with other spec changes
+    useEffect(() => {
+        setCode(JSON.stringify(spec, null, 2));
+    }, []);
 
-  const annotations: Ace.Annotation[] = jsonError
-    ? json_error_to_annotation(jsonError)
-    : [];
+    const annotations: Ace.Annotation[] = jsonError
+        ? json_error_to_annotation(jsonError)
+        : [];
 
-  useEffect(() => {
-    if (validatorReady) {
-      try {
-        const dash = validator.App.from_json(code);
-        const { is_valid: specValid, errors } = dash.is_valid();
-        if (specValid) {
-          dispatch(setSpec(dash.to_js()));
-          setIsValid(true);
-          setJsonError(null);
-          setValidationResult([]);
-        } else {
-          setIsValid(false);
-          setValidationResult(errors);
+    useEffect(() => {
+        if (validatorReady) {
+            try {
+                const dash = validator.App.from_json(code);
+                const { is_valid: specValid, errors } = dash.is_valid();
+                if (specValid) {
+                    dispatch(setSpec(dash.to_js()));
+                    setIsValid(true);
+                    setJsonError(null);
+                    setValidationResult([]);
+                } else {
+                    setIsValid(false);
+                    setValidationResult(errors);
+                }
+            } catch (e) {
+                setIsValid(false);
+                setJsonError(e);
+            }
         }
-      } catch (e) {
-        setIsValid(false);
-        setJsonError(e);
-      }
-    }
-  }, [JSON.stringify(code), validator, validatorReady]);
+    }, [JSON.stringify(code), validator, validatorReady]);
 
-  if (validatorError) return <h1>Failed to load validator wasm </h1>
+    if (validatorError) return <h1>Failed to load validator wasm </h1>;
 
-  const combinedErrors = useMemo(() => {
-    let combinedErrors = []
-    if(jsonError){
-      combinedErrors.push(jsonError)
-    }
-    if(validationResult){
-      combinedErrors = combinedErrors.concat(validationResult)
-    }
-    return combinedErrors.filter((a) => a)
-  },[jsonError, validationResult])
+    const combinedErrors = useMemo(() => {
+        let combinedErrors = [];
+        if (jsonError) {
+            combinedErrors.push(jsonError);
+        }
+        if (validationResult) {
+            combinedErrors = combinedErrors.concat(validationResult);
+        }
+        return combinedErrors.filter((a) => a);
+    }, [jsonError, validationResult]);
 
-  if (!validatorReady) return <ProgressCircle aria-label="Loading…" isIndeterminate />;
-  return (
-    <Flex direction="column" minHeight={{L:"95vh",M:"95vh",S:"35vh",base:"35vh"}} height="auto" position="relative">
-      <Heading
-        margin="size-150"
-        alignSelf="start"
-      >
-        Matico Specification
-        </Heading>
-      <AceEditor
-        mode="json"
-        theme="tomorrow_night"
-        onChange={(changes: any) => setCode(changes)}
-        value={code}
-        fontSize={12}
-        annotations={annotations}
-        style={{
-          width: "100%",
-          height: "auto",
-          flex: 1,
-          background:'none'
-        }}
-        setOptions={{
-          enableBasicAutocompletion: true,
-          enableLiveAutocompletion: true,
-          enableSnippets: true
-        }}
-      />
-      {(!!jsonError || !!validationResult) && (
-        <View position="absolute" bottom="5%" left="20%" width="60%" backgroundColor="negative">
-          {!!combinedErrors && !!combinedErrors.length && <ul>
-              {combinedErrors.map(err => <li><Text>{err}</Text></li>)}
-            </ul>}
-        </View>
-      )}
-    </Flex>
-  );
+    if (!validatorReady)
+        return <ProgressCircle aria-label="Loading…" isIndeterminate />;
+    return (
+        <Flex
+            direction="column"
+            minHeight={{ L: "95vh", M: "95vh", S: "35vh", base: "35vh" }}
+            height="auto"
+            position="relative"
+        >
+            <Heading margin="size-150" alignSelf="start">
+                Matico Specification
+            </Heading>
+            <AceEditor
+                mode="json"
+                theme="tomorrow_night"
+                onChange={(changes: any) => setCode(changes)}
+                value={code}
+                fontSize={12}
+                annotations={annotations}
+                style={{
+                    width: "100%",
+                    height: "auto",
+                    flex: 1
+                }}
+                setOptions={{
+                    enableBasicAutocompletion: true,
+                    enableLiveAutocompletion: true,
+                    enableSnippets: true
+                }}
+            />
+            {(!!jsonError || !!validationResult) && (
+                <View
+                    position="absolute"
+                    bottom="5%"
+                    left="20%"
+                    width="60%"
+                    backgroundColor="negative"
+                >
+                    {!!combinedErrors && !!combinedErrors.length && (
+                        <ul>
+                            {combinedErrors.map((err) => (
+                                <li>
+                                    <Text>{err}</Text>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </View>
+            )}
+        </Flex>
+    );
 };

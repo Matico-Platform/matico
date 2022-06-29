@@ -5,20 +5,20 @@ import ReactMde from "react-mde";
 import { View, Flex, Well, Text, Heading } from "@adobe/react-spectrum";
 import "react-mde/lib/styles/css/react-mde-all.css";
 import { RemovePaneDialog } from "../Utils/RemovePaneDialog";
-import {PaneRef} from "@maticoapp/matico_types/spec";
-import {usePane} from "Hooks/usePane";
+import { PaneRef } from "@maticoapp/matico_types/spec";
+import { usePane } from "Hooks/usePane";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 
-export const TextPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
-    const {pane, updatePane, updatePanePosition, parent, removePane} = usePane(paneRef)
+export const TextPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
+    const { pane, updatePane, updatePanePosition, parent, removePane } =
+        usePane(paneRef);
 
-    const textPane = pane.type==='text' ? pane : null
+    const textPane = pane.type === "text" ? pane : null;
 
     const handleContent = (content: string) => updatePane({ content });
-    const handleUpdate = (change: any) => updatePane({ ...textPane, ...change });
 
     if (!textPane) {
         return (
@@ -30,7 +30,7 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({ paneRef}) => {
 
     return (
         <Flex direction="column">
-              <PaneEditor
+            <PaneEditor
                 position={paneRef.position}
                 name={pane.name}
                 background={"white"}

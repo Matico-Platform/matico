@@ -11,7 +11,6 @@ import {
     TableBody,
     Column,
     Row,
-    Item,
     Cell,
     TooltipTrigger,
     Tooltip,
@@ -21,7 +20,7 @@ import { DatasetSummary } from "Datasets/Dataset";
 import { useRequestData } from "Hooks/useRequestData";
 import React from "react";
 import { ComputeParameterEditor } from "DatasetsProviders/ComputeProvider";
-import {useDatasetActions} from "Hooks/useDatasetActions";
+import { useDatasetActions } from "Hooks/useDatasetActions";
 
 interface DatasetModalProps {
     dataset: DatasetSummary;
@@ -40,10 +39,9 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
         10
     );
 
-    const {updateDataset} = useDatasetActions(dataset.name)
+    const { updateDataset } = useDatasetActions(dataset.name);
 
-    console.log("Dataset is ", dataset)
-    
+    console.log("Dataset is ", dataset);
 
     return (
         <DialogTrigger isDismissable>
@@ -55,14 +53,14 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
                     {dataset.error && <Text>{dataset.error}</Text>}
                     {dataRequest && dataRequest.state === "Done" && (
                         <Flex width={"100%"} gap={"size-200"} direction="row">
-                            {dataset.spec?.type === "WASMCompute" && (
+                            {dataset.spec?.type === "wasmCompute" && (
                                 <View flex={1}>
                                     <h1>Compute!</h1>
                                     <ComputeParameterEditor
                                         onChange={(update: any) =>
-                                          updateDataset(dataset.name, update )
+                                            updateDataset(dataset.name, update)
                                         }
-                                        spec = {dataset.spec}
+                                        spec={dataset.spec}
                                     />
                                 </View>
                             )}

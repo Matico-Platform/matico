@@ -5,189 +5,222 @@ import chroma from "chroma-js";
 import { RGBAColor } from "@deck.gl/core";
 import * as d3 from "d3-scale";
 import { colors } from "../../../Utils/colors";
-import lodash from "lodash";
-import {ColorSpecification} from "@maticoapp/matico_types/spec";
+import {
+    ColorSpecification,
+    MappingVarOr,
+    VarOr,
+    Range,
+    DomainVal
+} from "@maticoapp/matico_types/spec";
+import { Geometry, Polygon, Point, MultiPolygon } from "wkx";
 
 export function chunkCoords(coords: Array<Number>) {
-  return coords.reduce((result, coord, index) => {
-    const i = Math.floor(index / 2);
-    const j = index % 2;
-    result[i] = result[i] ? result[i] : [];
-    result[i][j] = coord;
-    return result;
-  }, []);
+    return coords.reduce((result, coord, index) => {
+        const i = Math.floor(index / 2);
+        const j = index % 2;
+        result[i] = result[i] ? result[i] : [];
+        result[i][j] = coord;
+        return result;
+    }, []);
 }
 
 // Simple convenience function to take a 1D array of coords and make it 2D
 export function mapCoords(array: Array<{ x: number; y: number }>) {
-  return array.map((a) => [a.x, a.y]);
+    return array.map((a) => [a.x, a.y]);
 }
 
 export function convertPoint(wkbGeom: any) {
-  return parseSync(wkbGeom, WKBLoader).positions.value;
+    return parseSync(wkbGeom, WKBLoader).positions.value;
 }
 
-export function convertPoly(poly: any) {
-  return [mapCoords(poly.exteriorRing), ...poly.interiorRings.map(mapCoords)];
+export function convertPoly(poly: Polygon) {
+    return [mapCoords(poly.exteriorRing), ...poly.interiorRings.map(mapCoords)];
 }
 
-export function expandMultiAndConvertPoly(data: any) {
-  const result = data.map((d) => ({
-    ...d,
-    geom: wkx.Geometry.parse(Buffer.from(d.geom)),
-  }));
-  const expanded = result.reduce((agg, d) => {
-    if (d.geom.polygons) {
-      d.geom.polygons.forEach((poly) => {
-        agg.push({ ...d, geom: convertPoly(poly) });
-      });
-    } else {
-      agg.push({ ...d, geom: convertPoly(d.geom) });
-    }
-    return agg;
-  }, []);
+export function expandMultiAndConvertPoly(data: Array<Record<string, any>>) {
+    const result = data.map(
+        (d: Record<string, any> & { geom: Uint8Array }) => ({
+            ...d,
+            geom: wkx.Geometry.parse(Buffer.from(d.geom))
+        })
+    );
+    const expanded = result.reduce(
+        (
+            agg: Array<Record<string, any> & { geom: number[][][] }>,
+            d: Record<string, any> & { geom: Polygon | MultiPolygon }
+        ) => {
+            if ("polygons" in d.geom) {
+                d.geom.polygons.forEach((poly: Polygon) => {
+                    agg.push({ ...d, geom: convertPoly(poly) });
+                });
+            } else {
+                agg.push({ ...d, geom: convertPoly(d.geom) });
+            }
+            return agg;
+        },
+        []
+    );
 
-  return expanded;
+    return expanded;
 }
 
 export function convertLine(wkbGeom: any) {
-  return chunkCoords(parseSync(wkbGeom, WKBLoader).positions.value);
+    return chunkCoords(parseSync(wkbGeom, WKBLoader).positions.value);
 }
 
-type ColorReturn = RGBAColor | ((d: unknown) => RGBAColor);
-type NumberReturn = number | ((d: unknown) => number);
+type ColorReturn = RGBAColor | ((d: Record<string, unknown>) => RGBAColor);
+type NumberReturn = number | ((d: Record<string, unknown>) => number);
 
-export const generateNumericVar = (numericVar): NumberReturn => {
-  if (!numericVar) return null;
-  if (typeof numericVar === "number") return numericVar;
-  if (numericVar.variable) {
-    const { variable, domain, range } = numericVar;
-    const ramp = constructRampFunctionNum(range,domain);
-    return (d) => {
-      const val = d.hasOwnProperty("properties")
-        ? d.properties[variable]
-        : d[variable];
-      return ramp(val);
-    };
-  }
-  return null;
-};
-
-
-export const chromaColorFromColorSpecification= (color: ColorSpecification, alpha: boolean) => {
-    if(color.hasOwnProperty("rgba")){
-      return  chroma(...color.rgba.slice(0,3), color.rgba[3]/255.0, "rgb").rgba()
+export const generateNumericVar = (
+    numericVar: MappingVarOr<number>
+): NumberReturn => {
+    if (!numericVar) return null;
+    if (typeof numericVar === "number") return numericVar;
+    if ("variable" in numericVar) {
+        const { variable, domain, range } = numericVar;
+        const ramp = constructRampFunctionNum(
+            range as Range<number>,
+            domain as DomainVal[]
+        );
+        return (d: Record<string, unknown>) => {
+            const val =
+                //@ts-ignore
+                "properties" in d ? d.properties[variable] : d[variable];
+            return ramp(val) as number;
+        };
     }
-    else if (color.hasOwnProperty("rgb")){
-      let c= chroma(...color.rgb,'rgb').rgba()
-      if(alpha){ c[3] = 0.7} 
-      return c 
-    }
-    else if (color.hasOwnProperty("hex")){
-      return chroma.hex(color.hex)
-    }
-    else if (color.hasOwnProperty("named")){
-      return chroma.hex(color.named)
-    }
-  return null;
-};
-
-const constructRampFunctionNum= (range:Array<any>,domain:Array<any> )=>{
-      if(typeof(domain[0]) === 'string'){
-        return (val:string)=> {
-          return range[domain.indexOf(val)] ?? 20
-        }
-      }
-      else{
-        return d3.scaleLinear().domain(domain).range(range)
-      }
-  
-
-}
-const constructRampFunctionCol = (range:Array<any>,domain:Array<any> )=>{
-      if(typeof(domain[0]) === 'string'){
-        return (val:string)=> {
-          // console.log("domain ",domain ,val)
-          const index = domain.indexOf(`${val}`)
-        
-          if(index >=0){
-            const r = range[index]
-            // console.log("r is ",r, index, range )
-            return chroma(r)
-          } 
-          else{
-            return  chroma(211,211,211)
-          }
-        }
-      }
-      else{
-        return chroma
-        .scale(range)
-        .domain(domain);
-      }
-  
-
-}
-export const generateColorVar = (colorVar, alpha=false): ColorReturn => {
-  if (!colorVar) {
     return null;
-  }
-  // If the color is data driven we compute the ramp either
-  // from an array of color values or a named pallet
-  if (colorVar.variable) {
-    const { variable, domain, range } = colorVar;
+};
 
-    // console.log("variable domain range ", variable,domain, range )
-
-    if (Array.isArray(range)) {
-      const mappedRange = range.map((c) => chromaColorFromColorSpecification(c,true))
-
-      const ramp = constructRampFunctionCol(mappedRange,domain) 
-
-      return (d) => {
-        let c = ramp(d[variable]).rgba();
-        c[3]= c[3]*255
-        return c
-      }
-    } else if (typeof range === "string" && _.at(colors, range)[0]) {
-      let brewer = _.at(colors, range)[0];
-      if (!brewer) {
-        return null;
-      }
-
-      if (!Array.isArray(brewer)) {
-        brewer = brewer[3];
-      }
-      const ramp = constructRampFunctionCol(brewer.map((c:string) => chromaColorFromColorSpecification({hex:c},true)), domain)
-
-      return (d: any) => {
-        const val = d.hasOwnProperty("properties")
-          ? d.properties[variable] 
-          : d[variable];
-        if(!val){ return [0,0,0,0]}
-        let c = ramp(val).rgba();
-        c[3]= c[3]*255
-        return c
-      };
-    } else {
-      return null;
+export const chromaColorFromColorSpecification = (
+    color: ColorSpecification,
+    alpha: boolean
+) => {
+    if ("rgba" in color) {
+        return chroma(
+            color.rgba[0],
+            color.rgba[1],
+            color.rgba[2],
+            color.rgba[3] / 255.0,
+            "rgb"
+        ).rgba();
+    } else if ("rgb" in color) {
+        let c = chroma(color.rgb[0], color.rgb[1], color.rgb[2], "rgb").rgba();
+        if (alpha) {
+            c[3] = 0.7;
+        }
+        return c;
+    } else if ("hex" in color) {
+        return chroma.hex(color.hex);
+    } else if ("named" in color) {
+        return chroma.hex(color.named);
     }
-  }
+    return null;
+};
 
-  let c= chromaColorFromColorSpecification(colorVar, alpha);
-  console.log("color is ", c)
-  c[3]= c[3]*255
-  return () => c
+const constructRampFunctionNum = (
+    range: Range<number>,
+    domain: DomainVal[]
+) => {
+    if (typeof domain[0] === "string") {
+        return (val: string) => {
+            return range[domain.indexOf(val)] ?? 20;
+        };
+    } else {
+        return d3
+            .scaleLinear()
+            .domain(domain as number[])
+            .range(range as number[]);
+    }
+};
+const constructRampFunctionCol = (range: Range<number>, domain: Array<any>) => {
+    if (typeof domain[0] === "string") {
+        return (val: string) => {
+            // console.log("domain ",domain ,val)
+            const index = domain.indexOf(`${val}`);
+
+            if (index >= 0) {
+                const r = range[index];
+                // console.log("r is ",r, index, range )
+                return chroma(r);
+            } else {
+                return chroma(211, 211, 211);
+            }
+        };
+    } else {
+        return chroma.scale(range).domain(domain);
+    }
+};
+export const generateColorVar = (
+    colorVar: MappingVarOr<ColorSpecification>,
+    alpha = false
+): ColorReturn => {
+    if (!colorVar) {
+        return null;
+    }
+    // If the color is data driven we compute the ramp either
+    // from an array of color values or a named pallet
+    if ("variable" in colorVar) {
+        const { variable, domain, range } = colorVar;
+
+        if (Array.isArray(range)) {
+            const mappedRange = range.map((c) =>
+                chromaColorFromColorSpecification(c, true)
+            );
+
+            const ramp = constructRampFunctionCol(mappedRange, domain);
+
+            return (d) => {
+                let c = ramp(d[variable]).rgba();
+                c[3] = c[3] * 255;
+                return c;
+            };
+        } else if (typeof range === "string" && _.at(colors, range)[0]) {
+            let brewer = _.at(colors, range)[0];
+            if (!brewer) {
+                return null;
+            }
+
+            if (!Array.isArray(brewer)) {
+                brewer = brewer[3];
+            }
+            const ramp = constructRampFunctionCol(
+                brewer.map((c: string) =>
+                    chromaColorFromColorSpecification({ hex: c }, true)
+                ),
+                domain
+            );
+
+            return (d: any) => {
+                const val = d.hasOwnProperty("properties")
+                    ? d.properties[variable]
+                    : d[variable];
+                if (!val) {
+                    return [0, 0, 0, 0];
+                }
+                let c = ramp(val).rgba();
+                c[3] = c[3] * 255;
+                return c;
+            };
+        } else {
+            return null;
+        }
+    }
+
+    let c = chromaColorFromColorSpecification(colorVar, alpha);
+    console.log("color is ", c);
+    c[3] = c[3] * 255;
+    return () => c;
 };
 
 export const getColorScale = (range: any) => {
-  if (typeof range === "string") {
-    let brewer = _.at(colors, [range]);
-    if (!brewer) {
-      return null;
+    if (typeof range === "string") {
+        let brewer = _.at(colors, [range]);
+        if (!brewer) {
+            return null;
+        }
+        return brewer;
+    } else {
+        return range;
     }
-    return brewer;
-  } else {
-    return range;
-  }
 };

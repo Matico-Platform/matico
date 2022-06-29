@@ -1,66 +1,69 @@
-import {NumberField, TextField, ToggleButton, View} from "@adobe/react-spectrum"
-import React from "react"
-import {VariableSelector} from "./VariableSelector"
+import {
+    NumberField,
+    TextField,
+    ToggleButton,
+    View
+} from "@adobe/react-spectrum";
+import React from "react";
+import { VariableSelector } from "./VariableSelector";
 import FunctionIcon from "@spectrum-icons/workflow/Function";
 
-type StateVariableReference= {"var": string}
+type StateVariableReference = { var: string };
 
-
-interface ValueOrVariableInputProps{
-  value:  number | string | StateVariableReference; 
-  defaultValue: number | string;
-  label?: string,
-  onChange: (newVal: number | string | StateVariableReference)=>void
+interface ValueOrVariableInputProps {
+    value: number | string | StateVariableReference;
+    defaultValue: number | string;
+    label?: string;
+    onChange: (newVal: number | string | StateVariableReference) => void;
 }
-export const ValueOrVariableInput :React.FC<ValueOrVariableInputProps>=({value,onChange,defaultValue, label})=>{
+export const ValueOrVariableInput: React.FC<ValueOrVariableInputProps> = ({
+    value,
+    onChange,
+    defaultValue,
+    label
+}) => {
+    const isVariable = typeof value === "object" && "var" in value;
 
-  const isVariable = (typeof(value) === 'object' && 'var' in value)
+    const toggleIsVariable = () => {
+        if (isVariable) {
+            onChange(defaultValue);
+        } else {
+            onChange({ var: null });
+        }
+    };
 
-  const toggleIsVariable =()=>{
-    if(isVariable){
-      onChange(defaultValue)
-    }
-    else{
-      onChange({'var':null})
-    }
-  }
-  
-  return(
-    <View>
-      {isVariable &&
-      <VariableSelector 
-        variable={value.var} 
-      onSelectVariable={(variableName:string)=> onChange({var: variableName})}
-      />
-      }
-      {(value && typeof(value) ==="string") && 
-        <TextField
-          value={value}
-          label={label}
-          onChange={(newVal: string) =>
-            onChange(newVal)
-          }
-        />
-      }
-      {(value && typeof(value)==='number')&&
-        
-        <NumberField
-          key="min_val"
-          value={value}
-          label="min"
-          onChange={(newVal :number) =>
-            onChange(newVal)
-          }
-        />
-      }
-      <ToggleButton
-        isEmphasized
-        isSelected={isVariable}
-        onPress={toggleIsVariable}
-      >
-        <FunctionIcon />
-      </ToggleButton>
-    </View>
-  )
-
-}
+    return (
+        <View>
+            {isVariable && (
+                <VariableSelector
+                    variable={value.var}
+                    onSelectVariable={(variableName: string) =>
+                        onChange({ var: variableName })
+                    }
+                />
+            )}
+            {value && typeof value === "string" && (
+                <TextField
+                    value={value}
+                    label={label}
+                    onChange={(newVal: string) => onChange(newVal)}
+                />
+            )}
+            {value && typeof value === "number" && (
+                <NumberField
+                    key="min_val"
+                    value={value}
+                    label="min"
+                    onChange={(newVal: number) => onChange(newVal)}
+                />
+            )}
+            <ToggleButton
+                isEmphasized
+                isSelected={isVariable}
+                onPress={toggleIsVariable}
+            >
+                <FunctionIcon />
+            </ToggleButton>
+        </View>
+    );
+};

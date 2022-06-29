@@ -7,7 +7,7 @@ import {
     addPaneRefToPage
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
-import {DefaultPosition} from "Components/MaticoEditor/Utils/PaneDetails";
+import { DefaultPosition } from "Components/MaticoEditor/Utils/PaneDetails";
 
 export const usePage = (pageId: string) => {
     const page = useMaticoSelector((selector) =>
@@ -32,14 +32,16 @@ export const usePage = (pageId: string) => {
 
     const addPaneToPage = (pane: Pane) => {
         dispatch(addPane({ pane }));
-        const paneRef = { id: uuidv4(), paneId: pane.id, type: pane.type,
-          position:DefaultPosition
-        }
+        const paneRef = {
+            id: uuidv4(),
+            paneId: pane.id,
+            type: pane.type,
+            position: DefaultPosition
+        };
         //@ts-ignore not sure why we are getting this error pane.type and paneRef.type should have the same set of entries
-        _addPaneRefToPage(paneRef)
-        
+        _addPaneRefToPage(paneRef);
     };
-    const _addPaneRefToPage =(paneRef:PaneRef,index?: number )=>{
+    const _addPaneRefToPage = (paneRef: PaneRef, index?: number) => {
         dispatch(
             addPaneRefToPage({
                 pageId: pageId,
@@ -47,7 +49,14 @@ export const usePage = (pageId: string) => {
                 index: index
             })
         );
-    }
+    };
 
-    return { page, updatePage, removePage: removePageLocal, panes, addPaneRefToPage : _addPaneRefToPage, addPaneToPage};
+    return {
+        page,
+        updatePage,
+        removePage: removePageLocal,
+        panes,
+        addPaneRefToPage: _addPaneRefToPage,
+        addPaneToPage
+    };
 };
