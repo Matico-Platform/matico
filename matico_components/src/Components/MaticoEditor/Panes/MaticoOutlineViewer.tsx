@@ -16,7 +16,11 @@ import styled from "styled-components";
 import { usePane } from "Hooks/usePane";
 import { Container } from "react-dom";
 import { useContainer } from "Hooks/useContainer";
-import { VgNonUnionDomain } from "vega-lite/build/src/vega.schema";
+import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
+import { restrictToVerticalAxis, restrictToWindowEdges } from '@dnd-kit/modifiers';
+import DragHandle from '@spectrum-icons/workflow/DragHandle';
+import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
+
 // function addForContainer(container: ContainerPane, inset: number) {
 //   let containerPanes: Array<RowEntryMultiButtonProps> = [];
 
@@ -47,6 +51,16 @@ const HoverableRow = styled.span`
   }
 `
 
+const DragButton = styled.button`
+  background:none;
+  border:none;
+  padding:0;
+  cursor: grab;
+`
+
+const DragContainer = styled.div`
+  transition: 250ms box-shadow;
+`
 interface PageListProps {
   pages: Page[],
   currentPage: Page,
@@ -153,70 +167,124 @@ const PaneRow: React.FC<{ rowPane: PaneRef }> = ({
     setPaneOrder,
     selectPane
   } = usePane(rowPane);
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: pane.id,
+    data: {
+      pane,
+      parent
+    }
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    background: 'var(--spectrum-global-color-static-gray-900)',
+    boxShadow: '0px 0px 10px var(--spectrum-global-color-fuchsia-400)',
+    cursor: 'grabbing',
+    zIndex: 500
+    
+  } : undefined;
 
   return <HoverableRow>
-    <Flex direction="row">
-      <Button
-        variant="primary"
-        onPress={selectPane}
-        isQuiet
-      >
-        {pane.name}
-      </Button>
-    </Flex>
-
+    <DragContainer style={style} ref={setNodeRef}>
+      <Flex direction="row">
+        <DragButton  {...listeners} {...attributes}>
+          <DragHandle />
+        </DragButton>
+        <Button
+          variant="primary"
+          onPress={selectPane}
+          isQuiet
+          UNSAFE_style={{
+            borderRadius: 0,
+            color: 'var(--spectrum-global-color-gray-900)',
+            textAlign: 'left',
+            justifyContent: 'flex-start'
+          }}
+        >
+          {pane.name}
+        </Button>
+        <Button 
+          variant="secondary"
+          isQuiet
+          onPress={removePane}
+          >
+            delete
+        </Button>
+      </Flex>
+    </DragContainer>
   </HoverableRow>
 }
 
-const ContainerPaneRow: React.FC<{ 
+const ContainerPaneRow: React.FC<{
   rowPane: PaneRef
 }> = ({
   rowPane
 }) => {
-  const { pane } = usePane(rowPane);
-  const {addPaneToContainer } = useContainer(rowPane);
-  const { panes } = pane as ContainerPane;
-  
-  return <>
-    <PaneRow 
-      rowPane={rowPane} 
+    const { pane } = usePane(rowPane);
+    const { addPaneToContainer } = useContainer(rowPane);
+    const { panes } = pane as ContainerPane;
+
+    return <>
+      <PaneRow
+        rowPane={rowPane}
       />
-    <PaneList 
-      panes={panes} 
-      addPaneRefToParent={addPaneToContainer}
+      <PaneList
+        panes={panes}
+        addPaneRefToParent={addPaneToContainer}
+        id={pane.id}
       />
-  </>
-}
+    </>
+  }
 
 
-const PaneList: React.FC<{ 
-    panes: PaneRef[],
-    addPaneRefToParent: (paneRef: PaneRef, index?:number) => void
-  }> = ({
+const PaneList: React.FC<{
+  panes: PaneRef[],
+  addPaneRefToParent: (paneRef: PaneRef, index?: number) => void,
+  id?: string
+}> = ({
   panes,
-  addPaneRefToParent
+  addPaneRefToParent,
+  id
 }) => {
-  return (
-    <View
-      borderStartColor={"gray-500"}
-      borderStartWidth={"thick"}
-      marginStart="size-50"
-    >
-      {
-        panes.map(pane => {
-          if (pane.type === 'container') {
-            return <ContainerPaneRow 
-            rowPane={pane}
-            />
-          } else {
-            return <PaneRow 
-              rowPane={pane}
-              />
-          }
-        })
+    const { isOver, setNodeRef } = useDroppable({
+      id: id || 'droppable',
+      data: {
+        id
       }
-    </View>)
-}
+    });
+    const style = {
+      border: isOver ? '1px solid var(--spectrum-global-color-fuchsia-400)' : '1px solid rgba(0,0,0,0)',
+      background: isOver ? 'var(--spectrum-global-color-static-gray-800)' : undefined,
+      transition: '250ms all'
+    };
+
+    return (
+      <div ref={setNodeRef} style={style}>
+        <View
+          borderStartColor={"gray-500"}
+          borderStartWidth={"thick"}
+          marginStart="size-50"
+        >
+        <NewPaneDialog
+          validatePaneName={() => true}
+          onAddPane={addPaneRefToParent}
+          />
+          {
+            panes.map(pane => {
+              if (pane.type === 'container') {
+                return <ContainerPaneRow
+                  rowPane={pane}
+                />
+              } else {
+                return <PaneRow
+                  rowPane={pane}
+                />
+              }
+            })
+          }
+        </View>
+      </div>)
+  }
 
 type MaticoOutlineViewerProps = RouteComponentProps & {}
 type MutableList = {
@@ -234,7 +302,7 @@ export const MaticoOutlineViewer: React.FC = withRouter(
     }: MaticoOutlineViewerProps
   ) => {
     // list pages
-    const { pages, setEditPage, removePage } = useApp();
+    const { pages, panes: allPanes, reparentPane, setEditPage, removePage } = useApp();
     const currentPage = pages.find(({ path }) => path === location.pathname);
     if (!currentPage) {
       return null
@@ -260,7 +328,31 @@ export const MaticoOutlineViewer: React.FC = withRouter(
           break;
       }
     }
+    const handleDragEnd = (e: any) => {
+      const {
+        over: {
+          id
+        },
+        active: {
+          data: {
+            current: {
+              pane,
+              parent
+            }
+          }
+        }
+      } = e;
+      
+      const target = id === 'droppable' 
+        ? currentPage 
+        : allPanes.find((p: Pane) => p.id === id)
 
+      reparentPane(
+        pane,
+        parent,
+        target
+      )
+    }
     return (
       <Flex
         direction="column"
@@ -271,19 +363,21 @@ export const MaticoOutlineViewer: React.FC = withRouter(
         >
           Page Outline
         </Heading>
-        <PageList
-          pages={pages}
-          currentPage={currentPage}
-          handlePageAction={handlePageAction}
-        />
-        <Heading
-          margin="size-150"
-          alignSelf="start"
-          level={4}
-        >
-          {pageName}
-        </Heading>
-        <PaneList panes={panes} />
+        <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={handleDragEnd}>
+          <PageList
+            pages={pages}
+            currentPage={currentPage}
+            handlePageAction={handlePageAction}
+          />
+          <Heading
+            margin="size-150"
+            alignSelf="start"
+            level={4}
+          >
+            {pageName}
+          </Heading>
+          <PaneList panes={panes} />
+        </DndContext>
       </Flex>
     )
   });

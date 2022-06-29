@@ -152,7 +152,6 @@ export const stateSlice = createSlice({
                     p.id == containerId && p.type === "container"
             );
             if (!container) {
-                console.log('container', JSON.stringify(state.spec.panes, null, 2), containerId)
                 return;
             } else if (index) {
                 //@ts-ignore

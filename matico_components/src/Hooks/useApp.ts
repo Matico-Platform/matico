@@ -1,10 +1,12 @@
-import { Page } from "@maticoapp/matico_types/spec";
+import { Page, Pane, ContainerPane, PaneRef } from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import {
     updatePageDetails,
     removePage,
     addPage,
-    setCurrentEditElement
+    setCurrentEditElement,
+    addPaneRefToContainer,
+    removePaneFromContainer
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 
@@ -49,6 +51,25 @@ export const useApp = () => {
         dispatch(removePage({ id, removeOrphanPanes: false }));
     };
 
+    const reparentPane = (
+        pane: Pane,
+        parent: ContainerPane | Page,
+        target: ContainerPane | Page
+    ) => {
+        const paneRef = parent.panes.find((parentPane: PaneRef) => parentPane.paneId === pane.id)
+        console.log(parent)
+        dispatch(
+            removePaneFromContainer({
+                containerId:parent.id, 
+                paneRefId:paneRef.id
+            }))
+        dispatch(
+            addPaneRefToContainer({
+                containerId: target.id,
+                paneRef
+        }))
+    }
+
     return {
         pages,
         panes,
@@ -56,6 +77,7 @@ export const useApp = () => {
         removePage: removePageLocal,
         addPage: addPageLocal,
         updatePage,
-        setEditPage
+        setEditPage,
+        reparentPane
     };
 };
