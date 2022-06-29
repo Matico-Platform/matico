@@ -16,8 +16,13 @@ use futures::{StreamExt, TryStreamExt};
 use slugify::slugify;
 use std::io::Write;
 use uuid::Uuid;
+use utoipa::{IntoParams};
 
-#[get("")]
+#[utoipa::path(
+    responses(
+        (status = 200, description = "List all datasets avaliable to the user", body = [Dataset])
+    )
+)]
 #[tracing::instrument(
     name = "GET DATASETS",
     skip(state),
@@ -25,6 +30,7 @@ use uuid::Uuid;
         request_id = %Uuid::new_v4(),
     )
 )]
+#[get("")]
 async fn get_datasets(
     state: web::Data<State>,
     web::Query(search_criteria): web::Query<DatasetSearch>,

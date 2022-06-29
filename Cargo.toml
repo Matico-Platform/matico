@@ -9,3 +9,5 @@ members = [
   "matico_compute/matico_hdbscam_analysis",
   "matico_common",
 ] # "matico_compute/matico_convex_hull_analysis",
+
+resolver= "2"

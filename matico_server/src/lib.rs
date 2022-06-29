@@ -19,6 +19,7 @@ use std::net::TcpListener;
 use std::time::Duration;
 use tracing;
 use tracing_actix_web::TracingLogger;
+use utoipa::OpenApi;
 
 pub mod app_config;
 mod app_state;
@@ -31,6 +32,25 @@ mod scheduler;
 mod schema;
 pub mod telemetry;
 mod utils;
+
+use models::datasets::{DatasetSearch, Dataset};
+
+
+#[derive(OpenApi)]
+#[openapi(
+    handlers(
+        routes::datasets::get_datasets
+    ),
+    components(
+        Dataset,
+        DatasetSearch
+    ),
+)]
+struct ApiDoc;
+
+
+use utoipa_swagger_ui::SwaggerUi;
+
 
 pub async fn health() -> impl Responder {
     "Everything is fine".to_string()
@@ -81,6 +101,8 @@ pub async fn run(
         ogr_string: ogr_string.clone(),
     });
 
+    let openapi = ApiDoc::openapi();
+
     let server = HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_header()
@@ -104,6 +126,7 @@ pub async fn run(
             .service(web::scope("/api/datasets").configure(routes::datasets::init_routes))
             .service(web::scope("/api/data").configure(routes::data::init_routes))
             .service(web::scope("/api/compute").configure(routes::compute::init_routes))
+            .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-doc/openapi.json", openapi.clone()))
             .service(fs::Files::new("/", "static").index_file("index.html"))
     })
     .listen(listener)?

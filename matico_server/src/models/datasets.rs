@@ -3,6 +3,7 @@ use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
+use utoipa::{Component, IntoParams};
 use uuid::Uuid;
 
 use crate::db::DbPool;
@@ -11,12 +12,12 @@ use crate::models::{Permission, PermissionType, ResourceType, SyncImport};
 use crate::schema::datasets::{self, dsl::*};
 use crate::utils::ImportParams;
 
-#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow, Component)]
 pub struct Extent {
     pub extent: Vec<f64>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Component, IntoParams)]
 pub struct DatasetSearch {
     pub name: Option<String>,
     pub public: Option<bool>,
@@ -25,7 +26,7 @@ pub struct DatasetSearch {
     pub owner_id: Option<Uuid>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Component)]
 pub struct CreateSyncDatasetDTO {
     pub name: String,
     pub description: String,
@@ -36,7 +37,7 @@ pub struct CreateSyncDatasetDTO {
     pub import_params: ImportParams,
 }
 
-#[derive(Debug, Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations)]
+#[derive(Debug, Serialize, Deserialize, Insertable, AsChangeset, Queryable, Associations, Component)]
 #[belongs_to(parent = "User", foreign_key = "owner_id")]
 #[table_name = "datasets"]
 pub struct Dataset {
@@ -59,7 +60,7 @@ pub struct Dataset {
     pub import_params: ImportParams,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Component)]
 pub struct CreateDatasetDTO {
     pub name: String,
     pub description: String,
@@ -68,7 +69,7 @@ pub struct CreateDatasetDTO {
     pub import_params: ImportParams,
 }
 
-#[derive(Serialize, Deserialize, Debug, AsChangeset)]
+#[derive(Serialize, Deserialize, Debug, AsChangeset, Component)]
 #[table_name = "datasets"]
 pub struct UpdateDatasetDTO {
     pub name: Option<String>,
