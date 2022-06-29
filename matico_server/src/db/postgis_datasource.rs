@@ -607,6 +607,55 @@ impl PostgisStatRunner {
         Ok(StatResults::Histogram(HistogramResults(results)))
     }
 
+    async fn calc_jenks(
+        db: &DataDbPool,
+        column: &DatasetColumn,
+        params: &JenksParams,
+        query: &PostgisQueryBuilder,
+    ) -> Result<StatResults, ServiceError> {
+        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false); // What is the point of this line?
+        let base_query = query.build_query()?;
+
+        let query =format!(
+            "
+            WITH edges AS (
+                    SELECT RANK() OVER(ORDER BY edge), edge FROM (
+                            SELECT MIN({col}) AS edge FROM {source_query}
+                            UNION 
+                            SELECT UNNEST(natural_breaks({col}, {bin_no})) FROM {source_query}
+                            UNION 
+                            SELECT MAX({col}) FROM {source_query} AS val) AS sq
+            ), bins AS (
+                    SELECT lower.edge AS bin_start, upper.edge AS bin_end
+                    FROM edges AS lower, edges AS upper
+                    WHERE lower.rank = upper.rank-1 
+            )
+            SELECT 
+                    bins.bin_start, 
+                    bins.bin_end, 
+                    count(*) AS count 
+            FROM bins, {source_query} 
+            WHERE bins.bin_start < {source_query}.{col} AND {source_query}.{col} <= bins.bin_end
+            GROUP BY bins.bin_start, bins.bin_end;
+            ",
+            col = column.name,
+            source_query = base_query,
+            bin_no = params.no_bins
+        );
+
+        let results: Vec<JenksEntry> = sqlx::query_as::<_, JenksEntry>(&query)
+            .fetch_all(db)
+            .await
+            .map_err(|e| {
+                ServiceError::InternalServerError(format!(
+                    "Failed to get Jenks result {:#?}",
+                    e
+                ))
+            })?;
+
+        Ok(StatResults::Jenks(JenksResults(results)))
+    }
+
     async fn calc_value_counts(
         db: &DataDbPool,
         column: &DatasetColumn,
