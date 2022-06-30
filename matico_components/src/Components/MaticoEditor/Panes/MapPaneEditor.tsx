@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import { useMaticoSelector } from "Hooks/redux";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
@@ -124,6 +124,8 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
     );
 
+    const dispatch = useMaticoDispatch()
+
     const updateBaseMap = (baseMap: BaseMap) => {
         console.log("Updating base map", baseMap);
         updatePane({
@@ -179,10 +181,13 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         );
     }
 
-    const setLayerEdit = (index: number) => {
-        setCurrentEditElement({
-            type: "layer"
-        });
+    const setLayerEdit = (id:string) => {
+        dispatch(
+          setCurrentEditElement({
+              id,
+              type: "layer"
+          })
+        )
     };
 
     const addLayer = (dataset: string, layerName: string) => {
@@ -334,10 +339,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             key={layer.name}
                             entryName={layer.name}
                             onSelect={() =>
-                                setCurrentEditElement({
-                                    type: "layer",
-                                    id: layer.id
-                                })
+                                setLayerEdit(layer.id)
                             }
                             onRemove={() => {}}
                             onDuplicate={() => {}}

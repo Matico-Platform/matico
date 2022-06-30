@@ -18,6 +18,7 @@ import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { IconForPaneType } from "../Utils/PaneDetails";
 import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
+import {PaneCollectionEditor} from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
 
 export interface PageEditorProps {
     id: string;
@@ -81,31 +82,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
             </CollapsibleSection>
 
             <CollapsibleSection title="Panes" isOpen={true}>
-                <Flex gap={"size-200"} direction="column">
-                    {page.panes.map((pane: PaneRef, index: number) => (
-                        <RowEntryMultiButton
-                            key={pane.id}
-                            onRaise={() => {}}
-                            onSelect={() => {}}
-                            onLower={() => {}}
-                            onRemove={() => {}}
-                            onDuplicate={() => {}}
-                            entryName={
-                                <Flex
-                                    direction="row"
-                                    alignItems="center"
-                                    gap="size-100"
-                                >
-                                    {IconForPaneType(pane.type)}
-                                    <Text>{panes[index].name}</Text>
-                                </Flex>
-                            }
-                        />
-                    ))}
-                    <NewPaneDialog
-                        onAddPane={(pane: Pane) => addPaneToPage(pane)}
-                    />
-                </Flex>
+              <PaneCollectionEditor containerId={page.id}/>
             </CollapsibleSection>
 
             <CollapsibleSection title="Danger Zone" isOpen={true}>

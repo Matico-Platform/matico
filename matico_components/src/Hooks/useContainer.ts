@@ -1,22 +1,22 @@
 import { ContainerPane, PaneRef, Pane } from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import {
-    removePaneFromContainer,
-    addPaneRefToContainer,
-    addPane,
-    setCurrentEditElement
+    setCurrentEditElement,
+    removePaneRefFromContainer
 } from "Stores/MaticoSpecSlice";
 import { usePane } from "./usePane";
 import { v4 as uuidv4 } from "uuid";
 import { DefaultPosition } from "Components/MaticoEditor/Utils/PaneDetails";
+import {usePaneContainer} from "./usePaneContainer";
 
 export const useContainer = (paneRef: PaneRef) => {
     const paneProperties = usePane(paneRef);
     const { pane } = paneProperties;
     const dispatch = useMaticoDispatch();
+    const {paneRefs, addPaneToContainer, addPaneRefToContainer, removePaneRefFromContainer} = usePaneContainer(paneRef.paneId)
 
     const container =
-        paneProperties.pane.type === "container"
+        pane.type === "container"
             ? (paneProperties.pane as ContainerPane)
             : null;
 
@@ -28,14 +28,6 @@ export const useContainer = (paneRef: PaneRef) => {
         )
     );
 
-    const removePaneFromContainerLocal = (paneRef: PaneRef) => {
-        dispatch(
-            removePaneFromContainer({
-                containerId: container?.id,
-                paneRefId: paneRef.id
-            })
-        );
-    };
 
     const selectSubPane = (subPane: PaneRef) => {
         dispatch(
@@ -47,33 +39,12 @@ export const useContainer = (paneRef: PaneRef) => {
         );
     };
 
-    const addPaneToContainer = (newPane: Pane) => {
-        if (pane.type === "container") {
-            dispatch(
-                addPane({
-                    pane: newPane
-                })
-            );
-
-            dispatch(
-                addPaneRefToContainer({
-                    containerId: pane.id,
-                    paneRef: {
-                        id: uuidv4(),
-                        paneId: newPane.id,
-                        type: newPane.type,
-                        position: DefaultPosition
-                    }
-                })
-            );
-        }
-    };
 
     return {
         ...paneProperties,
         container,
         addPaneToContainer,
-        removePaneFromContainer: removePaneFromContainerLocal,
+        removePaneFromContainer: removePaneRefFromContainer,
         selectSubPane,
         subPanes
     };

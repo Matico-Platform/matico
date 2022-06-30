@@ -11,6 +11,7 @@ import { IconForPaneType } from "../Utils/PaneDetails";
 import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { GatedAction } from "../EditorComponents/GatedAction";
+import {PaneCollectionEditor} from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
 
 export interface SectionEditorProps {
     paneRef: PaneRef;
@@ -25,10 +26,6 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
         updatePane,
         updatePanePosition,
         parent,
-        addPaneToContainer,
-        removePaneFromContainer,
-        subPanes,
-        selectSubPane
     } = useContainer(paneRef);
 
     return (
@@ -51,40 +48,7 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Panes" isOpen={true}>
-                <NewPaneDialog onAddPane={addPaneToContainer} />
-
-                <Flex gap={"size-200"} direction="column">
-                    {subPanes.map((pane: Pane, index: number) => {
-                        return (
-                            <RowEntryMultiButton
-                                // @ts-ignore
-                                key={pane.name}
-                                entryName={
-                                    <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        gap="size-100"
-                                    >
-                                        {IconForPaneType(pane.type)}
-                                        {/* @ts-ignore */}
-                                        <Text>{pane.name}</Text>
-                                    </Flex>
-                                }
-                                onRemove={() =>
-                                    removePaneFromContainer(
-                                        container.panes[index]
-                                    )
-                                }
-                                onRaise={() => {}}
-                                onLower={() => {}}
-                                onDuplicate={() => {}}
-                                onSelect={() =>
-                                    selectSubPane(container.panes[index])
-                                }
-                            />
-                        );
-                    })}
-                </Flex>
+              <PaneCollectionEditor containerId={paneRef.paneId} />
             </CollapsibleSection>
             <CollapsibleSection title="Danger Zone">
                 <GatedAction
