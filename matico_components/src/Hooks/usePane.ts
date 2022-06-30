@@ -11,7 +11,8 @@ import {
     updatePanePosition,
     findParent,
     setPaneOrder,
-    setCurrentEditElement
+    setCurrentEditElement,
+    removePaneRef
 } from "Stores/MaticoSpecSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
@@ -40,6 +41,10 @@ export const usePane = (paneRef: PaneRef) => {
     const deletePane = () => {
         dispatch(removePane({ id: paneRef.paneId }));
     };
+
+    const removePaneFromParent = () => {
+        dispatch(removePaneRef({ paneRefId: paneRef.paneId}))
+    }
 
     const reparentPane = (newParentId: string, position?: any) => {
         // dispatch
@@ -99,6 +104,7 @@ export const usePane = (paneRef: PaneRef) => {
         pane,
         updatePane,
         removePane: deletePane,
+        removePaneFromParent,
         updatePanePosition: _updatePanePosition,
         parent,
         raisePane,

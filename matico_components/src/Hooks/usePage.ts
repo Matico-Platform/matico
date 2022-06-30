@@ -4,10 +4,28 @@ import {
     updatePageDetails,
     removePage,
     addPane,
-    addPaneRefToPage
+    addPaneRefToPage,
+    setCurrentEditElement
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import { DefaultPosition } from "Components/MaticoEditor/Utils/PaneDetails";
+
+interface ParentActions {
+    addPaneToParent: (p: Pane, position: PanePosition) => void;
+    addPaneRefToParent: (id: string) => void;
+    removePaneRefFromParent: (id: string) => void;
+    setPaneIndex: (id: string, index: number) => void;
+    changeLayoutType: (layout: Layout) => void;
+}
+
+interface PaneRefActions {
+    // delete
+    // ...
+    deletePaneRef: () => void;
+    reparentPaneRef: (targetPaneId: string) => void;
+    copyPaneRef: (targetPaneId: string) => void;
+    updatePosition: () => void;
+}
 
 export const usePage = (pageId: string) => {
     const page = useMaticoSelector((selector) =>
@@ -24,6 +42,15 @@ export const usePage = (pageId: string) => {
 
     const updatePage = (update: Partial<Page>) => {
         dispatch(updatePageDetails({ pageId, update }));
+    };
+
+    const selectPage = () => {
+        dispatch(
+            setCurrentEditElement({
+                type: "page",
+                id: pageId
+            })
+        );
     };
 
     const removePageLocal = () => {
@@ -57,6 +84,7 @@ export const usePage = (pageId: string) => {
         removePage: removePageLocal,
         panes,
         addPaneRefToPage: _addPaneRefToPage,
-        addPaneToPage
+        addPaneToPage,
+        selectPage
     };
 };

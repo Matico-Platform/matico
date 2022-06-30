@@ -6,6 +6,7 @@ import {
     Pane
 } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
+import { Container } from "react-dom";
 
 export const findPaneParents = (spec: App, paneId: string) => {
     const pages = spec.pages.filter((p: Page) =>
@@ -20,6 +21,8 @@ export const findPaneParents = (spec: App, paneId: string) => {
     return { pages, containers: containersWithPane };
 };
 
+
+
 export const findPagesForPane = (spec: App, paneRef: PaneRef) => {
     let { pages, containers } = findPaneParents(spec, paneRef.id);
     while (containers.length > 0) {
@@ -33,3 +36,17 @@ export const findPagesForPane = (spec: App, paneRef: PaneRef) => {
     let pageSet = Array.from(new Set(pages));
     return pageSet;
 };
+
+export const findPaneOrPage = (spec: App, id: string) => {
+    const pages = spec.pages;
+    const pageMatch = pages.find((page: Page) => page.id === id)
+    if (pageMatch){
+        return pageMatch
+    }
+    const containers = spec.panes.filter((pane: Pane) => pane.type === "container") as ContainerPane[]
+    const containerMatch = containers.find((container: ContainerPane) => container.id === id)
+    if (containerMatch){
+        return containerMatch
+    }
+    return null
+}

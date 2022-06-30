@@ -10,7 +10,8 @@ import {
     PanePosition
 } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
-import { findPagesForPane } from "Utils/specUtils/specUtils";
+import { findPagesForPane, findPaneOrPage } from "Utils/specUtils/specUtils";
+import { stringValue } from "vega";
 
 export type EditElement = {
     id?: string;
@@ -37,6 +38,21 @@ export const findParent = (app: App, paneRefId: string) => {
         (pane: Pane) =>
             pane.type === "container" &&
             pane.panes.find((paneRef: PaneRef) => paneRef.id === paneRefId)
+    );
+    const container =
+        potentialPane?.type === "container"
+            ? (potentialPane as ContainerPane)
+            : null;
+    return potentialPage || container;
+};
+export const findRefParent = (app: App, paneRefId: string) => {
+    const potentialPage = app.pages.find((page: Page) =>
+        page.panes.find((paneRef: PaneRef) => paneRef.paneId === paneRefId)
+    );
+    const potentialPane = app.panes.find(
+        (pane: Pane) =>
+            pane.type === "container" &&
+            pane.panes.find((paneRef: PaneRef) => paneRef.paneId === paneRefId)
     );
     const container =
         potentialPane?.type === "container"
@@ -139,6 +155,38 @@ export const stateSlice = createSlice({
                 page.panes,
                 (p: PaneRef) => p.id === action.payload.paneRefId
             );
+        },
+        removePaneRef: (
+            state,
+            action: PayloadAction<{paneRefId: string}>
+        ) => {
+            const {paneRefId} = action.payload;
+            const parent = findRefParent(state.spec, paneRefId)
+            if (parent){
+                _.remove(
+                    parent.panes,
+                    (p: PaneRef) => p.paneId === paneRefId
+                )
+            }
+        },
+        reparentPaneRef: (
+            state,
+            action: PayloadAction<{paneRefId: string, targetId: string}>
+        ) => {
+            const {paneRefId, targetId} = action.payload;
+            if (paneRefId === targetId){ // dropped a container on itself :o
+                return;
+            }
+            const parent = findRefParent(state.spec, paneRefId)
+            const target = findPaneOrPage(state.spec, targetId)
+            if (parent && target && (parent.id !== target.id)){
+                const pane = parent.panes.find((p: PaneRef) => p.paneId === paneRefId)
+                _.remove(
+                    parent.panes,
+                    (p: PaneRef) => p.paneId === paneRefId
+                )
+                target.panes.push(pane)
+            }
         },
         addPaneRefToContainer: (
             state,
@@ -324,6 +372,8 @@ export const {
     addPaneRefToPage,
     addPaneRefToContainer,
     removePaneFromContainer,
+    removePaneRef,
+    reparentPaneRef,
     updatePageDetails
 } = stateSlice.actions;
 

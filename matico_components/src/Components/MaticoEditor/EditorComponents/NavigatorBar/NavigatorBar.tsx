@@ -8,7 +8,7 @@ import {
 } from "@adobe/react-spectrum";
 import React, { useState } from "react";
 import { NavigatorBarProps } from "./types";
-import Layers from "@spectrum-icons/workflow/Layers";
+import Breakdown from "@spectrum-icons/workflow/Breakdown";
 import Curate from "@spectrum-icons/workflow/Curate";
 import Data from "@spectrum-icons/workflow/Data";
 import Channel from "@spectrum-icons/workflow/Channel";
@@ -40,7 +40,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                 >
                     <TabList>
                         <Item key="outline">
-                            <Layers size="XL" />
+                            <Breakdown size="XL" />
                         </Item>
                         <Item key="datasets">
                             <Data size="L" />
