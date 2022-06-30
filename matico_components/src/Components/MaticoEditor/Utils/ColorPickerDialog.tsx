@@ -35,12 +35,12 @@ export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
 
     const updateColor = (color:any ) => {
         const rgbaColor = color.toFormat("rgba");
-        onColorChange({rgba:{
-            r: rgbaColor.red,
-            g: rgbaColor.green,
-            b: rgbaColor.blue,
-            a: rgbaColor.alpha * 255
-        }});
+        onColorChange({rgba:[
+            rgbaColor.red,
+            rgbaColor.green,
+            rgbaColor.blue,
+            rgbaColor.alpha * 255
+        ]});
     };
 
     return (
