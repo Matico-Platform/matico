@@ -307,6 +307,7 @@ export const MaticoOutlineViewer: React.FC = withRouter(
         } = useApp();
 
         const handleDragEnd = (e: any) => {
+            if (!e.over || !e.active) return;
             const {
                 over: { id: targetId },
                 active: { id: paneRefId }
