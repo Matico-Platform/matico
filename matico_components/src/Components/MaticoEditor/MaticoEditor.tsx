@@ -50,7 +50,6 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
         }
     }
     else if(type==='layer'){
-      alert("HERE!")
       const maps: Array<MapPane>= panes.filter((p:Pane)=>p.type==='map') as Array<MapPane>
       const map = maps.find(m=>m.layers.find(l=>l.id===element.id)) 
       return(<LayerEditor layerId={element.id} mapId={map.id}/>)

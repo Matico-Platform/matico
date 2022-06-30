@@ -283,7 +283,7 @@ export const stateSlice = createSlice({
             );
             //@ts-ignore
             let layer = map.layers.find((layer: Layer) => layer.id === layerId);
-            layer = { ...layer, layer };
+            Object.assign(layer, update);
         },
         removeLayer: (
             state,
