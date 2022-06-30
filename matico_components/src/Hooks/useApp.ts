@@ -11,7 +11,7 @@ import {
     addPage,
     setCurrentEditElement,
     addPaneRefToContainer,
-    removePaneFromContainer
+    removePaneRefFromContainer
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 
@@ -64,7 +64,7 @@ export const useApp = () => {
         );
         console.log(parent);
         dispatch(
-            removePaneFromContainer({
+            removePaneRefFromContainer({
                 containerId: parent.id,
                 paneRefId: paneRef.id
             })

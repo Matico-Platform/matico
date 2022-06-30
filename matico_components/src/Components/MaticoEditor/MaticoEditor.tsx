@@ -11,8 +11,10 @@ import {
     Page,
     Pane,
     PaneRef,
-    ContainerPane
+    ContainerPane,
+    MapPane
 } from "@maticoapp/matico_types/spec";
+import {LayerEditor} from "./Panes/LayerEditor";
 
 export interface MaticoEditorProps {
     editActive: boolean;
@@ -29,7 +31,6 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
     }
     const { type, id, parentId } = element;
 
-    console.log("Rendering edit pane for element ", element);
 
     if (type === "page") {
         return <PageEditor id={id} />;
@@ -47,6 +48,12 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
             const Editor = Editors[paneRef.type];
             return <Editor paneRef={paneRef} />;
         }
+    }
+    else if(type==='layer'){
+      alert("HERE!")
+      const maps: Array<MapPane>= panes.filter((p:Pane)=>p.type==='map') as Array<MapPane>
+      const map = maps.find(m=>m.layers.find(l=>l.id===element.id)) 
+      return(<LayerEditor layerId={element.id} mapId={map.id}/>)
     }
     return <AppEditor />;
 };

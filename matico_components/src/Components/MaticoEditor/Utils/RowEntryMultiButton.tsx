@@ -43,14 +43,12 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
     return (
         <View
             paddingX="size-150"
-            paddingY={compact ? "size-50" : "size-100"}
-            marginTop="size-100"
+            // paddingY={compact ? "size-50" : "size-100"}
             marginStart={`${inset}em`}
             width={`calc(100% - ${inset}em)`}
+            borderBottomWidth="thin"
+            borderBottomColor="gray-200"
             backgroundColor="gray-100"
-            borderColor="gray-400"
-            borderWidth="thin"
-            borderRadius="medium"
         >
             <Flex
                 direction="row"

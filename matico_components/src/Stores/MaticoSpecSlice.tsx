@@ -15,9 +15,7 @@ import { findPagesForPane } from "Utils/specUtils/specUtils";
 export type EditElement = {
     id?: string;
     parentId?: string;
-    type: "page" | "pane" | "metadata" | "dataset" | "dataview" | "layer";
-};
-
+    type: "page" | "pane" | "metadata" | "dataset" | "dataview" | "layer"; };
 export interface SpecState {
     spec: App | undefined;
     editing: boolean;
@@ -128,17 +126,24 @@ export const stateSlice = createSlice({
                 page.panes.push(action.payload.paneRef);
             }
         },
-        removePaneFromPage: (
+        removePaneRefFromContainer: (
             state,
-            action: PayloadAction<{ pageId: string; paneRefId: string }>
+            action: PayloadAction<{ containerId: string; paneRefId: string }>
         ) => {
-            const page = state.spec.pages.find(
-                (p: Page) => p.id === action.payload.pageId
-            );
+            let { containerId, paneRefId } = action.payload;
+            let container: ContainerPane | Page =
+                state.spec.pages.find((p) => p.id == containerId) ||
+                (state.spec.panes.find(
+                    (p) => p.id == containerId && p.type === "container"
+                ) as ContainerPane);
+            if (!container) return;
             _.remove(
-                page.panes,
+                container.panes,
                 (p: PaneRef) => p.id === action.payload.paneRefId
             );
+        },
+        addPane: (state, action: PayloadAction<{ pane: Pane }>) => {
+            state.spec.panes.push(action.payload.pane);
         },
         addPaneRefToContainer: (
             state,
@@ -149,55 +154,17 @@ export const stateSlice = createSlice({
             }>
         ) => {
             const { containerId, paneRef, index } = action.payload;
-            const container = state.spec.panes.find(
-                (p: Pane) =>
-                    p.id == containerId && p.type === "container"
-            );
-            if (!container) {
-                return;
-            } else if (index) {
-                //@ts-ignore
-                container.panes.splice(
-                    index,
-                    0,
-                    paneRef
-                );
-            } else {
-                //@ts-ignore
-                container.panes.push(paneRef);
-            }
-        },
-        removePaneFromContainer: (
-            state,
-            action: PayloadAction<{ containerId: string; paneRefId: string }>
-        ) => {
-            const container = state.spec.panes.find(
-                (p: Pane) => p.id == action.payload.containerId
-            );
-            if (container && container.type === "container") {
-                _.remove(
-                    container.panes,
-                    (p: PaneRef) => p.id === action.payload.paneRefId
-                );
-            }
-        },
-        addPane: (state, action: PayloadAction<{ pane: Pane }>) => {
-            state.spec.panes.push(action.payload.pane);
-        },
-        addPaneRefToPage: (
-            state,
-            action: PayloadAction<{
-                pageId: string;
-                paneRef: PaneRef;
-                index?: number;
-            }>
-        ) => {
-            const { pageId, paneRef, index } = action.payload;
-            let page = state.spec.pages.find((p) => p.id == pageId);
+            let container: ContainerPane | Page =
+                state.spec.pages.find((p) => p.id == containerId) ||
+                (state.spec.panes.find(
+                    (p) => p.id == containerId && p.type === "container"
+                ) as ContainerPane);
+            if (!container) return;
+
             if (index) {
-                page.panes.splice(index, 0, action.payload.paneRef);
+                container.panes.splice(index, 0, action.payload.paneRef);
             } else {
-                page.panes.push(paneRef);
+                container.panes.push(paneRef);
             }
         },
         updatePaneDetails: (
@@ -310,7 +277,6 @@ export const {
     removePage,
     removePane,
     addPaneToPage,
-    removePaneFromPage,
     updateDatasetSpec,
     updatePaneDetails,
     updatePanePosition,
@@ -321,9 +287,8 @@ export const {
     setPaneOrder,
     setCurrentEditElement,
     addPane,
-    addPaneRefToPage,
     addPaneRefToContainer,
-    removePaneFromContainer,
+    removePaneRefFromContainer,
     updatePageDetails
 } = stateSlice.actions;
 
