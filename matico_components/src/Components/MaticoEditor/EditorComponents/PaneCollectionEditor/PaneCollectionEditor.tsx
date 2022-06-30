@@ -13,7 +13,7 @@ export interface PaneCollectionEditorProps {
 
 export const PaneRefButton: React.FC<{paneRef: PaneRef}> = ({paneRef})=>{
   
-  const {pane,selectPane} = usePane(paneRef)
+  const {pane,selectPane, removePaneFromParent} = usePane(paneRef)
 
   return (
                 <RowEntryMultiButton
@@ -21,7 +21,7 @@ export const PaneRefButton: React.FC<{paneRef: PaneRef}> = ({paneRef})=>{
                     onRaise={() => {}}
                     onSelect={selectPane}
                     onLower={() => {}}
-                    onRemove={() => {}}
+                    onRemove={removePaneFromParent}
                     onDuplicate={() => {}}
                     entryName={
                         <Flex
