@@ -8,13 +8,13 @@ import ColorFill from "@spectrum-icons/workflow/ColorFill";
 import { SliderUnitSelector } from "../SliderUnitSelector";
 
 export const SliderVariableEditor: React.FC<SliderVariableEditorProps> = ({
-  label='',
+  label = '',
   style,
   datasetName,
   columns,
-  sliderMin=0,
-  sliderMax=2000,
-  sliderStep=1,
+  sliderMin = 0,
+  sliderMax = 2000,
+  sliderStep = 1,
   onUpdateValue,
   sliderUnits,
   sliderUnitsOptions,
@@ -28,7 +28,7 @@ export const SliderVariableEditor: React.FC<SliderVariableEditorProps> = ({
   const handleComboBoxChange = (newVal: string) => {
     if (newVal === `manual${label}`) {
       onUpdateValue(isManual ? style : 5);
-    } else if (newVal ===`no${label}`) {
+    } else if (newVal === `no${label}`) {
       onUpdateValue(nullValue);
     } else if (newVal.includes("datadriven-")) {
       const selectedColumn = newVal.split("datadriven-")[1]
@@ -38,10 +38,9 @@ export const SliderVariableEditor: React.FC<SliderVariableEditorProps> = ({
           dataset: datasetName,
           column: selectedColumn,
           metric: {
-            Quantile: {
-              bins: 5,
-            },
-          },
+            type: 'quantile',
+            bins: 5,
+          }
         },
         range: _.range(5).map((i) => sliderMin + ((sliderMax - sliderMin) * i) / 5.0),
       });

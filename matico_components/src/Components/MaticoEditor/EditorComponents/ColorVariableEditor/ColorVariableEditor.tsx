@@ -9,7 +9,7 @@ import ColorFill from "@spectrum-icons/workflow/ColorFill";
 
 export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
   label,
-  style={rgb: [255,255,255]},
+  style = { rgb: [255, 255, 255] },
   datasetName,
   columns,
   onUpdateStyle,
@@ -20,9 +20,9 @@ export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
 
   const handleComboBoxChange = (newVal: string) => {
     if (newVal === `manual${label}`) {
-      onUpdateStyle(isManual ? style : {'rgba': [120, 120, 255, 255]});
+      onUpdateStyle(isManual ? style : { 'rgba': [120, 120, 255, 255] });
     } else if (newVal === `no${label}`) {
-      onUpdateStyle({'rgba': [0, 0, 0, 0]});
+      onUpdateStyle({ 'rgba': [0, 0, 0, 0] });
     } else if (newVal.includes("datadriven-")) {
       const selectedColumn = newVal.split("datadriven-")[1]
       onUpdateStyle({
@@ -31,9 +31,8 @@ export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
           dataset: datasetName,
           column: selectedColumn,
           metric: {
-            Quantile: {
-              bins: 5
-            }
+            type: "quantile",
+            bins: 5
           }
         },
         range: "RedOr.5"
