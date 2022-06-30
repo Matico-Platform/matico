@@ -28,10 +28,10 @@ export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
     height = "size-400",
     width = "size-600"
 }) => {
-    let chromaColor = chromaColorFromColorSpecification(color, true)
-
-    let rgba = chromaColor?.rgba();
-    let spectrumColor = `rgba(${rgba.join(",")})`;
+    const hasAlpha = 'rgba' in color
+    let chromaColor = chromaColorFromColorSpecification(color, hasAlpha)
+    let rgba = hasAlpha ? chromaColor.rgba() : chromaColor.rgb();
+    let spectrumColor = `rgb${hasAlpha ? 'a' : ''}(${rgba.join(",")})`;
 
     const updateColor = (color:any ) => {
         const rgbaColor = color.toFormat("rgba");

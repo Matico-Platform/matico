@@ -103,13 +103,15 @@ export const chromaColorFromColorSpecification = (
             color.rgba[2],
             color.rgba[3] / 255.0,
             "rgb"
-        ).rgba();
+        )
     } else if ("rgb" in color) {
-        let c = chroma(color.rgb[0], color.rgb[1], color.rgb[2], "rgb").rgba();
-        if (alpha) {
-            c[3] = 0.7;
-        }
-        return c;
+        return chroma(
+            color.rgb[0],
+            color.rgb[1],
+            color.rgb[2],
+            alpha ? 0.7 : 1,
+            "rgb"
+        )
     } else if ("hex" in color) {
         return chroma.hex(color.hex);
     } else if ("named" in color) {
@@ -207,8 +209,8 @@ export const generateColorVar = (
         }
     }
 
-    let c = chromaColorFromColorSpecification(colorVar, alpha);
-    console.log("color is ", c);
+    let c = chromaColorFromColorSpecification(colorVar, alpha).rgba();
+    // console.log("color is ", c);
     c[3] = c[3] * 255;
     return () => c;
 };

@@ -9,20 +9,20 @@ import ColorFill from "@spectrum-icons/workflow/ColorFill";
 
 export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
   label,
-  style=[255,255,255],
+  style={rgb: [255,255,255]},
   datasetName,
   columns,
   onUpdateStyle,
 }) => {
   const isDataDriven = style && style.hasOwnProperty("variable");
-  const isNone = !isDataDriven && JSON.stringify(style) === '[0,0,0,0]'
-  const isManual = (!isDataDriven && !isNone) && (typeof style === 'string' || Array.isArray(style))
+  const isNone = !isDataDriven && '[[0, 0, 0, 0]]' === JSON.stringify(Object.values(style))
+  const isManual = !isDataDriven && !isNone
 
   const handleComboBoxChange = (newVal: string) => {
     if (newVal === `manual${label}`) {
-      onUpdateStyle(isManual ? style : [120, 120, 255]);
+      onUpdateStyle(isManual ? style : {'rgba': [120, 120, 255, 255]});
     } else if (newVal === `no${label}`) {
-      onUpdateStyle([0, 0, 0, 0]);
+      onUpdateStyle({'rgba': [0, 0, 0, 0]});
     } else if (newVal.includes("datadriven-")) {
       const selectedColumn = newVal.split("datadriven-")[1]
       onUpdateStyle({

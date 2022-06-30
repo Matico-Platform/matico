@@ -1,6 +1,8 @@
+import { ColorSpecification, MappingVarOr } from "@maticoapp/matico_types/spec";
+
 export type ColorVariableEditorProps = {
     label: string,
-    style: string | number[] | {[key:string]: any},
+    style: MappingVarOr<ColorSpecification>,
     datasetName: string,
     columns: {name: string,type: string}[],
     onUpdateStyle: (style: string | {[key:string]: any}) => void,
