@@ -96,6 +96,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                                 <Route
                                     path={page.path ? page.path : page.name}
                                     key={page.path}
+                                    exact={true}
                                 >
                                     <MaticoPage key={page.path} page={page} />
                                 </Route>
