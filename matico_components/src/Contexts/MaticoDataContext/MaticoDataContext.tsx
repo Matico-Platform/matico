@@ -101,7 +101,7 @@ export const MaticoDataProvider: React.FC<{
                 dispatch({
                     type: MaticoDataActionType.UPDATE_DATASET_STATE,
                     payload: {
-                        datasetName: dataset.GeoJSON.name,
+                        datasetName: dataset.name,
                         state: DatasetState.LOADING
                     }
                 });
