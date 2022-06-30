@@ -53,7 +53,8 @@ export const useMapSelectEditFeature  = (source:Source, featureId:string | numbe
         getRadius:20,
         stroked:true,
         getLineWidth:1,
-        lineWidthUnits: "pixels"
+        lineWidthUnits: "pixels",
+        radiusUnits:"pixels"
       }) 
     }
   }

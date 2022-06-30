@@ -122,7 +122,7 @@ pub struct BasicStatsResults {
 #[serde(rename_all="camelCase")]
 #[ts(export)]
 pub struct ValueCountEntry {
-    count: u32,
+    count: i32,
     name: String,
 }
 
@@ -145,7 +145,7 @@ pub struct HistogramResults(pub Vec<HistogramEntry>);
 pub struct ValueCountsResults(pub Vec<ValueCountEntry>);
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[serde(rename_all="camelCase")]
 #[ts(export)]
 pub enum StatResults {
     Quantiles(QuantileResults),

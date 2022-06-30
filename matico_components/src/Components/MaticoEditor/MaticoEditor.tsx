@@ -60,6 +60,7 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     const { spec, currentEditElement } = useMaticoSelector(
         (state) => state.spec
     );
+
     const [tabKey, setTabKey] = useState<string>("Components");
 
     useEffect(() => {
@@ -90,11 +91,22 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
         base: "35vh"
     };
 
-    return (
-        //@ts-ignore
+    if(spec){
+      return (
+          //@ts-ignore
 
-        <View overflow={"hidden auto"} height={height} paddingTop="3em">
-            <EditPane element={currentEditElement} />
-        </View>
-    );
+          <View overflow={"hidden auto"} height={height} paddingTop="3em">
+              <EditPane element={currentEditElement} />
+          </View>
+      );
+
+    }
+    else{
+      return(
+          <View overflow={"hidden auto"} height={height} paddingTop="3em">
+            <h1>Loading</h1>
+          </View>
+      )
+    }
+
 };
