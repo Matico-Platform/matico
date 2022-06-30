@@ -11,11 +11,13 @@ import {
 import chroma from "chroma-js";
 import { ColorSlider } from "@react-spectrum/color";
 import ColorFill from "@spectrum-icons/workflow/ColorFill";
+import { chromaColorFromColorSpecification } from "Components/Panes/MaticoMapPane/LayerUtils";
+import {ColorSpecification} from "@maticoapp/matico_types/spec"
 
 interface ColorPickerDialogInterface {
     // label: string;
-    color: string | [number, number, number, number];
-    onColorChange: (color: string | [number, number, number, number]) => void;
+    color:ColorSpecification;
+    onColorChange: (color: ColorSpecification) => void;
     height?: string;
     width?: string;
 }
@@ -26,31 +28,19 @@ export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
     height = "size-400",
     width = "size-600"
 }) => {
-    let chromaColor;
+    let chromaColor = chromaColorFromColorSpecification(color, true)
 
-    if (Array.isArray(color)) {
-        if (color.length === 4) {
-            chromaColor = chroma([...color.slice(0, 3), color[3] / 255]);
-        } else {
-            chromaColor = chroma([...color]);
-        }
-    } else if (chroma.valid(color)) {
-        chromaColor = chroma(color);
-    } else {
-        return <Text>Invalid Color</Text>;
-    }
-
-    let rgba = chromaColor.rgba();
+    let rgba = chromaColor?.rgba();
     let spectrumColor = `rgba(${rgba.join(",")})`;
 
-    const updateColor = (color: Color) => {
+    const updateColor = (color:any ) => {
         const rgbaColor = color.toFormat("rgba");
-        onColorChange([
-            rgbaColor.red,
-            rgbaColor.green,
-            rgbaColor.blue,
-            rgbaColor.alpha * 255
-        ]);
+        onColorChange({rgba:{
+            r: rgbaColor.red,
+            g: rgbaColor.green,
+            b: rgbaColor.blue,
+            a: rgbaColor.alpha * 255
+        }});
     };
 
     return (
