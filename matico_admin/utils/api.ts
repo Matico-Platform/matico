@@ -193,7 +193,7 @@ export async function updateFeature(
   update: any
 ) {
 
-  return a.put(`/datasets/${dataset_id}/data/${feature_id}`, update);
+  return a.put(`/data/dataset/${dataset_id}/feature/${feature_id}`, update);
 }
 
 export async function getUniqueColumnValues(

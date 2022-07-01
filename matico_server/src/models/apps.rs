@@ -14,7 +14,7 @@ use ts_rs::TS;
 use uuid::Uuid;
 
 #[derive(AsJsonb, Debug, Serialize, Deserialize)]
-pub struct AppSpec(matico_spec::Dashboard);
+pub struct AppSpec(matico_spec::App);
 
 #[derive(Serialize, Deserialize, Debug, Queryable, Insertable, TS)]
 #[table_name = "apps"]

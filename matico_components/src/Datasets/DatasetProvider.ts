@@ -1,22 +1,23 @@
+import { Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
 export interface DatasetRecord {
-  name: string;
-  id: string;
-  parameters?: {[param:string] : any}
+    name: string;
+    id: string;
+    parameters?: { [param: string]: any };
 }
 
-export interface DatasetProviderComponent{
-  onSubmit : (datasetDetails: any) =>void,
-  parameters?:{[param:string]:any}
+export interface DatasetProviderComponent {
+    onSubmit: (datasetDetails: DatasetSpec) => void;
+    parameters?: { [param: string]: any };
 }
 
-export interface DatasetParameterComponent{
-  onChange: (newParams: Record<string, any>) => void,
-  spec: Record<string,any>
+export interface DatasetParameterComponent {
+    onChange: (newParams: Record<string, any>) => void;
+    spec: Record<string, any>;
 }
 
 export interface DatasetProvider {
-  name: string;
-  description: string;
-  component: React.FC<DatasetProviderComponent>;
-  parameterEditor: React.FC<DatasetParameterComponent>
+    name: string;
+    description: string;
+    component: React.FC<DatasetProviderComponent>;
+    parameterEditor: React.FC<DatasetParameterComponent>;
 }

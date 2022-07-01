@@ -1,0 +1,2 @@
+
+export type ParameterValue = { type: "numericFloat" } & number | { type: "numericInt" } & number | { type: "numericCategory" } & Array<number> | { type: "textCategory" } & Array<string> | { type: "column" } & string | { type: "table" } & string | { type: "text" } & string;

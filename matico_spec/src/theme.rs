@@ -1,10 +1,12 @@
 use crate::ColorSpecification;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Theme {
     #[wasm_bindgen(skip)]
     pub primary_color: Option<ColorSpecification>,

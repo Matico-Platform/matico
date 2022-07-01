@@ -26,10 +26,15 @@ function App() {
     spec = JSON.parse(specString);
   } else {
     spec = {
-      name: "New Dashboard",
-      created_at: new Date(),
       pages: [],
       datasets: [],
+      panes:[],
+      metadata:{
+        name:"Test App",
+        description:"A Test app",
+        id:"stauarts test app",
+        createdAt: new Date(),
+      }
     };
   }
 

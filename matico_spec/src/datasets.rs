@@ -1,30 +1,40 @@
-use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
-use std::collections::HashMap;
-use crate::{VarOr};
+use crate::VarOr;
 use matico_analysis::SpecParameterValue;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use ts_rs::TS;
+use wasm_bindgen::prelude::*;
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
+#[ts(export)]
 pub enum Dataset {
     GeoJSON(GeoJSONDataset),
+    #[serde(rename="csv")]
     CSV(CSVDataset),
     MaticoRemote(MaticoRemoteDataset),
     MaticoApi(MaticoApiDataset),
+    #[serde(rename="cog")]
     COG(COGDataset),
-    WASMCompute(WASMCompute)
+    #[serde(rename="wasmCompute")]
+    WASMCompute(WASMCompute),
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
-pub struct COGDataset{
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct COGDataset {
     #[wasm_bindgen(skip)]
-    pub name:String,
+    pub name: String,
     #[wasm_bindgen(skip)]
-    pub url:String
+    pub url: String,
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct GeoJSONDataset {
     #[wasm_bindgen(skip)]
     pub name: String,
@@ -34,16 +44,18 @@ pub struct GeoJSONDataset {
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
-pub struct WASMCompute{
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct WASMCompute {
     #[wasm_bindgen(skip)]
     pub name: String,
 
     #[wasm_bindgen(skip)]
     pub url: String,
-    
+
     #[wasm_bindgen(skip)]
-    pub params: HashMap<String, SpecParameterValue>
+    pub params: HashMap<String, SpecParameterValue>,
 }
 
 #[wasm_bindgen]
@@ -60,8 +72,10 @@ impl GeoJSONDataset {
 }
 
 #[wasm_bindgen]
-#[derive(Default,Serialize,Deserialize, Clone,Debug)]
-pub struct MaticoRemoteDataset{
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct MaticoRemoteDataset {
     #[wasm_bindgen(skip)]
     pub name: String,
 
@@ -70,14 +84,16 @@ pub struct MaticoRemoteDataset{
 
     #[wasm_bindgen(skip)]
     pub server_url: String,
-    
+
     #[wasm_bindgen(skip)]
     pub dataset_id: Option<String>,
 }
 
 #[wasm_bindgen]
-#[derive(Default,Serialize,Deserialize, Clone,Debug)]
-pub struct MaticoApiDataset{
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct MaticoApiDataset {
     #[wasm_bindgen(skip)]
     pub name: String,
 
@@ -86,17 +102,16 @@ pub struct MaticoApiDataset{
 
     #[wasm_bindgen(skip)]
     pub server_url: String,
-    
+
     #[wasm_bindgen(skip)]
     pub api_id: Option<String>,
 
     #[wasm_bindgen(skip)]
-    pub params: HashMap<String, VarOr<f32>>
+    pub params: HashMap<String, VarOr<f32>>,
 }
 
-
 #[wasm_bindgen]
-impl MaticoRemoteDataset{
+impl MaticoRemoteDataset {
     #[wasm_bindgen(getter=name)]
     pub fn get_name(&self) -> String {
         self.name.clone()
@@ -136,11 +151,12 @@ impl MaticoRemoteDataset{
     pub fn set_dataset_id(&mut self, dataset_id: String) {
         self.dataset_id = Some(dataset_id)
     }
-
 }
 
 #[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CSVDataset {
     #[wasm_bindgen(skip)]
     pub name: String,

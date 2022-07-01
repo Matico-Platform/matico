@@ -1,126 +1,154 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import { useMaticoSelector } from "Hooks/redux";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
 import { PaneEditor } from "./PaneEditor";
 import { BaseMapSelector } from "../Utils/BaseMapSelector";
-import { PaneDefaults } from "Components/MaticoEditor/PaneDefaults";
+import { DefaultLayer } from "Components/MaticoEditor/Utils/PaneDetails";
+
 import {
     Flex,
-    Heading,
-    Well,
-    NumberField,
     ActionButton,
     Text,
     Item,
     Picker,
     Checkbox,
     DialogTrigger,
-    Dialog,
-    Content,
     TextField,
     View,
-    ButtonGroup
+    ButtonGroup,
+    Divider
     // repeat,
 } from "@adobe/react-spectrum";
-import { useMaticoSpec } from "Hooks/useMaticoSpec";
-import { useSpecActions } from "Hooks/useSpecActions";
 
-interface AddPaneModalProps {
+import {
+    MapPane,
+    PaneRef,
+    BaseMap,
+    VarOr,
+    View as MapView,
+    Layer,
+    Variable
+} from "@maticoapp/matico_types/spec";
+import { usePane } from "Hooks/usePane";
+import { setCurrentEditElement } from "Stores/MaticoSpecSlice";
+import { v4 as uuidv4 } from "uuid";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { DetailsEditor } from "./DetailsEditor";
+import { GeoBoundsSelector } from "../EditorComponents/GeoBoundsSelector";
+import { OptionsPopper } from "../EditorComponents/OptionsPopper";
+import { NumericEditor } from "../EditorComponents/NumericEditor";
+import { ParentSize } from "@visx/responsive";
+
+interface AddLayerModalProps {
     onAddLayer: (name: string, dataset: string) => void;
 }
 
-const AddPaneModal: React.FC<AddPaneModalProps> = ({ onAddLayer }) => {
+const AddLayerModal: React.FC<AddLayerModalProps> = ({ onAddLayer }) => {
     const [dataset, setDataset] = useState<string | null>(null);
     const [layerName, setLayerName] = useState<string>("New layer name");
 
     return (
-        <DialogTrigger isDismissable type="popover">
-            <ActionButton>Add</ActionButton>
-            {(close) => (
-                <Dialog>
-                    <Heading>Add layer</Heading>
-                    <Content>
-                        <TextField
-                            width="100%"
-                            label="Layer name"
-                            value={layerName}
-                            onChange={setLayerName}
-                        />
-                        <DatasetSelector
-                            selectedDataset={dataset}
-                            onDatasetSelected={setDataset}
-                        />
-                    </Content>
-                    <ButtonGroup>
-                        <ActionButton
-                            onPress={() => {
-                                onAddLayer(dataset, layerName);
-                                close();
-                            }}
-                        >
-                            Add
-                        </ActionButton>
-                    </ButtonGroup>
-                </Dialog>
-            )}
-        </DialogTrigger>
+        <ParentSize>
+            {({ width }) => {
+                return (
+                    <DialogTrigger
+                        isDismissable
+                        type="popover"
+                        containerPadding={0}
+                        hideArrow
+                    >
+                        <ActionButton width="100%">Add Map Layer</ActionButton>
+                        {(close) => (
+                            <View
+                                width={width}
+                                backgroundColor="gray-75"
+                                borderColor="informative"
+                                borderWidth="thick"
+                                UNSAFE_style={{
+                                    boxShadow: "0px 0px 8px 4px rgba(0,0,0,0.5)"
+                                }}
+                            >
+                                <Flex direction="column" margin="size-150">
+                                    <Text>Add layer</Text>
+                                    <Divider size="M" />
+                                    <TextField
+                                        width="100%"
+                                        label="Layer name"
+                                        labelPosition="side"
+                                        value={layerName}
+                                        onChange={setLayerName}
+                                        marginY="size-50"
+                                    />
+                                    <DatasetSelector
+                                        selectedDataset={dataset}
+                                        onDatasetSelected={setDataset}
+                                    />
+                                    <ButtonGroup>
+                                        <ActionButton
+                                            type="submit"
+                                            width="100%"
+                                            marginY="size-50"
+                                            onPress={() => {
+                                                onAddLayer(dataset, layerName);
+                                                close();
+                                            }}
+                                        >
+                                            Add to Map
+                                        </ActionButton>
+                                    </ButtonGroup>
+                                </Flex>
+                            </View>
+                        )}
+                    </DialogTrigger>
+                );
+            }}
+        </ParentSize>
     );
 };
 
 export interface PaneEditorProps {
-    editPath: string;
+    paneRef: PaneRef;
 }
-export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
-    const [mapPane, parentLayout] = useMaticoSpec(editPath);
-    const {
-        remove: deletePane,
-        update: updatePane,
-        setEditPath
-    } = useSpecActions(editPath, "Map");
+
+export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
+    const { pane, updatePane, updatePanePosition, removePane, parent } =
+        usePane(paneRef);
+
+    const mapPane = pane as MapPane;
+
     const mapPaneCurrentView = useMaticoSelector(
         (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
     );
 
-    const [confirmDelete, setConfirmDelete] = useState(false);
-    const [bindBothWays, setBindBothWays] = useState(false);
+    const dispatch = useMaticoDispatch()
 
-    const updatePaneDetails = (change: any) => {
+    const updateBaseMap = (baseMap: BaseMap) => {
+        console.log("Updating base map", baseMap);
         updatePane({
-            ...mapPane,
-            name: change.name,
-            position: { ...mapPane.position, ...change.position }
+            baseMap
         });
     };
 
-    const updateBaseMap = (basemap: any) => {
+    const updateView = (viewUpdate: Partial<VarOr<MapView>>) => {
         updatePane({
-            ...mapPane,
-            base_map: {
-                Named: basemap
-            }
-        });
-    };
-
-    const updateView = (viewUpdate: any) => {
-        updatePane({
-            ...mapPane,
             view: { ...mapPane.view, ...viewUpdate }
         });
     };
 
-    // @ts-ignore
-    const updateSyncedView = (view) => {
+    const updateSyncedView = (view: VarOr<MapView>) => {
+        //@ts-ignore
         if (view.var) {
             updatePane({
-                ...mapPane,
                 view: {
+                    //@ts-ignore
                     var: `${view.var}_map_loc`,
+                    //@ts-ignore
                     bind: view.bind
-                }
+                } as Variable
             });
         }
     };
@@ -133,8 +161,10 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     );
 
     const syncedMapPaneView = useMaticoSelector((state) =>
+        //@ts-ignore
         mapPane.view.var
-            ? state.variables.autoVariables[mapPane.view.var]
+            ? //@ts-ignore
+              state.variables.autoVariables[mapPane.view.var]
             : null
     );
 
@@ -145,26 +175,29 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     if (!mapPane) {
         return (
             <View>
+                {/* @ts-ignore */}
                 <Text color="status-error">Failed to find component</Text>
             </View>
         );
     }
 
-    const setLayerEdit = (index: number) => {
-        setEditPath({
-            editPath: `${editPath}.layers.${index}`,
-            editType: "Layer"
-        });
+    const setLayerEdit = (id:string) => {
+        dispatch(
+          setCurrentEditElement({
+              id,
+              type: "layer"
+          })
+        )
     };
 
     const addLayer = (dataset: string, layerName: string) => {
-        const newLayer = {
-            ...PaneDefaults.Layer,
-            source: { name: dataset },
-            name: layerName
+        const newLayer: Layer = {
+            ...DefaultLayer,
+            source: { name: dataset, filters: [] },
+            name: layerName,
+            id: uuidv4()
         };
         updatePane({
-            ...mapPane,
             layers: [...mapPane.layers, newLayer]
         });
     };
@@ -184,6 +217,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
     };
 
     const isSynced = syncedMapPaneView ? true : false;
+    //@ts-ignore
     const isBound = mapPane?.view?.bind ? true : false;
     const mapView = isSynced ? syncedMapPaneView.value : mapPane.view;
 
@@ -195,140 +229,130 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ editPath }) => {
 
     return (
         <Flex direction="column">
-            <PaneEditor
-                position={mapPane.position}
-                name={mapPane.name}
-                background={mapPane.background}
-                onChange={updatePaneDetails}
-                parentLayout={parentLayout}
-            />
-
-            <Well>
-                <Heading>
-                    <Flex
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="end"
+            <CollapsibleSection title="Details">
+                <DetailsEditor pane={pane} updatePane={updatePane} />
+            </CollapsibleSection>
+            <CollapsibleSection title="Sizing" isOpen={true}>
+                <PaneEditor
+                    position={paneRef.position}
+                    name={mapPane.name}
+                    background={"white"}
+                    onChange={updatePanePosition}
+                    parentLayout={parent.layout}
+                    id={paneRef.id}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Map Bounds" isOpen={true}>
+                <GeoBoundsSelector updateView={updateView} mapView={mapView} />
+                {!isSynced && (
+                    <ActionButton
+                        width="100%"
+                        onPress={setViewFromMap}
+                        marginTop="size-50"
                     >
-                        <Text>Map Bounds</Text>
-                    </Flex>
-                </Heading>
-                <Flex direction="column">
+                        Set Map Bounds from Current View
+                    </ActionButton>
+                )}
+                {otherMapPanes && otherMapPanes.length > 0 && (
+                    <Picker
+                        width="100%"
+                        label="Sync to Another Map View"
+                        labelPosition="side"
+                        items={otherMapPanes}
+                        selectedKey={
+                            //@ts-ignore
+                            mapPane?.view?.var &&
+                            //@ts-ignore
+                            mapPane.view.var.split("_map_loc")[0]
+                        }
+                        onSelectionChange={startSyncing}
+                    >
+                        {(pane) => <Item key={pane.name}>{pane.name}</Item>}
+                    </Picker>
+                )}
+                <OptionsPopper title="More Map Bounds Options">
                     <TwoUpCollapsableGrid>
-                        <NumberField
-                            width="100%"
-                            label="lat"
+                        <NumericEditor
+                            label="Lat"
                             step={0.001}
                             value={mapView.lat}
                             isDisabled={isSynced}
-                            onChange={(lat) => updateView({ lat })}
+                            onValueChange={(lat) => updateView({ lat })}
                         />
-                        <NumberField
-                            width="100%"
-                            label="lng"
+                        <NumericEditor
+                            label="Lon"
                             step={0.001}
                             value={mapView.lng}
                             isDisabled={isSynced}
-                            onChange={(lng) => updateView({ lng })}
+                            onValueChange={(lng) => updateView({ lng })}
                         />
                     </TwoUpCollapsableGrid>
                     <TwoUpCollapsableGrid>
-                        <NumberField
-                            width="100%"
-                            label="bearing"
+                        <NumericEditor
+                            label="Bearing"
                             step={1}
                             value={mapView.bearing}
                             isDisabled={isSynced}
-                            onChange={(bearing) => updateView({ bearing })}
+                            onValueChange={(bearing) => updateView({ bearing })}
                         />
-                        <NumberField
-                            width="100%"
-                            label="pitch"
+                        <NumericEditor
+                            label="Pitch"
                             step={1}
                             value={mapView.pitch}
                             isDisabled={isSynced}
-                            onChange={(pitch) => updateView({ pitch })}
+                            onValueChange={(pitch) => updateView({ pitch })}
                         />
                     </TwoUpCollapsableGrid>
-                    <NumberField
-                        width={{ L: "50%", M: "100%", S: "100%", base: "100%" }}
-                        label="zoom"
-                        step={1}
-                        value={mapView.zoom}
-                        isDisabled={isSynced}
-                        onChange={(zoom) => updateView({ zoom })}
-                    />
-                    {!isSynced && (
+                    <TwoUpCollapsableGrid>
+                        <NumericEditor
+                            label="Zoom"
+                            step={1}
+                            value={mapView.zoom}
+                            isDisabled={isSynced}
+                            onValueChange={(zoom) => updateView({ zoom })}
+                        />
+                    </TwoUpCollapsableGrid>
+                </OptionsPopper>
+                {isSynced && (
+                    <>
+                        <Checkbox isSelected={isBound} onChange={toggleBind}>
+                            Sync both maps
+                        </Checkbox>
                         <ActionButton
                             width="100%"
-                            onPress={setViewFromMap}
+                            onPress={stopSyncing}
                             marginTop="size-200"
                             marginBottom="size-200"
+                            isDisabled
                         >
-                            Set from current view
+                            Stop Syncing Map View
                         </ActionButton>
-                    )}
-                    {otherMapPanes && otherMapPanes.length > 0 && (
-                        <Picker
-                            width="100%"
-                            label="Sync Map View"
-                            items={otherMapPanes}
-                            selectedKey={
-                                mapPane?.view?.var &&
-                                mapPane.view.var.split("_map_loc")[0]
-                            }
-                            onSelectionChange={startSyncing}
-                        >
-                            {(pane) => <Item key={pane.name}>{pane.name}</Item>}
-                        </Picker>
-                    )}
-                    {isSynced && (
-                        <>
-                            <Checkbox
-                                isSelected={isBound}
-                                onChange={toggleBind}
-                            >
-                                Sync both maps
-                            </Checkbox>
-                            <ActionButton
-                                width="100%"
-                                onPress={stopSyncing}
-                                marginTop="size-200"
-                                marginBottom="size-200"
-                                isDisabled
-                            >
-                                Stop Syncing Map View
-                            </ActionButton>
-                        </>
-                    )}
-                </Flex>
-            </Well>
-            <Well>
-                <Heading>
-                    <Flex
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="end"
-                    >
-                        <Text>Layers</Text>
-                        <AddPaneModal onAddLayer={addLayer} />
-                    </Flex>
-                </Heading>
-                <Flex marginBottom={"size-200"} direction="column">
-                    {mapPane.layers.map((layer, index) => (
+                    </>
+                )}
+            </CollapsibleSection>
+            <CollapsibleSection title="Layers" isOpen={true}>
+                <AddLayerModal onAddLayer={addLayer} />
+                <Flex marginBottom={"size-200"} direction="column" width="100%">
+                    {/* @ts-ignore */}
+                    {mapPane.layers.map((layer) => (
                         <RowEntryMultiButton
                             key={layer.name}
                             entryName={layer.name}
-                            editPath={`${editPath}.layers.${index}`}
-                            editType="Layer"
+                            onSelect={() =>
+                                setLayerEdit(layer.id)
+                            }
+                            onRemove={() => {}}
+                            onDuplicate={() => {}}
+                            onRaise={() => {}}
+                            onLower={() => {}}
                         />
                     ))}
                 </Flex>
                 <BaseMapSelector
-                    baseMap={mapPane?.base_map?.Named}
-                    onChange={(baseMap) => updateBaseMap(baseMap)}
+                    baseMap={mapPane?.baseMap}
+                    onChange={updateBaseMap}
                 />
-            </Well>
+            </CollapsibleSection>
         </Flex>
     );
 };

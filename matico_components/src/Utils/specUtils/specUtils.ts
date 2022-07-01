@@ -1,62 +1,52 @@
-export const EditTypeMapping = {
-    pages: "Page",
-    layers: "Layer",
-    Map: "Map",
-    sections: "Section",
-    Text: "Text",
-    Histogram: "Histogram",
-    PieChart: "PieChart",
-    Scatterplot: "Scatterplot",
-    Controls: "Controls"
-};
+import {
+    PaneRef,
+    App,
+    Page,
+    ContainerPane,
+    Pane
+} from "@maticoapp/matico_types/spec";
+import _ from "lodash";
+import { Container } from "react-dom";
 
-export const extractEditType = (path: string): string => {
-    if (!path || !path.length) return null;
-    const parts = [...path.split(".")].reverse();
-    const lastPart = parts.find((f) => isNaN(+f));
-    //@ts-ignore
-    return EditTypeMapping[lastPart] || "";
-};
-
-export const getParentPath = (path: string): string => {
-    if (!path?.length) {
-        return path;
-    }
-    const parts = path.split(".");
-    const reverseParts = [...parts].reverse();
-    const lastPart = reverseParts.findIndex(
-        (f, i) => isNaN(+f) && !isNaN(+reverseParts[i - 1])
+export const findPaneParents = (spec: App, paneId: string) => {
+    const pages = spec.pages.filter((p: Page) =>
+        p.panes.find((p: PaneRef) => p.id === paneId)
     );
-    //@ts-ignore
-    return parts.slice(0, parts.length - lastPart).join(".");
-};
-
-export const getPathIndex = (path: string): number | null => {
-    if (!path?.length) {
-        return null;
-    }
-    const reverseParts = [...path.split(".")].reverse();
-    const deepestArrayIndex = reverseParts.find(
-        (f, i) => !isNaN(+f) && isNaN(+reverseParts[i + 1])
+    const containers = spec.panes.filter(
+        (p: Pane) => p.type === "container"
+    ) as Array<ContainerPane>;
+    const containersWithPane = containers.filter((container: ContainerPane) =>
+        container.panes.find((p: PaneRef) => p.id === paneId)
     );
-    //@ts-ignore
-    return +deepestArrayIndex;
+    return { pages, containers: containersWithPane };
 };
 
-export const incrementName = (name: string, takenNames: string[]): string => {
-    //@ts-ignore
-    let baseName = `${name}`;
-    while (!isNaN(+baseName.slice(-1)[0]) && baseName.length > 0){
-        baseName = baseName.slice(0, -1);
+
+
+export const findPagesForPane = (spec: App, paneRef: PaneRef) => {
+    let { pages, containers } = findPaneParents(spec, paneRef.id);
+    while (containers.length > 0) {
+        let consideration = containers.pop();
+        let { pages: considerationPages, containers: considerationContainers } =
+            findPaneParents(spec, consideration.id);
+        _.extend(pages, considerationPages);
+        _.extend(containers, considerationContainers);
     }
 
-    let tempName = `${baseName}`;
-    let suffix = 0;
-    
-    do {
-        tempName = `${baseName}${suffix}`;
-        suffix++;
-    } while (takenNames.includes(tempName));
-
-    return tempName;
+    let pageSet = Array.from(new Set(pages));
+    return pageSet;
 };
+
+export const findPaneOrPage = (spec: App, id: string) => {
+    const pages = spec.pages;
+    const pageMatch = pages.find((page: Page) => page.id === id)
+    if (pageMatch){
+        return pageMatch
+    }
+    const containers = spec.panes.filter((pane: Pane) => pane.type === "container") as ContainerPane[]
+    const containerMatch = containers.find((container: ContainerPane) => container.id === id)
+    if (containerMatch){
+        return containerMatch
+    }
+    return null
+}

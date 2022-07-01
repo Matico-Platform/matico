@@ -4,27 +4,34 @@ import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { MaticoDataState } from "../../Contexts/MaticoDataContext/MaticoDataContext";
 import { VariableState } from "../../Stores/MaticoVariableSlice";
 import { MaticoNavBar } from "../MaticoNavBar/MaticoNavBar";
-import { Dashboard } from "@maticoapp/matico_spec";
 import { setSpec } from "../../Stores/MaticoSpecSlice";
 import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
-import { registerDataset } from "Stores/MaticoDatasetSlice";
 import { Content, Grid, View } from "@adobe/react-spectrum";
-import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
+import { App, Page } from "@maticoapp/matico_types/spec";
+
 import _ from "lodash";
-import {useRegisterDatasets} from "Hooks/useRegisterDatasets";
+import { useRegisterDatasets } from "Hooks/useRegisterDatasets";
 
 interface MaticoAppPresenterProps {
-    spec?: Dashboard;
+    spec?: App;
     basename?: string;
     onStateChange?: (state: VariableState) => void;
     onDataChange?: (data: MaticoDataState) => void;
+    maxDimensions?: {
+        height: number | null;
+        width: number | null;
+    };
 }
 
 export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     spec,
     basename,
-    onStateChange
+    onStateChange,
+    maxDimensions = {
+        height: null,
+        width: null
+    }
 }) => {
     const dispatch = useMaticoDispatch();
 
@@ -41,9 +48,10 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     }, []);
 
     // Register the datasets in the spec and keep in sync as changes are made
-    useRegisterDatasets()
+    useRegisterDatasets();
 
     const appSpec = useAppSpec();
+    console.log("App spec ", appSpec);
 
     const appState = useMaticoSelector((state) => state.variables);
 
@@ -54,40 +62,50 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     }, [onStateChange, JSON.stringify(appState)]);
 
     return (
-        <Router basename={basename}>
+        <> 
+        {/* <Router basename={basename}> */}
             {appSpec && (
                 <Grid
                     areas={["nav main"]}
-                    gridArea={"viewer"}
                     columns={[
                         "static-size-900",
                         "calc(100% - static-size-900)"
                     ]}
                     rows={["flex"]}
+                    gridArea={"viewer"}
                     height="100%"
+                    maxWidth={
+                        maxDimensions.width
+                            ? `${maxDimensions.width}px`
+                            : "100%"
+                    }
+                    maxHeight={
+                        maxDimensions.height
+                            ? `${maxDimensions.height}px`
+                            : "100%"
+                    }
+                    margin="0 auto"
+                    width="100%"
                 >
                     <View gridArea="nav">
-                        <MaticoNavBar pages={appSpec.pages} />
+                        <MaticoNavBar />
                     </View>
                     <Content gridArea="main">
                         <Switch>
-                            {appSpec.pages.map((page, index: number) => (
+                            {appSpec.pages.map((page: Page, index: number) => (
                                 <Route
                                     path={page.path ? page.path : page.name}
-                                    exact={true}
                                     key={page.path}
+                                    exact={true}
                                 >
-                                    <MaticoPage
-                                        key={page.path}
-                                        page={page}
-                                        editPath={`pages.${index}`}
-                                    />
+                                    <MaticoPage key={page.path} page={page} />
                                 </Route>
                             ))}
                         </Switch>
                     </Content>
                 </Grid>
             )}
-        </Router>
+        {/* </Router> */}
+        </>
     );
 };

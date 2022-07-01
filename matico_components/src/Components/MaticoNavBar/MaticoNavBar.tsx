@@ -1,152 +1,117 @@
 import { Link } from "react-router-dom";
-import { Page } from "@maticoapp/matico_spec";
 import React from "react";
 import styled from "styled-components";
 import { useIsEditable } from "../../Hooks/useIsEditable";
-import { useMaticoDispatch, useMaticoSelector } from "../../Hooks/redux";
-import { addPage, setCurrentEditPath } from "../../Stores/MaticoSpecSlice";
-import { ControlButton } from "Components/MaticoEditor/Utils/MaticoControlButton";
-import chroma from "chroma-js";
+import { useApp } from "Hooks/useApp";
 import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
+import { chromaColorFromColorSpecification } from "Components/Panes/MaticoMapPane/LayerUtils";
 
-interface MaticoNavBarProps {
-  pages: Array<Page>;
-}
+interface MaticoNavBarProps {}
 
-const NamedButton: React.FC<{ name: IconProp; color?: string; size?: string }> =
-  ({ name, color = "white", size = "normal" }) => {
-    // const iconName = flatIconList.includes(name) ? name : "file";
-    return <span className={name} style={{
-      display: 'block',
-      fontSize:'150%',
-      padding: '.25em'
-    }}/>
-};
+const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
+    ({ name, color = "white", size = "normal" }) => {
+        // const iconName = flatIconList.includes(name) ? name : "file";
+        return (
+            <span
+                className={name}
+                style={{
+                    display: "block",
+                    fontSize: "150%",
+                    padding: ".25em"
+                }}
+            />
+        );
+    };
 
 const HoverLink = styled(Link)`
-  text-decoration: none;
-  padding:.5em 0;
-  color:white;
-  &:hover {
-    background:rgba(255,255,255,0.1);
-  }
-`
-
-export const MaticoNavBar: React.FC<MaticoNavBarProps> = ({ pages }) => {
-  const editable = useIsEditable();
-  const dispatch = useMaticoDispatch();
-  const theme = useMaticoSelector((state) => state.spec.spec.theme);
-  const primaryColor = theme?.primaryColor;
-  const logo = theme?.logoUrl;
-
-  let chromaColor;
-  if (Array.isArray(primaryColor)) {
-    if (primaryColor.length === 4) {
-      chromaColor = chroma.rgb([
-        ...primaryColor.slice(0, 3),
-        primaryColor[3] / 255,
-      ]);
-    } else if ((primaryColor.length = 3)) {
-      chromaColor = chroma.rgb(primaryColor);
+    text-decoration: none;
+    padding: 0.5em 0;
+    color: white;
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
     }
-  } else if (chroma.valid(primaryColor)) {
-    chromaColor = chroma(primaryColor);
-  }
+`;
 
-  const onAddPage = () => {
-    const firstPage = pages.length === 0;
-    const pageNo = firstPage ? 0 : Math.max(...pages.map((p) => p.order)) + 1;
+export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
+    const editable = useIsEditable();
+    const { pages, addPage, removePage, theme, setEditPage } = useApp();
 
-    dispatch(
-      addPage({
-        //@ts-ignore
-        page: {
-          name: firstPage ? "Home" : `Page${pageNo}`,
-          content: `This page ${pageNo}`,
-          path: firstPage ? "/" : `/page_${pageNo}`,
-          icon: firstPage ? "house" : "file",
-          //@ts-ignore
-          order: pageNo,
-          sections: [
-            {
-              name: "First Section",
-              layout: "free",
-              panes: [],
-              order: 1,
-            },
-          ],
-        },
-      })
-    );
-  };
+    const logo = theme?.logoUrl;
 
+    const onAddPage = () => {
+        addPage({});
+    };
 
-  return (
-    <View 
-      // overflowX="hidden"
-      // overflowY="auto"
-      overflow="hidden auto"
-      height="100%"
-      maxHeight="100vh"
-      backgroundColor={"blue-600"}
-      borderWidth="thin"
-      borderColor="dark"
-      UNSAFE_style={{
-        textAlign:"center",
-      }}>
-      <ButtonGroup align="center" UNSAFE_style={{display:'flex', flexDirection:'column', alignItems:'center'}} maxWidth="100%" marginTop="size-100">
-        <Link to="/" style={{marginBottom: '1em'}}>
-          <Image
-            alt="Logo"
-            src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
-            />
-        </Link>
-        {pages.map((page, index) => (
-          <View position="relative" key={page.path} width="100%" marginY="size-150">
-            <HoverLink
-              to={page.path ? page.path : `/${page.name}`}
+    const setEditorPath = (pageId: string) => {
+        if (editable) {
+            setEditPage(pageId);
+        }
+    };
+
+    return (
+        <View
+            overflow="hidden auto"
+            height="100%"
+            maxHeight="100vh"
+            backgroundColor={"blue-600"}
+            borderWidth="thin"
+            borderColor="dark"
+            UNSAFE_style={{
+                textAlign: "center"
+            }}
+        >
+            <ButtonGroup
+                align="center"
+                UNSAFE_style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center"
+                }}
+                maxWidth="100%"
+                marginTop="size-100"
             >
-              <NamedButton name={page.icon} />
-              <Text>
-                {page.name}
-              </Text>
-            </HoverLink>
-            <View position="absolute" right="0px" top="-20px">
-              <ControlButton action="edit" editPath={`pages.${index}`} editType={"Page"} />
-            </View>
-          </View>
-        ))}
-        {editable && (
-          <Button
-            marginY="size-100"
-            marginX="size-100"
-            aria-label="Add page"
-            onPress={() => onAddPage()}
-            UNSAFE_style={{fontSize: '0.75rem', cursor: 'pointer'}}
-            isQuiet
-            variant="overBackground"
-            
-          >
-            <NamedButton name="fas fa-plus" />
-          </Button>
-        )}
-      </ButtonGroup>
-    </View>
-    // <Sidebar
-    //   background={chromaColor ? chromaColor.hex() : "neutral-2"}
-    //   style={{textAlign:'center'}}
-    //   header={
-    //     <Avatar
-    //       src={logo ?? "https://www.matico.app/favicon/favicon-32x32.png"}
-    //       elevation="small"
-    //       style={{ margin: "0 auto" }}
-    //     />
-    //   }
-    //   elevation="medium"
-    //   footer={<Button icon={<Icons.Help />} hoverIndicator />}
-    // >
-    //   <Nav gap="small" >
-    //   </Nav>
-    // </Sidebar>
-  );
+                <Link to="/" style={{ marginBottom: "1em" }}>
+                    <Image
+                        alt="Logo"
+                        src={
+                            logo ??
+                            "https://www.matico.app/favicon/favicon-32x32.png"
+                        }
+                    />
+                </Link>
+                {pages.map((page, index) => (
+                    <View
+                        position="relative"
+                        key={page.path}
+                        width="100%"
+                        marginY="size-150"
+                    >
+                        <HoverLink
+                            to={page.path ? page.path : `/${page.name}`}
+                            onClick={() => setEditorPath(page.id)}
+                        >
+                            <NamedButton name={page.icon} />
+                            <Text>{page.name}</Text>
+                        </HoverLink>
+                    </View>
+                ))}
+                {editable && (
+                    <Button
+                        marginY="size-100"
+                        marginX="size-100"
+                        aria-label="Add page"
+                        onPress={() => onAddPage()}
+                        UNSAFE_style={{
+                            fontSize: "0.75rem",
+                            cursor: "pointer"
+                        }}
+                        isQuiet
+                        variant="overBackground"
+                    >
+                        <NamedButton name="fas fa-plus" />
+                    </Button>
+                )}
+            </ButtonGroup>
+        </View>
+    );
 };

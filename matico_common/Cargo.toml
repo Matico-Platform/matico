@@ -17,4 +17,4 @@ serde_json = "1.0.59"
 serde_yaml = "0.8"
 toml = "0.5.8"
 matico_spec_derive = { path = "../matico_spec_derive" }
-ts-rs = { version = "6.1", features = ['chrono-impl', 'uuid-impl'] }
+ts-rs = { version = "6.1", features = ['chrono-impl', 'uuid-impl', "serde-compat"] }

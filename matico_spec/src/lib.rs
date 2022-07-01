@@ -1,29 +1,29 @@
+mod apps;
 mod autocomplete;
 mod charts;
+mod colors;
 mod controls;
-mod dashboard;
 mod datasets;
+mod layouts;
 mod mapping;
 mod page;
 mod pane;
-mod section;
 mod theme;
 mod validation;
-mod colors;
 
+pub use apps::*;
 pub use autocomplete::*;
 pub use charts::*;
+pub use colors::*;
 pub use controls::*;
-pub use dashboard::*;
 pub use datasets::*;
+pub use layouts::*;
 pub use mapping::*;
+pub use matico_common::*;
 pub use page::*;
 pub use pane::*;
-pub use section::*;
 pub use theme::*;
 pub use validation::*;
-pub use matico_common::*;
-pub use colors::*;
 
 #[macro_use]
 extern crate matico_spec_derive;

@@ -49,20 +49,20 @@ pub struct TileID {
 }
 
 fn row_to_map(row: PgRow) -> BTreeMap<String, Option<QueryVal>> {
-    let mut hash: BTreeMap<String,Option<QueryVal>> = BTreeMap::new();
-    for (index,col) in row.columns().iter().enumerate() {
+    let mut hash: BTreeMap<String, Option<QueryVal>> = BTreeMap::new();
+    for (index, col) in row.columns().iter().enumerate() {
         let type_info: &PgTypeInfo = col.type_info();
         // info!("Column type is {:#?} {:#?}", type_info, type_info.name() );
         let val: Option<QueryVal> = match type_info.name() {
-             "INT2" | "INT4" => {
+            "INT2" | "INT4" => {
                 let val: Option<i32> = row.get(col.name());
-                let val =val.map(|c| c as i64);
+                let val = val.map(|c| c as i64);
                 val.map(|v| QueryVal::Int(v))
             }
-             "INT8"  => {
+            "INT8" => {
                 let val: Option<i64> = row.get(col.name());
                 val.map(|v| QueryVal::Int(v))
-             }
+            }
             "FLOAT4" | "FLOAT8" => {
                 let val: Option<f64> = row.get(col.name());
                 val.map(|v| QueryVal::Float(v))
@@ -99,7 +99,7 @@ pub struct PostgisQueryBuilder {
     api: Option<Api>,
     api_params: Option<HashMap<String, serde_json::Value>>,
     query: Option<String>,
-    columns:Option<Vec<String>>,
+    columns: Option<Vec<String>>,
     filters: Option<Vec<Filter>>,
     user: Option<User>,
     bounds: Option<Bounds>,
@@ -125,6 +125,40 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
         self.api = Some(api);
         self.api_params = Some(params);
         self
+    }
+
+    async fn update_feature(db: &DataDbPool, dataset: Dataset, feature_id: String, update: serde_json::Value)->Result<BTreeMap<String, Option<QueryVal>>, ServiceError>{
+
+        let obj = update.as_object().unwrap();
+        let mut key_vals: Vec<String> = vec![];
+
+        for (key, value) in &*obj {
+            // TODO FIX THIS ITS SUPER FUCKING HACKY JUST NOW!
+            if value.to_string().contains("coordinates"){
+                key_vals.push(format!("{} = ST_GeomFromGeoJSON('{}')", key, value.to_string().replace("'", "\"")));
+            }
+            else{
+                key_vals.push(format!("{} = {}", key, value).replace("\"", "'"));
+            }
+        }
+        let set_statement = key_vals.join(",");
+
+
+        let query = format!(
+            r#"UPDATE "{}"
+            SET {}
+            WHERE CAST("{}" AS TEXT) = CAST({} AS TEXT)"#,
+            dataset.table_name, set_statement, dataset.id_col, feature_id
+        );
+
+        tracing::info!("Update Query {}", query);
+        sqlx::query(&query)
+            .execute(db)
+            .await
+            .map_err(|e| ServiceError::QueryFailed(format!("Failed to get feature {:#?}", e)))?;
+        let new_feature = Self::new().dataset(dataset).get_feature(db, feature_id, None).await;
+        new_feature
+
     }
 
     fn query(&mut self, query: String) -> &mut Self {
@@ -163,7 +197,7 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
     }
 
     fn columns(&mut self, columns: Vec<String>) -> &mut Self {
-        self.columns= Some(columns);
+        self.columns = Some(columns);
         self
     }
 
@@ -205,9 +239,13 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
             base_query = format!("{} {}", base_query, page)
         };
 
-        if let Some(columns) = &self.columns{
-            let col_string = columns.iter().map(|c| format!("\"{}\"",c)).collect::<Vec<String>>().join(",");
-            base_query = format!("select {} from  ({}) as final",col_string , base_query );
+        if let Some(columns) = &self.columns {
+            let col_string = columns
+                .iter()
+                .map(|c| format!("\"{}\"", c))
+                .collect::<Vec<String>>()
+                .join(",");
+            base_query = format!("select {} from  ({}) as final", col_string, base_query);
         }
         Ok(base_query)
     }
@@ -297,7 +335,7 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
     async fn get_feature(
         &self,
         db: &DataDbPool,
-        feature_id: i32,
+        feature_id: String,
         id_col: Option<&str>,
     ) -> Result<BTreeMap<String, Option<QueryVal>>, ServiceError> {
         let base_query = self.build_query()?;
@@ -309,7 +347,7 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
             if let Some(d) = &self.dataset {
                 Some(d.id_col.clone())
             } else {
-                None
+                Some(String::from("ogc_fid"))
             }
         };
 
@@ -320,13 +358,13 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
         })?;
 
         let query = format!(
-            "select * from ({query}) as orig where ogc_fid = {id:?}",
+            "select * from ({query}) as orig where CAST(\"{column}\" as TEXT) = '{id}'",
             query = base_query,
-            // column = id_col,
+            column = id_col,
             id = feature_id
         );
 
-        tracing::info!("Query is {}",query );
+        tracing::info!("Query is {}", query);
 
         let result = sqlx::query(&query)
             .map(row_to_map)
@@ -524,6 +562,8 @@ impl PostgisStatRunner {
         let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
         let base_query = query.build_query()?;
 
+        let non_null_query = format!("select * from ({}) as nq where {} IS NOT NULL", base_query,column.name);
+
         let query = match &params.bin_edges {
             Some(edges) => format!("We have not yet implemented custom bin edges {:?}", edges),
             None => format!(
@@ -534,10 +574,10 @@ impl PostgisStatRunner {
                         ((bin_no +0.5 ) * (max-min)/{bin_no})::FLOAT as bin_mid,
                         count(*)::FLOAT as freq
                 FROM (
-                        select width_bucket({col}::NUMERIC, min, max, {bin_no}) as bin_no
+                        select width_bucket(\"{col}\"::NUMERIC, min, max, {bin_no}) as bin_no
                         from ({source_query}) as query,
-                        ( select max({col}::NUMERIC) as max,
-                                 min({col}::NUMERIC) as min
+                        ( select max(\"{col}\"::NUMERIC) as max,
+                                 min(\"{col}\"::NUMERIC) as min
                           FROM ({source_query}) as sq 
                         ) as    stats
                     ) iq,
@@ -549,7 +589,7 @@ impl PostgisStatRunner {
                         order by bin_no
                 ",
                 col = column.name,
-                source_query = base_query,
+                source_query = non_null_query,
                 bin_no = params.no_bins
             ),
         };
@@ -576,7 +616,7 @@ impl PostgisStatRunner {
         let base_query = query.build_query()?;
         let query = format!(
             "
-            select COALESCE({}::TEXT,'undefined') as name, count(*) as count 
+            select COALESCE({}::TEXT,'undefined') as name, count(*)::INT as count 
             from ({}) a
             group by COALESCE({}::TEXT,'undefined')
             order by count DESC",

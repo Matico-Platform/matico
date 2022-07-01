@@ -22,15 +22,16 @@ const INITIAL_VIEW_STATE = {
 };
 
 const binsForColType = (type: string | undefined | null) => {
-  const categories = {
-    ValueCounts: {},
-  };
+
+  const categories = 
+    {type:"valueCounts"}
+  ;
   const quantiles = {
-    Quantiles: {
-      no_bins: 8,
+    type:"quantiles",
+      noBins: 8,
       treat_null_as_zero: true,
-    },
   };
+
   switch (type) {
     case "VARCHAR":
       return categories;
@@ -67,8 +68,8 @@ const styleForCol = (
     },
   };
   switch (statType) {
-    case "ValueCounts":
-      const valueCounts = colStats!.ValueCounts;
+    case "valueCounts":
+      const valueCounts = colStats!.valueCounts;
       const topCategories = valueCounts.slice(0, 7).map((vc: any) => vc.name);
       const categoryPallet = chroma.brewer.Pastel2;
       return {
@@ -79,8 +80,8 @@ const styleForCol = (
           return chroma.valid(color) ? chroma(color).rgb() : "gray";
         },
       };
-    case "Quantiles":
-      const quantileBins = colStats!.Quantiles.map((qb: any) => qb.bin_end);
+    case "quantiles":
+      const quantileBins = colStats!.quantiles.map((qb: any) => qb.binEnd);
       const quantileScale = chroma.scale("RdYlBu").domain(quantileBins);
       return {
         ...common,
@@ -116,9 +117,10 @@ export const MapView: React.FC<MapViewInterface> = ({
 
   const { selectionLayer, saveGeometry, discardGeometryChanges } =
     useMapSelectEditFeature(source, selectedFeatureId, edit);
+
   const { column, columnError } = useDatasetColumn(source, visCol);
 
-  const stat = binsForColType(column?.col_type);
+  const stat = binsForColType(column?.colType);
 
   const selectFeature = (feature: any) => {
     if (idCol && onSelectFeature) {

@@ -18,6 +18,7 @@
     "@loaders.gl/json": "^3.1.4",
     "@maticoapp/matico_charts": "workspace:matico_charts",
     "@maticoapp/matico_components": "workspace:matico_components",
+    "@maticoapp/matico_types": "workspace:matico_types",
     "@nebula.gl/edit-modes": "^1.0.2-alpha.1",
     "@nebula.gl/editor": "^1.0.2-alpha.1",
     "@react-spectrum/card": "^3.0.0-alpha.1",

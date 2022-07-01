@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useDatasetColumns } from "../hooks/useDatasetColumns";
 import { useFeature } from "../hooks/useFeature";
 import { Source } from "../utils/api";
+import {Column} from "@maticoapp/matico_types/api"
 
 interface FeatureEditorProps {
   source: Source | null;
@@ -51,13 +52,13 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
     setFeatureUpdates({});
   }, [feature]);
 
-  const fieldForParameter = (column: any) => {
+  const fieldForParameter = (column: Column) => {
     const combinedParameters = { ...feature[0], ...featureUpdates };
 
     if (
-      column.col_type.includes("INT") ||
-      column.col_type.includes("FLOAT") ||
-      column.col_type.includes("NUMERIC")
+      column.colType.includes("INT") ||
+      column.colType.includes("FLOAT") ||
+      column.colType.includes("NUMERIC")
     ) {
       return (
         <NumberField
@@ -70,7 +71,7 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
           }
         />
       );
-    } else if (column.col_type === "VARCHAR") {
+    } else if (column.colType === "VARCHAR") {
       return (
         <TextField
           width="size-2400"

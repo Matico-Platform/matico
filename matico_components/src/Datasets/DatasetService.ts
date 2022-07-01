@@ -13,6 +13,7 @@ import { COGBuilder } from "./COGBuilder";
 import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
 import {WasmComputeBuilder} from "./WasmComputeBuilder";
+import {Dataset as DatasetSpec} from "@maticoapp/matico_types/spec"
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -33,12 +34,13 @@ export interface DatasetServiceInterface {
   ): void;
   registerOrUpdateDataset(
     datasetName: string,
-    datasetDetails: any
+    datasetDetails: DatasetSpec
   ): Promise<DatasetSummary>;
 
   registerColumnData(
     args: ColumnStatRequest,
-    callback: (data: any) => void
+    notifierId: string,
+    callback: (data: unknown) => void
   ): void;
 }
 
@@ -50,28 +52,29 @@ export const DatasetService: DatasetServiceInterface = {
   async registerColumnData(
     args: ColumnStatRequest,
     notifierId: string,
-    callback: (data: any) => void,
+    callback: (data: unknown) => void,
   ) {
 
     const { datasetName, metric, column, parameters, filters } = args;
+    console.log("REGISTERING COLUMN DATA ", args)
     
     const getMetric = async (datasetName: string) => {
       let dataset = this.datasets[datasetName];
       if (dataset) {
         switch (metric) {
-          case "Max":
+          case "max":
             return await dataset.getColumnMax(column);
-          case "Min":
+          case "min":
             return dataset.getColumnMin(column);
-          case "EqualInterval":
+          case "equalInterval":
             return dataset.getEqualIntervalBins(column, parameters.bins);
-          case "Quantile":
+          case "quantile":
             return dataset.getQuantileBins(column, parameters.bins);
-          case "Histogram":
+          case "histogram":
             return dataset.getColumnHistogram(column, parameters.bins,filters);
-          case "CategoryCounts":
+          case "categoryCounts":
             return dataset.getCategoryCounts(column, filters)
-          case "Categories":
+          case "categories":
             return dataset.getCategories(column,parameters.no_categories, filters)
           default:
             return null;
@@ -85,6 +88,7 @@ export const DatasetService: DatasetServiceInterface = {
     if (metricVal) {
       callback(metricVal);
     }
+    console.log("METRIC VAL IS", metricVal)
 
     this._registerNotifier(datasetName, notifierId, async () => {
       const metricVal = await getMetric(datasetName);
@@ -106,7 +110,7 @@ export const DatasetService: DatasetServiceInterface = {
       let d = this.datasets[datasetName];
       
       if (d) {
-        let data = await  d.getData(filters,columns,limit);
+        let data = await d.getData(filters,columns,limit);
         callback(data);
       }
 
@@ -137,9 +141,9 @@ export const DatasetService: DatasetServiceInterface = {
     }
   },
 
-  async registerOrUpdateDataset(datasetDetails: any): Promise<DatasetSummary> {
+  async registerOrUpdateDataset(datasetDetails: DatasetSpec): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
-      case "GeoJSON":
+      case "geoJSON":
         const geoDataset = await GeoJSONBuilder(datasetDetails);
         this.datasets[geoDataset.name] = geoDataset;
         this._notify(geoDataset.name);
@@ -153,10 +157,12 @@ export const DatasetService: DatasetServiceInterface = {
           tiled: geoDataset.tiled(),
           spec: datasetDetails
         };
-      case "CSV":
+      case "csv":
+        console.log("BUILDING CSV DATASET ")
         const csvDataset = await CSVBuilder(datasetDetails);
         this.datasets[csvDataset.name] = csvDataset;
         this._notify(csvDataset.name);
+        console.log("BUILDING CSV DATASET ", csvDataset)
         return {
           name: csvDataset.name,
           state: DatasetState.READY,
@@ -167,7 +173,7 @@ export const DatasetService: DatasetServiceInterface = {
           tiled: csvDataset.tiled(),
           spec: datasetDetails
         };
-      case "MaticoRemote":
+      case "maticoRemote":
         const maticoDataset = await MaticoRemoteBuilder(datasetDetails);
         this.datasets[maticoDataset.name] = maticoDataset;
         this._notify(maticoDataset.name);
@@ -182,7 +188,7 @@ export const DatasetService: DatasetServiceInterface = {
           mvtUrl: maticoDataset.mvtUrl(),
           spec: datasetDetails
         };
-      case "MaticoApi":
+      case "maticoApi":
         const maticoApi= await MaticoRemoteApiBuilder(datasetDetails);
         this.datasets[maticoApi.name] = maticoApi;
         this._notify(maticoApi.name);
@@ -197,7 +203,7 @@ export const DatasetService: DatasetServiceInterface = {
           mvtUrl: maticoApi.mvtUrl(),
           spec: datasetDetails
         };
-      case "WASMCompute":
+      case "wasmCompute":
         console.log("REGISTERING WASM COMPUTE")
         const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
         console.log("GENERATING NEW COMPUTE DATASET")
@@ -214,8 +220,8 @@ export const DatasetService: DatasetServiceInterface = {
           mvtUrl: null,
           spec: datasetDetails
         };
-      case "COG":
-        const cog = await COGBuilder(datasetDetails);
+      case "cog":
+        const cog = COGBuilder(datasetDetails);
         this.datasets[cog.name] = cog;
         this._notify(cog.name);
         return {

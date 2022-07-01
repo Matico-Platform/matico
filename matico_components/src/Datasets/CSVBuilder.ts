@@ -13,6 +13,7 @@ import {
 } from "@apache-arrow/es5-cjs";
 
 import Papa from "papaparse";
+import {CSVDataset} from "@maticoapp/matico_types/spec";
 interface CSVDetails {
   name: string;
   url: string;
@@ -117,21 +118,23 @@ const extractGeomType = (lat_col: string, lng_col: string) => {
   }
 };
 
-export const CSVBuilder = async (details: CSVDetails) => {
-  const { url, lat_col, lng_col, id_col, name } = details;
+export const CSVBuilder = async (details: CSVDataset) => {
+  console.log("HERE IN CSV BUILDER")
+  const { url, latCol, lngCol,  name } = details;
+  const idCol: string | null = null
   const { columns, fields, lat_index, lng_index } = await extractHeader(
     url,
-    lat_col,
-    lng_col,
-    id_col
+    latCol,
+    lngCol,
+    idCol
   );
 
-  const data = await extractData(url, fields, lat_index, lng_index, id_col);
+  const data = await extractData(url, fields, lat_index, lng_index, idCol);
 
-  const geomType = extractGeomType(lat_col, lng_col);
+  const geomType = extractGeomType(latCol, lngCol);
   return new LocalDataset(
     name,
-    id_col ? id_col : "id",
+    idCol ? idCol : "id",
     columns,
     data,
     geomType

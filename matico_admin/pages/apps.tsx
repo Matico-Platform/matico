@@ -14,6 +14,7 @@ import { Link as ALink, ActionButton } from "@adobe/react-spectrum";
 import Link from "next/link";
 import Edit from "@spectrum-icons/workflow/Edit";
 import Preview from "@spectrum-icons/workflow/Preview";
+import {App as AppSpec} from "@maticoapp/matico_types/spec"
 
 import {
   Cell,
@@ -31,15 +32,28 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
   const { apps, error, createApp } = useApps();
   const router = useRouter()
 
-  const submit = (details:any) => {
-    createApp({
-      ...details,
-      spec: {
-        name: details.name,
-        created_at: new Date(),
-        pages: [],
-        datasets: [],
+  const submit = (details: {name:string, description: string, public: boolean}) => {
+    const initalSpec = {
+      panes:[],
+      pages:[],
+      datasets:[],
+      theme:{
+        primaryColor: {hex:"#FF0000"},
+        secondaryColor: {hex:"#FF0000"},
+        logoUrl:null
       },
+      metadata:{
+        name: details.name,
+        createdAt: new Date().toISOString(),
+        description: details.description
+      }
+    } as AppSpec
+
+    createApp({
+      name: details.name,
+      description: details.description,
+      public: details.public,
+      spec: initalSpec  
     });
   };
 

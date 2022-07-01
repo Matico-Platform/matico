@@ -1,28 +1,10 @@
-import { Divider, Flex, Heading, Text, View } from "@adobe/react-spectrum";
+import { Divider, Flex, Text, View } from "@adobe/react-spectrum";
 import React, { useMemo } from "react";
-import { generateColor, getColorScale } from "../MaticoMapPane/LayerUtils";
-import {
-    scaleLinear,
-    scaleOrdinal,
-    scaleThreshold,
-    scaleQuantile
-} from "@visx/scale";
-import {
-    // Legend,
-    LegendLinear,
-    LegendQuantile,
-    LegendOrdinal,
-    LegendSize,
-    LegendThreshold,
-    LegendItem,
-    LegendLabel,
-    RectShape,
-    CircleShape,
-    LineShape
-} from "@visx/legend";
+import { scaleThreshold } from "@visx/scale";
+import { LegendThreshold, LegendItem } from "@visx/legend";
 import { colors } from "Utils/colors";
-import _ from "lodash";
-import styled from "styled-components";
+import { get } from "lodash";
+import { sanitizeColor } from "Utils/sanitizeColor";
 
 // interface MaicoMapPaneInterface extends MaticoPaneInterface {
 //     view: View;
@@ -47,15 +29,6 @@ export function nicelyFormatNumber(x: number | string) {
     if (val < 1_000_000_000_000) return `${(val / 1_000_000).toFixed(1)}B`;
     return val.toExponential();
 }
-
-export const sanitizeColor = (color: string | number[] | undefined) => {
-    if (!color) return null;
-    if (typeof color === "string") return color;
-    if (Array.isArray(color)) {
-        return `rgb${color.length === 4 ? "a" : ""}(${color.join(",")})`;
-    }
-    return null;
-};
 
 const Rect: React.FC<{ children: React.ReactChildren }> = ({ children }) => (
     <rect>{children}</rect>
@@ -92,7 +65,7 @@ const useLegend = (
         const { domain, range: valuesOrName } = fillColor;
         const range = Array.isArray(valuesOrName)
             ? valuesOrName
-            : _.get(colors, valuesOrName);
+            : get(colors, valuesOrName);
 
         const scale = scaleThreshold<number>({
             domain: [...domain.slice(1), Math.pow(10, 10)],
@@ -110,7 +83,7 @@ const useLegend = (
         const { domain, range: valuesOrName } = lineColor;
         const range = Array.isArray(valuesOrName)
             ? valuesOrName
-            : _.get(colors, valuesOrName);
+            : get(colors, valuesOrName);
         const scale = scaleThreshold<number>({
             domain: [...domain.slice(1), Math.pow(10, 10)],
             range
@@ -204,43 +177,56 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
                 <Text UNSAFE_style={{ fontWeight: "bold" }}>{name}</Text>
                 <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
                     {(labels) => {
-                        console.log(labels.sort((a,b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)))
+                        console.log(
+                            labels.sort(
+                                (a, b) =>
+                                    (isNaN(+a?.datum) ? 0 : +a?.datum) -
+                                    (isNaN(+b?.datum) ? 0 : +b?.datum)
+                            )
+                        );
                         //@ts-ignore
-                        return labels.sort((a,b) => (isNaN(+a?.datum) ? 0 : +a?.datum) - (isNaN(+b?.datum) ? 0 : +b?.datum)).reverse().map((label, i) => {
-                            const val: number =
-                                label.datum !== undefined
-                                    ? (label.datum as number)
-                                    : //@ts-ignore
-                                      (label?.extent[1] || 0) - 0.000000001;
+                        return labels
+                            .sort(
+                                (a, b) =>
+                                    (isNaN(+a?.datum) ? 0 : +a?.datum) -
+                                    (isNaN(+b?.datum) ? 0 : +b?.datum)
+                            )
+                            .reverse()
+                            .map((label, i) => {
+                                const val: number =
+                                    label.datum !== undefined
+                                        ? (label.datum as number)
+                                        : //@ts-ignore
+                                          (label?.extent[1] || 0) - 0.000000001;
 
-                            return (
-                                <LegendItem
-                                    key={`legend-quantile-${i}`}
-                                    margin="1px 0"
-                                    // onClick={() => {
-                                    //   if (events) alert(`clicked: ${JSON.stringify(label)}`);
-                                    // }}
-                                >
-                                    <svg
-                                        width={ENTRY_SYMBOL_WIDTH}
-                                        height={ENTRY_SYMBOL_HEIGHT}
+                                return (
+                                    <LegendItem
+                                        key={`legend-quantile-${i}`}
+                                        margin="1px 0"
+                                        // onClick={() => {
+                                        //   if (events) alert(`clicked: ${JSON.stringify(label)}`);
+                                        // }}
                                     >
-                                        {legendEl === "rect" ? (
-                                            <rect
-                                                {...getLegendItemProps(val)}
-                                            />
-                                        ) : (
-                                            <circle
-                                                {...getLegendItemProps(val)}
-                                            />
-                                        )}
-                                    </svg>
-                                    <Text marginStart={"size-100"}>
-                                        {i > 0 ? label.text : `> ${val}`}
-                                    </Text>
-                                </LegendItem>
-                            );
-                        });
+                                        <svg
+                                            width={ENTRY_SYMBOL_WIDTH}
+                                            height={ENTRY_SYMBOL_HEIGHT}
+                                        >
+                                            {legendEl === "rect" ? (
+                                                <rect
+                                                    {...getLegendItemProps(val)}
+                                                />
+                                            ) : (
+                                                <circle
+                                                    {...getLegendItemProps(val)}
+                                                />
+                                            )}
+                                        </svg>
+                                        <Text marginStart={"size-100"}>
+                                            {i > 0 ? label.text : `> ${val}`}
+                                        </Text>
+                                    </LegendItem>
+                                );
+                            });
                     }}
                 </LegendThreshold>
             </View>

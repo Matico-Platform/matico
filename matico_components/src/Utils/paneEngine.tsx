@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
 import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoHistogramPane } from "Components/Panes/MaticoHistogramPane/MaticoHistogramPane";
@@ -7,27 +7,27 @@ import { MaticoPieChartPane } from "Components/Panes/MaticoPieChartPane/MaticoPi
 import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoControlsPane";
 import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
 import { Pane } from "Components/Panes/Pane";
+import { PaneRef } from "@maticoapp/matico_types/spec";
+import { usePane } from "Hooks/usePane";
 
 export const panes: { [paneType: string]: Pane } = {
-    Map: MaticoMapPane,
-    Text: MaticoTextPane,
-    Histogram: MaticoHistogramPane,
-    Scatterplot: MaticoScatterplotPane,
-    PieChart: MaticoPieChartPane,
-    Controls: MaticoControlsPane,
-    Container: MaticoContainerPane
+    map: MaticoMapPane,
+    text: MaticoTextPane,
+    histogram: MaticoHistogramPane,
+    scatterplot: MaticoScatterplotPane,
+    pieChart: MaticoPieChartPane,
+    controls: MaticoControlsPane,
+    container: MaticoContainerPane
 };
 
-export function selectPane(pane: any, editPath: string) {
-    const paneType = Object.keys(pane)[0]; 
-    const paneDetails = pane[paneType];
+export const PaneSelector: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
+    const paneType = paneRef.type;
+    const { pane } = usePane(paneRef);
     const PaneComponent = panes[paneType];
+
     if (!PaneComponent) return null;
     return (
-        <PaneComponent
-            key={paneDetails.name}
-            {...paneDetails}
-            editPath={`${editPath}`}
-        />
+        //@ts-ignore
+        <PaneComponent key={pane.id} position={paneRef.position} {...pane} />
     );
-}
+};

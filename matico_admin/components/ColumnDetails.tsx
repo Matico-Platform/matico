@@ -20,11 +20,13 @@ interface ColumnDetailProps {
 }
 
 const statForDataType = (dataType: any) => {
-  const histogram = { Histogram: { no_bins: 20 } };
-  const categories = { ValueCounts: {} };
+  const histogram = { type:'histogram', noBins: 20} ;
+  const categories = {type:"valueCounts" };
 
   switch (dataType) {
     case "INT4":
+      return histogram;
+    case "INT8":
       return histogram;
     case "FLOAT":
       return histogram;
@@ -41,23 +43,23 @@ const statForDataType = (dataType: any) => {
 
 const chartForSummary = (dataSummary: any, colName: string) => {
   switch (Object.keys(dataSummary)[0]) {
-    case "ValueCounts":
+    case "valueCounts":
       return (
         <Grid columns={["1fr", "1fr"]}>
-          {dataSummary.ValueCounts.slice(0, 5).map((entry: any) => (
+          {dataSummary.valueCounts.slice(0, 5).map((entry: any) => (
             <>
               <Text>{entry.name}</Text>
               <Text>{entry.count}</Text>
             </>
           ))}
-          <Text>... and {dataSummary.ValueCounts.length - 5} others</Text>
+          <Text>... and {dataSummary.valueCounts.length - 5} others</Text>
         </Grid>
       );
-    case "Histogram":
-      const hist = dataSummary.Histogram;
+    case "histogram":
+      const hist = dataSummary.histogram;
       return (
         <MaticoChart
-          xCol="bin_mid"
+          xCol="binMid"
           xLabel={colName}
           yLabel={"counts"}
           yCol="freq"
@@ -74,7 +76,7 @@ const chartForSummary = (dataSummary: any, colName: string) => {
               type: "bar",
               color: "steelblue",
               scale: 1,
-              xAccessor: (d: any) => d.bin_mid,
+              xAccessor: (d: any) => d.binMid,
             },
           ]}
         />
@@ -91,7 +93,9 @@ export const ColumnDetails: React.FC<ColumnDetailProps> = ({
   const [isOpen, setIsOpen] = useState(false)
   const { column , columnError} = useDatasetColumn(source, colName);
 
-  const stat = statForDataType(column?.col_type);
+  const stat = statForDataType(column?.colType);
+
+  console.log("ATTEMPTING TO GET STAT ", stat, column?.colType, column)
   const { data: dataSummary, error: dataSummaryError } = useColumnStat(
     isOpen ? source : null,
     colName,

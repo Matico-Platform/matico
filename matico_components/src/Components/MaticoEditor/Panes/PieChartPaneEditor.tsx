@@ -1,121 +1,67 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import {
-  deleteSpecAtPath,
-  setCurrentEditPath,
-  setSpecAtPath,
-} from "Stores/MaticoSpecSlice";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-import { SectionHeading } from "../Utils/Utils";
 import { Text, View } from "@adobe/react-spectrum";
+import { usePane } from "Hooks/usePane";
+import { PaneRef, PieChartPane } from "@maticoapp/matico_types/spec";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 
 export interface PaneEditorProps {
-  editPath: string;
+    paneRef: PaneRef;
 }
 
-export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({
-  editPath,
-}) => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const dispatch = useMaticoDispatch();
+export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
+    const { pane, updatePane, parent, updatePanePosition } = usePane(paneRef);
 
-  const deletePane = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    dispatch(deleteSpecAtPath({ editPath }));
-  };
+    const pieChartPane = pane as PieChartPane;
 
-  const updateDataset = (dataset: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          dataset: { ...piechartPane.dataset, name: dataset },
-          column: null
-        },
-      })
-    );
-  };
+    const updateDataset = (dataset: string) => {
+        updatePane({
+            dataset: { ...pieChartPane.dataset, name: dataset },
+            column: null
+        });
+    };
 
-  const updateColumn = (column: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          column: column,
-        },
-      })
-    );
-  };
+    const updateColumn = (column: string) => {
+        updatePane({
+            column: column
+        });
+    };
 
-  const updatePane = (change: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          ...piechartPane,
-          ...change,
-        },
-      })
-    );
-  };
-  
-  const updateSpec = (change: any) => {
-    dispatch(
-      setSpecAtPath({
-        editPath,
-        update: {
-          ...piechartPane,
-          ...change,
-        },
-      })
-    );
-  };
+    if (!pieChartPane) {
+        return (
+            <View>
+                <Text>Failed to find component</Text>
+            </View>
+        );
+    }
 
-  // const editPane = (index) => {
-  //   console.log("SECTION is ",index)
-  //   dispatch(
-  //     setCurrentEditPath({
-  //       editPath: `${editPath}.${index}`,
-  //       editType: "Pane",
-  //     })
-  //   );
-  // };
-
-  const piechartPane = _.get(spec, editPath);
-
-  if (!piechartPane) {
     return (
-      <View>
-        <Text>Failed to find component</Text>
-      </View>
+        <View>
+            <CollapsibleSection title="Sizing" isOpen={true}>
+                <PaneEditor
+                    position={paneRef.position}
+                    name={pieChartPane.name}
+                    background={"white"}
+                    onChange={(change) => updatePanePosition(change)}
+                    parentLayout={parent.layout}
+                    id={paneRef.id}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Data Source and Column" isOpen={true}>
+                <DatasetSelector
+                    selectedDataset={pieChartPane.dataset.name}
+                    onDatasetSelected={updateDataset}
+                />
+                <DatasetColumnSelector
+                    datasetName={pieChartPane.dataset.name}
+                    selectedColumn={pieChartPane.column}
+                    label="Column"
+                    onColumnSelected={(column) => updateColumn(column.name)}
+                />
+            </CollapsibleSection>
+        </View>
     );
-  }
-  return (
-    <View>
-      <SectionHeading>Pane Details</SectionHeading>
-      <PaneEditor
-        position={piechartPane.position}
-        name={piechartPane.name}
-        background={piechartPane.background}
-        onChange={(change) => updatePane(change)}
-      />
-
-      <SectionHeading>Source</SectionHeading>
-      <DatasetSelector
-        selectedDataset={piechartPane.dataset.name}
-        onDatasetSelected={updateDataset}
-      />
-
-      <DatasetColumnSelector
-        datasetName={piechartPane.dataset.name}
-        selectedColumn={piechartPane.column}
-        label="Column"
-        onColumnSelected={(column) => updateSpec({ column: column.name })}
-      />
-    </View>
-  );
 };

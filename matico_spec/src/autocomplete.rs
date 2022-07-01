@@ -3,12 +3,10 @@ use matico_common::AutoComplete;
 
 pub fn autocomplete(expression: &str) -> Option<String> {
     match expression {
-        "Dashboard" => Some(Dashboard::autocomplete_json()),
-        "Chart" => Some(ChartPane::autocomplete_json()),
+        "App" => Some(App::autocomplete_json()),
         "Map" => Some(MapPane::autocomplete_json()),
         "Layer" => Some(Layer::autocomplete_json()),
         "Pane" => Some(Pane::autocomplete_json()),
-        "Section" => Some(Section::autocomplete_json()),
         _ => None,
     }
 }
@@ -20,7 +18,7 @@ mod tests {
     #[test]
     fn test_autocomplete() {
         assert!(
-            autocomplete("Dashboard").is_some(),
+            autocomplete("App").is_some(),
             "failed to autocomplete dashboard"
         );
         assert!(

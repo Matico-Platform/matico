@@ -6,7 +6,7 @@ use crate::{
     utils::{MVTTile, PaginationParams, QueryMetadata, SortParams},
 };
 use async_trait::async_trait;
-use std::collections::{HashMap,BTreeMap};
+use std::collections::{BTreeMap, HashMap};
 
 use super::{Bounds, Filter, QueryResult, QueryVal, TileID, TilerOptions};
 
@@ -45,15 +45,18 @@ pub trait QueryBuilder<T> {
     /// within that tile ID
     fn tile(&mut self, tile: TileID) -> &mut Self;
 
-
-    /// Set the columns to return from the query 
-    fn columns(&mut self, columns: Vec<String>)->&mut Self;
+    /// Set the columns to return from the query
+    fn columns(&mut self, columns: Vec<String>) -> &mut Self;
 
     /// This function should construct the base query depending on pervious config
     /// For example if a Dataset is passed the base query should select from that base datasource
     /// Note: We might have to change this from returning a Result<String,ServiceError> to
     /// something more generic depending on how other interfaces use this system
     fn base_query(&self) -> Result<String, crate::errors::ServiceError>;
+
+
+    /// Updates the given feature
+    async fn update_feature(db: &T, dataset: Dataset, feature_id: String, update: serde_json::Value)->Result<BTreeMap<String, Option<QueryVal>>,crate::errors::ServiceError>;
 
     /// Builds the final query taking in to account the base query, the base query, user, filters,
     /// bounds, sort, pagination and tileID
@@ -85,7 +88,7 @@ pub trait QueryBuilder<T> {
     async fn get_feature(
         &self,
         db: &T,
-        feature_id: i32,
+        feature_id: String,
         id_col: Option<&str>,
     ) -> Result<BTreeMap<String, Option<QueryVal>>, ServiceError>;
 

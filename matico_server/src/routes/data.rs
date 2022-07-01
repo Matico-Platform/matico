@@ -11,6 +11,7 @@ use crate::models::{Api, Dataset, StatParams, User};
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
 use actix_web::{
     get,
+    put,
     web::{self, resource},
     HttpResponse,
 };
@@ -19,13 +20,14 @@ use actix_web_lab::extract::Path;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use crate::models::{Permission,PermissionType};
 
 #[derive(Deserialize, Debug)]
 struct QueryString {
     pub q: Option<String>,
 }
 
-#[derive(Deserialize, Display, Debug)]
+#[derive(Deserialize, Display, Debug,PartialEq)]
 #[serde(rename_all = "lowercase")]
 enum SourceType {
     Dataset,
@@ -126,8 +128,8 @@ struct Source {
 }
 
 #[derive(Deserialize, Debug)]
-struct ColumnSelection{
-    pub columns : Option<String>
+struct ColumnSelection {
+    pub columns: Option<String>,
 }
 
 // {source_type}/{source_id}
@@ -148,17 +150,15 @@ async fn get_data(
     let user = User::from_token(&state.db, &logged_in_user.user);
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
 
-    query.page(page)
-         .bounds(bounds)
-         .sort(sort);
+    query.page(page).bounds(bounds).sort(sort);
 
     if let Some(user) = user {
         query.user(user);
     }
 
     //Must be a better way of doing this
-    if let Some(columns) = columns.columns{
-        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+    if let Some(columns) = columns.columns {
+        let cols: Vec<String> = columns.split(",").map(|s| String::from(s)).collect();
         query.columns(cols);
     }
 
@@ -190,8 +190,8 @@ async fn get_tile(
     }
 
     //Must be a better way of doing this
-    if let Some(columns) = columns.columns{
-        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+    if let Some(columns) = columns.columns {
+        let cols: Vec<String> = columns.split(",").map(|s| String::from(s)).collect();
         query.columns(cols);
     }
 
@@ -201,10 +201,9 @@ async fn get_tile(
     Ok(HttpResponse::Ok().body(result.mvt))
 }
 
-
-#[derive(Serialize,Deserialize)]
-struct FeatureDetails{
-    pub feature_id: i32 
+#[derive(Serialize, Deserialize)]
+struct FeatureDetails {
+    pub feature_id: String,
 }
 
 #[tracing::instrument(
@@ -228,8 +227,6 @@ async fn get_feature(
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
 
-    println!("HERE!!!!!!!");
-
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let user = User::from_token(&state.db, &logged_in_user.user);
 
@@ -238,13 +235,17 @@ async fn get_feature(
     }
 
     //Must be a better way of doing this
-    if let Some(columns) = columns.columns{
-        let cols :Vec<String>= columns.split(",").map(|s| String::from(s)).collect();
+    if let Some(columns) = columns.columns {
+        let cols: Vec<String> = columns.split(",").map(|s| String::from(s)).collect();
         query.columns(cols);
     }
 
     let feature = query
-        .get_feature(&state.data_db, feature_id.feature_id, Some("ogc_fid".into()))
+        .get_feature(
+            &state.data_db,
+            feature_id.feature_id,
+            Some("ogc_fid".into()),
+        )
         .await?;
 
     let result = QueryResult {
@@ -275,7 +276,9 @@ async fn get_extent(
         query.user(user);
     }
 
-    let extent = query.get_extent(&state.data_db, "wkb_geometry".into()).await?;
+    let extent = query
+        .get_extent(&state.data_db, "wkb_geometry".into())
+        .await?;
 
     Ok(HttpResponse::Ok().json(extent))
 }
@@ -327,32 +330,47 @@ async fn get_column_stat(
     Ok(HttpResponse::Ok().json(stat))
 }
 
-// #[put("{dataset_id}/data/{feature_id}")]
-// async fn update_feature(
-//     state: web::Data<State>,
-//     Path((dataset_id, feature_id)): Path<(Uuid, String)>,
-//     web::Json(update): web::Json<serde_json::Value>,
-//     web::Query(format_param): web::Query<FormatParam>,
-//     logged_in_user: AuthService,
-// ) -> Result<HttpResponse, ServiceError> {
+#[put("{source_type}/{source_id}/feature/{feature_id}")]
+async fn update_feature(
+    state: web::Data<State>,
+    Path(source): Path<Source>,
+    Path(feature_id):Path<FeatureDetails>,
+    web::Json(update): web::Json<serde_json::Value>,
+    web::Query(format_param): web::Query<FormatParam>,
+    logged_in_user: AuthService,
+) -> Result<HttpResponse, ServiceError> {
 
-//     let dataset = Dataset::find(&state.db, dataset_id)?;
-//     let user = User::from_token(&state.db, &logged_in_user.user);
 
-//     if let Some(user) = logged_in_user.user {
-//         Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::Write)?;
-//     }
+    tracing::info!("BUTTS");
+    if source.source_type != SourceType::Dataset{
+        return Err(ServiceError::BadRequest(format!("You can only update features on datasets")))
+    }
 
-//     let result = dataset
-//         .update_feature(&state.data_db, feature_id, &user, update, format_param.format)
-//         .await?;
+    let dataset = Dataset::find(&state.db, source.source_id.unwrap())?;
+    let user = User::from_token(&state.db, &logged_in_user.user);
 
-//     Ok(HttpResponse::Ok().body(result))
-// }
+    if let Some(user) = logged_in_user.user {
+        Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::Write)?;
+    }
+    let feature = PostgisQueryBuilder::update_feature(&state.data_db, dataset, feature_id.feature_id, update).await?;
+    
+    let result = QueryResult {
+        result: vec![feature],
+        execution_type: 0,
+    };
+
+    let format = format_param.format.unwrap_or(Format::Json);
+    let result = result.as_format(&format)?;
+
+    Ok(HttpResponse::Ok()
+        .content_type(format.mime_type())
+        .body(result))
+}
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     // cfg.service(get_data_query);
     // cfg.service(get_data_query_csv);
+    cfg.service(update_feature);
     cfg.service(
         resource([
             "{source_type}/{source_id}/columns/{column_name}",
@@ -361,7 +379,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
         .to(get_column),
     );
     cfg.service(
-        resource(["{source_type}/{source_id}/feature/{feature_id}", "{source_type}/feature/{feature_id}"]).to(get_feature)
+        resource([
+            "{source_type}/{source_id}/feature/{feature_id}",
+            "{source_type}/feature/{feature_id}",
+        ])
+        .to(get_feature),
     );
     cfg.service(
         resource([
@@ -387,5 +409,4 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(test);
     // cfg.service(get_feature);
     // cfg.service(get_data);
-    // cfg.service(update_feature);
 }

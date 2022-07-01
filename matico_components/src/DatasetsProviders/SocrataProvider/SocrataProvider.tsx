@@ -4,23 +4,20 @@ import {
   Picker,
   View,
   Text,
-  ActionButton,
-  Switch,
   Flex,
   ComboBox,
   Well,
   Link,
   ProgressBar,
   Button,
-  Header,
   Heading,
 } from "@adobe/react-spectrum";
 
 import {
-  DatasetProvider,
-  DatasetRecord,
   DatasetProviderComponent,
-} from "@maticoapp/matico_components";
+  DatasetProvider,
+} from "Datasets/DatasetProvider";
+
 import { PortalInfo, usePortals } from "./usePortals";
 import { usePortalDatasets } from "./usePortalDatasets";
 
@@ -45,9 +42,6 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
     : null;
 
   const { datasets, loading, progress } = usePortalDatasets(selectedPortal);
-  console.log("POrtals", portals);
-  console.log("Datasets ", datasets);
-  console.log("selected portal ", selectedPortal);
 
   const selectedDataset = datasets
     ? datasets.find((d) => d.resource.id === selectedDatasetId)
@@ -56,20 +50,19 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
   const attemptToLoadDataset = (dataset: any, format: "CSV" | "GeoJSON") => {
     if(format==='GeoJSON'){
       onSubmit({
-        GeoJSON: {
+          type:'geoJSON',
           url: `https://${dataset.metadata.domain}/api/geospatial/${dataset.resource.id}?method=export&format=GeoJSON`,
           name: dataset.resource.name,
-        },
       });
     }
     else{
       onSubmit({
-        CSV: {
+          type: 'csv',
           url: `https://${dataset.metadata.domain}/api/views/${dataset.resource.id}/rows.csv?accessType=DOWNLOAD`,
           name: dataset.resource.name,
-          lat_col: latitudeCol,
-          lng_col: longitudeCol
-        },
+          latCol: latitudeCol,
+          lngCol: longitudeCol,
+          idColumn:""
       });
 
     }

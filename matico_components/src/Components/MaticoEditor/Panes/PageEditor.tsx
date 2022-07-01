@@ -1,207 +1,99 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-import { Page } from "@maticoapp/matico_spec";
-import {
-  deleteSpecAtPath,
-  duplicateSpecAtPath,
-  removeSpecAtPath,
-  setCurrentEditPath,
-  setSpecAtPath,
-} from "Stores/MaticoSpecSlice";
-import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
 import {
-  ComboBox,
-  Heading,
-  Flex,
-  Item,
-  TextField,
-  Well,
-  View,
-  Button,
-  ButtonGroup,
-  Switch,
-  Text,
-  ActionButton,
-  DialogTrigger,
-  Dialog,
-  Content,
+    ComboBox,
+    Flex,
+    Item,
+    TextField,
+    View,
+    Text
 } from "@adobe/react-spectrum";
-import { PaneDefaults } from "../PaneDefaults";
-import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { iconList } from '../../../Utils/iconUtils'
-import { useIconList } from "Hooks/useIconList";
 
-const NewSectionModal: React.FC<{
-  onAddSection: (name: string) => void;
-}> = ({ onAddSection }) => {
-  const [name, setName] = useState("New Section");
-  return (
-    <DialogTrigger type="popover" isDismissable>
-      <ActionButton>Add New</ActionButton>
-      {(close) => (
-        <Dialog>
-          <Content>
-            <Heading>New Section</Heading>
-            <Flex direction="column" gap={"size-200"}>
-              <TextField width={"100%"} value={name} onChange={setName} />
-              <ActionButton
-                width={"100%"}
-                onPress={() => {
-                  onAddSection(name);
-                  close();
-                }}
-              >
-                Add
-              </ActionButton>
-            </Flex>
-          </Content>
-        </Dialog>
-      )}
-    </DialogTrigger>
-  );
-};
+import { useIconList } from "Hooks/useIconList";
+import { usePage } from "Hooks/usePage";
+import { GatedAction } from "../EditorComponents/GatedAction";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
+import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
+import { IconForPaneType } from "../Utils/PaneDetails";
+import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
+import {PaneCollectionEditor} from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
 
 export interface PageEditorProps {
-  editPath: string;
+    id: string;
 }
-export const PageEditor: React.FC<PageEditorProps> = ({ editPath }) => {
-  const spec = useMaticoSelector((state) => state.spec.spec);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const dispatch = useMaticoDispatch();
+export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
+    const { page, updatePage, removePage, panes, addPaneToPage } = usePage(id);
 
-  const updatePage = (change: Page) => {
-    dispatch(setSpecAtPath({ editPath: editPath, update: change }));
-  };
+    const { iconList, filterText, setFilterText, loadMoreIcons } =
+        useIconList();
 
-  const updateContent = (content: string) =>
-    dispatch(setSpecAtPath({ editPath: editPath, update: { content } }));
-
-  const deletePage = () => {
-    dispatch(setCurrentEditPath({ editPath: null, editType: null }));
-    console.log(editPath)
-    dispatch(removeSpecAtPath({ editPath }));
-  };
-
-  const addNewSection = (name: string) => {
-    dispatch(
-      setSpecAtPath({
-        editPath: editPath,
-        update: {
-          sections: [...page.sections, { ...PaneDefaults.Section, name }],
-        },
-      })
-    );
-  };
-
-  const page = _.get(spec, editPath);
-
-  const {
-    iconList,
-    filterText,
-    setFilterText,
-    loadMoreIcons
-  } = useIconList();
-
-  if (!page) {
+    if (!page) {
+        return (
+            <View>
+                <Text>Something went wrong. We could not find that page</Text>
+            </View>
+        );
+    }
     return (
-      <View>
-        <Text>Something went wrong. We could not find that page</Text>
-      </View>
-    );
-  }
-  return (
-    <Flex width="100%" height="100%" direction="column">
-      <Well>
-        <Heading>Page Details</Heading>
-        <TextField
-          label="Name"
-          value={page.name}
-          onChange={(name: string) => updatePage({ name })}
-        />
-        <TextField
-          label="path"
-          value={page.path}
-          onChange={(path: string) => updatePage({ path })}
-        />
-        <ComboBox
-          label="Icon"
-          selectedKey={page.icon}
-          onSelectionChange={(icon) => updatePage({icon})}          
-          items={iconList}
-          inputValue={filterText}
-          onInputChange={setFilterText}
-          onLoadMore={loadMoreIcons}
-          >
-          {({id, name}) => <Item>
-            <Text><i className={id} style={{marginRight: '1em'}}/>{name}</Text>
-          </Item>}
-        </ComboBox>
-      </Well>
-      <Well>
-        <Heading>
-          <Flex
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Text>Content</Text> <Switch>Simple</Switch>
-          </Flex>
-        </Heading>
-        <ReactMde value={page.content} onChange={updateContent} />
-      </Well>
-      <Well>
-        <Heading>
-          <Flex
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Text>Sections</Text>
-            <NewSectionModal onAddSection={addNewSection} />
-          </Flex>
-        </Heading>
-        <Flex direction="column">
-          {page.sections.map((section, index) => (
-            <Flex
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <RowEntryMultiButton
-                key={section.name}
-                entryName={section.name}
-                editPath={`${editPath}.sections.${index}`}
-                editType="Section"
+        <Flex width="100%" height="100%" direction="column">
+            <CollapsibleSection title="Page Details" isOpen={true}>
+                <TextField
+                    label="Name"
+                    labelPosition="side"
+                    width="100%"
+                    marginTop="size-50"
+                    value={page.name}
+                    onChange={(name: string) => updatePage({ name })}
                 />
-            </Flex>
-          ))}
-        </Flex>
-      </Well>
+                <TextField
+                    label="Path"
+                    labelPosition="side"
+                    width="100%"
+                    marginTop="size-50"
+                    value={page.path}
+                    onChange={(path: string) => updatePage({ path })}
+                />
+                <ComboBox
+                    label="Icon"
+                    selectedKey={page.icon}
+                    onSelectionChange={(icon: string) => updatePage({ icon })}
+                    labelPosition="side"
+                    width="100%"
+                    marginTop="size-50"
+                    items={iconList}
+                    inputValue={filterText}
+                    onInputChange={setFilterText}
+                    onLoadMore={loadMoreIcons}
+                >
+                    {({ id, name }) => (
+                        <Item>
+                            <Text>
+                                <i
+                                    className={id}
+                                    style={{ marginRight: "1em" }}
+                                />
+                                {name}
+                            </Text>
+                        </Item>
+                    )}
+                </ComboBox>
+            </CollapsibleSection>
 
-      <Well>
-        <Heading>Danger Zone</Heading>
-        <Flex direction="row" justifyContent="end" alignItems="center">
-          {confirmDelete ? (
-            <ButtonGroup>
-              <Button variant="cta" onPress={deletePage}>
-                Confirm
-              </Button>
-              <Button
-                variant="secondary"
-                onPress={() => setConfirmDelete(false)}
-              >
-                Cancel
-              </Button>
-            </ButtonGroup>
-          ) : (
-            <Button variant="cta" onPress={() => setConfirmDelete(true)}>
-              Remove Page
-            </Button>
-          )}
+            <CollapsibleSection title="Panes" isOpen={true}>
+              <PaneCollectionEditor containerId={page.id}/>
+            </CollapsibleSection>
+
+            <CollapsibleSection title="Danger Zone" isOpen={true}>
+                <GatedAction
+                    buttonText="Delete this page"
+                    confirmText={`Are you sure you want to delete ${page.name}?`}
+                    confirmButtonText="Delete Page"
+                    onConfirm={removePage}
+                    confirmBackgroundColor="negative"
+                />
+            </CollapsibleSection>
         </Flex>
-      </Well>
-    </Flex>
-  );
+    );
 };

@@ -1,37 +1,48 @@
-import { Picker, Text, Item } from "@adobe/react-spectrum";
+import { Picker, Item } from "@adobe/react-spectrum";
+import { BaseMap } from "@maticoapp/matico_types/spec";
 import React from "react";
 
 const BaseMaps = [
-  "CartoDBPositron",
-  "CartoDBVoyager",
-  "CartoDBDarkMatter",
-  "Light",
-  "Dark",
-  "Satelite",
-  "Terrain",
-  "Streets",
+    "CartoDBPositron",
+    "CartoDBVoyager",
+    "CartoDBDarkMatter",
+    "Light",
+    "Dark",
+    "Satelite",
+    "Terrain",
+    "Streets"
 ];
 
 interface BaseMapSelectorProps {
-  baseMap: string;
-  onChange: (baseMap: string) => void;
+    baseMap: BaseMap;
+    onChange: (baseMap: BaseMap) => void;
 }
 
 export const BaseMapSelector: React.FC<BaseMapSelectorProps> = ({
-  baseMap,
-  onChange,
+    baseMap,
+    onChange
 }) => {
-  return (
-    <Picker
-      label='Basemap'
-      width="100%"
-      items={BaseMaps.map((bm) => ({ key: bm }))}
-      selectedKey={baseMap}
-      onSelectionChange={(newBasemap) => onChange(newBasemap as string)}
-    >
-      {(basemapOption) => (
-        <Item key={basemapOption.key}>{basemapOption.key}</Item>
-      )}
-    </Picker>
-  );
+    if (baseMap.type === "named") {
+        return (
+            <Picker
+                label="Basemap"
+                width="100%"
+                items={BaseMaps.map((bm) => ({ key: bm }))}
+                selectedKey={baseMap.name}
+                onSelectionChange={(newBasemap) =>
+                    onChange({
+                        type: "named",
+                        name: newBasemap as string,
+                        affiliation: ""
+                    })
+                }
+            >
+                {(basemapOption) => (
+                    <Item key={basemapOption.key}>{basemapOption.key}</Item>
+                )}
+            </Picker>
+        );
+    } else {
+        return <h2>Basemap type not implemented</h2>;
+    }
 };

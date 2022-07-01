@@ -112,21 +112,6 @@ function addHeapObject(obj) {
     return idx;
 }
 
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
-    return instance.ptr;
-}
-
-let stack_pointer = 32;
-
-function addBorrowedObject(obj) {
-    if (stack_pointer == 1) throw new Error('out of js stack');
-    heap[--stack_pointer] = obj;
-    return stack_pointer;
-}
-
 let cachegetFloat32Memory0 = null;
 function getFloat32Memory0() {
     if (cachegetFloat32Memory0 === null || cachegetFloat32Memory0.buffer !== wasm.memory.buffer) {
@@ -138,9 +123,245 @@ function getFloat32Memory0() {
 function isLikeNone(x) {
     return x === undefined || x === null;
 }
+
+let stack_pointer = 32;
+
+function addBorrowedObject(obj) {
+    if (stack_pointer == 1) throw new Error('out of js stack');
+    heap[--stack_pointer] = obj;
+    return stack_pointer;
+}
 /**
 */
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
+/**
+*/
+export const LinearLayoutDirection = Object.freeze({ Horizontal:0,"0":"Horizontal",Vertical:1,"1":"Vertical", });
+/**
+*/
+export class App {
+
+    static __wrap(ptr) {
+        const obj = Object.create(App.prototype);
+        obj.ptr = ptr;
+
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_app_free(ptr);
+    }
+    /**
+    */
+    constructor() {
+        const ret = wasm.app_new_dash();
+        return App.__wrap(ret);
+    }
+    /**
+    * @returns {any}
+    */
+    get pages() {
+        const ret = wasm.app_get_pages(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @param {any} pages
+    */
+    set pages(pages) {
+        wasm.app_set_pages(this.ptr, addHeapObject(pages));
+    }
+    /**
+    * @returns {any}
+    */
+    get panes() {
+        const ret = wasm.app_get_panes(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @param {any} panes
+    */
+    set panes(panes) {
+        wasm.app_set_panes(this.ptr, addHeapObject(panes));
+    }
+    /**
+    * @returns {any}
+    */
+    get theme() {
+        const ret = wasm.app_get_theme(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @param {any} pages
+    */
+    set theme(pages) {
+        wasm.app_set_theme(this.ptr, addHeapObject(pages));
+    }
+    /**
+    * @returns {any}
+    */
+    get datasets() {
+        const ret = wasm.app_get_datasets(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @param {any} datasets
+    */
+    set datasets(datasets) {
+        wasm.app_set_datasets(this.ptr, addHeapObject(datasets));
+    }
+    /**
+    * @returns {string}
+    */
+    get name() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.app_get_name(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @param {string} name
+    */
+    set name(name) {
+        const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.app_set_name(this.ptr, ptr0, len0);
+    }
+    /**
+    * @returns {string}
+    */
+    get description() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.app_get_description(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @param {string} description
+    */
+    set description(description) {
+        const ptr0 = passStringToWasm0(description, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.app_set_description(this.ptr, ptr0, len0);
+    }
+    /**
+    * @returns {any}
+    */
+    get created_at() {
+        const ret = wasm.app_get_created_at(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @param {any} created_at
+    */
+    set created_at(created_at) {
+        wasm.app_set_created_at(this.ptr, addHeapObject(created_at));
+    }
+    /**
+    * @param {any} val
+    * @returns {App}
+    */
+    static from_js(val) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.app_from_js(retptr, addBorrowedObject(val));
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return App.__wrap(r0);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            heap[stack_pointer++] = undefined;
+        }
+    }
+    /**
+    * @param {string} val
+    * @returns {App}
+    */
+    static from_json(val) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passStringToWasm0(val, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.app_from_json(retptr, ptr0, len0);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return App.__wrap(r0);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @returns {any}
+    */
+    is_valid() {
+        const ret = wasm.app_is_valid(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @returns {any}
+    */
+    to_js() {
+        const ret = wasm.app_to_js(this.ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @returns {string}
+    */
+    to_toml() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.app_to_toml(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @returns {string}
+    */
+    to_yaml() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.app_to_yaml(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+}
 /**
 */
 export class COGDataset {
@@ -198,37 +419,6 @@ export class CSVDataset {
 }
 /**
 */
-export class ChartPane {
-
-    __destroy_into_raw() {
-        const ptr = this.ptr;
-        this.ptr = 0;
-
-        return ptr;
-    }
-
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_chartpane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_chartpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_chartpane_position(this.ptr, ptr0);
-    }
-}
-/**
-*/
 export class ContainerPane {
 
     __destroy_into_raw() {
@@ -241,21 +431,6 @@ export class ContainerPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_containerpane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_containerpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_containerpane_position(this.ptr, ptr0);
     }
 }
 /**
@@ -272,210 +447,6 @@ export class ControlsPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_controlspane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_controlspane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_controlspane_position(this.ptr, ptr0);
-    }
-}
-/**
-*/
-export class Dashboard {
-
-    static __wrap(ptr) {
-        const obj = Object.create(Dashboard.prototype);
-        obj.ptr = ptr;
-
-        return obj;
-    }
-
-    __destroy_into_raw() {
-        const ptr = this.ptr;
-        this.ptr = 0;
-
-        return ptr;
-    }
-
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_dashboard_free(ptr);
-    }
-    /**
-    */
-    constructor() {
-        const ret = wasm.dashboard_new_dash();
-        return Dashboard.__wrap(ret);
-    }
-    /**
-    * @returns {any}
-    */
-    get pages() {
-        const ret = wasm.dashboard_get_pages(this.ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {any} pages
-    */
-    set pages(pages) {
-        wasm.dashboard_set_pages(this.ptr, addHeapObject(pages));
-    }
-    /**
-    * @returns {any}
-    */
-    get theme() {
-        const ret = wasm.dashboard_get_theme(this.ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {any} pages
-    */
-    set theme(pages) {
-        wasm.dashboard_set_theme(this.ptr, addHeapObject(pages));
-    }
-    /**
-    * @returns {any}
-    */
-    get datasets() {
-        const ret = wasm.dashboard_get_datasets(this.ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {any} datasets
-    */
-    set datasets(datasets) {
-        wasm.dashboard_set_datasets(this.ptr, addHeapObject(datasets));
-    }
-    /**
-    * @returns {string}
-    */
-    get name() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.dashboard_get_name(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            return getStringFromWasm0(r0, r1);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-            wasm.__wbindgen_free(r0, r1);
-        }
-    }
-    /**
-    * @param {string} name
-    */
-    set name(name) {
-        const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.dashboard_set_name(this.ptr, ptr0, len0);
-    }
-    /**
-    * @returns {any}
-    */
-    get created_at() {
-        const ret = wasm.dashboard_get_created_at(this.ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {any} created_at
-    */
-    set created_at(created_at) {
-        wasm.dashboard_set_created_at(this.ptr, addHeapObject(created_at));
-    }
-    /**
-    * @param {any} val
-    * @returns {Dashboard}
-    */
-    static from_js(val) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.dashboard_from_js(retptr, addBorrowedObject(val));
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            var r2 = getInt32Memory0()[retptr / 4 + 2];
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Dashboard.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-            heap[stack_pointer++] = undefined;
-        }
-    }
-    /**
-    * @param {string} val
-    * @returns {Dashboard}
-    */
-    static from_json(val) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            const ptr0 = passStringToWasm0(val, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-            const len0 = WASM_VECTOR_LEN;
-            wasm.dashboard_from_json(retptr, ptr0, len0);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            var r2 = getInt32Memory0()[retptr / 4 + 2];
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Dashboard.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-        }
-    }
-    /**
-    * @returns {any}
-    */
-    is_valid() {
-        const ret = wasm.dashboard_is_valid(this.ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @returns {any}
-    */
-    to_js() {
-        const ret = wasm.dashboard_to_js(this.ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @returns {string}
-    */
-    to_toml() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.dashboard_to_toml(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            return getStringFromWasm0(r0, r1);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-            wasm.__wbindgen_free(r0, r1);
-        }
-    }
-    /**
-    * @returns {string}
-    */
-    to_yaml() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.dashboard_to_yaml(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            return getStringFromWasm0(r0, r1);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-            wasm.__wbindgen_free(r0, r1);
-        }
     }
 }
 /**
@@ -519,6 +490,22 @@ export class GeoJSONDataset {
 }
 /**
 */
+export class GridLayout {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_gridlayout_free(ptr);
+    }
+}
+/**
+*/
 export class HistogramPane {
 
     __destroy_into_raw() {
@@ -531,21 +518,6 @@ export class HistogramPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_histogrampane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_histogrampane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_histogrampane_position(this.ptr, ptr0);
     }
     /**
     * @returns {string}
@@ -589,6 +561,22 @@ export class Labels {
 }
 /**
 */
+export class LinearLayout {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_linearlayout_free(ptr);
+    }
+}
+/**
+*/
 export class MapPane {
 
     __destroy_into_raw() {
@@ -601,21 +589,6 @@ export class MapPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_mappane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_mappane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_mappane_position(this.ptr, ptr0);
     }
     /**
     * @returns {string}
@@ -771,6 +744,22 @@ export class MaticoRemoteDataset {
 }
 /**
 */
+export class Metadata {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_metadata_free(ptr);
+    }
+}
+/**
+*/
 export class Page {
 
     __destroy_into_raw() {
@@ -783,18 +772,6 @@ export class Page {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_page_free(ptr);
-    }
-    /**
-    */
-    get order() {
-        const ret = wasm.__wbg_get_page_order(this.ptr);
-        return ret >>> 0;
-    }
-    /**
-    * @param {number} arg0
-    */
-    set order(arg0) {
-        wasm.__wbg_set_page_order(this.ptr, arg0);
     }
     /**
     * @returns {string}
@@ -874,56 +851,83 @@ export class Page {
         wasm.page_set_icon(this.ptr, ptr0, len0);
     }
     /**
-    * @returns {string | undefined}
+    * @param {string} pane_type
+    * @param {string} pane_id
     */
-    get content() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.page_get_content(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            let v0;
-            if (r0 !== 0) {
-                v0 = getStringFromWasm0(r0, r1).slice();
-                wasm.__wbindgen_free(r0, r1 * 1);
-            }
-            return v0;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-        }
-    }
-    /**
-    * @param {string} content
-    */
-    set content(content) {
-        const ptr0 = passStringToWasm0(content, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    add_pane(pane_type, pane_id) {
+        const ptr0 = passStringToWasm0(pane_type, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.page_set_content(this.ptr, ptr0, len0);
+        const ptr1 = passStringToWasm0(pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.page_add_pane(this.ptr, ptr0, len0, ptr1, len1);
     }
     /**
-    * @returns {any}
+    * @param {string} before_pane_id
+    * @param {string} pane_type
+    * @param {string} pane_id
     */
-    get sections() {
-        const ret = wasm.page_get_sections(this.ptr);
-        return takeObject(ret);
+    add_pane_before(before_pane_id, pane_type, pane_id) {
+        const ptr0 = passStringToWasm0(before_pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(pane_type, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        const ptr2 = passStringToWasm0(pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len2 = WASM_VECTOR_LEN;
+        wasm.page_add_pane_before(this.ptr, ptr0, len0, ptr1, len1, ptr2, len2);
     }
     /**
-    * @param {any} sections
+    * @param {string} after_pane_id
+    * @param {string} pane_type
+    * @param {string} pane_id
     */
-    set sections(sections) {
-        wasm.page_set_sections(this.ptr, addHeapObject(sections));
+    add_pane_after(after_pane_id, pane_type, pane_id) {
+        const ptr0 = passStringToWasm0(after_pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(pane_type, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        const ptr2 = passStringToWasm0(pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len2 = WASM_VECTOR_LEN;
+        wasm.page_add_pane_after(this.ptr, ptr0, len0, ptr1, len1, ptr2, len2);
+    }
+    /**
+    * @param {string} pane_id
+    * @param {number} new_pos
+    */
+    move_pane_to_position(pane_id, new_pos) {
+        const ptr0 = passStringToWasm0(pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.page_move_pane_to_position(this.ptr, ptr0, len0, new_pos);
+    }
+    /**
+    * @param {string} pane_type
+    * @param {string} pane_id
+    * @param {number} index
+    */
+    add_pane_at_position(pane_type, pane_id, index) {
+        const ptr0 = passStringToWasm0(pane_type, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.page_add_pane_at_position(this.ptr, ptr0, len0, ptr1, len1, index);
+    }
+    /**
+    * @param {number} index
+    */
+    remove_pane_at_position(index) {
+        wasm.page_remove_pane_at_position(this.ptr, index);
+    }
+    /**
+    * @param {string} pane_id
+    */
+    remove_pane(pane_id) {
+        const ptr0 = passStringToWasm0(pane_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.page_remove_pane(this.ptr, ptr0, len0);
     }
 }
 /**
 */
 export class PanePosition {
-
-    static __wrap(ptr) {
-        const obj = Object.create(PanePosition.prototype);
-        obj.ptr = ptr;
-
-        return obj;
-    }
 
     __destroy_into_raw() {
         const ptr = this.ptr;
@@ -988,6 +992,66 @@ export class PanePosition {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
             wasm.paneposition_get_height_units(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @returns {string}
+    */
+    get pad_units_left() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.paneposition_get_pad_units_left(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @returns {string}
+    */
+    get pad_units_right() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.paneposition_get_pad_units_right(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @returns {string}
+    */
+    get pad_units_top() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.paneposition_get_pad_units_top(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @returns {string}
+    */
+    get pad_units_bottom() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.paneposition_get_pad_units_bottom(retptr, this.ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             return getStringFromWasm0(r0, r1);
@@ -1082,6 +1146,82 @@ export class PanePosition {
     set y(arg0) {
         wasm.__wbg_set_paneposition_y(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
     }
+    /**
+    */
+    get pad_left() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.__wbg_get_paneposition_pad_left(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getFloat32Memory0()[retptr / 4 + 1];
+            return r0 === 0 ? undefined : r1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {number | undefined} arg0
+    */
+    set pad_left(arg0) {
+        wasm.__wbg_set_paneposition_pad_left(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
+    }
+    /**
+    */
+    get pad_right() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.__wbg_get_paneposition_pad_right(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getFloat32Memory0()[retptr / 4 + 1];
+            return r0 === 0 ? undefined : r1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {number | undefined} arg0
+    */
+    set pad_right(arg0) {
+        wasm.__wbg_set_paneposition_pad_right(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
+    }
+    /**
+    */
+    get pad_top() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.__wbg_get_paneposition_pad_top(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getFloat32Memory0()[retptr / 4 + 1];
+            return r0 === 0 ? undefined : r1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {number | undefined} arg0
+    */
+    set pad_top(arg0) {
+        wasm.__wbg_set_paneposition_pad_top(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
+    }
+    /**
+    */
+    get pad_bottom() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.__wbg_get_paneposition_pad_bottom(retptr, this.ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getFloat32Memory0()[retptr / 4 + 1];
+            return r0 === 0 ? undefined : r1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {number | undefined} arg0
+    */
+    set pad_bottom(arg0) {
+        wasm.__wbg_set_paneposition_pad_bottom(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
+    }
 }
 /**
 */
@@ -1099,27 +1239,12 @@ export class PieChartPane {
         wasm.__wbg_piechartpane_free(ptr);
     }
     /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_piechartpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_piechartpane_position(this.ptr, ptr0);
-    }
-    /**
     * @returns {string}
     */
     get name() {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.piechartpane_get_name(retptr, this.ptr);
+            wasm.histogrampane_get_name(retptr, this.ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             return getStringFromWasm0(r0, r1);
@@ -1134,7 +1259,7 @@ export class PieChartPane {
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.piechartpane_set_name(this.ptr, ptr0, len0);
+        wasm.histogrampane_set_name(this.ptr, ptr0, len0);
     }
 }
 /**
@@ -1169,27 +1294,12 @@ export class ScatterplotPane {
         wasm.__wbg_scatterplotpane_free(ptr);
     }
     /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_piechartpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_piechartpane_position(this.ptr, ptr0);
-    }
-    /**
     * @returns {string}
     */
     get name() {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.piechartpane_get_name(retptr, this.ptr);
+            wasm.histogrampane_get_name(retptr, this.ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             return getStringFromWasm0(r0, r1);
@@ -1204,71 +1314,7 @@ export class ScatterplotPane {
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.piechartpane_set_name(this.ptr, ptr0, len0);
-    }
-}
-/**
-*/
-export class Section {
-
-    __destroy_into_raw() {
-        const ptr = this.ptr;
-        this.ptr = 0;
-
-        return ptr;
-    }
-
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_section_free(ptr);
-    }
-    /**
-    */
-    get order() {
-        const ret = wasm.__wbg_get_section_order(this.ptr);
-        return ret >>> 0;
-    }
-    /**
-    * @param {number} arg0
-    */
-    set order(arg0) {
-        wasm.__wbg_set_section_order(this.ptr, arg0);
-    }
-    /**
-    * @returns {any}
-    */
-    get panes() {
-        const ret = wasm.section_get_panes(this.ptr);
-        return takeObject(ret);
-    }
-    /**
-    * @param {any} panes
-    */
-    set panes(panes) {
-        wasm.section_set_panes(this.ptr, addHeapObject(panes));
-    }
-    /**
-    * @returns {string}
-    */
-    get layout() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.section_get_layout(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            return getStringFromWasm0(r0, r1);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-            wasm.__wbindgen_free(r0, r1);
-        }
-    }
-    /**
-    * @param {string} layout
-    */
-    set layout(layout) {
-        const ptr0 = passStringToWasm0(layout, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.section_set_layout(this.ptr, ptr0, len0);
+        wasm.histogrampane_set_name(this.ptr, ptr0, len0);
     }
 }
 /**
@@ -1301,21 +1347,6 @@ export class TextPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_textpane_free(ptr);
-    }
-    /**
-    */
-    get position() {
-        const ret = wasm.__wbg_get_containerpane_position(this.ptr);
-        return PanePosition.__wrap(ret);
-    }
-    /**
-    * @param {PanePosition} arg0
-    */
-    set position(arg0) {
-        _assertClass(arg0, PanePosition);
-        var ptr0 = arg0.ptr;
-        arg0.ptr = 0;
-        wasm.__wbg_set_containerpane_position(this.ptr, ptr0);
     }
     /**
     * @returns {string}
@@ -1589,6 +1620,22 @@ export class View {
     */
     set pitch(arg0) {
         wasm.__wbg_set_view_pitch(this.ptr, arg0);
+    }
+}
+/**
+*/
+export class WASMCompute {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_wasmcompute_free(ptr);
     }
 }
 

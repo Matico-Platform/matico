@@ -20,3 +20,4 @@ wkb = "0.7.1"
 wee_alloc = { version = "0.4.5" }
 enum_dispatch = "0.3.7"
 matico_common = { path = "../../matico_common" }
+ts-rs = { version = "6.1", features = ['chrono-impl', 'uuid-impl', "serde-compat"] }

@@ -1,8 +1,11 @@
 use serde::{Serialize,Deserialize};
 use matico_common::VarOr;
+use ts_rs::TS;
 
 
-#[derive(Serialize,Deserialize,Debug, Clone)]
+#[derive(Serialize,Deserialize,Debug, Clone, TS)]
+#[serde(rename_all="camelCase", tag="type")]
+#[ts(export)]
 pub enum ParameterValue {
     NumericFloat(f32),
     NumericInt(i32),
@@ -13,7 +16,9 @@ pub enum ParameterValue {
     Text(String),
 }
 
-#[derive(Serialize,Deserialize,Debug, Clone)]
+#[derive(Serialize,Deserialize,Debug, Clone, TS)]
+#[serde(rename_all="camelCase", tag="type")]
+#[ts(export)]
 pub enum SpecParameterValue {
     NumericFloat(VarOr<f32>),
     NumericInt(VarOr<i32>),

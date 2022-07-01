@@ -1,0 +1,3 @@
+import type { ScreenUnits } from "./ScreenUnits";
+
+export interface PanePosition { width: number, height: number, layer: number, float: boolean, x: number | null, y: number | null, padLeft: number | null, padRight: number | null, padTop: number | null, padBottom: number | null, xUnits: ScreenUnits | null, yUnits: ScreenUnits | null, widthUnits: ScreenUnits | null, heightUnits: ScreenUnits | null, padUnitsLeft: ScreenUnits | null, padUnitsRight: ScreenUnits | null, padUnitsTop: ScreenUnits | null, padUnitsBottom: ScreenUnits | null, }

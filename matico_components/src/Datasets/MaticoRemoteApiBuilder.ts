@@ -1,20 +1,13 @@
 import {MaticoRemoteApi} from "./MaticoRemoteApi";
+import {MaticoApiDataset} from '@maticoapp/matico_types/spec'
 
-interface MaticoRemoteApiBuilderOptions {
-  name: string;
-  server_url: string;
-  api_id: string;
-  description: string;
-  params: {[param:string]:any};
-}
-
-export const MaticoRemoteApiBuilder = async (details: MaticoRemoteApiBuilderOptions) => {
-  const { name, server_url, api_id,params } = details;
+export const MaticoRemoteApiBuilder = async (details: MaticoApiDataset) => {
+  const { name, serverUrl, apiId,params } = details;
 
   return new MaticoRemoteApi(
     name,
-    api_id,
-    server_url,
+    apiId,
+    serverUrl,
     params
   );
 };

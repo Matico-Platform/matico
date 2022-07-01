@@ -22,27 +22,10 @@ const Editor: NextPage = () => {
   const appId = params ? params[0] : "";
 
   const { app, updateApp } = useApp(appId);
-
-
+  console.log("app is ",app)
 
   return (
-    <Layout hasSidebar={true}>
-      <View backgroundColor="gray-200" padding="size-200" gridArea="sidebar">
-        {app ? (
-          <>
-            <Heading>{app.name}</Heading>
-            <Divider size="M" />
-            <Content>
-              <Text>{app ? app.description : ""}</Text>
-              <Divider size='M'/>
-              <Heading>Links</Heading>
-              <ALink><Link href={`/apps/${appId}`}>App Link</Link></ALink>
-            </Content>
-          </>
-        ) : (
-          <Heading>Loading</Heading>
-        )}
-      </View>
+    <Layout hasSidebar={false}>
       <View gridArea="content" id="appContent">
         {app && (
           <MaticoApp

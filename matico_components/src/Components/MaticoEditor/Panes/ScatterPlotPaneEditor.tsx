@@ -1,74 +1,48 @@
 import React from "react";
 import _ from "lodash";
 import { useMaticoSelector } from "Hooks/redux";
-import { Well, Text, Heading, Flex, View } from "@adobe/react-spectrum";
+import { Text, View } from "@adobe/react-spectrum";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-// import { ColorPicker } from "../Utils/ColorPicker";
 import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
 import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
 import { DatasetSummary } from "Datasets/Dataset";
 import { LabelEditor } from "../Utils/LabelEditor";
 import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
-import { useSpecActions } from "Hooks/useSpecActions";
-import { useMaticoSpec } from "Hooks/useMaticoSpec";
+import { usePane } from "Hooks/usePane";
+import { Labels, PaneRef, ScatterplotPane } from "@maticoapp/matico_types/spec";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 
 export interface PaneEditorProps {
-    editPath: string;
+    paneRef: PaneRef;
 }
 
 export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
-    editPath
+    paneRef
 }) => {
-    const [scatterPlotPane, parentLayout] = useMaticoSpec(editPath);
-    const {
-        remove: deletePane,
-        update: updatePane,
-        setEditPath
-    } = useSpecActions(editPath, "Scatterplot");
+    const { pane, updatePane, updatePanePosition, parent } = usePane(paneRef);
+    const scatterplotPane = pane as ScatterplotPane;
 
-    const updateLabels = (change: { [name: string]: string }) => {
-        const labels = scatterPlotPane.labels ?? {};
+    const updateLabels = (change: Partial<Labels>) => {
         updatePane({
-            ...scatterPlotPane,
-            labels: { ...labels, ...change }
+            labels: { ...scatterplotPane?.labels, ...change }
         });
     };
 
     const updateDataset = (dataset: string) => {
         updatePane({
-            ...scatterPlotPane,
-            dataset: { ...scatterPlotPane.dataset, name: dataset },
-            x_column: null,
-            y_column: null
-        });
-    };
-
-    const updateSpec = (change: any) => {
-        updatePane({
-            ...scatterPlotPane,
-            ...change
-        });
-    };
-
-    const updatePaneDetails = (change: any) => {
-        updatePane({
-            ...scatterPlotPane,
-            name: change.name,
-            position: {
-                ...scatterPlotPane.position,
-                ...change.position
-            }
+            dataset: { ...scatterplotPane?.dataset, name: dataset },
+            xColumn: null,
+            yColumn: null
         });
     };
 
     const dataset: DatasetSummary = useMaticoSelector(
-        (state) => state.datasets.datasets[scatterPlotPane.dataset.name]
+        (state) => state.datasets.datasets[scatterplotPane?.dataset.name]
     );
-    console.log("Scatter plot pane is ", scatterPlotPane);
 
-    if (!scatterPlotPane) {
+    if (!scatterplotPane) {
         return (
             <View>
                 <Text>Failed to find component</Text>
@@ -77,102 +51,90 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     }
 
     return (
-        <Flex direction="column">
-            <PaneEditor
-                position={scatterPlotPane.position}
-                name={scatterPlotPane.name}
-                background={scatterPlotPane.background}
-                onChange={updatePaneDetails}
-                parentLayout={parentLayout}
-            />
-            <Well>
-                <Heading>Source</Heading>
+        <View>
+            <CollapsibleSection title="Sizing" isOpen={true}>
+                <PaneEditor
+                    position={paneRef.position}
+                    name={scatterplotPane.name}
+                    background={"white"}
+                    onChange={(change) => updatePanePosition(change)}
+                    parentLayout={parent.layout}
+                    id={paneRef.id}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Data Source" isOpen={true}>
                 <DatasetSelector
-                    selectedDataset={scatterPlotPane.dataset.name}
+                    selectedDataset={scatterplotPane?.dataset.name}
                     onDatasetSelected={updateDataset}
                 />
-                {dataset && (
+                {dataset ? (
                     <TwoUpCollapsableGrid>
                         <DatasetColumnSelector
                             label="X Column"
-                            datasetName={scatterPlotPane.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.x_column
-                            )}
-                            onColumnSelected={(x_column) =>
-                                updateSpec({ x_column: x_column.name })
+                            datasetName={scatterplotPane?.dataset.name}
+                            selectedColumn={scatterplotPane.xColumn}
+                            onColumnSelected={(xColumn) =>
+                                updatePane({ xColumn: xColumn.name })
                             }
                         />
                         <DatasetColumnSelector
                             label="Y Column"
-                            datasetName={scatterPlotPane.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.y_column
-                            )}
-                            onColumnSelected={(y_column) =>
-                                updateSpec({ y_column: y_column.name })
+                            datasetName={scatterplotPane?.dataset.name}
+                            selectedColumn={scatterplotPane.yColumn}
+                            onColumnSelected={(yColumn) =>
+                                updatePane({ yColumn: yColumn.name })
                             }
                         />
                     </TwoUpCollapsableGrid>
+                ) : (
+                    <Text>Select a dataset to see column options.</Text>
                 )}
-            </Well>
-            {dataset && (
-                <>
-                    <Well>
-                        <Heading>Style</Heading>
-                        <NumericVariableEditor
-                            label="Dot Size"
-                            datasetName={scatterPlotPane.dataset.name}
-                            style={scatterPlotPane.dot_size}
-                            onUpdateStyle={(dot_size) =>
-                                updateSpec({ dot_size })
-                            }
-                            minVal={0}
-                            maxVal={100}
-                        />
+            </CollapsibleSection>
+            <CollapsibleSection title="Chart Styles" isOpen={true}>
+                <NumericVariableEditor
+                    label="Dot Size"
+                    datasetName={scatterplotPane?.dataset.name}
+                    style={scatterplotPane.dotSize}
+                    onUpdateStyle={(dotSize) => updatePane({ dotSize })}
+                    minVal={0}
+                    maxVal={100}
+                />
 
-                        <ColorVariableEditor
-                            label="Dot Color"
-                            datasetName={scatterPlotPane.dataset.name}
-                            style={scatterPlotPane.dot_color}
-                            onUpdateStyle={(dot_color) =>
-                                updateSpec({ dot_color })
-                            }
-                        />
-                    </Well>
-                    <LabelEditor
-                        labels={scatterPlotPane.labels}
-                        onUpdateLabels={updateLabels}
-                    />
-                </>
-            )}
-            <Well>
-                <Heading>Interaction</Heading>
-                {dataset && (
+                <ColorVariableEditor
+                    label="Dot Color"
+                    datasetName={scatterplotPane?.dataset.name}
+                    style={scatterplotPane?.dotColor}
+                    onUpdateStyle={(dotColor) => updatePane({ dotColor })}
+                />
+                <LabelEditor
+                    labels={scatterplotPane?.labels}
+                    onUpdateLabels={updateLabels}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Interaction" isOpen={true}>
+                {dataset ? (
                     <>
                         <DatasetColumnSelector
                             label="X Column"
-                            datasetName={scatterPlotPane.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.x_column
-                            )}
-                            onColumnSelected={(x_column) =>
-                                updateSpec({ x_column: x_column.name })
+                            datasetName={scatterplotPane.dataset.name}
+                            selectedColumn={scatterplotPane.xColumn}
+                            onColumnSelected={(xColumn) =>
+                                updatePane({ xColumn: xColumn.name })
                             }
                         />
                         <DatasetColumnSelector
                             label="Y Column"
-                            datasetName={scatterPlotPane.dataset.name}
-                            selectedColumn={dataset?.columns?.find(
-                                (c) => c.name === scatterPlotPane.y_column
-                            )}
-                            onColumnSelected={(y_column) =>
-                                updateSpec({ y_column: y_column.name })
+                            datasetName={scatterplotPane.dataset.name}
+                            selectedColumn={scatterplotPane.yColumn}
+                            onColumnSelected={(yColumn) =>
+                                updatePane({ yColumn: yColumn.name })
                             }
                         />
                     </>
+                ) : (
+                    <Text>Select a dataset to see interaction options.</Text>
                 )}
-            </Well>
-        </Flex>
+            </CollapsibleSection>
+        </View>
     );
 };

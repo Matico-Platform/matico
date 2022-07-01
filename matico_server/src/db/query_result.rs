@@ -3,14 +3,13 @@ use serde::{Deserialize, Serialize, Serializer};
 use std::collections::BTreeMap;
 use wkb::geom_to_wkb;
 
-use crate::{errors::ServiceError, utils::Format, models::Column};
+use crate::{errors::ServiceError, models::Column, utils::Format};
 
 #[derive(Serialize)]
 pub struct QueryResult {
-    pub result: Vec<BTreeMap<String,Option<QueryVal>>>,
+    pub result: Vec<BTreeMap<String, Option<QueryVal>>>,
     pub execution_type: u32,
 }
-
 
 impl QueryResult {
     pub fn as_format(&self, format: &Format) -> Result<String, ServiceError> {
@@ -91,8 +90,8 @@ impl QueryResult {
 
             let properties: serde_json::map::Map<String, serde_json::value::Value> = row
                 .iter()
-                .filter(|(key,_val)| *key != geom_key)
-                .map(|(key,val)| (key.clone(), serde_json::to_value(val).unwrap()))
+                .filter(|(key, _val)| *key != geom_key)
+                .map(|(key, val)| (key.clone(), serde_json::to_value(val).unwrap()))
                 .collect();
 
             let feature = geojson::Feature {

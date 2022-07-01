@@ -13,9 +13,11 @@
     "allowSyntheticDefaultImports":true,
     "target": "es6",
     "declaration": true,
-    "declarationDir": "./dist/"
+    "declarationDir": "./dist/",
+    "skipLibCheck": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist/**/*"
   ]
 }

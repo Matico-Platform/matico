@@ -33,7 +33,7 @@ export const GeoJSONImporter: React.FC<DatasetProviderComponent> = ({
         value={options.name}
         onChange={(name) => updateOptions({ name })}
       />
-      <Button variant='cta' onPress={() => onSubmit({ GeoJSON: options })}>Add Dataset</Button>
+      <Button variant='cta' onPress={() => onSubmit({ type:"geoJSON" , ...options })}>Add Dataset</Button>
     </Flex>
   );
 };

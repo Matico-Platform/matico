@@ -7,14 +7,9 @@ import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { useSize } from "../../../Hooks/useSize";
-import {
-  updateFilterExtent,
-  updateActiveDataset,
-} from "../../../Utils/chartUtils";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { View } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 
 export interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
   dataset: { name: string; filters: Array<Filter> };
@@ -157,54 +152,11 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
       : [];
   }, [JSON.stringify(mappedFilters), datasetReady, filtersReady, column]);
 
-  // function handleDragEnd(e, result) {
-  //   if (isNaN(result[1][0]) || isNaN(result[1][1])) return;
-
-  //   updateXFilter({
-  //     type: "SelectionRange",
-  //     variable: x_column,
-  //     min: Math.min(result[0][0], result[1][0]),
-  //     max: Math.max(result[0][0], result[1][0]),
-  //   });
-  //   updateYFilter({
-  //     type: "SelectionRange",
-  //     variable: y_column,
-  //     min: Math.min(result[0][1], result[1][1]),
-  //     max: Math.max(result[0][1], result[1][1]),
-  //   });
-  // }
-
   const signalListeners = {
     // xext: (e,v) => console.log(v)
     // click: handleClick,
     // tempDrag: (e, target) => console.log(e, target)
   };
-
-  // useEffect(() => {
-  //   if (xFilter && yFilter && view && Object.keys(view).length) {
-  //     if (xFilter.min && yFilter.min) {
-  //       updateFilterExtent({
-  //         view,
-  //         xFilter,
-  //         yFilter,
-  //         dataset: "filterExtent",
-  //       });
-  //     }
-  //     if (chartData.length) {
-  //       updateActiveDataset({
-  //         view,
-  //         chartData,
-  //         filter: (data) =>
-  //           data[x_column] >= xFilter.min &&
-  //           data[x_column] <= xFilter.max &&
-  //           data[y_column] >= yFilter.min &&
-  //           data[y_column] <= yFilter.max,
-  //         dataset: "active",
-  //       });
-  //     }
-  //   }
-  // }, [view, JSON.stringify(xFilter), JSON.stringify(yFilter)]);
-
   if (!datasetReady) {
     return <div>{dataset.name} not found!</div>;
   }
@@ -218,7 +170,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         backgroundColor
       }}
     >
-      <ControlActionBar editPath={`${editPath}.PieChart`} editType={"PieChart"} />
       <Vega
         ref={chartRef}
         data={{ table: chartData }}

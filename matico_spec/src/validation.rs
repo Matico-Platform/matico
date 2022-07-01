@@ -1,35 +1,42 @@
 use serde::Serialize;
+use ts_rs::TS;
 use validator::ValidationErrors;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 pub struct ValidationResult {
     pub is_valid: bool,
     #[wasm_bindgen(skip)]
+    #[ts(type = "Record<String,any>")]
     pub errors: Option<ValidationErrors>,
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::Dashboard;
+    use crate::App;
     use validator::Validate;
 
     #[test]
     fn test_validation() {
         let test_str = r#"
             {
-                "name": "Stuarts Dash",
-                "created_at": "2021-09-10T16:11:36.462Z",
                 "pages":[
                 ],
-                "datasets":[]
+                "panes":[],
+                "datasets":[],
+                "metadata":{
+                    "name": "Stuarts App",
+                    "createdAt": "2021-09-10T16:11:36.462Z",
+                    "description": "Some app"
+                }
             }
         "#;
-        let dash: Result<Dashboard, _> = serde_json::from_str(test_str);
+        let app: Result<App, _> = serde_json::from_str(test_str);
 
-        assert!(dash.is_ok(), "Failed to parse json {:#?}",dash);
-        let dash = dash.unwrap();
-        assert!(dash.validate().is_ok(), "Specification was invalid");
+        assert!(app.is_ok(), "Failed to parse json {:#?}", app);
+        let app = app.unwrap();
+        assert!(app.validate().is_ok(), "Specification was invalid");
     }
 }
