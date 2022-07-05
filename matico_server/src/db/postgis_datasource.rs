@@ -651,9 +651,8 @@ impl PostgisStatRunner {
 
         let query =format!(
             "
-            WITH base_query AS (
-                SELECT * FROM {source_query}
-            ), edges AS (
+            WITH base_query AS ({source_query}), 
+            edges AS (
                     SELECT RANK() OVER(ORDER BY edge), edge FROM (
                             SELECT MIN({col}) AS edge FROM base_query
                             UNION 
