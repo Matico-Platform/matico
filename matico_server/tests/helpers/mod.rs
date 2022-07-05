@@ -14,8 +14,10 @@ pub type DataDbPool = sqlx::PgPool;
 
 pub mod imports;
 pub mod users;
+pub mod stats;
 pub use imports::*;
 pub use users::*;
+pub use stats::*;
 
 use once_cell::sync::Lazy;
 

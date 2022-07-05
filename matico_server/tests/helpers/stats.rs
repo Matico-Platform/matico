@@ -2,26 +2,34 @@ use reqwest;
 use std::path::PathBuf;
 
 pub async fn get_stat(
-    dataset_id: &Uuid,
-    metadata: String,
-    token: Option<&str>,
+    dataset_id: &str,
+    column_name: &str,
+    url: &str,
+    stat_parameters: &str,
+    token: Option<&str>
 ) -> Result<reqwest::Response, reqwest::Error> {
     let client = reqwest::Client::new();
-    let mut test_file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    test_file_path.push(file_path);
 
-    let reader: Vec<u8> = std::fs::read(test_file_path).expect("Failed to load the file to upload");
+    let api_url = format!("/{source_type}/{source_id}/columns/{column_name}/stats", 
+        source_type = "dataset",
+        source_id = dataset_id,
+        column_name = column_name);
+    
+    let mut request = client.get(api_url).query(&[("stat", stat_parameters)]);
 
-    let part = reqwest::multipart::Part::stream(reader).file_name("file.geojson");
-
-    let form = reqwest::multipart::Form::new()
-        .text("metadata", metadata)
-        .part("file", part);
-
-    let mut request = client.post(url).multipart(form);
+    // let stat_params: String = serde_json::to_string(stat_parameters);
 
     if let Some(token) = token {
         request = request.bearer_auth(token)
     }
     request.send().await
 }
+
+
+
+
+
+
+
+
+// "{source_type}/{source_id}/columns/{column_name}/stats"
