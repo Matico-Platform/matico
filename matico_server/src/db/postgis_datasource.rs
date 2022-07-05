@@ -651,13 +651,15 @@ impl PostgisStatRunner {
 
         let query =format!(
             "
-            WITH edges AS (
+            WITH base_query AS (
+                SELECT * FROM {source_query}
+            ), edges AS (
                     SELECT RANK() OVER(ORDER BY edge), edge FROM (
-                            SELECT MIN({col}) AS edge FROM {source_query}
+                            SELECT MIN({col}) AS edge FROM base_query
                             UNION 
-                            SELECT UNNEST(natural_breaks({col}, {bin_no})) FROM {source_query}
+                            SELECT UNNEST(natural_breaks({col}, {bin_no})) FROM base_query
                             UNION 
-                            SELECT MAX({col}) FROM {source_query} AS val) AS sq
+                            SELECT MAX({col}) FROM base_query) AS sq
             ), bins AS (
                     SELECT lower.edge AS bin_start, upper.edge AS bin_end
                     FROM edges AS lower, edges AS upper
@@ -667,8 +669,8 @@ impl PostgisStatRunner {
                     bins.bin_start, 
                     bins.bin_end, 
                     count(*) AS count 
-            FROM bins, {source_query} 
-            WHERE bins.bin_start < {source_query}.{col} AND {source_query}.{col} <= bins.bin_end
+            FROM bins, base_query 
+            WHERE bins.bin_start < base_query.{col} AND base_query.{col} <= bins.bin_end
             GROUP BY bins.bin_start, bins.bin_end;
             ",
             col = column.name,
