@@ -66,14 +66,17 @@ async fn test_jenks_stat_on_dataset() {
     assert!(result.is_ok() ,  "Query should not fail");
     let result = result.unwrap();
     let result_status = result.status();
-    if(result_status != StatusCode::OK){
+    println!("Result status code is {}",result_status);
+    if result_status != StatusCode::OK{
         let error: QueryError= result.json().await.unwrap();
         println!("result is {:#?}\n\n",error);
         println!("Query was {}", error.full_query.unwrap());
+        assert!(false,"Result status was not ok")
 
     }
     else{
-        assert!(false,"Result status was not ok")
+        let result: Value= result.json().await.unwrap();
+        println!("Result was {:#}",result);
     }
 
 }
