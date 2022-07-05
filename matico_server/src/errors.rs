@@ -1,5 +1,13 @@
 use actix_web::{error::ResponseError, HttpResponse};
 use derive_more::Display;
+use serde::Serialize;
+
+#[derive(Debug,Serialize)]
+pub struct QueryFailDetails{
+    pub error: String,
+    pub query: Option<String>,
+    pub full_query: Option<String>
+} 
 
 #[derive(Debug, Display)]
 pub enum ServiceError {
@@ -39,7 +47,7 @@ pub enum ServiceError {
     APIFailed(String),
 
     #[display(fmt = "Query failed")]
-    QueryFailed(String),
+    QueryFailed(QueryFailDetails),
 }
 
 // TODO refactor this at somepoint to make shorter and use the display strings
@@ -73,7 +81,7 @@ impl ResponseError for ServiceError {
                 HttpResponse::BadRequest().json(format!("API failed {}", reason))
             }
             ServiceError::QueryFailed(reason) => {
-                HttpResponse::BadRequest().json(format!("Query failed {}", reason))
+                HttpResponse::InternalServerError().json(reason)
             }
             ServiceError::DBConfigError(reason) => {
                 HttpResponse::InternalServerError().json(format!("Invalid DB Config {}", reason))
