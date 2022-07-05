@@ -1,8 +1,19 @@
 mod helpers;
+use actix::fut::future::result;
 use helpers::{spawn_app, signup_user, upload_file, get_stat};
 
+use reqwest::StatusCode;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use serde_json::json;
+
+#[derive(Deserialize,Debug)]
+struct QueryError{
+    pub query:Option<String>,
+    pub full_query:Option<String>,
+    pub error:String
+}
 
 #[actix_web::test]
 async fn test_jenks_stat_on_dataset() { 
@@ -47,10 +58,22 @@ async fn test_jenks_stat_on_dataset() {
     let result = get_stat(
         dataset_body["id"].as_str().unwrap(), 
         "numbers", 
-        &stat_params.to_string(), 
         &test_server.url("/data"), 
+        &stat_params.to_string(), 
         Some(&user.token)
-        ).await.unwrap();
-    let result_json: Value = result.json().await.unwrap();
-    println!("{}", result_json);
+        ).await;
+
+    assert!(result.is_ok() ,  "Query should not fail");
+    let result = result.unwrap();
+    let result_status = result.status();
+    if(result_status != StatusCode::OK){
+        let error: QueryError= result.json().await.unwrap();
+        println!("result is {:#?}\n\n",error);
+        println!("Query was {}", error.full_query.unwrap());
+
+    }
+    else{
+        assert!(false,"Result status was not ok")
+    }
+
 }
