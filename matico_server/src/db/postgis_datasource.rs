@@ -667,7 +667,7 @@ impl PostgisStatRunner {
             SELECT 
                     bins.bin_start, 
                     bins.bin_end, 
-                    count(*) AS count 
+                    count(*) AS freq 
             FROM bins, base_query 
             WHERE bins.bin_start < base_query.{col} AND base_query.{col} <= bins.bin_end
             GROUP BY bins.bin_start, bins.bin_end;
