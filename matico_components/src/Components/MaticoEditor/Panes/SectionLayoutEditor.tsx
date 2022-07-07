@@ -25,7 +25,7 @@ export const SectionLayoutEditor: React.FC<SectionLayoutEditorProps> = ({
             <Picker
                 selectedKey={layout.type}
                 label="Layout"
-                onSelectionChange={(layout) => updateSection({ layout })}
+                onSelectionChange={(layout) => updateSection({ layout: { type: layout } })}
             >
                 {availableLayouts.map(({ name, label }) => (
                     <Item key={name}>{label}</Item>

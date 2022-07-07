@@ -9,14 +9,14 @@ import { PaneSelector } from "Utils/paneEngine";
  * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
  */
 const handleHorizontalUnits = (unit: string) =>
-    unit === "Percent" ? "%" : "px";
+    unit === "percent" ? "%" : "px";
 
 /**
  * If the unit is Percent, return Viewport height, otherwise return px
  * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
  */
 const handleVerticalUnits = (unit: string) =>
-    unit === "Percent" ? "vh" : "px";
+    unit === "percent" ? "vh" : "px";
 
 /**
  * If the position is horizontal, then return the result of calling handleHorizontalUnits with the
@@ -71,6 +71,21 @@ const LinearPane: React.FC<PanePosition> = ({
     padUnitsTop,
     children
 }) => {
+    console.log('LINEAR PANE', {
+        width,
+        height,
+        layer,
+        widthUnits,
+        heightUnits,
+        padLeft,
+        padRight,
+        padBottom,
+        padTop,
+        padUnitsLeft,
+        padUnitsRight,
+        padUnitsBottom,
+        padUnitsTop,
+    })
     return (
         <View
             width={`${width}${handleHorizontalUnits(widthUnits)}`}
