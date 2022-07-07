@@ -22,11 +22,13 @@ ADD ./matico_spec_derive /app/matico_spec_derive
 ADD ./matico_server /app/matico_server
 ADD ./matico_common /app/matico_common
 ADD ./matico_compute /app/matico_compute
+ADD ./matico_types/package.json /app/matico_types/package.json
+ADD ./matico_types/index.d.ts /app/matico_types/index.d.ts
+ADD ./scripts /app/scripts
 
+RUN ls /app/scripts
 WORKDIR /app 
-RUN ls 
 RUN cargo build --release
-
 
 WORKDIR /app/matico_spec
 RUN wasm-pack build  --release --scope maticoapp
@@ -37,6 +39,11 @@ WORKDIR /app/matico_compute/matico_hdbscam_analysis
 RUN ./build.sh
 WORKDIR /app/matico_compute/matico_dot_density_analysis
 RUN ./build.sh
+
+WORKDIR /app
+RUN ls 
+RUN pwd
+RUN ./scripts/build_types.sh
 
 # Install the dependencies for javascript
 #--------------------------------------------------------------------------------
@@ -69,6 +76,8 @@ COPY matico_components/package.json ./matico_components/package.json
 COPY matico_admin/package.json ./matico_admin/package.json
 COPY matico_charts/package.json ./matico_charts/package.json
 COPY --from=rust-builder /app/matico_spec/pkg /app/matico_spec/pkg
+COPY --from=rust-builder /app/matico_types /app/matico_types
+RUN ls /app/matico_types/
 RUN yarn
 RUN ls -alh .
 

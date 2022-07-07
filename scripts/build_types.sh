@@ -1,15 +1,16 @@
 #!/bin/sh
 
 echo "Building Types For Spec"
+mkdir -p matico_types
 if [[ -d "matico_types/spec" ]]
 then
   echo "Removing old spec directory"
   rm  -r matico_types/spec
 fi 
 
-(cd matico_spec && cargo test)
+(cd matico_spec && cargo test export_bindings)
 
-(cd matico_common && cargo test)
+(cd matico_common && cargo test export_bindings)
 
 (cd matico_compute/matico_analysis && cargo test)
 
@@ -35,9 +36,8 @@ then
   rm  -r matico_types/api
 fi 
 
-cd matico_server
-cargo test 
-cd ../
+(cd matico_server && cargo test export_bindings )
+
 cp -r matico_server/bindings matico_types/api
 FILES="matico_types/api/*"
 
