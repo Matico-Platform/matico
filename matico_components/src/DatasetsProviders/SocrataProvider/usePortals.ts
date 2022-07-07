@@ -4,7 +4,7 @@ export type PortalInfo = {domain: string, count:number}
 export const usePortals = () => {
   const [portals, setPortals] = useState<Array<PortalInfo> | null>(null);
   useEffect(() => {
-    fetch("http://api.us.socrata.com/api/catalog/v1/domains")
+    fetch("https://api.us.socrata.com/api/catalog/v1/domains")
       .then((res) => res.json())
       .then((result) =>
         setPortals(
