@@ -32,7 +32,7 @@ export class MaticoRemoteDataset implements Dataset {
         }
 
         this._axiosInstance = axios.create({
-            baseURL: serverUrl + `/data/datasets/${datasetId}`,
+            baseURL: serverUrl + `/data/dataset/${datasetId}`,
             headers
         });
     }
