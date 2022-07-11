@@ -61,7 +61,7 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                             Field::parse_named
                                 .parse2(quote! {
                                     #[serde(skip)]
-                                    pub tables:HashMap<String, (Schema, Vec<Chunk<Arc<dyn Array>>>)>
+                                    pub tables:HashMap<String, polars::prelude::DataFrame>
                                 })
                                 .unwrap(),
                         )
@@ -77,7 +77,7 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
 
     let impl_result = quote! {
         impl MaticoAnalysis for #name{
-                fn get_parameter(&self, parameter_name: &str) -> Result<&::matico_analysis::ParameterValue, ::matico_analysis::ArgError> {
+                fn get_parameter(&self, parameter_name: &str) -> std::result::Result<&::matico_analysis::ParameterValue, ::matico_analysis::ArgError> {
                     self.parameter_values
                         .get(parameter_name)
                         .ok_or(::matico_analysis::ArgError::new(parameter_name, "Does not exist"))
@@ -87,7 +87,7 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                     &mut self,
                     parameter_name: &str,
                     value: ::matico_analysis::ParameterValue,
-                ) -> Result<(), ::matico_analysis::ArgError> {
+                ) -> std::result::Result<(), ::matico_analysis::ArgError> {
                     let parameter_options = self
                         .options
                         .get(parameter_name)
@@ -100,25 +100,18 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                     Ok(())
                 }
 
-                fn register_table(&mut self, table_name: &str, data: &[u8]) -> Result<(), ::matico_analysis::ArgError> {
+                fn register_table(&mut self, table_name: &str, data: &[u8]) -> std::result::Result<(), ::matico_analysis::ArgError> {
+                    
                     let mut reader = ::std::io::Cursor::new(data);
-                    let metadata = ::arrow2::io::ipc::read::read_file_metadata(&mut reader)
-                        .map_err(|e| ::matico_analysis::ArgError::new(table_name, &format!("Failed to load table {:#?}", e)))?;
+                    let table = polars::prelude::IpcReader::new(reader)
+                        .finish()
+                        .map_err(|e| 
+                                 ::matico_analysis::ArgError::new(table_name,"Failed to register table. Is it an actualy dataframe?".into()))?;
 
-                    let schema = metadata.schema.clone();
-                    let reader = ::arrow2::io::ipc::read::FileReader::new(reader, metadata, None);
-
-                    println!("Schema is {:#?}",schema);
-
-                    let columns = reader
-                        .collect::<::arrow2::error::Result<Vec<_>>>()
-                        .map_err(|e| ::matico_analysis::ArgError::new(table_name, &format!("Failed to get columns of table {:#?}",e)))?;
-
-                    self.tables.insert(table_name.into(), (schema, columns));
+                    self.tables.insert(table_name.into(),table);
                     Ok(())
                 }
         }
-
     };
 
     let interface_name = format!("{}Interface", name);
@@ -139,10 +132,18 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                }
            }
 
-           pub fn run(&mut self)->Result<Vec<u8>, ::wasm_bindgen::JsValue>{
-               // Ok(vec![])
-               self.analysis.run()
-                   .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())
+           pub fn run(&mut self)-> std::result::Result<Vec<u8>, ::wasm_bindgen::JsValue>{
+               let mut result_df = self.analysis.run()
+                   .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())?;
+                    
+               let mut cursor : std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+                polars::prelude::IpcWriter::new(&mut cursor)
+                          .finish(&mut result_df)
+                          .map_err(|e| ::wasm_bindgen::JsValue::from( "Failed to serialize result") )?;
+
+                cursor.set_position(0);
+                Ok(cursor.into_inner())
            }
 
            pub fn options(&self)->::wasm_bindgen::JsValue{
@@ -153,19 +154,19 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                 ::wasm_bindgen::JsValue::from_serde(&self.analysis.description).unwrap()
            }
 
-           pub fn set_parameter(&mut self,name: &str, value: &::wasm_bindgen::JsValue)->Result<(),::wasm_bindgen::JsValue>{
+           pub fn set_parameter(&mut self,name: &str, value: &::wasm_bindgen::JsValue)->std::result::Result<(),::wasm_bindgen::JsValue>{
                let param_val: ::matico_analysis::ParameterValue = value.into_serde().unwrap();
                self.analysis.set_parameter(name,param_val)
                             .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
 
-           pub fn get_parameter(&self, name: &str)->Result<::wasm_bindgen::JsValue, ::wasm_bindgen::JsValue>{
+           pub fn get_parameter(&self, name: &str)->std::result::Result<::wasm_bindgen::JsValue, ::wasm_bindgen::JsValue>{
                let val = self.analysis.get_parameter(name)
                             .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())?;
                Ok(::wasm_bindgen::JsValue::from_serde(val).unwrap())
            }
 
-           pub fn register_table(&mut self,name: &str, data: &[u8])->Result<(),wasm_bindgen::JsValue>{
+           pub fn register_table(&mut self,name: &str, data: &[u8])->std::result::Result<(), ::wasm_bindgen::JsValue>{
               self.analysis.register_table(name,data)
                   .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())
            }
