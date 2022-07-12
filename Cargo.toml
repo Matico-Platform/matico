@@ -7,5 +7,6 @@ members = [
   "matico_compute/matico_analysis",
   "matico_compute/matico_dot_density_analysis",
   "matico_compute/matico_hdbscam_analysis",
+  "matico_compute/matico_area_analysis",
   "matico_common",
 ] # "matico_compute/matico_convex_hull_analysis",
