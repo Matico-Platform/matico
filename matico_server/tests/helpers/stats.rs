@@ -24,12 +24,3 @@ pub async fn get_stat(
     }
     request.send().await
 }
-
-
-
-
-
-
-
-
-// "{source_type}/{source_id}/columns/{column_name}/stats"
