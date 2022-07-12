@@ -25,7 +25,7 @@ mod app_state;
 mod auth;
 mod db;
 mod errors;
-mod models;
+pub mod models;
 mod routes;
 mod scheduler;
 mod schema;

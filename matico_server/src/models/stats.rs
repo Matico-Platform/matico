@@ -93,9 +93,9 @@ pub struct QuantileResults(pub Vec<QuantileEntry>);
 #[serde(rename_all="camelCase")]
 #[ts(export)]
 pub struct JenksEntry {
-    bin_start: f64,
-    bin_end: f64,
-    freq: i64
+    pub bin_start: f64,
+    pub bin_end: f64,
+    pub freq: i64
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]

@@ -8,11 +8,18 @@ use serde::Serialize;
 use serde_json::Value;
 use serde_json::json;
 
+use matico_server::models::stats::JenksEntry;
+
 #[derive(Deserialize,Debug)]
 struct QueryError{
     pub query:Option<String>,
     pub full_query:Option<String>,
     pub error:String
+}
+
+#[derive(Deserialize)]
+struct JenksResult{
+  jenks: Vec<JenksEntry>
 }
 
 #[actix_web::test]
@@ -52,7 +59,7 @@ async fn test_jenks_stat_on_dataset() {
 
     let stat_params = json!({
         "type":"jenks",
-        "noBins":3_i32
+        "noBins":5_i32
     });
     
     let result = get_stat(
@@ -65,18 +72,37 @@ async fn test_jenks_stat_on_dataset() {
 
     assert!(result.is_ok() ,  "Query should not fail");
     let result = result.unwrap();
-    let result_status = result.status();
-    println!("Result status code is {}",result_status);
-    if result_status != StatusCode::OK{
-        let error: QueryError= result.json().await.unwrap();
-        println!("result is {:#?}\n\n",error);
-        println!("Query was {}", error.full_query.unwrap());
-        assert!(false,"Result status was not ok")
 
+    // // Debugging
+    // let result_status = resxult.status();
+    // println!("Result status code is {}",result_status);
+    // if result_status != StatusCode::OK{
+    //     let error: QueryError= result.json().await.unwrap();
+    //     println!("result is {:#?}\n\n",error);
+    //     println!("Query was {}", error.full_query.unwrap());
+    //     assert!(false,"Result status was not ok");
+    // }
+    // else {
+    //     let result: Value= result.json().await.unwrap();
+    //     println!("Result was {:#}",result);
+    // }
+
+    let result: JenksResult = result.json().await.unwrap();
+    let bins: Vec<JenksEntry> = result.jenks;
+   
+    // Test if number of bins is correct
+    assert_eq!(stat_params["noBins"], bins.len(), "Wrong number of bins in output");
+
+    // Test if bin bounds match
+    for i in 0 .. stat_params["noBins"].as_u64().unwrap() - 1 {
+        assert!(bins[i as usize].bin_end == bins[(i + 1) as usize].bin_start, "Bin bounds don't match");
     }
-    else{
-        let result: Value= result.json().await.unwrap();
-        println!("Result was {:#}",result);
+
+    // Test if total number of data points is correct
+    let mut count: usize = 0;
+    for bin in bins {
+        count += bin.freq as usize;
     }
+    assert!(count == 20, "Number of data points is incorrect");
 
 }

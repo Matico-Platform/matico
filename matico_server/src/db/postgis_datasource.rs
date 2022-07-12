@@ -646,32 +646,36 @@ impl PostgisStatRunner {
         params: &JenksParams,
         query: &PostgisQueryBuilder,
     ) -> Result<StatResults, ServiceError> {
-        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false); // What is the point of this line?
+        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
         let base_query = query.build_query()?;
 
         let query =format!(
-            "
+            r#"
             WITH base_query AS ({source_query}), 
             edges AS (
-                    SELECT RANK() OVER(ORDER BY edge), edge FROM (
-                            SELECT MIN({col}) AS edge FROM base_query
-                            UNION 
-                            SELECT UNNEST(natural_breaks({col}, {bin_no})) FROM base_query
-                            UNION 
-                            SELECT MAX({col}) FROM base_query) AS sq
+                SELECT row_number() OVER(ORDER BY edge), edge FROM (
+    	            SELECT MIN({col}) AS edge FROM base_query
+                    UNION
+                    SELECT UNNEST(natural_breaks({col}, {bin_no})) FROM base_query
+                    UNION
+                    SELECT MAX({col}) + 1 FROM base_query) AS bounds
             ), bins AS (
-                    SELECT lower.edge AS bin_start, upper.edge AS bin_end
-                    FROM edges AS lower, edges AS upper
-                    WHERE lower.rank = upper.rank-1 
-            )
+                SELECT 
+                    lower.row_number AS lower_idx, 
+                    upper.row_number AS upper_idx, 
+                    lower.edge AS bin_start, 
+                    upper.edge AS bin_end
+                FROM edges AS lower, edges AS upper
+                WHERE lower.row_number = upper.row_number-1)
             SELECT 
-                    bins.bin_start, 
-                    bins.bin_end, 
-                    count(*) AS freq 
+	            bins.bin_start, 
+                bins.bin_end, 
+                count(*) AS freq 
             FROM bins, base_query 
-            WHERE bins.bin_start < base_query.{col} AND base_query.{col} <= bins.bin_end
-            GROUP BY bins.bin_start, bins.bin_end;
-            ",
+            WHERE (bins.bin_start <= base_query.{col} AND base_query.{col} < bins.bin_end)
+            GROUP BY bins.bin_start, bins.bin_end
+            ORDER BY bin_start;
+            "#,
             col = column.name,
             source_query = base_query,
             bin_no = params.no_bins
