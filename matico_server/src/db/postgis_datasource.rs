@@ -3,6 +3,7 @@ use super::QueryResult;
 use super::QueryVal;
 use crate::db::DataDbPool;
 use crate::db::DataSource;
+use crate::errors::QueryFailDetails;
 use crate::errors::ServiceError;
 use crate::models::datasets::Extent;
 use crate::models::{
@@ -155,7 +156,13 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
         sqlx::query(&query)
             .execute(db)
             .await
-            .map_err(|e| ServiceError::QueryFailed(format!("Failed to get feature {:#?}", e)))?;
+            .map_err(|e| ServiceError::QueryFailed(
+                    QueryFailDetails{
+                        query: Some(query.clone()),
+                        full_query: Some(query.clone()),
+                        error: format!("Failed to update table ${:#?}",e)
+                    }        
+            ))?;
         let new_feature = Self::new().dataset(dataset).get_feature(db, feature_id, None).await;
         new_feature
 
@@ -252,10 +259,11 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
 
     async fn metadata(&self, db: &DataDbPool) -> Result<QueryMetadata, ServiceError> {
         let base_query = self.build_query()?;
-        let result = sqlx::query(&format!(
+        let full_query = &format!(
             "SElECT count(*) as total from ({}) a ",
             base_query
-        ))
+        );
+        let result = sqlx::query(&full_query)
         .map(|row: PgRow| QueryMetadata {
             total: row.get("total"),
         })
@@ -263,8 +271,11 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
         .await
         .map_err(|e| {
             tracing::warn!("Failed to get metadata for query, {}", e);
-            ServiceError::QueryFailed(format!("SQL Error: {} Query was  {}", e, base_query))
-        })?;
+            ServiceError::QueryFailed(QueryFailDetails{
+                query: Some(base_query),
+                full_query: Some(full_query.into()), 
+                error: format!("Failed to get metadata: {} ", e)
+        })})?;
 
         Ok(result)
     }
@@ -313,7 +324,11 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
             .map(row_to_map)
             .fetch_all(db)
             .await
-            .map_err(|e| ServiceError::QueryFailed(format!("Query Failed : {}", e)))?;
+            .map_err(|e| ServiceError::QueryFailed(QueryFailDetails{
+                query: Some(query.clone()),
+                full_query: Some(query.clone()),
+                error: format!("Query Failed : {}", e)
+            }))?;
 
         Ok(QueryResult {
             result,
@@ -352,9 +367,11 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
         };
 
         let id_col = id_col.ok_or_else(|| {
-            ServiceError::QueryFailed(
-                "For feature requests on queries or apis, please include an id col".into(),
-            )
+            ServiceError::QueryFailed(QueryFailDetails{
+                query:None,
+                full_query:None,
+                error: "For feature requests on queries or apis, please include an id col".into()
+            })
         })?;
 
         let query = format!(
@@ -370,7 +387,12 @@ impl QueryBuilder<DataDbPool> for PostgisQueryBuilder {
             .map(row_to_map)
             .fetch_one(db)
             .await
-            .map_err(|e| ServiceError::QueryFailed(format!("Failed to get feature {:#?}", e)))?;
+            .map_err(|e| ServiceError::QueryFailed(
+                QueryFailDetails{
+                    query: Some(base_query),
+                    full_query: Some(query),
+                    error: format!("Failed to get feature {:#?}",e)
+                }))?;
         Ok(result)
     }
 
@@ -388,6 +410,7 @@ async fn local_get_query_column_details(
     pool: &DataDbPool,
     query: &str,
 ) -> Result<Vec<DatasetColumn>, ServiceError> {
+
     let columns = sqlx::query(query)
         .map(|row: PgRow| {
             let cols = row.columns();
@@ -404,7 +427,14 @@ async fn local_get_query_column_details(
         .await
         .map_err(|e| {
             tracing::warn!("SQL Query failed: {} {}", e, query);
-            ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, query))
+            ServiceError::QueryFailed( 
+                QueryFailDetails{
+                    error: format!("SQL Error: {} Query was {}", e, query), 
+                    query: Some(query.into()),
+                    full_query:None
+                }
+
+                )
         })?;
 
     Ok(columns)
@@ -464,7 +494,10 @@ pub async fn cached_tile_query(
         .await
         .map_err(|e| {
             tracing::warn!("SQL Query failed: {} {}", e, formatted_query);
-            ServiceError::QueryFailed(format!("SQL Error: {} Query was {}", e, formatted_query))
+            ServiceError::QueryFailed(QueryFailDetails{
+                query: Some(query.into()),
+                full_query:Some(formatted_query.clone()),
+                error:format!("SQL Error: {} Query was {}", e, formatted_query)})
         })?;
 
     tracing::info!(target: "mvt_tile", "Tile: {}", (chrono::Utc::now() - time_start_tile).num_seconds() );
@@ -607,6 +640,62 @@ impl PostgisStatRunner {
         Ok(StatResults::Histogram(HistogramResults(results)))
     }
 
+    async fn calc_jenks(
+        db: &DataDbPool,
+        column: &DatasetColumn,
+        params: &JenksParams,
+        query: &PostgisQueryBuilder,
+    ) -> Result<StatResults, ServiceError> {
+        let _treat_nulls_as_zero = params.treat_null_as_zero.unwrap_or(false);
+        let base_query = query.build_query()?;
+
+        let query =format!(
+            r#"
+            WITH base_query AS ({source_query}), 
+            edges AS (
+                SELECT row_number() OVER(ORDER BY edge), edge FROM (
+    	            SELECT MIN({col}) AS edge FROM base_query
+                    UNION
+                    SELECT UNNEST(natural_breaks({col}, {bin_no})) FROM base_query
+                    UNION
+                    SELECT MAX({col}) + 1 FROM base_query) AS bounds
+            ), bins AS (
+                SELECT 
+                    lower.row_number AS lower_idx, 
+                    upper.row_number AS upper_idx, 
+                    lower.edge AS bin_start, 
+                    upper.edge AS bin_end
+                FROM edges AS lower, edges AS upper
+                WHERE lower.row_number = upper.row_number-1)
+            SELECT 
+	            bins.bin_start, 
+                bins.bin_end, 
+                count(*) AS freq 
+            FROM bins, base_query 
+            WHERE (bins.bin_start <= base_query.{col} AND base_query.{col} < bins.bin_end)
+            GROUP BY bins.bin_start, bins.bin_end
+            ORDER BY bin_start;
+            "#,
+            col = column.name,
+            source_query = base_query,
+            bin_no = params.no_bins
+        );
+
+        let results: Vec<JenksEntry> = sqlx::query_as::<_, JenksEntry>(&query)
+            .fetch_all(db)
+            .await
+            .map_err(|e| {
+                ServiceError::QueryFailed(QueryFailDetails{
+                    query: Some(base_query),
+                    full_query: Some(query),
+                    error: format!("Failed to get Jenks result {}",e)
+                }
+                )
+            })?;
+
+        Ok(StatResults::Jenks(JenksResults(results)))
+    }
+
     async fn calc_value_counts(
         db: &DataDbPool,
         column: &DatasetColumn,
@@ -681,6 +770,7 @@ impl StatRunner<DataDbPool, PostgisQueryBuilder> for PostgisStatRunner {
             }
             StatParams::Histogram(params) => Self::calc_histogram(db, column, params, query).await,
             StatParams::Quantiles(params) => Self::calc_quantiles(db, column, params, query).await,
+            StatParams::Jenks(params) => Self::calc_jenks(db, column, params, query).await,
             _ => Err(ServiceError::BadRequest("Stat not implemented".into())),
         }
     }

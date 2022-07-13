@@ -14,8 +14,10 @@ pub type DataDbPool = sqlx::PgPool;
 
 pub mod imports;
 pub mod users;
+pub mod stats;
 pub use imports::*;
 pub use users::*;
+pub use stats::*;
 
 use once_cell::sync::Lazy;
 
@@ -66,13 +68,14 @@ pub async fn setup_dbs(config: &Config) -> (String, String, String, String) {
     ))
     .expect("Failed to connect to new data database");
 
-    let postgis_installl_commands = [
+    let postgis_install_commands = [
         "CREATE EXTENSION postgis;",
         "CREATE EXTENSION postgis_raster;",
         "CREATE EXTENSION postgis_topology;",
+        "CREATE EXTENSION postgeoda;",
     ];
 
-    for command in postgis_installl_commands {
+    for command in postgis_install_commands {
         diesel::sql_query(command)
             .execute(&data_conn_database)
             .expect("Failed to install postgis");

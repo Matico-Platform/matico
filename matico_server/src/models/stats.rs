@@ -89,16 +89,20 @@ pub struct QuantileEntry {
 #[ts(export)]
 pub struct QuantileResults(pub Vec<QuantileEntry>);
 
-#[derive(Serialize, Deserialize, Debug, TS)]
+#[derive(Serialize, Deserialize, Debug, TS, FromRow)]
 #[serde(rename_all="camelCase")]
 #[ts(export)]
-pub struct JenksResults {
-    pub bins: Vec<f32>,
-    pub values: Vec<f32>,
+pub struct JenksEntry {
+    pub bin_start: f64,
+    pub bin_end: f64,
+    pub freq: i64
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub struct JenksResults(pub Vec<JenksEntry>); 
+
+#[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
 pub struct LogorithmicResults {
     pub bins: Vec<f32>,
