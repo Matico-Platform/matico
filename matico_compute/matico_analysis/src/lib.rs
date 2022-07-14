@@ -33,9 +33,14 @@ impl fmt::Display for ArgError {
     }
 }
 
+impl From<ArgError> for ProcessError{
+    fn from (arg_err: ArgError) ->Self{
+       ProcessError { error: format!("{:#?}",arg_err) } 
+    } 
+}
+
 #[derive(Serialize,Deserialize)]
 pub struct ProcessError {
-    pub parameters: HashMap<String, ParameterValue>,
     pub error: String
 }
 

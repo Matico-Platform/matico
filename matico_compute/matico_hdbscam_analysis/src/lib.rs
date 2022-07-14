@@ -21,21 +21,10 @@ pub struct HDBScanAnalysis {}
 impl MaticoAnalysisRunner for HDBScanAnalysis {
     fn run(&mut self) -> std::result::Result<DataFrame, ProcessError> {
 
-        let min_dist= if let Ok(ParameterValue::NumericFloat(no)) = self.get_parameter("min_dist")
-        {
-            *no
-        } else {
-            0.001
-        };
-
-        let min_clust= if let Ok(ParameterValue::NumericInt(no)) = self.get_parameter("min_clust_no")
-        {
-            *no
-        } else {
-            20
-        };
-
+        let min_dist: f32  = self.get_parameter("min_dist")?.try_into()?;
+        let min_clust : f32 = self.get_parameter("min_clust_no")?.try_into()?;
         let source = self.tables.get("source_dataset").unwrap();
+
         let geoms = source.column("geom")
             .map_err(|_| ProcessError{parameters: self.parameter_values.clone(), error:"No column geom in the input table".into()})?
             .centroid()
