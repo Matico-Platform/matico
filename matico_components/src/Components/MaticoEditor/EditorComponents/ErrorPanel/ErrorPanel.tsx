@@ -1,4 +1,6 @@
 import {
+    ActionButton,
+    Content,
     Flex,
     Heading,
     Item,
@@ -18,15 +20,22 @@ export const ErrorPanel: React.FC<ErrorPanelProps> = () => {
                 Errors
             </Heading>
             {errors.length > 0 ? (
-                <ListBox width="100%">
+                <Flex direction="column" flex={1} paddingRight="20px">
                     {errors.map((error) => (
-                        <Item key={error.id}>{error.message}</Item>
+                        <ActionButton key={error.id}>
+                          <Content>{error.message}</Content>
+                        </ActionButton>
                     ))}
-                </ListBox>
+                </Flex>
             ) : (
-                <Flex direction='column' flex={1} height={"100%"} justifyContent={'center'}>
-                    <Text>No errors!</Text> 
-                    <Text>Everything looks peachy!</Text> 
+                <Flex
+                    direction="column"
+                    flex={1}
+                    height={"100%"}
+                    justifyContent={"center"}
+                >
+                    <Text>No errors!</Text>
+                    <Text>Everything looks peachy!</Text>
                     <Text>Good job you!</Text>
                 </Flex>
             )}

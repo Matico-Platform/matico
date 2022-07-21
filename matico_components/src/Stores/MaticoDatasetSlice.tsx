@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DatasetState, DatasetSummary } from "Datasets/Dataset";
 import { Filter, Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
+import {MaticoErrorType, registerError} from "./MaticoErrorSlice";
 
 export interface Query {
     state: "Loading" | "Error" | "Done";

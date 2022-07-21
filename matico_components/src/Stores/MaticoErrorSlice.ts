@@ -51,6 +51,10 @@ const errorSlice = createSlice({
         },
         clearAllErrors:(state:ErrorState) =>{
             state = [] 
+        },
+        clearErrorsOfType:(state:ErrorState, action: PayloadAction<MaticoErrorType>) =>{
+            let newErrors = state.filter(err=>err.type !== action.payload);
+            state= newErrors
         }
     }
 });
@@ -59,7 +63,8 @@ export const {
     errorViewed,
     clearErrorsForComponent,
     removeError,
-    clearAllErrors
+    clearAllErrors,
+    clearErrorsOfType
 } = errorSlice.actions;
 
 export const errorReducer = errorSlice.reducer;

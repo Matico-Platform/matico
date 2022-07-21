@@ -1,10 +1,12 @@
 import _ from "lodash";
 import { useRef, useEffect } from "react";
 import { registerOrUpdateDataset } from "../Stores/MaticoDatasetSlice";
-import { useMaticoDispatch } from "./redux";
+import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import { useAppSpec } from "./useAppSpec";
 import { useNormalizeSpec } from "./useNormalizeSpec";
 import { Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
+import { useErrorsOfType} from "./useErrors";
+import {MaticoErrorType} from "Stores/MaticoErrorSlice";
 
 /**
  * Registers and keeps datasets in sync with the specification
@@ -13,7 +15,21 @@ import { Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
  */
 export const useRegisterDatasets = () => {
     const spec = useAppSpec();
+    const datasets = useMaticoSelector(s=>s.datasets.datasets)
     const dispatch = useMaticoDispatch();
+    const {clearErrors, throwError} = useErrorsOfType(MaticoErrorType.DatasetError);
+
+
+    useEffect(()=>{
+      Object.entries(datasets).forEach( ([id,details])=>{
+        if(details.error){
+          throwError({
+            id: id,
+            message: details.error,
+          })
+        }
+      })
+    },[datasets])
 
     const [normalizedDatasetSpec, loadingDatasetSpec, datasetSpecError] =
         useNormalizeSpec(spec?.datasets);
@@ -31,6 +47,7 @@ export const useRegisterDatasets = () => {
             return;
         }
         normalizedDatasetSpec.forEach((datasetDetails: DatasetSpec) => {
+            clearErrors()
             const prevSpec = previousDatasetSpec.current.find(
                 (d: DatasetSpec) => d.name === datasetDetails.name
             );

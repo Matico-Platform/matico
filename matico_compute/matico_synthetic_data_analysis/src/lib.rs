@@ -36,33 +36,56 @@ impl MaticoAnalysisRunner for SyntheticData{
 
         let variable_name: String = self.get_parameter("variable_name")?.try_into()?;
         web_sys::console::log_1(&"Got all varaibles".into());
+        web_sys::console::log_1(&format!("
+                min_lat: {},
+                max_lat: {},
+                min_lng: {},
+                max_lng: {},
+                no_points: {}
+                                         ", min_lat,max_lat,min_lng,max_lng,no_points).into());
+       
+        if max_lat <= min_lat {
+            return Err(ProcessError{error: format!("Max lat ({}) must be > than min lat ({})",max_lat,min_lat)});
+        }
+        if max_lng <= min_lng{
+            return Err(ProcessError{error: format!("Max lng ({}) must be > than min lng ({})",max_lng,min_lng)});
+        }
 
 
         let mut rng = rand::thread_rng(); 
         
         let points :Vec<Geometry<f64>> = (0..no_points).map(|_| {
-            let x: f32 = rng.gen_range(min_lat..max_lat);
-            let y: f32 = rng.gen_range(min_lng..max_lng);
+            let y: f32 = rng.gen_range(min_lat..max_lat);
+            let x: f32 = rng.gen_range(min_lng..max_lng);
             Geometry::Point(Point::<f64>::new(x as f64, y as f64))
         }).collect();
 
         web_sys::console::log_1(&"Generated points".into());
 
-        let geo_series = Series::from_geom_vec(&points).unwrap();
+        let geo_series = Series::from_geom_vec(&points).
+            map_err(|e| ProcessError{
+                error: format!("Failed to construct geo series {:#?}",e)
+            })?;
         
-        let dist = Normal::new(2.0,3.0).unwrap();
+        let dist = Normal::new(2.0,3.0).map_err(|e| ProcessError{
+            error: format!("Failed to generate normal {:#?}",e)
+        })?;
+
         let variable : Vec<f32> = (0..no_points).map(|_| {
             let v:f32 = dist.sample(&mut rng); 
             v
         }).collect();
+
         web_sys::console::log_1(&"Calculated distribution".into());
 
         let variable : Series = Series::from_vec(&variable_name, variable);
 
-        let result = DataFrame::new(vec![variable,geo_series]).unwrap();
+        let result = DataFrame::new(vec![variable,geo_series]).map_err(|e|
+            ProcessError{
+                error: format!("Failed to construct result df {}", e)
+            });
         web_sys::console::log_1(&"Created result and returnign".into());
-        web_sys::console::log_1(&format!("Created result and returnign {:#?}",result.schema()).into());
-        Ok(result)
+        result
     }
 
     fn description()->Option<String>{

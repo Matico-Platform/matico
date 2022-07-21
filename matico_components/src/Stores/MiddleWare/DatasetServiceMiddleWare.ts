@@ -35,7 +35,7 @@ export const DatasetServiceMiddleWare = () => {
                             type: "datasets/datasetFailedToLoad",
                             payload: {
                                 ...action.payload,
-                                error: error.toString()
+                                error: error.error
                             }
                         });
                     });

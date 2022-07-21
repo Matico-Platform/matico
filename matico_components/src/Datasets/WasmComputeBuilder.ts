@@ -40,13 +40,7 @@ export const WasmComputeBuilder = async (details: WASMCompute, datasets: Array<D
            } }
     }
 
-    try{
-      analysis.set_parameter(name,parameter)
-    }
-    catch(e){
-        console.log("name was ",name, "value was ",parameter.value, "type was",parameter.type)
-        console.log("Variables register error ", JSON.stringify(e))
-    }
+    analysis.set_parameter(name,parameter)
   })
 
   console.log("All variables set without issue")
@@ -55,15 +49,8 @@ export const WasmComputeBuilder = async (details: WASMCompute, datasets: Array<D
   console.log("Analysis run")
   let table;
   let dataFrame
-  try{
-    console.log(run_result)
-    table = Table.from([run_result])
-    dataFrame = new DataFrame(table);
-  }
-  catch(e){
-    console.log("table failed to build in js", e)
-  }
-  console.log("Built table")
+  table = Table.from([run_result])
+  dataFrame = new DataFrame(table);
   
   const fields  = dataFrame.schema.fields.map((f)=>  ({ name: f.name, type: arrowTypeToMaticoType(f.type)} ) )
   return new LocalDataset(
