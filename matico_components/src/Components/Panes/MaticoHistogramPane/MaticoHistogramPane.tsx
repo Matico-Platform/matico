@@ -9,6 +9,9 @@ import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
+import {useErrorsFor} from "Hooks/useErrors";
+import {MaticoErrorType} from "Stores/MaticoErrorSlice";
+import {HistogramEntry} from "@maticoapp/matico_types/api";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
     dataset: { name: string; filters: Array<Filter> };
@@ -29,6 +32,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     id
 }) => {
     const [view, setView] = useState({});
+    const {errors, throwError, clearErrors} = useErrorsFor(id, MaticoErrorType.PaneError)
 
     const [
         columnFilter,
@@ -72,8 +76,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         if (!chartData || chartData.state !== "Done") {
             return <View>loading</View>;
         }
-        const data: Array<{ binStart: number; binEnd: number; count: number }> =
-            chartData.result;
+        const data: Array<HistogramEntry> =
+          chartData.result.filter((c:HistogramEntry)=> c.freq);
 
         const extent = [
             data[0].binStart - (data[0].binEnd - data[0].binStart),
@@ -88,11 +92,11 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
                 xCol="binStart"
                 xLabel={labels?.x_label ?? column}
                 yLabel={labels?.y_label ?? "counts"}
-                yCol="count"
+                yCol="freq"
                 title={labels?.title}
                 subtitle={labels?.sub_title}
                 attribution={labels?.attribution}
-                data={data.filter((d) => d.count)}
+                data={data}
                 xAxis={{
                     scaleType: "linear",
                     position: "bottom"
