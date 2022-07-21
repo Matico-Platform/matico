@@ -12,11 +12,14 @@ import Breakdown from "@spectrum-icons/workflow/Breakdown";
 import Curate from "@spectrum-icons/workflow/Curate";
 import Data from "@spectrum-icons/workflow/Data";
 import Channel from "@spectrum-icons/workflow/Channel";
+import Alert from "@spectrum-icons/workflow/Alert";
 import DocumentOutline from "@spectrum-icons/workflow/DocumentOutline";
 import { MaticoRawSpecEditor } from "Components/MaticoEditor/Panes/MaticoRawSpecEditor";
 import { MaticoStateViewer } from "Components/MaticoEditor/Panes/MaticoStateViewer";
 import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
+import {useErrors} from "Hooks/useErrors";
+import {ErrorPanel} from "../ErrorPanel/ErrorPanel";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -24,6 +27,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     const [showPanel, setShowPanel] = useState<boolean>(false);
     const handleShowPanel = () => setShowPanel(true);
     const handleHidePanel = () => setShowPanel(false);
+    const {errors} = useErrors()
 
     return (
         <div>
@@ -50,6 +54,9 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                         </Item>
                         <Item key="state">
                             <Channel size="L" />
+                        </Item>
+                        <Item key="errors">
+                          <Alert color={errors.length > 0 ? 'notice' : 'positive'} size="L" />
                         </Item>
                         <Item key="spec">
                             <DocumentOutline size="L" />
@@ -101,6 +108,9 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                     </Item>
                                     <Item key="dataviews">
                                         <p>Data views, coming soon...</p>
+                                    </Item>
+                                    <Item key="errors">
+                                      <ErrorPanel />
                                     </Item>
                                 </TabPanels>
                                 <Button

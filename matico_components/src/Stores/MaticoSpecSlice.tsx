@@ -13,10 +13,12 @@ import _ from "lodash";
 import { findPagesForPane, findPaneOrPage } from "Utils/specUtils/specUtils";
 import { stringValue } from "vega";
 
+
 export type EditElement = {
     id?: string;
     parentId?: string;
     type: "page" | "pane" | "metadata" | "dataset" | "dataview" | "layer"; };
+    
 export interface SpecState {
     spec: App | undefined;
     editing: boolean;
