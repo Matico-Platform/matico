@@ -1,5 +1,5 @@
 use crate::VarOr;
-use matico_analysis::SpecParameterValue;
+use matico_analysis::SpecParameter;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
@@ -55,7 +55,7 @@ pub struct WASMCompute {
     pub url: String,
 
     #[wasm_bindgen(skip)]
-    pub params: HashMap<String, SpecParameterValue>,
+    pub params: Vec<SpecParameter>,
 }
 
 #[wasm_bindgen]
@@ -107,7 +107,7 @@ pub struct MaticoApiDataset {
     pub api_id: Option<String>,
 
     #[wasm_bindgen(skip)]
-    pub params: HashMap<String, VarOr<f32>>,
+    pub params: Vec<SpecParameter>,
 }
 
 #[wasm_bindgen]

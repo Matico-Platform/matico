@@ -234,7 +234,8 @@ impl ValidateParameter for TableOptions {
 #[ts(export)]
 pub struct TextOptions {
     pub max_length: Option<usize>,
-    pub display_details: ParameterOptionDisplayDetails
+    pub display_details: ParameterOptionDisplayDetails,
+    pub default: Option<String> 
 
 }
 
@@ -242,7 +243,8 @@ impl Default for TextOptions {
     fn default() -> Self {
         Self { 
             max_length: None,
-            display_details: Default::default()
+            display_details: Default::default(),
+            default: None
         }
     }
 }

@@ -53,7 +53,7 @@ export const ValueOrVariableInput: React.FC<ValueOrVariableInputProps> = ({
                 <NumberField
                     key="min_val"
                     value={value}
-                    label="min"
+                    label={label}
                     onChange={(newVal: number) => onChange(newVal)}
                 />
             )}

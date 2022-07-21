@@ -58,7 +58,7 @@ sqlx = { version = "0.5.11", features = [
   "json",
   "bigdecimal",
 ] }
-zip = "0.6"
+zip = "0.5.13"
 bigdecimal = { version = "0.2.2", features = ["serde"] }
 slugify = "0.1.0"
 matico_spec = { path = "../matico_spec" }

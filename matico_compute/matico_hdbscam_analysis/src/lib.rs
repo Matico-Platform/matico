@@ -1,24 +1,15 @@
-use arrow2::array::PrimitiveArray;
-use arrow2::datatypes::{DataType, Field, Schema, PhysicalType, PrimitiveType};
-use arrow2::io::ipc::write;
-use arrow2::{
-    array::{Array, BinaryArray},
-    chunk::Chunk,
-};
-use geo::prelude::{BoundingRect,Contains};
-use geo_types::{Geometry, Point};
+use geo::Geometry;
 use matico_analysis::*;
-use rand::Rng;
+use polars::io::{SerWriter, SerReader};
 use serde::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::{
     collections::{BTreeMap, HashMap},
-    io::{Cursor, Read, Seek, SeekFrom},
-    sync::Arc,
+    io::{Cursor},
 };
-use wkb::{geom_to_wkb, wkb_to_geom};
-use web_sys::*;
 use wasm_bindgen::prelude::*;
+use polars::prelude::{Series,NamedFrom,IpcWriter};
+use geopolars::{geoseries::GeoSeries, geodataframe::GeoDataFrame };
 
 use rusty_machine::learning::dbscan::DBSCAN;
 use rusty_machine::learning::UnSupModel;
@@ -28,77 +19,27 @@ use rusty_machine::linalg::Matrix;
 pub struct HDBScanAnalysis {}
 
 impl MaticoAnalysisRunner for HDBScanAnalysis {
-    fn run(&mut self) -> Result<Vec<u8>, ProcessError> {
+    fn run(&mut self) -> std::result::Result<DataFrame, ProcessError> {
 
-        // {
-        //     *no
-        // } else {
-        //     2000
-        // };
-        //
-        let min_dist= if let Ok(ParameterValue::NumericFloat(no)) = self.get_parameter("min_dist")
-        {
-            *no
-        } else {
-            0.001
-        };
+        let min_dist: f32  = self.get_parameter("min_dist")?.try_into()?;
+        let min_clust : f32 = self.get_parameter("min_clust_no")?.try_into()?;
+        let source = self.tables.get("source_dataset").unwrap();
 
-        let min_clust= if let Ok(ParameterValue::NumericInt(no)) = self.get_parameter("min_clust_no")
-        {
-            *no
-        } else {
-            20
-        };
+        let geoms = source.column("geom")
+            .map_err(|_| ProcessError{parameters: self.parameter_values.clone(), error:"No column geom in the input table".into()})?
+            .centroid()
+            .map_err(|_| ProcessError{parameters: self.parameter_values.clone(), error:"No column geom in the input table".into()})?; 
 
-        let (source_table_schema, source_table_cols) = self.tables.get("source_dataset").unwrap();
-        let geom_pos =  source_table_schema.fields.iter().position(|c| c.name == "geom").unwrap();
+        let mut points :Vec<f64>  = Vec::with_capacity(geoms.len()*2);
 
-        // let count_col_name = if let Ok(ParameterValue::Column(col))= self.get_parameter("pop_col"){
-        //     Ok(col)
-        // }
-        // else{
-        //     Err(ProcessError{})
-        // }?;
-
-        console::log_1(&format!("Schema {:#?}",source_table_schema).into());
-
-        // let value_pos =  source_table_schema.fields.iter().position(|c| c.name == *count_col_name).unwrap();
-
-        // console::log_1(&format!("val pos {:#?}",value_pos).into());
-
-        // let mut rng = rand::thread_rng(); let mut points:Vec<Vec<u8>> = vec![];
-        
-        let mut points: Vec<f64>  = vec![];
-        let mut new_geoms : Vec<_> = vec![];
-
-        for chunk in source_table_cols.iter(){
-            let geoms_raw = chunk.get(geom_pos).unwrap();
-
-            new_geoms.push(geoms_raw.clone());
-
-            let geoms_raw = match geoms_raw.data_type().to_physical_type(){
-                PhysicalType::Binary => Ok(geoms_raw.as_any().downcast_ref::<BinaryArray<i32>>().unwrap()),
-                _ => Err(ProcessError{
-                    parameters: self.parameter_values.clone(),
-                    error:"Geom wasn't a binary array".into()
-                })
-            }?;
-
-            for (index,wkb) in geoms_raw.iter().enumerate(){
-                if wkb.is_some(){
-                    let mut cursor = Cursor::new(wkb.unwrap());
-                    let geom: Geometry<f64>= wkb_to_geom(&mut cursor).unwrap();
-
-                    if let Geometry::Point(point) = geom{
-                        points.push(point.x());
-                        points.push(point.y());
-                    }
-                    else{
-                        panic!("This analysis only works with points");
-                    }
+        for  geom in iter_geom(&geoms){
+            match geom{
+                Geometry::Point(p)=>{
+                    points.push(p.x());
+                    points.push(p.y());
                 }
+                _ => unreachable!()
             }
-
         }
 
         let inputs = Matrix::new(points.len()/2, 2, points);
@@ -109,7 +50,6 @@ impl MaticoAnalysisRunner for HDBScanAnalysis {
             parameters: self.parameter_values.clone(),
             error: format!("Failed to run DBSCAN {:#?}",e)
         })?;
-        console::log_1(&format!("trained model").into());
    
         let clustering = model.clusters().ok_or_else(|| ProcessError{
             parameters: self.parameter_values.clone(),
@@ -117,35 +57,14 @@ impl MaticoAnalysisRunner for HDBScanAnalysis {
         })?;
 
         let clustering: Vec<Option<u32>> = clustering.data().iter().map(|opt| opt.map(|v| v as u32)).collect();
+        let clustering = Series::new("cluster_labels",clustering);
 
-        console::log_1(&format!("Got clusters {:#?}", clustering).into());
+        let mut result = source.clone();
 
-        let schema = Schema::from(vec![
-            Field::new("geom", DataType::Binary, false),
-            Field::new("cluster_labels", DataType::UInt32, false),
-        ]);
-
-
-        let cluster_labels=  PrimitiveArray::<u32>::from(clustering);
-
-        let batch = Chunk::try_new(vec![
-            new_geoms.first().unwrap().clone() as Arc<dyn Array>,
-            Arc::new(cluster_labels) as Arc<dyn Array>
-        ]).unwrap();
-
-        let options = write::WriteOptions { compression: None };
-
-        let cursor: Cursor<Vec<u8>> = Cursor::new(vec![]);
-
-        let mut writer = write::FileWriter::try_new(cursor, &schema, None, options).unwrap();
-
-        writer.write(&batch, None).unwrap();
-        writer.finish().unwrap();
-        let mut c = writer.into_inner();
-        let mut result: Vec<u8> = Vec::new();
-        c.seek(SeekFrom::Start(0)).unwrap();
-        c.read_to_end(&mut result).unwrap();
-        Ok(result)
+        let result = result.with_column(clustering)
+                           .map_err(|_| ProcessError{parameters: self.parameter_values.clone(), error:"Failed to add column to incoming dataset".into()})?;
+           
+        Ok(result.to_owned())
     }
 
     fn description()->Option<String>{

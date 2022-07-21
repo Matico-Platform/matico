@@ -11,6 +11,7 @@ export const loadAnalysis = async (url: string) => {
 
 export const useAnalysis = (url: string | null) => {
     const [analysis, setAnalysis] = useState<any>(null);
+    const [defaults, setDefaults] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -28,6 +29,12 @@ export const useAnalysis = (url: string | null) => {
                 .then((module) => {
                     setAnalysis(module);
                     analysisCache[url] = module;
+                    let options = module.options();
+                    let defaults = Object.keys(module.options()).map((key:string)=>{
+                      return {name:key, parameter:{type:options[key].type, value: options[key].default }}
+                    }); 
+                    console.log("defaults ",defaults)
+                    setDefaults(defaults)
                     setError(null);
                 })
                 .catch((e) => {
@@ -38,5 +45,5 @@ export const useAnalysis = (url: string | null) => {
         }
     }, [url]);
 
-    return { analysis, error };
+    return { analysis, error, defaults};
 };

@@ -46,31 +46,24 @@ export class App {
 */
   to_yaml(): string;
 /**
-* @returns {any}
 */
   created_at: any;
 /**
-* @returns {any}
 */
   datasets: any;
 /**
-* @returns {string}
 */
   description: string;
 /**
-* @returns {string}
 */
   name: string;
 /**
-* @returns {any}
 */
   pages: any;
 /**
-* @returns {any}
 */
   panes: any;
 /**
-* @returns {any}
 */
   theme: any;
 }
@@ -84,7 +77,6 @@ export class COGDataset {
 export class CSVDataset {
   free(): void;
 /**
-* @returns {string}
 */
   name: string;
 }
@@ -103,7 +95,6 @@ export class ControlsPane {
 export class GeoJSONDataset {
   free(): void;
 /**
-* @returns {string}
 */
   name: string;
 }
@@ -117,7 +108,6 @@ export class GridLayout {
 export class HistogramPane {
   free(): void;
 /**
-* @returns {string}
 */
   name: string;
 }
@@ -136,7 +126,6 @@ export class LinearLayout {
 export class MapPane {
   free(): void;
 /**
-* @returns {string}
 */
   name: string;
 }
@@ -150,19 +139,15 @@ export class MaticoApiDataset {
 export class MaticoRemoteDataset {
   free(): void;
 /**
-* @returns {string | undefined}
 */
   dataset_id: string;
 /**
-* @returns {string}
 */
   description: string;
 /**
-* @returns {string}
 */
   name: string;
 /**
-* @returns {string}
 */
   server_url: string;
 }
@@ -212,15 +197,12 @@ export class Page {
 */
   remove_pane(pane_id: string): void;
 /**
-* @returns {string | undefined}
 */
   icon: string;
 /**
-* @returns {string}
 */
   name: string;
 /**
-* @returns {string | undefined}
 */
   path: string;
 }
@@ -235,7 +217,6 @@ export class PanePosition {
 */
   height: number;
 /**
-* @returns {string}
 */
   readonly height_units: string;
 /**
@@ -254,40 +235,33 @@ export class PanePosition {
 */
   pad_top?: number;
 /**
-* @returns {string}
 */
   readonly pad_units_bottom: string;
 /**
-* @returns {string}
 */
   readonly pad_units_left: string;
 /**
-* @returns {string}
 */
   readonly pad_units_right: string;
 /**
-* @returns {string}
 */
   readonly pad_units_top: string;
 /**
 */
   width: number;
 /**
-* @returns {string}
 */
   readonly width_units: string;
 /**
 */
   x?: number;
 /**
-* @returns {string}
 */
   readonly x_units: string;
 /**
 */
   y?: number;
 /**
-* @returns {string}
 */
   readonly y_units: string;
 }
@@ -296,7 +270,6 @@ export class PanePosition {
 export class PieChartPane {
   free(): void;
 /**
-* @returns {string}
 */
   name: string;
 }
@@ -310,7 +283,6 @@ export class RangeControl {
 export class ScatterplotPane {
   free(): void;
 /**
-* @returns {string}
 */
   name: string;
 }
@@ -324,19 +296,15 @@ export class SelectControl {
 export class TextPane {
   free(): void;
 /**
-* @returns {string | undefined}
 */
   background: string;
 /**
-* @returns {string}
 */
   content: string;
 /**
-* @returns {string | undefined}
 */
   font: string;
 /**
-* @returns {string}
 */
   name: string;
 }
@@ -345,15 +313,12 @@ export class TextPane {
 export class Theme {
   free(): void;
 /**
-* @returns {string | undefined}
 */
   icon: string;
 /**
-* @returns {any}
 */
   primaryColor: any;
 /**
-* @returns {any}
 */
   secondaryColor: any;
 }

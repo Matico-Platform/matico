@@ -20,19 +20,17 @@ const arrowTypeToMaticoType= (aType: DataType)=>{
 
 export const WasmComputeBuilder = async (details: WASMCompute, datasets: Array<Dataset>) => {
   const { name, url ,params } = details;
-  console.log("loading compute file")
   const wasm = await import(/* webpackIgnore: true */   url)
-  console.log("Awiting compute file")
   await wasm.default();
   const key = Object.keys(wasm).find(k => k.includes("Interface"))
-  console.log("loading key ",key)
   const analysis = wasm[key].new()
+  console.log(details)
 
-  console.log("Setting parameters")
-  Object.entries(params).forEach(([name,val])=>{
-    console.log("registering variable ",name ,JSON.stringify(val))
-    if(val.Table){
-         let dataset = datasets[val.Table];
+  params.forEach(({name,parameter})=>{
+    console.log("registering variable ",name ,JSON.stringify(parameter))
+    if(parameter.type ==='table'){
+         let dataset = datasets.find(d=>d.name === parameter.value);
+         alert("Here!")
          if(dataset){
            try{
             analysis.register_table(name,dataset._data.serialize("binary",false))
@@ -43,21 +41,30 @@ export const WasmComputeBuilder = async (details: WASMCompute, datasets: Array<D
     }
 
     try{
-      analysis.set_parameter(name,val)
+      analysis.set_parameter(name,parameter)
     }
     catch(e){
+        console.log("name was ",name, "value was ",parameter.value, "type was",parameter.type)
         console.log("Variables register error ", JSON.stringify(e))
     }
   })
 
-  console.log("Running Analysis")
+  console.log("All variables set without issue")
+
   const run_result  = analysis.run();
-  console.log("Analysis done generating table")
-  const table = Table.from([run_result])
-  console.log("building dataframe")
-  const dataFrame = new DataFrame(table);
+  console.log("Analysis run")
+  let table;
+  let dataFrame
+  try{
+    console.log(run_result)
+    table = Table.from([run_result])
+    dataFrame = new DataFrame(table);
+  }
+  catch(e){
+    console.log("table failed to build in js", e)
+  }
+  console.log("Built table")
   
-  console.log("dataFrame fields are ", dataFrame.schema.fields)
   const fields  = dataFrame.schema.fields.map((f)=>  ({ name: f.name, type: arrowTypeToMaticoType(f.type)} ) )
   return new LocalDataset(
     details.name,

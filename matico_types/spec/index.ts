@@ -57,6 +57,7 @@ export * from "./ScaleType";
 export * from "./ScatterplotPane";
 export * from "./ScreenUnits";
 export * from "./SelectControl";
+export * from "./SpecParameter";
 export * from "./SpecParameterValue";
 export * from "./StyleJSONBaseMap";
 export * from "./TabLayout";
