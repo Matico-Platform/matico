@@ -7,7 +7,7 @@ use crate::ArgError;
 
 
 #[derive(Serialize,Deserialize,Debug, Clone, TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[serde(rename_all="camelCase", tag="type",content="value")]
 #[ts(export)]
 pub enum ParameterValue {
     NumericFloat(f32),
@@ -84,7 +84,15 @@ impl TryFrom<&ParameterValue> for String{
 } 
 
 #[derive(Serialize,Deserialize,Debug, Clone, TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub struct SpecParameter{
+    name: String,
+    parameter: SpecParameterValue
+}
+
+#[derive(Serialize,Deserialize,Debug, Clone, TS)]
+#[serde(rename_all="camelCase", tag="type", content="value")]
 #[ts(export)]
 pub enum SpecParameterValue {
     NumericFloat(VarOr<f32>),

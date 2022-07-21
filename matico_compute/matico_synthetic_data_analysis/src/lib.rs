@@ -35,6 +35,8 @@ impl MaticoAnalysisRunner for SyntheticData{
         let no_points: u32 = self.get_parameter("no_points")?.try_into()?;
 
         let variable_name: String = self.get_parameter("variable_name")?.try_into()?;
+        web_sys::console::log_1(&"Got all varaibles".into());
+
 
         let mut rng = rand::thread_rng(); 
         
@@ -44,6 +46,8 @@ impl MaticoAnalysisRunner for SyntheticData{
             Geometry::Point(Point::<f64>::new(x as f64, y as f64))
         }).collect();
 
+        web_sys::console::log_1(&"Generated points".into());
+
         let geo_series = Series::from_geom_vec(&points).unwrap();
         
         let dist = Normal::new(2.0,3.0).unwrap();
@@ -51,10 +55,13 @@ impl MaticoAnalysisRunner for SyntheticData{
             let v:f32 = dist.sample(&mut rng); 
             v
         }).collect();
+        web_sys::console::log_1(&"Calculated distribution".into());
 
         let variable : Series = Series::from_vec(&variable_name, variable);
 
         let result = DataFrame::new(vec![variable,geo_series]).unwrap();
+        web_sys::console::log_1(&"Created result and returnign".into());
+        web_sys::console::log_1(&format!("Created result and returnign {:#?}",result.schema()).into());
         Ok(result)
     }
 

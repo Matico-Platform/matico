@@ -13,12 +13,13 @@ import {
     DatasetParameterComponent
 } from "Datasets/DatasetProvider";
 import { useAnalysis } from "Hooks/useAnalysis";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { Column } from "Datasets/Dataset";
 import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
 import { ValueOrVariableInput } from "Components/MaticoEditor/Utils/ValueOrVariableInput";
+import { SpecParameter } from "@maticoapp/matico_types/spec";
 
 export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     spec,
@@ -35,11 +36,24 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
                     key={key}
                     name={key}
                     options={parameters[key]}
-                    value={values[key]}
+                    value={
+                        values.find((v: SpecParameter) => v.name === key)
+                            .parameter.value
+                    }
                     onChange={(key, val) =>
                         onChange({
                             ...spec,
-                            params: { ...spec.params, [key]: val }
+                            params: values.map((s: SpecParameter) =>
+                                s.name === key
+                                    ? {
+                                          ...s,
+                                          parameter: {
+                                              type: s.parameter.type,
+                                              value: val
+                                          }
+                                      }
+                                    : s
+                            )
                         })
                     }
                     params={values}
@@ -56,65 +70,61 @@ const ParameterInput: React.FC<{
     onChange: (key: string, value: any) => void;
     params: { [key: string]: any };
 }> = ({ name, options, value, onChange, params }) => {
-    const [type, constraints] = Object.entries(options)[0];
-    const description = constraints.display_details.description;
-    const label = constraints.display_details.display_name ?? name;
+    console.log(name, options, value, onChange, params);
+
+    const { type, displayDetails } = options;
+    const { displayName, description } = displayDetails;
+    const defaultVal = options.default;
+
+    console.log("display name is ", displayName);
 
     switch (type) {
-        case "NumericInt":
+        case "numericInt":
             return (
                 <ValueOrVariableInput
-                    value={value ? value.NumericInt : constraints.default}
-                    label={label}
-                    defaultValue={constraints.default}
-                    onChange={(newVal) =>
-                        onChange(name, { NumericInt: newVal })
-                    }
+                    value={value ? value : defaultVal}
+                    label={displayName}
+                    defaultValue={defaultVal}
+                    onChange={(newVal) => onChange(name, newVal)}
                 />
             );
 
-        case "NumericFloat":
+        case "numericFloat":
             return (
                 <ValueOrVariableInput
-                    value={value ? value.NumericFloat : constraints.default}
-                    label={label}
-                    defaultValue={constraints.default}
-                    onChange={(newVal) =>
-                        onChange(name, { NumericFloat: newVal })
-                    }
+                    value={value ? value : defaultVal}
+                    label={displayName}
+                    defaultValue={defaultVal}
+                    onChange={(newVal) => onChange(name, newVal)}
                 />
             );
-        case "Text":
+        case "text":
             return (
                 <ValueOrVariableInput
-                    value={value ? value.NumericFloat : constraints.default}
-                    label={label}
-                    defaultValue={constraints.default}
-                    onChange={(newVal) =>
-                        onChange(name, { NumericFloat: newVal })
-                    }
+                    value={value ? value : defaultVal}
+                    label={displayName}
+                    defaultValue={defaultVal}
+                    onChange={(newVal) => onChange(name, newVal)}
                 />
             );
-        case "Table":
+        case "table":
             return (
                 <DatasetSelector
-                    label={label}
+                    label={displayName}
                     description={description}
-                    selectedDataset={value?.Table}
-                    onDatasetSelected={(dataset) =>
-                        onChange(name, { Table: dataset })
-                    }
+                    selectedDataset={value?.table}
+                    onDatasetSelected={(dataset) => onChange(name, dataset)}
                 />
             );
-        case "Column":
+        case "column":
             return (
                 <DatasetColumnSelector
-                    label={label}
+                    label={displayName}
                     description={description}
-                    selectedColumn={value?.Column}
-                    datasetName={params[constraints.from_dataset]?.Table}
+                    selectedColumn={value}
+                    datasetName={params[options.from_dataset]?.Table}
                     onColumnSelected={(column: Column) => {
-                        onChange(name, { Column: column.name });
+                        onChange(name, column.name);
                     }}
                 />
             );
@@ -125,7 +135,7 @@ const ParameterInput: React.FC<{
 
 export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     onSubmit,
-    parameters = {}
+    parameters = []
 }) => {
     const [selectedCompute, setSelectedCompute] =
         useState<Compute | null>(null);
@@ -139,10 +149,17 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     const computes = useAvaliableCompute();
 
     const updateSpec = (update: Record<string, any>) => {
+        console.log("updating spec with update", update);
         setSpec({ ...spec, ...update });
     };
 
-    const { analysis, error } = useAnalysis(spec.url);
+    const { analysis, error, defaults } = useAnalysis(spec.url);
+
+    useEffect(() => {
+        if (defaults) {
+            setSpec({ ...spec, params: [...defaults, ...parameters] });
+        }
+    }, [JSON.stringify(defaults)]);
 
     const computeOptions = analysis ? analysis.options() : {};
     const description = analysis ? analysis.description() : "";
@@ -152,7 +169,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
         const computeURL = compute
             ? `http://localhost:8000/compute${compute.path}`
             : null;
-        setSpec({ url: computeURL, params: {}, name: spec.name });
+        setSpec({ url: computeURL, params: [], name: spec.name });
         setSelectedCompute(compute);
     };
 
@@ -181,7 +198,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                         variant="cta"
                         onPress={() =>
                             onSubmit({
-                                type: "maticoCompute",
+                                type: "wasmCompute",
                                 ...spec
                             })
                         }
