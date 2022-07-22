@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {ParameterOptions, ParameterValue, SpecParameter} from "@maticoapp/matico_types/spec"
 
 const analysisCache: Record<string, any> = {};
 
@@ -8,6 +9,21 @@ export const loadAnalysis = async (url: string) => {
     let key = Object.keys(wasm).find((k) => k.includes("Interface"));
     return wasm[key].new();
 };
+
+
+const populateDefaults = (options: Record<string,ParameterOptions>)=>{
+  let defaults: Array<SpecParameter> = [] 
+  Object.entries(options).map(([key,option])=>{
+    if (option.type === "optionGroup"){
+      let value = populateDefaults(option.options)
+      defaults.push ({name:key, parameter:{type:option.type, value: value}})
+    } 
+    else{
+      defaults.push({name:key, parameter:{type:option.type, value: option.default}})
+    }
+  }) 
+  return defaults
+}
 
 export const useAnalysis = (url: string | null) => {
     const [analysis, setAnalysis] = useState<any>(null);
@@ -30,9 +46,7 @@ export const useAnalysis = (url: string | null) => {
                     setAnalysis(module);
                     analysisCache[url] = module;
                     let options = module.options();
-                    let defaults = Object.keys(module.options()).map((key:string)=>{
-                      return {name:key, parameter:{type:options[key].type, value: options[key].default }}
-                    }); 
+                    let defaults = populateDefaults(module.options)               
                     console.log("defaults ",defaults)
                     setDefaults(defaults)
                     setError(null);

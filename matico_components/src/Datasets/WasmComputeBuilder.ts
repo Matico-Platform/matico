@@ -32,12 +32,8 @@ export const WasmComputeBuilder = async (details: WASMCompute, datasets: Array<D
          let dataset = datasets.find(d=>d.name === parameter.value);
          alert("Here!")
          if(dataset){
-           try{
             analysis.register_table(name,dataset._data.serialize("binary",false))
-           }
-           catch(e){
-              console.log("Table register error",JSON.stringify(e))
-           } }
+          }
     }
 
     analysis.set_parameter(name,parameter)

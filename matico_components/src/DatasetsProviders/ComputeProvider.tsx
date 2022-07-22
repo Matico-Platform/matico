@@ -5,7 +5,10 @@ import {
     Text,
     Picker,
     Item,
-    View
+    View,
+    Well,
+    Header,
+    Content
 } from "@adobe/react-spectrum";
 import {
     DatasetProviderComponent,
@@ -31,6 +34,18 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
 
     return (
         <View>
+          <ParameterGroup parameters={parameters}  values={values} onChange={onChange} />
+        </View>
+    );
+};
+
+const ParameterGroup: React.FC<{
+  parameters: any,
+  values: any,
+  onChange: (update:any)=>void
+}> = ({parameters, values, onChange})=>{
+  return(
+      <>
             {Object.keys(parameters).map((key) => (
                 <ParameterInput
                     key={key}
@@ -41,27 +56,13 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
                             .parameter.value
                     }
                     onChange={(key, val) =>
-                        onChange({
-                            ...spec,
-                            params: values.map((s: SpecParameter) =>
-                                s.name === key
-                                    ? {
-                                          ...s,
-                                          parameter: {
-                                              type: s.parameter.type,
-                                              value: val
-                                          }
-                                      }
-                                    : s
-                            )
-                        })
-                    }
+                        onChange({[key]:val})}
                     params={values}
                 />
             ))}
-        </View>
-    );
-};
+            </>
+  )
+}
 
 const ParameterInput: React.FC<{
     name: string;
@@ -128,6 +129,19 @@ const ParameterInput: React.FC<{
                     }}
                 />
             );
+        case "optionGroup":
+            return (
+                <Well>
+                    <Header> {displayName}</Header>
+                    <Content>{description} </Content>
+                    <ParameterGroup parameters={options.options} values={value[name]} onChange={(update)=> console.log("update ",update)} />
+                </Well>
+            );
+            return <Text>Filed type {type} currently not supported</Text>;
+
+        case "repeatedOption":
+            return <Text>Filed type {type} currently not supported</Text>;
+
         default:
             return <Text>Field type {type} currently not supported</Text>;
     }
