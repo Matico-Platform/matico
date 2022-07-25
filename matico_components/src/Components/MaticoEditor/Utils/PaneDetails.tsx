@@ -109,7 +109,8 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         name: "New Map",
         view: DefaultView,
         layers: [],
-        baseMap: { type: "named", name: "CartoDBVoyager", affiliation: "" }
+        baseMap: { type: "named", name: "CartoDBVoyager", affiliation: "" },
+        controls: { scale:true, geolocate:true }
     },
     scatterplot: {
         name: "New Scatter",

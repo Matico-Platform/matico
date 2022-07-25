@@ -1,20 +1,34 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
-import { StaticMap } from "react-map-gl";
-import DeckGL from "@deck.gl/react";
+import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl} from "react-map-gl";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
-import { Layer } from "@maticoapp/matico_types/spec";
+import { Layer, MapControls} from "@maticoapp/matico_types/spec";
+import {MapboxOverlayProps, MapboxOverlay} from "@deck.gl/mapbox/typed"
+import maplibregl from 'maplibre-gl';
+
+import 'maplibre-gl/dist/maplibre-gl.css';
+
+
+
+function DeckGLOverlay(props: MapboxOverlayProps){
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  overlay.setProps(props)
+  return null
+}
+
+
 
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
     view: MaticoView;
     //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
     baseMap?: any;
     layers?: Array<any>;
+    controls: MapControls
 }
 
 function getNamedStyleJSON(style: string) {
@@ -45,10 +59,13 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     baseMap,
     name,
     layers,
-    id
+    id,
+    controls
 }) => {
     const [mapLayers, setMapLayers] = useState([]);
     const edit = useIsEditable();
+    const mapRef = useRef();
+
 
     const updateLayer = (layer: Layer) => {
         if (!layer) return;
@@ -110,25 +127,19 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
         <View position="relative" overflow="hidden" width="100%" height="100%">
             {currentView && (
                 <>
-                    <DeckGL
-                        width={"100%"}
-                        height={"100%"}
+                    <Map
+                        ref={mapRef}
+                        onLoad={()=>{  console.log ( "Layers ", mapRef.current?.getStyle().layers.filter(l=>l.type==="symbol"))}
+                        }
+                        mapLib={maplibregl}
+                        antialias={true}
                         initialViewState={{
                             latitude: currentView.lat,
                             longitude: currentView.lng,
                             zoom: currentView.zoom,
                             ...currentView
                         }}
-                        controller={true}
-                        onViewStateChange={updateViewState}
-                        layers={[...layers]
-                            .sort((a, b) => (a.order > b.order ? 1 : -1))
-                            .map((l) =>
-                                validMapLayers.find((ml) => ml.id === l.name)
-                            )}
-                    >
-                        <StaticMap
-                            mapboxApiAccessToken={
+                            mapboxAccessToken={
                                 "pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
                             }
                             mapStyle={
@@ -136,10 +147,31 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                                     ? styleJSON
                                     : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
                             }
-                            width={"100%"}
-                            height={"100%"}
-                        />
-                    </DeckGL>
+                            >{controls?.navigation && 
+                              <NavigationControl position="top-right"/>
+                            }
+                            {controls?.scale &&
+                              <ScaleControl position="bottom-right"  />
+                            }
+                            {controls?.geolocate &&
+                              <GeolocateControl position="top-right" />
+                              }
+                    
+                    <DeckGLOverlay
+                              interleaved={true}
+                              width={"100%"}
+                              height={"100%"}
+
+                              layers={[...layers]
+                                  .sort((a, b) => (a.order > b.order ? 1 : -1))
+                                  .map((l) =>
+                                      validMapLayers.find((ml) => ml.id === l.name)
+                                  )}
+                                  />
+
+                            
+                            </Map>
+                  
                     {layers.map((l) => (
                         <MaticoMapLayer
                             key={l.name}
@@ -148,9 +180,11 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             style={l.style}
                             onUpdate={updateLayer}
                             mapName={name}
+                            beforeId={"waterway_label"}
                         />
                     ))}
                     <MaticoLegendPane layers={validMapLayers} />
+                    
                 </>
             )}
         </View>

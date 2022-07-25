@@ -46,7 +46,6 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
       <div
         className="App"
         style={{
@@ -62,7 +61,6 @@ function App() {
           editActive={edit}
         />
       </div>
-    </ErrorBoundary>
   );
 }
 
