@@ -59,7 +59,7 @@ export interface ErrorSpec {
 
 // layers
 export interface BaseLayerSpec {
-  type: 'scatter' | 'line' | 'bar' | 'pie';
+  type: 'scatter' | 'line' | 'bar' | 'pie' | 'staticMap';
   data?: DataCollection;
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
@@ -79,6 +79,17 @@ export interface BaseLayerSpec {
   onHover?: InteractiveFunction;
   xOffset?: number;
   yOffset?: number;
+}
+
+export interface StaticMapSpec extends BaseLayerSpec {
+  proj: string;
+  fill?: ColorFunction | ColorOutput;
+  background?: ColorOutput;
+  gratOn?: boolean;
+  gratColor?: ColorOutput;
+  strokeWidth?: number;
+  strokeColor?: ColorOutput;
+  events?: boolean;
 }
 
 export interface ScatterSpec extends BaseLayerSpec {
