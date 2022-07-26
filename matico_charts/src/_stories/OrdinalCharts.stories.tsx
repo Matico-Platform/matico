@@ -86,11 +86,14 @@ HorizontalOrdinal.args = {
 };
 
 export const StaticMapChart = Template.bind({});
+console.log("Simple map data ", SampleMapData)
 StaticMapChart.args = {
-  title: "Emojis per Capita",
+  title: "Counties In California",
+  yExtent: [0,100],
+  xExtent: [0,100],
   layers: [
     {
-      type: "staticMap",
+      type: "map",
       fill: "red",
       proj: "geoConicConformal"
     },

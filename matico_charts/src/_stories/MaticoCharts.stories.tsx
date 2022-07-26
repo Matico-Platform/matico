@@ -114,7 +114,7 @@ Histogram.args = {
   layers: [
     {
       type: "bar",
-      color: color,
+      color: "steelblue",
       scale: 2,
       padding: 0.1,
     },
