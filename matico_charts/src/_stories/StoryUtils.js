@@ -1,6 +1,6 @@
 import { linearRegression, linearRegressionLine } from 'simple-statistics';
 import * as d3 from 'd3';
-import mapdata from './sample_data/Counties_In_California'
+import mapdata from './sample_data/Counties_In_California.json'
   
 export const generate2dData = (n) => Array(n)
   .fill(0)
