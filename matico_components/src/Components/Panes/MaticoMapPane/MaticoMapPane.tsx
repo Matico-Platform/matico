@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
-import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl} from "react-map-gl";
+import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl, FullScreen} from "react-map-gl";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
@@ -155,6 +155,9 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             }
                             {controls?.geolocate &&
                               <GeolocateControl position="top-right" />
+                              }
+                            {controls?.fullscreen &&
+                              <FullScreen position="top-right" />
                               }
                     
                     <DeckGLOverlay
