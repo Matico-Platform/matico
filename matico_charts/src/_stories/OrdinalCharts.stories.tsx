@@ -86,7 +86,6 @@ HorizontalOrdinal.args = {
 };
 
 export const StaticMapChart = Template.bind({});
-console.log("Simple map data ", SampleMapData)
 StaticMapChart.args = {
   title: "Counties In California",
   yExtent: [0,100],
@@ -95,6 +94,37 @@ StaticMapChart.args = {
     {
       type: "map",
       fill: "red",
+      proj: "geoConicConformal"
+    },
+  ],
+  data: SampleMapData,
+};
+
+export const StaticMapChartNoGrid = Template.bind({});
+StaticMapChartNoGrid.args = {
+  title: "Counties In California",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  layers: [
+    {
+      type: "map",
+      fill: "red",
+      proj: "geoConicConformal",
+      gratOn: false
+    },
+  ],
+  data: SampleMapData,
+};
+
+export const StaticMapChartFillFunc = Template.bind({});
+StaticMapChartFillFunc.args = {
+  title: "Counties In California",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  layers: [
+    {
+      type: "map",
+      fill: (datum) => {return datum["Shape__Area"] < 3082164727 ? "red" : "green"},
       proj: "geoConicConformal"
     },
   ],
