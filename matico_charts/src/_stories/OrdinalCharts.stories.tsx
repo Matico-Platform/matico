@@ -5,7 +5,7 @@ import MaticoChart from "../components/MaticoChart";
 import { ChartSpaceSpec } from "../components/types";
 
 import {
-  Sample2dData,
+  SampleMapData,
   SampleCategoricalData,
   SampleHistogramData,
 } from "./SampleData";
@@ -83,4 +83,17 @@ HorizontalOrdinal.args = {
     },
   ],
   data: SampleCategoricalData,
+};
+
+export const StaticMapChart = Template.bind({});
+StaticMapChart.args = {
+  title: "Emojis per Capita",
+  layers: [
+    {
+      type: "staticMap",
+      fill: "red",
+      proj: "geoConicConformal"
+    },
+  ],
+  data: SampleMapData,
 };
