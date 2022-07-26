@@ -89,6 +89,7 @@ pub struct LayerStyle {
     radius_scale: Option<f32>,
     elevation: Option<MappingVarOr<f32>>,
     elevation_scale: Option<f32>,
+    beforeId: Option<String>
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
@@ -144,6 +145,29 @@ impl Default for View {
     }
 }
 
+
+#[wasm_bindgen]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct MapControls{
+    pub scale : Option<bool>,
+    pub geolocate: Option<bool>,
+    pub navigation: Option<bool>,
+    pub fullscreen: Option<bool>,
+}
+
+impl Default for MapControls{
+    fn default()->Self{
+        MapControls{
+            scale: Some(true),
+            geolocate: Some(false),
+            fullscreen: Some(false),
+            navigation: Some(false)
+        }
+    }
+}
+
 #[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
@@ -163,6 +187,9 @@ pub struct MapPane {
 
     #[wasm_bindgen(skip)]
     pub base_map: Option<BaseMap>,
+
+    #[wasm_bindgen(skip)]
+    pub controls: Option<MapControls>
 }
 
 #[wasm_bindgen]
@@ -186,6 +213,7 @@ impl Default for MapPane {
             view: VarOr::Value(View::default()),
             layers: vec![],
             base_map: Some(BaseMap::default()),
+            controls: Some(MapControls::default())
         }
     }
 }
@@ -240,6 +268,7 @@ mod tests {
             radius_scale: Some(1.0),
             elevation: None,
             elevation_scale: Some(1.0),
+            beforeId:None
         };
         println!("{}", serde_json::to_string_pretty(&style).unwrap());
     }

@@ -21,7 +21,7 @@ function DeckGLOverlay(props: MapboxOverlayProps){
   return null
 }
 
-
+const accessToken="pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
 
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
     view: MaticoView;
@@ -31,7 +31,7 @@ export interface MaticoMapPaneInterface extends MaticoPaneInterface {
     controls: MapControls
 }
 
-function getNamedStyleJSON(style: string) {
+export function getNamedStyleJSON(style: string, accessToken: string) {
     switch (style) {
         case "CartoDBPositron":
             return "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
@@ -40,15 +40,15 @@ function getNamedStyleJSON(style: string) {
         case "CartoDBDarkMatter":
             return "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
         case "Light":
-            return "mapbox://styles/mapbox/light-v10";
+            return `https://api.mapbox.com/styles/v1/mapbox/light-v10?access_token=${accessToken}`
         case "Dark":
-            return "mapbox://styles/mapbox/dark-v10";
+            return `https://api.mapbox.com/styles/v1/mapbox/dark-v10?access_token=${accessToken}`
         case "Satelite":
-            return "mapbox://styles/mapbox/satellite-v9";
+            return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9?access_token=${accessToken}`
         case "Terrain":
-            return "mapbox://styles/mapbox/outdoors-v11";
+            return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11?access_token=${accessToken}`
         case "Streets":
-            return "mapbox://styles/mapbox/streets-v11";
+            return `https://api.mapbox.com/styles/v1/mapbox/streets-v11?access_token=${accessToken}`
         default:
             return "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
     }
@@ -117,7 +117,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
 
     if (baseMap) {
         if (baseMap.type === "named") {
-            styleJSON = getNamedStyleJSON(baseMap.name);
+            styleJSON = getNamedStyleJSON(baseMap.name, accessToken);
         } else if (baseMap.StyleJSON) {
             styleJSON = baseMap.StyleJSON;
         }
@@ -140,7 +140,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             ...currentView
                         }}
                             mapboxAccessToken={
-                                "pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
+                               accessToken 
                             }
                             mapStyle={
                                 styleJSON
@@ -161,7 +161,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                               interleaved={true}
                               width={"100%"}
                               height={"100%"}
-
+                              onViewStateChange = {updateViewState} 
                               layers={[...layers]
                                   .sort((a, b) => (a.order > b.order ? 1 : -1))
                                   .map((l) =>
@@ -180,7 +180,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             style={l.style}
                             onUpdate={updateLayer}
                             mapName={name}
-                            beforeId={"waterway_label"}
+                            // beforeId={"waterway_label"}
                         />
                     ))}
                     <MaticoLegendPane layers={validMapLayers} />

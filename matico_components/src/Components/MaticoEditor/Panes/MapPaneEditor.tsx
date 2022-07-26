@@ -20,7 +20,8 @@ import {
     TextField,
     View,
     ButtonGroup,
-    Divider
+    Divider,
+    CheckboxGroup
     // repeat,
 } from "@adobe/react-spectrum";
 
@@ -31,7 +32,8 @@ import {
     VarOr,
     View as MapView,
     Layer,
-    Variable
+    Variable,
+    MapControls
 } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
 import { setCurrentEditElement } from "Stores/MaticoSpecSlice";
@@ -119,12 +121,13 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         usePane(paneRef);
 
     const mapPane = pane as MapPane;
+    console.log("map pane is ", mapPane.controls);
 
     const mapPaneCurrentView = useMaticoSelector(
         (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
     );
 
-    const dispatch = useMaticoDispatch()
+    const dispatch = useMaticoDispatch();
 
     const updateBaseMap = (baseMap: BaseMap) => {
         console.log("Updating base map", baseMap);
@@ -181,13 +184,13 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         );
     }
 
-    const setLayerEdit = (id:string) => {
+    const setLayerEdit = (id: string) => {
         dispatch(
-          setCurrentEditElement({
-              id,
-              type: "layer"
-          })
-        )
+            setCurrentEditElement({
+                id,
+                type: "layer"
+            })
+        );
     };
 
     const addLayer = (dataset: string, layerName: string) => {
@@ -230,7 +233,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     return (
         <Flex direction="column">
             <CollapsibleSection title="Details">
-                <DetailsEditor pane={pane} updatePane={updatePane} />
+
             </CollapsibleSection>
             <CollapsibleSection title="Sizing" isOpen={true}>
                 <PaneEditor
@@ -338,9 +341,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                         <RowEntryMultiButton
                             key={layer.name}
                             entryName={layer.name}
-                            onSelect={() =>
-                                setLayerEdit(layer.id)
-                            }
+                            onSelect={() => setLayerEdit(layer.id)}
                             onRemove={() => {}}
                             onDuplicate={() => {}}
                             onRaise={() => {}}
@@ -352,6 +353,24 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     baseMap={mapPane?.baseMap}
                     onChange={updateBaseMap}
                 />
+            </CollapsibleSection>
+            <CollapsibleSection title="Controls" isOpen={true}>
+                <CheckboxGroup
+                    value={Object.entries(mapPane.controls)
+                        .filter(([label, selected]) => selected)
+                        .map(([label, selected]) => label)}
+                        //@ts-ignore
+                        onChange={(update)=> updatePane({controls: 
+                        //@ts-ignore
+                            update.reduce((agg: MapControls,val: KeyOf<MapControls>)=> ({...agg, [val] : true}) , {})
+                        })}
+                    label="Map Controls"
+                >
+                    <Checkbox value="navigation">Navigation</Checkbox>
+                    <Checkbox value="scale">Scale</Checkbox>
+                    <Checkbox value="geolocate">Geolocate</Checkbox>
+                    <Checkbox value="fullscreen">Full Screen</Checkbox>
+                </CheckboxGroup>
             </CollapsibleSection>
         </Flex>
     );

@@ -2,15 +2,15 @@
 /* eslint-disable */
 /**
 */
-export enum ScreenUnits {
-  Pixels,
-  Percent,
-}
-/**
-*/
 export enum LinearLayoutDirection {
   Horizontal,
   Vertical,
+}
+/**
+*/
+export enum ScreenUnits {
+  Pixels,
+  Percent,
 }
 /**
 */
@@ -120,6 +120,23 @@ export class Labels {
 */
 export class LinearLayout {
   free(): void;
+}
+/**
+*/
+export class MapControls {
+  free(): void;
+/**
+*/
+  fullscreen?: boolean;
+/**
+*/
+  geolocate?: boolean;
+/**
+*/
+  navigation?: boolean;
+/**
+*/
+  scale?: boolean;
 }
 /**
 */
