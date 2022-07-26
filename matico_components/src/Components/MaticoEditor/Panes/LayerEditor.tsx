@@ -11,7 +11,9 @@ import {
     Item,
     View,
     StatusLight,
-    Checkbox
+    Checkbox,
+    ComboBox,
+    TextField
 } from "@adobe/react-spectrum";
 import { ColorVariableEditor } from "Components/MaticoEditor/EditorComponents/ColorVariableEditor";
 import { FilterEditor } from "../Utils/FilterEditor";
@@ -25,9 +27,14 @@ import { useLayer } from "Hooks/useLayer";
 export interface LayerEditorProps {
     mapId: string;
     layerId: string;
+    otherLayers?: Array<string>;
 }
 
-export const LayerEditor: React.FC<LayerEditorProps> = ({ mapId, layerId }) => {
+export const LayerEditor: React.FC<LayerEditorProps> = ({
+    mapId,
+    layerId,
+    otherLayers
+}) => {
     const { layer, updateLayer, removeLayer, raiseLayer, lowerLayer } =
         useLayer(layerId, mapId);
 
@@ -274,6 +281,9 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({ mapId, layerId }) => {
                     </Checkbox>
                 </TwoUpCollapsableGrid>
             </CollapsibleSection>
+                <CollapsibleSection title="Interleaving" isOpen={true}>
+                  <TextField label={"Before layer id"} defaultValue={null} value={style.beforeId} onChange={(val)=> updateStyle("beforeId",val)} />
+                </CollapsibleSection>
         </Flex>
     );
 };

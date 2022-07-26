@@ -180,7 +180,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             style={l.style}
                             onUpdate={updateLayer}
                             mapName={name}
-                            // beforeId={"waterway_label"}
+                            beforeId={l.style.beforeId}
                         />
                     ))}
                     <MaticoLegendPane layers={validMapLayers} />
