@@ -13,6 +13,8 @@ import {
 
 import { PieChartColors } from "./SampleStyling";
 
+import * as scale from '@visx/scale';
+
 export default {
   title: "Matico/Ordinal Charts",
   component: MaticoChart,
@@ -142,6 +144,29 @@ StaticMapChartProjError.args = {
       type: "map",
       fill: "red",
       proj: "geoMercato"
+    },
+  ],
+  data: SampleMapData2
+}
+
+var colorArea = scale.scaleLinear({
+  domain: [
+      Math.min(...SampleMapData2.map((f) => f.properties["estimate"])),
+      Math.max(...SampleMapData2.map((f) => f.properties["estimate"])),
+  ],
+  range: ["Purple", "Orange"],
+});
+
+export const StaticMapChartScale = Template.bind({});
+StaticMapChartScale.args = {
+  title: "Median Income in Illinois Counties",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  layers: [
+    {
+      type: "map",
+      fill: (datum) => colorArea(datum["estimate"]),
+      proj: "geoEquirectangular"
     },
   ],
   data: SampleMapData2
