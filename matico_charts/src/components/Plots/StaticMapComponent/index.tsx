@@ -54,7 +54,7 @@ function formatColor (color:ColorOutput) {
 
 
 export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="white", background="white", gratOn=true, gratColor="black", strokeWidth=0.5, strokeColor="black", events=true}) => {
-    if (data) {    
+    if (data && (proj in basicProjections)) {    
         let width = 500, height = 500;
 
         const projection = basicProjections[proj]()
@@ -131,7 +131,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
         )
     } else {
         return (
-            <h1>Oops! Something's wrong.</h1>
+            <h1>Oops! Data or projection is invalid.</h1>
         )
     }
 };

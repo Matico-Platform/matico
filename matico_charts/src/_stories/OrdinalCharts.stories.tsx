@@ -6,6 +6,7 @@ import { ChartSpaceSpec } from "../components/types";
 
 import {
   SampleMapData,
+  SampleMapData2,
   SampleCategoricalData,
   SampleHistogramData,
 } from "./SampleData";
@@ -130,3 +131,18 @@ StaticMapChartFillFunc.args = {
   ],
   data: SampleMapData,
 };
+
+export const StaticMapChartProjError = Template.bind({});
+StaticMapChartProjError.args = {
+  title: "Median Income in Illinois Counties",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  layers: [
+    {
+      type: "map",
+      fill: "red",
+      proj: "geoMercator"
+    },
+  ],
+  data: SampleMapData2
+}

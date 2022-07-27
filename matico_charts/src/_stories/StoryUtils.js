@@ -1,6 +1,7 @@
 import { linearRegression, linearRegressionLine } from 'simple-statistics';
 import * as d3 from 'd3';
 import mapdata from './sample_data/Counties_In_California.json'
+import mapdata2 from './sample_data/ILcounty_medinc.json'
   
 export const generate2dData = (n) => Array(n)
   .fill(0)
@@ -38,7 +39,12 @@ export const getCategoricalData = (n) => {
   return returnObj;
 };
 
-export const getMapData = () => {
-  console.log("mapdata:", mapdata);
-  return mapdata.features;
+export const getMapData = (i) => {
+  if (i === 1) {
+    console.log("mapdata:", mapdata);
+    return mapdata.features;
+  } else if (i === 2) {
+    console.log("mapdata2:", mapdata2);
+    return mapdata2.features;
+  }
 }
