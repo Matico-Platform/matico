@@ -141,7 +141,7 @@ StaticMapChartProjError.args = {
     {
       type: "map",
       fill: "red",
-      proj: "geoMercator"
+      proj: "geoMercato"
     },
   ],
   data: SampleMapData2

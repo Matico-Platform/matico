@@ -129,9 +129,9 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
                 )}
             </svg>
         )
-    } else {
-        return (
-            <h1>Oops! Data or projection is invalid.</h1>
-        )
+    } else if (!data) { 
+        throw "StaticMapComponent: Something's wrong with the data";
+    } else { 
+        throw "StaticMapComponent: Something's wrong with the projection";
     }
 };
