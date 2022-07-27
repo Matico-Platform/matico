@@ -1,21 +1,22 @@
 import React, { useState, useMemo } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
-import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
-import { Layer } from "@maticoapp/matico_types/spec";
 import { MaticoSelectionLayer } from "./MaticoSelectionLayer";
+import {Map} from 'react-map-gl'
+import { SelectionOptions, Layer } from "@maticoapp/matico_types/spec";
 
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
     view: MaticoView;
     //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
     baseMap?: any;
     layers?: Array<any>;
+    selectionOptions: SelectionOptions
 }
 
 function getNamedStyleJSON(style: string) {
@@ -46,7 +47,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     baseMap,
     name,
     layers,
-    id
+    id,
+    selectionOptions
 }) => {
     const [mapLayers, setMapLayers] = useState([]);
     const edit = useIsEditable();
@@ -61,6 +63,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             }
         });
     };
+
+    console.log("Selection options ", selectionOptions )
 
     const validMapLayers: any = useMemo(
         () =>
@@ -138,8 +142,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         onViewStateChange={updateViewState}
                         layers={mls}
                     >
-                        <StaticMap
-                            mapboxApiAccessToken={
+                        <Map
+                            mapboxAccessToken={
                                 "pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
                             }
                             mapStyle={
@@ -147,8 +151,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                                     ? styleJSON
                                     : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
                             }
-                            width={"100%"}
-                            height={"100%"}
+                            style={{width:"100%", height:"100%"}}
                         />
                     </DeckGL>
                     {layers.map((l) => (
@@ -164,9 +167,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
 
                     <MaticoSelectionLayer
                         onUpdate={updateLayer}
-                        selectionEnabled={true}
-                        polygonSelection={false}
-                        rectangleSelection={false}
+                        selectionEnabled={selectionOptions.selectionEnabled}
+                        selectionMode={selectionOptions.selectionMode}
                         mapName={id}
                     />
                     <MaticoLegendPane layers={validMapLayers} />

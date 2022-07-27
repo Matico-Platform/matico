@@ -14,6 +14,13 @@ export enum LinearLayoutDirection {
 }
 /**
 */
+export enum SelectionMode {
+  Rectangle,
+  Polygon,
+  Lasso,
+}
+/**
+*/
 export class App {
   free(): void;
 /**
@@ -295,6 +302,12 @@ export class SelectControl {
 */
 export class SelectionOptions {
   free(): void;
+/**
+*/
+  selection_enabled: boolean;
+/**
+*/
+  selection_mode: number;
 }
 /**
 */

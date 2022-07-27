@@ -145,15 +145,28 @@ impl Default for View {
 }
 
 
+#[wasm_bindgen]
+#[derive(Serialize, Clone, Deserialize,  Debug, AutoCompleteMe, TS, Copy)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum SelectionMode{
+    Rectangle,
+    Polygon,
+    Lasso
+}
+impl Default for SelectionMode{
+    fn default()->Self{
+        SelectionMode::Rectangle
+    }
+}
 
 #[wasm_bindgen]
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS, Default)]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS, Default, Copy)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct SelectionOptions{
-    selectionEnabled: bool,
-    rectangleSelection:bool,
-    polygonSelection:bool
+    pub selection_enabled: bool,
+    pub selection_mode: SelectionMode
 }
 
 

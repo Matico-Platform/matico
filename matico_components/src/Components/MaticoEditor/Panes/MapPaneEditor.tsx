@@ -124,7 +124,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
     );
 
-    const dispatch = useMaticoDispatch()
+    const dispatch = useMaticoDispatch();
 
     const updateBaseMap = (baseMap: BaseMap) => {
         console.log("Updating base map", baseMap);
@@ -181,13 +181,13 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         );
     }
 
-    const setLayerEdit = (id:string) => {
+    const setLayerEdit = (id: string) => {
         dispatch(
-          setCurrentEditElement({
-              id,
-              type: "layer"
-          })
-        )
+            setCurrentEditElement({
+                id,
+                type: "layer"
+            })
+        );
     };
 
     const addLayer = (dataset: string, layerName: string) => {
@@ -338,9 +338,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                         <RowEntryMultiButton
                             key={layer.name}
                             entryName={layer.name}
-                            onSelect={() =>
-                                setLayerEdit(layer.id)
-                            }
+                            onSelect={() => setLayerEdit(layer.id)}
                             onRemove={() => {}}
                             onDuplicate={() => {}}
                             onRaise={() => {}}
@@ -353,6 +351,40 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     onChange={updateBaseMap}
                 />
             </CollapsibleSection>
+            <CollapsibleSection title="Selection" isOpen={true}>
+                <Checkbox
+                    value={mapPane.selectionOptions?.selectionEnabled}
+                    onChange={(val: boolean) =>
+                        updatePane({
+                            selectionOptions: {
+                                ...mapPane.selectionOptions,
+                                selectionEnabled: val
+                            }
+                        })
+                    }
+                >
+                    Allow Selection
+                </Checkbox>
+            </CollapsibleSection>
+            <Picker
+                isDisabled={!mapPane.selectionOptions?.selectionEnabled}
+                selectedKey={mapPane.selectionOptions?.selectionMode}
+                onSelectionChange={(update) =>
+                    updatePane({
+                        selectionOptions: {
+                            ...mapPane.selectionOptions,
+                            selectionMode: update
+                        }
+                    })
+                }
+                items={[
+                    { id: "rectangle", name: "Rectangle" },
+                    { id: "lasso", name: "Lasso" },
+                    { id: "polygon", name: "Polygon" }
+                ]}
+            >
+                {(item) => <Item key={item.id}>{item.name}</Item>}
+            </Picker>
         </Flex>
     );
 };

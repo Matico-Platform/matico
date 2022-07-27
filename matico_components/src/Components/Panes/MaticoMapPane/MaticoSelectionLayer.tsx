@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { EditableGeoJsonLayer} from "@nebula.gl/layers";
-import {DrawRectangleMode} from "nebula.gl"
+import {DrawRectangleMode, DrawPolygonMode, DrawPolygonByDraggingMode} from "nebula.gl"
 import { Toolbox } from "@nebula.gl/editor";
-
-
-import { StaticMap } from "react-map-gl";
 import { GeoJSON } from "@types/geojson";
 import {AutoVariableInterface, useAutoVariable} from "Hooks/useAutoVariable";
+import {SelectionMode} from '@maticoapp/matico_types/spec'
 
 interface SelectionLayerProps {
     onSelection?: (selection: GeoJSON) => void;
     selectionEnabled: boolean;
-    polygonSelection: boolean;
-    rectangleSelection: boolean;
+    selectionMode: SelectionMode,
     onUpdate: (layerState: any) => void;
     mapName: string
+}
+
+const SelectionModeMapping= {
+  "rectangle" : DrawRectangleMode,
+  "lasso" : DrawPolygonByDraggingMode,
+  "polygon" : DrawPolygonMode
 }
 
 export const MaticoSelectionLayer: React.FC<SelectionLayerProps> = ({
     onSelection,
     selectionEnabled,
-    polygonSelection,
-    rectangleSelection,
+    selectionMode,
     onUpdate,
     mapName
 }) => {
@@ -46,7 +48,7 @@ export const MaticoSelectionLayer: React.FC<SelectionLayerProps> = ({
         const editableLayer = new EditableGeoJsonLayer({
             id: "selection",
             data: selection,
-            mode: DrawRectangleMode,
+            mode: SelectionMode[DrawRectangleMode],
             selectedFeatureIndexes:[0],
             onEdit: ( {updatedData}) => {
                 setSelection(updatedData);
@@ -62,7 +64,7 @@ export const MaticoSelectionLayer: React.FC<SelectionLayerProps> = ({
         onUpdate(null)
     }
 
-    },[selectionEnabled])
+    },[selectionEnabled, selectionMode])
 
 
     return <></>;

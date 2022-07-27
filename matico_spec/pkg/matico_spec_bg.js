@@ -142,6 +142,9 @@ export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"
 export const LinearLayoutDirection = Object.freeze({ Horizontal:0,"0":"Horizontal",Vertical:1,"1":"Vertical", });
 /**
 */
+export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon:1,"1":"Polygon",Lasso:2,"2":"Lasso", });
+/**
+*/
 export class App {
 
     static __wrap(ptr) {
@@ -1360,6 +1363,32 @@ export class SelectionOptions {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_selectionoptions_free(ptr);
+    }
+    /**
+    * @returns {boolean}
+    */
+    get selection_enabled() {
+        const ret = wasm.__wbg_get_selectionoptions_selection_enabled(this.ptr);
+        return ret !== 0;
+    }
+    /**
+    * @param {boolean} arg0
+    */
+    set selection_enabled(arg0) {
+        wasm.__wbg_set_selectionoptions_selection_enabled(this.ptr, arg0);
+    }
+    /**
+    * @returns {number}
+    */
+    get selection_mode() {
+        const ret = wasm.__wbg_get_selectionoptions_selection_mode(this.ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @param {number} arg0
+    */
+    set selection_mode(arg0) {
+        wasm.__wbg_set_selectionoptions_selection_mode(this.ptr, arg0);
     }
 }
 /**
