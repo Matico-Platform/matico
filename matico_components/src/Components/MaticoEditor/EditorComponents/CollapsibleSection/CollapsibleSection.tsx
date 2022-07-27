@@ -44,7 +44,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     }}
                 />
             </Button>
-            <View height={open ? "auto" : 0} overflow="hidden hidden">
+            <View height={open ? "auto" : 0} overflow="hidden hidden" padding="size-100">
                 <Flex
                     direction="column"
                     alignItems="start"

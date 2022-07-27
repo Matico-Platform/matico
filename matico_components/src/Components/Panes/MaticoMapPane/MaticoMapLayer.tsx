@@ -27,6 +27,7 @@ interface MaticoLayerInterface {
     style: any;
     onUpdate: (layerState: any) => void;
     mapName: string;
+    beforeId?: string;
 }
 
 export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
@@ -34,7 +35,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     style,
     name,
     mapName,
-    onUpdate
+    onUpdate,
+    beforeId
 }) => {
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[source.name]
@@ -184,6 +186,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                 updateClickVariable(clickTarget.object),
             pickable: true,
             id: name,
+            beforeId: beforeId,
             data: dataset.tiled ? dataset.mvtUrl : preparedData,
             updateTriggers: {
                 getFillColor: [JSON.stringify(mappedStyle.fillColor)],

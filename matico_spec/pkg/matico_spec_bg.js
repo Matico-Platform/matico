@@ -114,15 +114,6 @@ function addHeapObject(obj) {
     return idx;
 }
 
-let cachedFloat32Memory0 = new Float32Array();
-
-function getFloat32Memory0() {
-    if (cachedFloat32Memory0.byteLength === 0) {
-        cachedFloat32Memory0 = new Float32Array(wasm.memory.buffer);
-    }
-    return cachedFloat32Memory0;
-}
-
 function isLikeNone(x) {
     return x === undefined || x === null;
 }
@@ -134,15 +125,24 @@ function addBorrowedObject(obj) {
     heap[--stack_pointer] = obj;
     return stack_pointer;
 }
+
+let cachedFloat32Memory0 = new Float32Array();
+
+function getFloat32Memory0() {
+    if (cachedFloat32Memory0.byteLength === 0) {
+        cachedFloat32Memory0 = new Float32Array(wasm.memory.buffer);
+    }
+    return cachedFloat32Memory0;
+}
 /**
 */
-export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
+export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon:1,"1":"Polygon",Lasso:2,"2":"Lasso", });
 /**
 */
 export const LinearLayoutDirection = Object.freeze({ Horizontal:0,"0":"Horizontal",Vertical:1,"1":"Vertical", });
 /**
 */
-export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon:1,"1":"Polygon",Lasso:2,"2":"Lasso", });
+export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
 /**
 */
 export class App {
@@ -579,6 +579,74 @@ export class LinearLayout {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_linearlayout_free(ptr);
+    }
+}
+/**
+*/
+export class MapControls {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_mapcontrols_free(ptr);
+    }
+    /**
+    * @returns {boolean | undefined}
+    */
+    get scale() {
+        const ret = wasm.__wbg_get_mapcontrols_scale(this.ptr);
+        return ret === 0xFFFFFF ? undefined : ret !== 0;
+    }
+    /**
+    * @param {boolean | undefined} arg0
+    */
+    set scale(arg0) {
+        wasm.__wbg_set_mapcontrols_scale(this.ptr, isLikeNone(arg0) ? 0xFFFFFF : arg0 ? 1 : 0);
+    }
+    /**
+    * @returns {boolean | undefined}
+    */
+    get geolocate() {
+        const ret = wasm.__wbg_get_mapcontrols_geolocate(this.ptr);
+        return ret === 0xFFFFFF ? undefined : ret !== 0;
+    }
+    /**
+    * @param {boolean | undefined} arg0
+    */
+    set geolocate(arg0) {
+        wasm.__wbg_set_mapcontrols_geolocate(this.ptr, isLikeNone(arg0) ? 0xFFFFFF : arg0 ? 1 : 0);
+    }
+    /**
+    * @returns {boolean | undefined}
+    */
+    get navigation() {
+        const ret = wasm.__wbg_get_mapcontrols_navigation(this.ptr);
+        return ret === 0xFFFFFF ? undefined : ret !== 0;
+    }
+    /**
+    * @param {boolean | undefined} arg0
+    */
+    set navigation(arg0) {
+        wasm.__wbg_set_mapcontrols_navigation(this.ptr, isLikeNone(arg0) ? 0xFFFFFF : arg0 ? 1 : 0);
+    }
+    /**
+    * @returns {boolean | undefined}
+    */
+    get fullscreen() {
+        const ret = wasm.__wbg_get_mapcontrols_fullscreen(this.ptr);
+        return ret === 0xFFFFFF ? undefined : ret !== 0;
+    }
+    /**
+    * @param {boolean | undefined} arg0
+    */
+    set fullscreen(arg0) {
+        wasm.__wbg_set_mapcontrols_fullscreen(this.ptr, isLikeNone(arg0) ? 0xFFFFFF : arg0 ? 1 : 0);
     }
 }
 /**
