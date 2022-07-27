@@ -30,6 +30,7 @@ export * from "./Layer";
 export * from "./Layout";
 export * from "./LinearLayoutDirection";
 export * from "./LinearLayout";
+export * from "./MapControls";
 export * from "./MapPane";
 export * from "./Mapping";
 export * from "./MappingVarOr";
