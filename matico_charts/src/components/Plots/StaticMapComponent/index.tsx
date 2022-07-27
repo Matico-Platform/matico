@@ -80,28 +80,26 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
           var [majorMinLat, majorMaxLat] = [-90, 90]
         
           // Modify the extent of the graph if the step size is small to decrease the amount the app has to render
-          if (stepSize <= 5) {
-              // Get the lat/long coordinates of the corners of the graph
-              const ul = projection.invert?.([0, 0])
-              const bl = projection.invert?.([0, height])
-              const ur = projection.invert?.([width, 0])
-              const br = projection.invert?.([width, height])
+          if (stepSize < 5) {
+            // Get the lat/long coordinates of the corners of the graph
+            let corners = [projection.invert?.([0, 0]),
+            projection.invert?.([0, height]),
+            projection.invert?.([width, 0]),
+            projection.invert?.([width, height])].filter(x => x != null && typeof x != "undefined") as [number, number][]
 
-              if (ul && bl) {
-                 extMinLong = Math.max(extMinLong, Math.min(ul[0], bl[0]))
-              }
-              if (ur && br) {
-                  extMaxLong = Math.min(extMaxLong, Math.max(ur[0], br[0]))
-              }
-              if (bl && br) {
-                  minorMinLat = Math.max(minorMinLat, Math.min(bl[1], br[1]))
-                  majorMinLat = Math.max(majorMinLat, Math.min(bl[1], br[1]))
-              } 
-              if (ul && ur) {
-                  minorMaxLat = Math.min(minorMaxLat, Math.max(ul[1], ur[1]))
-                  majorMaxLat = Math.min(majorMaxLat, Math.max(ul[1], ur[1]))
-             }
-          }
+            const longs = corners.map((x:[number, number]) => x[0])
+            const lats = corners.map((x:[number, number]) => x[1])
+
+            extMinLong = Math.max(extMinLong, Math.min(...longs))
+            extMaxLong = Math.min(extMaxLong, Math.max(...longs))
+
+            minorMinLat = Math.max(minorMinLat, Math.min(...lats))
+            majorMinLat = Math.max(majorMinLat, Math.min(...lats))
+
+            minorMaxLat = Math.min(minorMaxLat, Math.max(...lats))
+            majorMaxLat = Math.min(majorMaxLat, Math.max(...lats))
+
+        }
         }
 
         return (
