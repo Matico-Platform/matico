@@ -58,6 +58,8 @@ export * from "./ScaleType";
 export * from "./ScatterplotPane";
 export * from "./ScreenUnits";
 export * from "./SelectControl";
+export * from "./SelectionMode";
+export * from "./SelectionOptions";
 export * from "./SpecParameter";
 export * from "./SpecParameterValue";
 export * from "./StyleJSONBaseMap";

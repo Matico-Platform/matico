@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
-import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl, FullScreen} from "react-map-gl";
+import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl, FullscreenControl} from "react-map-gl";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
@@ -12,9 +12,11 @@ import {MapboxOverlayProps, MapboxOverlay} from "@deck.gl/mapbox/typed"
 import maplibregl from 'maplibre-gl';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { SelectionOptions } from "@maticoapp/matico_types/spec";
+import { MaticoSelectionLayer } from "./MaticoSelectionLayer";
 
 
-
+//@ts-ignore
 function DeckGLOverlay(props: MapboxOverlayProps){
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
   overlay.setProps(props)
@@ -28,7 +30,8 @@ export interface MaticoMapPaneInterface extends MaticoPaneInterface {
     //TODO WE should properly type this from the @maticoapp/matico_spec library. Need to figure out the Typescript integration better or witx
     baseMap?: any;
     layers?: Array<any>;
-    controls: MapControls
+    controls: MapControls;
+    selectionOptions: SelectionOptions;
 }
 
 export function getNamedStyleJSON(style: string, accessToken: string) {
@@ -60,7 +63,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     name,
     layers,
     id,
-    controls
+    controls,
+    selectionOptions
 }) => {
     const [mapLayers, setMapLayers] = useState([]);
     const edit = useIsEditable();
@@ -123,14 +127,22 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
         }
     }
 
+    let mls = ([...layers]
+        .sort((a, b) => (a.order > b.order ? 1 : -1))
+        .map((l) =>
+            validMapLayers.find((ml) => ml.id === l.name)
+        ))
+
+    const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
+    if (selectionLayer){
+        mls.push(selectionLayer) 
+    }
+
     return (
         <View position="relative" overflow="hidden" width="100%" height="100%">
             {currentView && (
                 <>
                     <Map
-                        ref={mapRef}
-                        onLoad={()=>{  console.log ( "Layers ", mapRef.current?.getStyle().layers.filter(l=>l.type==="symbol"))}
-                        }
                         mapLib={maplibregl}
                         antialias={true}
                         initialViewState={{
@@ -157,7 +169,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                               <GeolocateControl position="top-right" />
                               }
                             {controls?.fullscreen &&
-                              <FullScreen position="top-right" />
+                              <FullscreenControl position="top-right" />
                               }
                     
                     <DeckGLOverlay
@@ -165,11 +177,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                               width={"100%"}
                               height={"100%"}
                               onViewStateChange = {updateViewState} 
-                              layers={[...layers]
-                                  .sort((a, b) => (a.order > b.order ? 1 : -1))
-                                  .map((l) =>
-                                      validMapLayers.find((ml) => ml.id === l.name)
-                                  )}
+                              layers={mls}
                                   />
 
                             
@@ -186,6 +194,12 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             beforeId={l.style.beforeId}
                         />
                     ))}
+                       <MaticoSelectionLayer
+                        onUpdate={updateLayer}
+                        selectionEnabled={selectionOptions.selectionEnabled}
+                        selectionMode={selectionOptions.selectionMode}
+                        mapName={id}
+                    />
                     <MaticoLegendPane layers={validMapLayers} />
                     
                 </>
