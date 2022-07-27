@@ -7,68 +7,86 @@ import {
     Item,
     View,
     Well,
-    Header,
-    Content
+    Header, Content, ActionButton
 } from "@adobe/react-spectrum";
 import {
     DatasetProviderComponent,
     DatasetProvider,
     DatasetParameterComponent
 } from "Datasets/DatasetProvider";
-import { useAnalysis } from "Hooks/useAnalysis";
+import { useAnalysis, populateDefaults } from "Hooks/useAnalysis";
 import React, { useEffect, useState } from "react";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { Column } from "Datasets/Dataset";
 import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
 import { ValueOrVariableInput } from "Components/MaticoEditor/Utils/ValueOrVariableInput";
-import { SpecParameter } from "@maticoapp/matico_types/spec";
+import { SpecParameter,SpecParameterValue } from "@maticoapp/matico_types/spec";
 
 export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     spec,
     onChange
 }) => {
-    const { analysis, error } = useAnalysis(spec.url);
-    const parameters = analysis ? analysis.options() : {};
+    const { analysis, error, options } = useAnalysis(spec.url);
     const values = spec.params;
+
+    const updateValues = (update: SpecParameter) => {
+        console.log("update is ", update);
+        onChange({
+            ...spec,
+            params: spec.params.map((p: SpecParameter) =>
+                p.name === update.name ? update : p
+            )
+        });
+    };
 
     return (
         <View>
-          <ParameterGroup parameters={parameters}  values={values} onChange={onChange} />
+            <ParameterGroup
+                parameters={options}
+                values={values}
+                onChange={updateValues}
+            />
         </View>
     );
 };
 
 const ParameterGroup: React.FC<{
-  parameters: any,
-  values: any,
-  onChange: (update:any)=>void
-}> = ({parameters, values, onChange})=>{
-  return(
-      <>
-            {Object.keys(parameters).map((key) => (
-                <ParameterInput
-                    key={key}
-                    name={key}
-                    options={parameters[key]}
-                    value={
-                        values.find((v: SpecParameter) => v.name === key)
-                            .parameter.value
-                    }
-                    onChange={(key, val) =>
-                        onChange({[key]:val})}
-                    params={values}
-                />
-            ))}
-            </>
-  )
-}
+    parameters: any;
+    values: any;
+    onChange: (update: SpecParameter) => void;
+}> = ({ parameters, values, onChange }) => {
+    if (!parameters || !values) return <></>;
+
+    return (
+        <>
+            {Object.keys(parameters).map((key) => {
+                let val = values.find((v: SpecParameter) => v.name === key)
+                    .parameter.value;
+                console.log(" input for ", key, parameters[key], val);
+                return (
+                    <ParameterInput
+                        key={key}
+                        name={key}
+                        options={parameters[key]}
+                        value={
+                            values.find((v: SpecParameter) => v.name === key)
+                                .parameter.value
+                        }
+                        onChange={onChange}
+                        params={values}
+                    />
+                );
+            })}
+        </>
+    );
+};
 
 const ParameterInput: React.FC<{
     name: string;
     options: any;
     value: any;
-    onChange: (key: string, value: any) => void;
+    onChange: (update: SpecParameter) => void;
     params: { [key: string]: any };
 }> = ({ name, options, value, onChange, params }) => {
     console.log(name, options, value, onChange, params);
@@ -77,8 +95,6 @@ const ParameterInput: React.FC<{
     const { displayName, description } = displayDetails;
     const defaultVal = options.default;
 
-    console.log("display name is ", displayName);
-
     switch (type) {
         case "numericInt":
             return (
@@ -86,7 +102,9 @@ const ParameterInput: React.FC<{
                     value={value ? value : defaultVal}
                     label={displayName}
                     defaultValue={defaultVal}
-                    onChange={(newVal) => onChange(name, newVal)}
+                    onChange={(newVal) =>
+                        onChange({ name, parameter: { type, value: newVal } })
+                    }
                 />
             );
 
@@ -96,7 +114,9 @@ const ParameterInput: React.FC<{
                     value={value ? value : defaultVal}
                     label={displayName}
                     defaultValue={defaultVal}
-                    onChange={(newVal) => onChange(name, newVal)}
+                    onChange={(newVal) =>
+                        onChange({ name, parameter: { type, value: newVal } })
+                    }
                 />
             );
         case "text":
@@ -105,7 +125,9 @@ const ParameterInput: React.FC<{
                     value={value ? value : defaultVal}
                     label={displayName}
                     defaultValue={defaultVal}
-                    onChange={(newVal) => onChange(name, newVal)}
+                    onChange={(newVal) =>
+                        onChange({ name, parameter: { type, value: newVal } })
+                    }
                 />
             );
         case "table":
@@ -114,7 +136,9 @@ const ParameterInput: React.FC<{
                     label={displayName}
                     description={description}
                     selectedDataset={value?.table}
-                    onDatasetSelected={(dataset) => onChange(name, dataset)}
+                    onDatasetSelected={(dataset) =>
+                        onChange({ name, parameter: { type, value: dataset } })
+                    }
                 />
             );
         case "column":
@@ -125,22 +149,93 @@ const ParameterInput: React.FC<{
                     selectedColumn={value}
                     datasetName={params[options.from_dataset]?.Table}
                     onColumnSelected={(column: Column) => {
-                        onChange(name, column.name);
+                        onChange({
+                            name,
+                            parameter: { type, value: column.name }
+                        });
                     }}
                 />
             );
-        case "optionGroup":
+
+        case "repeatedOption":
+          console.log("reapeated option value" ,value,options)
             return (
                 <Well>
                     <Header> {displayName}</Header>
                     <Content>{description} </Content>
-                    <ParameterGroup parameters={options.options} values={value[name]} onChange={(update)=> console.log("update ",update)} />
+                    {value.map((instance: SpecParameterValue, index: number) => { 
+                      console.log("instance is ", instance, value, options)
+                      return (
+                        <ParameterInput
+                            name={""}
+                            options={options.options}
+                            value={instance.value}
+                            onChange={(update) =>{
+                                console.log("update is ", update)
+                            
+                                onChange({
+                                    name,
+                                    parameter: {
+                                        type,
+                                        value: value.map(
+                                            (
+                                                v: SpecParameterValue,
+                                                v_index: number
+                                            ) =>
+                                                v_index === index ? update.parameter: v
+                                        )
+                                    }
+                                })
+                            }
+                            }
+                            params={params}
+                            key={index}
+                        />
+                    )})}
+                    <ActionButton
+                        onPress={() => {
+                            onChange({
+                                name,
+                                parameter: {
+                                    type,
+                                    value: [
+                                        ...value,
+                                        ...populateDefaults({
+                                            [`${name}_${value.length + 1}`]:
+                                                options.options
+                                        }).map(p=>p.parameter)
+                                    ]
+                                }
+                            });
+                        }}
+                    >
+                        Add
+                    </ActionButton>
                 </Well>
             );
-            return <Text>Filed type {type} currently not supported</Text>;
-
-        case "repeatedOption":
-            return <Text>Filed type {type} currently not supported</Text>;
+        case "optionGroup":
+            console.log("Option group", options, value);
+            return (
+                <Well>
+                    <Header> {displayName}</Header>
+                    <Content>{description} </Content>
+                    <ParameterGroup
+                        parameters={options.options}
+                        values={value}
+                        onChange={(update) =>
+                            onChange({
+                                name,
+                                parameter: {
+                                    type,
+                                    value: value.map((v: SpecParameter) =>
+                                        v.name === update.name ? update : v
+                                    )
+                                }
+                            })
+                        }
+                    />
+                </Well>
+            );
 
         default:
             return <Text>Field type {type} currently not supported</Text>;
@@ -159,6 +254,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
         url: null,
         params: parameters
     });
+
 
     const computes = useAvaliableCompute();
 

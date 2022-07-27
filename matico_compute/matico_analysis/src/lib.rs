@@ -1,7 +1,7 @@
 use geo::Geometry;
 use serde::{Serialize,Deserialize};
 use geozero::{wkb::Wkb, ToGeo};
-use std::{collections::{HashMap, BTreeMap}, fmt};
+use std::{collections::{BTreeMap}, fmt};
 mod parameter_options;
 mod parameter_values;
 pub use polars::prelude::{Series, DataFrame};

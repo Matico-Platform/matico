@@ -42,6 +42,8 @@ export * from "./NumericCategoryOptions";
 export * from "./NumericFloatOptions";
 export * from "./NumericIntOptions";
 export * from "./OptionGroup";
+export * from "./OptionGroupVals";
+export * from "./OptionGroupVal";
 export * from "./Page";
 export * from "./PaneDetails";
 export * from "./PanePosition";

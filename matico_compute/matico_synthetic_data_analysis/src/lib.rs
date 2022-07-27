@@ -8,15 +8,8 @@ use serde::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::collections::{BTreeMap, HashMap};
 use wasm_bindgen::prelude::*;
-use rand_distr::{Normal,Distribution};
+use rand_distr::{Normal,Distribution, Binomial, Poisson};
 
-
-// use polars::prelude::Series;
-// use geopolars::{geoseries::GeoSeries, geodataframe::GeoDataFrame };
-
-// use rusty_machine::learning::dbscan::DBSCAN;
-// use rusty_machine::learning::UnSupModel;
-// use rusty_machine::linalg::Matrix;
 
 #[matico_spec_derive::matico_compute]
 pub struct SyntheticData{}
@@ -25,18 +18,15 @@ impl MaticoAnalysisRunner for SyntheticData{
     fn run(&mut self) -> std::result::Result<DataFrame, ProcessError> {
         
         // Get region variables
-        let region: BTreeMap<String,ParameterValue> = self.get_parameter("region")?.try_into()?;
-        let min_lat : f32 = region.get("min_lat").ok_or_else(|| ProcessError{error:"Failed to get min_lat".into()})?.try_into()?;
-        let max_lat: f32  = region.get("max_lat").ok_or_else(|| ProcessError{error:"Failed to get max_lat".into()})?.try_into()?;
-        let min_lng: f32 = region.get("min_lng").ok_or_else(|| ProcessError{error:"Failed to get min_lng".into()})?.try_into()?;
-        let max_lng: f32 = region.get("max_lng").ok_or_else(|| ProcessError{error:"Failed to get max lng".into()})?.try_into()?;
-        let no_points: u32 = region.get("no_points").ok_or_else(|| ProcessError{error:"Failed to get no_points".into()})?.try_into()?;
+        let region: OptionGroupVals = self.get_parameter("region")?.try_into()?;
+        let min_lat: f32 = region.get("min_lat")?.try_into()?;
+        let max_lat: f32  = region.get("max_lat")?.try_into()?;
+        let min_lng: f32 = region.get("min_lng")?.try_into()?;
+        let max_lng: f32 = region.get("max_lng")?.try_into()?;
 
-        // Get variables
-        let variable: BTreeMap<String,ParameterValue> = self.get_parameter("variable")?.try_into()?;
-        let variable_name: String = variable.get("variable_name").ok_or_else(|| ProcessError{error:"Failed to get variable_name".into()})?.try_into()?;
-        let variable_mean: f32 = variable.get("mean").ok_or_else(|| ProcessError{error:"Failed to get variable_name".into()})?.try_into()?;
-        let variable_std_dev: f32 = variable.get("std_dev").ok_or_else(|| ProcessError{error:"Failed to get variable_name".into()})?.try_into()?;
+        let no_points: u32 = self.get_parameter("no_points")?.try_into()?;
+        let control_fraction: f32 = self.get_parameter("control_fraction")?.try_into()?;
+
 
         // Do some quick checks 
         if max_lat <= min_lat {
@@ -66,21 +56,53 @@ impl MaticoAnalysisRunner for SyntheticData{
 
         // Construct the distribution
         
-        let dist = Normal::new(variable_mean,variable_std_dev).map_err(|e| ProcessError{
-            error: format!("Failed to generate normal {:#?}",e)
-        })?;
 
-        let variable : Vec<f32> = (0..no_points).map(|_| {
-            let v:f32 = dist.sample(&mut rng); 
-            v
+        let variables : Vec<ParameterValue> = self.get_parameter("variables")?.try_into()?;  
+        let mut result_series: Vec<Series> = vec![];
+
+        for variable in variables.iter(){
+
+            let variable_params : OptionGroupVals = variable.try_into()?;
+        
+            let variable_name: String = variable_params.get("variable_name")?.try_into()?;
+            let variable_lambda: f32 = variable_params.get("variable_lambda")?.try_into()?;
+
+            let dist = Poisson::new(variable_lambda).map_err(|e| ProcessError{
+                error: format!("Failed to generate normal {:#?}",e)
+            })?;
+
+            let variable : Vec<f32> = (0..no_points).map(|_| {
+                let v: f32= dist.sample(&mut rng); 
+                v
+            }).collect();
+
+            web_sys::console::log_1(&"Calculated distribution".into());
+
+            let variable : Series = Series::from_vec(&variable_name, variable);
+            result_series.push(variable);
+        }
+
+
+
+        let control_variable : Vec<u32> = (0..no_points).map(|_| {
+            let v: bool= rng.gen_bool(control_fraction as f64); 
+            if v {
+                return  1
+            }
+            else{
+                return 0
+            }
         }).collect();
 
-        web_sys::console::log_1(&"Calculated distribution".into());
 
-        let variable : Series = Series::from_vec(&variable_name, variable);
+        let control_variable : Series = Series::from_vec("control", control_variable);
+        result_series.push(control_variable);
 
+    
+
+        result_series.push(geo_series);
         // Generate the result 
-        let result = DataFrame::new(vec![variable,geo_series]).map_err(|e|
+        let result = DataFrame::new(result_series).map_err(|e|
             ProcessError{
                 error: format!("Failed to construct result df {}", e)
             });
@@ -147,36 +169,28 @@ impl MaticoAnalysisRunner for SyntheticData{
             }
         }));
 
-        let mut variable_options:BTreeMap<String,ParameterOptions> = BTreeMap::new();
-        variable_options.insert("variable_mean".into(), ParameterOptions::NumericFloat(NumericFloatOptions{
-            default: Some(1.0),
-            range: Some([-10000.0,10000.0]),
+
+        options.insert("control_fraction".into(), ParameterOptions::NumericFloat(NumericFloatOptions{
+            default: Some(0.3),
+            range:None,
             display_details:ParameterOptionDisplayDetails{
-                description:Some("The mean of the variable, where it is centered".into()),
-                display_name:Some("Mean".into())
+                description:Some("What fraction of the points should be in the control group".into()),
+                display_name: Some("Control Fraction".into())
             }
         }));
 
-        variable_options.insert("variable_std_dev".into(), ParameterOptions::NumericFloat(NumericFloatOptions{
+
+        let mut variable_options:BTreeMap<String,ParameterOptions> = BTreeMap::new();
+        variable_options.insert("variable_lambda".into(), ParameterOptions::NumericFloat(NumericFloatOptions{
             default: Some(1.0),
             range: Some([0.0,10000.0]),
             display_details:ParameterOptionDisplayDetails{
-                description:Some("The std_dev of the variable, where it is centered".into()),
-                display_name:Some("Standard Deviation".into())
+                description:Some("The lambda value of the poisson distribution of the variable".into()),
+                display_name:Some("Lambda".into())
             }
         }));
 
-        let variable_options = OptionGroup{
-            display_details: ParameterOptionDisplayDetails { description: Some("Details of a random variable to add to the dataset".into()), display_name: Some("Variable".into()) },
-            options : variable_options
-
-        };
-
-        options.insert("region".into(), ParameterOptions::OptionGroup(region_options));
-        options.insert("variable".into(), ParameterOptions::OptionGroup(variable_options));
-
-
-        options.insert("variable_name".into(), ParameterOptions::Text(TextOptions{
+        variable_options.insert("variable_name".into(), ParameterOptions::Text(TextOptions{
             default: Some("variable".into()),
             display_details:ParameterOptionDisplayDetails{
                 description:Some("What to call the random variable".into()),
@@ -184,6 +198,25 @@ impl MaticoAnalysisRunner for SyntheticData{
             },
             ..Default::default()
         })); 
+
+
+
+        let variable_options = RepeatedOption{
+        display_details: ParameterOptionDisplayDetails { description: Some("Variables to add to the resulting table".into()), display_name: Some("Variables".into()) },
+        min_times:0,
+        max_times: Some(10),
+
+        options: Box::new(ParameterOptions::OptionGroup(OptionGroup{
+            display_details: ParameterOptionDisplayDetails { description: Some("Details of a random variable to add to the dataset".into()), display_name: Some("Variable".into()) },
+            options : variable_options
+
+        }))
+        };
+
+        options.insert("region".into(), ParameterOptions::OptionGroup(region_options));
+        options.insert("variables".into(), ParameterOptions::RepeatedOption(variable_options));
+
+
 
         options
 

@@ -1,16 +1,35 @@
 use serde::{Serialize,Deserialize};
 use matico_common::VarOr;
 use ts_rs::TS;
-use std::{convert::TryFrom, collections::BTreeMap};
+use std::convert::TryFrom;
 
-use crate::ArgError;
+use crate::{ArgError, ProcessError};
+
+#[derive(Serialize,Deserialize,Debug, Clone, TS)]
+#[ts(export)]
+pub struct OptionGroupVals(Vec<OptionGroupVal>);
+
+#[derive(Serialize,Deserialize,Debug, Clone, TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub struct OptionGroupVal{
+    pub name:String,
+    pub parameter: ParameterValue
+}
+
+impl OptionGroupVals{
+    pub fn get(&self, variable: &str)->Result<&ParameterValue, ProcessError>{
+        let option_group = self.0.iter().find(|v| v.name == variable).ok_or_else(|| ProcessError{error:format!("Failed to get {} in option group", variable).into()})?;
+        Ok(&option_group.parameter)
+    }
+}
 
 
 #[derive(Serialize,Deserialize,Debug, Clone, TS)]
 #[serde(rename_all="camelCase", tag="type",content="value")]
 #[ts(export)]
 pub enum ParameterValue {
-    OptionCollection(BTreeMap<String,ParameterValue>),
+    OptionGroup(OptionGroupVals),
     RepeatedOption(Vec<ParameterValue>),
     NumericFloat(f32),
     NumericInt(i32),
@@ -20,6 +39,7 @@ pub enum ParameterValue {
     Table(String),
     Text(String),
 }
+
 
 impl TryFrom<&ParameterValue> for Vec<ParameterValue>{
     type Error = ArgError;
@@ -34,11 +54,11 @@ impl TryFrom<&ParameterValue> for Vec<ParameterValue>{
     }
 }
 
-impl TryFrom<&ParameterValue> for BTreeMap<String,ParameterValue>{
+impl TryFrom<&ParameterValue> for OptionGroupVals{
     type Error = ArgError;
 
-    fn try_from(parameter_value: &ParameterValue)->Result<BTreeMap<String,ParameterValue>, Self::Error>{
-        if let ParameterValue::OptionCollection(options) = parameter_value{
+    fn try_from(parameter_value: &ParameterValue)->Result<OptionGroupVals, Self::Error>{
+        if let ParameterValue::OptionGroup(options) = parameter_value{
             return Ok(options.to_owned())
         }
         else{
@@ -119,12 +139,14 @@ pub struct SpecParameter{
     parameter: SpecParameterValue
 }
 
+
+
 #[derive(Serialize,Deserialize,Debug, Clone, TS)]
 #[serde(rename_all="camelCase", tag="type", content="value")]
 #[ts(export)]
 pub enum SpecParameterValue {
-    OptionCollection(BTreeMap<String,SpecParameter>),
-    RepeatedOption(Vec<SpecParameter>),
+    OptionGroup(Vec<SpecParameter>),
+    RepeatedOption(Vec<SpecParameterValue>),
     NumericFloat(VarOr<f32>),
     NumericInt(VarOr<i32>),
     NumericCategory(VarOr<Vec<u32>>),
