@@ -27,29 +27,29 @@ pub struct TiledLayer {
 #[derive(Serialize, Clone, Deserialize, Debug, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct NamedBaseMap{
+pub struct NamedBaseMap {
     name: String,
-    affiliation: Option<String>
+    affiliation: Option<String>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Debug, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct StyleJSONBaseMap{
+pub struct StyleJSONBaseMap {
     url: String,
-    affiliation: Option<String>
+    affiliation: Option<String>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Debug, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct ImageBaseMap{
+pub struct ImageBaseMap {
     url: String,
-    affiliation: Option<String>
+    affiliation: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[serde(rename_all = "camelCase", tag="type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
 pub enum BaseMap {
     Color(ColorSpecification),
@@ -89,7 +89,7 @@ pub struct LayerStyle {
     radius_scale: Option<f32>,
     elevation: Option<MappingVarOr<f32>>,
     elevation_scale: Option<f32>,
-    beforeId: Option<String>
+    beforeId: Option<String>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
@@ -145,27 +145,50 @@ impl Default for View {
     }
 }
 
-
 #[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct MapControls{
-    pub scale : Option<bool>,
+pub struct MapControls {
+    pub scale: Option<bool>,
     pub geolocate: Option<bool>,
     pub navigation: Option<bool>,
     pub fullscreen: Option<bool>,
 }
 
-impl Default for MapControls{
-    fn default()->Self{
-        MapControls{
+impl Default for MapControls {
+    fn default() -> Self {
+        MapControls {
             scale: Some(true),
             geolocate: Some(false),
             fullscreen: Some(false),
-            navigation: Some(false)
+            navigation: Some(false),
         }
     }
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe, TS, Copy)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum SelectionMode {
+    Rectangle,
+    Polygon,
+    Lasso,
+}
+impl Default for SelectionMode {
+    fn default() -> Self {
+        SelectionMode::Rectangle
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS, Default, Copy)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SelectionOptions {
+    pub selection_enabled: bool,
+    pub selection_mode: SelectionMode,
 }
 
 #[wasm_bindgen]
@@ -189,7 +212,10 @@ pub struct MapPane {
     pub base_map: Option<BaseMap>,
 
     #[wasm_bindgen(skip)]
-    pub controls: Option<MapControls>
+    pub controls: Option<MapControls>,
+
+    #[wasm_bindgen(skip)]
+    pub selection_options: Option<SelectionOptions>,
 }
 
 #[wasm_bindgen]
@@ -213,7 +239,8 @@ impl Default for MapPane {
             view: VarOr::Value(View::default()),
             layers: vec![],
             base_map: Some(BaseMap::default()),
-            controls: Some(MapControls::default())
+            controls: Some(MapControls::default()),
+            selection_options: Some(SelectionOptions::default()),
         }
     }
 }
@@ -268,7 +295,7 @@ mod tests {
             radius_scale: Some(1.0),
             elevation: None,
             elevation_scale: Some(1.0),
-            beforeId:None
+            beforeId: None,
         };
         println!("{}", serde_json::to_string_pretty(&style).unwrap());
     }

@@ -2,6 +2,13 @@
 /* eslint-disable */
 /**
 */
+export enum SelectionMode {
+  Rectangle,
+  Polygon,
+  Lasso,
+}
+/**
+*/
 export enum LinearLayoutDirection {
   Horizontal,
   Vertical,
@@ -307,6 +314,17 @@ export class ScatterplotPane {
 */
 export class SelectControl {
   free(): void;
+}
+/**
+*/
+export class SelectionOptions {
+  free(): void;
+/**
+*/
+  selection_enabled: boolean;
+/**
+*/
+  selection_mode: number;
 }
 /**
 */

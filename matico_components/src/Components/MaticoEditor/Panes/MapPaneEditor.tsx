@@ -121,7 +121,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         usePane(paneRef);
 
     const mapPane = pane as MapPane;
-    console.log("map pane is ", mapPane.controls);
+    console.log("map pane is ", mapPane);
 
     const mapPaneCurrentView = useMaticoSelector(
         (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
@@ -354,9 +354,32 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     onChange={updateBaseMap}
                 />
             </CollapsibleSection>
+            <CollapsibleSection title="Selection" isOpen={true}>
+                <Checkbox
+                    isSelected={mapPane.selectionoOtions?.selectionEnabled}
+                    onChange={(val: boolean) =>
+                        updatePane({
+                            selectionOptions: {
+                                ...mapPane.selectionOptions,
+                                selectionEnabled: val
+                            }
+                        })
+                    }
+                >
+                    Allow Selection
+                </Checkbox>
+
+                <Picker label="Selection Mode" selectedKey={mapPane.selectionOptions?.selectionMode} 
+                    isDisabled={!mapPane.selectionOptions?.selectionEnabled}
+                    onSelectionChange={(key)=> updatePane({ selectionOptions: { ...mapPane.selectionOptions, selectionMode: key }})}
+                items={[{id:"rectangle", name:"Rectangle"}, {id:"lasso", name:"Lasso"}, {id:"polygon", name:"Polygon"}]}>
+                    {(item)=><Item key={item.id}>{item.name}</Item>}
+                </Picker>
+
+            </CollapsibleSection>
             <CollapsibleSection title="Controls" isOpen={true}>
                 <CheckboxGroup
-                    value={Object.entries(mapPane.controls)
+                    value={Object.entries(mapPane.controls ?? {})
                         .filter(([label, selected]) => selected)
                         .map(([label, selected]) => label)}
                         //@ts-ignore
