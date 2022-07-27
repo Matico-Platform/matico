@@ -8,7 +8,8 @@ function getObject(idx) { return heap[idx]; }
 
 let WASM_VECTOR_LEN = 0;
 
-let cachedUint8Memory0;
+let cachedUint8Memory0 = new Uint8Array();
+
 function getUint8Memory0() {
     if (cachedUint8Memory0.byteLength === 0) {
         cachedUint8Memory0 = new Uint8Array(wasm.memory.buffer);
@@ -71,7 +72,8 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 
-let cachedInt32Memory0;
+let cachedInt32Memory0 = new Int32Array();
+
 function getInt32Memory0() {
     if (cachedInt32Memory0.byteLength === 0) {
         cachedInt32Memory0 = new Int32Array(wasm.memory.buffer);
@@ -112,7 +114,8 @@ function addHeapObject(obj) {
     return idx;
 }
 
-let cachedFloat32Memory0;
+let cachedFloat32Memory0 = new Float32Array();
+
 function getFloat32Memory0() {
     if (cachedFloat32Memory0.byteLength === 0) {
         cachedFloat32Memory0 = new Float32Array(wasm.memory.buffer);
@@ -166,50 +169,59 @@ export class App {
         return App.__wrap(ret);
     }
     /**
+    * @returns {any}
     */
     get pages() {
         const ret = wasm.app_get_pages(this.ptr);
         return takeObject(ret);
     }
     /**
+    * @param {any} pages
     */
     set pages(pages) {
         wasm.app_set_pages(this.ptr, addHeapObject(pages));
     }
     /**
+    * @returns {any}
     */
     get panes() {
         const ret = wasm.app_get_panes(this.ptr);
         return takeObject(ret);
     }
     /**
+    * @param {any} panes
     */
     set panes(panes) {
         wasm.app_set_panes(this.ptr, addHeapObject(panes));
     }
     /**
+    * @returns {any}
     */
     get theme() {
         const ret = wasm.app_get_theme(this.ptr);
         return takeObject(ret);
     }
     /**
+    * @param {any} pages
     */
     set theme(pages) {
         wasm.app_set_theme(this.ptr, addHeapObject(pages));
     }
     /**
+    * @returns {any}
     */
     get datasets() {
         const ret = wasm.app_get_datasets(this.ptr);
         return takeObject(ret);
     }
     /**
+    * @param {any} datasets
     */
     set datasets(datasets) {
         wasm.app_set_datasets(this.ptr, addHeapObject(datasets));
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -224,6 +236,7 @@ export class App {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -231,6 +244,7 @@ export class App {
         wasm.app_set_name(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string}
     */
     get description() {
         try {
@@ -245,6 +259,7 @@ export class App {
         }
     }
     /**
+    * @param {string} description
     */
     set description(description) {
         const ptr0 = passStringToWasm0(description, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -252,12 +267,14 @@ export class App {
         wasm.app_set_description(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {any}
     */
     get created_at() {
         const ret = wasm.app_get_created_at(this.ptr);
         return takeObject(ret);
     }
     /**
+    * @param {any} created_at
     */
     set created_at(created_at) {
         wasm.app_set_created_at(this.ptr, addHeapObject(created_at));
@@ -380,6 +397,7 @@ export class CSVDataset {
         wasm.__wbg_csvdataset_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -394,6 +412,7 @@ export class CSVDataset {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -449,6 +468,7 @@ export class GeoJSONDataset {
         wasm.__wbg_geojsondataset_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -463,6 +483,7 @@ export class GeoJSONDataset {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -502,6 +523,7 @@ export class HistogramPane {
         wasm.__wbg_histogrampane_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -516,6 +538,7 @@ export class HistogramPane {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -571,6 +594,7 @@ export class MapPane {
         wasm.__wbg_mappane_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -585,6 +609,7 @@ export class MapPane {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -624,6 +649,7 @@ export class MaticoRemoteDataset {
         wasm.__wbg_maticoremotedataset_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -638,6 +664,7 @@ export class MaticoRemoteDataset {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -645,6 +672,7 @@ export class MaticoRemoteDataset {
         wasm.csvdataset_set_name(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string}
     */
     get description() {
         try {
@@ -659,6 +687,7 @@ export class MaticoRemoteDataset {
         }
     }
     /**
+    * @param {string} description
     */
     set description(description) {
         const ptr0 = passStringToWasm0(description, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -666,6 +695,7 @@ export class MaticoRemoteDataset {
         wasm.maticoremotedataset_set_description(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string}
     */
     get server_url() {
         try {
@@ -680,6 +710,7 @@ export class MaticoRemoteDataset {
         }
     }
     /**
+    * @param {string} server_url
     */
     set server_url(server_url) {
         const ptr0 = passStringToWasm0(server_url, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -687,6 +718,7 @@ export class MaticoRemoteDataset {
         wasm.maticoremotedataset_set_server_url(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string | undefined}
     */
     get dataset_id() {
         try {
@@ -705,6 +737,7 @@ export class MaticoRemoteDataset {
         }
     }
     /**
+    * @param {string} dataset_id
     */
     set dataset_id(dataset_id) {
         const ptr0 = passStringToWasm0(dataset_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -744,6 +777,7 @@ export class Page {
         wasm.__wbg_page_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -758,6 +792,7 @@ export class Page {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -765,6 +800,7 @@ export class Page {
         wasm.page_set_name(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string | undefined}
     */
     get path() {
         try {
@@ -783,6 +819,7 @@ export class Page {
         }
     }
     /**
+    * @param {string} path
     */
     set path(path) {
         const ptr0 = passStringToWasm0(path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -790,6 +827,7 @@ export class Page {
         wasm.page_set_path(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string | undefined}
     */
     get icon() {
         try {
@@ -808,6 +846,7 @@ export class Page {
         }
     }
     /**
+    * @param {string} icon
     */
     set icon(icon) {
         const ptr0 = passStringToWasm0(icon, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -905,6 +944,7 @@ export class PanePosition {
         wasm.__wbg_paneposition_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get x_units() {
         try {
@@ -919,6 +959,7 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {string}
     */
     get y_units() {
         try {
@@ -933,6 +974,7 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {string}
     */
     get width_units() {
         try {
@@ -947,6 +989,7 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {string}
     */
     get height_units() {
         try {
@@ -961,6 +1004,7 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {string}
     */
     get pad_units_left() {
         try {
@@ -975,6 +1019,7 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {string}
     */
     get pad_units_right() {
         try {
@@ -989,6 +1034,7 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {string}
     */
     get pad_units_top() {
         try {
@@ -1003,6 +1049,7 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {string}
     */
     get pad_units_bottom() {
         try {
@@ -1017,50 +1064,59 @@ export class PanePosition {
         }
     }
     /**
+    * @returns {number}
     */
     get width() {
         const ret = wasm.__wbg_get_paneposition_width(this.ptr);
         return ret >>> 0;
     }
     /**
+    * @param {number} arg0
     */
     set width(arg0) {
         wasm.__wbg_set_paneposition_width(this.ptr, arg0);
     }
     /**
+    * @returns {number}
     */
     get height() {
         const ret = wasm.__wbg_get_paneposition_height(this.ptr);
         return ret >>> 0;
     }
     /**
+    * @param {number} arg0
     */
     set height(arg0) {
         wasm.__wbg_set_paneposition_height(this.ptr, arg0);
     }
     /**
+    * @returns {number}
     */
     get layer() {
         const ret = wasm.__wbg_get_paneposition_layer(this.ptr);
         return ret >>> 0;
     }
     /**
+    * @param {number} arg0
     */
     set layer(arg0) {
         wasm.__wbg_set_paneposition_layer(this.ptr, arg0);
     }
     /**
+    * @returns {boolean}
     */
     get float() {
         const ret = wasm.__wbg_get_paneposition_float(this.ptr);
         return ret !== 0;
     }
     /**
+    * @param {boolean} arg0
     */
     set float(arg0) {
         wasm.__wbg_set_paneposition_float(this.ptr, arg0);
     }
     /**
+    * @returns {number | undefined}
     */
     get x() {
         try {
@@ -1074,11 +1130,13 @@ export class PanePosition {
         }
     }
     /**
+    * @param {number | undefined} arg0
     */
     set x(arg0) {
         wasm.__wbg_set_paneposition_x(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
     }
     /**
+    * @returns {number | undefined}
     */
     get y() {
         try {
@@ -1092,11 +1150,13 @@ export class PanePosition {
         }
     }
     /**
+    * @param {number | undefined} arg0
     */
     set y(arg0) {
         wasm.__wbg_set_paneposition_y(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
     }
     /**
+    * @returns {number | undefined}
     */
     get pad_left() {
         try {
@@ -1110,11 +1170,13 @@ export class PanePosition {
         }
     }
     /**
+    * @param {number | undefined} arg0
     */
     set pad_left(arg0) {
         wasm.__wbg_set_paneposition_pad_left(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
     }
     /**
+    * @returns {number | undefined}
     */
     get pad_right() {
         try {
@@ -1128,11 +1190,13 @@ export class PanePosition {
         }
     }
     /**
+    * @param {number | undefined} arg0
     */
     set pad_right(arg0) {
         wasm.__wbg_set_paneposition_pad_right(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
     }
     /**
+    * @returns {number | undefined}
     */
     get pad_top() {
         try {
@@ -1146,11 +1210,13 @@ export class PanePosition {
         }
     }
     /**
+    * @param {number | undefined} arg0
     */
     set pad_top(arg0) {
         wasm.__wbg_set_paneposition_pad_top(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
     }
     /**
+    * @returns {number | undefined}
     */
     get pad_bottom() {
         try {
@@ -1164,6 +1230,7 @@ export class PanePosition {
         }
     }
     /**
+    * @param {number | undefined} arg0
     */
     set pad_bottom(arg0) {
         wasm.__wbg_set_paneposition_pad_bottom(this.ptr, !isLikeNone(arg0), isLikeNone(arg0) ? 0 : arg0);
@@ -1185,6 +1252,7 @@ export class PieChartPane {
         wasm.__wbg_piechartpane_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -1199,6 +1267,7 @@ export class PieChartPane {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1238,6 +1307,7 @@ export class ScatterplotPane {
         wasm.__wbg_scatterplotpane_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -1252,6 +1322,7 @@ export class ScatterplotPane {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1277,6 +1348,22 @@ export class SelectControl {
 }
 /**
 */
+export class SelectionOptions {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_selectionoptions_free(ptr);
+    }
+}
+/**
+*/
 export class TextPane {
 
     __destroy_into_raw() {
@@ -1291,6 +1378,7 @@ export class TextPane {
         wasm.__wbg_textpane_free(ptr);
     }
     /**
+    * @returns {string}
     */
     get content() {
         try {
@@ -1305,6 +1393,7 @@ export class TextPane {
         }
     }
     /**
+    * @param {string} content
     */
     set content(content) {
         const ptr0 = passStringToWasm0(content, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1312,6 +1401,7 @@ export class TextPane {
         wasm.textpane_set_content(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string}
     */
     get name() {
         try {
@@ -1326,6 +1416,7 @@ export class TextPane {
         }
     }
     /**
+    * @param {string} name
     */
     set name(name) {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1333,6 +1424,7 @@ export class TextPane {
         wasm.textpane_set_name(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string | undefined}
     */
     get font() {
         try {
@@ -1351,6 +1443,7 @@ export class TextPane {
         }
     }
     /**
+    * @param {string} font
     */
     set font(font) {
         const ptr0 = passStringToWasm0(font, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1358,6 +1451,7 @@ export class TextPane {
         wasm.textpane_set_font(this.ptr, ptr0, len0);
     }
     /**
+    * @returns {string | undefined}
     */
     get background() {
         try {
@@ -1376,6 +1470,7 @@ export class TextPane {
         }
     }
     /**
+    * @param {string} background
     */
     set background(background) {
         const ptr0 = passStringToWasm0(background, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1399,28 +1494,33 @@ export class Theme {
         wasm.__wbg_theme_free(ptr);
     }
     /**
+    * @returns {any}
     */
     get primaryColor() {
         const ret = wasm.theme_get_primary_color(this.ptr);
         return takeObject(ret);
     }
     /**
+    * @param {any} val
     */
     set primaryColor(val) {
         wasm.theme_set_primary_color(this.ptr, addHeapObject(val));
     }
     /**
+    * @returns {any}
     */
     get secondaryColor() {
         const ret = wasm.theme_get_secondary_color(this.ptr);
         return takeObject(ret);
     }
     /**
+    * @param {any} val
     */
     set secondaryColor(val) {
         wasm.theme_set_secondary_color(this.ptr, addHeapObject(val));
     }
     /**
+    * @returns {string | undefined}
     */
     get icon() {
         try {
@@ -1439,6 +1539,7 @@ export class Theme {
         }
     }
     /**
+    * @param {string} logo_url
     */
     set icon(logo_url) {
         const ptr0 = passStringToWasm0(logo_url, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -1462,12 +1563,14 @@ export class ValidationResult {
         wasm.__wbg_validationresult_free(ptr);
     }
     /**
+    * @returns {boolean}
     */
     get is_valid() {
         const ret = wasm.__wbg_get_validationresult_is_valid(this.ptr);
         return ret !== 0;
     }
     /**
+    * @param {boolean} arg0
     */
     set is_valid(arg0) {
         wasm.__wbg_set_validationresult_is_valid(this.ptr, arg0);
@@ -1489,56 +1592,66 @@ export class View {
         wasm.__wbg_view_free(ptr);
     }
     /**
+    * @returns {number}
     */
     get lat() {
         const ret = wasm.__wbg_get_view_lat(this.ptr);
         return ret;
     }
     /**
+    * @param {number} arg0
     */
     set lat(arg0) {
         wasm.__wbg_set_view_lat(this.ptr, arg0);
     }
     /**
+    * @returns {number}
     */
     get lng() {
         const ret = wasm.__wbg_get_view_lng(this.ptr);
         return ret;
     }
     /**
+    * @param {number} arg0
     */
     set lng(arg0) {
         wasm.__wbg_set_view_lng(this.ptr, arg0);
     }
     /**
+    * @returns {number}
     */
     get zoom() {
         const ret = wasm.__wbg_get_view_zoom(this.ptr);
         return ret;
     }
     /**
+    * @param {number} arg0
     */
     set zoom(arg0) {
         wasm.__wbg_set_view_zoom(this.ptr, arg0);
     }
     /**
+    * @returns {number}
     */
     get bearing() {
         const ret = wasm.__wbg_get_view_bearing(this.ptr);
         return ret;
     }
     /**
+    * @param {number} arg0
     */
     set bearing(arg0) {
         wasm.__wbg_set_view_bearing(this.ptr, arg0);
     }
     /**
+    * @returns {number}
     */
     get pitch() {
         const ret = wasm.__wbg_get_view_pitch(this.ptr);
         return ret;
     }
     /**
+    * @param {number} arg0
     */
     set pitch(arg0) {
         wasm.__wbg_set_view_pitch(this.ptr, arg0);
@@ -1579,12 +1692,12 @@ export function __wbindgen_json_parse(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-export function __wbg_getTime_7c8d3b79f51e2b87(arg0) {
+export function __wbg_getTime_58b0bdbebd4ef11d(arg0) {
     const ret = getObject(arg0).getTime();
     return ret;
 };
 
-export function __wbg_new0_6b49a1fca8534d39() {
+export function __wbg_new0_adda2d4bcb124f0a() {
     const ret = new Date();
     return addHeapObject(ret);
 };
@@ -1592,8 +1705,4 @@ export function __wbg_new0_6b49a1fca8534d39() {
 export function __wbindgen_throw(arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
 };
-
-cachedFloat32Memory0 = new Float32Array(wasm.memory.buffer);
-cachedInt32Memory0 = new Int32Array(wasm.memory.buffer);
-cachedUint8Memory0 = new Uint8Array(wasm.memory.buffer);
 

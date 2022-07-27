@@ -9,6 +9,7 @@ import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
 import { Layer } from "@maticoapp/matico_types/spec";
+import { MaticoSelectionLayer } from "./MaticoSelectionLayer";
 
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
     view: MaticoView;
@@ -106,6 +107,20 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
         }
     }
 
+
+    let mls = ([...layers]
+                            .sort((a, b) => (a.order > b.order ? 1 : -1))
+                            .map((l) =>
+                                validMapLayers.find((ml) => ml.id === l.name)
+                            ))
+
+    const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
+    if (selectionLayer){
+      mls.push(selectionLayer) 
+    }
+
+    console.log("mls ",mls)
+
     return (
         <View position="relative" overflow="hidden" width="100%" height="100%">
             {currentView && (
@@ -121,11 +136,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         }}
                         controller={true}
                         onViewStateChange={updateViewState}
-                        layers={[...layers]
-                            .sort((a, b) => (a.order > b.order ? 1 : -1))
-                            .map((l) =>
-                                validMapLayers.find((ml) => ml.id === l.name)
-                            )}
+                        layers={mls}
                     >
                         <StaticMap
                             mapboxApiAccessToken={
@@ -147,9 +158,17 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             source={l.source}
                             style={l.style}
                             onUpdate={updateLayer}
-                            mapName={name}
+                            mapName={id}
                         />
                     ))}
+
+                    <MaticoSelectionLayer
+                        onUpdate={updateLayer}
+                        selectionEnabled={true}
+                        polygonSelection={false}
+                        rectangleSelection={false}
+                        mapName={id}
+                    />
                     <MaticoLegendPane layers={validMapLayers} />
                 </>
             )}

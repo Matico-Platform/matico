@@ -293,6 +293,11 @@ export class SelectControl {
 }
 /**
 */
+export class SelectionOptions {
+  free(): void;
+}
+/**
+*/
 export class TextPane {
   free(): void;
 /**

@@ -144,6 +144,19 @@ impl Default for View {
     }
 }
 
+
+
+#[wasm_bindgen]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS, Default)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SelectionOptions{
+    selectionEnabled: bool,
+    rectangleSelection:bool,
+    polygonSelection:bool
+}
+
+
 #[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
@@ -163,6 +176,9 @@ pub struct MapPane {
 
     #[wasm_bindgen(skip)]
     pub base_map: Option<BaseMap>,
+
+    #[wasm_bindgen(skip)]
+    pub selection_options: Option<SelectionOptions>
 }
 
 #[wasm_bindgen]
@@ -186,6 +202,7 @@ impl Default for MapPane {
             view: VarOr::Value(View::default()),
             layers: vec![],
             base_map: Some(BaseMap::default()),
+            selection_options: Some(SelectionOptions::default())
         }
     }
 }
