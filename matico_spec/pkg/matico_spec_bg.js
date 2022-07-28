@@ -139,7 +139,13 @@ function getFloat32Memory0() {
 export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon:1,"1":"Polygon",Lasso:2,"2":"Lasso", });
 /**
 */
-export const LinearLayoutDirection = Object.freeze({ Horizontal:0,"0":"Horizontal",Vertical:1,"1":"Vertical", });
+export const LinearLayoutDirection = Object.freeze({ Row:0,"0":"Row",Column:1,"1":"Column", });
+/**
+*/
+export const Justification = Object.freeze({ FlexStart:0,"0":"FlexStart",FlexEnd:1,"1":"FlexEnd",Center:2,"2":"Center",SpaceBetween:3,"3":"SpaceBetween",SpaceAround:4,"4":"SpaceAround",SpaceEvenly:5,"5":"SpaceEvenly", });
+/**
+*/
+export const Alignment = Object.freeze({ FlexStart:0,"0":"FlexStart",FlexEnd:1,"1":"FlexEnd",Center:2,"2":"Center",Stretch:3,"3":"Stretch",BaseLine:4,"4":"BaseLine", });
 /**
 */
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
@@ -457,6 +463,35 @@ export class ControlsPane {
 }
 /**
 */
+export class FreeLayout {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_freelayout_free(ptr);
+    }
+    /**
+    * @returns {boolean}
+    */
+    get allow_overflow() {
+        const ret = wasm.__wbg_get_freelayout_allow_overflow(this.ptr);
+        return ret !== 0;
+    }
+    /**
+    * @param {boolean} arg0
+    */
+    set allow_overflow(arg0) {
+        wasm.__wbg_set_freelayout_allow_overflow(this.ptr, arg0);
+    }
+}
+/**
+*/
 export class GeoJSONDataset {
 
     __destroy_into_raw() {
@@ -579,6 +614,58 @@ export class LinearLayout {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_linearlayout_free(ptr);
+    }
+    /**
+    * @returns {number}
+    */
+    get direction() {
+        const ret = wasm.__wbg_get_freelayout_allow_overflow(this.ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @param {number} arg0
+    */
+    set direction(arg0) {
+        wasm.__wbg_set_linearlayout_direction(this.ptr, arg0);
+    }
+    /**
+    * @returns {boolean}
+    */
+    get allow_overflow() {
+        const ret = wasm.__wbg_get_linearlayout_allow_overflow(this.ptr);
+        return ret !== 0;
+    }
+    /**
+    * @param {boolean} arg0
+    */
+    set allow_overflow(arg0) {
+        wasm.__wbg_set_linearlayout_allow_overflow(this.ptr, arg0);
+    }
+    /**
+    * @returns {number}
+    */
+    get justify() {
+        const ret = wasm.__wbg_get_linearlayout_justify(this.ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @param {number} arg0
+    */
+    set justify(arg0) {
+        wasm.__wbg_set_linearlayout_justify(this.ptr, arg0);
+    }
+    /**
+    * @returns {number}
+    */
+    get align() {
+        const ret = wasm.__wbg_get_linearlayout_align(this.ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @param {number} arg0
+    */
+    set align(arg0) {
+        wasm.__wbg_set_linearlayout_align(this.ptr, arg0);
     }
 }
 /**

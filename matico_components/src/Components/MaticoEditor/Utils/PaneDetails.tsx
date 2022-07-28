@@ -110,7 +110,8 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         view: DefaultView,
         layers: [],
         baseMap: { type: "named", name: "CartoDBVoyager", affiliation: "" },
-        controls: { scale:true, geolocate:true }
+        controls: { scale:true, geolocate:true, navigation:true, fullscreen:true },
+        selectionOptions:{selectionEnabled:false, selectionMode:"rectangle"}
     },
     scatterplot: {
         name: "New Scatter",
@@ -144,7 +145,7 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
     container: {
         name: "Container",
         title: "Container",
-        layout: { type: "free" },
+        layout: { type: "free"},
         panes: []
     }
 };

@@ -1,6 +1,12 @@
 import React from "react";
-import { PanePosition, PaneRef } from "@maticoapp/matico_types/spec";
-import { View } from "@adobe/react-spectrum";
+import {
+    PanePosition,
+    PaneRef,
+    LinearLayoutDirection,
+    Justification,
+    Alignment
+} from "@maticoapp/matico_types/spec";
+import { View, Flex } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { PaneSelector } from "Utils/paneEngine";
 
@@ -71,21 +77,6 @@ const LinearPane: React.FC<PanePosition> = ({
     padUnitsTop,
     children
 }) => {
-    console.log('LINEAR PANE', {
-        width,
-        height,
-        layer,
-        widthUnits,
-        heightUnits,
-        padLeft,
-        padRight,
-        padBottom,
-        padTop,
-        padUnitsLeft,
-        padUnitsRight,
-        padUnitsBottom,
-        padUnitsTop,
-    })
     return (
         <View
             width={`${width}${handleHorizontalUnits(widthUnits)}`}
@@ -111,19 +102,33 @@ const LinearPane: React.FC<PanePosition> = ({
 
 export interface MaticoLinearLayoutInterface {
     paneRefs: Array<PaneRef>;
+    direction: LinearLayoutDirection;
+    align: Alignment;
+    justify: Justification;
 }
 
 export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
-    paneRefs
+    paneRefs,
+    direction,
+    align,
+    justify
 }) => {
+    console.log(" Linear Layout ", direction ,align ,justify)
     return (
-        <View position="relative" width="100%" height="100%">
+        <Flex
+            position="relative"
+            width="100%"
+            height="100%"
+            direction={direction}
+            alignContent={align}
+            justifyContent={justify}
+        >
             {paneRefs.map((paneRef: PaneRef) => (
                 <LinearPane key={paneRef.id} {...paneRef.position}>
                     <ControlActionBar paneRef={paneRef} />
                     <PaneSelector paneRef={paneRef} />
                 </LinearPane>
             ))}
-        </View>
+        </Flex>
     );
 };

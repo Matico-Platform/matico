@@ -18,7 +18,7 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
     panes
 }) => {
     const edit = useIsEditable();
-    let LayoutEngine = selectLayout(layout);
+    let Layout= selectLayout(layout);
     return (
         <View
             position="relative"
@@ -28,7 +28,7 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
             backgroundColor={edit ? "default" : "transparent"}
         >
             <Content width="100%" height="100%">
-                <LayoutEngine paneRefs={panes} />
+                <Layout paneRefs={panes} {...layout}/>
             </Content>
         </View>
     );
