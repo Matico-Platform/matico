@@ -150,7 +150,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
                         columns={columns}
                         onUpdateValue={(style) => updateStyle("size", style)}
                         sliderMin={0}
-                        sliderMax={2000}
+                        sliderMax={20}
                     />
                     <TwoUpCollapsableGrid
                         gridProps={{

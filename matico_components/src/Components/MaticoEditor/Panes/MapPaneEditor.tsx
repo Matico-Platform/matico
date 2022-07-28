@@ -232,10 +232,15 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     return (
         <Flex direction="column">
-            <CollapsibleSection title="Details">
-
+            <CollapsibleSection title="Basic" isOpen={true}>
+                <TextField
+                    width="100%"
+                    label="name"
+                    value={mapPane.name}
+                    onChange={(name) => updatePane({ name })}
+                />
             </CollapsibleSection>
-            <CollapsibleSection title="Sizing" isOpen={true}>
+            <CollapsibleSection title="Layout" isOpen={true}>
                 <PaneEditor
                     position={paneRef.position}
                     name={mapPane.name}

@@ -1,16 +1,16 @@
 import React from "react";
 import _ from "lodash";
 import { useMaticoSelector } from "Hooks/redux";
-import { Text, Flex, View, Divider } from "@adobe/react-spectrum";
+import { Text, Flex, View, Divider, TextField } from "@adobe/react-spectrum";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
-import { ColorVariableEditor } from "../Utils/ColorVariableEditor";
+import { ColorVariableEditor } from "../EditorComponents/ColorVariableEditor";
 import { LabelEditor } from "../Utils/LabelEditor";
 import { usePane } from "Hooks/usePane";
 import { HistogramPane, Labels, PaneRef } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { SliderUnitSelector } from "../EditorComponents/SliderUnitSelector";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
@@ -45,6 +45,8 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         (state) => state.datasets.datasets[histogramPane.dataset.name]
     );
 
+    const { columns } = dataset;
+
     if (!histogramPane) {
         return (
             <View>
@@ -55,7 +57,15 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     return (
         <Flex direction="column">
-            <CollapsibleSection title="Sizing" isOpen={true}>
+            <CollapsibleSection title="Basic" isOpen={true}>
+                <TextField
+                    width="100%"
+                    label="name"
+                    value={histogramPane.name}
+                    onChange={(name) => updatePane({ name })}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Layout" isOpen={true}>
                 <PaneEditor
                     position={paneRef.position}
                     name={histogramPane.name}
@@ -78,29 +88,32 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                 />
             </CollapsibleSection>
             {dataset && (
-                <CollapsibleSection title="Chart Settings" isOpen={true}>
-                    <Text>Style</Text>
-                    <NumericVariableEditor
-                        label="Number of bins"
-                        minVal={2}
-                        maxVal={100}
-                        style={histogramPane.maxbins}
-                        datasetName={histogramPane.dataset.name}
-                        onUpdateStyle={(maxbins) => updatePane({ maxbins })}
-                    />
+                <>
+                    <CollapsibleSection title="Settings" isOpen={true}>
+                        <Text>Max bins</Text>
+                        <SliderUnitSelector
+                            label="Number of bins"
+                            sliderMin={2}
+                            sliderMax={100}
+                            value={histogramPane.maxbins}
+                            onUpdateValue={(maxbins) => updatePane({ maxbins })}
+                            sliderStep={1}
+                        />
 
-                    <ColorVariableEditor
-                        label="Color"
-                        style={histogramPane.color}
-                        datasetName={histogramPane.dataset.name}
-                        onUpdateStyle={(color) => updatePane({ color })}
-                    />
-                    <Divider />
+                        <ColorVariableEditor
+                            label="Color"
+                            style={histogramPane.color}
+                            datasetName={histogramPane.dataset.name}
+                            columns={columns}
+                            onUpdateStyle={(color) => updatePane({ color })}
+                        />
+                        <Divider />
+                    </CollapsibleSection>
                     <LabelEditor
                         labels={histogramPane.labels}
                         onUpdateLabels={updateLabels}
                     />
-                </CollapsibleSection>
+                </>
             )}
         </Flex>
     );

@@ -32,7 +32,7 @@ export const SliderUnitSelector: React.FC<SliderUnitSelectorProps> = ({
           maxValue={sliderMax}
           step={sliderStep}
           onChange={onUpdateValue}
-          flex={"0 1 0px"}
+          flex={"1 1 0px"}
         />
         <NumberField
           value={value}

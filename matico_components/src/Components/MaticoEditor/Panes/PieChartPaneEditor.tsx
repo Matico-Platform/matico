@@ -3,7 +3,7 @@ import _ from "lodash";
 import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
-import { Text, View } from "@adobe/react-spectrum";
+import { Text, TextField, View } from "@adobe/react-spectrum";
 import { usePane } from "Hooks/usePane";
 import { PaneRef, PieChartPane } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
@@ -40,7 +40,15 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     return (
         <View>
-            <CollapsibleSection title="Sizing" isOpen={true}>
+            <CollapsibleSection title="Basic" isOpen={true}>
+                <TextField
+                    width="100%"
+                    label="name"
+                    value={pieChartPane.name}
+                    onChange={(name) => updatePane({ name })}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Layout" isOpen={true}>
                 <PaneEditor
                     position={paneRef.position}
                     name={pieChartPane.name}

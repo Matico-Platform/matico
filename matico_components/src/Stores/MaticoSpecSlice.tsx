@@ -12,6 +12,7 @@ import {
 import _ from "lodash";
 import { findPagesForPane, findPaneOrPage } from "Utils/specUtils/specUtils";
 import { stringValue } from "vega";
+import {Theme} from "@maticoapp/matico_types/spec";
 
 
 export type EditElement = {
@@ -271,6 +272,16 @@ export const stateSlice = createSlice({
             );
             layers.slice(newIndex, 0, layer);
         },
+        updateTheme:( state, action:PayloadAction<{update:Partial<Theme>}>)=>{
+          let theme = state.spec.theme;
+          let update = action.payload.update;
+          Object.assign(theme,update)
+        },
+        updateMetadata:( state, action:PayloadAction<{update:Partial<Metadata>}>)=>{
+          let theme = state.spec.metadata;
+          let update = action.payload.update;
+          Object.assign(metadata,update)
+        },
         updateLayer: (
             state,
             action: PayloadAction<{
@@ -341,7 +352,9 @@ export const {
     removePaneRef,
     reparentPaneRef,
     removePaneRefFromContainer,
-    updatePageDetails
+    updatePageDetails,
+    updateTheme,
+    updateMetadata
 } = stateSlice.actions;
 
 export const selectSpec = (state: SpecState) => state.spec;
