@@ -96,7 +96,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
             if (left > -175) {
                 extMinLong = Math.max(extMinLong, Math.min(...longs, left))
             } else {
-                extMaxLong = Math.max(extMinLong, Math.min(...longs.filter(x => x < 0), left))
+                extMaxLong = Math.min(extMaxLong, Math.min(...longs.filter(x => x < 0), left))
             }
             
             if (right < 175) {
