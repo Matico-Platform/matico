@@ -97,7 +97,7 @@ StaticMapChart.args = {
     {
       type: "map",
       fill: "red",
-      proj: "geoMercator"
+      proj: "geoTransverseMercator"
     },
   ],
   data: SampleMapData,

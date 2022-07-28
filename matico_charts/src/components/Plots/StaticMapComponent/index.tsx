@@ -87,17 +87,24 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
             projection.invert?.([width, 0]),
             projection.invert?.([width, height])].filter(x => x != null && typeof x != "undefined") as [number, number][]
 
+            //@ts-ignore
+            let [[left, bottom], [right, top]] = d3.geoBounds({type: "FeatureCollection", features: data})
+
             const longs = corners.map((x:[number, number]) => x[0])
             const lats = corners.map((x:[number, number]) => x[1])
 
-            extMinLong = Math.max(extMinLong, Math.min(...longs))
-            extMaxLong = Math.min(extMaxLong, Math.max(...longs))
+            if (left > -175) {
+                extMinLong = Math.max(extMinLong, Math.min(...longs, left))
+            }
+            if (right < 175) {
+                extMaxLong = Math.min(extMaxLong, Math.max(...longs, right))
+            }
 
-            minorMinLat = Math.max(minorMinLat, Math.min(...lats))
-            majorMinLat = Math.max(majorMinLat, Math.min(...lats))
+            minorMinLat = Math.max(minorMinLat, Math.min(...lats, bottom))
+            majorMinLat = Math.max(majorMinLat, Math.min(...lats, top))
 
-            minorMaxLat = Math.min(minorMaxLat, Math.max(...lats))
-            majorMaxLat = Math.min(majorMaxLat, Math.max(...lats))
+            minorMaxLat = Math.min(minorMaxLat, Math.max(...lats, bottom))
+            majorMaxLat = Math.min(majorMaxLat, Math.max(...lats, top))
 
         }
         }
