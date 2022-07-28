@@ -196,8 +196,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                     ))}
                        <MaticoSelectionLayer
                         onUpdate={updateLayer}
-                        selectionEnabled={selectionOptions.selectionEnabled}
-                        selectionMode={selectionOptions.selectionMode}
+                        selectionEnabled={selectionOptions?.selectionEnabled}
+                        selectionMode={selectionOptions?.selectionMode}
                         mapName={id}
                     />
                     <MaticoLegendPane layers={validMapLayers} />
