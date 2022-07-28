@@ -13,6 +13,7 @@ import {
 import * as d3 from 'd3-geo';
 import * as scale from '@visx/scale';
 import { StaticMapSpec, ColorOutput, DataRow } from "../../types";
+import { GridRows } from '@visx/grid';
 
 
 declare module 'react' {
@@ -52,9 +53,17 @@ function formatColor (color:ColorOutput) {
   }
 }
 
-
 export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="white", background="white", gratOn=true, gratColor="black", strokeWidth=0.5, strokeColor="black", events=true}) => {
-    if (data && (proj in basicProjections)) {    
+    // Checkers for geometry and properties
+    const geometryChecker = (row: any) => { 
+        return row.hasOwnProperty("geometry")
+    }; // This one works, but removing properties for one of the rows will raise a different error on its own
+
+    const propChecker = (row: any) => {
+        return row.hasOwnProperty("properties")
+    };
+    
+    if (data && data.every(geometryChecker) && data.every(propChecker) && (proj in basicProjections)) {
         let width = 500, height = 500;
 
         const projection = basicProjections[proj]()
@@ -129,9 +138,16 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
                 )}
             </svg>
         )
-    } else if (!data) { 
-        throw "StaticMapComponent: Something's wrong with the data";
+    } else if (data && !(data.every(geometryChecker))) { 
+        throw "StaticMapComponent: geometry is missing from some entries";
+    } else if (data && !(data.every(propChecker))) {
+        throw "StaticMapComponent: properties are missing from data"
+    } else if (!(proj in basicProjections)) { 
+        throw "StaticMapComponent: projection is not available--check spelling of projection name"  
     } else { 
-        throw "StaticMapComponent: Something's wrong with the projection";
+        throw "StaticMapComponent: issues with loading data";
     }
 };
+
+// every for arrays
+// check if array exists, then check if given entry in array has properties and geometry

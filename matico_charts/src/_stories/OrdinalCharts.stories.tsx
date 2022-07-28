@@ -162,11 +162,11 @@ StaticMapChartScale.args = {
   title: "Median Income in Illinois Counties",
   yExtent: [0,100],
   xExtent: [0,100],
+  proj: "geoEquirectangular",
   layers: [
     {
       type: "map",
       fill: (datum) => colorArea(datum["estimate"]),
-      proj: "geoEquirectangular"
     },
   ],
   data: SampleMapData2
