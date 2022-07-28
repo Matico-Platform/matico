@@ -4,7 +4,7 @@ import { Flex, Text } from "@adobe/react-spectrum";
 
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
-import { SectionLayoutEditor } from "./SectionLayoutEditor";
+import { LayoutEditor } from "./LayoutEditor";
 import { useContainer } from "Hooks/useContainer";
 import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
 import { IconForPaneType } from "../Utils/PaneDetails";
@@ -41,10 +41,10 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Container Layout" isOpen={true}>
-                <SectionLayoutEditor
+                <LayoutEditor
                     name={container.name}
                     layout={container.layout}
-                    updateSection={updatePane}
+                    updateLayout={(update)  => updatePane({layout: update})}
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Panes" isOpen={true}>

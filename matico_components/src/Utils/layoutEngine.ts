@@ -5,16 +5,26 @@ import { MaticoLinearLayout } from "Components/Layouts/MaticoLinearLayout/Matico
 interface LayoutLabel {
     name: string;
     label: string;
+    default: Partial<Layout>;
 }
 
 export const availableLayouts: LayoutLabel[] = [
     {
         name: "free",
-        label: "Free Layout"
+        label: "Free Layout",
+        default: {
+          allowOverflow : false
+        }
     },
     {
         name: "linear",
-        label: "Linear Layout"
+        label: "Linear Layout",
+        default: {
+            direction: "vertical",
+            justify: "flex-start",
+            align: "center",
+            allowOverflow:true
+        }
     }
 ];
 

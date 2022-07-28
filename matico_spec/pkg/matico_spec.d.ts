@@ -10,8 +10,27 @@ export enum SelectionMode {
 /**
 */
 export enum LinearLayoutDirection {
-  Horizontal,
-  Vertical,
+  Row,
+  Column,
+}
+/**
+*/
+export enum Justification {
+  FlexStart,
+  FlexEnd,
+  Center,
+  SpaceBetween,
+  SpaceAround,
+  SpaceEvenly,
+}
+/**
+*/
+export enum Alignment {
+  FlexStart,
+  FlexEnd,
+  Center,
+  Stretch,
+  BaseLine,
 }
 /**
 */
@@ -99,6 +118,14 @@ export class ControlsPane {
 }
 /**
 */
+export class FreeLayout {
+  free(): void;
+/**
+*/
+  allow_overflow: boolean;
+}
+/**
+*/
 export class GeoJSONDataset {
   free(): void;
 /**
@@ -127,6 +154,18 @@ export class Labels {
 */
 export class LinearLayout {
   free(): void;
+/**
+*/
+  align: number;
+/**
+*/
+  allow_overflow: boolean;
+/**
+*/
+  direction: number;
+/**
+*/
+  justify: number;
 }
 /**
 */
