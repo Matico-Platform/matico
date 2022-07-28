@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use enum_dispatch::enum_dispatch;
 use serde::{Serialize,Deserialize};
 use crate::parameter_values::ParameterValue;
@@ -205,6 +207,7 @@ impl ValidateParameter for ColumnOptions {
     }
 }
 
+
 #[derive(Serialize,Deserialize,TS)]
 #[serde(rename_all="camelCase")]
 #[ts(export)]
@@ -249,6 +252,39 @@ impl Default for TextOptions {
     }
 }
 
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub struct OptionGroup{
+    pub options: BTreeMap<String,ParameterOptions>,
+    pub display_details: ParameterOptionDisplayDetails,
+}
+
+// TODO implment
+impl ValidateParameter for OptionGroup{
+    fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
+        Ok(())
+    }
+}
+
+// TODO implment
+impl ValidateParameter for RepeatedOption{
+    fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
+        Ok(())
+    }
+}
+
+#[derive(Serialize,Deserialize,TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub struct RepeatedOption{
+    pub options: Box<ParameterOptions>,
+    pub display_details: ParameterOptionDisplayDetails,
+    pub min_times: usize,
+    pub max_times: Option<usize>,
+}
+
+
 // TODO figure out how to validate this against table
 impl ValidateParameter for TextOptions {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
@@ -276,6 +312,8 @@ impl ValidateParameter for TextOptions {
 #[serde(rename_all="camelCase", tag="type")]
 #[ts(export)]
 pub enum ParameterOptions {
+    OptionGroup(OptionGroup),
+    RepeatedOption(RepeatedOption),
     NumericFloat(NumericFloatOptions),
     NumericInt(NumericIntOptions),
     NumericCategory(NumericCategoryOptions),

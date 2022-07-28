@@ -3,13 +3,34 @@ use matico_common::VarOr;
 use ts_rs::TS;
 use std::convert::TryFrom;
 
-use crate::ArgError;
+use crate::{ArgError, ProcessError};
+
+#[derive(Serialize,Deserialize,Debug, Clone, TS)]
+#[ts(export)]
+pub struct OptionGroupVals(Vec<OptionGroupVal>);
+
+#[derive(Serialize,Deserialize,Debug, Clone, TS)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub struct OptionGroupVal{
+    pub name:String,
+    pub parameter: ParameterValue
+}
+
+impl OptionGroupVals{
+    pub fn get(&self, variable: &str)->Result<&ParameterValue, ProcessError>{
+        let option_group = self.0.iter().find(|v| v.name == variable).ok_or_else(|| ProcessError{error:format!("Failed to get {} in option group", variable).into()})?;
+        Ok(&option_group.parameter)
+    }
+}
 
 
 #[derive(Serialize,Deserialize,Debug, Clone, TS)]
 #[serde(rename_all="camelCase", tag="type",content="value")]
 #[ts(export)]
 pub enum ParameterValue {
+    OptionGroup(OptionGroupVals),
+    RepeatedOption(Vec<ParameterValue>),
     NumericFloat(f32),
     NumericInt(i32),
     NumericCategory(Vec<u32>),
@@ -17,6 +38,33 @@ pub enum ParameterValue {
     Column(String),
     Table(String),
     Text(String),
+}
+
+
+impl TryFrom<&ParameterValue> for Vec<ParameterValue>{
+    type Error = ArgError;
+
+    fn try_from(parameter_value: &ParameterValue) -> Result<Vec<ParameterValue>, Self::Error>{
+        if let ParameterValue::RepeatedOption(list) = parameter_value{
+            return Ok(list.to_owned())
+        }
+        else{
+            Err(ArgError::new("", "Failed to convert ParameterValue to options"))
+        }
+    }
+}
+
+impl TryFrom<&ParameterValue> for OptionGroupVals{
+    type Error = ArgError;
+
+    fn try_from(parameter_value: &ParameterValue)->Result<OptionGroupVals, Self::Error>{
+        if let ParameterValue::OptionGroup(options) = parameter_value{
+            return Ok(options.to_owned())
+        }
+        else{
+            Err(ArgError::new("", "Failed to convert ParameterValue to options"))
+        }
+    }
 }
 
 impl TryFrom<&ParameterValue> for f32{
@@ -91,10 +139,14 @@ pub struct SpecParameter{
     parameter: SpecParameterValue
 }
 
+
+
 #[derive(Serialize,Deserialize,Debug, Clone, TS)]
 #[serde(rename_all="camelCase", tag="type", content="value")]
 #[ts(export)]
 pub enum SpecParameterValue {
+    OptionGroup(Vec<SpecParameter>),
+    RepeatedOption(Vec<SpecParameterValue>),
     NumericFloat(VarOr<f32>),
     NumericInt(VarOr<i32>),
     NumericCategory(VarOr<Vec<u32>>),

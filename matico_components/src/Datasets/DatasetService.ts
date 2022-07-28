@@ -204,9 +204,7 @@ export const DatasetService: DatasetServiceInterface = {
           spec: datasetDetails
         };
       case "wasmCompute":
-        console.log("REGISTERING WASM COMPUTE")
         const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
-        console.log("GENERATING NEW COMPUTE DATASET")
         this.datasets[wasmCompute.name] = wasmCompute;
         this._notify(wasmCompute.name);
         return {
