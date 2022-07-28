@@ -1,17 +1,14 @@
 import React from "react";
 import _ from "lodash";
-import { Flex, Text } from "@adobe/react-spectrum";
+import { Flex, Text, TextField } from "@adobe/react-spectrum";
 
-import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
 import { LayoutEditor } from "./LayoutEditor";
 import { useContainer } from "Hooks/useContainer";
-import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
-import { IconForPaneType } from "../Utils/PaneDetails";
-import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
+import { PaneRef } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { GatedAction } from "../EditorComponents/GatedAction";
-import {PaneCollectionEditor} from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
+import { PaneCollectionEditor } from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
 
 export interface SectionEditorProps {
     paneRef: PaneRef;
@@ -20,17 +17,20 @@ export interface SectionEditorProps {
 export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
     paneRef
 }) => {
-    const {
-        container,
-        removePane,
-        updatePane,
-        updatePanePosition,
-        parent,
-    } = useContainer(paneRef);
+    const { container, removePane, updatePane, updatePanePosition, parent } =
+        useContainer(paneRef);
 
     return (
         <Flex width="100%" height="100%" direction="column">
-            <CollapsibleSection title="Size" isOpen={true}>
+            <CollapsibleSection title="Basic" isOpen={true}>
+                <TextField
+                    width="100%"
+                    label="name"
+                    value={container.name}
+                    onChange={(name) => updatePane({ name })}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Layout" isOpen={true}>
                 <PaneEditor
                     position={paneRef.position}
                     name={container.name}
@@ -44,11 +44,11 @@ export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
                 <LayoutEditor
                     name={container.name}
                     layout={container.layout}
-                    updateLayout={(update)  => updatePane({layout: update})}
+                    updateLayout={(update) => updatePane({ layout: update })}
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Panes" isOpen={true}>
-              <PaneCollectionEditor containerId={paneRef.paneId} />
+                <PaneCollectionEditor containerId={paneRef.paneId} />
             </CollapsibleSection>
             <CollapsibleSection title="Danger Zone">
                 <GatedAction

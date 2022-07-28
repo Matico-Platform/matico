@@ -4,7 +4,8 @@ import {
     Picker,
     Item,
     Radio,
-    RadioGroup
+    RadioGroup,
+    Flex
 } from "@adobe/react-spectrum";
 import { availableLayouts } from "Utils/layoutEngine";
 import { Layout, LinearLayout, FreeLayout, LinearLayoutDirection, Alignment,Justification} from "@maticoapp/matico_types/spec";
@@ -19,14 +20,16 @@ export const LinearLayoutEditor: React.FC<LinearLayoutEditorProps> = ({
     onChange
 }) => {
     return (
-        <>
+        <Flex direction='column' rowGap='size-300' marginTop="size-300">
             <RadioGroup
                 label="Flow direction"
                 value={layout.direction}
                 onChange={(val) => onChange({ direction: val as LinearLayoutDirection })}
             >
+                <Flex direction='row'>
                 <Radio value="row">Horizontal</Radio>
                 <Radio value="column">Vertical</Radio>
+              </Flex>
             </RadioGroup>
 
             <RadioGroup
@@ -34,11 +37,13 @@ export const LinearLayoutEditor: React.FC<LinearLayoutEditorProps> = ({
                 value={layout.align}
                 onChange={(val) => onChange({ align: val  as Alignment})}
             >
+                <Flex direction="row" wrap={"wrap"}>
                 <Radio value="flex-start">Start</Radio>
                 <Radio value="center">Center</Radio>
                 <Radio value="flex-end">End</Radio>
                 <Radio value="stretch">Stretch</Radio>
                 <Radio value="baseline">Baseline</Radio>
+              </Flex>
             </RadioGroup>
 
             <RadioGroup
@@ -46,14 +51,16 @@ export const LinearLayoutEditor: React.FC<LinearLayoutEditorProps> = ({
                 value={layout.justify}
                 onChange={(val) => onChange({ justify: val as Justification})}
             >
+                <Flex direction='row' wrap={"wrap"}>
                 <Radio value="flex-start">Start</Radio>
                 <Radio value="center">Center</Radio>
                 <Radio value="flex-end">End</Radio>
                 <Radio value="space-between">Space Between</Radio>
                 <Radio value="space-around">Space Around</Radio>
                 <Radio value="space-evenly">Space Evenly</Radio>
+              </Flex>
             </RadioGroup>
-        </>
+        </Flex>
     );
 };
 
@@ -91,6 +98,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
     return (
         <View>
             <Picker
+                width="100%"
                 selectedKey={layout.type}
                 label="Layout"
                 onSelectionChange={(layout) =>

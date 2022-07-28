@@ -1,6 +1,7 @@
 import { Flex, Heading, TextField, Well } from "@adobe/react-spectrum";
 import { Labels } from "@maticoapp/matico_types/spec";
 import React from "react";
+import {CollapsibleSection} from "../EditorComponents/CollapsibleSection";
 
 interface LabelEditorProps {
     labels: Labels;
@@ -12,9 +13,8 @@ export const LabelEditor: React.FC<LabelEditorProps> = ({
     onUpdateLabels
 }) => {
     return (
-        <Well>
-            <Heading>Labels</Heading>
-            <Flex direction="column">
+      <CollapsibleSection title="Labels">
+            <Flex direction="column" width="100%">
                 <TextField
                     width="100%"
                     label="title"
@@ -46,6 +46,6 @@ export const LabelEditor: React.FC<LabelEditorProps> = ({
                     onChange={(yLabel) => onUpdateLabels({ yLabel })}
                 />
             </Flex>
-        </Well>
+        </CollapsibleSection>
     );
 };

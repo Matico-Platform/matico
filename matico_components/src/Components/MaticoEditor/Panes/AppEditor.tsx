@@ -8,11 +8,14 @@ import {
     ActionButton,
     Content,
     Dialog,
-    DialogTrigger
+    DialogTrigger,
+    TextArea
 } from "@adobe/react-spectrum";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { Page } from "@maticoapp/matico_types/spec";
 import { useApp } from "Hooks/useApp";
+import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { ColorPickerDialog } from "../Utils/ColorPickerDialog";
 
 interface AddPageModalProps {
     onAddPage: (pageName: string) => void;
@@ -29,6 +32,11 @@ const AddPageModal: React.FC<AddPageModalProps> = ({
     const attemptToAddPage = (pageName: string, close: () => void) => {
         if (newPageName.length === 0) {
             setErrorText("Please provide a name");
+            <TextField
+                label="MapBox"
+                description="Required to use the application with mapbox gl tiling, geododing or routing"
+                width="100%"
+            />;
         }
         if (validatePageName) {
             if (validatePageName(pageName)) {
@@ -46,7 +54,9 @@ const AddPageModal: React.FC<AddPageModalProps> = ({
 
     return (
         <DialogTrigger type="popover" isDismissable>
-            <ActionButton isQuiet>Add</ActionButton>
+            <ActionButton width="100%" isQuiet>
+                Add
+            </ActionButton>
             {(close: any) => (
                 <Dialog>
                     <Heading>Select pane to add</Heading>
@@ -77,7 +87,7 @@ const AddPageModal: React.FC<AddPageModalProps> = ({
 interface AppEditorProps {}
 
 export const AppEditor: React.FC<AppEditorProps> = () => {
-    const { pages, addPage, removePage, setEditPage } = useApp();
+    const { theme, pages, addPage, removePage, setEditPage, updateTheme, metadata, updateMetadata} = useApp();
     console.log("rendering app editor ", pages);
 
     const addNewPage = (pageName: string) => {
@@ -94,37 +104,58 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
         }
         return true;
     };
+    console.log("theme ", theme)
+
 
     return (
-        <Flex direction="column">
-            <Well>
-                <Heading>
-                    <Flex
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="end"
-                    >
-                        <Text>Pages</Text>
-                        <AddPageModal
-                            validatePageName={validatePageName}
-                            onAddPage={addNewPage}
-                        />
-                    </Flex>
-                </Heading>
-                <Flex marginBottom={"size-200"} direction="column">
-                    {pages.map((page: Page) => (
-                        <RowEntryMultiButton
-                            key={page.name}
-                            entryName={page.name}
-                            onRemove={() => removePage(page.id)}
-                            onLower={() => {}}
-                            onRaise={() => {}}
-                            onDuplicate={() => {}}
-                            onSelect={() => setEditPage(page.id)}
-                        />
-                    ))}
-                </Flex>
-            </Well>
+        <Flex width="100%" height="100%" direction="column">
+            <CollapsibleSection title="Theme" isOpen={true}>
+                <Text>Primary Color</Text>
+                <ColorPickerDialog
+                    // @ts-ignore
+                    color={theme?.primaryColor ?? {rgb:[255,0,0]}}
+                    onColorChange={(color) => updateTheme({primaryColor: color})}
+                />
+                <Text>Secondary Color</Text>
+                <ColorPickerDialog
+                    // @ts-ignore
+                    color={theme?.secondaryColor ?? {rgb:[0,255,0]}}
+                    onColorChange={(color) => updateTheme({secondaryColor:color})}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Metadata" isOpen={true}>
+              <TextField label="Name" width="100%" value={metadata.name} onChange={(name)=> updateMetadata({name})}/>
+              <TextArea label="description" width="100%" value={metadata.description} onChange={(description)=>updateMetadata({description})}/>
+            </CollapsibleSection>
+            <CollapsibleSection title="Keys" isOpen={true}>
+                <TextField
+                    label="MapBox"
+                    description="Required to use the application with mapbox gl tiling, geododing or routing"
+                    width="100%"
+                />
+                <TextField
+                    label="MapTiler"
+                    description="Required to use the application with MapTiler tilesets"
+                    width="100%"
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Pages" isOpen={true}>
+                {pages.map((page: Page) => (
+                    <RowEntryMultiButton
+                        key={page.name}
+                        entryName={page.name}
+                        onRemove={() => removePage(page.id)}
+                        onLower={() => {}}
+                        onRaise={() => {}}
+                        onDuplicate={() => {}}
+                        onSelect={() => setEditPage(page.id)}
+                    />
+                ))}
+                <AddPageModal
+                    validatePageName={validatePageName}
+                    onAddPage={addNewPage}
+                />
+            </CollapsibleSection>
         </Flex>
     );
 };

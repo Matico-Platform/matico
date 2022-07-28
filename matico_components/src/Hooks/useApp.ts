@@ -1,8 +1,5 @@
 import {
     Page,
-    Pane,
-    ContainerPane,
-    PaneRef
 } from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import {
@@ -10,16 +7,18 @@ import {
     removePage,
     addPage,
     setCurrentEditElement,
-    addPaneRefToContainer,
-    removePaneFromContainer,
-    reparentPaneRef
+    reparentPaneRef,
+    updateTheme
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
+import {Theme} from "@maticoapp/matico_types/spec";
+import {Metadata} from "@maticoapp/matico_types/spec";
 
 export const useApp = () => {
     const { metadata, pages, panes, theme } = useMaticoSelector(
         (selector) => selector.spec.spec
     );
+
     const dispatch = useMaticoDispatch();
 
     const addPageLocal = (page: Partial<Page>) => {
@@ -47,6 +46,9 @@ export const useApp = () => {
         );
     };
 
+    const _updateMetadata = (update:Partial<Metadata>)=>{
+      dispatch(updateMetadata({update}))
+    }
     const updatePage = (pageId: string, update: Partial<Page>) => {
         dispatch(updatePageDetails({ pageId, update }));
     };
@@ -54,6 +56,10 @@ export const useApp = () => {
     const removePageLocal = (pageId: string) => {
         dispatch(removePage({ pageId, removeOrphanPanes: false }));
     };
+
+    const _updateTheme= (update: Partial<Theme>)=>{
+        dispatch(updateTheme({update}))
+    }
 
     const reparentPane = (
         paneRefId: string,
@@ -76,6 +82,7 @@ export const useApp = () => {
         addPage: addPageLocal,
         updatePage,
         setEditPage,
-        reparentPane
+        reparentPane,
+        updateTheme: _updateTheme
     };
 };
