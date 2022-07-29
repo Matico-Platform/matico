@@ -68,7 +68,8 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
 
         const projection = basicProjections[proj]()
         //@ts-ignore
-        .fitExtent([[20, 20], [width - 20, height - 20]], {type: "FeatureCollection", features: data}); // Translate and scale to fit the object
+        .fitExtent([[20, 20], [width - 20, height - 20]], {type: "FeatureCollection", features: data}) // Translate and scale to fit the object
+        .clipExtent([[0, 0], [width, height]])
 
         if (gratOn) { 
           // Calculate the graticule step size. It will always be 10 times a power of 2
@@ -80,7 +81,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
           var [majorMinLat, majorMaxLat] = [-90, 90]
         
           // Modify the extent of the graticule if the step size is small to decrease the amount the app has to render
-            if (stepSize < 5) {
+            if (stepSize < 1.25) {
             // Get the lat/long coordinates of the corners and edge midpoints of the graph
             let corners = [projection.invert?.([0, 0]), //ul
             projection.invert?.([0, height / 2]),
