@@ -118,6 +118,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
                         data={data as FeatureShape[]}
                         scale={projection.scale()}
                         translate={projection.translate()}
+                        pointRadius={3}
                     >
                         {(customProjection:any) => (
                             <g>

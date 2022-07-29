@@ -2,6 +2,10 @@ import { linearRegression, linearRegressionLine } from 'simple-statistics';
 import * as d3 from 'd3';
 import mapdata from './sample_data/Counties_In_California.json'
 import mapdata2 from './sample_data/ILcounty_medinc.json'
+import mapdata3 from './sample_data/samplepoint.json'
+import mapdata4 from './sample_data/sampleline.json'
+import mapdata5 from './sample_data/samplepoly.json'
+import mapdata6 from './sample_data/sample-line-polygon-mix.json'
   
 export const generate2dData = (n) => Array(n)
   .fill(0)
@@ -46,5 +50,17 @@ export const getMapData = (i) => {
   } else if (i === 2) {
     console.log("mapdata2:", mapdata2);
     return mapdata2.features;
+  } else if (i === 3) {
+    console.log("mapdata3:", mapdata3)
+    return mapdata3.features;
+  } else if (i === 4) {
+    console.log("mapdata4:", mapdata4)
+    return mapdata4.features;
+  } else if (i === 5) {
+    console.log("mapdata5:", mapdata5)
+    return mapdata5.features;
+  } else if (i === 6) {
+    console.log("mapdata6:", mapdata6)
+    return mapdata5.features;
   }
 }

@@ -7,6 +7,10 @@ import { ChartSpaceSpec } from "../components/types";
 import {
   SampleMapData,
   SampleMapData2,
+  SampleMapData3,
+  SampleMapData4,
+  SampleMapData5,
+  SampleMapData6,
   SampleCategoricalData,
   SampleHistogramData,
 } from "./SampleData";
@@ -170,4 +174,64 @@ StaticMapChartScale.args = {
     },
   ],
   data: SampleMapData2
+}
+
+export const StaticMapChartPoint = Template.bind({});
+StaticMapChartPoint.args = {
+  title: "Testing point data",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  proj: "geoEquirectangular",
+  layers: [
+    {
+      type: "map",
+      fill: "black"
+    }
+  ],
+  data: SampleMapData3
+}
+
+export const StaticMapChartLine = Template.bind({});
+StaticMapChartLine.args = {
+  title: "Testing line data",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  proj: "geoEquirectangular",
+  layers: [
+    {
+      type: "map",
+      fill: "black"
+    }
+  ],
+  data: SampleMapData4
+}
+
+export const StaticMapChartPoly = Template.bind({});
+StaticMapChartPoly.args = {
+  title: "Testing polygon data",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  proj: "geoEquirectangular",
+  layers: [
+    {
+      type: "map",
+      fill: "white"
+    }
+  ],
+  data: SampleMapData5
+}
+
+export const StaticMapChartLinePolyMix = Template.bind({});
+StaticMapChartLinePolyMix.args = {
+  title: "Testing a mix of polygon and line data",
+  yExtent: [0,100],
+  xExtent: [0,100],
+  proj: "geoEquirectangular",
+  layers: [
+    {
+      type: "map",
+      fill: "black"
+    }
+  ],
+  data: SampleMapData6
 }
