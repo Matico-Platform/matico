@@ -5,8 +5,9 @@ import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { Text, TextField, View } from "@adobe/react-spectrum";
 import { usePane } from "Hooks/usePane";
-import { PaneRef, PieChartPane } from "@maticoapp/matico_types/spec";
+import { PaneRef, PieChartPane, Labels } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { LabelEditor } from "../Utils/LabelEditor";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
@@ -16,6 +17,13 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     const { pane, updatePane, parent, updatePanePosition } = usePane(paneRef);
 
     const pieChartPane = pane as PieChartPane;
+
+    const updateLabels = (change: Partial<Labels>) => {
+        const labels = pieChartPane.labels ?? ({} as Labels);
+        updatePane({
+            labels: { ...labels, ...change }
+        });
+    };
 
     const updateDataset = (dataset: string) => {
         updatePane({
@@ -70,6 +78,10 @@ export const PieChartPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     onColumnSelected={(column) => updateColumn(column.name)}
                 />
             </CollapsibleSection>
+            <LabelEditor
+                labels={pieChartPane.labels}
+                onUpdateLabels={updateLabels}
+            />
         </View>
     );
 };
