@@ -79,13 +79,18 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
           var [[extMinLong, minorMinLat],[extMaxLong, minorMaxLat]] =  [[-180.01, -80.01], [180.01, 80.01]]
           var [majorMinLat, majorMaxLat] = [-90, 90]
         
-          // Modify the extent of the graph if the step size is small to decrease the amount the app has to render
-          if (stepSize < 5) {
-            // Get the lat/long coordinates of the corners of the graph
-            let corners = [projection.invert?.([0, 0]),
-            projection.invert?.([0, height]),
-            projection.invert?.([width, 0]),
-            projection.invert?.([width, height])].filter(x => x != null && typeof x != "undefined") as [number, number][]
+          // Modify the extent of the graticule if the step size is small to decrease the amount the app has to render
+            if (stepSize < 5) {
+            // Get the lat/long coordinates of the corners and edge midpoints of the graph
+            let corners = [projection.invert?.([0, 0]), //ul
+            projection.invert?.([0, height / 2]),
+            projection.invert?.([0, height]), //bl
+            projection.invert?.([width / 2, height]),
+            projection.invert?.([width, height]), //br
+            projection.invert?.([width, height / 2]),
+            projection.invert?.([width, 0]), // ur
+            projection.invert?.([width / 2, 0])]
+            .filter(x => x != null && typeof x != "undefined") as [number, number][]
 
             //@ts-ignore
             let [[left, bottom], [right, top]] = d3.geoBounds({type: "FeatureCollection", features: data})
@@ -94,24 +99,24 @@ export const StaticMapComponent:React.FC<StaticMapSpec> = ({data, proj, fill="wh
             const lats = corners.map((x:[number, number]) => x[1])
 
             if (left > -175) {
-                extMinLong = Math.max(extMinLong, Math.min(...longs, left))
+                extMinLong = Math.max(extMinLong, Math.min(...longs))
             } else {
-                extMaxLong = Math.min(extMaxLong, Math.min(...longs.filter(x => x < 0), left))
+                extMaxLong = Math.min(extMaxLong, Math.min(...longs.filter(x => x < 0)))
             }
             
             if (right < 175) {
                 extMaxLong = Math.min(extMaxLong, Math.max(...longs, right))
             } else {
-                extMinLong = Math.max(extMinLong, Math.min(...longs.filter(x => x > 0), left))
+                extMinLong = Math.max(extMinLong, Math.min(...longs.filter(x => x > 0)))
             }
 
-            minorMinLat = Math.max(minorMinLat, Math.min(...lats, bottom))
-            majorMinLat = Math.max(majorMinLat, Math.min(...lats, top))
+            minorMinLat = Math.max(minorMinLat, Math.min(...lats))
+            majorMinLat = Math.max(majorMinLat, Math.min(...lats))
 
-            minorMaxLat = Math.min(minorMaxLat, Math.max(...lats, bottom))
-            majorMaxLat = Math.min(majorMaxLat, Math.max(...lats, top))
+            minorMaxLat = Math.min(minorMaxLat, Math.max(...lats))
+            majorMaxLat = Math.min(majorMaxLat, Math.max(...lats))
 
-        }
+            }
         }
 
         return (
