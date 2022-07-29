@@ -52,6 +52,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     const foundDataset = useMaticoSelector(
         (state) => state.datasets.datasets[dataset.name]
     );
+
     const datasetReady = foundDataset && foundDataset.state === "READY";
     const [mappedFilters, filtersReady] = useNormalizeSpec(dataset.filters);
 
