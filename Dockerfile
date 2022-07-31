@@ -7,10 +7,8 @@ RUN sh install_rust.sh -y
 ENV PATH="/root/.cargo/bin/:${PATH}"
 
 RUN rustup default nightly
-RUN apt-get update
-# RUN apt-get -y install software-properties-common
-# RUN add-apt-repository ppa:nextgis/ppa && apt-get update
-RUN apt-get -y install libpq-dev build-essential pkg-config openssl libssl-dev libclang-dev 
+ 
+RUN apt-get update && apt-get -y install libpq-dev build-essential pkg-config openssl libssl-dev libclang-dev cmake 
 # RUN apk --no-cache add g++ make libressl-dev pkgconfig
 
 RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
@@ -35,9 +33,12 @@ RUN wasm-pack build  --release --scope maticoapp
 
 RUN mkdir -p /app/matico_server/static/compute/
 
-WORKDIR /app/matico_compute/matico_hdbscam_analysis
-RUN ./build.sh
-WORKDIR /app/matico_compute/matico_dot_density_analysis
+# WORKDIR /app/matico_compute/matico_hdbscam_analysis
+# RUN ./build.sh
+# WORKDIR /app/matico_compute/matico_dot_density_analysis
+# RUN ./build.sh
+
+WORKDIR /app/matico_compute/matico_synthetic_data_analysis
 RUN ./build.sh
 
 WORKDIR /app

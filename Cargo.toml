@@ -4,8 +4,8 @@ members = [
   "matico_spec_derive",
   "matico_spec",
   "matico_server",
-  "matico_compute/matico_analysis",
-  "matico_compute/matico_hdbscam_analysis",
+  
+  
   "matico_compute/matico_synthetic_data_analysis",
   "matico_common",
 ] # "matico_compute/matico_convex_hull_analysis",
