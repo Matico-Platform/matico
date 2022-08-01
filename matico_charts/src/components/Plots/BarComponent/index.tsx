@@ -1,10 +1,10 @@
 //@ts-ignore
 import React from "react";
-import { BarSpec } from "../../types";
+import { BarSpec, PlotLayersProperties } from "../../types";
 import { Bar } from "@visx/shape";
 import { isFunc, sanitizeColor } from "../../../Utils";
 
-export const BarComponent = (props: BarSpec) => {
+export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
   const {
     data = [],
     xScale = () => 0,

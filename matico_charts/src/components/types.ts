@@ -186,3 +186,8 @@ export interface ChartSpaceSpec {
   useBrush?: BooleanOrBrushSpec;
   onBrush?: xyDomainCallback;
 }
+
+export interface PlotLayersProperties {
+  xMax: number;
+  yMax: number;
+}

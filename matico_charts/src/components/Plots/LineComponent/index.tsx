@@ -1,9 +1,9 @@
 //@ts-ignore
 import React from 'react';
-import { LineSpec } from '../../types';
+import { LineSpec, PlotLayersProperties } from '../../types';
 import { LinePath } from '@visx/shape';
 
-export const LineComponent = (props: LineSpec) => {
+export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   const {
     data = [],
     xScale = () => 0,

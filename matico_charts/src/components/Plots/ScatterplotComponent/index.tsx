@@ -1,7 +1,7 @@
 //@ts-ignore
 import React from "react";
 import { Circle } from "@visx/shape";
-import { ScatterSpec } from "../../types";
+import { PlotLayersProperties, ScatterSpec } from "../../types";
 import { isFunc, sanitizeColor } from "../../../Utils";
 
 export const ScatterplotComponent = ({
@@ -15,7 +15,7 @@ export const ScatterplotComponent = ({
   shape = () => "circle",
   xOffset = 0,
   yOffset = 0,
-}: ScatterSpec) => {
+}: ScatterSpec & PlotLayersProperties) => {
   if (!data || !xAccessor || !yAccessor) return null;
   const fill = isFunc(color)
     ? //@ts-ignore
