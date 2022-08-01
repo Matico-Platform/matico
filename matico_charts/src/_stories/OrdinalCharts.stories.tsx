@@ -92,6 +92,8 @@ HorizontalOrdinal.args = {
   data: SampleCategoricalData,
 };
 
+// Static Map Example 1:
+// Filling with a single color, graticules on
 export const StaticMapChart = Template.bind({});
 StaticMapChart.args = {
   title: "Counties In California",
@@ -107,6 +109,8 @@ StaticMapChart.args = {
   data: SampleMapData,
 };
 
+// Static Map Example 2:
+// Filling with a single color, graticules off
 export const StaticMapChartNoGrid = Template.bind({});
 StaticMapChartNoGrid.args = {
   title: "Counties In California",
@@ -123,6 +127,8 @@ StaticMapChartNoGrid.args = {
   data: SampleMapData,
 };
 
+// Static Map Example 3:
+// Filling with a boolean-based scheme
 export const StaticMapChartFillFunc = Template.bind({});
 StaticMapChartFillFunc.args = {
   title: "Counties In California",
@@ -138,6 +144,8 @@ StaticMapChartFillFunc.args = {
   data: SampleMapData,
 };
 
+// Static Map Example 4:
+// Testing error message for proj
 export const StaticMapChartProjError = Template.bind({});
 StaticMapChartProjError.args = {
   title: "Median Income in Illinois Counties",
@@ -153,6 +161,7 @@ StaticMapChartProjError.args = {
   data: SampleMapData2
 }
 
+// Sample coloring function for the next example
 var colorArea = scale.scaleLinear({
   domain: [
       Math.min(...SampleMapData2.map((f) => f.properties["estimate"])),
@@ -161,6 +170,8 @@ var colorArea = scale.scaleLinear({
   range: ["Purple", "Orange"],
 });
 
+// Static Map Example 5: 
+// Passing in a custom area-coloring function
 export const StaticMapChartScale = Template.bind({});
 StaticMapChartScale.args = {
   title: "Median Income in Illinois Counties",
@@ -176,6 +187,8 @@ StaticMapChartScale.args = {
   data: SampleMapData2
 }
 
+// Static Map Example 6:
+// Displaying point data 
 export const StaticMapChartPoint = Template.bind({});
 StaticMapChartPoint.args = {
   title: "Testing point data",
@@ -191,6 +204,8 @@ StaticMapChartPoint.args = {
   data: SampleMapData3
 }
 
+// Static Map Example 7:
+// Displaying lines only
 export const StaticMapChartLine = Template.bind({});
 StaticMapChartLine.args = {
   title: "Testing line data",
@@ -206,6 +221,8 @@ StaticMapChartLine.args = {
   data: SampleMapData4
 }
 
+// Static Map Example 8:
+// Displaying polygons (e.g. rectangle)
 export const StaticMapChartPoly = Template.bind({});
 StaticMapChartPoly.args = {
   title: "Testing polygon data",
@@ -221,6 +238,8 @@ StaticMapChartPoly.args = {
   data: SampleMapData5
 }
 
+// Static Map Example 9:
+// Displaying both polygons and lines
 export const StaticMapChartLinePolyMix = Template.bind({});
 StaticMapChartLinePolyMix.args = {
   title: "Testing a mix of polygon and line data",
@@ -230,8 +249,17 @@ StaticMapChartLinePolyMix.args = {
   layers: [
     {
       type: "map",
-      fill: "black"
+      fill: "red"
     }
   ],
   data: SampleMapData6
 }
+
+// ***** Note: 7/31/22
+// LineStrings do not render nicely; it seems that
+// customProjection is always trying to shade the area bounded
+// by the lines (from joining initial and final points)
+// Is there a way to handle LineStrings appropriately?
+// Another addition to the component is a paramter for changing
+// the size of the points. Might look into whether the colors
+// could also be changed.
