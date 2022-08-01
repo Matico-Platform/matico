@@ -14,7 +14,5 @@ serde = { version = "^1.0.130", features = ["derive"] }
 validator = { version = "0.12", features = ["derive"] }
 wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
 serde_json = "1.0.59"
-serde_yaml = "0.8"
-toml = "0.5.8"
 matico_spec_derive = { path = "../matico_spec_derive" }
 ts-rs = { version = "6.1", features = ['chrono-impl', 'uuid-impl', "serde-compat"] }
