@@ -14,7 +14,6 @@ wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
 serde_json = "1.0.59"
 geo-types = "0.7.2"
 geo = "0.18.0"
-wkb = "0.7.1"
 wee_alloc = { version = "0.4.5" }
 enum_dispatch = "0.3.7"
 matico_common = { path = "../../matico_common" }

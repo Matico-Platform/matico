@@ -11,7 +11,10 @@ const withTM = require("next-transpile-modules")(
     "@react-spectrum/button",
     "@react-spectrum/buttongroup",
     "@react-spectrum/checkbox",
+    "@react-spectrum/calendar",
+    "@react-spectrum/contextualhelp",
     "@react-spectrum/combobox",
+    "@react-spectrum/datepicker",
     "@react-spectrum/dialog",
     "@react-spectrum/divider",
     "@react-spectrum/form",
@@ -74,6 +77,22 @@ module.exports = withPlugins([withTM, optomizedImages], {
                 options:{
                   outputPath: 'static/webfonts/',
                   publicPath: '../webfonts/',
+                  // optional, just to prettify file names
+                  name: '[name].[ext]',
+                }
+              },
+            ],
+          },
+
+          {
+            test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+            use: [
+              {
+
+                loader: 'file-loader',
+                options:{
+                  outputPath: 'static/media/',
+                  publicPath: '../media/',
                   // optional, just to prettify file names
                   name: '[name].[ext]',
                 }
