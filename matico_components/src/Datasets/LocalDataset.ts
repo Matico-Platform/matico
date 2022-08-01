@@ -1,10 +1,12 @@
 import { Dataset, Column, GeomType, DatasetState } from "./Dataset";
 
-import { predicate, DataFrame, RecordBatch } from "@apache-arrow/es5-cjs";
+import { Table } from "@apache-arrow/es5-cjs";
+import { all, desc, op, table } from 'arquero';
+
 import _ from "lodash";
 //@ts-ignore
 import * as d3 from "d3-array";
-import { Predicate } from "@apache-arrow/es5-cjs/compute/predicate";
+
 import {
     Filter,
     RangeFilter,
@@ -15,6 +17,7 @@ import {
     ValueCountEntry,
     ValueCountsResults
 } from "@maticoapp/matico_types/api";
+import ColumnTable from "arquero/dist/types/table/column-table";
 
 export class LocalDataset implements Dataset {
     private _isReady: boolean;
@@ -25,7 +28,7 @@ export class LocalDataset implements Dataset {
         public name: string,
         public idCol: string,
         private _columns: Array<Column>,
-        public _data: DataFrame,
+        public _data: ColumnTable,
         public _geometryType: GeomType,
         onStateChange?: (state: DatasetState) => void
     ) {
