@@ -195,10 +195,11 @@ StaticMapChartPoint.args = {
   yExtent: [0,100],
   xExtent: [0,100],
   proj: "geoEquirectangular",
+  pointRadius: 4,
+  fill: "green",
   layers: [
     {
       type: "map",
-      fill: "black"
     }
   ],
   data: SampleMapData3
@@ -212,6 +213,8 @@ StaticMapChartLine.args = {
   yExtent: [0,100],
   xExtent: [0,100],
   proj: "geoEquirectangular",
+  strokeWidth: 2,
+  strokeColor: "red",
   layers: [
     {
       type: "map",
@@ -254,12 +257,3 @@ StaticMapChartLinePolyMix.args = {
   ],
   data: SampleMapData6
 }
-
-// ***** Note: 7/31/22
-// LineStrings do not render nicely; it seems that
-// customProjection is always trying to shade the area bounded
-// by the lines (from joining initial and final points)
-// Is there a way to handle LineStrings appropriately?
-// Another addition to the component is a paramter for changing
-// the size of the points. Might look into whether the colors
-// could also be changed.

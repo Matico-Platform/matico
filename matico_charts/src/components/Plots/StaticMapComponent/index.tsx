@@ -53,7 +53,7 @@ function formatColor (color:ColorOutput) {
   }
 }
 
-export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({data, proj, fill="white", background="white", gratOn=true, gratColor="black", strokeWidth=0.5, strokeColor="black", events=true}) => {
+export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({data, proj, fill="white", background="white", gratOn=true, gratColor="black", strokeWidth=0.5, strokeColor="black", pointRadius=3, events=true}) => {
     // Checkers for geometry and properties
     const geometryChecker = (row: any) => { 
         return row.hasOwnProperty("geometry")
@@ -129,7 +129,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
                         data={data as FeatureShape[]}
                         scale={projection.scale()}
                         translate={projection.translate()}
-                        pointRadius={3}
+                        pointRadius={pointRadius}
                     >
                         {(customProjection:any) => (
                             <g>

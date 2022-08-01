@@ -89,6 +89,7 @@ export interface StaticMapSpec extends BaseLayerSpec {
   gratColor?: ColorOutput;
   strokeWidth?: number;
   strokeColor?: ColorOutput;
+  pointRadius?: number;
   events?: boolean;
 }
 
