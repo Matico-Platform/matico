@@ -141,7 +141,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
                                     <path
                                         key={`map-feature-${i}`}
                                         d={path || ''}
-                                        fill={typeof fill == "function" ? formatColor(fill(feature.properties)) : formatColor(fill)}
+                                        fill= {feature.geometry.type === ("LineString" || "MultiLineString") ? "transparent" : ((typeof fill == "function") ? formatColor(fill(feature.properties)) : formatColor(fill))}
                                         stroke={formatColor(strokeColor)}
                                         strokeWidth={strokeWidth}
                                         onClick={() => {
