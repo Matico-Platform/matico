@@ -6,8 +6,6 @@ services:
     region: oregon # optional (defaults to oregon)
     plan: starter # optional (defaults to starter)
     branch: render_deploy # optional (uses repo default)
-    ports:
-      - 80:80
     numInstances: 1 # optional (defaults to 1)
     healthCheckPath: /
     domains:
