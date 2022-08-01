@@ -29,7 +29,7 @@ export type ColorSpecification = { rgba: Array<number> } | { rgb: Array<number> 
 interface FeatureShape {
     type: 'Feature';
     id: string;
-    geometry: { coordinates: [number, number][][]; type: 'Polygon' };
+    geometry: GeoJSON.GeometryObject;//{ coordinates: [number, number][][]; type: 'Polygon' };
     properties: Record<string, any>;
 }
 
