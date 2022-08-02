@@ -53,7 +53,16 @@ function formatColor (color:ColorOutput) {
   }
 }
 
-export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({data, proj="geoMercator", fill="white", background="white", gratOn=true, gratColor="black", strokeWidth=0.5, strokeColor="black", pointRadius=3, events=true}) => {
+export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({
+    data, proj="geoMercator", 
+    fill="white", 
+    background="white", 
+    gratOn=true, 
+    gratColor="black", 
+    strokeWidth=0.5, 
+    strokeColor="black", 
+    pointRadius=3, 
+    events=true}) => {
     // Checkers for geometry and properties
     const geometryChecker = (row: any) => { 
         return row.hasOwnProperty("geometry")
