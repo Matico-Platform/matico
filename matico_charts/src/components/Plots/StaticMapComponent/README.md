@@ -1,6 +1,10 @@
 # StaticMapComponent
 
-This component plots a GeoJSON object with a given projection and graticule. It uses visx and d3-geo functions to do so. It can handle the six main types of GeoJSON geometries. The different features in the object can all be filled with the same color, or filled using a function based on their properties. The object is translated and scaled to fit the window using d3's `projection.fitExtent()` function. For larger objects, the graticule's extent is calculated via d3's `projection.clipExtent()` function, but for smaller objects it is calculated by preclipping based on the latitude and longitude coordinates of the window's corners and centers of its edges. The step size of the graticule is computed automatically, and is always 10*2^(-n) degrees, where n is a non-negative integer. 
+This component plots a GeoJSON object for a given projection using `visx` and `d3-geo` functions. It can handle the six main types of GeoJSON geometries (Point, MultiPoint, LineString, MultiString, Polygon, MultiPolygon). Different features in the object can be filled with the same color or according to a function based on each feature's `properties`.
+The object is translated and scaled to fit the window using d3's `projection.fitExtent()` function. 
+For large objects, the graticules' extent is calculated using d3's `projection.clipExtent`. 
+For small objects, it is calculated by preclipping based on the latitude/longitude coordinates of the window's corners and edge centers.
+The graticule step size is set to $10\times 2^{-n}$ degrees for some optimal nonnegative integer $n$.
 
 
 ## Parameters
