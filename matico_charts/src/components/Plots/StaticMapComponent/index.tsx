@@ -129,7 +129,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
                         data={data as FeatureShape[]}
                         scale={projection.scale()}
                         translate={projection.translate()}
-                        pointRadius={pointRadius}
+                        pointRadius = {pointRadius}
                     >
                         {(customProjection:any) => (
                             <g>
