@@ -1,82 +1,54 @@
 import { Dataset, Column, Datum, GeomType, DatasetState } from "./Dataset";
-import { constructColumnListFromSample } from "./utils";
-import {
-    Binary,
-    Field,
-    Struct,
-    Builder,
-    Int32,
-    Table,
-    DataFrame
-} from "@apache-arrow/es5-cjs";
-import traverse from "traverse";
+import { constructColumnListFromTable} from "./utils";
 import wkx from "wkx";
 import { LocalDataset } from "./LocalDataset";
 import { GeoJSONDataset } from "@maticoapp/matico_types/spec";
+import { fromJSON, fromArrow} from "arquero";
+import { makeBuilder, Binary, tableFromArrays} from "@apache-arrow/es5-cjs";
+import traverse from "traverse";
 
 export const GeoJSONBuilder = async (details: GeoJSONDataset) => {
     const { name, url } = details;
     const idCol: null | string = null;
-    const result = await fetch(url).then((r) => r.json());
-    const geometryType = extractGeomType(result);
-    const { columns, fields } = extractColumns(result, idCol);
-    const data = buildDataTable(result, idCol, columns, fields);
 
+    const data = await fetch(url).then((r)=>r.json())
+    const properties = data.features.map((feature:any)=> feature.properties)
+
+    const result = fromJSON(properties)
+
+    const geometryType = extractGeomType(data);
+    const geomBuilder = makeBuilder({
+        type: new Binary(),
+        nullValues: [null]
+    });
+
+    data.features.forEach((feature: any, id: number) => {
+        if (!feature.geometry) {
+            geomBuilder.append(null);
+        }
+        else{
+          const geom = wkx.Geometry.parseGeoJSON(feature.geometry).toWkb();
+          geomBuilder.append(geom)
+        }
+    });
+
+    const geoms = geomBuilder.finish().toVector();
+
+    debugger
+    let geom_table = fromArrow(tableFromArrays({"geoms":geoms.toArray()}))
+    
+
+    result.assign(geom_table)
+
+    
+    const columns = constructColumnListFromTable(result);
     return new LocalDataset(
         name,
         idCol ? idCol : "id",
         columns,
-        data,
+        result,
         geometryType
     );
-};
-
-const extractColumns = (geoJSON: any, idCol: string) => {
-    const props = geoJSON.features[0].properties;
-    const { columns, fields } = constructColumnListFromSample(props);
-    fields.push(new Field("geom", new Binary(), true));
-    if (!idCol) {
-        fields.push(new Field("id", new Int32(), false));
-    }
-    return { columns, fields };
-};
-
-const buildDataTable = (
-    geoJSON: any,
-    idCol: string | null,
-    columns: Array<Column>,
-    fields: any
-) => {
-    const struct = new Struct(fields);
-    const builder = Builder.new({
-        type: struct,
-        nullValues: [null, "n/a"]
-    });
-
-    self.performance.mark("geojson_table_build_start");
-    geoJSON.features.forEach((feature: any, id: number) => {
-        if (!feature.geometry) {
-            return;
-        }
-        const geom = wkx.Geometry.parseGeoJSON(feature.geometry).toWkb();
-        //@ts-ignore
-        const values = columns.map((c) => feature.properties[c.name]);
-        let datum = [...values, geom];
-        if (!idCol) {
-            datum.push(id);
-        }
-        //@ts-ignore
-        builder.append(datum);
-    });
-    builder.finish();
-    let df = new DataFrame(Table.fromStruct(builder.toVector()));
-    self.performance.mark("geojson_table_build_end");
-    self.performance.measure(
-        "geojson_table_build",
-        "geojson_table_build_start",
-        "geojson_table_build_end"
-    );
-    return df;
 };
 
 const extractGeomType = (geojson: any) => {

@@ -26,7 +26,7 @@ export const options = {
   bundle: true,
   sourcemap: true,
   loader: {
-   '.eot': 'file',
+    '.eot': 'file',
     '.woff': 'file',
     '.woff2': 'file',
     '.svg': 'file',
@@ -37,6 +37,7 @@ export const options = {
     inlineWorkerPlugin({
       inject: [require.resolve("node-stdlib-browser/helpers/esbuild/shim")],
       sourcemap:true,
+      target:"es2020",
       define:{
         global:"global",
         process:"process",

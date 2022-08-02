@@ -1,8 +1,8 @@
 import {LocalDataset} from './LocalDataset'
-import {Table,DataFrame} from "@apache-arrow/es5-cjs";
-import {Column, Dataset, GeomType} from "./Dataset"
-import {DataType} from '@apache-arrow/es5-cjs'
+import { Dataset, GeomType} from "./Dataset"
 import {WASMCompute, ParameterValue, SpecParameter} from "@maticoapp/matico_types/spec"
+import {fromArrow} from 'arquero'
+import {DataType} from '@apache-arrow/es5-cjs'
 
 
 const arrowTypeToMaticoType= (aType: DataType)=>{
@@ -58,12 +58,9 @@ export const WasmComputeBuilder = async (details: WASMCompute, datasets: Array<D
 
   const run_result  = analysis.run();
   console.log("Analysis run")
-  let table;
-  let dataFrame
-  table = Table.from([run_result])
-  dataFrame = new DataFrame(table);
+  let dataFrame = fromArrow(run_result)
   
-  const fields  = dataFrame.schema.fields.map((f)=>  ({ name: f.name, type: arrowTypeToMaticoType(f.type)} ) )
+  const fields  = dataFrame.toArrow().schema.fields.map((f)=>  ({ name: f.name, type: arrowTypeToMaticoType(f.type)} ) )
   return new LocalDataset(
     details.name,
     "ogc_fid",

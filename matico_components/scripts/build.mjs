@@ -6,6 +6,7 @@ esbuild
   .build({
     ...options,
     outfile: `${outDir}/index.js`,
+    format:"esm",
     minify: false,
     external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)]
   })
@@ -18,6 +19,7 @@ esbuild
     ...options,
     outfile: `${outDir}/bundle.js`,
     minify: true,
+    format:'cjs',
     external: ["styled-components"]
   })
   .catch(() => process.exit(1));
