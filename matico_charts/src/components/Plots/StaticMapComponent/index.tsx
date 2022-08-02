@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { CustomProjection, Graticule } from '@visx/geo';
 import {
+    geoMercator,
     geoConicConformal,
     geoTransverseMercator,
     geoNaturalEarth1,
     geoConicEquidistant,
     geoOrthographic,
     geoStereographic,
-    geoMercator,
     geoEquirectangular
 } from 'd3-geo';
 import * as d3 from 'd3-geo';
@@ -53,7 +53,7 @@ function formatColor (color:ColorOutput) {
   }
 }
 
-export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({data, proj, fill="white", background="white", gratOn=true, gratColor="black", strokeWidth=0.5, strokeColor="black", pointRadius=3, events=true}) => {
+export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({data, proj="geoMercator", fill="white", background="white", gratOn=true, gratColor="black", strokeWidth=0.5, strokeColor="black", pointRadius=3, events=true}) => {
     // Checkers for geometry and properties
     const geometryChecker = (row: any) => { 
         return row.hasOwnProperty("geometry")
