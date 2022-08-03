@@ -8,11 +8,21 @@ import { getSeededRandom, getRandomNormal } from '@visx/mock-data';
 import { withTooltip, Tooltip, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { PatternLines } from '@visx/pattern';
+import { DistributionSpec, ColorOutput, DataRow, PlotLayersProperties } from "../../types";
 
 // seeded randomness - we won't need this when we supply our own data
 const seededRandom = getSeededRandom(0.1);
 const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
 const data: Stats[] = genStats(5, randomNormal, () => 10 * seededRandom());
+
+function formatColor (color:ColorOutput) {
+  if (typeof color == "string") {
+    return color;
+  } else if (Array.isArray(color)) {
+    let prefix = color.length === 3 ? "rgb" : "rgba"
+    return `${prefix}(${color.join(",")})`;
+  }
+}
 
 // accessors
 const x = (d: Stats) => d.boxPlot.x;
