@@ -4,7 +4,7 @@ import mapdata from './sample_data/Counties_In_California.json'
 import mapdata2 from './sample_data/ILcounty_medinc.json'
 import mapdata3 from './sample_data/samplepoint.json'
 import mapdata4 from './sample_data/sampleline.json'
-import mapdata5 from './sample_data/samplerectangle-cc.json'
+import mapdata5 from './sample_data/samplerectangle-c.json'
 import mapdata6 from './sample_data/samplelinepolymix.json'
 
 // samplepoly2 has the coordinates drawn counterclockwise and
