@@ -22,7 +22,7 @@ The component consists of nine parameters.
     - `geoStereographic`
     - `geoEquirectangular`
 * `fill`: determines the fill color for points and polygons, either a hex/color string, rgb/rgba array, or a custom function
-* `background`: sets the background of the pane, either a hex/color string or rgb/rgba array
+<!-- * `background`: sets the background of the pane, either a hex/color string or rgb/rgba array -->
 * `gratOn`: turns the graticules on (`true` by default) or off (`false`)
 * `gratColor`: determines color of the graticules, either a hex/color string or rgb/rgba array
 * `strokeWidth`: sets the stroke width for lines, polygon boundaries, and outline for points
