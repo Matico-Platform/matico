@@ -84,7 +84,7 @@ export interface BaseLayerSpec {
 export interface StaticMapSpec extends BaseLayerSpec {
   proj: string;
   fill?: ColorFunction | ColorOutput;
-  background?: ColorOutput;
+  //background?: ColorOutput;
   gratOn?: boolean;
   gratColor?: ColorOutput;
   strokeWidth?: number;

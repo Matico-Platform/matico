@@ -56,7 +56,7 @@ function formatColor (color:ColorOutput) {
 export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({
     data, proj="geoMercator", 
     fill="white", 
-    background="white", 
+    //background="white", 
     gratOn=true, 
     gratColor="black", 
     strokeWidth=0.5, 
@@ -131,7 +131,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
 
         return (
             <svg width={width} height={height}>
-                <rect x={0} y={0} width={width} height={height} fill={formatColor(background)} rx={0} />
+                {/* <rect x={0} y={0} width={width} height={height} fill={formatColor(background)} rx={0} /> */}
                 {!!data && (
                     <CustomProjection<FeatureShape>
                         projection={() => projection}
