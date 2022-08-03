@@ -34,12 +34,16 @@
     "@visx/axis": "^2.6.0",
     "@visx/brush": "^2.6.0",
     "@visx/event": "^2.6.0",
+    "@visx/gradient": "^2.10.0",
     "@visx/grid": "^2.6.0",
     "@visx/group": "^2.1.0",
     "@visx/heatmap": "^2.1.2",
+    "@visx/mock-data": "^2.1.2",
     "@visx/pattern": "^2.1.2",
     "@visx/responsive": "^2.4.1",
     "@visx/shape": "^2.4.0",
+    "@visx/stats": "^2.10.0",
+    "@visx/tooltip": "^2.10.0",
     "simple-statistics": "^7.7.3"
   }
 }
