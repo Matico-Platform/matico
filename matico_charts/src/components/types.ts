@@ -59,7 +59,7 @@ export interface ErrorSpec {
 
 // layers
 export interface BaseLayerSpec {
-  type: 'scatter' | 'line' | 'bar' | 'pie';
+  type: 'scatter' | 'line' | 'bar' | 'pie' | 'distribution';
   data?: DataCollection;
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
@@ -112,7 +112,16 @@ export interface HeatmapSpec extends BaseLayerSpec {
   binnedData?: DataCollection[]
 }
 
-export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec;
+export interface DistributionSpec extends BaseLayerSpec {
+  bins: number,
+  binnedData?: DataCollection[]
+  showBoxPlot?: boolean,
+  showViolinPlot?: boolean,
+  background?: ColorOutput,
+  flip?: boolean,
+}
+
+export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec | DistributionSpec;
 
 // layouts
 export type OverwriteProperty = { [property: string]: any };
