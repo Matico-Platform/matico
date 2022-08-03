@@ -117,7 +117,6 @@ export interface DistributionSpec extends BaseLayerSpec {
   binnedData?: DataCollection[]
   showBoxPlot?: boolean,
   showViolinPlot?: boolean,
-  background?: ColorOutput,
   flip?: boolean,
 }
 
