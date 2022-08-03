@@ -54,6 +54,8 @@ function formatColor (color:ColorOutput) {
 }
 
 export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> = ({
+    xMax,
+    yMax,
     data, proj="geoMercator", 
     fill="white", 
     //background="white", 
@@ -73,12 +75,11 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
     };
     
     if (data && data.every(geometryChecker) && data.every(propChecker) && (proj in basicProjections)) {
-        let width = 500, height = 500;
 
         const projection = basicProjections[proj]()
         //@ts-ignore
-        .fitExtent([[20, 20], [width - 20, height - 20]], {type: "FeatureCollection", features: data}) // Translate and scale to fit the object
-        .clipExtent([[0, 0], [width, height]])
+        .fitExtent([[20, 20], [xMax - 20, yMax - 20]], {type: "FeatureCollection", features: data}) // Translate and scale to fit the object
+        .clipExtent([[0, 0], [xMax, yMax]])
 
         if (gratOn) { 
           // Calculate the graticule step size. It will always be 10 times a power of 2
@@ -93,13 +94,13 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
             if (stepSize < 1.25) {
             // Get the lat/long coordinates of the corners and edge midpoints of the graph
             let corners = [projection.invert?.([0, 0]), //ul
-            projection.invert?.([0, height / 2]),
-            projection.invert?.([0, height]), //bl
-            projection.invert?.([width / 2, height]),
-            projection.invert?.([width, height]), //br
-            projection.invert?.([width, height / 2]),
-            projection.invert?.([width, 0]), // ur
-            projection.invert?.([width / 2, 0])]
+            projection.invert?.([0, yMax / 2]),
+            projection.invert?.([0, yMax]), //bl
+            projection.invert?.([xMax / 2, yMax]),
+            projection.invert?.([xMax, yMax]), //br
+            projection.invert?.([xMax, yMax / 2]),
+            projection.invert?.([xMax, 0]), // ur
+            projection.invert?.([xMax / 2, 0])]
             .filter(x => x != null && typeof x != "undefined") as [number, number][]
 
             //@ts-ignore
@@ -130,8 +131,8 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
         }
 
         return (
-            <svg width={width} height={height}>
-                {/* <rect x={0} y={0} width={width} height={height} fill={formatColor(background)} rx={0} /> */}
+            <svg width={xMax} height={yMax}>
+                {/* <rect x={0} y={0} width={xMax} height={yMax} fill={formatColor(background)} rx={0} /> */}
                 {!!data && (
                     <CustomProjection<FeatureShape>
                         projection={() => projection}
