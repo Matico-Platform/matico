@@ -9,7 +9,7 @@ import { withTooltip, Tooltip, defaultStyles as defaultTooltipStyles } from '@vi
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { PatternLines } from '@visx/pattern';
 
-// seeded randomness
+// seeded randomness - we won't need this when we supply our own data
 const seededRandom = getSeededRandom(0.1);
 const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
 const data: Stats[] = genStats(5, randomNormal, () => 10 * seededRandom());
