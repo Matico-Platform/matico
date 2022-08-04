@@ -3547,7 +3547,7 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/styled-components": ^5.1.21
     "@visx/axis": ^2.6.0
-    "@visx/brush": ^2.6.0
+    "@visx/brush": ^2.12.1
     "@visx/event": ^2.6.0
     "@visx/gradient": ^2.10.0
     "@visx/grid": ^2.6.0
@@ -11577,7 +11577,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@visx/brush@npm:^2.6.0":
+"@visx/brush@npm:^2.12.1":
   version: 2.12.1
   resolution: "@visx/brush@npm:2.12.1"
   dependencies:

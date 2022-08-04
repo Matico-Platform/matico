@@ -53,26 +53,33 @@ export type StatsPlotProps = {
   height: number;
 };
 
+<<<<<<< HEAD
 
 
 export default withTooltip<StatsPlotProps, TooltipData>(
+=======
+export default withTooltip<PlotLayersProperties, TooltipData>(
+>>>>>>> c2f675a6 (Ready to pull)
   ({
-    width,
-    height,
+    xMax,
+    yMax,
     tooltipOpen,
     tooltipLeft,
     tooltipTop,
     tooltipData,
     showTooltip,
     hideTooltip,
-  }: StatsPlotProps & WithTooltipProvidedProps<TooltipData>) => {
+  }: PlotLayersProperties & WithTooltipProvidedProps<TooltipData>) => {
     // bounds
-    const xMax = width;
-    const yMax = height - 120;
+    const xMax2 = xMax;
+    const yMax2 = yMax - 120;
+
+    const fillColor = "white"
+    const strokeColor = "black"
 
     // scales
     const xScale = scaleBand<string>({
-      range: [0, xMax],
+      range: [0, xMax2],
       round: true,
       domain: data.map(x),
       padding: 0.4,
@@ -86,7 +93,7 @@ export default withTooltip<StatsPlotProps, TooltipData>(
     const maxYValue = Math.max(...values);
 
     const yScale = scaleLinear<number>({
-      range: [yMax, 0],
+      range: [yMax2, 0],
       round: true,
       domain: [minYValue, maxYValue],
     });
@@ -94,11 +101,11 @@ export default withTooltip<StatsPlotProps, TooltipData>(
     const boxWidth = xScale.bandwidth();
     const constrainedWidth = Math.min(40, boxWidth);
 
-    return width < 10 ? null : (
+    return xMax < 10 ? null : (
       <div style={{ position: 'relative' }}>
-        <svg width={width} height={height}>
-          <LinearGradient id="statsplot" to="#8b6ce7" from="#87f2d4" />
-          <rect x={0} y={0} width={width} height={height} fill="url(#statsplot)" rx={14} />
+        <svg width={xMax} height={yMax}>
+          {/* <LinearGradient id="statsplot" to="#8b6ce7" from="#87f2d4" />
+          <rect x={0} y={0} width={xMax} height={yMax} fill="url(#statsplot)" rx={14} />
           <PatternLines
             id="hViolinLines"
             height={3}
@@ -107,17 +114,17 @@ export default withTooltip<StatsPlotProps, TooltipData>(
             strokeWidth={1}
             // fill="rgba(0,0,0,0.3)"
             orientation={['horizontal']}
-          />
+          /> */}
           <Group top={40}>
             {data.map((d: Stats, i) => (
               <g key={i}>
                 <ViolinPlot
                   data={d.binData}
-                  stroke="#dee2e6"
+                  stroke={strokeColor}
                   left={xScale(x(d))!}
                   width={constrainedWidth}
                   valueScale={yScale}
-                  fill="url(#hViolinLines)"
+                  fill={fillColor}
                 />
                 <BoxPlot
                   min={min(d)}
@@ -127,9 +134,9 @@ export default withTooltip<StatsPlotProps, TooltipData>(
                   thirdQuartile={thirdQuartile(d)}
                   median={median(d)}
                   boxWidth={constrainedWidth * 0.4}
-                  fill="#FFFFFF"
+                  fill={fillColor}
                   fillOpacity={0.3}
-                  stroke="#FFFFFF"
+                  stroke={strokeColor}
                   strokeWidth={2}
                   valueScale={yScale}
                   outliers={outliers(d)}
@@ -180,7 +187,7 @@ export default withTooltip<StatsPlotProps, TooltipData>(
                   }}
                   medianProps={{
                     style: {
-                      stroke: 'white',
+                      stroke: strokeColor,
                     },
                     onMouseOver: () => {
                       showTooltip({
