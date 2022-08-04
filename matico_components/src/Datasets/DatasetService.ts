@@ -14,6 +14,7 @@ import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
 import {WasmComputeBuilder} from "./WasmComputeBuilder";
 import {Dataset as DatasetSpec} from "@maticoapp/matico_types/spec"
+import {ArrowBuilder} from "./ArrowBuilder";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -56,7 +57,6 @@ export const DatasetService: DatasetServiceInterface = {
   ) {
 
     const { datasetName, metric, column, parameters, filters } = args;
-    console.log("REGISTERING COLUMN DATA ", args)
     
     const getMetric = async (datasetName: string) => {
       let dataset = this.datasets[datasetName];
@@ -88,7 +88,6 @@ export const DatasetService: DatasetServiceInterface = {
     if (metricVal) {
       callback(metricVal);
     }
-    console.log("METRIC VAL IS", metricVal)
 
     this._registerNotifier(datasetName, notifierId, async () => {
       const metricVal = await getMetric(datasetName);
@@ -157,12 +156,25 @@ export const DatasetService: DatasetServiceInterface = {
           tiled: geoDataset.tiled(),
           spec: datasetDetails
         };
+      case "arrow":
+        const arrowDataset= await ArrowBuilder(datasetDetails);
+        this.datasets[arrowDataset.name] = arrowDataset;
+        this._notify(arrowDataset.name);
+        return {
+          name: arrowDataset.name,
+          state: DatasetState.READY,
+          columns: await arrowDataset.columns(),
+          geomType: await arrowDataset.geometryType(),
+          local: true,
+          raster:false,
+          tiled: arrowDataset.tiled(),
+          spec: datasetDetails
+        };
       case "csv":
-        console.log("BUILDING CSV DATASET ")
         const csvDataset = await CSVBuilder(datasetDetails);
         this.datasets[csvDataset.name] = csvDataset;
         this._notify(csvDataset.name);
-        console.log("BUILDING CSV DATASET ", csvDataset)
+
         return {
           name: csvDataset.name,
           state: DatasetState.READY,

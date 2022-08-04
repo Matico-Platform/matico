@@ -1,6 +1,7 @@
 use geo::{Geometry,Point};
 use geopolars::geoseries::GeoSeries;
 use matico_analysis::*;
+use matico_common::{ProcessError, ArgError};
 use polars::io::{SerWriter, SerReader};
 use polars::prelude::NamedFromOwned;
 use rand::Rng;

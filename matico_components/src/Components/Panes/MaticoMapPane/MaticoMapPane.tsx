@@ -146,6 +146,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         mapLib={maplibregl}
                         key={id}
                         id={id}
+                        reuseMaps={true}
                         antialias={true}
                         initialViewState={{
                             latitude: currentView.lat,

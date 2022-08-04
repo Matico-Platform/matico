@@ -13,14 +13,12 @@ export const loadAnalysis = async (url: string) => {
 
 export const populateDefaults = (options: Record<string,ParameterOptions>)=>{
   let defaults: Array<SpecParameter> = [] 
-  console.log("options", options)
   Object.entries(options).map(([key,option])=>{
     if (option.type === "optionGroup"){
       let value = populateDefaults(option.options)
       defaults.push ({name:key, parameter:{type:option.type, value: value}})
     } 
     else if (option.type === "repeatedOption"){
-      console.log("REPEATED OPTION")
       let values = []
       for(let i = 0; i< option.min_times; i++){
         values.push({type:option.type, value: populateDefaults({ [key] : option.options})}) 
@@ -31,7 +29,6 @@ export const populateDefaults = (options: Record<string,ParameterOptions>)=>{
       defaults.push({name:key, parameter:{type:option.type, value: option.default}})
     }
   }) 
-  console.log("defaults", defaults)
   return defaults
 }
 

@@ -1,7 +1,5 @@
-use crate::VarOr;
-use matico_analysis::SpecParameter;
+use matico_common::SpecParameter;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use ts_rs::TS;
 use wasm_bindgen::prelude::*;
 
@@ -18,6 +16,8 @@ pub enum Dataset {
     COG(COGDataset),
     #[serde(rename="wasmCompute")]
     WASMCompute(WASMCompute),
+    #[serde(rename="arrow")]
+    Arrow(ArrowDataset)
 }
 
 #[wasm_bindgen]
@@ -42,6 +42,25 @@ pub struct GeoJSONDataset {
     #[wasm_bindgen(skip)]
     pub url: String,
 }
+
+#[wasm_bindgen]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ArrowDataset {
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[wasm_bindgen(skip)]
+    pub url: String,
+
+    #[wasm_bindgen(skip)]
+    pub geometry_col: Option<String>,
+
+    #[wasm_bindgen(skip)]
+    pub id_col: Option<String>,
+}
+
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]

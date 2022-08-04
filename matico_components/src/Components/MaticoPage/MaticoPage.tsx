@@ -10,8 +10,6 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ page }) => {
     let layout: Layout = page.layout;
     let LayoutEngine = selectLayout(layout);
 
-    console.log("rendering page ", page);
-
     return (
         <View overflow="none auto" width="100%" height="100%">
             <Flex direction="column" width={"100%"} height={"100%"}>

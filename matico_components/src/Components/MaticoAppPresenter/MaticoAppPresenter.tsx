@@ -51,7 +51,6 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     useRegisterDatasets();
 
     const appSpec = useAppSpec();
-    console.log("App spec ", appSpec);
 
     const appState = useMaticoSelector((state) => state.variables);
 

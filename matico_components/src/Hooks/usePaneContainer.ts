@@ -24,7 +24,6 @@ export const usePaneContainer = (containerId: string) => {
 
         || selector.spec.spec.pages.find( (p:Page) => p.id ==containerId)     );
 
-    console.log("container is ",container, containerId, spec)
 
     const panes  = useMaticoSelector((selector)=> container.panes.map((paneRef: PaneRef)=>selector.spec.spec.panes.find((pane:Pane)=>pane.id === paneRef.paneId)))
     

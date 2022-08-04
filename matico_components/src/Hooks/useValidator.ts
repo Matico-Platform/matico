@@ -15,7 +15,6 @@ export const useValidator = () => {
                 setValidatorReady(true);
             } catch (err) {
                 setError(`failed to load wasm: ${err}`);
-                console.log("unexpected error in load wasm ", err);
             }
         };
         f();

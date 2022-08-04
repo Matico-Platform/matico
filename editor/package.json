@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@maticoapp/matico_components": "workspace:matico_components",
-    "@maticoapp/matico_spec": "workspace:matico_spec/pkg",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -20,15 +19,14 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "SKIP_PREFLIGHT_CHECK=true craco start",
+    "start": "craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {
@@ -46,11 +44,13 @@
   "devDependencies": {
     "@babel/plugin-syntax-typescript": "^7.14.5",
     "@craco/craco": "^6.4.5",
-    "@typescript-eslint/parser": "^5.7.0",
     "@wasm-tool/wasm-pack-plugin": "^1.5.0",
+    "buffer": "^6.0.3",
+    "craco-workbox": "^0.2.0",
     "craco-worker-loader": "^1.0.0",
     "eslint": "^8.14.0",
-    "eslint-config-react-app": "^6.0.0",
+    "node-polyfill-webpack-plugin": "^2.0.1",
+    "process": "^0.11.10",
     "react-app-rewired": "^2.1.8",
     "wasm-loader": "^1.3.0",
     "worker-loader": "^3.0.8"

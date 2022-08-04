@@ -1,5 +1,6 @@
 export * from "./Alignment";
 export * from "./App";
+export * from "./ArrowDataset";
 export * from "./BaseMap";
 export * from "./CategoriesParams";
 export * from "./CategoryFilter";

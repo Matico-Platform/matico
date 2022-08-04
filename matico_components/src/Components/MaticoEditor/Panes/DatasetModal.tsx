@@ -41,7 +41,6 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
 
     const { updateDataset } = useDatasetActions(dataset.name);
 
-    console.log("Dataset is ", dataset);
 
     return (
         <DialogTrigger isDismissable>

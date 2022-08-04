@@ -23,6 +23,7 @@ import {
 import { GeoJSONProvider } from "DatasetsProviders/GeoJSONProvider";
 import { CSVProvider } from "DatasetsProviders/CSVProvider";
 import { COGProvider } from "DatasetsProviders/COGProvider";
+import { ArrowProvider} from "DatasetsProviders/ArrowProvider";
 import { App } from "@maticoapp/matico_types/spec";
 
 import { SocrataDatasetProvider } from "DatasetsProviders/SocrataProvider/SocrataProvider";
@@ -153,6 +154,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                                         datasetProviders={[
                                             CSVProvider,
                                             GeoJSONProvider,
+                                            ArrowProvider,
                                             COGProvider,
                                             // @ts-ignore
                                             SocrataDatasetProvider,

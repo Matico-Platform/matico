@@ -16,3 +16,4 @@ wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
 serde_json = "1.0.59"
 matico_spec_derive = { path = "../matico_spec_derive" }
 ts-rs = { version = "6.1", features = ['chrono-impl', 'uuid-impl', "serde-compat"] }
+enum_dispatch = "0.3.7"

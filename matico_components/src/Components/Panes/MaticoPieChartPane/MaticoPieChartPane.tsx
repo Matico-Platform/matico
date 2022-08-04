@@ -46,7 +46,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         right: 10
     };
 
-    console.log("labels ", labels)
 
     const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
 
@@ -62,7 +61,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
           }
         : null;
 
-    console.log("Data Request is ", dataRequest, dataset, foundDataset);
 
     const chartData = useRequestColumnStat(dataRequest);
 
@@ -74,14 +72,13 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         
         const pallet = colors.Pastel["10"] 
         const colMapping = chartData.result.reduce((agg,d,index) => ({...agg, [d.name] : pallet[index]} ),{})
-        console.log("pallet ",pallet, " colMapping ",colMapping)
 
         return (
             <MaticoChart
                 layers={[
                     {
                         type: "pie",
-                        color: (d)=>{console.log("color", d, colMapping[d.name]); return colMapping[d.name]},
+                        color: (d)=>colMapping[d.name],
                         padding: 0.2,
                         innerRadius: 0.5,
                         valueAccessor: (d: any) => d.counts[0],

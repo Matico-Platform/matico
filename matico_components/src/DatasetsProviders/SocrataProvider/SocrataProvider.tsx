@@ -68,7 +68,6 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
     }
   };
 
-  console.log("selected dataset ", selectedDataset);
   return (
     <Flex direction="column" gap="size-200" padding="size-100">
       {portals && (

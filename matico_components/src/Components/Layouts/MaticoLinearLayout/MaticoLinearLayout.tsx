@@ -113,7 +113,6 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
     align,
     justify
 }) => {
-    console.log(" Linear Layout ", direction ,align ,justify)
     return (
         <Flex
             position="relative"

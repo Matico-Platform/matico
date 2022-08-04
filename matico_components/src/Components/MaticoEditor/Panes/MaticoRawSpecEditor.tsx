@@ -33,7 +33,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
 
     const spec = useAppSpec();
     const dispatch = useMaticoDispatch();
-    console.log("Got app spec as ", spec);
 
     //Need to figure out how to make sure this updates with other spec changes
     useEffect(() => {
@@ -65,7 +64,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
         }
     }, [JSON.stringify(code), validator, validatorReady]);
 
-    if (validatorError) return <h1>Failed to load validator wasm </h1>;
 
     const combinedErrors = useMemo(() => {
         let combinedErrors = [];
@@ -77,6 +75,8 @@ export const MaticoRawSpecEditor: React.FC = () => {
         }
         return combinedErrors.filter((a) => a);
     }, [jsonError, validationResult]);
+
+    if (validatorError) return <h1>Failed to load validator wasm </h1>;
 
     if (!validatorReady)
         return <ProgressCircle aria-label="Loading…" isIndeterminate />;

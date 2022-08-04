@@ -94,7 +94,6 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
 }) => {
 
     const Editor = LayoutEditorMap[layout.type as keyof typeof LayoutEditorMap];
-    console.log("layout " , layout, layout.type,  Editor)
     return (
         <View>
             <Picker

@@ -64,7 +64,6 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
     }
 
     const updateFilters = (newFilters: Array<Filter>) => {
-        console.log("Updating filters ", newFilters);
         updateLayer({
             source: {
                 ...layer.source,

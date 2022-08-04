@@ -33,7 +33,7 @@
     "@mapbox/rehype-prism": "^0.8.0",
     "@math.gl/web-mercator": "^3.6.0",
     "@maticoapp/matico_charts": "workspace:matico_charts",
-    "@maticoapp/matico_spec": "workspace:matico_spec/pkg",
+    "@maticoapp/matico_spec": "workspace:matico_spec",
     "@maticoapp/matico_types": "workspace:matico_types",
     "@nebula.gl/editor": "^1.0.2",
     "@nebula.gl/layers": "^1.0.2",

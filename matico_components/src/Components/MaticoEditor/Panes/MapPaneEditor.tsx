@@ -121,7 +121,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         usePane(paneRef);
 
     const mapPane = pane as MapPane;
-    console.log("map pane is ", mapPane);
 
     const mapPaneCurrentView = useMaticoSelector(
         (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
@@ -130,7 +129,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     const dispatch = useMaticoDispatch();
 
     const updateBaseMap = (baseMap: BaseMap) => {
-        console.log("Updating base map", baseMap);
         updatePane({
             baseMap
         });

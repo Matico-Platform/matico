@@ -95,6 +95,11 @@ export class App {
 }
 /**
 */
+export class ArrowDataset {
+  free(): void;
+}
+/**
+*/
 export class COGDataset {
   free(): void;
 }

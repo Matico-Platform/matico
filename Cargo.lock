@@ -2264,6 +2264,7 @@ dependencies = [
 name = "matico_common"
 version = "0.1.0"
 dependencies = [
+ "enum_dispatch",
  "matico_spec_derive",
  "serde 1.0.140",
  "serde_json",
@@ -2334,7 +2335,6 @@ name = "matico_spec"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "matico_analysis",
  "matico_common",
  "matico_spec_derive",
  "serde 1.0.140",
@@ -2365,6 +2365,7 @@ dependencies = [
  "geopolars",
  "geozero 0.9.5",
  "matico_analysis",
+ "matico_common",
  "matico_spec_derive",
  "polars",
  "rand 0.8.5",

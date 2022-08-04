@@ -67,6 +67,8 @@ module.exports = withPlugins([withTM, optomizedImages], {
   },
   webpack: (config, options) => {
     config.experiments.asyncWebAssembly = true;
+    config.experiments.topLevelAwait = true;
+
     config.module.rules.push(
           {
             test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,

@@ -42,7 +42,6 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     max,
     onUpdateFilter
 }) => {
-    console.log("selected column ", selectedColumn);
 
     const toggleVariableMin = () => {
         if (typeof min === "number") {
@@ -286,7 +285,6 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
         (state) => state.datasets.datasets[datasetName]
     );
 
-    console.log("Filters to iterate over ", filters);
     const columns =
         dataset && dataset.state === DatasetState.READY ? dataset.columns : [];
 

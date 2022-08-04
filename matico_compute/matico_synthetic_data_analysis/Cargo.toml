@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 serde = { version = "^1.0.130", features = ["derive"] }
 wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
 matico_analysis = { path = "../matico_analysis" }
+matico_common = { path = "../../matico_common" }
 matico_spec_derive = { path = "../../matico_spec_derive" }
 serde_json = "1.0.59"
 geozero = { version = "0.9.4", features = ["with-wkb"], default-features = false }
