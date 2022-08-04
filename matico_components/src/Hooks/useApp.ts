@@ -1,5 +1,5 @@
 import {
-    Page,
+    Page, Pane,
 } from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import {
@@ -8,7 +8,8 @@ import {
     addPage,
     setCurrentEditElement,
     reparentPaneRef,
-    updateTheme
+    updateTheme,
+    addPane
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import {Theme} from "@maticoapp/matico_types/spec";
@@ -27,9 +28,9 @@ export const useApp = () => {
                 page: {
                     name: pages.length === 0 ? "Home" : `Page ${pages.length}`,
                     id: uuidv4(),
-                    layout: { type: "free" },
+                    layout: { type: "free", allowOverflow:false },
                     panes: [],
-                    icon: pages.length === 0 ? "faHome" : "faPage",
+                    icon: pages.length === 0 ? "fa faHome" : "fa faPage",
                     path: pages.length === 0 ? "/" : `/page_${pages.length}`,
                     ...page
                 }
@@ -61,6 +62,10 @@ export const useApp = () => {
         dispatch(updateTheme({update}))
     }
 
+    const _addPane =(pane: Pane)=>{
+        dispatch(addPane({pane}))
+    }
+
     const reparentPane = (
         paneRefId: string,
         targetId: string
@@ -83,6 +88,7 @@ export const useApp = () => {
         updatePage,
         setEditPage,
         reparentPane,
+        addPane:_addPane,
         updateTheme: _updateTheme
     };
 };

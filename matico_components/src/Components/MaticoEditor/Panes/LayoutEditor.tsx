@@ -1,6 +1,5 @@
 import React from "react";
-import {
-    View,
+import { View,
     Picker,
     Item,
     Radio,
@@ -95,7 +94,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
 
     const Editor = LayoutEditorMap[layout.type as keyof typeof LayoutEditorMap];
     return (
-        <View>
+        <View width="100%">
             <Picker
                 width="100%"
                 selectedKey={layout.type}
