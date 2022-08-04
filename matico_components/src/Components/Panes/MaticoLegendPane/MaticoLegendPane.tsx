@@ -177,13 +177,6 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
                 <Text UNSAFE_style={{ fontWeight: "bold" }}>{name}</Text>
                 <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
                     {(labels) => {
-                        console.log(
-                            labels.sort(
-                                (a, b) =>
-                                    (isNaN(+a?.datum) ? 0 : +a?.datum) -
-                                    (isNaN(+b?.datum) ? 0 : +b?.datum)
-                            )
-                        );
                         //@ts-ignore
                         return labels
                             .sort(

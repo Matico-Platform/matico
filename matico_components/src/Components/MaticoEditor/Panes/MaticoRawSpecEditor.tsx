@@ -33,13 +33,14 @@ export const MaticoRawSpecEditor: React.FC = () => {
 
     const spec = useAppSpec();
     const dispatch = useMaticoDispatch();
-    console.log("Got app spec as ", spec);
 
     //Need to figure out how to make sure this updates with other spec changes
     useEffect(() => {
         setCode(JSON.stringify(spec, null, 2));
     }, []);
 
+
+    console.log("JSON ERROR IS ",jsonError)
     const annotations: Ace.Annotation[] = jsonError
         ? json_error_to_annotation(jsonError)
         : [];
@@ -47,6 +48,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
     useEffect(() => {
         if (validatorReady) {
             try {
+                debugger
                 const dash = validator.App.from_json(code);
                 const { is_valid: specValid, errors } = dash.is_valid();
                 if (specValid) {
@@ -65,7 +67,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
         }
     }, [JSON.stringify(code), validator, validatorReady]);
 
-    if (validatorError) return <h1>Failed to load validator wasm </h1>;
 
     const combinedErrors = useMemo(() => {
         let combinedErrors = [];
@@ -77,6 +78,8 @@ export const MaticoRawSpecEditor: React.FC = () => {
         }
         return combinedErrors.filter((a) => a);
     }, [jsonError, validationResult]);
+
+    if (validatorError) return <h1>Failed to load validator wasm </h1>;
 
     if (!validatorReady)
         return <ProgressCircle aria-label="Loading…" isIndeterminate />;

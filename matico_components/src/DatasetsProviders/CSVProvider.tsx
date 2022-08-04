@@ -8,11 +8,11 @@ import React, {useState} from "react";
 export const CSVImporter: React.FC<DatasetProviderComponent> = ({
   onSubmit,
 }) => {
-  const [options, setOptions] = useState<{url:string, name:string, lat_col:string, lng_col:string}>({
+  const [options, setOptions] = useState<{url:string, name:string, latCol:string, lngCol:string}>({
     url: "",
     name: "",
-    lat_col: "",
-    lng_col: "",
+    latCol: "",
+    lngCol: "",
   });
 
   const updateOptions = (update: { [option: string]: string }) => {
@@ -36,14 +36,14 @@ export const CSVImporter: React.FC<DatasetProviderComponent> = ({
       <TextField
         width="100%"
         label="latitude column"
-        value={options.lat_col}
-        onChange={(lat_col) => updateOptions({ lat_col })}
+        value={options.latCol}
+        onChange={(latCol) => updateOptions({ latCol })}
       />
       <TextField
         width="100%"
         label="longitude column"
-        value={options.lng_col}
-        onChange={(lng_col) => updateOptions({ lng_col })}
+        value={options.lngCol}
+        onChange={(lngCol) => updateOptions({ lngCol })}
       />
       <Button variant="cta" onPress={() => onSubmit({ "type": "csv",  ...options })}>Submit</Button>
     </Flex>

@@ -1,7 +1,6 @@
 import { wasmLoader } from "esbuild-plugin-wasm";
 import inlineWorkerPlugin from "esbuild-plugin-inline-worker";
 import fs from "fs";
-import { replace } from "esbuild-plugin-replace";
 import plugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import stdLibBrowser from "node-stdlib-browser"
 import {createRequire} from 'module'
@@ -26,7 +25,7 @@ export const options = {
   bundle: true,
   sourcemap: true,
   loader: {
-   '.eot': 'file',
+    '.eot': 'file',
     '.woff': 'file',
     '.woff2': 'file',
     '.svg': 'file',
@@ -37,6 +36,8 @@ export const options = {
     inlineWorkerPlugin({
       inject: [require.resolve("node-stdlib-browser/helpers/esbuild/shim")],
       sourcemap:true,
+      minify:false,
+      target:"es2020",
       define:{
         global:"global",
         process:"process",

@@ -62,7 +62,7 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                     <Heading>Select pane to add</Heading>
                     <Content>
                         {AvaliablePanes.map((section) => (
-                            <Flex direction="column" gap="size-150">
+                            <Flex direction="column" key={section.sectionTitle} gap="size-150">
                                 <TextField
                                     label="New pane name"
                                     value={newPaneName}
@@ -83,6 +83,7 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                                             label: string;
                                         }) => (
                                             <ActionButton
+                                                key={pane.name}
                                                 onPress={() => {
                                                     attemptToAddPane(
                                                         pane.name,

@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     ActionButton,
-    ActionGroup,
     Button,
-    ButtonGroup,
     Content,
     Dialog,
     DialogTrigger,
@@ -13,12 +11,6 @@ import {
     Text,
     View
 } from "@adobe/react-spectrum";
-import { useAppSpec } from "Hooks/useAppSpec";
-import {
-    RowEntryMultiButton,
-    RowEntryMultiButtonProps
-} from "../Utils/RowEntryMultiButton";
-import { isArray, isObject, remove } from "lodash";
 import { useApp } from "Hooks/useApp";
 import {
     ContainerPane,
@@ -27,20 +19,14 @@ import {
     PaneRef
 } from "@maticoapp/matico_types/spec";
 import { usePage } from "Hooks/usePage";
-import Checkmark from "@spectrum-icons/workflow/Checkmark";
-import Settings from "@spectrum-icons/workflow/Settings";
-import Duplicate from "@spectrum-icons/workflow/Duplicate";
-import { GatedAction } from "../EditorComponents/GatedAction";
 import Delete from "@spectrum-icons/workflow/Delete";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 import styled from "styled-components";
 import { usePane } from "Hooks/usePane";
-import { Container } from "react-dom";
 import { useContainer } from "Hooks/useContainer";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import {
     restrictToVerticalAxis,
-    restrictToWindowEdges
 } from "@dnd-kit/modifiers";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
 import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
@@ -207,9 +193,9 @@ const PaneList: React.FC<{
         >
             {panes.map((pane) => {
                 if (pane.type === "container") {
-                    return <ContainerPaneRow rowPane={pane} />;
+                    return <ContainerPaneRow key={pane.id} rowPane={pane} />;
                 } else {
-                    return <PaneRow rowPane={pane} />;
+                    return <PaneRow key={pane.id} rowPane={pane} />;
                 }
             })}
         </View>
@@ -325,7 +311,7 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                     onDragEnd={handleDragEnd}
                 >
                     {pages.map((page) => (
-                        <PageList page={page} />
+                        <PageList key={page.id} page={page} />
                     ))}
                 </DndContext>
             </Flex>

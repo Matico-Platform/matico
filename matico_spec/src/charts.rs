@@ -1,4 +1,4 @@
-use crate::{AutoComplete, ColorSpecification, DatasetRef, MappingVarOr, PanePosition};
+use crate::{AutoComplete, ColorSpecification, DatasetRef, MappingVarOr};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use validator::Validate;

@@ -16,7 +16,6 @@ const loadDataasets = async (portal : PortalInfo, onProgress? : progressFunc )=>
   const perPage = 100
   const datasets: Array<any> =[]
   const pages = Math.ceil(portal.count / perPage)
-  console.log("loading datasets, it will take ", pages, perPage)
   for( let page =0;  page < pages; page++){
     let pagedDatasets = await loadPageOfDatasets(portal.domain, page, perPage) 
     if(onProgress){

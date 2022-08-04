@@ -6,7 +6,6 @@ export const useDatasetActions = (name: string) => {
     const dispatch = useMaticoDispatch();
 
     const updateDataset = (name: string, spec: any) => {
-        console.log("updating dataset ", name, " with values ", spec);
         dispatch(updateDatasetSpec({ name, datasetSpec: spec }));
     };
     return { updateDataset };

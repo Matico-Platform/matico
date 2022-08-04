@@ -40,7 +40,6 @@ export const MaticoSelectionLayer: React.FC<SelectionLayerProps> = ({
         features: []
     });
 
-    console.log("internal selection is ",selection)
 
     useEffect(()=>{
 

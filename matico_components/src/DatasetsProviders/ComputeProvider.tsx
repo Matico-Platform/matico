@@ -31,7 +31,6 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     const values = spec.params;
 
     const updateValues = (update: SpecParameter) => {
-        console.log("update is ", update);
         onChange({
             ...spec,
             params: spec.params.map((p: SpecParameter) =>
@@ -63,7 +62,6 @@ const ParameterGroup: React.FC<{
             {Object.keys(parameters).map((key) => {
                 let val = values.find((v: SpecParameter) => v.name === key)
                     .parameter.value;
-                console.log(" input for ", key, parameters[key], val);
                 return (
                     <ParameterInput
                         key={key}
@@ -89,7 +87,6 @@ const ParameterInput: React.FC<{
     onChange: (update: SpecParameter) => void;
     params: { [key: string]: any };
 }> = ({ name, options, value, onChange, params }) => {
-    console.log(name, options, value, onChange, params);
 
     const { type, displayDetails } = options;
     const { displayName, description } = displayDetails;
@@ -158,20 +155,17 @@ const ParameterInput: React.FC<{
             );
 
         case "repeatedOption":
-          console.log("reapeated option value" ,value,options)
             return (
                 <Well>
                     <Header> {displayName}</Header>
                     <Content>{description} </Content>
                     {value.map((instance: SpecParameterValue, index: number) => { 
-                      console.log("instance is ", instance, value, options)
                       return (
                         <ParameterInput
                             name={""}
                             options={options.options}
                             value={instance.value}
                             onChange={(update) =>{
-                                console.log("update is ", update)
                             
                                 onChange({
                                     name,
@@ -214,7 +208,6 @@ const ParameterInput: React.FC<{
                 </Well>
             );
         case "optionGroup":
-            console.log("Option group", options, value);
             return (
                 <Well>
                     <Header> {displayName}</Header>
@@ -259,7 +252,6 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     const computes = useAvaliableCompute();
 
     const updateSpec = (update: Record<string, any>) => {
-        console.log("updating spec with update", update);
         setSpec({ ...spec, ...update });
     };
 

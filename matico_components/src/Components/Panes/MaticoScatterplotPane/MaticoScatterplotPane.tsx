@@ -103,7 +103,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         Math.max(...yVals)
       ]
 
-      console.log("X Columns is ", xColumn, " y column is ",yColumn, " xExtent ", xExtent, " yExtent ", yExtent)
 
       return (
         <MaticoChart

@@ -21,5 +21,4 @@ uuid = { version = "0.6", features = ["serde", "v4"] }
 url = { version = "2.2.2", features = ["serde"] }
 matico_spec_derive = { path = "../matico_spec_derive" }
 ts-rs = { version = "6.1", features = ['chrono-impl', 'uuid-impl', "serde-compat"] }
-matico_analysis = { path = "../matico_compute/matico_analysis" }
 matico_common = { path = "../matico_common" }

@@ -1,5 +1,5 @@
 use crate::{
-    AutoComplete, ColorSpecification, Filter, MappingVarOr, PanePosition, ScreenUnits, VarOr,
+    AutoComplete, ColorSpecification, Filter, MappingVarOr, VarOr,
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -89,7 +89,8 @@ pub struct LayerStyle {
     radius_scale: Option<f32>,
     elevation: Option<MappingVarOr<f32>>,
     elevation_scale: Option<f32>,
-    beforeId: Option<String>,
+    before_id: Option<String>,
+    
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
@@ -295,7 +296,7 @@ mod tests {
             radius_scale: Some(1.0),
             elevation: None,
             elevation_scale: Some(1.0),
-            beforeId: None,
+            before_id: None,
         };
         println!("{}", serde_json::to_string_pretty(&style).unwrap());
     }

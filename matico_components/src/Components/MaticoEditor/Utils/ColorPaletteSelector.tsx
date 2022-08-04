@@ -24,7 +24,6 @@ export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
         });
 
     const updatePalette = (paletteName: string) => {
-        console.log("PALETTE NAME", paletteName);
         //@ts-ignore
         onSelectPalette({ name: paletteName, colors: colors[paletteName] });
     };

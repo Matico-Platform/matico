@@ -30,7 +30,10 @@ export function mapCoords(array: Array<{ x: number; y: number }>) {
 }
 
 export function convertPoint(wkbGeom: any) {
-    return parseSync(wkbGeom, WKBLoader).positions.value;
+    if(!wkbGeom) return null
+    let wkxVal = wkx.Geometry.parse(Buffer.from(wkbGeom)) 
+    //@ts-ignore
+    return [wkxVal.x,wkxVal.y] 
 }
 
 export function convertPoly(poly: Polygon) {
@@ -41,7 +44,7 @@ export function expandMultiAndConvertPoly(data: Array<Record<string, any>>) {
     const result = data.map(
         (d: Record<string, any> & { geom: Uint8Array }) => ({
             ...d,
-            geom: wkx.Geometry.parse(Buffer.from(d.geom))
+            geom: d.geom ? wkx.Geometry.parse(Buffer.from(d.geom)) : null
         })
     );
     const expanded = result.reduce(
@@ -138,12 +141,10 @@ const constructRampFunctionNum = (
 const constructRampFunctionCol = (range: Range<number>, domain: Array<any>) => {
     if (typeof domain[0] === "string") {
         return (val: string) => {
-            // console.log("domain ",domain ,val)
             const index = domain.indexOf(`${val}`);
 
             if (index >= 0) {
                 const r = range[index];
-                // console.log("r is ",r, index, range )
                 return chroma(r);
             } else {
                 return chroma(211, 211, 211);
@@ -210,7 +211,6 @@ export const generateColorVar = (
     }
 
     let c = chromaColorFromColorSpecification(colorVar, alpha).rgba();
-    // console.log("color is ", c);
     c[3] = c[3] * 255;
     return () => c;
 };

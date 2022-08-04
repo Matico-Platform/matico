@@ -88,7 +88,6 @@ interface AppEditorProps {}
 
 export const AppEditor: React.FC<AppEditorProps> = () => {
     const { theme, pages, addPage, removePage, setEditPage, updateTheme, metadata, updateMetadata} = useApp();
-    console.log("rendering app editor ", pages);
 
     const addNewPage = (pageName: string) => {
         addPage({
@@ -104,7 +103,6 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
         }
         return true;
     };
-    console.log("theme ", theme)
 
 
     return (
