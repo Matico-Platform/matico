@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Group } from '@visx/group';
-import { ViolinPlot, BoxPlot } from '@visx/stats';
+import { ViolinPlot, BoxPlot, computeStats } from '@visx/stats';
 import { LinearGradient } from '@visx/gradient';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import genStats, { Stats } from '@visx/mock-data/lib/generators/genStats';
@@ -14,6 +14,12 @@ import { DistributionSpec, ColorOutput, DataRow, PlotLayersProperties } from "..
 const seededRandom = getSeededRandom(0.1);
 const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
 const data: Stats[] = genStats(5, randomNormal, () => 10 * seededRandom());
+// We'll need genStats to compute the stats for the box plot
+// data will be an array of objects, each element in the array with type Stats
+// Each array element is an object with properties binData and boxPlot
+// binData is an object with bins as its keys and counts as the corresponding values
+// boxPlot is an object that holds all of the statistics (including outliers)
+// genStats calculates stats for randomly generated data--will not work in inputs
 
 function formatColor (color:ColorOutput) {
   if (typeof color == "string") {
@@ -46,6 +52,8 @@ export type StatsPlotProps = {
   width: number;
   height: number;
 };
+
+
 
 export default withTooltip<StatsPlotProps, TooltipData>(
   ({

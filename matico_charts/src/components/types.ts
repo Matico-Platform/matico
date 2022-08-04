@@ -112,6 +112,19 @@ export interface HeatmapSpec extends BaseLayerSpec {
   binnedData?: DataCollection[]
 }
 
+export interface DistributionSpec extends BaseLayerSpec {
+  bins: number,
+  binnedData?: DataCollection[]
+  showBoxPlot?: boolean,
+  boxPlotStroke?: ColorOutput,
+  boxPlotFill?: ColorOutput,
+  showViolinPlot?: boolean,
+  violinPlotStroke?: ColorOutput,
+  violinPlotFill?: ColorOutput,
+  horizontal?: boolean,
+  tooltip?: boolean //TooltipSpec
+}
+
 export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec;
 
 // layouts
@@ -174,4 +187,9 @@ export interface ChartSpaceSpec {
   dimensions?: WidthAndHeight;
   useBrush?: BooleanOrBrushSpec;
   onBrush?: xyDomainCallback;
+}
+
+export interface PlotLayersProperties {
+  xMax: number;
+  yMax: number;
 }
