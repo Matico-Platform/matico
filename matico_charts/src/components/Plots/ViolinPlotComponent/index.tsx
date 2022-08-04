@@ -115,15 +115,15 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
           <Group top={40}>
             {data.map((d: BoxPlotStats, i) => (
               <g key={i}>
-                <ViolinPlot
+                {showViolinPlot ? <ViolinPlot
                   data={d.binData}
                   stroke={formatColor(violinPlotStroke)}
                   left={xScale(x(d))!}
                   width={constrainedWidth}
                   valueScale={yScale}
                   fill={formatColor(violinPlotFill)}
-                />
-                <BoxPlot
+                /> : null}
+                {showBoxPlot ? <BoxPlot
                   min={min(d)}
                   max={max(d)}
                   left={xScale(x(d))! + 0.3 * constrainedWidth}
@@ -200,7 +200,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                       hideTooltip();
                     },
                   }}
-                />
+                /> : null }
               </g>
             ))}
           </Group>
