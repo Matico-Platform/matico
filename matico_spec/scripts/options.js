@@ -8,7 +8,7 @@ module.exports ={
   format: "esm",
   bundle: true,
   plugins:[
-    wasmLoader({mode:"deferred"}),
+    wasmLoader({mode:"embedded"}),
     wasmPack({
       path: "./",
       target:"bundler"

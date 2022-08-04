@@ -13,10 +13,7 @@ module.exports = async ()=>{
           syncWebAssembly: true,
           topLevelAwait: true
         }
-
         addPlugins(webpackConfig, [new NodePolyfilPlugin()])
-
-
         return webpackConfig
       }
     }

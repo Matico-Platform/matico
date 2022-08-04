@@ -39,6 +39,8 @@ export const MaticoRawSpecEditor: React.FC = () => {
         setCode(JSON.stringify(spec, null, 2));
     }, []);
 
+
+    console.log("JSON ERROR IS ",jsonError)
     const annotations: Ace.Annotation[] = jsonError
         ? json_error_to_annotation(jsonError)
         : [];
@@ -46,6 +48,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
     useEffect(() => {
         if (validatorReady) {
             try {
+                debugger
                 const dash = validator.App.from_json(code);
                 const { is_valid: specValid, errors } = dash.is_valid();
                 if (specValid) {
