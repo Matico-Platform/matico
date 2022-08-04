@@ -1,5 +1,5 @@
 use crate::{
-    AutoComplete, ColorSpecification, Filter, MappingVarOr, VarOr,
+    AutoComplete, ColorSpecification, Filter, MappingVarOr, VarOr, Labels,
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -184,6 +184,28 @@ impl Default for SelectionMode {
 }
 
 #[wasm_bindgen]
+#[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe, TS, Copy)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum MapProjection{
+    GeoConicConformal,
+    GeoTransverseMercator,
+    GeoNaturalEarth1,
+    GeoConicEquidistant,
+    GeoOrthographic,
+    GeoStereographic,
+    GeoMercator,
+    GeoEquirectangular
+}
+
+impl Default for MapProjection{
+    fn default()->Self{
+        MapProjection::GeoConicConformal
+    }
+}
+
+
+#[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS, Default, Copy)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -191,6 +213,31 @@ pub struct SelectionOptions {
     pub selection_enabled: bool,
     pub selection_mode: SelectionMode,
 }
+
+#[wasm_bindgen]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct StaticMapPane{
+    #[wasm_bindgen(skip)]
+    pub labels: Option<Labels>,
+
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[wasm_bindgen(skip)]
+    pub id: String,
+
+    #[wasm_bindgen(skip)]
+    pub layers: Vec<Layer>,
+    
+    #[wasm_bindgen(skip)]
+    pub projection: Option<MapProjection>,
+
+    #[wasm_bindgen(skip)]
+    pub show_graticule: Option<bool>,
+}
+
 
 #[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]

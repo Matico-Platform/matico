@@ -292,7 +292,7 @@ export const stateSlice = createSlice({
         ) => {
             const { mapId, layerId, update } = action.payload;
             const map = state.spec.panes.find(
-                (p: Pane) => p.id === mapId && p.type === "map"
+                (p: Pane) => p.id === mapId && ["map","staticMap"].includes(p.type)
             );
             //@ts-ignore
             let layer = map.layers.find((layer: Layer) => layer.id === layerId);

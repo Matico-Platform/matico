@@ -9,6 +9,18 @@ export enum SelectionMode {
 }
 /**
 */
+export enum MapProjection {
+  GeoConicConformal,
+  GeoTransverseMercator,
+  GeoNaturalEarth1,
+  GeoConicEquidistant,
+  GeoOrthographic,
+  GeoStereographic,
+  GeoMercator,
+  GeoEquirectangular,
+}
+/**
+*/
 export enum LinearLayoutDirection {
   Row,
   Column,
@@ -369,6 +381,11 @@ export class SelectionOptions {
 /**
 */
   selection_mode: number;
+}
+/**
+*/
+export class StaticMapPane {
+  free(): void;
 }
 /**
 */

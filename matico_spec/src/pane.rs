@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Control, HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane};
+use crate::{AutoComplete, Control, HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -36,6 +36,7 @@ pub enum PaneRef {
     Scatterplot(PaneDetails),
     PieChart(PaneDetails),
     Controls(PaneDetails),
+    StaticMap(PaneDetails)
 }
 
 impl PaneRef {
@@ -48,6 +49,7 @@ impl PaneRef {
             PaneRef::Scatterplot(s) => &s.id,
             PaneRef::PieChart(s) => &s.id,
             PaneRef::Controls(s) => &s.id,
+            PaneRef::StaticMap(s) => &s.id,
         }
     }
 }
@@ -59,6 +61,10 @@ impl TryFrom<(&str, &str)> for PaneRef {
         let pane_id: String = params.1.into();
         match params.0 {
             "map" => Ok(PaneRef::Map(PaneDetails {
+                pane_id,
+                ..Default::default()
+            })),
+            "staticMap" => Ok(PaneRef::StaticMap(PaneDetails {
                 pane_id,
                 ..Default::default()
             })),
@@ -97,6 +103,10 @@ impl From<Pane> for PaneRef {
                 pane_id: map.id,
                 ..Default::default()
             }),
+            Pane::StaticMap(map) => PaneRef::StaticMap(PaneDetails {
+                pane_id: map.id,
+                ..Default::default()
+            }),
             Pane::Text(text) => PaneRef::Text(PaneDetails {
                 pane_id: text.id,
                 ..Default::default()
@@ -130,6 +140,7 @@ impl From<Pane> for PaneRef {
 #[ts(export)]
 pub enum Pane {
     Map(MapPane),
+    StaticMap(StaticMapPane),
     Text(TextPane),
     Container(ContainerPane),
     Histogram(HistogramPane),
@@ -155,6 +166,7 @@ impl Validate for Pane {
         };
         match self {
             Self::Map(map) => ValidationErrors::merge(result, "MapPane", map.validate()),
+            Self::StaticMap(map) => ValidationErrors::merge(result, "StaticMapPane", map.validate()),
             Self::Text(text) => ValidationErrors::merge(result, "TextPane", text.validate()),
             Self::Container(container) => {
                 ValidationErrors::merge(result, "ContainerPane", container.validate())

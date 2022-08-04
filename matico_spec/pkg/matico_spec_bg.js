@@ -139,6 +139,9 @@ function getFloat32Memory0() {
 export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon:1,"1":"Polygon",Lasso:2,"2":"Lasso", });
 /**
 */
+export const MapProjection = Object.freeze({ GeoConicConformal:0,"0":"GeoConicConformal",GeoTransverseMercator:1,"1":"GeoTransverseMercator",GeoNaturalEarth1:2,"2":"GeoNaturalEarth1",GeoConicEquidistant:3,"3":"GeoConicEquidistant",GeoOrthographic:4,"4":"GeoOrthographic",GeoStereographic:5,"5":"GeoStereographic",GeoMercator:6,"6":"GeoMercator",GeoEquirectangular:7,"7":"GeoEquirectangular", });
+/**
+*/
 export const LinearLayoutDirection = Object.freeze({ Row:0,"0":"Row",Column:1,"1":"Column", });
 /**
 */
@@ -1560,6 +1563,22 @@ export class SelectionOptions {
     */
     set selection_mode(arg0) {
         wasm.__wbg_set_selectionoptions_selection_mode(this.ptr, arg0);
+    }
+}
+/**
+*/
+export class StaticMapPane {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_staticmappane_free(ptr);
     }
 }
 /**

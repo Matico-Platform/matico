@@ -223,7 +223,7 @@ export class LocalDataset implements Dataset {
             return this._filterCache[cacheKey];
         }
         const results = applyFilters(this._data, filters ?? [])
-            .select(columns)
+            .select(columns ?? this._columns.map(c=>c.name))
             .objects({ limit });
 
         this._filterCache[JSON.stringify(filters)] = results;
