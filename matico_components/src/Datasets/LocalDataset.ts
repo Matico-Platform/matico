@@ -121,11 +121,11 @@ export class LocalDataset implements Dataset {
 
     getCategoryCounts(column: string, filters?: Array<Filter>) {
         const counts = applyFilters(this._data, filters)
-            .groupby({ name: column })
+            .groupby(column)
             .count()
             .orderby(desc("count"))
-            .objects() as Array<{ name: string; count: number }>;
-
+            .objects() 
+            .map( (r: Record<string,any>) => ({name: r[column], count: r.count}))
         return Promise.resolve(counts);
     }
 
@@ -135,10 +135,10 @@ export class LocalDataset implements Dataset {
         filters?: Array<Filter>
     ) {
         const counts = applyFilters(this._data, filters)
-            .groupby({ name: column })
+            .groupby(column) 
             .count()
             .orderby(desc("count"))
-            .array("name") as Array<string | number>;
+            .array(column) as Array<string | number>;
 
         return Promise.resolve(counts);
     }
@@ -196,9 +196,7 @@ export class LocalDataset implements Dataset {
             .count()
             .impute(
             { count: () => 0 }, // set imputed counts to zero
-            { expand: { bin: d => op.sequence(...op.bins(d.bin)) } } // include rows for all bin values
-            // Note: op.bins(d.bin) -> [start, stop, step]
-            //    so op.sequence(...op.bins(d.bin)) -> op.sequence(start, stop, step)
+            { expand: { bin: d => op.sequence(...op.bins(d.bin)) } } 
           )
           .orderby('bin')
           .objects() as Array<{ bin: number; count: number }>;

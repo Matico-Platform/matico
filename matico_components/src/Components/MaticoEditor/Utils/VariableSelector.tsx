@@ -21,7 +21,6 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
 }) => {
     const state = useMaticoSelector((state) => state.variables.autoVariables);
 
-    console.log("State ", state);
     const mappedState = Object.keys(state).reduce((agg, variableName) => {
         const variable = state[variableName];
         if (variable.value) {
@@ -37,7 +36,6 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
         return agg;
     }, []);
 
-    console.log("Mapped State ", mappedState);
     return (
         <DialogTrigger type="popover" isDismissable={true}>
             <ActionButton>

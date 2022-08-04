@@ -71,23 +71,28 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         }
         
         const pallet = colors.Pastel["10"] 
-        const colMapping = chartData.result.reduce((agg,d,index) => ({...agg, [d.name] : pallet[index]} ),{})
+        const others = chartData.result.slice(10,).reduce((agg,r)=> agg+r.count, 0);
+        let data= chartData.result.slice(0,10)
+
+        const colMapping = data.reduce((agg,d,index) => ({...agg, [d.name] : pallet[index%10]} ),{})
+        data.push({name:"others", count: others})
+
 
         return (
             <MaticoChart
                 layers={[
                     {
                         type: "pie",
-                        color: (d)=>colMapping[d.name],
+                        color: (d)=>colMapping[d.name] ?? "gray",
                         padding: 0.2,
                         innerRadius: 0.5,
-                        valueAccessor: (d: any) => d.counts[0],
+                        valueAccessor: (d: any) => d.count,
                         labelAccessor: (d: any) => d.name,
                         reverseSort: false,
                     }
                 ]}
                 categorical={true}
-                data={chartData.result}
+                data={data}
                 {...labels}
             />
         );

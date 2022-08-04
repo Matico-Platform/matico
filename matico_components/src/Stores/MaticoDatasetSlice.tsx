@@ -43,7 +43,6 @@ export const datasetsSlice = createSlice({
             state,
             action: PayloadAction<DatasetSpec>
         ) => {
-            console.log("HERE ", action.payload);
             state.datasets[action.payload.name] = {
                 name: action.payload.name,
                 state: DatasetState.LOADING,

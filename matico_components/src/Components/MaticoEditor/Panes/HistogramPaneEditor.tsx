@@ -45,8 +45,6 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         (state) => state.datasets.datasets[histogramPane.dataset.name]
     );
 
-    console.log("dataset  is ", dataset)
-
     if (!histogramPane) {
         return (
             <View>

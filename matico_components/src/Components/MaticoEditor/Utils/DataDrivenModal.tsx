@@ -346,7 +346,6 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         const newRange = rangeValues.map((val: Color | number, index: number) =>
             index === binNo ? newVal : val
         );
-        console.log("Mapping ", mapping, " range ", newRange);
         onUpdateMapping({ ...mapping, range: newRange });
     };
 

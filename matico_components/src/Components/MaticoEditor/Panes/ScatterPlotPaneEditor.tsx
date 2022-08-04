@@ -40,7 +40,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     };
 
     const dataset: DatasetSummary = useMaticoSelector(
-        (state) => state.datasets.datasets[scatterplotPane?.dataset.name]
+        (state) => state.datasets.datasets[scatterplotPane?.dataset?.name]
     );
 
     if (!scatterplotPane) {
@@ -50,6 +50,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
             </View>
         );
     }
+
 
     return (
         <View>
@@ -73,7 +74,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
             </CollapsibleSection>
             <CollapsibleSection title="Data Source" isOpen={true}>
                 <DatasetSelector
-                    selectedDataset={scatterplotPane?.dataset.name}
+                    selectedDataset={scatterplotPane?.dataset?.name}
                     onDatasetSelected={updateDataset}
                 />
                 {dataset ? (
@@ -99,12 +100,14 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                     <Text>Select a dataset to see column options.</Text>
                 )}
             </CollapsibleSection>
+               {dataset && 
+            <>
             <CollapsibleSection title="Chart Styles" isOpen={true}>
                 <SliderVariableEditor
                     label="Point Radius"
                     style={scatterplotPane?.dotSize}
-                    datasetName={dataset.name}
-                    columns={dataset.columns}
+                    datasetName={dataset?.name}
+                    columns={dataset?.columns}
                     onUpdateValue={(dotSize) => updatePane({ dotSize })}
                     sliderMin={0}
                     sliderMax={2000}
@@ -112,7 +115,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
 
                 <ColorVariableEditor
                     label="Dot Color"
-                    datasetName={scatterplotPane?.dataset.name}
+                    datasetName={scatterplotPane?.dataset?.name}
                     style={scatterplotPane?.dotColor}
                     onUpdateStyle={(dotColor) => updatePane({ dotColor })}
                     columns={dataset.columns}
@@ -123,7 +126,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                     <>
                         <DatasetColumnSelector
                             label="X Column"
-                            datasetName={scatterplotPane.dataset.name}
+                            datasetName={scatterplotPane.dataset?.name}
                             selectedColumn={scatterplotPane.xColumn}
                             onColumnSelected={(xColumn) =>
                                 updatePane({ xColumn: xColumn.name })
@@ -131,7 +134,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                         />
                         <DatasetColumnSelector
                             label="Y Column"
-                            datasetName={scatterplotPane.dataset.name}
+                            datasetName={scatterplotPane.dataset?.name}
                             selectedColumn={scatterplotPane.yColumn}
                             onColumnSelected={(yColumn) =>
                                 updatePane({ yColumn: yColumn.name })
@@ -146,6 +149,8 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                 labels={scatterplotPane?.labels}
                 onUpdateLabels={updateLabels}
             />
+          </>
+              }
         </View>
     );
 };

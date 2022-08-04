@@ -72,11 +72,6 @@ export const DatasetServiceMiddleWare = () => {
                     });
                 };
 
-                console.log(
-                    "Registering for Column Data",
-                    action.payload.args,
-                    action.payload.notifierId
-                );
 
                 worker.registerColumnData(
                     action.payload.args,

@@ -42,7 +42,6 @@ export const usePortalDatasets= (portal: PortalInfo | null) => {
         (async()=>{
           setLoading(true);
           let datasets = await loadDataasets(portal,setProgress)
-          console.log("datasets ", datasets)
           setDatasets(datasets)
           setLoading(false)
           cache[portal.domain] = datasets

@@ -56,12 +56,10 @@ export const useAnalysis = (url: string | null) => {
                     let options = module.options();
                     setOptions(options)
                     let defaults = populateDefaults(options)               
-                    console.log("full defaults ", defaults)
                     setDefaults(defaults)
                     setError(null);
                 })
                 .catch((e) => {
-                    console.log("Error is ", e);
                     setAnalysis(null);
                     setError(e.to_string());
                 });

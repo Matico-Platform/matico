@@ -12,6 +12,7 @@ import { Flex, ProgressCircle, View } from "@adobe/react-spectrum";
 import {useErrorsFor} from "Hooks/useErrors";
 import {MaticoErrorType} from "Stores/MaticoErrorSlice";
 import {HistogramEntry} from "@maticoapp/matico_types/api";
+import {LoadingSpinner} from "Components/MaticoEditor/EditorComponents/LoadingSpinner/LoadingSpinner";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
     dataset: { name: string; filters: Array<Filter> };
@@ -73,18 +74,9 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
     const chartData = useRequestColumnStat(dataRequest);
 
-    console.log("Char data is ", chartData)
-
     const Chart = useMemo(() => {
         if (!chartData || chartData.state !== "Done") {
-          return (<Flex width="100%" height="100%" alignItems='center' justifyContent='center'>
-                  <ProgressCircle
-                    aria-label="Loading…"
-                    isIndeterminate
-                    variant="overBackground"
-                /> 
-                  </Flex>
-                    )
+          return (<LoadingSpinner />)
 
           ;
         }
