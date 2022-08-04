@@ -1,6 +1,6 @@
 import { Dataset, Column, GeomType, DatasetState } from "./Dataset";
 
-import {  desc, op, } from "arquero";
+import {  desc, op, escape, bin} from "arquero";
 
 import _ from "lodash";
 //@ts-ignore
@@ -191,24 +191,23 @@ export class LocalDataset implements Dataset {
         noBins: number,
         filters?: Array<Filter>
     ) {
-        const { max, min } = applyFilters(this._data, filters)
-            .rollup({
-                min: op.min(column),
-                max: op.max(column)
-            })
-            .object() as { max: number; min: number };
-
-        const binSize = (max - min) / noBins;
-
         let result = applyFilters(this._data, filters)
-            .groupby({ bin: (d) => op.bin(d[column], min, max, binSize) })
+            .groupby({ bin: bin(column, {maxbins:noBins}) })
             .count()
-            .object() as Array<{ bin: number; count: number }>;
+            .impute(
+            { count: () => 0 }, // set imputed counts to zero
+            { expand: { bin: d => op.sequence(...op.bins(d.bin)) } } // include rows for all bin values
+            // Note: op.bins(d.bin) -> [start, stop, step]
+            //    so op.sequence(...op.bins(d.bin)) -> op.sequence(start, stop, step)
+          )
+          .orderby('bin')
+          .objects() as Array<{ bin: number; count: number }>;
 
-        let mappedResult = result.map((r) => ({
-            binStart: min + r.bin * binSize,
-            binEnd: min + (r.bin + 1) * binSize,
-            binMid: r.bin * 0.5 * binSize,
+        const binSize = result[1].bin - result[0].bin
+        let mappedResult = result.map((r,index) => ({
+            binStart: r.bin ,
+            binEnd: r.bin+binSize ,
+            binMid: r.bin+0.5*binSize,
             freq: r.count
         }));
 

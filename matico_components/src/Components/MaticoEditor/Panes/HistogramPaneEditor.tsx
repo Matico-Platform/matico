@@ -45,7 +45,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         (state) => state.datasets.datasets[histogramPane.dataset.name]
     );
 
-    const { columns } = dataset;
+    console.log("dataset  is ", dataset)
 
     if (!histogramPane) {
         return (
@@ -55,6 +55,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         );
     }
 
+    const  columns  = dataset?.columns;
     return (
         <Flex direction="column">
             <CollapsibleSection title="Basic" isOpen={true}>

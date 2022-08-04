@@ -8,7 +8,7 @@ import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
-import { View } from "@adobe/react-spectrum";
+import { Flex, ProgressCircle, View } from "@adobe/react-spectrum";
 import {useErrorsFor} from "Hooks/useErrors";
 import {MaticoErrorType} from "Stores/MaticoErrorSlice";
 import {HistogramEntry} from "@maticoapp/matico_types/api";
@@ -73,9 +73,20 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
     const chartData = useRequestColumnStat(dataRequest);
 
+    console.log("Char data is ", chartData)
+
     const Chart = useMemo(() => {
         if (!chartData || chartData.state !== "Done") {
-            return <View>loading</View>;
+          return (<Flex width="100%" height="100%" alignItems='center' justifyContent='center'>
+                  <ProgressCircle
+                    aria-label="Loading…"
+                    isIndeterminate
+                    variant="overBackground"
+                /> 
+                  </Flex>
+                    )
+
+          ;
         }
         const data: Array<HistogramEntry> =
           chartData.result.filter((c:HistogramEntry)=> c.freq);
