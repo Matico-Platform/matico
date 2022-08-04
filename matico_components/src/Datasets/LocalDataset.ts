@@ -36,7 +36,8 @@ const applyFilter = (table: ColumnTable, filter: Filter) => {
     }
 };
 
-const applyFilters = (table: ColumnTable, filters: Array<Filter>) => {
+const applyFilters = (table: ColumnTable, filters?: Array<Filter>) => {
+    if(!filters) return table;
     let tempTable = table
     filters.forEach((filter)=>{
       tempTable= applyFilter(tempTable,filter)

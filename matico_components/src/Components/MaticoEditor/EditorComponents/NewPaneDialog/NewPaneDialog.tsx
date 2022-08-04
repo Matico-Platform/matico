@@ -149,6 +149,7 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                                         rowGap={"size-150"}
                                         autoRows="fit-content"
                                         marginBottom="size-200"
+                                        key={section.sectionTitle}
                                     >
                                         {section.panes.map(
                                             (pane: {

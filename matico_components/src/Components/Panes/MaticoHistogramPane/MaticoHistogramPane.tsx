@@ -8,7 +8,7 @@ import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
-import { Flex, ProgressCircle, View } from "@adobe/react-spectrum";
+import { View } from "@adobe/react-spectrum";
 import {useErrorsFor} from "Hooks/useErrors";
 import {MaticoErrorType} from "Stores/MaticoErrorSlice";
 import {HistogramEntry} from "@maticoapp/matico_types/api";
