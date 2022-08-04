@@ -108,6 +108,7 @@ export interface PieSpec extends BaseLayerSpec {
 }
 
 export interface HeatmapSpec extends BaseLayerSpec {
+  data: DataCollection,
   xBins: number,
   yBins: number,
   binnedData?: DataCollection[]

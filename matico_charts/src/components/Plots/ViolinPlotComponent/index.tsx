@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Group } from '@visx/group';
-import { ViolinPlot, BoxPlot, computeStats } from '@visx/stats';
+import { ViolinPlot, BoxPlot } from '@visx/stats';
 import { LinearGradient } from '@visx/gradient';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import genStats, { Stats } from '@visx/mock-data/lib/generators/genStats';
@@ -8,18 +8,12 @@ import { getSeededRandom, getRandomNormal } from '@visx/mock-data';
 import { withTooltip, Tooltip, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { PatternLines } from '@visx/pattern';
-import { DistributionSpec, ColorOutput, DataRow, PlotLayersProperties } from "../../types";
+import { DistributionSpec, ColorOutput, DataRow, PlotLayersProperties, BoxPlotStats } from "../../types";
 
 // seeded randomness - we won't need this when we supply our own data
 const seededRandom = getSeededRandom(0.1);
 const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
 const data: Stats[] = genStats(5, randomNormal, () => 10 * seededRandom());
-// We'll need genStats to compute the stats for the box plot
-// data will be an array of objects, each element in the array with type Stats
-// Each array element is an object with properties binData and boxPlot
-// binData is an object with bins as its keys and counts as the corresponding values
-// boxPlot is an object that holds all of the statistics (including outliers)
-// genStats calculates stats for randomly generated data--will not work in inputs
 
 function formatColor (color:ColorOutput) {
   if (typeof color == "string") {
@@ -31,13 +25,13 @@ function formatColor (color:ColorOutput) {
 }
 
 // accessors
-const x = (d: Stats) => d.boxPlot.x;
-const min = (d: Stats) => d.boxPlot.min;
-const max = (d: Stats) => d.boxPlot.max;
-const median = (d: Stats) => d.boxPlot.median;
-const firstQuartile = (d: Stats) => d.boxPlot.firstQuartile;
-const thirdQuartile = (d: Stats) => d.boxPlot.thirdQuartile;
-const outliers = (d: Stats) => d.boxPlot.outliers;
+const x = (d: BoxPlotStats) => d.boxPlot.x;
+const min = (d: BoxPlotStats) => d.boxPlot.min;
+const max = (d: BoxPlotStats) => d.boxPlot.max;
+const median = (d: BoxPlotStats) => d.boxPlot.median;
+const firstQuartile = (d: BoxPlotStats) => d.boxPlot.firstQuartile;
+const thirdQuartile = (d: BoxPlotStats) => d.boxPlot.thirdQuartile;
+const outliers = (d: BoxPlotStats) => d.boxPlot.outliers;
 
 interface TooltipData {
   name?: string;
@@ -53,33 +47,36 @@ export type StatsPlotProps = {
   height: number;
 };
 
-<<<<<<< HEAD
-
-
-export default withTooltip<StatsPlotProps, TooltipData>(
-=======
-export default withTooltip<PlotLayersProperties, TooltipData>(
->>>>>>> c2f675a6 (Ready to pull)
-  ({
+export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersProperties) => {
+  const {
+    data,
+    showBoxPlot = true,
+    boxPlotStroke = 'black',
+    boxPlotFill = 'white',
+    showViolinPlot = true,
+    violinPlotStroke = 'black',
+    violinPlotFill = 'white',
+    horizontal = false,
+    tooltip = true,
     xMax,
-    yMax,
+    yMax
+  } = {
+    ...props,
+    ...props.layer,
+  }
+  withTooltip<TooltipData>(
+  ({
     tooltipOpen,
     tooltipLeft,
     tooltipTop,
     tooltipData,
     showTooltip,
     hideTooltip,
-  }: PlotLayersProperties & WithTooltipProvidedProps<TooltipData>) => {
-    // bounds
-    const xMax2 = xMax;
-    const yMax2 = yMax - 120;
-
-    const fillColor = "white"
-    const strokeColor = "black"
+  }: WithTooltipProvidedProps<TooltipData>) => {
 
     // scales
     const xScale = scaleBand<string>({
-      range: [0, xMax2],
+      range: [0, xMax],
       round: true,
       domain: data.map(x),
       padding: 0.4,
@@ -93,7 +90,7 @@ export default withTooltip<PlotLayersProperties, TooltipData>(
     const maxYValue = Math.max(...values);
 
     const yScale = scaleLinear<number>({
-      range: [yMax2, 0],
+      range: [yMax - 120, 0],
       round: true,
       domain: [minYValue, maxYValue],
     });
@@ -116,15 +113,15 @@ export default withTooltip<PlotLayersProperties, TooltipData>(
             orientation={['horizontal']}
           /> */}
           <Group top={40}>
-            {data.map((d: Stats, i) => (
+            {data.map((d: BoxPlotStats, i) => (
               <g key={i}>
                 <ViolinPlot
                   data={d.binData}
-                  stroke={strokeColor}
+                  stroke={formatColor(violinPlotStroke)}
                   left={xScale(x(d))!}
                   width={constrainedWidth}
                   valueScale={yScale}
-                  fill={fillColor}
+                  fill={formatColor(violinPlotFill)}
                 />
                 <BoxPlot
                   min={min(d)}
@@ -134,9 +131,9 @@ export default withTooltip<PlotLayersProperties, TooltipData>(
                   thirdQuartile={thirdQuartile(d)}
                   median={median(d)}
                   boxWidth={constrainedWidth * 0.4}
-                  fill={fillColor}
+                  fill={formatColor(boxPlotFill)}
                   fillOpacity={0.3}
-                  stroke={strokeColor}
+                  stroke={formatColor(boxPlotStroke)}
                   strokeWidth={2}
                   valueScale={yScale}
                   outliers={outliers(d)}
@@ -187,7 +184,7 @@ export default withTooltip<PlotLayersProperties, TooltipData>(
                   }}
                   medianProps={{
                     style: {
-                      stroke: strokeColor,
+                      stroke: formatColor(boxPlotStroke),
                     },
                     onMouseOver: () => {
                       showTooltip({
@@ -231,3 +228,4 @@ export default withTooltip<PlotLayersProperties, TooltipData>(
     );
   },
 );
+}
