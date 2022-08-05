@@ -98,7 +98,9 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({
         <FreeArea>
             {paneRefs.map((paneRef) => (
                 <FreePane key={paneRef.id} {...paneRef.position}>
+                  {/*
                     <ControlActionBar paneRef={paneRef} />
+                    */}
                     <PaneSelector paneRef={paneRef} />
                 </FreePane>
             ))}

@@ -31,9 +31,9 @@ pub enum LinearLayoutDirection {
 #[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
 #[ts(export)]
 pub enum Justification{
-    #[serde(rename="flex-start")]
+    #[serde(rename="start")]
     FlexStart,
-    #[serde(rename="flex-end")]
+    #[serde(rename="end")]
     FlexEnd,
     #[serde(rename="center")]
     Center,
@@ -49,9 +49,9 @@ pub enum Justification{
 #[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
 #[ts(export)]
 pub enum Alignment{
-    #[serde(rename="flex-start")]
+    #[serde(rename="start")]
     FlexStart,
-    #[serde(rename="flex-end")]
+    #[serde(rename="end")]
     FlexEnd,
     #[serde(rename="center")]
     Center,
@@ -59,6 +59,18 @@ pub enum Alignment{
     Stretch,
     #[serde(rename="baseline")]
     BaseLine,
+}
+
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub enum GapSize{
+    None,
+    Small,
+    Medium,
+    Large,
 }
 
 #[wasm_bindgen]
@@ -69,6 +81,7 @@ pub struct LinearLayout {
     pub direction: LinearLayoutDirection,
     pub allow_overflow: bool,
     pub justify: Justification,
+    pub gap: Option<GapSize>,
     pub align: Alignment
 }
 

@@ -24,7 +24,9 @@ export const IconForPaneType = (PaneType: string) => {
         case "controls":
             return <PropertiesIcon />;
         case "container":
-            return <Border />; }
+            return <Border />; 
+        case "staticMap":
+            return <MapIcon/>; }
 };
 
 type AvaliablePanesSection = {
@@ -37,6 +39,7 @@ type AvaliablePanesSection = {
             | "text"
             | "scatterplot"
             | "controls"
+            | "staticMap"
             | "container";
         label: string;
     }>;
@@ -52,7 +55,8 @@ export const AvaliablePanes: Array<AvaliablePanesSection> = [
             { name: "text", label: "Text" },
             { name: "scatterplot", label: "Scatter Plot" },
             { name: "controls", label: "Controls" },
-            { name: "container", label: "Container" }
+            { name: "container", label: "Container" },
+            { name: "staticMap", label: "Simple Map" }
         ]
     }
 ];
@@ -135,6 +139,12 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         baseMap: { type: "named", name: "CartoDBVoyager", affiliation: "" },
         controls: { scale:true, geolocate:true, navigation:true, fullscreen:true },
         selectionOptions:{selectionEnabled:false, selectionMode:"rectangle"}
+    },
+    staticMap: {
+        name: "New Map",
+        layers: [],
+        showGraticule: false,
+        projection:"geoOrthographic" 
     },
     scatterplot: {
         name: "New Scatter",

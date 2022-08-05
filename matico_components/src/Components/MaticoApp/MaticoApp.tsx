@@ -135,7 +135,6 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 
     return (
         <Provider store={store}>
-            <MaticoDataProvider onStateChange={onDataChange}>
                 <Router basename={basename}>
                     <SpectrumProvider
                         theme={darkTheme}
@@ -264,7 +263,6 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                         </Grid>
                     </SpectrumProvider>
                 </Router>
-            </MaticoDataProvider>
         </Provider>
     );
 };

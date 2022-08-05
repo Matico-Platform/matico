@@ -4,7 +4,8 @@ import {
     PaneRef,
     LinearLayoutDirection,
     Justification,
-    Alignment
+    Alignment,
+    GapSize
 } from "@maticoapp/matico_types/spec";
 import { View, Flex } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
@@ -22,7 +23,7 @@ const handleHorizontalUnits = (unit: string) =>
  * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
  */
 const handleVerticalUnits = (unit: string) =>
-    unit === "percent" ? "vh" : "px";
+    unit === "percent" ? "%" : "px";
 
 /**
  * If the position is horizontal, then return the result of calling handleHorizontalUnits with the
@@ -105,13 +106,23 @@ export interface MaticoLinearLayoutInterface {
     direction: LinearLayoutDirection;
     align: Alignment;
     justify: Justification;
+    gap? : GapSize
+}
+
+const GapVals ={
+  "none" : "size-0",
+  "small": "size-100",
+  "medium":"size-600",
+  "large":"size-1000"
+
 }
 
 export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
     paneRefs,
     direction,
     align,
-    justify
+    justify,
+    gap
 }) => {
     return (
         <Flex
@@ -121,6 +132,7 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
             direction={direction}
             alignContent={align}
             justifyContent={justify}
+            gap={GapVals[gap]}
         >
             {paneRefs.map((paneRef: PaneRef) => (
                 <LinearPane key={paneRef.id} {...paneRef.position}>

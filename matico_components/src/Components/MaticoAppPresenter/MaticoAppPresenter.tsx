@@ -62,7 +62,6 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
 
     return (
         <> 
-        {/* <Router basename={basename}> */}
             {appSpec && (
                 <Grid
                     areas={["nav main"]}
@@ -97,7 +96,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                                     key={page.path}
                                     exact={true}
                                 >
-                                    <MaticoPage key={page.path} page={page} />
+                                    <MaticoPage key={page.path} pageId={page.id} />
                                 </Route>
                             ))}
                         </Switch>

@@ -2,11 +2,13 @@ import React from "react";
 import { Page, Layout } from "@maticoapp/matico_types/spec";
 import { View, Flex } from "@adobe/react-spectrum";
 import { selectLayout } from "Utils/layoutEngine";
+import {usePage} from "Hooks/usePage";
 
 interface MaticoPageInterface {
-    page: Page;
+    pageId: string;
 }
-export const MaticoPage: React.FC<MaticoPageInterface> = ({ page }) => {
+export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
+    let {page} = usePage(pageId)
     let layout: Layout = page.layout;
     let LayoutEngine = selectLayout(layout);
 

@@ -1,12 +1,12 @@
 //@ts-ignore
 import React from 'react';
 import { Circle } from '@visx/shape';
-import { HeatmapSpec } from '../../types';
+import { HeatmapSpec, PlotLayersProperties } from '../../types';
 import { HeatmapCircle, HeatmapRect } from '@visx/heatmap';
 import { isFunc, sanitizeColor } from '../../../Utils';
 import { scaleLinear } from '@visx/scale';
 
-export const HeatmapComponent = (props: HeatmapSpec) => {
+export const HeatmapComponent = (props: HeatmapSpec & PlotLayersProperties) => {
   const {
     data = [],
     binnedData = [],

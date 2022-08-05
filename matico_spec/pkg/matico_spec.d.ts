@@ -9,6 +9,18 @@ export enum SelectionMode {
 }
 /**
 */
+export enum MapProjection {
+  GeoConicConformal,
+  GeoTransverseMercator,
+  GeoNaturalEarth1,
+  GeoConicEquidistant,
+  GeoOrthographic,
+  GeoStereographic,
+  GeoMercator,
+  GeoEquirectangular,
+}
+/**
+*/
 export enum LinearLayoutDirection {
   Row,
   Column,
@@ -31,6 +43,14 @@ export enum Alignment {
   Center,
   Stretch,
   BaseLine,
+}
+/**
+*/
+export enum GapSize {
+  None,
+  Small,
+  Medium,
+  Large,
 }
 /**
 */
@@ -168,6 +188,9 @@ export class LinearLayout {
 /**
 */
   direction: number;
+/**
+*/
+  gap?: number;
 /**
 */
   justify: number;
@@ -369,6 +392,11 @@ export class SelectionOptions {
 /**
 */
   selection_mode: number;
+}
+/**
+*/
+export class StaticMapPane {
+  free(): void;
 }
 /**
 */

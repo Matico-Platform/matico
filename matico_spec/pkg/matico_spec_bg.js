@@ -139,6 +139,9 @@ function getFloat32Memory0() {
 export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon:1,"1":"Polygon",Lasso:2,"2":"Lasso", });
 /**
 */
+export const MapProjection = Object.freeze({ GeoConicConformal:0,"0":"GeoConicConformal",GeoTransverseMercator:1,"1":"GeoTransverseMercator",GeoNaturalEarth1:2,"2":"GeoNaturalEarth1",GeoConicEquidistant:3,"3":"GeoConicEquidistant",GeoOrthographic:4,"4":"GeoOrthographic",GeoStereographic:5,"5":"GeoStereographic",GeoMercator:6,"6":"GeoMercator",GeoEquirectangular:7,"7":"GeoEquirectangular", });
+/**
+*/
 export const LinearLayoutDirection = Object.freeze({ Row:0,"0":"Row",Column:1,"1":"Column", });
 /**
 */
@@ -146,6 +149,9 @@ export const Justification = Object.freeze({ FlexStart:0,"0":"FlexStart",FlexEnd
 /**
 */
 export const Alignment = Object.freeze({ FlexStart:0,"0":"FlexStart",FlexEnd:1,"1":"FlexEnd",Center:2,"2":"Center",Stretch:3,"3":"Stretch",BaseLine:4,"4":"BaseLine", });
+/**
+*/
+export const GapSize = Object.freeze({ None:0,"0":"None",Small:1,"1":"Small",Medium:2,"2":"Medium",Large:3,"3":"Large", });
 /**
 */
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
@@ -669,6 +675,19 @@ export class LinearLayout {
     */
     set justify(arg0) {
         wasm.__wbg_set_linearlayout_justify(this.ptr, arg0);
+    }
+    /**
+    * @returns {number | undefined}
+    */
+    get gap() {
+        const ret = wasm.__wbg_get_linearlayout_gap(this.ptr);
+        return ret === 4 ? undefined : ret;
+    }
+    /**
+    * @param {number | undefined} arg0
+    */
+    set gap(arg0) {
+        wasm.__wbg_set_linearlayout_gap(this.ptr, isLikeNone(arg0) ? 4 : arg0);
     }
     /**
     * @returns {number}
@@ -1560,6 +1579,22 @@ export class SelectionOptions {
     */
     set selection_mode(arg0) {
         wasm.__wbg_set_selectionoptions_selection_mode(this.ptr, arg0);
+    }
+}
+/**
+*/
+export class StaticMapPane {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_staticmappane_free(ptr);
     }
 }
 /**

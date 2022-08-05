@@ -59,7 +59,7 @@ export interface ErrorSpec {
 
 // layers
 export interface BaseLayerSpec {
-  type: 'scatter' | 'line' | 'bar' | 'pie';
+  type: 'scatter' | 'line' | 'bar' | 'pie' | 'map';
   data?: DataCollection;
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
@@ -79,6 +79,19 @@ export interface BaseLayerSpec {
   onHover?: InteractiveFunction;
   xOffset?: number;
   yOffset?: number;
+}
+
+export interface StaticMapSpec extends BaseLayerSpec {
+  proj: string;
+  rotation?: number;
+  fill?: ColorFunction | ColorOutput;
+  //background?: ColorOutput;
+  gratOn?: boolean;
+  gratColor?: ColorOutput;
+  strokeWidth?: number;
+  strokeColor?: ColorOutput;
+  pointRadius?: number;
+  events?: boolean;
 }
 
 export interface ScatterSpec extends BaseLayerSpec {
@@ -112,7 +125,7 @@ export interface HeatmapSpec extends BaseLayerSpec {
   binnedData?: DataCollection[]
 }
 
-export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec;
+export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec | StaticMapSpec;
 
 // layouts
 export type OverwriteProperty = { [property: string]: any };
@@ -174,4 +187,9 @@ export interface ChartSpaceSpec {
   dimensions?: WidthAndHeight;
   useBrush?: BooleanOrBrushSpec;
   onBrush?: xyDomainCallback;
+}
+
+export interface PlotLayersProperties {
+  xMax: number;
+  yMax: number;
 }

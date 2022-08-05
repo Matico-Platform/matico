@@ -1,9 +1,9 @@
 //@ts-ignore
 import React from 'react';
 import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
-import { PieSpec } from '../../types';
+import { PieSpec, PlotLayersProperties } from '../../types';
 
-export const PieChartComponent = (props: PieSpec) => {
+export const PieChartComponent = (props: PieSpec & PlotLayersProperties) => {
   const {
     data=[],
     valueAccessor=()=>0,

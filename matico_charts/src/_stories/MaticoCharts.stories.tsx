@@ -5,6 +5,7 @@ import MaticoChart from "../components/MaticoChart";
 import { ChartSpaceSpec } from "../components/types";
 
 import {
+  SampleMapData,
   Sample2dData,
   SampleCategoricalData,
   SampleHistogramData,
@@ -113,7 +114,7 @@ Histogram.args = {
   layers: [
     {
       type: "bar",
-      color: color,
+      color: "steelblue",
       scale: 2,
       padding: 0.1,
     },
@@ -152,7 +153,7 @@ HistogramWithScatterplot.args = {
       padding: 0.1,
     },
     {
-      data: Sample2dData,
+      data: SampleMapData,
       type: "scatter",
       color: "rgba(70,130,180,0.2)",
       scale: 2,
