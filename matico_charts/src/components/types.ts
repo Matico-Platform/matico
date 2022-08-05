@@ -1,6 +1,6 @@
 import { Scale } from '@visx/brush/lib/types';
 import { ContinuousDomain } from '@visx/scale';
-import { BoxPlot } from '@visx/mock-data/lib/generators/genStats';
+import { BinData, BoxPlot } from '@visx/mock-data/lib/generators/genStats';
 //layout
 export type MarginSpec = {
   top: number;
@@ -128,7 +128,7 @@ export interface DistributionSpec extends BaseLayerSpec {
 
 export interface BoxPlotStats{
   boxPlot: BoxPlot;
-  binData: DataRow;
+  binData: BinData[];
 }
 
 export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec;

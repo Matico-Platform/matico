@@ -75,26 +75,27 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
   }: WithTooltipProvidedProps<TooltipData>) => {
 
     // scales
+    const values = data.reduce((allValues, { boxPlot }) => {
+      allValues.push(boxPlot.min, boxPlot.max);
+      return allValues;
+    }, [] as number[]);
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+
     const xScale = scaleBand<string>({
-      range: [0, xMax],
+      range: [0, (horizontal ? yMax : xMax)],
       round: true,
       domain: data.map(x),
       padding: 0.4,
     });
 
-    const values = data.reduce((allValues, { boxPlot }) => {
-      allValues.push(boxPlot.min, boxPlot.max);
-      return allValues;
-    }, [] as number[]);
-    const minYValue = Math.min(...values);
-    const maxYValue = Math.max(...values);
-
     const yScale = scaleLinear<number>({
-      range: [yMax - 120, 0],
+      range: (horizontal? [20, xMax - 20] : [yMax - 20 , 0]),
       round: true,
-      domain: [minYValue, maxYValue],
+      domain: [minValue, maxValue],
     });
 
+    
     const boxWidth = xScale.bandwidth();
     const constrainedWidth = Math.min(40, boxWidth);
 
@@ -118,10 +119,12 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                 {showViolinPlot ? <ViolinPlot
                   data={d.binData}
                   stroke={formatColor(violinPlotStroke)}
-                  left={xScale(x(d))!}
+                  left={(horizontal ? 0 : xScale(x(d))!)}
+                  top={(horizontal ? xScale(x(d))! : 0)}
                   width={constrainedWidth}
                   valueScale={yScale}
                   fill={formatColor(violinPlotFill)}
+                  horizontal={horizontal}
                 /> : null}
                 {showBoxPlot ? <BoxPlot
                   min={min(d)}
@@ -137,6 +140,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                   strokeWidth={2}
                   valueScale={yScale}
                   outliers={outliers(d)}
+                  horizontal={horizontal}
                   minProps={{
                     onMouseOver: () => {
                       showTooltip({
