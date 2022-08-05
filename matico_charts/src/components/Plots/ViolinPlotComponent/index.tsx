@@ -144,8 +144,12 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                   minProps={{
                     onMouseOver: () => {
                       showTooltip({
-                        tooltipTop: yScale(min(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
+                        tooltipTop: horizontal
+                          ? xScale(x(d))! + boxWidth + 5
+                          : (yScale(min(d)) ?? 0) - 40, //Should this be + or - 40?
+                        tooltipLeft: horizontal
+                          ? (yScale(min(d)) ?? 0) - 40
+                          : xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           min: min(d),
                           name: x(d),
@@ -159,8 +163,12 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                   maxProps={{
                     onMouseOver: () => {
                       showTooltip({
-                        tooltipTop: yScale(max(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
+                        tooltipTop: horizontal
+                          ? xScale(x(d))! + boxWidth + 5
+                          : (yScale(max(d)) ?? 0) - 40,
+                        tooltipLeft: horizontal
+                          ? (yScale(max(d)) ?? 0) - 140
+                          : xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           max: max(d),
                           name: x(d),
@@ -174,8 +182,12 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                   boxProps={{
                     onMouseOver: () => {
                       showTooltip({
-                        tooltipTop: yScale(median(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
+                        tooltipTop: horizontal
+                          ? xScale(x(d))! + boxWidth + 5
+                          : (yScale(median(d)) ?? 0) - 40,
+                        tooltipLeft: horizontal
+                          ? (yScale(median(d)) ?? 0) - 100
+                          : xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           ...d.boxPlot,
                           name: x(d),
@@ -192,8 +204,12 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     },
                     onMouseOver: () => {
                       showTooltip({
-                        tooltipTop: yScale(median(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
+                        tooltipTop: horizontal
+                          ? xScale(x(d))! + boxWidth + 5
+                          : (yScale(median(d)) ?? 0) - 40,
+                        tooltipLeft: horizontal
+                          ? (yScale(median(d)) ?? 0) - 90
+                          : xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           median: median(d),
                           name: x(d),
