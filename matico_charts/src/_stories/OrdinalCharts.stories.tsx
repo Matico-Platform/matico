@@ -8,6 +8,7 @@ import {
   Sample2dData,
   SampleCategoricalData,
   SampleHistogramData,
+  SampleDistData
 } from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
@@ -83,4 +84,29 @@ HorizontalOrdinal.args = {
     },
   ],
   data: SampleCategoricalData,
+};
+
+export const VerticalBoxAndViolin = Template.bind({});
+VerticalBoxAndViolin.args = {
+  yCol: "x1",
+  yExtent: [-10, 10],
+  yLabel: "Scale of Something",
+  xCol: "count",
+  xAxis: {
+    scaleType: "linear",
+    position: "bottom",
+  },
+  xLabel: "Count of Something",
+  title: "My Boxplot/Violinplot",
+  grid: {
+    rows: true,
+    columns: false
+  },
+  layers: [
+    {
+      type: "dist",
+      horizontal: false
+    },
+  ],
+  data: SampleDistData,
 };

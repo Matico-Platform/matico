@@ -60,7 +60,7 @@ export interface ErrorSpec {
 
 // layers
 export interface BaseLayerSpec {
-  type: 'scatter' | 'line' | 'bar' | 'pie';
+  type: 'scatter' | 'line' | 'bar' | 'pie' | 'dist';
   data?: DataCollection | BoxPlotStats[];
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
@@ -83,6 +83,7 @@ export interface BaseLayerSpec {
 }
 
 export interface ScatterSpec extends BaseLayerSpec {
+  data: DataCollection;
   color?: ColorFunction | ColorOutput;
   scale?: number | SizeFunction;
   shape?: string | ShapeFunction;
@@ -92,16 +93,19 @@ export interface ScatterSpec extends BaseLayerSpec {
 }
 
 export interface LineSpec extends BaseLayerSpec {
+  data: DataCollection;
   lineFunction?: LineFunction;
   lineColor?: string;
   lineWidth?: number;
 }
 
 export interface BarSpec extends BaseLayerSpec {
+  data: DataCollection;
   padding?: number;
 }
 
 export interface PieSpec extends BaseLayerSpec {
+  data: DataCollection;
   reverseSort?: boolean;
   innerRadius?: number;
   padding?: number;
@@ -131,7 +135,7 @@ export interface BoxPlotStats{
   binData: BinData[];
 }
 
-export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec;
+export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec | DistributionSpec;
 
 // layouts
 export type OverwriteProperty = { [property: string]: any };
