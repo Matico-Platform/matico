@@ -1,4 +1,6 @@
 import { linearRegression, linearRegressionLine } from 'simple-statistics';
+import genStats, { Stats } from '@visx/mock-data/lib/generators/genStats';
+import { getSeededRandom, getRandomNormal } from '@visx/mock-data';
 import * as d3 from 'd3';
 
 export const generate2dData = (n) => Array(n)
@@ -37,4 +39,8 @@ export const getCategoricalData = (n) => {
   return returnObj;
 };
 
-
+export const getDistributionData = (n) => {
+const seededRandom = getSeededRandom(0.1);
+const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
+ return genStats(n, randomNormal, () => 10 * seededRandom());
+}

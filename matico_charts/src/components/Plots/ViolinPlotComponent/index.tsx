@@ -3,17 +3,12 @@ import { Group } from '@visx/group';
 import { ViolinPlot, BoxPlot } from '@visx/stats';
 import { LinearGradient } from '@visx/gradient';
 import { scaleBand, scaleLinear } from '@visx/scale';
-import genStats, { Stats } from '@visx/mock-data/lib/generators/genStats';
-import { getSeededRandom, getRandomNormal } from '@visx/mock-data';
+import { Stats } from '@visx/mock-data/lib/generators/genStats';
 import { withTooltip, Tooltip, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { PatternLines } from '@visx/pattern';
 import { DistributionSpec, ColorOutput, DataRow, PlotLayersProperties, BoxPlotStats } from "../../types";
 
-// seeded randomness - we won't need this when we supply our own data
-const seededRandom = getSeededRandom(0.1);
-const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
-const data: Stats[] = genStats(5, randomNormal, () => 10 * seededRandom());
 
 function formatColor (color:ColorOutput) {
   if (typeof color == "string") {
@@ -117,17 +112,8 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
       <div style={{ position: 'relative' }}>
         <svg width={xMax} height={yMax}>
           {/* <LinearGradient id="statsplot" to="#8b6ce7" from="#87f2d4" />
-          <rect x={0} y={0} width={xMax} height={yMax} fill="url(#statsplot)" rx={14} />
-          <PatternLines
-            id="hViolinLines"
-            height={3}
-            width={3}
-            stroke="#ced4da"
-            strokeWidth={1}
-            // fill="rgba(0,0,0,0.3)"
-            orientation={['horizontal']}
-          /> */}
-          <Group top={40}>
+          <rect x={0} y={0} width={xMax} height={yMax} fill={background} rx={0} />*/}
+          <Group top={0}>
             {data.map((d: BoxPlotStats, i) => (
               <g key={i}>
                 {showViolinPlot ? <ViolinPlot
