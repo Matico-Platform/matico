@@ -61,33 +61,39 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> =
         return { type: "Feature", geometry: geoJSON, properties }
       }).filter(g=>g)
 
+      console.log("Layers ", layers, mappedLayers) 
+
 
       if (!filtersReady || ! layersReady) return <LoadingSpinner/>;
 
       const styledLayers = mappedLayers.map((l:Layer)=>{
-        console.log("mapped layers ", mappedLayers)
         const fillColor = generateColorVar(l?.style?.fillColor);
         const lineColor = generateColorVar(l?.style?.lineColor);
         const lineWidth= generateNumericVar(l?.style?.lineWidth);
-        console.log("line color ", lineColor)
-        return {fill : l?.style?.fillColor.rgba, type:"map", strokeColor: l?.style?.lineColor.rgba, strokeWidth: l?.style?.lineWidth}
+
+
+        return {fill : fillColor, type:"map", strokeColor: l?.style?.lineColor.rgba, strokeWidth: l?.style?.lineWidth}
       })
+
+         
 
       return (
         <MaticoChart
-          title= "Testing polygon data"
+          title= {labels?.title}
+          subtitle= {labels?.subTitle}
           yExtent= {[0,100]}
           xExtent= {[0,100]}
           proj= {projection}
           gratOn={showGraticule}
           layers= {styledLayers}
           data={ mappedData} 
-                />
+        />
               );
     }, [
       chartData,
       mappedLayers,
       showGraticule,
+      mappedLayers,
       projection
     ]);
 

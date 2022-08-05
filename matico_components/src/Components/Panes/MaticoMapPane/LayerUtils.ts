@@ -187,10 +187,13 @@ export const generateColorVar = (
             if (!Array.isArray(brewer)) {
                 brewer = brewer[3];
             }
-            const ramp = constructRampFunctionCol(
-                brewer.map((c: string) =>
+
+            const mappedRange =brewer.map((c: string) =>
                     chromaColorFromColorSpecification({ hex: c }, true)
-                ),
+                )
+
+            const ramp = constructRampFunctionCol(
+                mappedRange,
                 domain
             );
 
@@ -202,7 +205,9 @@ export const generateColorVar = (
                     return [0, 0, 0, 0];
                 }
                 let c = ramp(val).rgba();
-                c[3] = c[3] * 255;
+                // console.log("VAl is " ,val , " domain ", domain.join(","), c)
+                
+                // c[3] = c[3] * 255;
                 return c;
             };
         } else {

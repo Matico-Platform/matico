@@ -22,7 +22,7 @@ const handleHorizontalUnits = (unit: string) =>
  * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
  */
 const handleVerticalUnits = (unit: string) =>
-    unit === "percent" ? "vh" : "px";
+    unit === "percent" ? "%" : "px";
 
 /**
  * If the position is horizontal, then return the result of calling handleHorizontalUnits with the

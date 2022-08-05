@@ -179,7 +179,7 @@ export class LocalDataset implements Dataset {
             .rollup(quantiles)
             .object();
 
-        return Promise.resolve(Object.values(result));
+        return Promise.resolve(Object.values(result).sort((a,b)=>a > b ? 1 : -1));
     }
 
     async getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
