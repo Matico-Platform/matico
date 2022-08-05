@@ -46,6 +46,14 @@ export enum Alignment {
 }
 /**
 */
+export enum GapSize {
+  None,
+  Small,
+  Medium,
+  Large,
+}
+/**
+*/
 export enum ScreenUnits {
   Pixels,
   Percent,
@@ -180,6 +188,9 @@ export class LinearLayout {
 /**
 */
   direction: number;
+/**
+*/
+  gap?: number;
 /**
 */
   justify: number;

@@ -20,6 +20,7 @@ export * from "./DomainVal";
 export * from "./EqualIntervalParams";
 export * from "./Filter";
 export * from "./FreeLayout";
+export * from "./GapSize";
 export * from "./GeoJSONDataset";
 export * from "./GridLayout";
 export * from "./HistogramPane";
