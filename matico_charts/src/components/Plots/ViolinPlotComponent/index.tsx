@@ -76,11 +76,26 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
 
     // scales
     const values = data.reduce((allValues, { boxPlot }) => {
-      allValues.push(boxPlot.min, boxPlot.max);
+      allValues.push(boxPlot.min, boxPlot.max, Math.min(...boxPlot.outliers), Math.max(...boxPlot.outliers));
       return allValues;
     }, [] as number[]);
     const minValue = Math.min(...values);
     const maxValue = Math.max(...values);
+
+    // Determines the boxplot's "top" and "bottom" depending on orientation
+    const boxExtentScale = scaleBand<number>({
+      range: horizontal ? [0.05 * xMax, 0.95 * xMax] : [0.05 * yMax, 0.95 * yMax],
+      round: true,
+      domain: [minValue, maxValue]
+    });
+
+    // Scale for spacing out multiple boxplots
+    const spacingScale = scaleBand<string>({
+      range: [0, (horizontal ? yMax : xMax)],
+      round: true,
+      domain: data.map(x),
+      padding: 0.25
+    });
 
     const xScale = scaleBand<string>({
       range: [0, (horizontal ? yMax : xMax)],
