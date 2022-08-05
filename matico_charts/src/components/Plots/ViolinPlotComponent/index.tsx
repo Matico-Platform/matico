@@ -101,18 +101,17 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
       range: [0, (horizontal ? yMax : xMax)],
       round: true,
       domain: data.map(x),
-      padding: 0.4,
+      padding: 0.25,
     });
 
     const yScale = scaleLinear<number>({
-      range: (horizontal? [20, xMax - 20] : [yMax - 20 , 0]),
+      range: (horizontal? [xMax * 0.05, xMax * 0.95] : [yMax * 0.95 , yMax * 0.05]),
       round: true,
       domain: [minValue, maxValue],
     });
 
     
     const boxWidth = xScale.bandwidth();
-    const constrainedWidth = Math.min(40, boxWidth);
 
     return xMax < 10 ? null : (
       <div style={{ position: 'relative' }}>
@@ -136,7 +135,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                   stroke={formatColor(violinPlotStroke)}
                   left={(horizontal ? 0 : xScale(x(d))!)}
                   top={(horizontal ? xScale(x(d))! : 0)}
-                  width={constrainedWidth}
+                  width={boxWidth}
                   valueScale={yScale}
                   fill={formatColor(violinPlotFill)}
                   horizontal={horizontal}
@@ -144,11 +143,11 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                 {showBoxPlot ? <BoxPlot
                   min={min(d)}
                   max={max(d)}
-                  left={xScale(x(d))! + 0.3 * constrainedWidth}
+                  left={xScale(x(d))! + 0.3 * boxWidth}
                   firstQuartile={firstQuartile(d)}
                   thirdQuartile={thirdQuartile(d)}
                   median={median(d)}
-                  boxWidth={constrainedWidth * 0.4}
+                  boxWidth={boxWidth * 0.4}
                   fill={formatColor(boxPlotFill)}
                   fillOpacity={0.3}
                   stroke={formatColor(boxPlotStroke)}
@@ -160,7 +159,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     onMouseOver: () => {
                       showTooltip({
                         tooltipTop: yScale(min(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + constrainedWidth + 5,
+                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           min: min(d),
                           name: x(d),
@@ -175,7 +174,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     onMouseOver: () => {
                       showTooltip({
                         tooltipTop: yScale(max(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + constrainedWidth + 5,
+                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           max: max(d),
                           name: x(d),
@@ -190,7 +189,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     onMouseOver: () => {
                       showTooltip({
                         tooltipTop: yScale(median(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + constrainedWidth + 5,
+                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           ...d.boxPlot,
                           name: x(d),
@@ -208,7 +207,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     onMouseOver: () => {
                       showTooltip({
                         tooltipTop: yScale(median(d)) ?? 0 + 40,
-                        tooltipLeft: xScale(x(d))! + constrainedWidth + 5,
+                        tooltipLeft: xScale(x(d))! + boxWidth + 5,
                         tooltipData: {
                           median: median(d),
                           name: x(d),
