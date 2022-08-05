@@ -62,6 +62,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
     gratOn=true, 
     gratColor="black", 
     strokeWidth=0.5, 
+    rotation,
     strokeColor="black", 
     pointRadius=3, 
     events=true}) => {
@@ -139,6 +140,7 @@ export const StaticMapComponent:React.FC<StaticMapSpec & PlotLayersProperties> =
                         data={data as FeatureShape[]}
                         scale={projection.scale()}
                         translate={projection.translate()}
+                        rotate={rotation ? [rotation,0,0] : projection.rotate()}
                         pointRadius = {pointRadius}
                     >
                         {(customProjection:any) => (

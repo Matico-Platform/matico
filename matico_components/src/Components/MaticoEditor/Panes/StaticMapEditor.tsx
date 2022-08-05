@@ -15,6 +15,7 @@ import {
     Flex,
     Item,
     Picker,
+    Slider,
     TextField,
     View,
     // repeat,
@@ -97,7 +98,7 @@ export const StaticMapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Map Settings" isOpen={true}>
-              <Picker selectedKey={mapPane.projection} onSelectionChange={(projection)=> updatePane({projection})} items={[
+              <Picker selectedKey={mapPane.projection} width={"100%"} onSelectionChange={(projection)=> updatePane({projection})} items={[
                 {id:"geoConicConformal", name:"Conic Conformal"},
                 {id:"geoTransverseMercator", name: "Traverse Mercator"},
                 {id:"geoNaturalEarth1", name: "Natural Earth"},
@@ -109,7 +110,8 @@ export const StaticMapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
               ]} >
                 {(item)=><Item key={item.id}>{item.name}</Item>}
                 </Picker>
-                <Checkbox isSelected={mapPane.showGraticule} onChange={(val)=>updatePane({showGraticule:val})} >Show Graticule </Checkbox>
+                <Checkbox width={"100%"} isSelected={mapPane.showGraticule} onChange={(val)=>updatePane({showGraticule:val})} >Show Graticule </Checkbox>
+                <Slider width={"100%"} label="Rotation" minValue={-180} maxValue={180} value={mapPane.rotation} onChange={(rotation)=>updatePane({rotation})} />
             </CollapsibleSection>
             <CollapsibleSection title="Layers" isOpen={true}>
                 <AddLayerModal onAddLayer={addLayer} />

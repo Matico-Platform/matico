@@ -236,6 +236,10 @@ pub struct StaticMapPane{
 
     #[wasm_bindgen(skip)]
     pub show_graticule: Option<bool>,
+
+    #[wasm_bindgen(skip)]
+    pub rotation: Option<f32>
+
 }
 
 

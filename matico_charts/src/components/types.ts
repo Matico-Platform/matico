@@ -83,6 +83,7 @@ export interface BaseLayerSpec {
 
 export interface StaticMapSpec extends BaseLayerSpec {
   proj: string;
+  rotation?: number;
   fill?: ColorFunction | ColorOutput;
   //background?: ColorOutput;
   gratOn?: boolean;

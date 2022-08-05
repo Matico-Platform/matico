@@ -22,6 +22,7 @@ export interface MaticoStaticMapPaneInterface extends MaticoPaneInterface {
   layers: Layer,
   projection: MapProjection,
   showGraticule: boolean,
+  rotation:number,
   labels?: Labels;
 }
 
@@ -32,6 +33,7 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> =
     projection,
     showGraticule=false,
     id,
+    rotation,
     labels,
   }) => {
     const edit = useIsEditable();
@@ -85,6 +87,7 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> =
           xExtent= {[0,100]}
           proj= {projection}
           gratOn={showGraticule}
+          rotation={rotation}
           layers= {styledLayers}
           data={ mappedData} 
         />
