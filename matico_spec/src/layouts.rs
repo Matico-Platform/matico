@@ -85,6 +85,25 @@ pub struct LinearLayout {
     pub align: Alignment
 }
 
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
+#[serde(rename_all="camelCase")]
+#[ts(export)]
+pub enum TabBarPosition{
+    Horizontal,
+    Vertical
+}
+
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct TabLayout{
+    tab_bar_position: TabBarPosition
+}
+
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Clone, Debug, TS)]
 #[serde(rename_all = "camelCase")]
@@ -102,9 +121,3 @@ pub struct GridLayout {
     cols: usize,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct TabLayout {
-    tab_list: Vec<String>,
-}

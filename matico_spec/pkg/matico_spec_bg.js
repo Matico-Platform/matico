@@ -154,6 +154,9 @@ export const Alignment = Object.freeze({ FlexStart:0,"0":"FlexStart",FlexEnd:1,"
 export const GapSize = Object.freeze({ None:0,"0":"None",Small:1,"1":"Small",Medium:2,"2":"Medium",Large:3,"3":"Large", });
 /**
 */
+export const TabBarPosition = Object.freeze({ Horizontal:0,"0":"Horizontal",Vertical:1,"1":"Vertical", });
+/**
+*/
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
 /**
 */
@@ -1595,6 +1598,22 @@ export class StaticMapPane {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_staticmappane_free(ptr);
+    }
+}
+/**
+*/
+export class TabLayout {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_tablayout_free(ptr);
     }
 }
 /**

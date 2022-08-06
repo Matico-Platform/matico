@@ -74,6 +74,7 @@ export * from "./SpecParameter";
 export * from "./SpecParameterValue";
 export * from "./StaticMapPane";
 export * from "./StyleJSONBaseMap";
+export * from "./TabBarPosition";
 export * from "./TabLayout";
 export * from "./TableOptions";
 export * from "./TextCategoryOptions";

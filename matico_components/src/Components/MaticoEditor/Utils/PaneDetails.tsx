@@ -182,7 +182,7 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
     }
 };
 
-export type ContainerPresetTypes = "full" | "mainSideBar" | "row" | "column";
+export type ContainerPresetTypes = "full" | "mainSideBar" | "row" | "column" | "tabs";
 
 export const containerPreset = (name: string, presetType: ContainerPresetTypes) => {
 
@@ -217,6 +217,33 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         panes:[]
       }
       return {container: columnContainer, additionalPanes:[]}
+
+    case "tabs":
+      let tabOne = {
+        id:uuid(),
+        type: 'container',
+        name: `${name}: Tab 1`,
+        layout: {type: 'free', allowOverflow:false},
+        panes:[]
+      }
+      let tabTwo= {
+        id:uuid(),
+        type: 'container',
+        name: `${name}: Tab 2`,
+        layout: {type: 'free', allowOverflow:false},
+        panes:[]
+      }
+      let tabContainer={
+        id:uuid(),
+        name:name,
+        type:'container',
+        layout:{type:'tabs', tabBarPosition:'horizontal'},
+        panes:[
+          {id:uuid(), type:'container', paneId:tabOne.id, position: {...FullPosition, width:100, heigh:100}},
+          {id:uuid(), type:'container', paneId:tabTwo.id, position: {...FullPosition, width:100, heigh:100}},
+        ]
+      }
+      return {container: tabContainer, additionalPanes:[tabOne,tabTwo]}
 
 
     case "mainSideBar":
