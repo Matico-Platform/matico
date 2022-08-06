@@ -85,15 +85,41 @@ export default function ContinuousChartspace({
     ? (yCol as AccessorFunction)
     : (d: DataRow) => d[yCol as string];
 
-  const xBounds = xExtent
-    ? xExtent
-    : //@ts-ignore
-      [Math.min(...data.map(xAccessor)), Math.max(...data.map(xAccessor))];
+   
 
-  const yBounds = yExtent
-    ? yExtent
-    : //@ts-ignore
-      [Math.min(...data.map(yAccessor)), Math.max(...data.map(yAccessor))];
+    let xBounds :number[];
+    if(xExtent){
+      xBounds = xExtent
+    }
+    else if(data){
+      const xData = data.map(xAccessor)
+      xBounds = [Math.min(...xData), Math.max(...xData)]
+    }
+    else{
+      const layerExtents = layers.map(l=> {
+        const xData = l.data?.map(xAccessor)
+        return [Math.min(...xData!), Math.max(...xData!)]
+
+      })
+      xBounds = [Math.min(...layerExtents.map(le=>le[0])),  Math.max(...layerExtents.map(le=>le[1])) ]
+    }
+
+    let yBounds : number[];
+    if(yExtent){
+      yBounds = yExtent
+    }
+    else if(data){
+      const yData = data.map(yAccessor)
+      yBounds = [Math.min(...yData), Math.max(...yData)]
+    }
+    else{
+      const layerExtents = layers.map(l=> {
+        const yData = l.data?.map(yAccessor)
+        return [Math.min(...yData!), Math.max(...yData!)]
+
+      })
+      yBounds = [Math.min(...layerExtents.map(le=>le[0])),  Math.max(...layerExtents.map(le=>le[1])) ]
+    }
 
   // Axis and grid definition
   const XAxis = xAxisPos === "bottom" ? AxisBottom : AxisTop;
@@ -288,18 +314,17 @@ export default function ContinuousChartspace({
         )}
 
         <PlotLayers
-        
-        data={data}
-        layers={layers}
-        xMax={xMax}
-        yMax={yMax}
-          {...{
-            xScale,
-            yScale,
-            xAccessor,
-            yAccessor,
-            ...rest,
-          }}
+          data={data}
+          layers={layers}
+          xMax={xMax}
+          yMax={yMax}
+            {...{
+              xScale,
+              yScale,
+              xAccessor,
+              yAccessor,
+              ...rest,
+            }}
         />
 
         {children}

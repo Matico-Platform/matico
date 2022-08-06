@@ -17,7 +17,7 @@ export default function PlotLayers({
   yMax = 0,
   ...rest
 }: PlotLayersSpec) {
-  return layers.length && data.length ? (
+  return layers.length ? (
       <g>
         {layers.map((layer: any, i: number) => {
           if (!layer.type) return null;
