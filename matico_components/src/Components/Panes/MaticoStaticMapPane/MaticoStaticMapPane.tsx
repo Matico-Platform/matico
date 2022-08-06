@@ -5,7 +5,7 @@ import _ from "lodash";
 import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { useMaticoSelector } from "Hooks/redux";
-import { useRequestData } from "Hooks/useRequestData";
+import { useRequestData, useRequestDataMulti } from "Hooks/useRequestData";
 import { useAutoVariable } from "Hooks/useAutoVariable";
 import wkx from "wkx";
 import { MaticoChart } from "@maticoapp/matico_charts";
@@ -24,6 +24,10 @@ export interface MaticoStaticMapPaneInterface extends MaticoPaneInterface {
   showGraticule: boolean,
   rotation:number,
   labels?: Labels;
+}
+
+export const StaticMapLayer: React.FC<Layer>= ()=>{
+return <></>
 }
 
 export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> =
@@ -49,35 +53,34 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> =
 
     const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
 
-    let firstLayer =  mappedLayers ?  mappedLayers[0] : null 
-
-    const chartData = useRequestData( firstLayer?.source?.name, firstLayer?.source?.filters );
+    
+    const chartData = useRequestDataMulti(mappedLayers.map(l=>({
+      datasetName: l.source?.name,
+      filters: l.source?.filters,
+      columns: l.source?.columns,
+    })))
 
     const Chart = useMemo(() => {
-      const data = chartData?.state === "Done" ? chartData.result : [];
-
-      const mappedData = data.map( (d: Record<string,any>) => {
-        let { geom, ...properties} = d 
-        if(!geom) return null
-        let geoJSON = wkx.Geometry.parse(Buffer.from(geom)).toGeoJSON() 
-        return { type: "Feature", geometry: geoJSON, properties }
-      }).filter(g=>g)
-
-      console.log("Layers ", layers, mappedLayers) 
-
 
       if (!filtersReady || ! layersReady) return <LoadingSpinner/>;
 
-      const styledLayers = mappedLayers.map((l:Layer)=>{
-        const fillColor = generateColorVar(l?.style?.fillColor);
-        const lineColor = generateColorVar(l?.style?.lineColor);
-        const lineWidth= generateNumericVar(l?.style?.lineWidth);
+          const styledLayers = mappedLayers.map((l:Layer, i:index)=>{
+            console.log("Chart data ", chartData)
+            if(!chartData[i]  || chartData[i].state!=="Done"){ return null}
+            const mappedData = chartData[i].result.map( (d: Record<string,any>) => {
+                let { geom, ...properties} = d 
+                if(!geom) return null
+                let geoJSON = wkx.Geometry.parse(Buffer.from(geom)).toGeoJSON() 
+                return { type: "Feature", geometry: geoJSON, properties }
+            }).filter(g=>g)
 
+            const fillColor = generateColorVar(l?.style?.fillColor);
+            const lineColor = generateColorVar(l?.style?.lineColor);
+            const lineWidth= generateNumericVar(l?.style?.lineWidth);
+            return {fill : fillColor, type:"map", strokeColor: lineColor, strokeWidth: lineWidth, data:mappedData}
+          }).filter(l=>l)
 
-        return {fill : fillColor, type:"map", strokeColor: l?.style?.lineColor.rgba, strokeWidth: l?.style?.lineWidth}
-      })
-
-         
+        console.log("Styled layers ", styledLayers)  
 
       return (
         <MaticoChart
@@ -89,7 +92,7 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> =
           gratOn={showGraticule}
           rotation={rotation}
           layers= {styledLayers}
-          data={ mappedData} 
+          data={[]}
         />
               );
     }, [
