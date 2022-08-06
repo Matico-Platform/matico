@@ -25,6 +25,7 @@ import RailRightIcon from "@spectrum-icons/workflow/RailRight";
 import ViewSingle from "@spectrum-icons/workflow/ViewSingle";
 import ViewRow from "@spectrum-icons/workflow/ViewRow";
 import ViewColumn from "@spectrum-icons/workflow/ViewColumn";
+import WebPages from "@spectrum-icons/workflow/WebPages";
 import {useApp} from "Hooks/useApp";
 
 interface NewPaneDialogProps {
@@ -115,9 +116,7 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                                         <ActionButton key={"free"}
                                           onPress={()=>addContainerPaneType("full", close)}
                                         >
-                                            <ViewSingle />
-                                            <Text>Free Layout</Text>
-                                        </ActionButton>
+                                            <ViewSingle /> <Text>Free Layout</Text> </ActionButton>
                                         <ActionButton key={"linearHorizontal"}
                                                     
                                           onPress={()=>addContainerPaneType("row",close)}
@@ -131,6 +130,13 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                                         >
                                             <ViewColumn />
                                             <Text>Column</Text>
+                                        </ActionButton>
+                                        <ActionButton key={"tabs"}
+                                          onPress={()=>addContainerPaneType("tabs",close)}
+
+                                        >
+                                            <WebPages/>
+                                            <Text>Tabs</Text>
                                         </ActionButton>
                                     </DefaultGrid>
                                     <ActionButton

@@ -56,6 +56,7 @@ export function __wbg_freelayout_free(a: number): void;
 export function __wbg_get_freelayout_allow_overflow(a: number): number;
 export function __wbg_set_freelayout_allow_overflow(a: number, b: number): void;
 export function __wbg_gridlayout_free(a: number): void;
+export function __wbg_tablayout_free(a: number): void;
 export function __wbg_linearlayout_free(a: number): void;
 export function __wbg_get_linearlayout_direction(a: number): number;
 export function __wbg_metadata_free(a: number): void;

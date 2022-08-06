@@ -54,6 +54,12 @@ export enum GapSize {
 }
 /**
 */
+export enum TabBarPosition {
+  Horizontal,
+  Vertical,
+}
+/**
+*/
 export enum ScreenUnits {
   Pixels,
   Percent,
@@ -396,6 +402,11 @@ export class SelectionOptions {
 /**
 */
 export class StaticMapPane {
+  free(): void;
+}
+/**
+*/
+export class TabLayout {
   free(): void;
 }
 /**

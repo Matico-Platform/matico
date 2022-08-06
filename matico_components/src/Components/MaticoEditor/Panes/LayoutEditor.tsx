@@ -11,6 +11,8 @@ import { availableLayouts } from "Utils/layoutEngine";
 import {
     Layout,
     LinearLayout,
+    TabLayout,
+    TabBarPosition,
     FreeLayout,
     LinearLayoutDirection,
     Alignment,
@@ -88,6 +90,29 @@ export const LinearLayoutEditor: React.FC<LinearLayoutEditorProps> = ({
     );
 };
 
+export interface TabLayoutEditorProps{
+  layout: TabLayout,
+  onChange:(update:Partial<TabLayout>)=>void
+}
+
+export const TabLayoutEditor: React.FC<TabLayoutEditorProps>  = ({layout,onChange})=>{
+  return(
+    <Flex direction='column' width="100%">
+            <RadioGroup
+                label="Tab bar location"
+                value={layout.tabBarPosition}
+                onChange={(val) => onChange({ tabBarPosition: val as TabBarPosition})}
+            >
+                <Flex direction="row" wrap={"wrap"}>
+                    <Radio value="horizontal">Horizontal</Radio>
+                    <Radio value="vertical">Vertical</Radio>
+                </Flex>
+            </RadioGroup>
+    </Flex>
+  )
+}
+
+
 export interface FreeLayoutEditorProps {
     layout: FreeLayout;
     onChange: (update: Partial<FreeLayout>) => void;
@@ -102,7 +127,8 @@ export const FreeLayoutEditor: React.FC<FreeLayoutEditorProps> = ({
 
 const LayoutEditorMap = {
     linear: LinearLayoutEditor,
-    free: FreeLayoutEditor
+    free: FreeLayoutEditor,
+    tabs: TabLayoutEditor
 };
 
 interface LayoutEditorProps {
