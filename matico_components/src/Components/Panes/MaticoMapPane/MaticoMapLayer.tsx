@@ -67,12 +67,13 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             requiredCols.push(node);
         }
     });
+    
 
     const dataResult = useRequestData(
-        filtersReady && dataset.tiled === false ? source.name : null,
-        mappedFilters,
-        [...requiredCols, "geom"]
-    );
+      {datasetName: filtersReady && dataset.tiled === false ? source.name : null,
+        filters:mappedFilters,
+        columns:[...requiredCols, "geom"]
+      });
 
 
     const preparedData = useMemo(() => {

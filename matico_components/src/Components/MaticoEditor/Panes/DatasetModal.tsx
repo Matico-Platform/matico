@@ -31,13 +31,14 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
     dataset
 }) => {
     const dataRequest = useRequestData(
-        dataset.name,
-        [],
-        dataset.columns
+      {
+        datasetName:dataset.name,
+        filters: [],
+        columns: dataset.columns
             ?.filter((c) => c.type !== "geometry")
             .map((c) => c.name),
-        10
-    );
+            limit:10
+      });
 
     const { updateDataset } = useDatasetActions(dataset.name);
 
