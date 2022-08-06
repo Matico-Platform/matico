@@ -50,7 +50,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
 
     const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
 
-    const chartData = useRequestData(dataset.name, dataset.filters, [xColumn,yColumn]);
+    const chartData = useRequestData({datasetName: dataset.name, filters:dataset.filters, columns:[xColumn,yColumn]});
 
 
     const [

@@ -6,8 +6,6 @@ import { ChartSpaceSpec } from './types';
 export default function MaticoChart(props: ChartSpaceSpec) {
   const { data, dimensions } = props;
 
-  if (!data) return null;
-
   return (
     <ParentSize>
       {({ width, height }) => (
