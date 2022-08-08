@@ -108,7 +108,8 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
     
     const boxWidth = xScale.bandwidth();
 
-    return xMax < 10 ? null : (
+    console.log(xMax);
+    return (
       <div style={{ position: 'relative' }}>
         <svg width={xMax} height={yMax}>
           {/* <LinearGradient id="statsplot" to="#8b6ce7" from="#87f2d4" />
