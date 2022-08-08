@@ -58,7 +58,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
   } = {
     ...props,
     ...props.layer,
-  }
+  };
   withTooltip<TooltipData>(
   ({
     tooltipOpen,

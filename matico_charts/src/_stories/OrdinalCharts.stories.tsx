@@ -92,7 +92,10 @@ VerticalBoxAndViolin.args = {
   layers: [
     {
       type: "dist",
-      horizontal: false
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red"
     },
   ],
   data: SampleDistData,

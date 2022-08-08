@@ -41,19 +41,23 @@ export type StatsPlotProps = {
   height: number;
 };
 
-export const DistributionPlotComponent2: React.FC<DistributionSpec & PlotLayersProperties> = ({
-    data,
-    showBoxPlot = true,
-    boxPlotStroke = 'black',
-    boxPlotFill = 'white',
-    showViolinPlot = true,
-    violinPlotStroke = 'black',
-    violinPlotFill = 'white',
-    horizontal = false,
-    tooltip = true,
-    xMax,
-    yMax
-}) => {
+export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersProperties) => {
+    const {
+      data,
+      showBoxPlot = true,
+      boxPlotStroke = 'black',
+      boxPlotFill = 'white',
+      showViolinPlot = true,
+      violinPlotStroke = 'black',
+      violinPlotFill = 'white',
+      horizontal = false,
+      tooltip = true,
+      xMax,
+      yMax
+    } = {
+      ...props,
+      ...props.layer,
+    };
     // Taken from the visx stacked barchart demo
     const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
     useTooltip<TooltipData>();
@@ -72,7 +76,7 @@ export const DistributionPlotComponent2: React.FC<DistributionSpec & PlotLayersP
 
     // Determines the boxplot's "top" and "bottom" depending on orientation
     const boxExtentScale = scaleLinear<number>({
-      range: (horizontal ? [0.05 * xMax, 0.95 * xMax] : [0.05 * yMax, 0.95 * yMax]),
+      range: (horizontal? [xMax * 0.05, xMax * 0.95] : [yMax * 0.95 , yMax * 0.05]),
       round: true,
       domain: [minValue, maxValue]
     });
@@ -90,6 +94,14 @@ export const DistributionPlotComponent2: React.FC<DistributionSpec & PlotLayersP
     return (
         <div style={{ position: "relative" }}>
             <svg ref={containerRef} width={xMax} height={yMax}>
+            <LinearGradient id="statsplot" to="#8b6ce7" from="#87f2d4" />
+            <rect
+                x={0}
+                y={0}
+                width={xMax}
+                height={yMax}
+                fill="url(#statsplot)"
+            />
                 <Group top={0}>
                     {data.map((d: BoxPlotStats, i) => (
                         <g key={i}>
