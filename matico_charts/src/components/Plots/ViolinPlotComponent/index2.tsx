@@ -92,7 +92,6 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
     const boxWidth = spacingScale.bandwidth()
 
     return (
-        <div style={{ position: "relative" }}>
             <svg ref={containerRef} width={xMax} height={yMax}>
             <LinearGradient id="statsplot" to="#8b6ce7" from="#87f2d4" />
             <rect
@@ -131,108 +130,106 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                                 outliers={outliers(d)}
                                 horizontal={horizontal}
                                 minProps={{
-                                    onMouseMove: () => {
-                                        showTooltip({
-                                            tooltipTop: horizontal
-                                                ? spacingScale(x(d))! + (boxWidth / 2)
-                                                : (boxExtentScale(min(d))) + (boxWidth / 2),
-                                            tooltipLeft: horizontal 
-                                                ? (boxExtentScale(min(d))) + (boxWidth / 2)
-                                                : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                min: min(d),
-                                                name: x(d),
-                                            }
-                                        })
-                                    },
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                    // onMouseMove: () => {
+                                    //     showTooltip({
+                                    //         tooltipTop: horizontal
+                                    //             ? spacingScale(x(d))! + (boxWidth / 2)
+                                    //             : (boxExtentScale(min(d))) + (boxWidth / 2),
+                                    //         tooltipLeft: horizontal 
+                                    //             ? (boxExtentScale(min(d))) + (boxWidth / 2)
+                                    //             : spacingScale(x(d))! + (boxWidth / 2),
+                                    //         tooltipData: {
+                                    //             min: min(d),
+                                    //             name: x(d),
+                                    //         }
+                                    //     })
+                                    // },
+                                    // onMouseLeave: () => {
+                                    //     hideTooltip();
+                                    // },
                                 }}
                                 maxProps={{
-                                    onMouseMove: () => {
-                                        showTooltip({
-                                            tooltipTop: horizontal
-                                                ? spacingScale(x(d))! + (boxWidth / 2)
-                                                : (boxExtentScale(max(d))) + (boxWidth / 2),
-                                            tooltipLeft: horizontal 
-                                                ? (boxExtentScale(max(d))) + (boxWidth / 2)
-                                                : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                max: max(d),
-                                                name: x(d),
-                                            }
-                                        })
-                                    },
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                    // onMouseMove: () => {
+                                    //     showTooltip({
+                                    //         tooltipTop: horizontal
+                                    //             ? spacingScale(x(d))! + (boxWidth / 2)
+                                    //             : (boxExtentScale(max(d))) + (boxWidth / 2),
+                                    //         tooltipLeft: horizontal 
+                                    //             ? (boxExtentScale(max(d))) + (boxWidth / 2)
+                                    //             : spacingScale(x(d))! + (boxWidth / 2),
+                                    //         tooltipData: {
+                                    //             max: max(d),
+                                    //             name: x(d),
+                                    //         }
+                                    //     })
+                                    // },
+                                    // onMouseLeave: () => {
+                                    //     hideTooltip();
+                                    // },
                                 }}
                                 boxProps={{
-                                    onMouseMove: () => {
-                                        showTooltip({
-                                            tooltipTop: horizontal
-                                                ? spacingScale(x(d))! + (boxWidth / 2)
-                                                : (boxExtentScale(median(d))) + (boxWidth / 2),
-                                            tooltipLeft: horizontal 
-                                                ? (boxExtentScale(median(d))) + (boxWidth / 2)
-                                                : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                ...d.boxPlot,
-                                                name: x(d),
-                                            }
-                                        })
-                                    },
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                    // onMouseMove: () => {
+                                    //     showTooltip({
+                                    //         tooltipTop: horizontal
+                                    //             ? spacingScale(x(d))! + (boxWidth / 2)
+                                    //             : (boxExtentScale(median(d))) + (boxWidth / 2),
+                                    //         tooltipLeft: horizontal 
+                                    //             ? (boxExtentScale(median(d))) + (boxWidth / 2)
+                                    //             : spacingScale(x(d))! + (boxWidth / 2),
+                                    //         tooltipData: {
+                                    //             ...d.boxPlot,
+                                    //             name: x(d),
+                                    //         }
+                                    //     })
+                                    // },
+                                    // onMouseLeave: () => {
+                                    //     hideTooltip();
+                                    // },
                                 }}
                                 medianProps={{
                                     style: {
                                         stroke: formatColor(boxPlotStroke),
                                     },
-                                    onMouseMove: () => {
-                                        showTooltip({
-                                            tooltipTop: horizontal
-                                                ? spacingScale(x(d))! + (boxWidth / 2)
-                                                : (boxExtentScale(median(d))) + (boxWidth / 2),
-                                            tooltipLeft: horizontal 
-                                                ? (boxExtentScale(median(d))) + (boxWidth / 2)
-                                                : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                max: max(d),
-                                                name: x(d),
-                                            }
-                                        })
-                                    },
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                    // onMouseMove: () => {
+                                    //     showTooltip({
+                                    //         tooltipTop: horizontal
+                                    //             ? spacingScale(x(d))! + (boxWidth / 2)
+                                    //             : (boxExtentScale(median(d))) + (boxWidth / 2),
+                                    //         tooltipLeft: horizontal 
+                                    //             ? (boxExtentScale(median(d))) + (boxWidth / 2)
+                                    //             : spacingScale(x(d))! + (boxWidth / 2),
+                                    //         tooltipData: {
+                                    //             max: max(d),
+                                    //             name: x(d),
+                                    //         }
+                                    //     })
+                                    // },
+                                    // onMouseLeave: () => {
+                                    //     hideTooltip();
+                                    // },
                                 }}
                             /> : null}
                         </g>
                     ))}
                 </Group>
             </svg>
-
-            {tooltipOpen && tooltipData && (
-                <TooltipInPortal 
-                    top={tooltipTop} 
-                    left={tooltipLeft} 
-                    style={{ ...defaultTooltipStyles, backgroundColor: '#283238', color: 'white' }}
-                >
-                    <div>
-                        <strong>{tooltipData.name}</strong>
-                    </div>
-                    <div style={{ marginTop: '5px', fontSize: '12px' }}>
-                        {tooltipData.max && <div>max: {tooltipData.max}</div>}
-                        {tooltipData.thirdQuartile && <div>third quartile: {tooltipData.thirdQuartile}</div>}
-                        {tooltipData.median && <div>median: {tooltipData.median}</div>}
-                        {tooltipData.firstQuartile && <div>first quartile: {tooltipData.firstQuartile}</div>}
-                        {tooltipData.min && <div>min: {tooltipData.min}</div>}
-                    </div>
-                </TooltipInPortal>
-            )}
-        </div>
+            // {tooltipOpen && tooltipData && (
+            //     <TooltipInPortal 
+            //         top={tooltipTop} 
+            //         left={tooltipLeft} 
+            //         style={{ ...defaultTooltipStyles, backgroundColor: '#283238', color: 'white' }}
+            //     >
+            //         <div>
+            //             <strong>{tooltipData?.name}</strong>
+            //         </div>
+            //         <div style={{ marginTop: '5px', fontSize: '12px' }}>
+            //             {tooltipData?.max && <div>max: {tooltipData?.max}</div>}
+            //             {tooltipData?.thirdQuartile && <div>third quartile: {tooltipData?.thirdQuartile}</div>}
+            //             {tooltipData?.median && <div>median: {tooltipData?.median}</div>}
+            //             {tooltipData?.firstQuartile && <div>first quartile: {tooltipData?.firstQuartile}</div>}
+            //             {tooltipData?.min && <div>min: {tooltipData?.min}</div>}
+            //         </div>
+            //     </TooltipInPortal>
+            // )}
     )
 };
