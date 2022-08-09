@@ -186,7 +186,6 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                                         stroke: sanitizeColor(boxPlotStroke),
                                     },
                                     onMouseOver: () => {
-                                        console.log("medianProps hover")
                                         showTooltip({
                                             tooltipTop: horizontal
                                                 ? spacingScale(x(d))! + (boxWidth / 2)
