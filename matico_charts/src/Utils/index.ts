@@ -18,8 +18,8 @@ export const getBoolOrProperty = (
 };
 
 export const sanitizeColor = (color: ColorOutput) => {
-  if (!color) return null;
-  if (isString(color)) return color;
+  if (!color) return undefined;
+  if (isString(color)) return color as string;
   if (isArray(color)) {
     //@ts-ignore
     return `rgb${color.length === 4 ? "a" : ""}(${color.join(",")})`;

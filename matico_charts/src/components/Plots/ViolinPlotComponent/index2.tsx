@@ -1,22 +1,23 @@
 import * as React from 'react';
 import { Group } from '@visx/group';
 import { ViolinPlot, BoxPlot } from '@visx/stats';
-import { LinearGradient } from '@visx/gradient';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Stats } from '@visx/mock-data/lib/generators/genStats';
 import { useTooltip, useTooltipInPortal, withTooltip, Tooltip, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
-import { PatternLines } from '@visx/pattern';
 import { DistributionSpec, ColorOutput, DataRow, PlotLayersProperties, BoxPlotStats } from "../../types";
+import { sanitizeColor } from '../../../Utils';
+//import { LinearGradient } from '@visx/gradient';
+//import { PatternLines } from '@visx/pattern';
 
-function formatColor (color:ColorOutput) {
-  if (typeof color == "string") {
-    return color;
-  } else if (Array.isArray(color)) {
-    let prefix = color.length === 3 ? "rgb" : "rgba"
-    return `${prefix}(${color.join(",")})`;
-  }
-}
+// function formatColor (color:ColorOutput) {
+//   if (typeof color == "string") {
+//     return color;
+//   } else if (Array.isArray(color)) {
+//     let prefix = color.length === 3 ? "rgb" : "rgba"
+//     return `${prefix}(${color.join(",")})`;
+//   }
+// }
 
 // accessors
 const x = (d: BoxPlotStats) => d.boxPlot.x;
@@ -93,38 +94,31 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
 
     return (
             <svg ref={containerRef} width={xMax} height={yMax}>
-            <LinearGradient id="statsplot" to="#8b6ce7" from="#87f2d4" />
-            <rect
-                x={0}
-                y={0}
-                width={xMax}
-                height={yMax}
-                fill="url(#statsplot)"
-            />
                 <Group top={0}>
                     {data.map((d: BoxPlotStats, i) => (
                         <g key={i}>
                             {showViolinPlot ? <ViolinPlot
                                 data={d.binData}
-                                stroke={formatColor(violinPlotStroke)}
+                                stroke={sanitizeColor(violinPlotStroke)}
                                 left={(horizontal ? 0 : spacingScale(x(d))!)}
                                 top={(horizontal ? spacingScale(x(d))! : 0)}
                                 width={boxWidth}
                                 valueScale={boxExtentScale}
-                                fill={formatColor(violinPlotFill)}
+                                fill={sanitizeColor(violinPlotFill)}
                                 horizontal={horizontal} 
                             /> : null}
                             {showBoxPlot ? <BoxPlot
                                 min={min(d)}
                                 max={max(d)}
-                                left={spacingScale(x(d))! + 0.3 * boxWidth}
+                                left={(horizontal ? 0 : spacingScale(x(d))! + 0.3 * boxWidth)}
+                                top={(horizontal ? spacingScale(x(d))! + 0.3 * boxWidth : 0)}
                                 firstQuartile={firstQuartile(d)}
                                 thirdQuartile={thirdQuartile(d)}
                                 median={median(d)}
                                 boxWidth={boxWidth * 0.4}
-                                fill={formatColor(boxPlotFill)}
+                                fill={sanitizeColor(boxPlotFill)}
                                 fillOpacity={0.3}
-                                stroke={formatColor(boxPlotStroke)}
+                                stroke={sanitizeColor(boxPlotStroke)}
                                 strokeWidth={2}
                                 valueScale={boxExtentScale}
                                 outliers={outliers(d)}
@@ -188,7 +182,7 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                                 }}
                                 medianProps={{
                                     style: {
-                                        stroke: formatColor(boxPlotStroke),
+                                        stroke: sanitizeColor(boxPlotStroke),
                                     },
                                     // onMouseMove: () => {
                                     //     showTooltip({

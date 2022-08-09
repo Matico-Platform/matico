@@ -95,7 +95,8 @@ VerticalBoxAndViolin.args = {
       showBoxPlot: true,
       showViolinPlot: true,
       boxPlotStroke: "green",
-      violinPlotStroke: "red"
+      violinPlotStroke: "red",
+      horizontal: true,
     },
   ],
   data: SampleDistData,
