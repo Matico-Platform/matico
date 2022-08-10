@@ -51,13 +51,19 @@ export const DatasetServiceMiddleWare = () => {
                     }
                 });
                 break;
-            case "datasets/request_query":
-                // worker.runQuery(action.payload).then(() => {
-                //   store.dispatch({
-                //     type: "dataset/QUERY_RESULTS",
-                //     payload: {},
-                //   });
-                // });
+            case "datasets/requestTransform":
+                worker.applyTransform(action.payload).then((data: Array<any>) => {
+                  store.dispatch({
+                    type: "datasets/gotTransformResult",
+                    payload:{ transformId: action.payload.id, result: data},
+                  });
+                })
+                .catch((err:Error)=>{
+                    store.dispatch({
+                      type: "datasets/gotTransformResult",
+                      payload:{transformId: action.payload.id, error: err}
+                    }) 
+                });
                 break;
             case "datasets/registerColumnStatUpdates":
                 const onStatsUpdate = (data: Array<any>) => {

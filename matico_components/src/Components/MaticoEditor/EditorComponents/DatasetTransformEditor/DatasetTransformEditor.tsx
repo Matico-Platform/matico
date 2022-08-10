@@ -40,6 +40,8 @@ import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { useRequestData } from "Hooks/useRequestData";
 import { CollapsibleSection } from "../CollapsibleSection";
 import Delete from "@spectrum-icons/workflow/Delete";
+import {useTransform} from "Hooks/useTransform";
+import {LoadingSpinner} from "../LoadingSpinner/LoadingSpinner";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -69,6 +71,7 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
         </DialogTrigger>
     );
 };
+
 
 export const AddTransformStepDialog: React.FC<{
     onAdd: (type: DatasetTransformStep) => void;
@@ -206,7 +209,7 @@ export const JoinStepEditor: React.FC<{
                     {(item) => <Item key={item.id}>{item.name}</Item>}
                 </Picker>
                 <TextField label="Left Prefix" value={joinStep.leftPrefix} onChange={(leftPrefix)=> onChange({leftPrefix})} />
-                <TextField label="Left Prefix" value={joinStep.leftPrefix} onChange={(leftPrefix)=> onChange({leftPrefix})} />
+                <TextField label="Left Prefix" value={joinStep.rightPrefix} onChange={(rightPrefix)=> onChange({rightPrefix})} />
             </Flex>
             <Divider orientation="vertical" size="S" />
             <Flex direction="column" flex={1} gap="size-200">
@@ -438,6 +441,9 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
         addStep
     } = useDatasetTransform(transformId);
 
+    const transformResult = useTransform(datasetTransform)
+    console.log(datasetTransform, transformResult)
+
     const dataRequest = useRequestData({
         datasetName: datasetTransform.sourceId,
         filters: []
@@ -509,8 +515,15 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
             </Flex>
             <Divider size="S" />
             <Flex direction="column">
-                {dataRequest && dataRequest.state === "Done" && (
-                    <DataTable data={dataRequest.result} />
+              {transformResult && transformResult.state=="Loading" && 
+                <LoadingSpinner />
+              }
+
+              {transformResult && transformResult.state=="Error" &&
+                <Text>Failed to run transform {JSON.stringify(transformResult.error)}</Text>
+              }
+                {transformResult && transformResult.state === "Done" && (
+                    <DataTable data={transformResult.result} />
                 )}
             </Flex>
         </Flex>
