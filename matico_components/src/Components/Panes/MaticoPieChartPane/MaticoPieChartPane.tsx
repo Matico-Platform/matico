@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { useState, useRef, useMemo } from "react";
-import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
@@ -29,7 +28,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     editPath,
     labels
 }) => {
-    const { state: dataState } = useContext(MaticoDataContext);
     const [view, setView] = useState({});
     const chartRef = useRef();
     const containerRef = useRef();
