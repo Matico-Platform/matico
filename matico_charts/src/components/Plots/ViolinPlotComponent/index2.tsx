@@ -7,6 +7,7 @@ import { useTooltip, useTooltipInPortal, withTooltip, Tooltip, defaultStyles as 
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { DistributionSpec, DataRow, PlotLayersProperties, BoxPlotStats } from "../../types";
 import { sanitizeColor } from '../../../Utils';
+import { AnyScaleBand } from '@visx/shape/lib/types';
 //import { ContinuousDomainScaleType } from '@visx/scale';
 //import { LinearGradient } from '@visx/gradient';
 //import { PatternLines } from '@visx/pattern';
@@ -90,14 +91,17 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
     // });
 
     // Scale for spacing out multiple boxplots
-    const spacingScale = scaleBand<string>({
-      range: [0, (horizontal ? yMax : xMax)],
-      round: true,
-      domain: data.map(x),
-      padding: 0.25
-    });
+    const spacingScale = horizontal? yScale : xScale;
+    
+    // scaleBand<string>({
+    //   range: [0, (horizontal ? yMax : xMax)],
+    //   round: true,
+    //   domain: data.map(x),
+    //   padding: 0.25
+    // });
 
-    const boxWidth = spacingScale.bandwidth()
+    //@ts-ignore
+    const boxWidth = spacingScale.bandwidth();
 
     return (
         <>
@@ -108,9 +112,11 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                         {showViolinPlot ? <ViolinPlot
                             data={d.binData}
                             stroke={sanitizeColor(violinPlotStroke)}
-                            left={(horizontal ? 0 : spacingScale(x(d))!)}
-                            top={(horizontal ? spacingScale(x(d))! : 0)}
-                            width={boxWidth}
+                            //@ts-ignore
+                            left={(horizontal ? 0 : spacingScale(x(d))! + boxWidth / 8)}
+                            //@ts-ignore
+                            top={(horizontal ? spacingScale(x(d))! + boxWidth / 8 : 0)}
+                            width={boxWidth * 3/4}
                             //@ts-ignore
                             valueScale={boxExtentScale}
                             fill={sanitizeColor(violinPlotFill)}
@@ -119,7 +125,9 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                         {showBoxPlot ? <BoxPlot
                             min={min(d)}
                             max={max(d)}
+                            //@ts-ignore
                             left={(horizontal ? 0 : spacingScale(x(d))! + 0.3 * boxWidth)}
+                            //@ts-ignore
                             top={(horizontal ? spacingScale(x(d))! + 0.3 * boxWidth : 0)}
                             firstQuartile={firstQuartile(d)}
                             thirdQuartile={thirdQuartile(d)}
@@ -136,12 +144,14 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                                     onMouseMove: () => {
                                         showTooltip({
                                             tooltipTop: horizontal
+                                                //@ts-ignore                                   
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
                                                 : (boxExtentScale(min(d))) - (boxWidth / 2),
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(min(d))) - boxWidth
+                                                //@ts-ignore
                                                 : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 min: min(d),
@@ -157,12 +167,14 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                                     onMouseMove: () => {
                                         showTooltip({
                                             tooltipTop: horizontal
+                                                //@ts-ignore
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
                                                 : (boxExtentScale(max(d))) - (boxWidth / 2),
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(max(d))) - boxWidth
+                                                //@ts-ignore
                                                 : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 max: max(d),
@@ -178,12 +190,14 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                                     onMouseMove: () => {
                                         showTooltip({
                                             tooltipTop: horizontal
+                                                //@ts-ignore
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
                                                 : (boxExtentScale(thirdQuartile(d))) - (boxWidth),
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(thirdQuartile(d))) - (boxWidth)
+                                                //@ts-ignore
                                                 : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 ...d.boxPlot,
@@ -202,12 +216,14 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                                     onMouseMove: () => {
                                         showTooltip({
                                             tooltipTop: horizontal
+                                                //@ts-ignore
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
                                                 : (boxExtentScale(median(d))) - (boxWidth / 2),
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(median(d))) - boxWidth
+                                                //@ts-ignore
                                                 : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 median: median(d),

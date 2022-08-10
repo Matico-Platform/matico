@@ -11,6 +11,7 @@ const SampleRegressionLineData = getRegressionLine(Sample2dData)
 const SampleHistogramData = getHistogramData(Sample2dData)
 const SampleCategoricalData = getCategoricalData(1000)
 const SampleDistData = getDistributionData(5)
+const SampleDistData2 = getDistributionData(2)
 console.log(SampleHistogramData)
 export {
     Sample2dData,
@@ -18,4 +19,5 @@ export {
     SampleHistogramData,
     SampleCategoricalData,
     SampleDistData,
+    SampleDistData2
 }

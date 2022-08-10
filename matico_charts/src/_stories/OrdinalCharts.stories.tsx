@@ -10,7 +10,8 @@ import {
   Sample2dData,
   SampleCategoricalData,
   SampleHistogramData,
-  SampleDistData
+  SampleDistData,
+  SampleDistData2
 } from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
@@ -95,6 +96,7 @@ VerticalBoxAndViolin.args = {
     scaleType: "band",
     position: "bottom"
   },
+  xExtent: SampleDistData.map(d => d.boxPlot.x),
   yAxis: {
     scaleType: "linear",
     position: "left"
@@ -118,11 +120,12 @@ HorizontalBoxAndViolin.args = {
   title: "My Boxplot/Violinplot",
   yAxis: {
     scaleType: "band",
-    position: "bottom"
+    position: "left"
   },
+  yExtent: SampleDistData2.map(d => d.boxPlot.x),
   xAxis: {
     scaleType: "linear",
-    position: "left"
+    position: "bottom"
   },
   xExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
   layers: [
@@ -135,5 +138,5 @@ HorizontalBoxAndViolin.args = {
       horizontal: true,
     },
   ],
-  data: SampleDistData,
+  data: SampleDistData2,
 };
