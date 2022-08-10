@@ -104,7 +104,9 @@ export const AddTransformStepDialog: React.FC<{
             otherSourceId: null,
             joinType: "inner",
             joinColumnsLeft: [],
-            joinColumnsRight: []
+            joinColumnsRight: [],
+            leftPrefix:"",
+            rightPrefix:""
         } as DatasetTransformStep);
         close();
     };
@@ -203,6 +205,8 @@ export const JoinStepEditor: React.FC<{
                 >
                     {(item) => <Item key={item.id}>{item.name}</Item>}
                 </Picker>
+                <TextField label="Left Prefix" value={joinStep.leftPrefix} onChange={(leftPrefix)=> onChange({leftPrefix})} />
+                <TextField label="Left Prefix" value={joinStep.leftPrefix} onChange={(leftPrefix)=> onChange({leftPrefix})} />
             </Flex>
             <Divider orientation="vertical" size="S" />
             <Flex direction="column" flex={1} gap="size-200">

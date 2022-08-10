@@ -71,8 +71,16 @@ pub struct JoinStep{
     pub join_type: JoinType,
     #[wasm_bindgen(skip)]
     pub join_columns_left: Vec<String>,
+
     #[wasm_bindgen(skip)]
-    pub join_columns_right: Vec<String>
+    pub join_columns_right: Vec<String>,
+
+    #[wasm_bindgen(skip)]
+    pub left_prefix: String,
+
+    #[wasm_bindgen(skip)]
+    pub right_prefix: String,
+
 }
 
 
