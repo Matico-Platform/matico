@@ -13,8 +13,11 @@ import {
     TooltipTrigger,
     Tooltip,
     Text,
-    View
+    View,
+    IllustratedMessage,
+    Content
 } from "@adobe/react-spectrum";
+import NotFound from "@spectrum-icons/illustrations/NotFound";
 import React, {useMemo} from "react";
 
 export interface DataTableProps {
@@ -23,6 +26,17 @@ export interface DataTableProps {
 
 export const DataTable: React.FC<DataTableProps> = ({ data }) => {
     let table = useMemo(()=>{
+      if (!data || data.length===0){
+        return(
+        <IllustratedMessage>
+          <NotFound />
+          <Heading>No data</Heading>
+          <Content>
+            The dataset or transform resulted in no data
+          </Content>
+        </IllustratedMessage>
+        )
+      }
       return (
                 <TableView flex={1} overflowMode="truncate">
                     <TableHeader>
