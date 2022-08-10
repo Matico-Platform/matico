@@ -102,7 +102,7 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
     return (
         <>
         <svg ref={containerRef} width={xMax} height={yMax}>
-            <Group top={0}>
+            <Group top={0} pointerEvents="all">
                 {data.map((d: BoxPlotStats, i) => (
                     <g key={i}>
                         {showViolinPlot ? <ViolinPlot
@@ -112,7 +112,7 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                             top={(horizontal ? spacingScale(x(d))! : 0)}
                             width={boxWidth}
                             //@ts-ignore
-                            valueScale={boxExtentScale!}
+                            valueScale={boxExtentScale}
                             fill={sanitizeColor(violinPlotFill)}
                             horizontal={horizontal} 
                         /> : null}
@@ -126,7 +126,6 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                             median={median(d)}
                             boxWidth={boxWidth * 0.4}
                             fill={sanitizeColor(boxPlotFill)}
-                            fillOpacity={0.3}
                             stroke={sanitizeColor(boxPlotStroke)}
                             strokeWidth={2}
                             //@ts-ignore

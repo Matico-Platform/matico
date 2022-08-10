@@ -4,6 +4,7 @@ import { Story, Meta } from "@storybook/react";
 import MaticoChart from "../components/MaticoChart";
 import { ChartSpaceSpec } from "../components/types";
 import { Stats } from '@visx/mock-data/lib/generators/genStats';
+import { BoxPlotStats } from "../components/types";
 
 import {
   Sample2dData,
@@ -90,22 +91,26 @@ HorizontalOrdinal.args = {
 export const VerticalBoxAndViolin = Template.bind({});
 VerticalBoxAndViolin.args = {
   title: "My Boxplot/Violinplot",
+  xAccessor: (d: Stats) => d.boxPlot.x,
   xAxis: {
-    scaleType: "band",
+    scaleType: "sqrt",
     position: "bottom"
   },
+  xExtent: [-10, 25],
   yAxis: {
     scaleType: "log",
     position: "left"
   },
-  yExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
+  yExtent: [5, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
   layers: [
     {
       type: "dist",
       showBoxPlot: true,
       showViolinPlot: true,
       boxPlotStroke: "green",
+      boxPlotFill: "#FFFFFF",
       violinPlotStroke: "red",
+      violinPlotFill: "gray",
       horizontal: true,
     },
   ],
