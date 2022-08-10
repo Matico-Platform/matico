@@ -95,10 +95,35 @@ VerticalBoxAndViolin.args = {
     position: "bottom"
   },
   yAxis: {
-    scaleType: "log",
+    scaleType: "linear",
     position: "left"
   },
   yExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
+  layers: [
+    {
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      horizontal: false,
+    },
+  ],
+  data: SampleDistData,
+};
+
+export const HorizontalBoxAndViolin = Template.bind({});
+HorizontalBoxAndViolin.args = {
+  title: "My Boxplot/Violinplot",
+  yAxis: {
+    scaleType: "band",
+    position: "bottom"
+  },
+  xAxis: {
+    scaleType: "linear",
+    position: "left"
+  },
+  xExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
   layers: [
     {
       type: "dist",
