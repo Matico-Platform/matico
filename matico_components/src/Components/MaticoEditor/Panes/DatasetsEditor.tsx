@@ -124,30 +124,22 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
             <Heading margin="size-150" alignSelf="start">
                 Datasets
             </Heading>
-            <Well>
-                <Heading>
-                    <Flex direction="row" justifyContent="space-between">
-                        <Text>Datasets</Text>
-                        <NewDatasetModal
-                            onSubmit={createDataset}
-                            datasetProviders={datasetProviders}
-                        />
-                    </Flex>
-                </Heading>
-
-                <Flex direction="column">
-                    {Object.entries(datasets).map(([datasetName, dataset]) => {
-                        return (
-                            <ActionButton width="100%">
-                                <DatasetEditor
-                                    dataset={dataset}
-                                    key={datasetName}
-                                />
-                            </ActionButton>
-                        );
-                    })}
-                </Flex>
-            </Well>
+            <Flex direction="column">
+                {Object.entries(datasets).map(([datasetName, dataset]) => {
+                    return (
+                        <ActionButton width="100%">
+                            <DatasetEditor
+                                dataset={dataset}
+                                key={datasetName}
+                            />
+                        </ActionButton>
+                    );
+                })}
+            </Flex>
+            <NewDatasetModal
+                onSubmit={createDataset}
+                datasetProviders={datasetProviders}
+            />
         </Flex>
     );
 };

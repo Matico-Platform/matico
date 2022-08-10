@@ -142,6 +142,12 @@ export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon
 export const MapProjection = Object.freeze({ GeoConicConformal:0,"0":"GeoConicConformal",GeoTransverseMercator:1,"1":"GeoTransverseMercator",GeoNaturalEarth1:2,"2":"GeoNaturalEarth1",GeoConicEquidistant:3,"3":"GeoConicEquidistant",GeoOrthographic:4,"4":"GeoOrthographic",GeoStereographic:5,"5":"GeoStereographic",GeoMercator:6,"6":"GeoMercator",GeoEquirectangular:7,"7":"GeoEquirectangular", });
 /**
 */
+export const JoinType = Object.freeze({ Inner:0,"0":"Inner",Outer:1,"1":"Outer",Left:2,"2":"Left",Right:3,"3":"Right", });
+/**
+*/
+export const AggregationType = Object.freeze({ Min:0,"0":"Min",Max:1,"1":"Max",Sum:2,"2":"Sum",CumulativeSum:3,"3":"CumulativeSum",Mean:4,"4":"Mean",Median:5,"5":"Median",StandardDeviation:6,"6":"StandardDeviation", });
+/**
+*/
 export const LinearLayoutDirection = Object.freeze({ Row:0,"0":"Row",Column:1,"1":"Column", });
 /**
 */
@@ -158,6 +164,38 @@ export const TabBarPosition = Object.freeze({ Horizontal:0,"0":"Horizontal",Vert
 /**
 */
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
+/**
+*/
+export class AggregateStep {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_aggregatestep_free(ptr);
+    }
+}
+/**
+*/
+export class AggregationSummary {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_aggregationsummary_free(ptr);
+    }
+}
 /**
 */
 export class App {
@@ -488,6 +526,38 @@ export class ControlsPane {
 }
 /**
 */
+export class DatasetTransform {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_datasettransform_free(ptr);
+    }
+}
+/**
+*/
+export class FilterStep {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_filterstep_free(ptr);
+    }
+}
+/**
+*/
 export class FreeLayout {
 
     __destroy_into_raw() {
@@ -607,6 +677,22 @@ export class HistogramPane {
         const ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
         wasm.histogrampane_set_name(this.ptr, ptr0, len0);
+    }
+}
+/**
+*/
+export class JoinStep {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_joinstep_free(ptr);
     }
 }
 /**

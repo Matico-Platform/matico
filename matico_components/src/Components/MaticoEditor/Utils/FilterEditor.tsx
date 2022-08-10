@@ -281,6 +281,7 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
     onUpdateFilters,
     datasetName
 }) => {
+    console.log("dataset name ", datasetName)
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[datasetName]
     );
@@ -297,16 +298,9 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
         );
 
     return (
-        <Flex direction="column">
-            <Heading>
-                <Flex direction="row" justifyContent="space-between">
-                    <Text>Filters</Text>{" "}
-                    <FilterTypeDialog onSubmit={addFilter} />
-                </Flex>
-            </Heading>
-            <Flex direction="column">
-                <FilterBlock {...{ columns, filters, updateFilter }} />
-            </Flex>
-        </Flex>
+          <Flex direction="column">
+              <FilterBlock {...{ columns, filters, updateFilter }} />
+              <FilterTypeDialog onSubmit={addFilter} />
+          </Flex>
     );
 };

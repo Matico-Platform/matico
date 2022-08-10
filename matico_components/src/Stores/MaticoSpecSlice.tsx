@@ -7,19 +7,20 @@ import {
     Dataset,
     Layer,
     ContainerPane,
-    PanePosition
+    PanePosition,
+    DatasetTransform,
+    DatasetTransformStep,
+    Theme
 } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
 import { findPagesForPane, findPaneOrPage } from "Utils/specUtils/specUtils";
-import { stringValue } from "vega";
-import {Theme} from "@maticoapp/matico_types/spec";
-
 
 export type EditElement = {
     id?: string;
     parentId?: string;
-    type: "page" | "pane" | "metadata" | "dataset" | "dataview" | "layer"; };
-    
+    type: "page" | "pane" | "metadata" | "dataset" | "dataview" | "layer";
+};
+
 export interface SpecState {
     spec: App | undefined;
     editing: boolean;
@@ -163,34 +164,31 @@ export const stateSlice = createSlice({
         },
         removePaneRef: (
             state,
-            action: PayloadAction<{paneRefId: string}>
+            action: PayloadAction<{ paneRefId: string }>
         ) => {
-            const {paneRefId} = action.payload;
-            const parent = findRefParent(state.spec, paneRefId)
-            if (parent){
-                _.remove(
-                    parent.panes,
-                    (p: PaneRef) => p.paneId === paneRefId
-                )
+            const { paneRefId } = action.payload;
+            const parent = findRefParent(state.spec, paneRefId);
+            if (parent) {
+                _.remove(parent.panes, (p: PaneRef) => p.paneId === paneRefId);
             }
         },
         reparentPaneRef: (
             state,
-            action: PayloadAction<{paneRefId: string, targetId: string}>
+            action: PayloadAction<{ paneRefId: string; targetId: string }>
         ) => {
-            const {paneRefId, targetId} = action.payload;
-            if (paneRefId === targetId){ // dropped a container on itself :o
+            const { paneRefId, targetId } = action.payload;
+            if (paneRefId === targetId) {
+                // dropped a container on itself :o
                 return;
             }
-            const parent = findRefParent(state.spec, paneRefId)
-            const target = findPaneOrPage(state.spec, targetId)
-            if (parent && target && (parent.id !== target.id)){
-                const pane = parent.panes.find((p: PaneRef) => p.paneId === paneRefId)
-                _.remove(
-                    parent.panes,
+            const parent = findRefParent(state.spec, paneRefId);
+            const target = findPaneOrPage(state.spec, targetId);
+            if (parent && target && parent.id !== target.id) {
+                const pane = parent.panes.find(
                     (p: PaneRef) => p.paneId === paneRefId
-                )
-                target.panes.push(pane)
+                );
+                _.remove(parent.panes, (p: PaneRef) => p.paneId === paneRefId);
+                target.panes.push(pane);
             }
         },
         addPane: (state, action: PayloadAction<{ pane: Pane }>) => {
@@ -272,15 +270,21 @@ export const stateSlice = createSlice({
             );
             layers.slice(newIndex, 0, layer);
         },
-        updateTheme:( state, action:PayloadAction<{update:Partial<Theme>}>)=>{
-          let theme = state.spec.theme;
-          let update = action.payload.update;
-          Object.assign(theme,update)
+        updateTheme: (
+            state,
+            action: PayloadAction<{ update: Partial<Theme> }>
+        ) => {
+            let theme = state.spec.theme;
+            let update = action.payload.update;
+            Object.assign(theme, update);
         },
-        updateMetadata:( state, action:PayloadAction<{update:Partial<Metadata>}>)=>{
-          let theme = state.spec.metadata;
-          let update = action.payload.update;
-          Object.assign(metadata,update)
+        updateMetadata: (
+            state,
+            action: PayloadAction<{ update: Partial<Metadata> }>
+        ) => {
+            let theme = state.spec.metadata;
+            let update = action.payload.update;
+            Object.assign(metadata, update);
         },
         updateLayer: (
             state,
@@ -292,7 +296,8 @@ export const stateSlice = createSlice({
         ) => {
             const { mapId, layerId, update } = action.payload;
             const map = state.spec.panes.find(
-                (p: Pane) => p.id === mapId && ["map","staticMap"].includes(p.type)
+                (p: Pane) =>
+                    p.id === mapId && ["map", "staticMap"].includes(p.type)
             );
             //@ts-ignore
             let layer = map.layers.find((layer: Layer) => layer.id === layerId);
@@ -327,6 +332,76 @@ export const stateSlice = createSlice({
             );
             //@ts-ignore
             datasetToUpdate = { ...datasetToUpdate, ...datasetSpec };
+        },
+
+        addDatasetTransform: (
+            state,
+            action: PayloadAction<DatasetTransform>
+        ) => {
+            state.spec.datasetTransforms.push(action.payload);
+        },
+
+        removeDatasetTransform: (
+            state,
+            action: PayloadAction<{ id: string }>
+        ) => {
+            state.spec.datasetTransforms = state.spec.datasetTransforms.filter(
+                (dt) => dt.id !== action.payload.id
+            );
+        },
+
+        updateDatasetTransform: (
+            state,
+            action: PayloadAction<Partial<DatasetTransform>>
+        ) => {
+            const update = action.payload;
+            let transform = state.spec.datasetTransforms.find(
+                (dt) => dt.id === update.id
+            );
+            Object.assign(transform, update);
+        },
+        addDatasetTransformStep: (
+            state,
+            action: PayloadAction<{
+                transformId: string;
+                step: DatasetTransformStep;
+            }>
+        ) => {
+            const { step, transformId } = action.payload;
+            let transform = state.spec.datasetTransforms.find(
+                (dt) => dt.id === transformId
+            );
+            transform.steps.push(step);
+        },
+        updateDatasetTransformStep: (
+            state,
+            action: PayloadAction<{
+                transformId: string;
+                update: Partial<addDatasetTransformStep>;
+            }>
+        ) => {
+            const { update, transformId } = action.payload;
+            console.log("update ", update )
+            let transform = state.spec.datasetTransforms.find(
+                (dt) => dt.id === transformId
+            );
+            //@ts-ignore
+            transform.steps = transform.steps.map((step) =>
+                step.id === update.id ? { ...step, ...update } : step
+            );
+        },
+        removeDatasetTransformStep: (
+            state,
+            action: PayloadAction<{ transformId: string; stepId: string }>
+        ) => {
+            const { stepId, transformId } = action.payload;
+            let transform = state.spec.datasetTransforms.find(
+                (dt: DatasetTransform) => dt.id === transformId
+            );
+            //@ts-ignore
+            transform.steps = transform.steps.filter(
+                (step: DatasetTransformStep) => step.id !== stepId
+            );
         }
     }
 });
@@ -354,7 +429,13 @@ export const {
     removePaneRefFromContainer,
     updatePageDetails,
     updateTheme,
-    updateMetadata
+    updateMetadata,
+    addDatasetTransform,
+    removeDatasetTransform,
+    updateDatasetTransform,
+    updateDatasetTransformStep,
+    removeDatasetTransformStep,
+    addDatasetTransformStep
 } = stateSlice.actions;
 
 export const selectSpec = (state: SpecState) => state.spec;

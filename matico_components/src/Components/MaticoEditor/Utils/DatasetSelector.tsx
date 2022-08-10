@@ -1,17 +1,20 @@
 import React from "react";
 import { useMaticoSelector } from "Hooks/redux";
 import { Picker, Item, Text } from "@adobe/react-spectrum";
+import {LabelPosition} from "@react-types/shared";
 
 interface DatasetSelectorProps {
     selectedDataset?: string;
     onDatasetSelected: (datasetName: string) => void;
     description?: string;
     label?: string;
+    labelPosition?: LabelPosition
 }
 export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
     selectedDataset,
     onDatasetSelected,
     label,
+    labelPosition="side",
     description
 }) => {
     const datasets = useMaticoSelector((state) => state.datasets.datasets);
@@ -26,7 +29,7 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
                 onDatasetSelected(dataset as string)
             }
             label={label ?? "Dataset"}
-            labelPosition="side"
+            labelPosition={labelPosition}
             description={description}
             marginY="size-50"
             width="100%"

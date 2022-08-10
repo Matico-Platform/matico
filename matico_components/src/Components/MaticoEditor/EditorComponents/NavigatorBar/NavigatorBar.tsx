@@ -20,6 +20,7 @@ import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
 import {useErrors} from "Hooks/useErrors";
 import {ErrorPanel} from "../ErrorPanel/ErrorPanel";
+import {DatasetTransfromPane} from "../DatasetTransformPane/DatasetTransformPane";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -49,7 +50,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                         <Item key="datasets">
                             <Data size="L" />
                         </Item>
-                        <Item key="dataviews">
+                        <Item key="datasetTransforms">
                             <Curate size="L" />
                         </Item>
                         <Item key="state">
@@ -106,8 +107,8 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                     <Item key="state">
                                         <MaticoStateViewer />
                                     </Item>
-                                    <Item key="dataviews">
-                                        <p>Data views, coming soon...</p>
+                                    <Item key="datasetTransforms">
+                                      <DatasetTransfromPane />
                                     </Item>
                                     <Item key="errors">
                                       <ErrorPanel />

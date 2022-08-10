@@ -1,4 +1,5 @@
 import {
+  DatasetTransform,
     Page, Pane,
 } from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
@@ -9,14 +10,16 @@ import {
     setCurrentEditElement,
     reparentPaneRef,
     updateTheme,
-    addPane
+    addPane,
+    addDatasetTransform,
+    removeDatasetTransform
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import {Theme} from "@maticoapp/matico_types/spec";
 import {Metadata} from "@maticoapp/matico_types/spec";
 
 export const useApp = () => {
-    const { metadata, pages, panes, theme } = useMaticoSelector(
+    const { metadata, pages, panes, theme, datasetTransforms } = useMaticoSelector(
         (selector) => selector.spec.spec
     );
 
@@ -58,6 +61,13 @@ export const useApp = () => {
         dispatch(removePage({ pageId, removeOrphanPanes: false }));
     };
 
+    const _addDatasetTransform = ( transform: DatasetTransform) =>{
+        dispatch(addDatasetTransform(transform))
+    }
+    const _removeDatasetTransform= ( transform: DatasetTransform) =>{
+        dispatch(removeDatasetTransform(transform))
+    }
+
     const _updateTheme= (update: Partial<Theme>)=>{
         dispatch(updateTheme({update}))
     }
@@ -82,6 +92,7 @@ export const useApp = () => {
         pages,
         panes,
         theme,
+        datasetTransforms,
         metadata,
         removePage: removePageLocal,
         addPage: addPageLocal,
@@ -89,6 +100,8 @@ export const useApp = () => {
         setEditPage,
         reparentPane,
         addPane:_addPane,
-        updateTheme: _updateTheme
+        updateTheme: _updateTheme,
+        addDatasetTransform: _addDatasetTransform,
+        removeDatasetTransform: _removeDatasetTransform,
     };
 };
