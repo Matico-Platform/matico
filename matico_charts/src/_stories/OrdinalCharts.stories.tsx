@@ -4,6 +4,7 @@ import { Story, Meta } from "@storybook/react";
 import MaticoChart from "../components/MaticoChart";
 import { ChartSpaceSpec } from "../components/types";
 import { Stats } from '@visx/mock-data/lib/generators/genStats';
+import { BoxPlotStats } from "../components/types";
 
 import {
   Sample2dData,

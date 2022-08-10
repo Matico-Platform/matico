@@ -112,7 +112,7 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                             top={(horizontal ? spacingScale(x(d))! : 0)}
                             width={boxWidth}
                             //@ts-ignore
-                            valueScale={boxExtentScale!}
+                            valueScale={boxExtentScale}
                             fill={sanitizeColor(violinPlotFill)}
                             horizontal={horizontal} 
                         /> : null}
@@ -126,7 +126,6 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                             median={median(d)}
                             boxWidth={boxWidth * 0.4}
                             fill={sanitizeColor(boxPlotFill)}
-                            fillOpacity={0.3}
                             stroke={sanitizeColor(boxPlotStroke)}
                             strokeWidth={2}
                             //@ts-ignore
