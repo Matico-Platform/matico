@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { Group } from '@visx/group';
 import { ViolinPlot, BoxPlot } from '@visx/stats';
-import { scaleBand, scaleLinear } from '@visx/scale';
-import { Stats } from '@visx/mock-data/lib/generators/genStats';
 import { useTooltip, useTooltipInPortal, withTooltip, Tooltip, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
-import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { DistributionSpec, DataRow, PlotLayersProperties, BoxPlotStats } from "../../types";
 import { sanitizeColor } from '../../../Utils';
-import { AnyScaleBand } from '@visx/shape/lib/types';
+//import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
+//import { scaleBand, scaleLinear } from '@visx/scale';
+//import { Stats } from '@visx/mock-data/lib/generators/genStats';
 //import { ContinuousDomainScaleType } from '@visx/scale';
 //import { LinearGradient } from '@visx/gradient';
 //import { PatternLines } from '@visx/pattern';
