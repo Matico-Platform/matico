@@ -104,6 +104,32 @@ impl Default for AggregationType{
     }
 }
 
+
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[serde(rename_all = "camelCase", tag="type", content="value")]
+#[ts(export)]
+pub enum ImputeMethod{
+    Value(f32),
+    Mean,
+    Median
+}
+
+impl Default for ImputeMethod{
+    fn default()->Self{
+        return ImputeMethod::Mean
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug, Default, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ImputeStep{
+    column: String,
+    method: ImputeMethod 
+}
+
+
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Debug, Default, TS)]
 #[serde(rename_all = "camelCase")]
