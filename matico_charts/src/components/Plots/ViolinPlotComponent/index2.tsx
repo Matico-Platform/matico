@@ -246,10 +246,10 @@ export const DistributionPlotComponent2 = (props: DistributionSpec & PlotLayersP
                     left={tooltipLeft} 
                     style={{ ...defaultTooltipStyles, backgroundColor: '#283238', color: 'white' }}
                 >
-                    <div>
+                    <div style={{fontFamily: 'Arial'}}>
                         <strong>{tooltipData?.name}</strong>
                     </div>
-                    <div style={{ marginTop: '5px', fontSize: '12px' }}>
+                    <div style={{ marginTop: '5px', fontSize: '12px', fontFamily: 'Arial'}}>
                         {tooltipData?.max && <div>max: {tooltipData?.max}</div>}
                         {tooltipData?.thirdQuartile && <div>third quartile: {tooltipData?.thirdQuartile}</div>}
                         {tooltipData?.median && <div>median: {tooltipData?.median}</div>}
