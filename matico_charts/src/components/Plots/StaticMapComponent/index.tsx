@@ -244,7 +244,3 @@ export const StaticMapComponent: React.FC<
     throw "StaticMapComponent: issues with loading data";
   }
 };
-
-// every for arrays
-// check if array exists, then check if given entry in array has properties and geometry
-
