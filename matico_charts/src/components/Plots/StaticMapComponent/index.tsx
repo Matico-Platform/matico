@@ -102,7 +102,7 @@ export const StaticMapComponent: React.FC<
       });
     
     const projection = basicProjections[proj]()
-    .rotate([rotation ? rotation : (left + right) / 2, 0, 0])
+    .rotate([rotation !== undefined ? rotation : (left + right) / 2, 0, 0])
       //@ts-ignore
       .fitExtent(
         [
