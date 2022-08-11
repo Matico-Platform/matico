@@ -260,6 +260,3 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
         </>
     )
 };
-
-// Note: Might want to increase the right margin a bit more to 
-// all for better tooltips?

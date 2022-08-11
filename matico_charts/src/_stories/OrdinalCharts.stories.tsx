@@ -12,7 +12,8 @@ import {
   SampleHistogramData,
   SampleDistData,
   SampleDistData2,
-  SampleDistData3
+  SampleDistData3,
+  SampleDistData4,
 } from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
@@ -139,5 +140,60 @@ HorizontalBoxAndViolin.args = {
       horizontal: true,
     },
   ],
-  data: SampleDistData,
+  data: SampleDistData2,
 };
+
+export const IrisBoxAndViolin = Template.bind({});
+IrisBoxAndViolin.args = {
+  title: "Box and Violin Plots with Iris Data from R",
+  xAxis: {
+    scaleType: "band",
+    position: "bottom"
+  },
+  xExtent: SampleDistData3.map(d => d.boxPlot.x),
+  yAxis: {
+    scaleType: "linear",
+    position: "left"
+  },
+  yExtent: [-1, 8],
+  layers: [
+    {
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      horizontal: false,
+    }
+  ],
+  data: SampleDistData3
+}
+
+export const ExtremeBoxAndViolin = Template.bind({});
+ExtremeBoxAndViolin.args = {
+  title: "Box and Violin Plots with Synthetic Extreme Data",
+  xAxis: {
+    scaleType: "band",
+    position: "bottom"
+  },
+  xExtent: ["Sample Data"],
+  yAxis: {
+    scaleType: "linear",
+    position: "left"
+  },
+  yExtent: [
+    -10,
+    5
+  ],
+  layers: [
+    {
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      horizontal: false,
+    }
+  ],
+  data: SampleDistData4
+}
