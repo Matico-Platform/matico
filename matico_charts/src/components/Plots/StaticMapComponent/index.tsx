@@ -94,7 +94,15 @@ export const StaticMapComponent: React.FC<
     data.every(propChecker) &&
     proj in basicProjections
   ) {
+
+    //@ts-ignore
+    let [[left, bottom], [right, top]] = d3.geoBounds({
+        type: "FeatureCollection",
+        features: data,
+      });
+    
     const projection = basicProjections[proj]()
+    .rotate([rotation ? rotation : (left + right) / 2, 0, 0])
       //@ts-ignore
       .fitExtent(
         [
@@ -140,12 +148,6 @@ export const StaticMapComponent: React.FC<
           number
         ][];
 
-        //@ts-ignore
-        let [[left, bottom], [right, top]] = d3.geoBounds({
-          type: "FeatureCollection",
-          features: data,
-        });
-
         const longs = corners.map((x: [number, number]) => x[0]);
         const lats = corners.map((x: [number, number]) => x[1]);
 
@@ -184,7 +186,7 @@ export const StaticMapComponent: React.FC<
             data={data as FeatureShape[]}
             scale={projection.scale()}
             translate={projection.translate()}
-            rotate={rotation ? [rotation, 0, 0] : projection.rotate()}
+            rotate={projection.rotate()}
             pointRadius={pointRadius}
           >
             {(customProjection: any) => (
