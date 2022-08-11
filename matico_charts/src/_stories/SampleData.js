@@ -76,9 +76,9 @@ const SampleDistData3 = [
 // computeStats doesn't produce something of type Stats
 // The boxPlot property here has a different type (also called BoxPlot
 // but is missing the x property)
-const SampleDistData4 = computeStats([
+const SampleDistData4 = [computeStats([
     -100000,-12342,-50,-11,-10,-9.9,-3.2,-3.1,-3.1,-2.6,-2.5,-1.1,0,
     1,1,1,1,1.1,1.5,1.6,2.999,10000,50000, 9023134
-])
+])]
 
-SampleDistData4.boxPlot.x = "Sample Data"
+SampleDistData4[0].boxPlot.x = "Sample Data"

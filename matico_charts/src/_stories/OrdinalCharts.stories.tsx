@@ -176,14 +176,15 @@ ExtremeBoxAndViolin.args = {
     scaleType: "band",
     position: "bottom"
   },
-  xExtent: ["Sample Data"],
+  //@ts-ignore
+  xExtent: SampleDistData4.map(d => d.boxPlot.x),
   yAxis: {
-    scaleType: "linear",
+    scaleType: "sqrt",
     position: "left"
   },
   yExtent: [
-    -10,
-    5
+    -100000,
+    10000000
   ],
   layers: [
     {
