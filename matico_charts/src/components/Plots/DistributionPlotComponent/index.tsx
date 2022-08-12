@@ -141,7 +141,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                                 //@ts-ignore                                   
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
-                                                : (boxExtentScale(min(d))) - (boxWidth / 2),
+                                                : (boxExtentScale(min(d))) - 50, // - (boxWidth / 2)
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(min(d))) - boxWidth
@@ -164,7 +164,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                                 //@ts-ignore
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
-                                                : (boxExtentScale(max(d))) - (boxWidth / 2),
+                                                : (boxExtentScale(max(d))) - 50, // - (boxWidth / 2)
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(max(d))) - boxWidth
@@ -187,7 +187,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                                 //@ts-ignore
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
-                                                : (boxExtentScale(thirdQuartile(d))) - (boxWidth),
+                                                : (boxExtentScale(thirdQuartile(d))) -50,// - (boxWidth)
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(thirdQuartile(d))) - (boxWidth)
@@ -213,7 +213,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                                 //@ts-ignore
                                                 ? spacingScale(x(d))! + (boxWidth / 4)
                                                 //@ts-ignore
-                                                : (boxExtentScale(median(d))) - (boxWidth / 2),
+                                                : (boxExtentScale(median(d))) - 50,// - (boxWidth / 2)
                                             tooltipLeft: horizontal 
                                                 //@ts-ignore
                                                 ? (boxExtentScale(median(d))) - boxWidth

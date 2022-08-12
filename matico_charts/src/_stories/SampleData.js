@@ -5,6 +5,7 @@ import {
     getCategoricalData,
     getDistributionData,
 } from './StoryUtils'
+import SampleIncomeData from './sample_data/NLSY.json'
 import { computeStats } from '@visx/stats'
 
 const Sample2dData = generate2dData(1000)
@@ -13,6 +14,7 @@ const SampleHistogramData = getHistogramData(Sample2dData)
 const SampleCategoricalData = getCategoricalData(1000)
 const SampleDistData = getDistributionData(5)
 const SampleDistData2 = getDistributionData(2)
+const SampleDistData5 = SampleIncomeData
 console.log(SampleHistogramData)
 export {
     Sample2dData,
@@ -23,6 +25,7 @@ export {
     SampleDistData2,
     SampleDistData3,
     SampleDistData4,
+    SampleDistData5,
 }
 
 // Example of formatting of visx's Stats data type

@@ -14,6 +14,7 @@ import {
   SampleDistData2,
   SampleDistData3,
   SampleDistData4,
+  SampleDistData5,
 } from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
@@ -197,4 +198,62 @@ ExtremeBoxAndViolin.args = {
     }
   ],
   data: SampleDistData4
+}
+
+export const VerticalRealDataBoxAndViolin = Template.bind({});
+VerticalRealDataBoxAndViolin.args = {
+  title: "Box and Violin Plots with Real Data",
+  xAxis: {
+    scaleType: "band",
+    position: "bottom"
+  },
+  xExtent: SampleDistData5.map(d => d.boxPlot.x),
+  yAxis: {
+    scaleType: "linear",
+    position: "left"
+  },
+  yExtent: [
+    -1,
+    750
+  ],
+  horizontal: false,
+  layers: [
+    {
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+    }
+  ],
+  data: SampleDistData5
+}
+
+export const HorizontalRealDataBoxAndViolin = Template.bind({});
+HorizontalRealDataBoxAndViolin.args = {
+  title: "Box and Violin Plots with Real Data",
+  yAxis: {
+    scaleType: "band",
+    position: "left"
+  },
+  yExtent: SampleDistData5.map(d => d.boxPlot.x),
+  xAxis: {
+    scaleType: "linear",
+    position: "bottom"
+  },
+  xExtent: [
+    -1,
+    750
+  ],
+  horizontal: true,
+  layers: [
+    {
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+    }
+  ],
+  data: SampleDistData5
 }
