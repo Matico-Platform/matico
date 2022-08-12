@@ -11,7 +11,6 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
     let {page} = usePage(pageId)
     let layout: Layout = page.layout;
     let LayoutEngine = selectLayout(layout);
-    console.log("rendering page ", page)
 
     return (
         <View overflow="none auto" width="100%" height="100%">

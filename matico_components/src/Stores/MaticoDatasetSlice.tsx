@@ -57,6 +57,16 @@ export const datasetsSlice = createSlice({
                 spec: action.payload
             };
         },
+        registerOrUpdateTransform: (
+            state,
+            action: PayloadAction<DatasetTransform>
+        ) => {
+            state.datasets[action.payload.name] = {
+                name: action.payload.name,
+                state: DatasetState.LOADING,
+                spec: action.payload
+            };
+        },
         datasetReady: (state, action: PayloadAction<DatasetSummary>) => {
             state.datasets[action.payload.name] = action.payload;
         },
@@ -134,6 +144,7 @@ export const {
     registerOrUpdateDataset,
     registerDataUpdates,
     registerColumnStatUpdates,
+    registerOrUpdateTransform,
     requestTransform
 } = datasetsSlice.actions;
 

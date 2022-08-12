@@ -16,6 +16,8 @@ import {WasmComputeBuilder} from "./WasmComputeBuilder";
 import {Dataset as DatasetSpec, DatasetTransform} from "@maticoapp/matico_types/spec"
 import {ArrowBuilder} from "./ArrowBuilder";
 import {DatasetTransformRunner} from "./DatasetTransformRunner";
+import {LocalDataset} from "./LocalDataset";
+import {constructColumnListFromTable} from "./utils";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -35,10 +37,15 @@ export interface DatasetServiceInterface {
     columns?: Array<string>,
     limit?: number
   ): void;
+  _clearNotifiers(notifierId: string): void,
   registerOrUpdateDataset(
     datasetName: string,
     datasetDetails: DatasetSpec
   ): Promise<DatasetSummary>;
+
+  registerOrUpdateTransform(
+    transform : DatasetTransform
+  ): void;
 
   registerColumnData(
     args: ColumnStatRequest,
@@ -55,7 +62,6 @@ export const DatasetService: DatasetServiceInterface = {
   async applyTransform(
     transform: DatasetTransform,
   ){
-
     let transformer = new DatasetTransformRunner(transform);
     return Promise.resolve(transformer.runTransform(this.datasets).objects())
   },
@@ -149,7 +155,55 @@ export const DatasetService: DatasetServiceInterface = {
       });
     }
   },
+  _clearNotifiers(notifierId: string){
+      Object.keys(this.notifiers).forEach( (datasetId:any) => delete this.notifiers[datasetId][notifierId]) 
+  },
+  async registerOrUpdateTransform(datasetTransform: DatasetTransform, updateCallback : (summart: DatasetSummary)=>void){
+    const transform = new DatasetTransformRunner(datasetTransform)
 
+    const runTransform = async ()=>{
+        console.log("running transform ", this.datasets, datasetTransform)
+        try{
+          const transfromResult = transform.runTransform(this.datasets)
+          console.log("Transform result is ", transfromResult)
+          if(transfromResult){
+            let newDataset =  new LocalDataset(
+                transform.name,
+                "id",
+                constructColumnListFromTable(transfromResult),
+                transfromResult,
+                GeomType.Polygon 
+            );
+            this.datasets[datasetTransform.name] = newDataset
+            updateCallback({
+              name: newDataset.name,
+              state: DatasetState.READY,
+              columns: await newDataset.columns(),
+              geomType: GeomType.Polygon,
+              local:true,
+              raster:false,
+              tiled:false,
+              spec: datasetTransform
+            })
+          }
+        }
+        catch(err){
+          console.log("ERROR RUNNING TRANSFORM ", err)
+        }
+    }
+
+    try{
+      this._clearNotifiers(transform.id)
+    }
+    catch(err){ console.log(err)}
+
+    transform.requiredDatasets().forEach((dataset)=>{
+      console.log("Registering for dataset updates ", dataset )
+      this._registerNotifier(dataset, transform.id, ()=>runTransform())
+    })
+
+    await runTransform()
+  },
   async registerOrUpdateDataset(datasetDetails: DatasetSpec): Promise<DatasetSummary> {
     switch (datasetDetails.type) {
       case "geoJSON":
