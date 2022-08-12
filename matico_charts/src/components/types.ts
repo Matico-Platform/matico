@@ -1,4 +1,3 @@
-import { Scale } from '@visx/brush/lib/types';
 import { ContinuousDomain } from '@visx/scale';
 import { BinData, BoxPlot } from '@visx/mock-data/lib/generators/genStats';
 //layout
