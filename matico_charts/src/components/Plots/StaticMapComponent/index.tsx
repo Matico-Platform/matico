@@ -18,6 +18,7 @@ import {
   DataRow,
   PlotLayersProperties,
 } from "../../types";
+import { sanitizeColor } from "../../../Utils";
 import { GridRows } from "@visx/grid";
 
 declare module "react" {
@@ -51,14 +52,15 @@ const basicProjections: { [projection: string]: () => d3.GeoProjection } = {
   geoEquirectangular,
 };
 
-function formatColor(color: ColorOutput) {
-  if (typeof color == "string") {
-    return color;
-  } else if (Array.isArray(color)) {
-    let prefix = color.length === 3 ? "rgb" : "rgba";
-    return `${prefix}(${color.join(",")})`;
-  }
-}
+// Alternate function to sanitizeColor
+// function formatColor(color: ColorOutput) {
+//   if (typeof color == "string") {
+//     return color;
+//   } else if (Array.isArray(color)) {
+//     let prefix = color.length === 3 ? "rgb" : "rgba";
+//     return `${prefix}(${color.join(",")})`;
+//   }
+// }
 
 export const StaticMapComponent: React.FC<
   StaticMapSpec & PlotLayersProperties
@@ -194,7 +196,7 @@ export const StaticMapComponent: React.FC<
                 {gratOn ? (
                   <Graticule
                     graticule={(g) => customProjection.path(g) || ""}
-                    stroke={formatColor(gratColor)}
+                    stroke={sanitizeColor(gratColor)}
                     extentMinor={[
                       [extMinLong, minorMinLat],
                       [extMaxLong, minorMaxLat],
@@ -216,10 +218,10 @@ export const StaticMapComponent: React.FC<
                         ("LineString" || "MultiLineString")
                           ? "transparent"
                           : typeof fill == "function"
-                          ? formatColor(fill(feature.properties))
-                          : formatColor(fill)
+                          ? sanitizeColor(fill(feature.properties))
+                          : sanitizeColor(fill)
                       }
-                      stroke={formatColor(strokeColor)}
+                      stroke={sanitizeColor(strokeColor)}
                       strokeWidth={strokeWidth}
                       onClick={() => {
                         if (events)
