@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import traverse from "traverse";
-import { useMaticoSelector } from "./redux";
-import _ from "lodash";
+import { useMaticoDispatch, useMaticoSelector } from "./redux";
+import _, {update} from "lodash";
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { useRequestColumnStats } from "./useRequestColumnStat";
+import {updateNormalizedSpec} from "Stores/MaticoSpecSlice";
 
-const getRequiredVariableList = (struct: string) => {
+const getRequiredVariableList = (struct: any) => {
     const requiredVariables: Array<string> = [];
     traverse(struct).forEach((node: any) => {
         if (node && node.var) {
@@ -18,7 +19,7 @@ const getRequiredVariableList = (struct: string) => {
 const getRequiredDatasetMetrics = (struct: any) => {
     const requiredDataMetrics: Array<ColumnStatRequest> = [];
     traverse(struct).forEach((node: any) => {
-        if (node && node.dataset) {
+        if (node && node.dataset && node.metric) {
             const { dataset, column, feature_id, metric, filters } = node;
             const requiredMetric = {
                 datasetName: dataset,
@@ -37,7 +38,23 @@ const getRequiredDatasetMetrics = (struct: any) => {
  * and then fetch any dataset values that are required to normalize
  * the section of the spec
  */
-export const useNormalizeSpec = (spec: any) => {
+export const useNormalizeSpec = () => {
+  const [spec,loaded,errors] = useFullyNormalizeSpec();
+  const dispatch = useMaticoDispatch();
+  
+  useEffect(()=>{
+    if(loaded){
+      console.log("updateing normalized spec ", spec)
+      dispatch(updateNormalizedSpec(spec)) 
+    } 
+  },[JSON.stringify(spec),loaded])
+
+  return [spec,loaded,errors]
+}
+
+export const useFullyNormalizeSpec = ()=>{
+    const spec = useMaticoSelector((selector)=>selector.spec.spec)
+    const dispatch = useMaticoDispatch()
     const [error, setError] = useState<string | null>(null);
 
     // Get a list of required variables for the spec from the global
@@ -84,5 +101,6 @@ export const useNormalizeSpec = (spec: any) => {
         }
     });
 
-    return [fullyNormalized, true, error];
+
+    return [fullyNormalized,true,null];
 };

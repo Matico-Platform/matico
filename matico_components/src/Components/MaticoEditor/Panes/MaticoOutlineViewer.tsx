@@ -25,11 +25,10 @@ import styled from "styled-components";
 import { usePane } from "Hooks/usePane";
 import { useContainer } from "Hooks/useContainer";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
-import {
-    restrictToVerticalAxis,
-} from "@dnd-kit/modifiers";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
 import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
+import { IconForPaneType } from "../Utils/PaneDetails";
 
 // function addForContainer(container: ContainerPane, inset: number) {
 //   let containerPanes: Array<RowEntryMultiButtonProps> = [];
@@ -112,37 +111,47 @@ const PaneRow: React.FC<{
     return (
         <HoverableRow>
             <DragContainer style={style} ref={setNodeRef}>
-                <Flex direction="row" justifyContent="space-between">
-                    <View>
+                <View position="relative" width="100%">
+                    <Flex
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="start"
+                        wrap="nowrap"
+                    >
                         <DragButton {...listeners} {...attributes}>
-                            <DragHandle />
+                            <DragHandle color="positive" />
                         </DragButton>
-                        <Button
-                            variant="primary"
-                            onPress={selectPane}
-                            isQuiet
-                            UNSAFE_style={{
-                                borderRadius: 0,
-                                color: "var(--spectrum-global-color-gray-900)",
-                                textAlign: "left",
-                                justifyContent: "flex-start",
-                                padding: ".25em 0"
-                            }}
-                        >
-                            {pane.name}
+                        {IconForPaneType(pane.type)}
+                        <Button variant="primary" onPress={selectPane} isQuiet>
+                            <Text
+                                UNSAFE_style={{
+                                    textOverflow: "ellipsis",
+                                    overflowX: "hidden",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {pane.name}
+                            </Text>
                         </Button>
-                    </View>
-                    <View>
-                        <HoverableItem>
-                            {!!addPaneToContainer && (
-                                <NewPaneDialog onAddPane={addPaneToContainer} />
-                            )}
-                            <ActionButton isQuiet onPress={removePaneFromParent}>
-                                <Delete />
-                            </ActionButton>
-                        </HoverableItem>
-                    </View>
-                </Flex>
+                    </Flex>
+                    <HoverableItem
+                        style={{
+                            position: "absolute",
+                            zIndex: 100,
+                            right: 0,
+                            top: 0,
+                            backgroundColor:
+                                "var(--spectrum-global-color-gray-100)"
+                        }}
+                    >
+                        {!!addPaneToContainer && (
+                            <NewPaneDialog onAddPane={addPaneToContainer} />
+                        )}
+                        <ActionButton isQuiet onPress={removePaneFromParent}>
+                            <Delete />
+                        </ActionButton>
+                    </HoverableItem>
+                </View>
             </DragContainer>
         </HoverableRow>
     );
@@ -157,7 +166,7 @@ const ContainerPaneRow: React.FC<{
     const { isOver, setNodeRef } = useDroppable({
         id: pane.id,
         data: {
-            targetId: pane.id,
+            targetId: pane.id
         }
     });
 
@@ -287,10 +296,7 @@ type MutableList = {
 export const MaticoOutlineViewer: React.FC = withRouter(
     ({ history, location }: MaticoOutlineViewerProps) => {
         // list pages
-        const {
-            pages,
-            reparentPane
-        } = useApp();
+        const { pages, reparentPane } = useApp();
 
         const handleDragEnd = (e: any) => {
             if (!e.over || !e.active) return;

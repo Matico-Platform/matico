@@ -13,8 +13,9 @@ import { COGBuilder } from "./COGBuilder";
 import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
 import {MaticoRemoteApiBuilder} from "./MaticoRemoteApiBuilder";
 import {WasmComputeBuilder} from "./WasmComputeBuilder";
-import {Dataset as DatasetSpec} from "@maticoapp/matico_types/spec"
+import {Dataset as DatasetSpec, DatasetTransform} from "@maticoapp/matico_types/spec"
 import {ArrowBuilder} from "./ArrowBuilder";
+import {DatasetTransformRunner} from "./DatasetTransformRunner";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -25,6 +26,7 @@ export interface DatasetServiceInterface {
   notifiers: { [datasetName: string]: Record<string, Notifier>  };
   _notify: (datasetName: string) => void;
   _registerNotifier: (datasetName: string, notifierId: string, notifier: Notifier) => void;
+  applyTransform:(transform:DatasetTransform) => Promise<any>,
   registerForUpdates(
     datasetName: string,
     callback: (data: Array<any>) => void,
@@ -49,6 +51,14 @@ export const DatasetService: DatasetServiceInterface = {
   datasets: {},
   datasetLoaders: {},
   notifiers: {},
+
+  async applyTransform(
+    transform: DatasetTransform,
+  ){
+
+    let transformer = new DatasetTransformRunner(transform);
+    return Promise.resolve(transformer.runTransform(this.datasets).objects())
+  },
 
   async registerColumnData(
     args: ColumnStatRequest,

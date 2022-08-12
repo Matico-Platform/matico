@@ -24,12 +24,13 @@ export const panes: { [paneType: string]: Pane } = {
 
 export const PaneSelector: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
     const paneType = paneRef.type;
-    const { pane } = usePane(paneRef);
+    const {normalizedPane} = usePane(paneRef);
     const PaneComponent = panes[paneType];
 
-    if (!PaneComponent) return null;
+
+    if (!PaneComponent || !normalizedPane) return null;
     return (
         //@ts-ignore
-        <PaneComponent key={pane.id} position={paneRef.position} {...pane} />
+        <PaneComponent key={normalizedPane.id} position={paneRef.position} {...normalizedPane} />
     );
 };

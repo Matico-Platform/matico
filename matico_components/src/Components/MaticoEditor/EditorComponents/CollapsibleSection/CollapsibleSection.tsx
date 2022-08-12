@@ -6,6 +6,7 @@ import { CollapsibleSectionProps } from "./types";
 export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     title = "",
     children = null,
+    icon = null,
     isOpen = false,
     onToggle = (isOpen: boolean) => {},
     titleStyle = {}
@@ -34,7 +35,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     ...titleStyle
                 }}
             >
-                {title}
+              {icon}{title}
                 <ChevronDown
                     aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
                     size="XS"

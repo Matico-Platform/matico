@@ -181,7 +181,6 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                             )}
                         </Flex>
                     </Content>
-                    )
                 </Dialog>
             )}
         </DialogTrigger>

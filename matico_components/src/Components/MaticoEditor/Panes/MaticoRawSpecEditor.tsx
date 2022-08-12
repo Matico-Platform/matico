@@ -5,7 +5,6 @@ import { useValidator } from "Hooks/useValidator";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-github";
-import { useAppSpec } from "Hooks/useAppSpec";
 import { useMaticoDispatch } from "Hooks/redux";
 import { setSpec } from "Stores/MaticoSpecSlice";
 import { json_error_to_annotation } from "../Utils/Utils";
@@ -21,6 +20,7 @@ import {
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-tomorrow_night";
 import "ace-builds/src-noconflict/ext-language_tools";
+import {useApp} from "Hooks/useApp";
 
 export const MaticoRawSpecEditor: React.FC = () => {
     const [code, setCode] = useState<string>();
@@ -31,12 +31,12 @@ export const MaticoRawSpecEditor: React.FC = () => {
 
     const { validator, validatorReady, error: validatorError } = useValidator();
 
-    const spec = useAppSpec();
+    const {app}= useApp();
     const dispatch = useMaticoDispatch();
 
     //Need to figure out how to make sure this updates with other spec changes
     useEffect(() => {
-        setCode(JSON.stringify(spec, null, 2));
+        setCode(JSON.stringify(app, null, 2));
     }, []);
 
 

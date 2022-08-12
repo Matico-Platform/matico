@@ -10,6 +10,7 @@ mod page;
 mod pane;
 mod theme;
 mod validation;
+mod dataset_transforms;
 
 pub use apps::*;
 pub use autocomplete::*;
@@ -24,6 +25,7 @@ pub use page::*;
 pub use pane::*;
 pub use theme::*;
 pub use validation::*;
+pub use dataset_transforms::*;
 
 #[macro_use]
 extern crate matico_spec_derive;
