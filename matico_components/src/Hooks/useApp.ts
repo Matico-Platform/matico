@@ -12,16 +12,20 @@ import {
     updateTheme,
     addPane,
     addDatasetTransform,
-    removeDatasetTransform
+    removeDatasetTransform,
+    updateMetadata
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import {Theme} from "@maticoapp/matico_types/spec";
 import {Metadata} from "@maticoapp/matico_types/spec";
 
 export const useApp = () => {
-    const { metadata, pages, panes, theme, datasetTransforms } = useMaticoSelector(
+
+    const app = useMaticoSelector(
         (selector) => selector.spec.spec
     );
+
+    const { metadata, pages, panes, theme, datasetTransforms } = app
 
     const dispatch = useMaticoDispatch();
 
@@ -89,6 +93,7 @@ export const useApp = () => {
     };
 
     return {
+        app,
         pages,
         panes,
         theme,

@@ -16,6 +16,7 @@ import {
 } from "Stores/MaticoSpecSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
+import {useNormalizedSpecSelector} from "./useNormalizedSpecSelector";
 
 export const usePane = (paneRef: PaneRef) => {
     const dispatch = useMaticoDispatch();
@@ -23,6 +24,10 @@ export const usePane = (paneRef: PaneRef) => {
     const pane = useMaticoSelector((selector) =>
         selector.spec.spec.panes.find((p: Pane) => p.id == paneRef.paneId)
     );
+
+    const normalizedPane = useNormalizedSpecSelector((selector)=>
+        selector?.panes.find((p:Pane)=>p.id===paneRef.paneId) 
+    )
 
     const parent = useMaticoSelector((selector) =>
         findParent(selector.spec.spec, paneRef.id)
@@ -102,6 +107,7 @@ export const usePane = (paneRef: PaneRef) => {
 
     return {
         pane,
+        normalizedPane,
         updatePane,
         removePane: deletePane,
         removePaneFromParent,

@@ -23,12 +23,14 @@ export type EditElement = {
 
 export interface SpecState {
     spec: App | undefined;
+    normalizedSpec: App | undefined;
     editing: boolean;
     currentEditElement?: EditElement;
 }
 
 const initialState: SpecState = {
     spec: undefined,
+    normalizedSpec: undefined,
     editing: false
 };
 
@@ -47,6 +49,7 @@ export const findParent = (app: App, paneRefId: string) => {
             : null;
     return potentialPage || container;
 };
+
 export const findRefParent = (app: App, paneRefId: string) => {
     const potentialPage = app.pages.find((page: Page) =>
         page.panes.find((paneRef: PaneRef) => paneRef.paneId === paneRefId)
@@ -102,6 +105,13 @@ export const stateSlice = createSlice({
         },
         removePane: (state, action: PayloadAction<{ id: string }>) => {
             _.remove(state.spec.pages, (p: Page) => p.id === action.payload.id);
+        },
+        updateNormalizedSpec:(
+          state,
+          action: PayloadAction<App>
+        )=>{
+          console.log("state in dispatch", state, action.payload)
+          state.normalizedSpec = action.payload 
         },
         setPaneOrder: (
             state,
@@ -435,7 +445,8 @@ export const {
     updateDatasetTransform,
     updateDatasetTransformStep,
     removeDatasetTransformStep,
-    addDatasetTransformStep
+    addDatasetTransformStep,
+    updateNormalizedSpec
 } = stateSlice.actions;
 
 export const selectSpec = (state: SpecState) => state.spec;
