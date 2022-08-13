@@ -47,6 +47,18 @@ export const datasetsSlice = createSlice({
     initialState,
     reducers: {
         // Also triggers middleware
+        registerColumnStatUpdates: (
+            state,
+            action: PayloadAction<{
+                requestHash: string;
+                args: ColumnStatRequest;
+                notifierId: string;
+            }>
+        ) => {
+            const { requestHash, args } = action.payload;
+            state.queries[requestHash] = { state: "Loading", result: null };
+        },
+        // Also triggers middleware
         registerOrUpdateDataset: (
             state,
             action: PayloadAction<DatasetSpec>
@@ -89,7 +101,6 @@ export const datasetsSlice = createSlice({
         },
         gotTransformResult:(state, action:PayloadAction<{transformId:string,result:Array<any>, error:TransformStepError}>)=>{
           const {transformId, error,result} = action.payload
-          console.log("Transform result is ", action.payload )
           state.transforms[transformId] = {state: error ? "Error" : "Done", result, error}
         },
         // Also triggers middleware
@@ -105,18 +116,6 @@ export const datasetsSlice = createSlice({
             }>
         ) => {
             const { requestHash } = action.payload;
-            state.queries[requestHash] = { state: "Loading", result: null };
-        },
-        // Also triggers middleware
-        registerColumnStatUpdates: (
-            state,
-            action: PayloadAction<{
-                requestHash: string;
-                args: ColumnStatRequest;
-                notifierId: string;
-            }>
-        ) => {
-            const { requestHash, args } = action.payload;
             state.queries[requestHash] = { state: "Loading", result: null };
         },
         gotData: (

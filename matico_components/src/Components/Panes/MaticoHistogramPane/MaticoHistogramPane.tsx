@@ -57,6 +57,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     const datasetReady = foundDataset && foundDataset.state === "READY";
 
 
+
     const dataRequest =
         foundDataset  
             ? {
@@ -68,7 +69,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
               }
             : null;
 
-    const chartData = useRequestColumnStat(dataRequest);
+
 
     const Chart = useMemo(() => {
         if (!chartData || chartData.state !== "Done") {
@@ -126,7 +127,10 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
                     {
                         type: "bar",
                         //@ts-ignore
-                        color: colorMap,
+                        color: (d) => {
+                          let c = colorMap(d.binMid)
+                          return [c[0],c[1],c[2]]
+                        } ,
                         scale: 11,
                         xAccessor: (d: any) => d.binEnd
                     }

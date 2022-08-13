@@ -39,12 +39,12 @@ export interface DatasetServiceInterface {
   ): void;
   _clearNotifiers(notifierId: string): void,
   registerOrUpdateDataset(
-    datasetName: string,
     datasetDetails: DatasetSpec
   ): Promise<DatasetSummary>;
 
   registerOrUpdateTransform(
-    transform : DatasetTransform
+    transform : DatasetTransform,
+    updateCallback : (summary: DatasetSummary)=>void
   ): void;
 
   registerColumnData(
@@ -101,9 +101,11 @@ export const DatasetService: DatasetServiceInterface = {
     };
 
     const metricVal = await getMetric(datasetName);
+
     if (metricVal) {
       callback(metricVal);
     }
+
 
     this._registerNotifier(datasetName, notifierId, async () => {
       const metricVal = await getMetric(datasetName);
@@ -157,15 +159,14 @@ export const DatasetService: DatasetServiceInterface = {
   },
   _clearNotifiers(notifierId: string){
       Object.keys(this.notifiers).forEach( (datasetId:any) => delete this.notifiers[datasetId][notifierId]) 
+
   },
   async registerOrUpdateTransform(datasetTransform: DatasetTransform, updateCallback : (summart: DatasetSummary)=>void){
     const transform = new DatasetTransformRunner(datasetTransform)
 
     const runTransform = async ()=>{
-        console.log("running transform ", this.datasets, datasetTransform)
         try{
           const transfromResult = transform.runTransform(this.datasets)
-          console.log("Transform result is ", transfromResult)
           if(transfromResult){
             let newDataset =  new LocalDataset(
                 transform.name,
@@ -198,7 +199,6 @@ export const DatasetService: DatasetServiceInterface = {
     catch(err){ console.log(err)}
 
     transform.requiredDatasets().forEach((dataset)=>{
-      console.log("Registering for dataset updates ", dataset )
       this._registerNotifier(dataset, transform.id, ()=>runTransform())
     })
 
@@ -210,6 +210,7 @@ export const DatasetService: DatasetServiceInterface = {
         const geoDataset = await GeoJSONBuilder(datasetDetails);
         this.datasets[geoDataset.name] = geoDataset;
         this._notify(geoDataset.name);
+
         return {
           name: geoDataset.name,
           state: DatasetState.READY,

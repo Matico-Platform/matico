@@ -14,10 +14,10 @@ import {useNormalizedSpecSelector} from "./useNormalizedSpecSelector";
  * required datasets
  */
 export const useRegisterDatasets = () => {
-    const datasets = useMaticoSelector(s=>s.datasets.datasets)
+    const datasets = useNormalizedSpecSelector(s=>s?.datasets) ?? []
     const dispatch = useMaticoDispatch();
     const {clearErrors, throwError} = useErrorsOfType(MaticoErrorType.DatasetError);
-
+  
 
     useEffect(()=>{
       Object.entries(datasets).forEach( ([id,details])=>{
@@ -36,6 +36,7 @@ export const useRegisterDatasets = () => {
 
     const previousDatasetSpec = useRef<Array<DatasetSpec>>([]);
     const previousTransforms= useRef<Array<DatasetTransform>>([]);
+
 
     useEffect(() => {
         if (!normalizedDatasetSpec) {

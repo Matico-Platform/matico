@@ -150,15 +150,32 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         const common = {
             getFillColor: (d: Record<string, unknown>) => {
                 try {
+                    let color;
                     if (typeof fillColor === "function") {
-                        return fillColor(d);
+                        color = fillColor(d);
                     }
-                    return fillColor;
+                    else{
+                      color = fillColor;
+                    }
+                    return [color[0], color[1], color[2],color[3]*255]
                 } catch {
                     return [0, 0, 0, 0];
                 }
             },
-            getLineColor: lineColor,
+            getLineColor:  (d: Record<string, unknown>) => {
+                try {
+                    let color;
+                    if (typeof lineColor === "function") {
+                        color = lineColor(d);
+                    }
+                    else{
+                      color = lineColor;
+                    }
+                    return [color[0], color[1], color[2],color[3]*255]
+                } catch {
+                    return [0, 0, 0, 0];
+                }
+            },
             getLineWidth: lineWidth === null ? 10 : lineWidth,
             lineWidthUnits,
             lineWidthScale,

@@ -281,7 +281,6 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
     onUpdateFilters,
     datasetName
 }) => {
-    console.log("dataset name ", datasetName)
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[datasetName]
     );

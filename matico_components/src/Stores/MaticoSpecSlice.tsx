@@ -110,7 +110,6 @@ export const stateSlice = createSlice({
           state,
           action: PayloadAction<App>
         )=>{
-          console.log("state in dispatch", state, action.payload)
           state.normalizedSpec = action.payload 
         },
         setPaneOrder: (
@@ -391,7 +390,6 @@ export const stateSlice = createSlice({
             }>
         ) => {
             const { update, transformId } = action.payload;
-            console.log("update ", update )
             let transform = state.spec.datasetTransforms.find(
                 (dt) => dt.id === transformId
             );
