@@ -261,7 +261,7 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         type:'container',
         name: `${name}: SideBar`,
         layout:{type:"linear", direction:"row",  allowOverflow:true, 
-            justify: "flex-start",
+            justify: "start",
             align: "center"
         },
         panes:[]
