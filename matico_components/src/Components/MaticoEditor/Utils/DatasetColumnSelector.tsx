@@ -67,7 +67,6 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
         );
 
         const columns = foundDataset ? foundDataset.columns : [];
-        console.log("columns are ", columns);
 
         return (
             <Flex direction='column'>

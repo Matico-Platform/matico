@@ -51,6 +51,40 @@ export const DatasetServiceMiddleWare = () => {
                     }
                 });
                 break;
+            case "datasets/registerOrUpdateTransform":
+                worker
+                    .registerOrUpdateTransform(action.payload, comlink.proxy((datasetSummary: DatasetSummary) => {
+                        store.dispatch({
+                            type: "datasets/datasetReady",
+                            payload: datasetSummary
+                        });
+                    }))
+                    .catch((error: any) => {
+                        console.warn(
+                            "Something went wrong registering transform",
+                            action.payload,
+                            error
+                        );
+                        store.dispatch({
+                            type: "datasets/datasetFailedToLoad",
+                            payload: {
+                                ...action.payload,
+                                error: error.error
+                            }
+                        });
+                    });
+
+                // Once we have started the loading process modify the message
+                // To reflect this
+                //
+                return next({
+                    ...action,
+                    payload: {
+                        name: action.payload.name,
+                        state: DatasetState.LOADING
+                    }
+                });
+                break;
             case "datasets/requestTransform":
                 worker.applyTransform(action.payload).then((data: Array<any>) => {
                   store.dispatch({

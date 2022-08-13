@@ -442,7 +442,6 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     } = useDatasetTransform(transformId);
 
     const transformResult = useTransform(datasetTransform)
-    console.log(datasetTransform, transformResult)
 
     const dataRequest = useRequestData({
         datasetName: datasetTransform.sourceId,

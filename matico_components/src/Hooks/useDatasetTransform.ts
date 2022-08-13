@@ -50,7 +50,6 @@ export const useDatasetTransform = (datasetTransformId: string) => {
     };
 
     const _removeStep = (stepId: string) => {
-        console.log("removing step ", stepId)
         dispatch(
             removeDatasetTransformStep({
                 transformId: datasetTransform.id,
@@ -74,3 +73,4 @@ export const useDatasetTransform = (datasetTransformId: string) => {
         updateStep: _updateStep
     };
 };
+

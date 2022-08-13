@@ -44,7 +44,6 @@ export const useNormalizeSpec = () => {
   
   useEffect(()=>{
     if(loaded){
-      console.log("updateing normalized spec ", spec)
       dispatch(updateNormalizedSpec(spec)) 
     } 
   },[JSON.stringify(spec),loaded])
@@ -71,7 +70,6 @@ export const useFullyNormalizeSpec = ()=>{
             const path = node.var.split(".").slice(1).join(".");
             const variable = variables[variableName];
             if (variable === null || variable === undefined) {
-                console.warn("failed to find variable", variableName);
                 return;
             }
             const value = _.at(variable.value, path)[0];
@@ -87,16 +85,15 @@ export const useFullyNormalizeSpec = ()=>{
         return [specWithVariables, true, null];
     }
 
-    if (!datasetValues.every((dv) => dv && dv.state === "Done")) {
-        return [null, false, null];
-    }
 
     let nodeNumber = 0;
 
     // Identify which data stats the spec needs
     const fullyNormalized = traverse(specWithVariables).map(function (node) {
-        if (node && node.dataset) {
-            this.update(datasetValues[nodeNumber].result);
+        if (node && node.metric) {
+            if(datasetValues[nodeNumber] && datasetValues[nodeNumber].state==="Done"){
+              this.update(datasetValues[nodeNumber].result);
+            }
             nodeNumber += 1;
         }
     });

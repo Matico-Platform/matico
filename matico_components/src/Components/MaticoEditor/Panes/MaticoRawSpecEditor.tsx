@@ -40,7 +40,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
     }, []);
 
 
-    console.log("JSON ERROR IS ",jsonError)
     const annotations: Ace.Annotation[] = jsonError
         ? json_error_to_annotation(jsonError)
         : [];
