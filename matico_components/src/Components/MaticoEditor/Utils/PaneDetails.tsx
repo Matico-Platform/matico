@@ -198,22 +198,22 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
       }
       return {container: full, additionalPanes:[]}
     
-    case "row":
+    case "column":
       let rowContainer ={
         id:uuid(),
         name:name,
         type: 'container',
-        layout: {type:"linear", direction:"row", justify:'start', align:"center", allowOverflow:false},
+        layout: {type:"linear", gap:"small", direction:"row", justify:'start', align:"center", allowOverflow:false},
         panes:[]
       }
       return {container: rowContainer, additionalPanes:[]}
 
-    case "column":
+    case "row":
       let columnContainer ={
         id:uuid(),
         name:name,
         type: 'container',
-        layout: {type:"linear", direction:"column", justify:'start', align:"center", allowOverflow:false},
+        layout: {type:"linear", gap:"small", direction:"column", justify:'start', align:"center", allowOverflow:false},
         panes:[]
       }
       return {container: columnContainer, additionalPanes:[]}
@@ -260,7 +260,7 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         id:uuid(),
         type:'container',
         name: `${name}: SideBar`,
-        layout:{type:"linear", direction:"row",  allowOverflow:true, 
+        layout:{type:"linear", direction:"column", gap:"small",  allowOverflow:true, 
             justify: "start",
             align: "center"
         },
@@ -271,7 +271,7 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         id: uuid(),
         type:"container",
         name:name,
-        layout:{type: "linear", direction:"row", justify:'start', align:"center", allowOverflow:false},
+        layout:{type: "linear", direction:"row", gap:'small', justify:'start', align:"center", allowOverflow:false},
         panes:[
           {id:uuid(), type:'container', paneId:MainContentPane.id, position: {...FullPosition, width:70}},
           {id:uuid(), type:'container', paneId:SideBar.id, position: {...FullPosition, width:30}},
