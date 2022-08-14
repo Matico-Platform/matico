@@ -188,8 +188,8 @@ export const generateColorVar = (
                 brewer = brewer[3];
             }
 
-            const mappedRange =brewer.map((c: string) =>
-                    chromaColorFromColorSpecification({ hex: c }, true)
+            const mappedRange =brewer.map((c: string | Array[number]) =>
+                    chromaColorFromColorSpecification( typeof(c) ==="string" ? { hex: c } : {rgb:c}, true)
                 )
 
             const ramp = constructRampFunctionCol(
