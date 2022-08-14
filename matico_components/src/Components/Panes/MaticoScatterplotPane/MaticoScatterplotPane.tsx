@@ -42,9 +42,17 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     );
     const datasetReady =
       foundDataset && foundDataset.state === DatasetState.READY;
+  
 
+    let columns = [xColumn,yColumn]
+    if(typeof(dotSize) ==='object' && 'variable' in dotSize){
+      columns.push(dotSize.variable)
+    }
+    if(typeof(dotColor) ==='object' && 'variable' in dotColor){
+      columns.push(dotColor.variable)
+    }
 
-    const chartData = useRequestData({datasetName: dataset.name, filters:dataset.filters, columns:[xColumn,yColumn]});
+    const chartData = useRequestData({datasetName: dataset.name, filters:dataset.filters, columns});
 
 
     const [
@@ -78,8 +86,9 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     
     const Chart = useMemo(() => {
       const data = chartData?.state === "Done" ? chartData.result : [];
+      
 
-
+    
       const dotSizeFunc= generateNumericVar(dotSize);
       const dotColorFunc= generateColorVar(dotColor);
 
@@ -122,7 +131,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
             {
               type: "scatter",
               color: dotColorFunc,
-              scale: dotSizeFunc,
+              scale: dotSizeFunc
             },
           ]}
           useBrush={{
