@@ -70,11 +70,11 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
             }
         } else {
             onAddPane({
+                ...PaneDefaults[paneType],
                 id: uuidv4(),
                 name: newPaneName,
                 //@ts-ignore
                 type: paneType,
-                ...PaneDefaults[paneType]
             });
             close();
         }
