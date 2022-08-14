@@ -70,6 +70,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
             : null;
 
 
+    const chartData = useRequestColumnStat(dataRequest);
 
     const Chart = useMemo(() => {
         if (!chartData || chartData.state !== "Done") {
@@ -86,7 +87,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         ];
 
         const colorMap = generateColorVar(color);
-
+  
         return (
             <MaticoChart
                 xExtent={extent}
