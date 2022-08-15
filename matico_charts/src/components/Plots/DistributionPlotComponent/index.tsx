@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Group } from '@visx/group';
 import { ViolinPlot, BoxPlot } from '@visx/stats';
-import { useTooltip, useTooltipInPortal, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
+import { useTooltip, useTooltipInPortal, defaultStyles as defaultTooltipStyles, Tooltip, TooltipWithBounds } from '@visx/tooltip';
 import { DistributionSpec, PlotLayersProperties, BoxPlotStats } from "../../types";
 import { sanitizeColor } from '../../../Utils';
 import { localPoint } from '@visx/event'
@@ -67,7 +67,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
     // Need to see if the tooltip will cover the box or hide under it when
     // we turn renderTooltipInPortal to true
     const [tooltipShouldDetectBounds, setTooltipShouldDetectBounds] = useState(true);
-    const [renderTooltipInPortal, setRenderTooltipInPortal] = useState(false);
+    const [renderTooltipInPortal, setRenderTooltipInPortal] = useState(true);
 
     const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal({
         scroll: true,
@@ -82,6 +82,15 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
         hideTooltip, 
         showTooltip } =
     useTooltip<TooltipData>();
+
+    const TooltipComponent = renderTooltipInPortal
+    ? TooltipInPortal
+    : tooltipShouldDetectBounds
+    ? TooltipWithBounds
+    : Tooltip;
+    // If renderTooltipInPortal is true, then TooltipComponent is assigned TooltipInPortal
+    // If instead false, then we check tooltipShouldDetectBounds 
+
 
     // Slapped on the any types for now
     const handleMouseOver = (event: any, datum: any) => {
@@ -274,7 +283,8 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                 </Group>
             </svg>
             {tooltipOpen && tooltipData && (
-                <TooltipInPortal 
+                <TooltipComponent
+                    key={Math.random()} // apparently necessary for tooltip
                     top={tooltipTop} 
                     left={tooltipLeft} 
                     style={{ ...defaultTooltipStyles, backgroundColor: '#283238', color: 'white' }}
@@ -289,7 +299,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                         {tooltipData?.firstQuartile && <div>first quartile: {tooltipData?.firstQuartile}</div>}
                         {tooltipData?.min && <div>min: {tooltipData?.min}</div>}
                     </div>
-                </TooltipInPortal>
+                </TooltipComponent>
             )}
         </>
     )
