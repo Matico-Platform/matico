@@ -2,13 +2,17 @@
   "name": "@maticoapp/matico_charts",
   "version": "0.0.1",
   "description": "A concise, flexible charting wrapper made for React and Matico.",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup -c",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "build-dev": "node --es-module-specifier-resolution=node scripts/dev.mjs",
+    "build-prod": "node --es-module-specifier-resolution=node scripts/build.mjs",
+    "build-types": "tsc --emitDeclarationOnly --outDir dist",
+    "start": "yarn storybook"
   },
   "author": "Dylan Halpern",
   "license": "MIT",
@@ -21,6 +25,7 @@
     "@types/react": "^17.0.38",
     "@types/styled-components": "^5.1.21",
     "d3": "^7.3.0",
+    "esbuild": "^0.14.5",
     "react": "^18.2.0",
     "rollup": "^2.66.0",
     "rollup-plugin-dts": "^4.1.0",
@@ -43,5 +48,8 @@
     "@visx/shape": "^2.4.0",
     "d3-geo": "^3.0.1",
     "simple-statistics": "^7.7.3"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
   }
 }

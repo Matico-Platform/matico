@@ -83,6 +83,7 @@
     "remark-math": "^5.1.0",
     "traverse": "^0.6.6",
     "uuid": "^8.3.2",
+    "verbum": "^0.3.4",
     "wkx": "^0.5.0"
   },
   "devDependencies": {
