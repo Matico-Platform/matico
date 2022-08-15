@@ -16,6 +16,7 @@ import { useApp } from "Hooks/useApp";
 import React, { useState } from "react";
 import { DatasetTransformDialog, DatasetTransformEditor } from "../DatasetTransformEditor/DatasetTransformEditor";
 import { v4 as uuid } from "uuid";
+import {useMaticoSelector} from "Hooks/redux";
 
 export const NewDatasetTransformModal: React.FC<{
     onSubmit: (transform: DatasetTransform) => void;
@@ -85,6 +86,7 @@ export const NewDatasetTransformModal: React.FC<{
 
 export const DatasetTransfromPane: React.FC = () => {
     const { datasetTransforms, addDatasetTransform } = useApp();
+    const { datasets } = useMaticoSelector((s) => s.datasets);
     return (
         <Flex height="100%" width="100%" direction="column">
             <Heading margin="size-150" alignSelf="start">
@@ -96,6 +98,7 @@ export const DatasetTransfromPane: React.FC = () => {
                         <DatasetTransformDialog
                             key={transform.id}
                             transformId={transform.id}
+                            state={datasets[transform.name].state}
                         />
                 ))}
             </Flex>

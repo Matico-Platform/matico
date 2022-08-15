@@ -97,7 +97,7 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface{
   }
 
    applyAggregate(step: AggregateStep, table: ColumnTable, datasets: Record<string,LocalDataset>, stepNo:number): ColumnTable {
-     let rollUps = step.aggregate.reduce ( (rollUps, agg)=> ({...rollUps,  [agg.rename] :  oppTypeToOp(agg.aggType)(agg.column) }), {})
+     let rollUps = step.aggregate.reduce ( (rollUps, agg)=> ({...rollUps,  [agg.rename ?? `${agg.aggType}_${agg.column}`] :  oppTypeToOp(agg.aggType)(agg.column) }), {})
      return table.groupby(step.groupByColumns).rollup(rollUps)
   }
 

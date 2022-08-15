@@ -184,7 +184,8 @@ export const DatasetService: DatasetServiceInterface = {
               local:true,
               raster:false,
               tiled:false,
-              spec: datasetTransform
+              spec: datasetTransform,
+              transform:true 
             })
           }
         }
@@ -219,7 +220,8 @@ export const DatasetService: DatasetServiceInterface = {
           local: true,
           raster:false,
           tiled: geoDataset.tiled(),
-          spec: datasetDetails
+          spec: datasetDetails,
+          transform:false
         };
       case "arrow":
         const arrowDataset= await ArrowBuilder(datasetDetails);
@@ -233,7 +235,8 @@ export const DatasetService: DatasetServiceInterface = {
           local: true,
           raster:false,
           tiled: arrowDataset.tiled(),
-          spec: datasetDetails
+          spec: datasetDetails,
+          transform:false
         };
       case "csv":
         const csvDataset = await CSVBuilder(datasetDetails);
@@ -248,7 +251,8 @@ export const DatasetService: DatasetServiceInterface = {
           raster:false,
           local: true,
           tiled: csvDataset.tiled(),
-          spec: datasetDetails
+          spec: datasetDetails,
+          transform:false
         };
       case "maticoRemote":
         const maticoDataset = await MaticoRemoteBuilder(datasetDetails);
@@ -263,7 +267,9 @@ export const DatasetService: DatasetServiceInterface = {
           tiled: maticoDataset.tiled(),
           raster:false,
           mvtUrl: maticoDataset.mvtUrl(),
-          spec: datasetDetails
+          spec: datasetDetails,
+          transform:false
+
         };
       case "maticoApi":
         const maticoApi= await MaticoRemoteApiBuilder(datasetDetails);
@@ -278,7 +284,9 @@ export const DatasetService: DatasetServiceInterface = {
           raster:false,
           tiled: maticoApi.tiled(),
           mvtUrl: maticoApi.mvtUrl(),
-          spec: datasetDetails
+          spec: datasetDetails,
+          transform:false
+
         };
       case "wasmCompute":
         const wasmCompute = await WasmComputeBuilder(datasetDetails, this.datasets);
@@ -293,7 +301,8 @@ export const DatasetService: DatasetServiceInterface = {
           raster:false,
           tiled: wasmCompute.tiled(),
           mvtUrl: null,
-          spec: datasetDetails
+          spec: datasetDetails,
+          transform:false
         };
       case "cog":
         const cog = COGBuilder(datasetDetails);
@@ -308,7 +317,8 @@ export const DatasetService: DatasetServiceInterface = {
           raster: true,
           tiled: cog.tiled(),
           mvtUrl: cog.mvtUrl(),
-          spec: datasetDetails
+          spec: datasetDetails,
+          transform:false
         };
     }
   },
