@@ -12,39 +12,32 @@ import {
     Text,
     Picker,
     Item,
-    Divider
+    Divider,
+    StatusLight
 } from "@adobe/react-spectrum";
-import {
-    DatasetTransform,
-    DatasetTransformStep,
-    FilterStep,
-    AggregateStep,
-    JoinStep,
-    AggregationSummary
-} from "@maticoapp/matico_types/spec";
-import { DefaultGrid } from "Components/MaticoEditor/Utils/DefaultGrid";
+import { DatasetTransformStep, FilterStep } from "@maticoapp/matico_types/spec";
 import { useDatasetTransform } from "Hooks/useDatasetTransform";
-import { transform } from "lodash";
 import React from "react";
 import { DataTable } from "../DataTable/DataTable";
 import Filter from "@spectrum-icons/workflow/Filter";
 import Join from "@spectrum-icons/workflow/Merge";
 import AggregateIcon from "@spectrum-icons/workflow/GraphBarHorizontal";
 import Compute from "@spectrum-icons/workflow/Calculator";
-import {
-    DatasetColumnSelector,
-    DatasetColumnSelectorMulti
-} from "Components/MaticoEditor/Utils/DatasetColumnSelector";
-import { FilterEditor } from "Components/MaticoEditor/Utils/FilterEditor";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
-import { useRequestData } from "Hooks/useRequestData";
 import { CollapsibleSection } from "../CollapsibleSection";
 import Delete from "@spectrum-icons/workflow/Delete";
-import {useTransform} from "Hooks/useTransform";
-import {LoadingSpinner} from "../LoadingSpinner/LoadingSpinner";
+import { useTransform } from "Hooks/useTransform";
+import { LoadingSpinner } from "../LoadingSpinner/LoadingSpinner";
+import { JoinStepEditor } from "./JoinStep";
+import { AggregateStepEditor } from "./AggregateStep";
+import { FilterStepEditor } from "./FilterStep";
+import { AddTransformStepDialog } from "./AddTransformStep";
+import { DatasetState } from "Datasets/Dataset";
+import { DatasetStatusColors } from "Components/MaticoEditor/Panes/DatasetsEditor";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
+    state: DatasetState;
 }
 
 const IconForStepType: Record<string, React.ReactNode> = {
@@ -55,96 +48,31 @@ const IconForStepType: Record<string, React.ReactNode> = {
 };
 
 export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
-    transformId
+    transformId,
+    state
 }) => {
     const { datasetTransform } = useDatasetTransform(transformId);
     return (
-        <DialogTrigger type="fullscreen" isDismissable>
-            <ActionButton> {datasetTransform.name}</ActionButton>
+        <DialogTrigger  isDismissable>
+            <ActionButton isQuiet>
+                <Flex
+                    direction="row"
+                    gap="small"
+                    width="100%"
+                    alignItems="center"
+                    justifyContent="space-between"
+                >
+                    <Text>{datasetTransform.name} </Text>
+                    <StatusLight variant={DatasetStatusColors[state]} />
+                </Flex>
+            </ActionButton>
             {(close) => (
-                <Dialog>
+                <Dialog width="90vw" height="90vh">
                     <Content>
-                        <DatasetTransformEditor transformId={transformId} />
-                    </Content>
-                </Dialog>
-            )}
-        </DialogTrigger>
-    );
-};
-
-
-export const AddTransformStepDialog: React.FC<{
-    onAdd: (type: DatasetTransformStep) => void;
-}> = ({ onAdd }) => {
-    const addFilter = (close: () => void) => {
-        onAdd({
-            type: "filter",
-            filters: []
-        });
-        close();
-    };
-
-    const addAggregate = (close: () => void) => {
-        onAdd({
-            type: "aggregate",
-            aggregate: [],
-            groupByColumns: []
-        } as DatasetTransformStep);
-        close();
-    };
-
-    const addCompute = (close: () => void) => {
-        onAdd({
-            type: "compute",
-            url: null
-        } as DatasetTransformStep);
-        close();
-    };
-
-    const addJoin = (close: () => void) => {
-        onAdd({
-            type: "join",
-            otherSourceId: null,
-            joinType: "inner",
-            joinColumnsLeft: [],
-            joinColumnsRight: [],
-            leftPrefix:"",
-            rightPrefix:""
-        } as DatasetTransformStep);
-        close();
-    };
-
-    return (
-        <DialogTrigger isDismissable type="popover">
-            <ActionButton isQuiet>Add Transform step</ActionButton>
-            {(close) => (
-                <Dialog>
-                    <Heading>Step Type</Heading>
-                    <Content>
-                        <DefaultGrid
-                            columns={repeat(2, "1fr")}
-                            columnGap={"size-150"}
-                            rowGap={"size-150"}
-                            autoRows="fit-content"
-                            marginBottom="size-200"
-                        >
-                            <ActionButton onPress={() => addFilter(close)}>
-                                <Filter />
-                                Filter
-                            </ActionButton>
-                            <ActionButton onPress={() => addAggregate(close)}>
-                                <AggregateIcon />
-                                Aggregate
-                            </ActionButton>
-                            <ActionButton onPress={() => addCompute(close)}>
-                                <Compute />
-                                Compute
-                            </ActionButton>
-                            <ActionButton onPress={() => addJoin(close)}>
-                                <Join />
-                                Join
-                            </ActionButton>
-                        </DefaultGrid>
+                        <DatasetTransformEditor
+                            state={state}
+                            transformId={transformId}
+                        />
                     </Content>
                 </Dialog>
             )}
@@ -159,242 +87,12 @@ export interface TransformStepProps {
     datasetId: string;
 }
 
-export const FilterStepEditor: React.FC<{
-    filterStep: FilterStep;
-    onChange: (update: Partial<FilterStep>) => void;
-    datasetId: string;
-}> = ({ filterStep, onChange, datasetId }) => {
-    return (
-        <Flex direction="column">
-            <FilterEditor
-                datasetName={datasetId}
-                filters={filterStep.filters}
-                onUpdateFilters={(update) => {
-                    console.log("update is ", update);
-                    onChange({ filters: update });
-                }}
-            />
-        </Flex>
-    );
-};
-
-export const JoinStepEditor: React.FC<{
-    joinStep: JoinStep;
-    onChange: (update: Partial<JoinStep>) => void;
-    datasetId: string;
-}> = ({ joinStep, onChange, datasetId }) => {
-
-    return (
-        <Flex direction="row" gap={"size-300"}>
-            <Flex direction="column">
-                <DatasetSelector
-                    label="Dataset to join with"
-                    labelPosition="top"
-                    selectedDataset={joinStep.otherSourceId}
-                    onDatasetSelected={(dataset) =>
-                        onChange({ otherSourceId: dataset })
-                    }
-                />
-                <Picker
-                    label="Join Type"
-                    onSelectionChange={(joinType) => onChange({ joinType })}
-                    selectedKey={joinStep.joinType}
-                    items={[
-                        { id: "left", name: "Left" },
-                        { id: "inner", name: "Inner" },
-                        { id: "right", name: "Right" },
-                        { id: "outer", name: "Outer" }
-                    ]}
-                >
-                    {(item) => <Item key={item.id}>{item.name}</Item>}
-                </Picker>
-                <TextField label="Left Prefix" value={joinStep.leftPrefix} onChange={(leftPrefix)=> onChange({leftPrefix})} />
-                <TextField label="Left Prefix" value={joinStep.rightPrefix} onChange={(rightPrefix)=> onChange({rightPrefix})} />
-            </Flex>
-            <Divider orientation="vertical" size="S" />
-            <Flex direction="column" flex={1} gap="size-200">
-                {joinStep.joinColumnsLeft.map(
-                    (leftCol: string, index: number) => (
-                        <Flex
-                            key={index}
-                            direction="row"
-                            alignItems="end"
-                            gap="size-300"
-                            width="100%"
-                        >
-                            <DatasetColumnSelector
-                                label="Left Join Column"
-                                labelPosition="side"
-                                datasetName={joinStep.otherSourceId}
-                                selectedColumn={
-                                    joinStep.joinColumnsLeft
-                                        ? joinStep.joinColumnsLeft[index]
-                                        : null
-                                }
-                                onColumnSelected={(column) => {
-                                    onChange({
-                                        joinColumnsLeft:
-                                            joinStep.joinColumnsLeft.map(
-                                                (jc, i) =>
-                                                    i === index ? column.name : jc
-                                            )
-                                    });
-                                }}
-                            />
-                            <DatasetColumnSelector
-                                label="Right Join Column"
-                                labelPosition="side"
-                                datasetName={joinStep.otherSourceId}
-                                selectedColumn={
-                                    joinStep.joinColumnsRight
-                                        ? joinStep.joinColumnsRight[index]
-                                        : null
-                                }
-                                onColumnSelected={(column) => {
-                                    onChange({
-                                        joinColumnsRight:
-                                            joinStep.joinColumnsRight.map(
-                                                (jc, i) =>
-                                                    i === index ? column.name : jc
-                                            )
-                                    });
-                                }}
-                            />
-                            <ActionButton
-                                onPress={() =>
-                                    onChange({
-                                        joinColumnsLeft:
-                                            joinStep.joinColumnsLeft.filter(
-                                                (_, i: number) => i !== index
-                                            ),
-                                        joinColumnsRight:
-                                            joinStep.joinColumnsRight.filter(
-                                                (_, i: number) => i !== index
-                                            )
-                                    })
-                                }
-                            >
-                                {" "}
-                                <Delete />{" "}
-                            </ActionButton>
-                        </Flex>
-                    )
-                )}
-                <ActionButton
-                    isQuiet
-                    onPress={() =>
-                        onChange({
-                            joinColumnsLeft: [
-                                ...joinStep.joinColumnsLeft,
-                                null
-                            ],
-                            joinColumnsRight: [
-                                ...joinStep.joinColumnsRight,
-                                null
-                            ]
-                        })
-                    }
-                >
-                    Add another column to join on
-                </ActionButton>
-            </Flex>
-        </Flex>
-    );
-};
-
-export const AggregateStepEditor: React.FC<{
-    step: AggregateStep;
-    datasetId: string;
-    onChange: (update: Partial<AggregateStep>) => void;
-}> = ({ step, datasetId, onChange }) => {
-    const updateAggregate = (
-        index: number,
-        update: Partial<AggregationSummary>
-    ) => {
-        const newAggregate = step.aggregate.map(
-            (a: AggregationSummary, i: number) =>
-                i === index ? { ...a, ...update } : a
-        );
-        onChange({ aggregate: newAggregate });
-    };
-
-    return (
-        <Flex direction="row" gap="size-200">
-            <DatasetColumnSelectorMulti
-                label="Columns to group by"
-                datasetName={datasetId}
-                selectedColumns={step.groupByColumns}
-                onColumnsSelected={(groupByColumns) =>
-                    onChange({ groupByColumns })
-                }
-            />
-            <Divider orientation="vertical" size="S" />
-            <Flex direction="column" gap="size-200">
-                {step.aggregate.map(
-                    (agg: AggregationSummary, index: number) => (
-                        <Flex direction="row" gap="size-200">
-                            <DatasetColumnSelector
-                                datasetName={datasetId}
-                                selectedColumn={agg.column}
-                                onColumnSelected={(column) =>
-                                    updateAggregate(index, { column : column.name })
-                                }
-                            />
-                            <Picker
-                                label="Aggregation Type"
-                                labelPosition="side"
-                                items={[
-                                    { id: "min", label: "Min" },
-                                    { id: "max", label: "Max" },
-                                    { id: "mean", label: "Mean" },
-                                    { id: "sum", label: "Sum" },
-                                    { id: "median", label: "Median" }
-                                ]}
-                                onSelectionChange={(aggType) =>
-                                    updateAggregate(index, { aggType })
-                                }
-                                selectedKey={agg.aggType}
-                            >
-                                {(item) => (
-                                    <Item key={item.id}>{item.label}</Item>
-                                )}
-                            </Picker>
-                            <TextField
-                                labelPosition="side"
-                                label="Rename result"
-                                value={agg.rename}
-                                onChange={(rename) =>
-                                    updateAggregate(index, { rename })
-                                }
-                            />
-                        </Flex>
-                    )
-                )}
-                <ActionButton
-                    onPress={() =>
-                        onChange({
-                            aggregate: [
-                                ...step.aggregate,
-                                { column: null, aggType: "sum", rename: null }
-                            ]
-                        })
-                    }
-                    isQuiet
-                >
-                    Add Aggregate
-                </ActionButton>
-            </Flex>
-        </Flex>
-    );
-};
-
 export const TransformStep: React.FC<TransformStepProps> = ({
     step,
     datasetId,
     onChange,
     onRemove
 }) => {
-
     const updateStep = (update: Partial<DatasetTransformStep>) => {
         onChange({ ...step, ...update });
     };
@@ -441,12 +139,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
         addStep
     } = useDatasetTransform(transformId);
 
-    const transformResult = useTransform(datasetTransform)
-
-    const dataRequest = useRequestData({
-        datasetName: datasetTransform.sourceId,
-        filters: []
-    });
+    const transformResult = useTransform(datasetTransform);
 
     return (
         <Flex direction="column" gap={"size-300"} width="100%" height="100%">
@@ -514,13 +207,16 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
             </Flex>
             <Divider size="S" />
             <Flex direction="column">
-              {transformResult && transformResult.state=="Loading" && 
-                <LoadingSpinner />
-              }
+                {transformResult && transformResult.state == "Loading" && (
+                    <LoadingSpinner />
+                )}
 
-              {transformResult && transformResult.state=="Error" &&
-                <Text>Failed to run transform {JSON.stringify(transformResult.error)}</Text>
-              }
+                {transformResult && transformResult.state == "Error" && (
+                    <Text>
+                        Failed to run transform{" "}
+                        {JSON.stringify(transformResult.error)}
+                    </Text>
+                )}
                 {transformResult && transformResult.state === "Done" && (
                     <DataTable data={transformResult.result} />
                 )}

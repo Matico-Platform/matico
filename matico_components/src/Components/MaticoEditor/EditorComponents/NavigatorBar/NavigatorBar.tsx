@@ -9,7 +9,6 @@ import {
 import React, { useState } from "react";
 import { NavigatorBarProps } from "./types";
 import Breakdown from "@spectrum-icons/workflow/Breakdown";
-import Curate from "@spectrum-icons/workflow/Curate";
 import Data from "@spectrum-icons/workflow/Data";
 import Channel from "@spectrum-icons/workflow/Channel";
 import Alert from "@spectrum-icons/workflow/Alert";
@@ -20,7 +19,6 @@ import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
 import {useErrors} from "Hooks/useErrors";
 import {ErrorPanel} from "../ErrorPanel/ErrorPanel";
-import {DatasetTransfromPane} from "../DatasetTransformPane/DatasetTransformPane";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -49,9 +47,6 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                         </Item>
                         <Item key="datasets">
                             <Data size="L" />
-                        </Item>
-                        <Item key="datasetTransforms">
-                            <Curate size="L" />
                         </Item>
                         <Item key="state">
                             <Channel size="L" />
@@ -106,9 +101,6 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                     </Item>
                                     <Item key="state">
                                         <MaticoStateViewer />
-                                    </Item>
-                                    <Item key="datasetTransforms">
-                                      <DatasetTransfromPane />
                                     </Item>
                                     <Item key="errors">
                                       <ErrorPanel />

@@ -46,7 +46,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
 
     return (
         <DialogTrigger isDismissable>
-            <ActionButton width="100%">{children}</ActionButton>
+            <ActionButton isQuiet={true} width="100%">{children}</ActionButton>
 
             <Dialog width="80vw">
                 <Heading>{dataset.name}</Heading>
