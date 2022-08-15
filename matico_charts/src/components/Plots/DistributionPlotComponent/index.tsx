@@ -94,7 +94,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
 
     // Slapped on the any types for now
     const handleMouseOver = (event: any, datum: any) => {
-        const coords = localPoint(event.target.ownerSVGElement, event); // event.target.ownerSVGElement refers to the SVGElement that the cursor is over
+        const coords = localPoint(event); // event.target.ownerSVGElement refers to the SVGElement that the cursor is over
         showTooltip({
             tooltipLeft: coords?.x,
             tooltipTop: coords?.y,
@@ -172,79 +172,19 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                             outliers={outliers(d)}
                             horizontal={horizontal}
                             minProps={{
-                                    onMouseMove: (event) => {
-                                        const coords = localPoint(event);
-                                        showTooltip({
-                                            tooltipLeft: coords?.x,
-                                            tooltipTop: coords?.y,
-                                            // tooltipTop: horizontal
-                                            //     //@ts-ignore                                   
-                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
-                                            //     //@ts-ignore
-                                            //     : (boxExtentScale(min(d))) - 50, // - (boxWidth / 2)
-                                            // tooltipLeft: horizontal 
-                                            //     //@ts-ignore
-                                            //     ? (boxExtentScale(min(d))) - boxWidth
-                                            //     //@ts-ignore
-                                            //     : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                min: min(d),
-                                                name: x(d),
-                                            },
-                                        })
-                                    },
+                                    onMouseMove: (event) => {handleMouseOver(event, {min: min(d), name: x(d)})},
                                     onMouseLeave: () => {
                                         hideTooltip();
                                     },
                              }}
                             maxProps={{
-                                    onMouseMove: (event) => {
-                                        const coords = localPoint(event);
-                                        showTooltip({
-                                            tooltipLeft: coords?.x,
-                                            tooltipTop: coords?.y,
-                                            // tooltipTop: horizontal
-                                            //     //@ts-ignore
-                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
-                                            //     //@ts-ignore
-                                            //     : (boxExtentScale(max(d))) - 50, // - (boxWidth / 2)
-                                            // tooltipLeft: horizontal 
-                                            //     //@ts-ignore
-                                            //     ? (boxExtentScale(max(d)))! // - boxWidth
-                                            //     //@ts-ignore
-                                            //     : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                max: max(d),
-                                                name: x(d),
-                                            }
-                                        })
-                                    },
+                                    onMouseMove: (event) => {handleMouseOver(event, {max: max(d), name: x(d)})},
                                     onMouseLeave: () => {
                                         hideTooltip();
                                     },
                             }}
                             boxProps={{
-                                    onMouseMove: (event) => {
-                                        const coords = localPoint(event);
-                                        showTooltip({
-                                            tooltipLeft: coords?.x,
-                                            tooltipTop: coords?.y,
-                                            // tooltipTop: horizontal
-                                            //     //@ts-ignore
-                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
-                                            //     //@ts-ignore
-                                            //     : (boxExtentScale(thirdQuartile(d))) -50,// - (boxWidth)
-                                            // tooltipLeft: horizontal 
-                                            //     //@ts-ignore
-                                            //     ? (boxExtentScale(thirdQuartile(d))) - (boxWidth)
-                                            //     //@ts-ignore
-                                            //     : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                ...d.boxPlot,
-                                                name: x(d),
-                                            }
-                                        })
-                                    },
+                                    onMouseMove: (event) => {handleMouseOver(event, {...d.boxPlot, name: x(d)})},
                                     onMouseLeave: () => {
                                         hideTooltip();
                                     },
@@ -253,27 +193,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                     style: {
                                         stroke: sanitizeColor(boxPlotStroke),
                                     },
-                                    onMouseMove: (event) => {
-                                        const coords = localPoint(event);
-                                        showTooltip({
-                                            tooltipLeft: coords?.x,
-                                            tooltipTop: coords?.y,
-                                            // tooltipTop: horizontal
-                                            //     //@ts-ignore
-                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
-                                            //     //@ts-ignore
-                                            //     : (boxExtentScale(median(d))) - 50,// - (boxWidth / 2)
-                                            // tooltipLeft: horizontal 
-                                            //     //@ts-ignore
-                                            //     ? (boxExtentScale(median(d))) - boxWidth
-                                            //     //@ts-ignore
-                                            //     : spacingScale(x(d))! + (boxWidth / 2),
-                                            tooltipData: {
-                                                median: median(d),
-                                                name: x(d),
-                                            }
-                                        })
-                                    },
+                                    onMouseMove: (event) => {handleMouseOver(event, {median: median(d), name: x(d)})},
                                     onMouseLeave: () => {
                                         hideTooltip();
                                     },
