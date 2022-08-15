@@ -1,12 +1,12 @@
 import React from "react";
-import { PaneEditor } from "./PaneEditor";
+import { PaneEditor } from "Components/MaticoEditor/Panes/PaneEditor";
 import ReactMde from "react-mde";
 import { View, Flex, Well, Text, Heading, TextField } from "@adobe/react-spectrum";
 import "react-mde/lib/styles/css/react-mde-all.css";
-import { RemovePaneDialog } from "../Utils/RemovePaneDialog";
+import { RemovePaneDialog } from "Components/MaticoEditor//Utils/RemovePaneDialog";
 import { PaneRef } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
-import {CollapsibleSection} from "../EditorComponents/CollapsibleSection";
+import {CollapsibleSection} from "Components/MaticoEditor/EditorComponents/CollapsibleSection";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
