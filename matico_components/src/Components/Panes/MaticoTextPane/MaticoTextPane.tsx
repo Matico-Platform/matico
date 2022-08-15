@@ -5,6 +5,7 @@ import {
     EditorComposer,
     Editor,
 } from "verbum";
+import styled from "styled-components";
 export interface MaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
     handleContent?: (content: string) => void;
@@ -12,6 +13,17 @@ export interface MaticoTextPaneInterface extends MaticoPaneInterface {
     children?: React.ReactNode;
 }
 
+const TextPaneContainer = styled.section<{isReadOnly?:boolean}>`
+    height: 100%;
+    div.editor-shell {
+        margin:0;
+        /* margin:${({isReadOnly}) => isReadOnly ? "0" : "20px auto"}; */
+    }
+    div.editor-shell, div.editor-container {
+        height: 100%;
+        border-radius: 0;
+    }
+`
 
 export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
     content,
@@ -28,7 +40,9 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
             height="100%"
             backgroundColor={isReadOnly ? "transparent" : "default"}
         >
-            <Content>
+            <TextPaneContainer
+                isReadOnly={isReadOnly}
+            >
                 <EditorComposer>
                     <Editor
                         hashtagsEnabled={true}
@@ -39,7 +53,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
                         {children}
                     </Editor>
                 </EditorComposer>
-            </Content>
+            </TextPaneContainer>
         </View>
     );
 };
