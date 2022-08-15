@@ -9,7 +9,6 @@
   "private": true,
   "workspaces": [
     "./matico_spec",
-    "./matico_buffer_analysis/pkg",
     "./matico_components",
     "./matico_types",
     "./matico_admin",
