@@ -53,7 +53,7 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
 }) => {
     const { datasetTransform } = useDatasetTransform(transformId);
     return (
-        <DialogTrigger  isDismissable>
+        <DialogTrigger isDismissable>
             <ActionButton isQuiet>
                 <Flex
                     direction="row"
@@ -73,6 +73,7 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
                             state={state}
                             transformId={transformId}
                         />
+
                     </Content>
                 </Dialog>
             )}
@@ -169,7 +170,19 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                 </Flex>
                 <Divider orientation="vertical" size="S" />
                 <Flex flex={1} direction="column">
-                    <Heading>Transform Steps</Heading>
+                    <Heading>
+                        <Flex
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <Text>Transform Steps</Text>
+
+                            <AddTransformStepDialog
+                                onAdd={(newStep) => addStep(newStep)}
+                            />
+                        </Flex>
+                    </Heading>
                     <View overflow={{ y: "auto" }}>
                         {datasetTransform.steps.map(
                             (step: DatasetTransformStep) => (
@@ -200,9 +213,6 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                             )
                         )}
                     </View>
-                    <AddTransformStepDialog
-                        onAdd={(newStep) => addStep(newStep)}
-                    />
                 </Flex>
             </Flex>
             <Divider size="S" />
