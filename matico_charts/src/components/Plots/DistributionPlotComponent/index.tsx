@@ -69,7 +69,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
     const [tooltipShouldDetectBounds, setTooltipShouldDetectBounds] = useState(true);
     const [renderTooltipInPortal, setRenderTooltipInPortal] = useState(true);
 
-    const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal({
+    const { containerBounds, TooltipInPortal } = useTooltipInPortal({ // removed containerRef for now
         scroll: true,
         detectBounds: tooltipShouldDetectBounds
     })
@@ -94,7 +94,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
 
     // Slapped on the any types for now
     const handleMouseOver = (event: any, datum: any) => {
-        const coords = localPoint(event);
+        const coords = localPoint(event.target.ownerSVGElement, event); // event.target.ownerSVGElement refers to the SVGElement that the cursor is over
         showTooltip({
             tooltipLeft: coords?.x,
             tooltipTop: coords?.y,
@@ -135,7 +135,8 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
 
     return (
         <>
-        <svg ref={containerRef} width={xMax} height={yMax}>
+        {/* Removed containerRef for now */}
+        <svg width={xMax} height={yMax}>
             <Group top={0} pointerEvents="all">
                 {data.map((d: BoxPlotStats, i) => (
                     <g key={i}>
@@ -189,7 +190,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                             tooltipData: {
                                                 min: min(d),
                                                 name: x(d),
-                                            }
+                                            },
                                         })
                                     },
                                     onMouseLeave: () => {
@@ -287,7 +288,8 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     key={Math.random()} // apparently necessary for tooltip
                     top={tooltipTop} 
                     left={tooltipLeft} 
-                    style={{ ...defaultTooltipStyles, backgroundColor: '#283238', color: 'white' }}
+                    style={{ ...defaultTooltipStyles, backgroundColor: '#283238', color: 'white', fontFamily: "sans-serif" }}
+                    offsetTop={80}
                 >
                     <div>
                         <strong>{tooltipData?.name}</strong>
