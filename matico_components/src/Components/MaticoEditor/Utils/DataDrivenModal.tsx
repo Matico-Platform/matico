@@ -238,6 +238,15 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         filters: filters
     });
 
+   const histogram = useRequestColumnStat({
+        datasetName: dataset.name,
+        column: column.name,
+        metric: "histogram",
+        parameters: { bins: 20 },
+        filters: filters
+    });
+
+
     useEffect(() => {
         if (metric.type === "quantile" && quantiles && quantiles.state === "Done") {
             setDomainValues(quantiles.result);
