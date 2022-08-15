@@ -1,9 +1,11 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { Group } from '@visx/group';
 import { ViolinPlot, BoxPlot } from '@visx/stats';
 import { useTooltip, useTooltipInPortal, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
 import { DistributionSpec, PlotLayersProperties, BoxPlotStats } from "../../types";
 import { sanitizeColor } from '../../../Utils';
+import { localPoint } from '@visx/event'
 //import { Stats } from '@visx/mock-data/lib/generators/genStats';
 
 // function formatColor (color:ColorOutput) {
@@ -59,13 +61,38 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
       ...props,
       ...props.layer,
     };
-    // Taken from the visx stacked barchart demo
-    const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } =
+
+    // Setup for tooltip is taken from the visx pointer tooltip example
+    // We set boundary detection to true and rendering in portal to false
+    // Need to see if the tooltip will cover the box or hide under it when
+    // we turn renderTooltipInPortal to true
+    const [tooltipShouldDetectBounds, setTooltipShouldDetectBounds] = useState(true);
+    const [renderTooltipInPortal, setRenderTooltipInPortal] = useState(false);
+
+    const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal({
+        scroll: true,
+        detectBounds: tooltipShouldDetectBounds
+    })
+
+    const { 
+        tooltipOpen, 
+        tooltipLeft, 
+        tooltipTop, 
+        tooltipData, 
+        hideTooltip, 
+        showTooltip } =
     useTooltip<TooltipData>();
+
+    // Slapped on the any types for now
+    const handleMouseOver = (event: any, datum: any) => {
+        const coords = localPoint(event);
+        showTooltip({
+            tooltipLeft: coords?.x,
+            tooltipTop: coords?.y,
+            tooltipData: datum
+        })
+    }
     
-    const { containerRef, TooltipInPortal} = useTooltipInPortal({
-        scroll: true
-    });
 
     // Computing the min/max of the data
     // const values = data.reduce((allValues, { boxPlot }) => {
@@ -135,18 +162,21 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                             outliers={outliers(d)}
                             horizontal={horizontal}
                             minProps={{
-                                    onMouseMove: () => {
+                                    onMouseMove: (event) => {
+                                        const coords = localPoint(event);
                                         showTooltip({
-                                            tooltipTop: horizontal
-                                                //@ts-ignore                                   
-                                                ? spacingScale(x(d))! + (boxWidth / 4)
-                                                //@ts-ignore
-                                                : (boxExtentScale(min(d))) - 50, // - (boxWidth / 2)
-                                            tooltipLeft: horizontal 
-                                                //@ts-ignore
-                                                ? (boxExtentScale(min(d))) - boxWidth
-                                                //@ts-ignore
-                                                : spacingScale(x(d))! + (boxWidth / 2),
+                                            tooltipLeft: coords?.x,
+                                            tooltipTop: coords?.y,
+                                            // tooltipTop: horizontal
+                                            //     //@ts-ignore                                   
+                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
+                                            //     //@ts-ignore
+                                            //     : (boxExtentScale(min(d))) - 50, // - (boxWidth / 2)
+                                            // tooltipLeft: horizontal 
+                                            //     //@ts-ignore
+                                            //     ? (boxExtentScale(min(d))) - boxWidth
+                                            //     //@ts-ignore
+                                            //     : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 min: min(d),
                                                 name: x(d),
@@ -158,18 +188,21 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                     },
                              }}
                             maxProps={{
-                                    onMouseMove: () => {
+                                    onMouseMove: (event) => {
+                                        const coords = localPoint(event);
                                         showTooltip({
-                                            tooltipTop: horizontal
-                                                //@ts-ignore
-                                                ? spacingScale(x(d))! + (boxWidth / 4)
-                                                //@ts-ignore
-                                                : (boxExtentScale(max(d))) - 50, // - (boxWidth / 2)
-                                            tooltipLeft: horizontal 
-                                                //@ts-ignore
-                                                ? (boxExtentScale(max(d))) - boxWidth
-                                                //@ts-ignore
-                                                : spacingScale(x(d))! + (boxWidth / 2),
+                                            tooltipLeft: coords?.x,
+                                            tooltipTop: coords?.y,
+                                            // tooltipTop: horizontal
+                                            //     //@ts-ignore
+                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
+                                            //     //@ts-ignore
+                                            //     : (boxExtentScale(max(d))) - 50, // - (boxWidth / 2)
+                                            // tooltipLeft: horizontal 
+                                            //     //@ts-ignore
+                                            //     ? (boxExtentScale(max(d)))! // - boxWidth
+                                            //     //@ts-ignore
+                                            //     : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 max: max(d),
                                                 name: x(d),
@@ -181,18 +214,21 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                     },
                             }}
                             boxProps={{
-                                    onMouseMove: () => {
+                                    onMouseMove: (event) => {
+                                        const coords = localPoint(event);
                                         showTooltip({
-                                            tooltipTop: horizontal
-                                                //@ts-ignore
-                                                ? spacingScale(x(d))! + (boxWidth / 4)
-                                                //@ts-ignore
-                                                : (boxExtentScale(thirdQuartile(d))) -50,// - (boxWidth)
-                                            tooltipLeft: horizontal 
-                                                //@ts-ignore
-                                                ? (boxExtentScale(thirdQuartile(d))) - (boxWidth)
-                                                //@ts-ignore
-                                                : spacingScale(x(d))! + (boxWidth / 2),
+                                            tooltipLeft: coords?.x,
+                                            tooltipTop: coords?.y,
+                                            // tooltipTop: horizontal
+                                            //     //@ts-ignore
+                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
+                                            //     //@ts-ignore
+                                            //     : (boxExtentScale(thirdQuartile(d))) -50,// - (boxWidth)
+                                            // tooltipLeft: horizontal 
+                                            //     //@ts-ignore
+                                            //     ? (boxExtentScale(thirdQuartile(d))) - (boxWidth)
+                                            //     //@ts-ignore
+                                            //     : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 ...d.boxPlot,
                                                 name: x(d),
@@ -207,18 +243,21 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                                     style: {
                                         stroke: sanitizeColor(boxPlotStroke),
                                     },
-                                    onMouseMove: () => {
+                                    onMouseMove: (event) => {
+                                        const coords = localPoint(event);
                                         showTooltip({
-                                            tooltipTop: horizontal
-                                                //@ts-ignore
-                                                ? spacingScale(x(d))! + (boxWidth / 4)
-                                                //@ts-ignore
-                                                : (boxExtentScale(median(d))) - 50,// - (boxWidth / 2)
-                                            tooltipLeft: horizontal 
-                                                //@ts-ignore
-                                                ? (boxExtentScale(median(d))) - boxWidth
-                                                //@ts-ignore
-                                                : spacingScale(x(d))! + (boxWidth / 2),
+                                            tooltipLeft: coords?.x,
+                                            tooltipTop: coords?.y,
+                                            // tooltipTop: horizontal
+                                            //     //@ts-ignore
+                                            //     ? spacingScale(x(d))! + (boxWidth / 4)
+                                            //     //@ts-ignore
+                                            //     : (boxExtentScale(median(d))) - 50,// - (boxWidth / 2)
+                                            // tooltipLeft: horizontal 
+                                            //     //@ts-ignore
+                                            //     ? (boxExtentScale(median(d))) - boxWidth
+                                            //     //@ts-ignore
+                                            //     : spacingScale(x(d))! + (boxWidth / 2),
                                             tooltipData: {
                                                 median: median(d),
                                                 name: x(d),
