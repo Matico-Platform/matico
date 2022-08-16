@@ -200,50 +200,6 @@ const EditorForFilter: React.FC<{
     return <Text>Failed to get filter type</Text>;
 };
 
-const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
-    onSubmit
-}) => {
-    return (
-        <DialogTrigger isDismissable type="popover">
-            <ActionButton>Add Filter</ActionButton>
-            {(close) => (
-                <Dialog>
-                    <Content>
-                        <Flex direction="column">
-                            <ActionButton
-                                onPress={() => {
-                                    onSubmit({
-                                        Range: {
-                                            variable: null,
-                                            min: 0,
-                                            max: 100
-                                        }
-                                    });
-                                    close();
-                                }}
-                            >
-                                Range
-                            </ActionButton>
-                            <ActionButton
-                                onPress={() => {
-                                    onSubmit({
-                                        Category: {
-                                            variable: null,
-                                            is_one_of: []
-                                        }
-                                    });
-                                    close();
-                                }}
-                            >
-                                Category
-                            </ActionButton>
-                        </Flex>
-                    </Content>
-                </Dialog>
-            )}
-        </DialogTrigger>
-    );
-};
 
 interface FilterBlockProps {
     filters: Array<Filter>;
@@ -299,7 +255,6 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
     return (
           <Flex direction="column">
               <FilterBlock {...{ columns, filters, updateFilter }} />
-              <FilterTypeDialog onSubmit={addFilter} />
           </Flex>
     );
 };
