@@ -63,9 +63,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
     };
 
     // Setup for tooltip is taken from the visx pointer tooltip example
-    // We set boundary detection to true and rendering in portal to false
-    // Need to see if the tooltip will cover the box or hide under it when
-    // we turn renderTooltipInPortal to true
+    // Set both boundary detection and in portal to be true
     const [tooltipShouldDetectBounds, setTooltipShouldDetectBounds] = useState(true);
     const [renderTooltipInPortal, setRenderTooltipInPortal] = useState(true);
 
@@ -88,13 +86,10 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
     : tooltipShouldDetectBounds
     ? TooltipWithBounds
     : Tooltip;
-    // If renderTooltipInPortal is true, then TooltipComponent is assigned TooltipInPortal
-    // If instead false, then we check tooltipShouldDetectBounds 
-
 
     // Slapped on the any types for now
     const handleMouseOver = (event: any, datum: any) => {
-        const coords = localPoint(event); // event.target.ownerSVGElement refers to the SVGElement that the cursor is over
+        const coords = localPoint(event);
         showTooltip({
             tooltipLeft: coords?.x,
             tooltipTop: coords?.y,
@@ -172,31 +167,31 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                             outliers={outliers(d)}
                             horizontal={horizontal}
                             minProps={{
-                                    onMouseMove: (event) => {handleMouseOver(event, {min: min(d), name: x(d)})},
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                onMouseMove: (event) => {handleMouseOver(event, {min: min(d), name: x(d)})},
+                                onMouseLeave: () => {
+                                    hideTooltip();
+                                },
                              }}
                             maxProps={{
-                                    onMouseMove: (event) => {handleMouseOver(event, {max: max(d), name: x(d)})},
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                onMouseMove: (event) => {handleMouseOver(event, {max: max(d), name: x(d)})},
+                                onMouseLeave: () => {
+                                    hideTooltip();
+                                },
                             }}
                             boxProps={{
-                                    onMouseMove: (event) => {handleMouseOver(event, {...d.boxPlot, name: x(d)})},
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                onMouseMove: (event) => {handleMouseOver(event, {...d.boxPlot, name: x(d)})},
+                                onMouseLeave: () => {
+                                    hideTooltip();
+                                },
                             }}
                             medianProps={{
-                                    style: {
-                                        stroke: sanitizeColor(boxPlotStroke),
-                                    },
-                                    onMouseMove: (event) => {handleMouseOver(event, {median: median(d), name: x(d)})},
-                                    onMouseLeave: () => {
-                                        hideTooltip();
-                                    },
+                                style: {
+                                    stroke: sanitizeColor(boxPlotStroke),
+                                },
+                                onMouseMove: (event) => {handleMouseOver(event, {median: median(d), name: x(d)})},
+                                onMouseLeave: () => {
+                                    hideTooltip();
+                                },
                                 }}
                             /> : null}
                         </g>
@@ -205,7 +200,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
             </svg>
             {tooltipOpen && tooltipData && (
                 <TooltipComponent
-                    key={Math.random()} // apparently necessary for tooltip
+                    key={Math.random()}
                     top={tooltipTop} 
                     left={tooltipLeft} 
                     style={{ ...defaultTooltipStyles, backgroundColor: '#283238', color: 'white', fontFamily: "sans-serif" }}
