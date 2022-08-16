@@ -42,7 +42,6 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse){
         return
       }
 
-    
       const user = await prisma.user.findUnique({where:{
         email: session?.user?.email 
       }})
@@ -56,10 +55,12 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse){
 
       console.log("app details are ", JSON.stringify(appDetails,null,2))
       console.log("Templates ", Object.keys(Templates))
+
       if(!Object.keys(Templates).includes(appDetails.template)){
         res.status(401).json({"error": "Unknown tempalte type"})
         return
       }
+      console.log(appDetails)
 
       const app = await prisma.app.create({
         data:{
@@ -67,7 +68,7 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse){
           description: appDetails.description as string,
           public :appDetails.public as boolean,
           spec: Templates[appDetails.template],
-          ownerId: user.id
+          owner: {connect: {id: user.id}}
         },
         include:{owner:true}
       })

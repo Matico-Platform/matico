@@ -11,7 +11,7 @@ export const getServerSideProps:GetServerSideProps =async(context)=>{
 
   console.log("session is ", session)
 
-  const user = session?.email ? await prisma.user.findUnique({where:{email:(session.email as string)}}) : null
+  const user = session?.user?.email ? await prisma.user.findUnique({where:{email:(session.user.email as string)}}) : null
 
   const app = await prisma.app.findUnique({
     where:{
@@ -19,6 +19,8 @@ export const getServerSideProps:GetServerSideProps =async(context)=>{
     },
     include:{owner:true}
   }) 
+  console.log("app ", app)
+  console.log("user ", user )
 
   if(!app) return {props:{ app: null, error:"Failed to find app"}}
 
