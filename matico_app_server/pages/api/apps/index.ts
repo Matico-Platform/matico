@@ -35,6 +35,7 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse){
     return
   }
 
+
   if(req.method==='POST'){
       if (!session ) {
         res.status(401).json({"error": "Not Logged In"})

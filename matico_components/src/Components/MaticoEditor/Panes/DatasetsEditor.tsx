@@ -61,11 +61,12 @@ const NewDatasetModal: React.FC<NewDatasetModalProps> = ({
     datasetProviders,
     onSubmit
 }) => {
+    console.log("Dataset providers are ", datasetProviders)
     return (
         <DialogTrigger isDismissable>
             <ActionButton >Add Dataset</ActionButton>
             {(close) => (
-                <Dialog>
+                <Dialog width="70vw">
                     <Content>
                         <Tabs>
                             <TabList>

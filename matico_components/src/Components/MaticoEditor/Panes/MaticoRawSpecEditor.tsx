@@ -45,7 +45,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
         : [];
 
     useEffect(() => {
-        if (validatorReady) {
+        if (validatorReady && validator.App) {
             try {
                 const dash = validator.App.from_json(code);
                 const { is_valid: specValid, errors } = dash.is_valid();

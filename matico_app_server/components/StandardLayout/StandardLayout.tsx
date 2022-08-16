@@ -5,8 +5,8 @@ import {Header} from "../Header/Header";
 export const StandardLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <Grid
-      flex={1}
       width="100vw"
+      height="100vh"
       areas={{
         base: ["header", "nav", "content", "footer"],
         M: [

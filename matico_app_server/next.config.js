@@ -56,10 +56,9 @@ const withTM = require("next-transpile-modules")(
   { resolveSymlinks: false }
 );
 
-
-
-module.exports = withTM( {
+module.exports = withPlugins([withTM, optomizedImages], {
   reactStrictMode: true,
+  webpack5: true,
   typescript: {
     ignoreBuildErrors: true,
   },
