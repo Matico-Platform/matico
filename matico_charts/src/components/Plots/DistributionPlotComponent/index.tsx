@@ -8,15 +8,6 @@ import { sanitizeColor } from '../../../Utils';
 import { localPoint } from '@visx/event'
 //import { Stats } from '@visx/mock-data/lib/generators/genStats';
 
-// function formatColor (color:ColorOutput) {
-//   if (typeof color == "string") {
-//     return color;
-//   } else if (Array.isArray(color)) {
-//     let prefix = color.length === 3 ? "rgb" : "rgba"
-//     return `${prefix}(${color.join(",")})`;
-//   }
-// }
-
 // accessors
 const x = (d: BoxPlotStats) => d.boxPlot.x;
 const min = (d: BoxPlotStats) => d.boxPlot.min;
@@ -96,34 +87,12 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
             tooltipData: datum
         })
     }
-    
-
-    // Computing the min/max of the data
-    // const values = data.reduce((allValues, { boxPlot }) => {
-    //   allValues.push(boxPlot.min, boxPlot.max, Math.min(...boxPlot.outliers), Math.max(...boxPlot.outliers));
-    //   return allValues;
-    // }, [] as number[]);
-    // const minValue = Math.min(...values);
-    // const maxValue = Math.max(...values);
 
     // Determines the boxplot's "top" and "bottom" depending on orientation. Should be a continuous scale.
     const boxExtentScale = horizontal ? xScale : yScale;
-    
-    // scaleLinear<number>({
-    //   range: (horizontal ? [0, xMax] : [yMax, 0]),
-    //   round: true,
-    //   domain: yExtent ? yExtent : [minValue, maxValue]
-    // });
 
     // Scale for spacing out multiple boxplots. Should be of scale type "band"
     const spacingScale = horizontal? yScale : xScale;
-    
-    // scaleBand<string>({
-    //   range: [0, (horizontal ? yMax : xMax)],
-    //   round: true,
-    //   domain: data.map(x),
-    //   padding: 0.25
-    // });
 
     //@ts-ignore
     const boxWidth = spacingScale.bandwidth();
