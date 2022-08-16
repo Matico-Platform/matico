@@ -10,8 +10,12 @@ import { Pane } from "Components/Panes/Pane";
 import { PaneRef } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
 import {MaticoStaticMapPane} from "Components/Panes/MaticoStaticMapPane/MaticoStaticMapPane";
+import { useIsEditable } from "Hooks/useIsEditable";
+// new pane schema
+import { PaneParts } from "Components/Panes/PaneParts";
+import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 
-export const panes: { [paneType: string]: Pane } = {
+export const fallbackPanes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
     staticMap: MaticoStaticMapPane,
     text: MaticoTextPane,
@@ -21,16 +25,23 @@ export const panes: { [paneType: string]: Pane } = {
     controls: MaticoControlsPane,
     container: MaticoContainerPane
 };
+export const panes: { [paneType: string]: PaneParts } = {
+    text: MaticoTextPaneComponents
+}
 
 export const PaneSelector: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
     const paneType = paneRef.type;
-    const {normalizedPane} = usePane(paneRef);
-    const PaneComponent = panes[paneType];
+    const {normalizedPane, updatePane} = usePane(paneRef);
+    const isEdit = useIsEditable();
 
+    const PaneComponent = panes[paneType]?.[isEdit ? 'editablePane' : 'pane']
+        || panes[paneType]?.['pane']
+        || fallbackPanes[paneType];
+ 
 
     if (!PaneComponent || !normalizedPane) return null;
     return (
         //@ts-ignore
-        <PaneComponent key={normalizedPane.id} position={paneRef.position} {...normalizedPane} />
+        <PaneComponent key={normalizedPane.id} position={paneRef.position} {...normalizedPane} updatePane={updatePane} />
     );
 };

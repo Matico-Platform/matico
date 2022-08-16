@@ -8,6 +8,7 @@ import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Border from "@spectrum-icons/workflow/Border";
 import { ContainerPane, Layer, Pane, PanePosition } from "@maticoapp/matico_types/spec";
 import {v4 as uuid} from 'uuid'
+import {MaticoTextPaneComponents as text} from "Components/Panes/MaticoTextPane";
 
 export const IconForPaneType = (PaneType: string) => {
     switch (PaneType) {
@@ -16,7 +17,7 @@ export const IconForPaneType = (PaneType: string) => {
         case "pieChart":
             return <PieChartIcon />;
         case "text":
-            return <TextIcon />;
+            return text.icon;
         case "map":
             return <MapIcon />;
         case "scatterplot":
@@ -166,10 +167,7 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         column: null,
         dataset: { name: "unknown", filters: [] }
     },
-    text: {
-        content: "New Text Pane",
-        name: "Text Pane"
-    },
+    text: text.defaults,
     controls: {
         name: "Controls",
         title: "Controls",
