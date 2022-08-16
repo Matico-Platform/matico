@@ -12,6 +12,7 @@
     "./matico_components",
     "./matico_types",
     "./matico_admin",
+    "./matico_app_server",
     "./matico_charts",
     "./editor"
   ],
