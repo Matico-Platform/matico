@@ -11,5 +11,6 @@ export const MaticoTextPaneComponents: PaneParts = {
     editablePane: EditableMaticoTextPane,
     sidebarPane: TextPaneEditor,
     icon: <TextIcon />,
-    defaults
+    defaults,
+    docs: 'https://www.matico.app/docs/panes/text'
 };

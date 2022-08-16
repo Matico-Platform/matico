@@ -14,16 +14,23 @@ export interface MaticoTextPaneInterface extends MaticoPaneInterface {
 }
 
 const TextPaneContainer = styled.section<{isReadOnly?:boolean}>`
-    height: 100%;
+    min-height: 100%;
+    height: fit-content;
     div.editor-shell {
         margin:0;
-        /* margin:${({isReadOnly}) => isReadOnly ? "0" : "20px auto"}; */
     }
     div.editor-shell, div.editor-container {
-        height: 100%;
+        min-height: 100%;
+        height: fit-content;
         border-radius: 0;
     }
-`
+    .ContentEditable__root {
+        resize: none;
+    }
+    iframe, img, iframe div {
+        max-width: 100%;
+    }
+    `
 
 export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
     content,
@@ -31,7 +38,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
     isReadOnly=true,
     children
 }) => {
-
+    
     return (
         <View
             position="relative"

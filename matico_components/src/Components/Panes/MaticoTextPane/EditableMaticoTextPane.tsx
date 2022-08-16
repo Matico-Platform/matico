@@ -22,7 +22,6 @@ import styled from "styled-components";
 import MoreCircle from "@spectrum-icons/workflow/MoreCircle";
 import { useFormattedText } from "Hooks/useFormattedText";
 import { MaticoTextPane } from "./MaticoTextPane";
-
 export interface EditableMaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
     updatePane: (e: any) => void;
@@ -33,8 +32,31 @@ const ToolbarWrapper = styled.div<{ expanded?: boolean }>`
     div.toolbar {
         flex-wrap: wrap;
         height: ${({ expanded }) => (expanded ? "auto" : "36px")};
+        span.text {
+            display:none;
+        }
     }
 `;
+
+const fontSizeOptions: [string, string][] = [
+    ['10px', '10px'],
+    ['11px', '11px'],
+    ['12px', '12px'],
+    ['13px', '13px'],
+    ['14px', '14px'],
+    ['15px', '15px'],
+    ['16px', '16px'],
+    ['17px', '17px'],
+    ['18px', '18px'],
+    ['19px', '19px'],
+    ['20px', '20px'],
+    ['24px', '24px'],
+    ['28px', '28px'],
+    ['32px', '32px'],
+    ['40px', '40px'],
+    ['48px', '48px'],
+    ['72px', '72px'],
+]
 
 export const EditableMaticoTextPane: React.FC<EditableMaticoTextPaneInterface> = ({
     content,
@@ -73,21 +95,28 @@ export const EditableMaticoTextPane: React.FC<EditableMaticoTextPaneInterface> =
                     <MoreCircle />
                 </ActionButton>
                 <ToolbarPlugin defaultFontSize="20px">
-                    <FontFamilyDropdown />
-                    <FontSizeDropdown />
+                    <FontSizeDropdown fontSizeOptions={fontSizeOptions} />
+                    <AlignDropdown />
+                    <Divider />
+                    <InsertDropdown 
+                        enableEquations
+                        enableHorizontalRule
+                        enableYoutube
+                        enableImage
+                        // enableTwitter
+                         />
                     <Divider />
                     <BoldButton />
                     <ItalicButton />
                     <UnderlineButton />
-                    <CodeFormatButton />
-                    <InsertLinkButton />
+                    <Divider />
                     <TextColorPicker />
                     <BackgroundColorPicker />
                     <TextFormatDropdown />
+                    <FontFamilyDropdown />
                     <Divider />
-                    <InsertDropdown />
-                    <Divider />
-                    <AlignDropdown />
+                    <InsertLinkButton />
+                    <CodeFormatButton />
                 </ToolbarPlugin>
             </ToolbarWrapper>
         </MaticoTextPane>
