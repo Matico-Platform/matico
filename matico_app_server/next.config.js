@@ -51,6 +51,9 @@ const withTM = require("next-transpile-modules")(
     "@spectrum-icons/workflow",
     "@spectrum-icons/illustrations",
     "@maticoapp/matico_components",
+    "verbum",
+    "lexical",
+    "katex",
     "react-mde",
   ],
   { resolveSymlinks: false }
