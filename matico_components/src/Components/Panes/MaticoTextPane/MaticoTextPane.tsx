@@ -14,14 +14,13 @@ export interface MaticoTextPaneInterface extends MaticoPaneInterface {
 }
 
 const TextPaneContainer = styled.section<{isReadOnly?:boolean}>`
-    min-height: 100%;
-    height: fit-content;
+    height: 100%;
     div.editor-shell {
         margin:0;
     }
     div.editor-shell, div.editor-container {
-        min-height: 100%;
-        height: fit-content;
+        height: 100%;
+        overflow-y: auto;
         border-radius: 0;
     }
     .ContentEditable__root {
