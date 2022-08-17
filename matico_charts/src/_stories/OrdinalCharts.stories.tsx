@@ -260,22 +260,47 @@ HorizontalRealDataBoxAndViolin.args = {
   data: SampleDistData5
 }
 
-export const LineComponentExample = Template.bind({});
-LineComponentExample.args = {
-  title: "Line Component Example",
+export const LineComponentDataExample = Template.bind({});
+LineComponentDataExample.args = {
+  title: "Line Component Data Example",
   xAxis: {
-    scaleType: "band",
+    scaleType: "linear",
     position: "bottom"
   },
-  xExtent: SampleLineData.map(d => d.date),
+  yExtent: [
+    Math.min(...SampleLineData.map(x => Math.min(x.value))),
+    Math.max(...SampleLineData.map(x => Math.max(x.value)))
+  ],
   yAxis: {
     scaleType: "linear",
     position: "left"
   },
-  xBounds: [0,0],
-  yBounds: [0,0], // Might not matter for this example
-  xAccessor: (d: any) => d.date,
-  yAccessor: (d: any) => d.value,
+  xCol: "date",             // actually xCol and yCol
+  yCol: "value",
   lineFunction: null, 
+  layers: [{
+    type: "line",
+  }],
   data: SampleLineData,
+}
+
+export const LineComponentFunctionExample = Template.bind({});
+LineComponentFunctionExample.args = {
+  title: "Line Component Function Example",
+  xAxis: {
+    scaleType: "linear",
+    position: "bottom"
+  },
+  yAxis: {
+    scaleType: "linear",
+    position: "left"
+  },
+  xCol: "date",
+  yCol: "value", 
+  layers: [{
+    type: "line",
+    lineFunction: (x) => x**2,
+    xBounds: [1,4],
+  }],
+  data: [],
 }

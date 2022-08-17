@@ -1,7 +1,7 @@
-//@ts-ignore
-import React from 'react';
+import * as React from 'react';
 import { LineSpec } from '../../types';
 import { LinePath } from '@visx/shape';
+import { curveLinear } from '@visx/curve';
 
 export const LineComponent = (props: LineSpec) => {
   const {
@@ -30,11 +30,12 @@ export const LineComponent = (props: LineSpec) => {
 
   if (!chartData) return null;                        // if chartData is null/undefined, then return null
   if (lineFunction) {                                 // if we have a lineFunction, then:
-    return (                                          // 
+    return (                                          // we're probably plotting the graph of some function over an interval?
       <LinePath                                       // 
         stroke={lineColor || 'gray'}
         strokeWidth={lineWidth || 2}
         data={chartData}
+        curve={curveLinear}
         //@ts-ignore
         x={(d) => xScale(d[0])}
         //@ts-ignore
@@ -54,3 +55,7 @@ export const LineComponent = (props: LineSpec) => {
     />
   );
 };
+
+// strokeDashArray -- see how visx handles this 
+// For the data example to work, we need the keys in each of object (inside the array)
+// to be numbers. Might need to expand on this so that they can also be strings. 

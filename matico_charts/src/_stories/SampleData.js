@@ -89,11 +89,11 @@ SampleDistData4[0].boxPlot.x = "Sample Data"
 
 // For LineComponent
 const SampleLineData = [
-    {date: "Jan 1", value: 1},
-    {date: "Jan 2", value: 2},
-    {date: "Jan 3", value: 3},
-    {date: "Jan 4", value: 4},
-    {date: "Jan 5", value: 3},
-    {date: "Jan 6", value: 2},
-    {date: "Jan 7", value: 1}
+    {date: 1, value: 1},
+    {date: 2, value: 2},
+    {date: 3, value: 3},
+    {date: 4, value: 4},
+    {date: 5, value: 3},
+    {date: 6, value: 2},
+    {date: 7, value: 1}
 ]
