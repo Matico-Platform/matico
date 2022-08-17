@@ -11,7 +11,7 @@ const prisma= new PrismaClient()
 export const getServerSideProps:GetServerSideProps =async(context)=>{
   const session = await getSession(context)
 
-  const user = session?.email ? await prisma.user.findUnique({where:{email:(session.email as string)}}) : null
+  const user = session?.user?.email ? await prisma.user.findUnique({where:{email:(session?.user?.email as string)}}) : null
 
   const app = await prisma.app.findUnique({
     where:{

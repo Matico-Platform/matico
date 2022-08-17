@@ -17,16 +17,16 @@ export default async function handler(req,res){
     })
   }
 
-
   if(req.method==="PUT"){
     let query = {}
     let where: any  = {public : true}
   
     const appUpdate = JSON.parse(req.body)
+    const {spec, public : isPublic, name,description } = appUpdate
 
     try{
       const updatedApp = await prisma.app.update({
-        data: {...appUpdate, updatedAt: new Date()},
+        data: { spec, public: isPublic, name,description, updatedAt: new Date()},
         where:{
           id: appId 
         }

@@ -60,11 +60,11 @@ const withTM = require("next-transpile-modules")(
 );
 
 module.exports = withPlugins([withTM, optomizedImages], {
-  reactStrictMode: true,
-  webpack5: true,
+  reactStrictMode: false,
   typescript: {
     ignoreBuildErrors: true,
   },
+  disableStaticImages:true,
    experimental: {
      urlImports: ['http://localhost:8000/'],
   },
