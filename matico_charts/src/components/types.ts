@@ -129,9 +129,9 @@ export interface DistributionSpec extends BaseLayerSpec {
   tooltip?: boolean //TooltipSpec
 }
 
-export interface BoxPlotStats{
+export interface BoxPlotStats {
   boxPlot: BoxPlot;
-  binData: BinData[];
+  binData?: BinData[];
 }
 
 export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec | DistributionSpec;
