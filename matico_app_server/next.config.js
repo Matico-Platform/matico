@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const withPlugins = require("next-compose-plugins");
-const optomizedImages = require("next-optimized-images");
+const optimizedImages = require("next-optimized-images");
 
 const withTM = require("next-transpile-modules")(
   [
@@ -59,15 +59,15 @@ const withTM = require("next-transpile-modules")(
   { resolveSymlinks: false }
 );
 
-module.exports = withPlugins([withTM, optomizedImages], {
+module.exports = withPlugins([withTM, optimizedImages], {
   reactStrictMode: false,
   typescript: {
     ignoreBuildErrors: true,
   },
-  disableStaticImages:true,
-   experimental: {
-     urlImports: ['http://localhost:8000/'],
-  },
+  // disableStaticImages:true,
+  //  experimental: {
+  //    urlImports: ['http://localhost:8000/'],
+  // },
   webpack: (config, options) => {
     config.experiments.asyncWebAssembly = true;
     config.experiments.syncWebAssembly = true;
