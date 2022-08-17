@@ -42,6 +42,8 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
       violinPlotFill = 'white',
       horizontal = false,
       tooltipOn = true,
+      tooltipShouldDetectBounds= true,
+      renderTooltipInPortal= true,
       xScale,
       yScale,
       xExtent,
@@ -52,11 +54,6 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
       ...props,
       ...props.layer,
     };
-
-    // Setup for tooltip is taken from the visx pointer tooltip example
-    // Set both boundary detection and in portal to be true
-    const [tooltipShouldDetectBounds, setTooltipShouldDetectBounds] = useState(true);
-    const [renderTooltipInPortal, setRenderTooltipInPortal] = useState(true);
 
     const { containerBounds, TooltipInPortal } = useTooltipInPortal({ // removed containerRef for now
         scroll: true,

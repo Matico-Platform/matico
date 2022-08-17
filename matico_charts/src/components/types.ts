@@ -126,7 +126,9 @@ export interface DistributionSpec extends BaseLayerSpec {
   violinPlotStroke?: ColorOutput,
   violinPlotFill?: ColorOutput,
   horizontal?: boolean,
-  tooltipOn?: boolean //TooltipSpec
+  tooltipOn?: boolean, //TooltipSpec
+  tooltipShouldDetectBounds?: boolean,
+  renderTooltipInPortal?: boolean,
 }
 
 export interface BoxPlotStats {
