@@ -1,20 +1,22 @@
-import { App } from "@maticoapp/matico_types/spec";
+import useSwr from "swr";
 
-export const updateApp = async (app: any) => {
-  return fetch(`/api/apps/${app.id}`, {
-    method: "PUT",
-    body: JSON.stringify(app),
-  }).then((r) => r.json());
-};
+export interface ApiOptions {
+  initialData?: any;
+  params?: Record<string, any>;
+}
 
-export const createAppFromTemplate = async (template: string) => {
-  return fetch(`/api/apps/`, {
-    method: "POST",
-    body: JSON.stringify({
-      name: "My New App",
-      description: "A new blank app",
-      public: false,
-      template,
-    }),
-  }).then((r) => r.json());
+export const fetcher = async (url: string) => fetch(url).then((r) => r.json());
+
+export const useApi = (apiPath: string | null, options: ApiOptions) => {
+  const { initialData, params } = options;
+  let fullUrl = apiPath;
+  if (params) {
+    const paramString = Object.entries(params)
+      .map(
+        ([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`
+      )
+      .join("&");
+    fullUrl = `${fullUrl}?${paramString}`;
+  }
+  return useSwr(fullUrl, fetcher, { fallbackData: initialData });
 };

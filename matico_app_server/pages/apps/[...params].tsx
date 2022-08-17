@@ -1,21 +1,20 @@
-import {Flex} from "@adobe/react-spectrum";
+import {Flex, View} from "@adobe/react-spectrum";
 import {PrismaClient, App} from "@prisma/client";
 import {GetServerSideProps} from "next";
 import {getSession} from "next-auth/react";
 import dynamic from "next/dynamic";
-import {updateApp} from "../../../utils/api";
+import {userFromSession} from "../../utils/db";
 
-
-const prisma= new PrismaClient()
 
 export const getServerSideProps:GetServerSideProps =async(context)=>{
+  const prisma= new PrismaClient()
   const session = await getSession(context)
-
-  const user = session?.user?.email ? await prisma.user.findUnique({where:{email:(session?.user?.email as string)}}) : null
+  const user = await userFromSession(session, prisma)
+  const params = context.query.params
 
   const app = await prisma.app.findUnique({
     where:{
-      id:context.query.appId as string  
+      id: params? params[0] : undefined 
     },
     include:{owner:true}
   }) 
@@ -37,7 +36,7 @@ interface AppPresentPageProps{
 }
 
 const AppPresentPage : React.FC<AppPresentPageProps>= ({app,error})=>{
-  const MaticoApp = dynamic(
+  const MaticoApp= dynamic(
     () =>
       (import("@maticoapp/matico_components") as any).then(
         (matico: any) => matico.MaticoApp
@@ -45,20 +44,6 @@ const AppPresentPage : React.FC<AppPresentPageProps>= ({app,error})=>{
     { ssr: false }
   );
 
-  const onUpdateApp = (spec: App)=>{
-
-    if(!spec){return }
-
-    const update={
-          ...app,
-          name: spec.name,
-          description: spec.description,
-          spec: spec,
-    }
-
-    updateApp(update)
-    .catch(e=>{console.log("Failed to udpate app", e.error)})
-  }
 
   if(error){
     return(
@@ -69,15 +54,13 @@ const AppPresentPage : React.FC<AppPresentPageProps>= ({app,error})=>{
   }
 
   return(
-    <Flex height="100vh">
+    <Flex width="100vw" height="100vh" >
       {app &&
-        <MaticoApp 
-          onSpecChange={(spec: any) => {
-            onUpdateApp(spec);
-          }}
+        <MaticoApp
           spec={app.spec}
-          basename={`/apps/edit/${app.id}`}
-          editActive={true} />
+          basename={`/apps/${app.id}`}
+          editActive={false}
+        />
       }
     </Flex>
 

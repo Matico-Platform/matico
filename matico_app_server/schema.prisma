@@ -5,6 +5,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 model Account {
@@ -56,8 +57,8 @@ model User {
   updatedAt     DateTime      @updatedAt
   accounts      Account[]
   sessions      Session[]
-  Colaborators  Colaborator[]
-  Apps          App[]
+  apps          App[]
+  colaborations Colaborator[]
   Datasets      Dataset[]
 
   @@map("users")
@@ -73,7 +74,9 @@ model Colaborator {
   view         Boolean
   edit         Boolean
   manage       Boolean
+  apps         App @relation(fields:[resourceId], references: [id])       
   @@map("colaborators")
+  @@unique([userId,resourceId])
 }
 
 model App {
@@ -85,6 +88,9 @@ model App {
   description String
   public      Boolean
   ownerId     String
+  colaborators Colaborator[]
+  noViews     Int @default(0) 
+  noForks     Int @default(0) 
   owner       User     @relation(fields: [ownerId], references: [id])
   @@map("apps")
 }

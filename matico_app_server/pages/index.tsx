@@ -1,117 +1,140 @@
-import type { GetServerSideProps, NextPage } from 'next'
-import {Divider, Flex, Header,Grid, View, ActionButton, Text,Heading} from "@adobe/react-spectrum"
-import {getSession} from 'next-auth/react'
-import {PrismaClient, App, User} from '@prisma/client'
-import {AppCard} from '../components/AppCard/AppCard'
-import {StandardLayout} from '../components/StandardLayout/StandardLayout'
-import {createAppFromTemplate} from '../utils/api'
-import {useRouter} from "next/router"
+import type { GetServerSideProps, NextPage } from "next";
+import {
+  Divider,
+  Flex,
+  Header,
+  Grid,
+  View,
+  ActionButton,
+  Text,
+  Heading,
+  TextField,
+} from "@adobe/react-spectrum";
+import { getSession } from "next-auth/react";
+import { PrismaClient, App, User } from "@prisma/client";
+import { AppCard } from "../components/AppCard/AppCard";
+import { StandardLayout } from "../components/StandardLayout/StandardLayout";
+import { useRouter } from "next/router";
+import { useApps, UseAppsArgs } from "../hooks/useApps";
+import { TemplateSelector } from "../components/TemplateSelector/TemplatesSelector";
+import { userFromSession } from "../utils/db";
+import {useState} from "react";
 
-export const getServerSideProps:GetServerSideProps =async(context)=>{
-  const prisma= new PrismaClient()
-  const session = await getSession(context)
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const prisma = new PrismaClient();
+  const session = await getSession(context);
 
-  const user = session?.email ? await prisma.user.findUnique({where:{email:(session.email as string)}}) : null
+  const user = await userFromSession(session, prisma);
 
   const recentApps = await prisma.app.findMany({
-    where:{
-      public:true,
+    where: {
+      public: true,
     },
-    include:{owner:true},
-    orderBy:{
-      createdAt:"desc"
-    } 
-  }) 
-
-  const userApps = user ? await prisma.app.findMany({
-    where:{
-      public:true,
-      ownerId: user.id
+    include: { owner: true },
+    orderBy: {
+      createdAt: "desc",
     },
-    include:{owner:true},
-    orderBy:{
-      createdAt:"desc"
-    } 
-  }) 
-   : null
+  });
 
+  const userApps = user
+    ? await prisma.app.findMany({
+        where: {
+          ownerId: user.id,
+        },
+        include: { owner: true },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })
+    : null;
 
-  return{
-    props:{
-      recentApps:JSON.parse(JSON.stringify(recentApps)),
-      userApps: JSON.parse(JSON.stringify(userApps)),
-      user: JSON.parse(JSON.stringify(user))
-    }
-  }
-}  
+    console.log("user apps are ", userApps)
 
+  return {
+    props: {
+      initalRecentApps: JSON.parse(JSON.stringify(recentApps)),
+      initalUserApps: JSON.parse(JSON.stringify(userApps)),
+      user: JSON.parse(JSON.stringify(user)),
+    },
+  };
+};
 
-interface HomePageProps{
-  recentApps: Array<App>,
-  user?: User,
-  userApps?: Array<App>
+interface HomePageProps {
+  initalRecentApps: Array<App>;
+  user?: User;
+  initalUserApps?: Array<App>;
 }
 
+const Home: React.FC<HomePageProps> = ({
+  user,
+  initalRecentApps,
+  initalUserApps,
+}) => {
+  const router = useRouter();
+  const [userSearchTerm, setUserSearchTerm] = useState("")
 
+  const { apps: recentApps } = useApps(
+    { public: true, order: "updatedAt" },
+    initalRecentApps
+  );
 
-const Home : React.FC<HomePageProps>  = ({user,recentApps,userApps}) => {
-  const router = useRouter()
-
-  const createNewApp = (template:string)=>{
-    createAppFromTemplate(template).then(
-                           app => router.push(`/apps/edit/${app.id}`) 
-    )
+  let userAppParams: UseAppsArgs={
+     ownerId: user?.id, order: "updatedAt"
   }
-  return(
+
+  if(userSearchTerm.length){
+    userAppParams.search = userSearchTerm
+  }
+
+  const { apps: userApps, createAppFromTemplate } = useApps(
+    userAppParams,
+    initalUserApps
+  );
+
+  console.log("userApps ", userApps, initalUserApps);
+
+  const createNewApp = (template: string) => {
+    createAppFromTemplate(template).then((app) => {
+      router.push(`/apps/edit/${app.id}`);
+    });
+  };
+
+  return (
     <StandardLayout>
-      <Flex gridArea="content">
-        <Flex id='templates' direction='column' gap="size-500" width="100%" >
-          <Heading>Get Started With a Template</Heading>
-          <Grid rows={["1fr","1fr"]} columns={["1fr", "1fr", "1fr"]} columnGap ="size-500" flex={1} maxHeight="450px">
-            <ActionButton width="200px" height="200px" onPress={()=>createNewApp("Blank")}>
-                <View>
-                  <Text>Blank</Text>
-                </View>
-            </ActionButton>
-            <ActionButton width="200px" height="200px" onPress={()=>createNewApp("BigMap")}>
-                <View>
-                  <Text>Big Map</Text>
-                </View>
-            </ActionButton>
-            <ActionButton width="200px" height="200px" onPress={()=>createNewApp("MapWithSideBar")}>
-                <View>
-                  <Text>Map With Sidebar</Text>
-                </View>
-            </ActionButton>
-            <ActionButton width="200px" height="200px" onPress={()=>createNewApp("Scrollytelling")}>
-                <View>
-                  <Text>Scrollytelling</Text>
-                </View>
-            </ActionButton>
-          </Grid>
-          <Divider size="S" />
-        </Flex>
-        {user && userApps && 
-        <Flex id='templates' direction='column'>
-          <Header>Your Apps</Header>
-          <Grid rows={["1fr","1fr"]} columns={["1fr", "1fr", "1fr"]} flex={1}>
-            {userApps.map(userApp=>
-              <AppCard key={userApp.id} app={userApp}/>
-            )}
-          </Grid>
-        </Flex>
-        }
+      <Flex direction="column" gridArea="content">
+        <TemplateSelector onSelectTemplate={createNewApp} />
+        {userApps && (
+          <Flex id="Your Apps" direction="column">
+            <Heading>Your Apps</Heading>
+            <TextField value={userSearchTerm} label="search" onChange={setUserSearchTerm} />
+            <Grid
+              rows={["1fr", "1fr"]}
+              columns={["1fr", "1fr", "1fr"]}
+              flex={1}
+            >
+              {(userApps || initalUserApps).map((userApp: App) => (
+                <AppCard
+                  key={userApp.id}
+                  app={userApp}
+                  includeEdit
+                  includeFork
+                  includeView
+                />
+              ))}
+            </Grid>
+          </Flex>
+        )}
       </Flex>
-      <Flex direction='column' gridArea="toc">
+      <Flex direction="column" gridArea="toc">
         <Header>Recent popular apps</Header>
-        <Flex direction='column' flex={1} >
-          {recentApps.map(app=>
-              <AppCard key={app.id} app={app}/>
-          )}
+        <Flex direction="column" flex={1}>
+          {(recentApps ?? initalRecentApps).map((app: App) => (
+            <AppCard key={app.id} app={app} />
+          ))}
         </Flex>
       </Flex>
     </StandardLayout>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
