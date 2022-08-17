@@ -13,7 +13,8 @@ import {
     addPane,
     addDatasetTransform,
     removeDatasetTransform,
-    updateMetadata
+    updateMetadata,
+    setPaneRefIndex
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import {Theme} from "@maticoapp/matico_types/spec";
@@ -92,6 +93,18 @@ export const useApp = () => {
         );
     };
 
+    const changePaneIndex = (
+        paneRefId: string,
+        newIndex: number
+    ) => {
+        dispatch(
+            setPaneRefIndex({
+                paneRefId,
+                newIndex
+            })
+        )
+    }
+
     return {
         app,
         pages,
@@ -104,6 +117,7 @@ export const useApp = () => {
         updatePage,
         setEditPage,
         reparentPane,
+        changePaneIndex,
         addPane:_addPane,
         updateTheme: _updateTheme,
         addDatasetTransform: _addDatasetTransform,

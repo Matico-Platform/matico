@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
     ActionButton,
     Button,
@@ -24,11 +24,38 @@ import { withRouter, RouteComponentProps } from "react-router-dom";
 import styled from "styled-components";
 import { usePane } from "Hooks/usePane";
 import { useContainer } from "Hooks/useContainer";
-import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
+import {
+    closestCenter,
+    CollisionDetection,
+    DndContext,
+    KeyboardSensor,
+    MeasuringStrategy,
+    MouseSensor,
+    TouchSensor,
+    useDraggable,
+    useDroppable,
+    useSensor,
+    useSensors
+} from "@dnd-kit/core";
+
+import {
+    arrayMove,
+    useSortable,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    SortingStrategy,
+    verticalListSortingStrategy,
+    AnimateLayoutChanges,
+    NewIndexGetter,
+    defaultAnimateLayoutChanges
+} from "@dnd-kit/sortable";
+
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
 import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
 import { IconForPaneType } from "../Utils/PaneDetails";
+import { MultipleContainers } from "../EditorComponents/SortableDraggableList/MultipleContainers";
+import { coordinateGetter } from "../EditorComponents/SortableDraggableList/multipleContainersKeyboardCoordinates";
 
 // function addForContainer(container: ContainerPane, inset: number) {
 //   let containerPanes: Array<RowEntryMultiButtonProps> = [];
@@ -74,10 +101,14 @@ const DragContainer = styled.div`
     transition: 250ms box-shadow;
 `;
 
+const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+  defaultAnimateLayoutChanges({...args, wasDragging: true});
+
 const PaneRow: React.FC<{
     rowPane: PaneRef;
+    index: number;
     addPaneToContainer?: (p: Pane) => void;
-}> = ({ rowPane, addPaneToContainer }) => {
+}> = ({ rowPane, addPaneToContainer, index }) => {
     const {
         pane,
         updatePane,
@@ -90,11 +121,27 @@ const PaneRow: React.FC<{
         setPaneOrder,
         selectPane
     } = usePane(rowPane);
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+
+    const {
+        active,
+        attributes,
+        isDragging,
+        isSorting,
+        listeners,
+        overIndex,
+        setNodeRef,
+        setActivatorNodeRef,
+        transform,
+        transition
+    } = useSortable({
         id: pane.id,
         data: {
-            paneRefId: pane.id
-        }
+            paneRefId: pane.id,
+            parent,
+            index: index
+        },
+        animateLayoutChanges
+        // getNewIndex,
     });
 
     const style = transform
@@ -159,14 +206,16 @@ const PaneRow: React.FC<{
 
 const ContainerPaneRow: React.FC<{
     rowPane: PaneRef;
-}> = ({ rowPane }) => {
+    index: number;
+}> = ({ rowPane, index }) => {
     const { pane } = usePane(rowPane);
     const { addPaneToContainer } = useContainer(rowPane);
     const { panes } = pane as ContainerPane;
     const { isOver, setNodeRef } = useDroppable({
         id: pane.id,
         data: {
-            targetId: pane.id
+            targetId: pane.id,
+            type: "container"
         }
     });
 
@@ -183,6 +232,7 @@ const ContainerPaneRow: React.FC<{
     return (
         <div ref={setNodeRef} style={style}>
             <PaneRow
+                index={index}
                 rowPane={rowPane}
                 addPaneToContainer={addPaneToContainer}
             />
@@ -193,20 +243,31 @@ const ContainerPaneRow: React.FC<{
 
 const PaneList: React.FC<{
     panes: PaneRef[];
-}> = ({ panes, addPaneToParent }) => {
+}> = ({ panes }) => {
+    const [items, setItems] = useState(panes.map((paneRef) => paneRef.id));
     return (
         <View
             borderStartColor={"gray-500"}
             borderStartWidth={"thick"}
             marginStart="size-50"
         >
-            {panes.map((pane) => {
-                if (pane.type === "container") {
-                    return <ContainerPaneRow key={pane.id} rowPane={pane} />;
-                } else {
-                    return <PaneRow key={pane.id} rowPane={pane} />;
-                }
-            })}
+            <SortableContext items={items}>
+                {panes.map((pane, i) => {
+                    if (pane.type === "container") {
+                        return (
+                            <ContainerPaneRow
+                                key={pane.id}
+                                rowPane={pane}
+                                index={i}
+                            />
+                        );
+                    } else {
+                        return (
+                            <PaneRow key={pane.id} rowPane={pane} index={i} />
+                        );
+                    }
+                })}
+            </SortableContext>
         </View>
     );
 };
@@ -221,7 +282,8 @@ const PageList: React.FC<PageListProps> = ({ page }) => {
     const { isOver, setNodeRef } = useDroppable({
         id,
         data: {
-            targetId: id
+            targetId: id,
+            type: "page"
         }
     });
 
@@ -234,6 +296,7 @@ const PageList: React.FC<PageListProps> = ({ page }) => {
             : undefined,
         transition: "250ms all"
     };
+
     return (
         <div ref={setNodeRef} style={style}>
             <HoverableRow>
@@ -296,16 +359,168 @@ type MutableList = {
 export const MaticoOutlineViewer: React.FC = withRouter(
     ({ history, location }: MaticoOutlineViewerProps) => {
         // list pages
-        const { pages, reparentPane } = useApp();
+        const { pages, reparentPane, changePaneIndex } = useApp();
+        const [activeItem, setActiveItem] =
+            useState<Page | PaneRef | null>(null);
 
-        const handleDragEnd = (e: any) => {
-            if (!e.over || !e.active) return;
-            const {
-                over: { id: targetId },
-                active: { id: paneRefId }
-            } = e;
-            reparentPane(paneRefId, targetId);
-        };
+        //@ts-ignore
+        const handleDragStart = ({ active }) => setActiveItem(active);
+        const handleDragOver = ({ over, active}) => {
+            const isSelf = active.id === over.id;
+            if (isSelf) return;
+            const currentParent = active?.data?.current?.parent
+            const overParent = over?.data?.current?.parent
+            const overNewParent = (
+                over?.data?.current?.type === "page"
+                ||
+                over?.data?.current?.type === "container"
+            )
+            const haveParents = currentParent && overParent;
+            const overCousinRow = (
+                haveParents && currentParent.id !== overParent.id
+            )
+            const isSibling = (
+                haveParents && currentParent.id === overParent.id
+            )
+
+            if (overNewParent) {
+                const paneRefId = active?.id;
+                const targetId = over?.id;
+                reparentPane(paneRefId, targetId);
+                return
+            } else if (overCousinRow) {
+                const paneRefId = active?.id;
+                const targetId = overParent?.id;
+                reparentPane(paneRefId, targetId);
+                return
+            } else if (isSibling) {
+                const newIndex = over?.data?.current?.index
+                if (active?.id && newIndex !== undefined) {
+                    changePaneIndex(active?.id, newIndex)
+                }
+            }
+        }
+        // const handleDragOver = handleDragEnd;
+            // const overContainer = findContainer(overId);
+            // const activeContainer = findContainer(active.id);
+    
+            // if (!overContainer || !activeContainer) {
+            //     return;
+            // }
+    
+            // if (activeContainer !== overContainer) {
+            //     setItems((items) => {
+            //     const activeItems = items[activeContainer];
+            //     const overItems = items[overContainer];
+            //     const overIndex = overItems.indexOf(overId);
+            //     const activeIndex = activeItems.indexOf(active.id);
+    
+            //     let newIndex: number;
+    
+            //     if (overId in items) {
+            //         newIndex = overItems.length + 1;
+            //     } else {
+            //         const isBelowOverItem =
+            //         over &&
+            //         active.rect.current.translated &&
+            //         active.rect.current.translated.top >
+            //             over.rect.top + over.rect.height;
+    
+            //         const modifier = isBelowOverItem ? 1 : 0;
+    
+            //         newIndex =
+            //         overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+            //     }
+    
+            //     recentlyMovedToNewContainer.current = true;
+    
+            //     return {
+            //         ...items,
+            //         [activeContainer]: items[activeContainer].filter(
+            //         (item) => item !== active.id
+            //         ),
+            //         [overContainer]: [
+            //         ...items[overContainer].slice(0, newIndex),
+            //         items[activeContainer][activeIndex],
+            //         ...items[overContainer].slice(
+            //             newIndex,
+            //             items[overContainer].length
+            //         ),
+            //         ],
+            //     };
+            //     });
+            // }
+        // }
+
+        // const collisionDetectionStrategy: CollisionDetection = useCallback(
+        //     (args) => {
+        //         if (activeItem) {
+        //             return closestCenter({
+        //                 ...args,
+        //                 droppableContainers: args.droppableContainers
+        //             });
+        //         }
+
+        //         // // Start by finding any intersecting droppable
+        //         // const pointerIntersections = pointerWithin(args);
+        //         // const intersections =
+        //         //     pointerIntersections.length > 0
+        //         //         ? // If there are droppables intersecting with the pointer, return those
+        //         //           pointerIntersections
+        //         //         : rectIntersection(args);
+        //         // let overId = getFirstCollision(intersections, "id");
+
+        //         // if (overId != null) {
+        //         //     if (overId === TRASH_ID) {
+        //         //         // If the intersecting droppable is the trash, return early
+        //         //         // Remove this if you're not using trashable functionality in your app
+        //         //         return intersections;
+        //         //     }
+
+        //         //     if (overId in items) {
+        //         //         const containerItems = items[overId];
+
+        //         //         // If a container is matched and it contains items (columns 'A', 'B', 'C')
+        //         //         if (containerItems.length > 0) {
+        //         //             // Return the closest droppable within that container
+        //         //             overId = closestCenter({
+        //         //                 ...args,
+        //         //                 droppableContainers:
+        //         //                     args.droppableContainers.filter(
+        //         //                         (container) =>
+        //         //                             container.id !== overId &&
+        //         //                             containerItems.includes(container.id)
+        //         //                     )
+        //         //             })[0]?.id;
+        //         //         }
+        //         //     }
+
+        //         //     lastOverId.current = overId;
+
+        //         //     return [{ id: overId }];
+        //         // }
+
+        //         // // When a draggable item moves to a new container, the layout may shift
+        //         // // and the `overId` may become `null`. We manually set the cached `lastOverId`
+        //         // // to the id of the draggable item that was moved to the new container, otherwise
+        //         // // the previous `overId` will be returned which can cause items to incorrectly shift positions
+        //         // if (recentlyMovedToNewContainer.current) {
+        //         //     lastOverId.current = activeId;
+        //         // }
+
+        //         // // If no droppable is matched, return the last match
+        //         // return lastOverId.current ? [{ id: lastOverId.current }] : [];
+        //     },
+        //     [activeItem, JSON.stringify(pages)]
+        // );
+
+        const sensors = useSensors(
+            useSensor(MouseSensor),
+            useSensor(TouchSensor),
+            useSensor(KeyboardSensor, {
+                coordinateGetter
+            })
+        );
 
         return (
             <Flex direction="column">
@@ -314,7 +529,16 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                 </Heading>
                 <DndContext
                     modifiers={[restrictToVerticalAxis]}
-                    onDragEnd={handleDragEnd}
+                    onDragStart={handleDragStart}
+                    // onDragEnd={handleDragEnd}
+                    onDragOver={handleDragOver}
+                    // collisionDetection={collisionDetectionStrategy}
+                    sensors={sensors}
+                    measuring={{
+                        droppable: {
+                            strategy: MeasuringStrategy.Always
+                        }
+                    }}
                 >
                     {pages.map((page) => (
                         <PageList key={page.id} page={page} />
