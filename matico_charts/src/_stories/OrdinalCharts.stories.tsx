@@ -254,6 +254,7 @@ HorizontalRealDataBoxAndViolin.args = {
       showViolinPlot: true,
       boxPlotStroke: "green",
       violinPlotStroke: "red",
+      tooltip: false
     }
   ],
   data: SampleDistData5

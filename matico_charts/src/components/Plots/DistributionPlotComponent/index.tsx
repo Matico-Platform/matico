@@ -104,7 +104,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
             <Group top={0} pointerEvents="all">
                 {data.map((d: BoxPlotStats, i) => (
                     <g key={i}>
-                        {showViolinPlot ? <ViolinPlot
+                        {showViolinPlot && d.binData ? <ViolinPlot
                             data={d.binData}
                             stroke={sanitizeColor(violinPlotStroke)}
                             //@ts-ignore
@@ -167,7 +167,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     ))}
                 </Group>
             </svg>
-            {tooltipOpen && tooltipData && (
+            {tooltipOpen && tooltipData && tooltip && (
                 <TooltipComponent
                     key={Math.random()}
                     top={tooltipTop} 
