@@ -6,7 +6,7 @@ import { LinePath } from '@visx/shape';
 export const LineComponent = (props: LineSpec) => {
   const {
     data = [],
-    xScale = () => 0,
+    xScale = () => 0,  
     yScale = () => 0,
     xAccessor = () => 0,
     yAccessor = () => 0,
@@ -20,18 +20,18 @@ export const LineComponent = (props: LineSpec) => {
     ...props.layer,
   };
   const chartData = lineFunction
-    ? [
+    ? [                                               // if not null, then set chartData to the following array of arrays
         //@ts-ignore
         [xBounds[0], lineFunction(xBounds[0])],
         //@ts-ignore
         [xBounds[1], lineFunction(xBounds[1])],
       ]
-    : data;
+    : data;                                           // if no function provided, then we just use the data
 
-  if (!chartData) return null;
-  if (lineFunction) {
-    return (
-      <LinePath
+  if (!chartData) return null;                        // if chartData is null/undefined, then return null
+  if (lineFunction) {                                 // if we have a lineFunction, then:
+    return (                                          // 
+      <LinePath                                       // 
         stroke={lineColor || 'gray'}
         strokeWidth={lineWidth || 2}
         data={chartData}
