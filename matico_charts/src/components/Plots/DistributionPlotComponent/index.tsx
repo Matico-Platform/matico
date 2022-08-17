@@ -41,7 +41,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
       violinPlotStroke = 'black',
       violinPlotFill = 'white',
       horizontal = false,
-      tooltip = true,
+      tooltipOn = true,
       xScale,
       yScale,
       xExtent,
@@ -167,7 +167,7 @@ export const DistributionPlotComponent = (props: DistributionSpec & PlotLayersPr
                     ))}
                 </Group>
             </svg>
-            {tooltipOpen && tooltipData && tooltip && (
+            {tooltipOpen && tooltipData && tooltipOn && (
                 <TooltipComponent
                     key={Math.random()}
                     top={tooltipTop} 
