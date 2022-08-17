@@ -10,6 +10,7 @@ import { Pane } from "Components/Panes/Pane";
 import { PaneRef } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
 import {MaticoStaticMapPane} from "Components/Panes/MaticoStaticMapPane/MaticoStaticMapPane";
+import {MaticoSummaryPane} from "Components/Panes/MaticoSummaryPane/MaticoSummaryPane";
 
 export const panes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
@@ -19,7 +20,8 @@ export const panes: { [paneType: string]: Pane } = {
     scatterplot: MaticoScatterplotPane,
     pieChart: MaticoPieChartPane,
     controls: MaticoControlsPane,
-    container: MaticoContainerPane
+    container: MaticoContainerPane,
+    summary: MaticoSummaryPane
 };
 
 export const PaneSelector: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {

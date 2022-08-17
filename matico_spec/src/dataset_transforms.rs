@@ -85,7 +85,7 @@ pub struct JoinStep{
 
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum AggregationType{

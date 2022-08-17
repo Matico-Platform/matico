@@ -7,6 +7,7 @@ import {TextPaneEditor} from './Panes/TextPaneEditor'
 import {LayerEditor} from './Panes/LayerEditor'
 import {ControlsPaneEditor} from './Panes/ControlsEditor'
 import {StaticMapPaneEditor} from './Panes/StaticMapEditor'
+import {SummaryPaneEditor} from './Panes/SummaryEditor'
 
 
 export const Editors ={
@@ -18,5 +19,6 @@ export const Editors ={
   pieChart: PieChartPaneEditor,
   layer: LayerEditor,
   controls:ControlsPaneEditor,
-  staticMap: StaticMapPaneEditor
+  staticMap: StaticMapPaneEditor,
+  summary: SummaryPaneEditor
 }

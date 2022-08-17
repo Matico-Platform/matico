@@ -6,6 +6,7 @@ import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Border from "@spectrum-icons/workflow/Border";
+import Stamp from "@spectrum-icons/workflow/Stamp";
 import { ContainerPane, Layer, Pane, PanePosition } from "@maticoapp/matico_types/spec";
 import {v4 as uuid} from 'uuid'
 
@@ -25,6 +26,8 @@ export const IconForPaneType = (PaneType: string) => {
             return <PropertiesIcon />;
         case "container":
             return <Border />; 
+        case "summary":
+            return <Stamp/>; 
         case "staticMap":
             return <MapIcon/>; }
 };
@@ -56,7 +59,8 @@ export const AvaliablePanes: Array<AvaliablePanesSection> = [
             { name: "scatterplot", label: "Scatter Plot" },
             { name: "controls", label: "Controls" },
             { name: "container", label: "Container" },
-            { name: "staticMap", label: "Simple Map" }
+            { name: "staticMap", label: "Simple Map" },
+            { name: "summary", label:"Summary"}
         ]
     }
 ];
@@ -153,6 +157,10 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         dotColor: { rgb: [1.0, 0.0, 0.0] },
         dotSize: 14,
         dataset: { name: "uknown", filters: [] }
+    },
+    summary:{
+        name: "Summary",
+        summaryItems:[],
     },
     histogram: {
         name: "New Histogram",

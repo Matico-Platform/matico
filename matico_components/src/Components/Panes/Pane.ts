@@ -7,6 +7,7 @@ import { MaticoScatterplotPane } from "Components/Panes/MaticoScatterplotPane/Ma
 import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
 import {MaticoStaticMapPane} from "./MaticoStaticMapPane/MaticoStaticMapPane";
+import { MaticoSummaryPane  } from "./MaticoSummaryPane/MaticoSummaryPane";
 
 export interface MaticoPaneInterface {
   position: PanePosition;
@@ -23,4 +24,5 @@ export type Pane =
   | typeof MaticoScatterplotPane
   | typeof MaticoContainerPane
   | typeof MaticoTextPane
-  | typeof MaticoStaticMapPane;
+  | typeof MaticoStaticMapPane
+  | typeof MaticoSummaryPane;

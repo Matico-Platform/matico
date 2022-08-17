@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Control, HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane};
+use crate::{AutoComplete, Control, HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane, AggregationType};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -36,7 +36,8 @@ pub enum PaneRef {
     Scatterplot(PaneDetails),
     PieChart(PaneDetails),
     Controls(PaneDetails),
-    StaticMap(PaneDetails)
+    StaticMap(PaneDetails),
+    Summary(PaneDetails)
 }
 
 impl PaneRef {
@@ -50,6 +51,7 @@ impl PaneRef {
             PaneRef::PieChart(s) => &s.id,
             PaneRef::Controls(s) => &s.id,
             PaneRef::StaticMap(s) => &s.id,
+            PaneRef::Summary(s) => &s.id,
         }
     }
 }
@@ -92,6 +94,10 @@ impl TryFrom<(&str, &str)> for PaneRef {
                 pane_id,
                 ..Default::default()
             })),
+            "summary" => Ok(PaneRef::Summary(PaneDetails {
+                pane_id,
+                ..Default::default()
+            })),
             _ => Err("Unrecognized pane type".into()),
         }
     }
@@ -131,6 +137,10 @@ impl From<Pane> for PaneRef {
                 pane_id: controls.id,
                 ..Default::default()
             }),
+            Pane::Summary(summary) => PaneRef::Controls(PaneDetails {
+                pane_id: summary.id,
+                ..Default::default()
+            }),
         }
     }
 }
@@ -147,6 +157,7 @@ pub enum Pane {
     Scatterplot(ScatterplotPane),
     PieChart(PieChartPane),
     Controls(ControlsPane),
+    Summary(SummaryPane),
 }
 
 impl Default for Pane {
@@ -183,8 +194,64 @@ impl Validate for Pane {
             Self::Controls(controls) => {
                 ValidationErrors::merge(result, "ScatterplotPane", controls.validate())
             }
+            Self::Summary(summary) => {
+                ValidationErrors::merge(result, "SummaryPane", summary.validate())
+            }
         }
     }
+}
+
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize,  Debug, Clone,  AutoCompleteMe,  TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum SummaryStyle{
+    Compact,
+    List 
+}
+
+impl Default for SummaryStyle{
+    fn default()->Self{
+        return SummaryStyle::Compact
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone,  AutoCompleteMe, Default, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SummaryItem{
+    #[wasm_bindgen(skip)]
+    pub name: String,
+    #[wasm_bindgen(skip)]
+    pub dataset:String,
+    #[wasm_bindgen(skip)]
+    pub column: String,
+    #[wasm_bindgen(skip)]
+    pub summary_types: Vec<AggregationType>,
+
+    #[wasm_bindgen(skip)]
+    pub groupby_columns: Vec<String>,
+
+    #[wasm_bindgen(skip)]
+    pub style: SummaryStyle 
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone,AutoCompleteMe, Default, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SummaryPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[wasm_bindgen(skip)]
+    pub id: String,
+
+    #[wasm_bindgen(skip)]
+    pub summary_items: Vec<SummaryItem>
+    
 }
 
 #[wasm_bindgen]
