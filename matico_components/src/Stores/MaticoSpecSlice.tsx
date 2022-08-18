@@ -82,6 +82,15 @@ export const stateSlice = createSlice({
         addPage: (state, action: PayloadAction<{ page: Page }>) => {
             state.spec.pages.push(action.payload.page);
         },
+        setPageIndex: (state, action: PayloadAction<{pageId: string, newIndex: number}>) => {
+            const {pageId, newIndex} = action.payload;
+            const page = state.spec.pages.find(page => page.id === pageId);
+            if (page) {
+                const oldIndex = state.spec.pages.indexOf(page);
+                state.spec.pages.splice(oldIndex, 1);
+                state.spec.pages.splice(newIndex, 0, page);
+            }
+        },
         removePage: (
             state,
             action: PayloadAction<{
@@ -438,6 +447,7 @@ export const {
     setEditing,
     setSpec,
     addPage,
+    setPageIndex,
     removePage,
     removePane,
     addPaneToPage,

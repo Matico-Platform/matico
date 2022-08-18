@@ -1,9 +1,16 @@
 import React, { useCallback, useState } from "react";
-import { ActionButton, Button, Flex, Heading, View } from "@adobe/react-spectrum";
+import {
+    ActionButton,
+    Button,
+    Flex,
+    Heading,
+    View
+} from "@adobe/react-spectrum";
 import { useApp } from "Hooks/useApp";
 import { Page, PaneRef } from "@maticoapp/matico_types/spec";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 import {
+    closestCenter,
     CollisionDetection,
     DndContext,
     DragEndEvent,
@@ -24,13 +31,17 @@ import { DraggingProvider } from "./DraggingContext";
 import { DraggablePane } from "./DraggablePane";
 import { PageList } from "./PageList";
 import { HoverableItem, HoverableRow } from "./Styled";
+import {
+    SortableContext,
+    verticalListSortingStrategy
+} from "@dnd-kit/sortable";
 
 type MaticoOutlineViewerProps = RouteComponentProps & {};
 
 export const MaticoOutlineViewer: React.FC = withRouter(
     ({ history, location }: MaticoOutlineViewerProps) => {
         // list pages
-        const { pages, reparentPane, changePaneIndex, addPage } = useApp();
+        const { pages, reparentPane, changePaneIndex, addPage, updatePageIndex } = useApp();
         const [activeItem, setActiveItem] =
             useState<Page | PaneRef | null>(null);
         const handleDrag = throttle(
@@ -38,6 +49,11 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                 const { over, active } = event;
                 const isSelf = active.id === over?.id;
                 if (isSelf || !over) return;
+                if (active?.data?.current?.type === "page"){
+                    const overIndex = over?.data?.current?.sortable?.index;
+                    updatePageIndex(active.id as string, overIndex);
+                    return;
+                } 
                 const currentParent = active?.data?.current?.parent;
                 const overParent = over?.data?.current?.parent;
                 const overNewParent =
@@ -99,7 +115,6 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                 coordinateGetter
             })
         );
-
         return (
             <DraggingProvider activeItem={activeItem}>
                 <View width="100%" height="auto">
@@ -127,18 +142,22 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                             collisionDetection={collisionDetectionStrategy}
                             sensors={sensors}
                         >
-                            {pages.map((page) => (
-                                <PageList key={page.id} page={page} />
-                            ))}
-                            {!!activeItem &&
-                                createPortal(
-                                    <DragOverlay adjustScale={false}>
-                                        <DraggablePane
-                                            activeItem={activeItem}
-                                        />
-                                    </DragOverlay>,
-                                    document.body
-                                )}
+                            <SortableContext
+                                items={pages.map((page) => page.id)}
+                            >
+                                {pages.map((page) => (
+                                    <PageList key={page.id} page={page} />
+                                ))}
+                                {!!activeItem &&
+                                    createPortal(
+                                        <DragOverlay adjustScale={false}>
+                                            <DraggablePane
+                                                activeItem={activeItem}
+                                            />
+                                        </DragOverlay>,
+                                        document.body
+                                    )}
+                            </SortableContext>
                         </DndContext>
                     </Flex>
                 </View>

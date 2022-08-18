@@ -1,17 +1,18 @@
 import React from "react";
-import {
-    Text,
-} from "@adobe/react-spectrum";
+import { Text } from "@adobe/react-spectrum";
 import { IconForPaneType } from "../../Utils/PaneDetails";
 import { DraggableContainer } from "./Styled";
 
 export const DraggablePane: React.FC<{
     activeItem: any;
 }> = ({ activeItem }) => {
-    const pane = activeItem?.data?.current?.pane;
+    const isPage = activeItem?.data?.current?.type === "page";
+    const data = activeItem?.data?.current;
+    const name = isPage ? data.name : data.pane.name;
+
     return (
         <DraggableContainer>
-            {IconForPaneType(pane.type)}
+            {!isPage && IconForPaneType(data.pane.type)}
             <Text
                 UNSAFE_style={{
                     textOverflow: "ellipsis",
@@ -19,7 +20,7 @@ export const DraggablePane: React.FC<{
                     whiteSpace: "nowrap"
                 }}
             >
-                {pane.name}
+                {name}
             </Text>
         </DraggableContainer>
     );

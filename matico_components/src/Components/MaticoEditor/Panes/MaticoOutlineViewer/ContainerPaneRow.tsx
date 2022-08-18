@@ -35,7 +35,7 @@ export const ContainerPaneRow: React.FC<{
     });
 
     // @ts-ignore
-    const showDropZone = !!activeItem;
+    const showDropZone = !!activeItem && activeItem?.data?.current?.type !== "page";
 
     return (
         <div>

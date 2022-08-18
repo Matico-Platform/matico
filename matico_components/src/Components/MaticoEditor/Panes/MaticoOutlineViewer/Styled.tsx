@@ -5,11 +5,16 @@ export const HoverableItem = styled.span`
     transition: 125ms opacity;
 `;
 
-export const HoverableRow = styled.div<{hideBorder?: boolean}>`
+export const HoverableRow = styled.div<{hideBorder?: boolean, squash?: boolean}>`
     position: relative;
     border-bottom: ${({hideBorder}) => hideBorder ? 'none' : '1px solid var(--spectrum-global-color-gray-200)'};
+    ${HoverableItem} {
+        width: ${({squash}) => squash ? '0' : 'fit-content'};
+        transition: 125ms width;
+    }
     &:hover ${HoverableItem}, &:focus-within ${HoverableItem}, &:focus ${HoverableItem} {
         opacity: 1;
+        width: fit-content;
     }
 `;
 
@@ -25,8 +30,8 @@ export const ContainerDropTarget = styled.div<{
     isOver: boolean;
     depth: number;
 }>`
-    background: ${({ isOver }) =>
-        isOver ? "var(--spectrum-semantic-positive-color-icon)" : "rgba(0,0,0,0)"};
+    background: ${({ isOver, active }) =>
+        isOver && active ? "var(--spectrum-semantic-positive-color-icon)" : "rgba(0,0,0,0)"};
     transition: 125ms all;
     position: relative;
     &:before {
@@ -39,7 +44,7 @@ export const ContainerDropTarget = styled.div<{
         border: 1px solid rgba(81, 255, 249, 0.5);
         transition: 125ms all;
         border-left: 3px solid var(--spectrum-semantic-positive-color-icon);
-        opacity: ${({ active, isOver }) => (isOver ? ".75" : active ? "0.5" : "0")};
+        opacity: ${({ active, isOver }) => (isOver && active ? ".75" : active ? "0.5" : "0")};
     }
 `;
 export const DragContainer = styled.div`

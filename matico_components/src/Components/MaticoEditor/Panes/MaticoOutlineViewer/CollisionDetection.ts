@@ -3,6 +3,7 @@ import {
     closestCorners,
     CollisionDescriptor,
     CollisionDetection,
+    pointerWithin,
     rectIntersection,
 } from "@dnd-kit/core";
 
@@ -56,7 +57,8 @@ export const closestTop: CollisionDetection = ({
 
 
 export const outlineCollisionDetection: CollisionDetection = (args) => {
-    const { active, collisionRect } = args;
+    const { active, collisionRect, droppableContainers } = args;
+    
     const currentParent = active?.data?.current?.parent;
     // const currentDepth = active?.data?.current?.depth;
     const currentTop = collisionRect.top;
@@ -75,6 +77,17 @@ export const outlineCollisionDetection: CollisionDetection = (args) => {
             );
         }
     );
+    if (active?.data?.current?.type === "page"){
+        const pages = intersections.filter(intersected => (
+            intersected?.data?.droppableContainer?.data?.current?.type === "page"
+        ))
+        return closestCorners({
+            ...args,
+            droppableContainers: pages.map(
+                (item) => item.data.droppableContainer
+            )
+        })
+    }
     // todo something like this could be much more concise...
     // const nearestTops = closestTop({
     //     ...args

@@ -14,7 +14,8 @@ import {
     addDatasetTransform,
     removeDatasetTransform,
     updateMetadata,
-    setPaneRefIndex
+    setPaneRefIndex,
+    setPageIndex
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import {Theme} from "@maticoapp/matico_types/spec";
@@ -105,6 +106,18 @@ export const useApp = () => {
         )
     }
 
+    const updatePageIndex = (
+        pageId: string,
+        newIndex: number
+    ) => {  
+        dispatch(
+            setPageIndex({
+                pageId,
+                newIndex
+            })
+        )
+    }
+
     return {
         app,
         pages,
@@ -114,6 +127,7 @@ export const useApp = () => {
         metadata,
         removePage: removePageLocal,
         addPage: addPageLocal,
+        updatePageIndex,
         updatePage,
         setEditPage,
         reparentPane,
