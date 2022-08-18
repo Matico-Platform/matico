@@ -5,9 +5,9 @@ export const HoverableItem = styled.span`
     transition: 125ms opacity;
 `;
 
-export const HoverableRow = styled.div`
+export const HoverableRow = styled.div<{hideBorder?: boolean}>`
     position: relative;
-    border-bottom: 1px solid var(--spectrum-global-color-gray-200);
+    border-bottom: ${({hideBorder}) => hideBorder ? 'none' : '1px solid var(--spectrum-global-color-gray-200)'};
     &:hover ${HoverableItem}, &:focus-within ${HoverableItem}, &:focus ${HoverableItem} {
         opacity: 1;
     }

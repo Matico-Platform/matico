@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Flex, Heading, View } from "@adobe/react-spectrum";
+import { ActionButton, Button, Flex, Heading, View } from "@adobe/react-spectrum";
 import { useApp } from "Hooks/useApp";
 import { Page, PaneRef } from "@maticoapp/matico_types/spec";
 import { withRouter, RouteComponentProps } from "react-router-dom";
@@ -23,13 +23,14 @@ import { outlineCollisionDetection } from "./CollisionDetection";
 import { DraggingProvider } from "./DraggingContext";
 import { DraggablePane } from "./DraggablePane";
 import { PageList } from "./PageList";
+import { HoverableItem, HoverableRow } from "./Styled";
 
 type MaticoOutlineViewerProps = RouteComponentProps & {};
 
 export const MaticoOutlineViewer: React.FC = withRouter(
     ({ history, location }: MaticoOutlineViewerProps) => {
         // list pages
-        const { pages, reparentPane, changePaneIndex } = useApp();
+        const { pages, reparentPane, changePaneIndex, addPage } = useApp();
         const [activeItem, setActiveItem] =
             useState<Page | PaneRef | null>(null);
         const handleDrag = throttle(
@@ -103,9 +104,21 @@ export const MaticoOutlineViewer: React.FC = withRouter(
             <DraggingProvider activeItem={activeItem}>
                 <View width="100%" height="auto">
                     <Flex direction="column">
-                        <Heading margin="size-150" marginBottom="size-0" alignSelf="start">
-                            Page Outline
-                        </Heading>
+                        <HoverableRow hideBorder>
+                            <Flex direction="row" alignItems="center">
+                                <Heading marginY="size-0" marginX="size-150">
+                                    Page Outline
+                                </Heading>
+                                <HoverableItem>
+                                    <ActionButton
+                                        onPress={() => addPage({})}
+                                        isQuiet
+                                    >
+                                        Add Page
+                                    </ActionButton>
+                                </HoverableItem>
+                            </Flex>
+                        </HoverableRow>
                         <DndContext
                             modifiers={[restrictToVerticalAxis]}
                             onDragStart={handleDragStart}
