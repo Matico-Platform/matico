@@ -3,6 +3,19 @@ import { LineSpec } from '../../types';
 import { LinePath } from '@visx/shape';
 import { curveLinear } from '@visx/curve';
 
+// Divides an interval [a, b] into 100 subintervals
+export const intervalPartitioner = (interval: number[]) => {
+  const intervalLength = interval[1]-interval[0];
+  const meshLength = intervalLength / 100;
+  const partitionValues: number[] = [];
+
+  for (let i = 0; i < 100; i++) {
+    partitionValues.push(interval[0] + i * meshLength)
+  }
+
+  return partitionValues
+}
+
 export const LineComponent = (props: LineSpec) => {
   const {
     data = [],
@@ -19,22 +32,35 @@ export const LineComponent = (props: LineSpec) => {
     ...props,
     ...props.layer,
   };
+
+  // The following are defined for graphing lineFunction on the x-axis
+
+  //@ts-ignore
+  const tickMarks = intervalPartitioner(xBounds);
+  const lineFunctionPoints: any = [];
+
+  lineFunction 
+    ? tickMarks.forEach(element => lineFunctionPoints.push([element, lineFunction(element)]))
+    : lineFunctionPoints.push(0)
+
+  console.log(lineFunctionPoints)
+
   const chartData = lineFunction
-    ? [                                               // if not null, then set chartData to the following array of arrays
+    ? [
         //@ts-ignore
         [xBounds[0], lineFunction(xBounds[0])],
         //@ts-ignore
         [xBounds[1], lineFunction(xBounds[1])],
       ]
-    : data;                                           // if no function provided, then we just use the data
+    : data;
 
-  if (!chartData) return null;                        // if chartData is null/undefined, then return null
-  if (lineFunction) {                                 // if we have a lineFunction, then:
-    return (                                          // we're probably plotting the graph of some function over an interval?
-      <LinePath                                       // 
+  if (!chartData) return null; 
+  if (lineFunction) {
+    return (                                          
+      <LinePath                                    
         stroke={lineColor || 'gray'}
         strokeWidth={lineWidth || 2}
-        data={chartData}
+        data={lineFunctionPoints}
         curve={curveLinear}
         //@ts-ignore
         x={(d) => xScale(d[0])}
@@ -42,18 +68,19 @@ export const LineComponent = (props: LineSpec) => {
         y={(d) => yScale(d[1])}
       />
     );
+  } else {
+    return (
+      <LinePath
+        stroke={lineColor || 'gray'}
+        strokeWidth={2}
+        data={chartData}
+        //@ts-ignore
+        x={(d) => xScale(xAccessor(d)) ?? 0}
+        //@ts-ignore
+        y={(d) => yScale(yAccessor(d)) ?? 0}
+      />
+    );
   }
-  return (
-    <LinePath
-      stroke={lineColor || 'gray'}
-      strokeWidth={2}
-      data={chartData}
-      //@ts-ignore
-      x={(d) => xScale(xAccessor(d)) ?? 0}
-      //@ts-ignore
-      y={(d) => yScale(yAccessor(d)) ?? 0}
-    />
-  );
 };
 
 // strokeDashArray -- see how visx handles this 
