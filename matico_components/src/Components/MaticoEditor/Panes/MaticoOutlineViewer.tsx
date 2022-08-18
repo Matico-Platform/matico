@@ -26,6 +26,7 @@ import { useContainer } from "Hooks/useContainer";
 import {
     closestCenter,
     closestCorners,
+    CollisionDescriptor,
     CollisionDetection,
     defaultDropAnimationSideEffects,
     DndContext,
@@ -90,13 +91,54 @@ const HoverableItem = styled.span`
 
 const HoverableRow = styled.div`
     position: relative;
-    /* :hover {
-        background: #cc00007f;
-    }
-    &:hover ${HoverableItem} {
-        opacity: 1;
-    } */
 `;
+
+/**
+ * Sort collisions in descending order (from greatest to smallest value)
+ */
+export function sortCollisionsAsc(
+    { data: { value: a } }: CollisionDescriptor,
+    { data: { value: b } }: CollisionDescriptor
+) {
+    return a - b;
+}
+
+/**
+ * Returns the closest rectangles from an array of rectangles to the corners of
+ * another rectangle.
+ */
+export const closestTop: CollisionDetection = ({
+    collisionRect,
+    droppableRects,
+    droppableContainers,
+    active
+}) => {
+    const activeId = active?.id;
+    const top = collisionRect.top;
+    const collisions: CollisionDescriptor[] = [];
+
+    for (const droppableContainer of droppableContainers) {
+        const { id } = droppableContainer;
+        const rect = droppableRects.get(id);
+        if (rect && id !== activeId) {
+            const collisionTop = rect.top;
+            const collisionMid = rect.top - rect.height / 2;
+            const distance = Math.abs(collisionTop - top);
+
+            collisions.push({
+                id,
+                data: {
+                    droppableContainer,
+                    value: distance,
+                    overMid: collisionMid > top,
+                    top: collisionTop
+                }
+            });
+        }
+    }
+
+    return collisions.sort(sortCollisionsAsc);
+};
 
 const DragButton = styled.button`
     background: none;
@@ -105,14 +147,28 @@ const DragButton = styled.button`
     cursor: grab;
 `;
 
-const ContainerDropTarget = styled.div<{ active: boolean; isOver: boolean }>`
-    border: ${({ active }) =>
-        active
-            ? "1px solid rgba(42, 244, 255, 0.5)"
-            : "1px solid rgba(0,0,0,0)"};
+const ContainerDropTarget = styled.div<{
+    active: boolean;
+    isOver: boolean;
+    depth: number;
+}>`
     background: ${({ isOver }) =>
-        isOver ? "rgba(227, 251, 41, 0.1)" : "rgba(0,0,0,0)"};
-    transition: 125ms;
+        isOver ? "rgba(81, 255, 249, 0.2)" : "rgba(0,0,0,0)"};
+    transition: 125ms all;
+    position: relative;
+    &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 1px solid rgba(81, 255, 249, 0.5);
+        transition: 125ms all;
+        border-left: ${({ isOver }) =>
+            isOver ? "3px solid rgba(81, 255, 249, 1)" : "3px solid rgba(81, 255, 249, 0.5)"};
+        opacity: ${({ active }) => (active ? "1" : "0")};
+    }
 `;
 const DragContainer = styled.div`
     transition: 250ms box-shadow;
@@ -165,7 +221,6 @@ const PaneRow: React.FC<{
     addPaneToContainer?: (p: Pane) => void;
 }> = ({ rowPane, addPaneToContainer, index, children }) => {
     const { pane, removePaneFromParent, parent, selectPane } = usePane(rowPane);
-
     const { attributes, listeners, setNodeRef, transform, transition } =
         useSortable({
             id: rowPane.id,
@@ -175,9 +230,10 @@ const PaneRow: React.FC<{
                 pane,
                 parent,
                 index
-            },
+            }
             // getNewIndex,
         });
+
     const style = transform
         ? {
               transform: `translate(${transform?.x}px, ${transform?.y}px)`,
@@ -270,6 +326,7 @@ const ContainerPaneRow: React.FC<{
                 ref={setNodeRef}
                 active={showDropZone}
                 isOver={isOver}
+                depth={depth}
             >
                 <PaneRow
                     index={index}
@@ -294,10 +351,13 @@ const PaneList: React.FC<{
             borderStartColor={"gray-500"}
             borderStartWidth={"thick"}
             marginStart="size-50"
+            UNSAFE_style={{
+                paddingTop: depth === 0 ? "2em" : 0
+            }}
         >
             <SortableContext
                 items={items}
-                strategy={verticalListSortingStrategy}
+                // strategy={verticalListSortingStrategy}
             >
                 {panes.map((pane, i) => {
                     if (pane.type === "container") {
@@ -333,22 +393,24 @@ const PageList: React.FC<PageListProps> = ({ page }) => {
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
     const activeItem = useDraggingContext();
+    const depth = 0;
     const { isOver, setNodeRef } = useDroppable({
         id,
         data: {
             targetId: id,
             type: "page",
-            depth: 0
+            depth
         }
     });
     const showDropZone = !!activeItem;
 
     return (
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative", marginTop: "2em" }}>
             <ContainerDropTarget
                 ref={setNodeRef}
                 active={showDropZone}
                 isOver={isOver}
+                depth={depth}
             >
                 <HoverableRow>
                     <Flex direction="row" justifyContent="space-between">
@@ -479,18 +541,50 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                 // const currentDepth = active?.data?.current?.depth;
                 const currentTop = collisionRect.top;
                 // const pointerIntersections = pointerWithin(args);
-                const intersections = rectIntersection(args).filter((intersected) => {
-                    // Filter for not self, to avoid container dropping into itself
-                    const activeId = active.id;
-                    const intersectedId = intersected.id;
-                    const intersectedPaneRefId =
-                        intersected?.data?.droppableContainer?.data?.current
-                            ?.paneRefId;
-                    return (
-                        activeId !== intersectedId &&
-                        activeId !== intersectedPaneRefId
-                    );
-                });
+                const intersections = rectIntersection(args).filter(
+                    (intersected) => {
+                        // Filter for not self, to avoid container dropping into itself
+                        const activeId = active.id;
+                        const intersectedId = intersected.id;
+                        const intersectedPaneRefId =
+                            intersected?.data?.droppableContainer?.data?.current
+                                ?.paneRefId;
+                        return (
+                            activeId !== intersectedId &&
+                            activeId !== intersectedPaneRefId
+                        );
+                    }
+                );
+                // todo something like this could be much more concise...
+                // const nearestTops = closestTop({
+                //     ...args
+                // });
+                // if (nearestTops.length > 1) {
+                //     const nearestIsContainer =
+                //         nearestTops[0]?.data?.droppableContainer?.value ===
+                //         nearestTops[1]?.data?.droppableContainer?.value;
+                //     if (nearestIsContainer) {
+                //         const isOverMid =
+                //             nearestTops[0]?.data?.droppableContainer?.overMid;
+                //         if (isOverMid) {
+                //             return nearestTops.filter(
+                //                 (container) =>
+                //                     container?.data?.current?.type !==
+                //                     "container"
+                //             );
+                //         } else {
+                //             return nearestTops.filter(
+                //                 (container) =>
+                //                     container?.data?.current?.type ===
+                //                     "container"
+                //             );
+                //         }
+                //     } else {
+                //         return nearestTops;
+                //     }
+                // } else {
+                //     return nearestTops;
+                // }
 
                 const parents = intersections.filter((intersected) => {
                     const intersectedData =
@@ -515,7 +609,7 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                     return !isContainer;
                 });
                 if (!parents.length) {
-                    return closestCorners({
+                    return closestCenter({
                         ...args,
                         droppableContainers: siblings.map(
                             (item) => item.data.droppableContainer
@@ -549,13 +643,16 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                     ) {
                         return closestSibling;
                     }
-                    const parentTop = closestParent[0]?.data?.droppableContainer?.rect?.current?.top
-                    const parentBottom = closestParent[0]?.data?.droppableContainer?.rect?.current?.bottom
-                    const parentHeight = parentBottom - parentTop
-                    const parentMid = ((parentTop + parentBottom) / 2) - parentHeight / 2
-                    if (
-                        parentMid < currentTop
-                    ) {
+                    const parentTop =
+                        closestParent[0]?.data?.droppableContainer?.rect
+                            ?.current?.top;
+                    const parentBottom =
+                        closestParent[0]?.data?.droppableContainer?.rect
+                            ?.current?.bottom;
+                    const parentHeight = parentBottom - parentTop;
+                    const parentMid =
+                        (parentTop + parentBottom) / 2 - parentHeight / 2;
+                    if (parentMid < currentTop) {
                         return closestParent;
                     }
                     return closestCorners({
@@ -591,20 +688,18 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                             // onDragOver={handleDragOver}
                             collisionDetection={collisionDetectionStrategy}
                             sensors={sensors}
-                            measuring={{
-                                droppable: {
-                                    strategy: MeasuringStrategy.Always
-                                }
-                            }}
+                            // measuring={{
+                            //     droppable: {
+                            //         strategy: MeasuringStrategy.Always
+                            //     }
+                            // }}
                         >
                             {pages.map((page) => (
                                 <PageList key={page.id} page={page} />
                             ))}
                             {!!activeItem &&
                                 createPortal(
-                                    <DragOverlay
-                                        adjustScale={false}
-                                    >
+                                    <DragOverlay adjustScale={false}>
                                         <DraggablePane
                                             activeItem={activeItem}
                                         />
