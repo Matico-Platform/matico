@@ -19,6 +19,7 @@
     "@maticoapp/matico_components": "workspace:matico_components",
     "@maticoapp/matico_types": "workspace:matico_types",
     "@next-auth/prisma-adapter": "^1.0.4",
+    "@next/bundle-analyzer": "^12.2.5",
     "@prisma/client": "4.2.1",
     "@react-spectrum/card": "^3.0.0-alpha.10",
     "@react-spectrum/color": "3.0.0-beta.14",
@@ -44,6 +45,7 @@
     "react-dropzone": "^11.4.2",
     "react-mde": "^11.5.0",
     "react-paginate": "^8.1.0",
+    "react-stately": "^3.16.0",
     "react-ui-cards": "^3.0.0",
     "styled-components": "^5.3.1",
     "swr": "^1.1.1"
@@ -56,6 +58,7 @@
     "eslint-config-next": "12.0.7",
     "file-loader": "^6.2.0",
     "prisma": "^4.2.1",
-    "typescript": "4.5.4"
+    "typescript": "4.5.4",
+    "webpack-visualizer-plugin": "^0.1.11"
   }
 }

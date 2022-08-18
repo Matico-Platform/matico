@@ -16,17 +16,17 @@ export default async function handler(req, res) {
       where: {
         id: appId,
       },
-      include : {colaborators:true},
+      include: { owner: true, _count: { select: { colaborators: true } } },
     });
 
-    if(!app){
-      return res.status(404).json({error:"Failed to find app"})
+    if (!app) {
+      return res.status(404).json({ error: "Failed to find app" });
     }
-    if( userHasView(app, user)){
-      return res.status(200).json(app)
+    if (userHasView(app, user)) {
+      return res.status(200).json(app);
     }
 
-    return res.status(200).json(app)
+    return res.status(200).json(app);
   }
 
   if (req.method === "PUT") {
@@ -43,14 +43,17 @@ export default async function handler(req, res) {
         where: {
           id: appId,
         },
+        include: {
+          owner:true,
+          _count:{select:{colaborators: true}},
+        },
       });
 
       res.status(200).json(updatedApp);
-      return 
-
+      return;
     } catch (e: any) {
       res.status(500).json({ error: `Could not update app ${e.message}` });
-      return 
+      return;
     }
   }
 
@@ -62,10 +65,10 @@ export default async function handler(req, res) {
         },
       });
       res.status(200).json(deletedApp);
-      return 
+      return;
     } catch (e: any) {
       res.status(500).json({ error: `Failed to delete app ${e.message}` });
-      return
+      return;
     }
   }
 }

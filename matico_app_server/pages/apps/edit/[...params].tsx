@@ -19,12 +19,12 @@ export const getServerSideProps:GetServerSideProps =async(context)=>{
     where:{
       id: params ? params[0] : undefined  
     },
-    include:{owner:true}
+    include:{owner:true, _count:{ select:{colaborators:true}}}
   }) 
 
   if(!app) return {props:{ app: null, error:"Failed to find app"}}
 
-  if(app.owner.id !== user?.id  && app.public === false) return { props:{app:null, error:"Unauthorized to view this app"}}
+  if(app.owner.id !== user?.id  ) return { props:{app:null, error:"Unauthorized to view this app"}}
 
   return{
     props:{
@@ -64,26 +64,32 @@ const AppPresentPage : React.FC<AppPresentPageProps>= ({initialApp,error})=>{
       .catch(e=>{console.log("Failed to udpate app", e.error)})
   }
 
-  const editor = useMemo(()=>
-
-      <MaticoApp 
+  const editor = useMemo(()=>{
+      if(initialApp){
+        return <MaticoApp 
                 onSpecChange={(spec: any) => {
                   onUpdateSpec(spec);
                 }}
                 spec={initialApp.spec}
                 basename={`/apps/edit/${initialApp.id}`}
                 editActive={true} />
-  ,[initialApp])
-
-
-
-  if(error){
-    return(
-      <Flex height="100%" gridArea="content">
-        <h2>{error}</h2>
+      }
+      else if(error){
+      return(
+        <Flex height="100%" gridArea="content">
+          <h2>{error}</h2>
+        </Flex>
+      )
+      }
+    else{
+      return <Flex height="100%" gridArea='content'>
+        <h2>Something really weird went wrong</h2>
       </Flex>
-    )
-  }
+    }
+  },[initialApp])
+
+
+
 
   return(
     <Flex direction='column' height='100vh'>

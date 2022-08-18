@@ -94,7 +94,7 @@ export const userHasManage = (
   return false;
 };
 
-export const setAppAcces = async (
+export const setAppAccess = async (
   app: App,
   userId: string,
   permisions: { view: boolean; edit: boolean; manage: boolean },
@@ -102,8 +102,7 @@ export const setAppAcces = async (
 ) => {
   return prisma.colaborator.upsert({
     where: {
-      userId: userId,
-      resourceId: app.id,
+      userId_resourceId: {userId:userId,resourceId:app.id},
     },
     create: {
       view: permisions.view,
