@@ -8,6 +8,9 @@ export const HoverableItem = styled.span`
 export const HoverableRow = styled.div`
     position: relative;
     border-bottom: 1px solid var(--spectrum-global-color-gray-200);
+    &:hover ${HoverableItem} {
+        opacity: 1;
+    }
 `;
 
 export const DragButton = styled.button`
