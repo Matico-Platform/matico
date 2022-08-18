@@ -28,23 +28,5 @@
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
   },
-  "devDependencies": {
-    "concurrently": "^6.3.0",
-    "esbuild": "^0.14.51",
-    "netlify-cli": "^6.14.11",
-    "prisma": "^4.2.1",
-    "typescript": "^4.1.2"
-  },
-  "packageManager": "yarn@3.2.2",
-  "dependencies": {
-    "@loaders.gl/shapefile": "^3.1.8",
-    "@nebula.gl/layers": "^1.0.2-alpha.1",
-    "@nebula.gl/overlays": "^1.0.2-alpha.1",
-    "@parcel/transformer-react-refresh-wrap": "^2.0.0",
-    "@react-types/button": "^3.5.1",
-    "@zip.js/zip.js": "^2.4.9",
-    "immer": "^9.0.6",
-    "logrocket": "^2.2.0",
-    "logrocket-react": "^5.0.1"
-  }
+  "packageManager": "yarn@3.2.2"
 }
