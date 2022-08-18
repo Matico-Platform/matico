@@ -65,7 +65,6 @@
     "d3-scale": "^4.0.2",
     "katex": "^0.13.18",
     "lexical": "^0.3.11",
-    "lodash": "^4.17.21",
     "mapbox-gl": "npm:empty-npm-package@1.0.0",
     "maplibre-gl": "^2.1.9",
     "nebula.gl": "^1.0.2",
@@ -74,16 +73,10 @@
     "react-ace": "^9.5.0",
     "react-json-view": "^1.21.3",
     "react-map-gl": "^7.0.18",
-    "react-markdown": "^7.0.1",
-    "react-mde": "^11.5.0",
     "react-redux": "^7.2.6",
     "react-router": "^6",
     "react-router-dom": "^5.3.0",
     "rehype": "^12.0.0",
-    "rehype-katex": "^6.0.1",
-    "rehype-raw": "^6.1.0",
-    "remark-gfm": "^3.0.0",
-    "remark-math": "^5.1.0",
     "traverse": "^0.6.6",
     "uuid": "^8.3.2",
     "verbum": "https://github.com/nofurtherinformation/verbum.git",
@@ -116,6 +109,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-mde": "^11.5.0",
+    "lodash": "^4.17.21",
     "styled-components": "^5.3.1"
   }
 }

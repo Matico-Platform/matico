@@ -1,8 +1,17 @@
 import React from "react";
 import { useMaticoSelector } from "Hooks/redux";
-import { Picker, Item, Flex, Text, Heading} from "@adobe/react-spectrum";
+import {
+    Picker,
+    Item,
+    Flex,
+    Text,
+    View,
+    Heading,
+    CheckboxGroup,
+    Checkbox
+} from "@adobe/react-spectrum";
 import { Column } from "Datasets/Dataset";
-import { Item as ListItem, ListView } from "@react-spectrum/list";
+// import { Item as ListItem, ListView } from "@react-spectrum/list";
 
 interface DatasetColumnSelectorProps {
     datasetName?: string;
@@ -32,7 +41,6 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
             items={columns}
             label={label ?? `Column from {datasetName}`}
             labelPosition={labelPosition}
-
             isDisabled={!datasetName}
             selectedKey={selectedColumn}
             onSelectionChange={(column) =>
@@ -69,8 +77,21 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
         const columns = foundDataset ? foundDataset.columns : [];
 
         return (
-            <Flex direction='column'>
+            <Flex direction="column">
                 <Heading>{label}</Heading>
+                <View maxHeight="150px" overflow={"clip auto"}>
+                <CheckboxGroup
+                    value={selectedColumns}
+                    onChange={(keys) =>
+                        onColumnsSelected(keys)
+                    }
+                >
+                        {columns.map((c) => (
+                            <Checkbox key={c.name}> {c.name}</Checkbox>
+                        ))}
+                </CheckboxGroup>
+              </View>
+                {/*
                 <ListView
                     width="100%"
                     maxHeight="200px"
@@ -83,6 +104,7 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
                 >
                     {(item) => <Item key={item.name}>{item.name}</Item>}
                 </ListView>
+                */}
                 {description && <Text>{description}</Text>}
             </Flex>
         );
