@@ -1,8 +1,6 @@
 import React from "react";
 import { PaneEditor } from "Components/MaticoEditor/Panes/PaneEditor";
-import ReactMde from "react-mde";
-import { View, Flex, Well, Text, Heading, TextField } from "@adobe/react-spectrum";
-import "react-mde/lib/styles/css/react-mde-all.css";
+import { View, Flex, Text, TextField } from "@adobe/react-spectrum";
 import { RemovePaneDialog } from "Components/MaticoEditor//Utils/RemovePaneDialog";
 import { PaneRef } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
@@ -48,10 +46,6 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     id={paneRef.id}
                 />
             </CollapsibleSection>
-            <CollapsibleSection title="Content" isOpen={true}>
-                <ReactMde value={textPane.content} onChange={handleContent} />
-            </CollapsibleSection>
-
 
             <RemovePaneDialog deletePane={removePane} />
         </Flex>

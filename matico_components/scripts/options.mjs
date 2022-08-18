@@ -32,7 +32,7 @@ export const options = {
     '.ttf': 'file',
   },
   plugins: [
-    wasmLoader(),
+    wasmLoader({mode:"deferred"}),
     inlineWorkerPlugin({
       inject: [require.resolve("node-stdlib-browser/helpers/esbuild/shim")],
       sourcemap:true,
