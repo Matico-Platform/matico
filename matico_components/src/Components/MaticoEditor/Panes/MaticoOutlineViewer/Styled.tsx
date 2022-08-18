@@ -8,6 +8,7 @@ export const HoverableItem = styled.span`
 export const HoverableRow = styled.div<{hideBorder?: boolean, squash?: boolean}>`
     position: relative;
     border-bottom: ${({hideBorder}) => hideBorder ? 'none' : '1px solid var(--spectrum-global-color-gray-200)'};
+    transition:125ms all;
     ${HoverableItem} {
         width: ${({squash}) => squash ? '0' : 'fit-content'};
         transition: 125ms width;
