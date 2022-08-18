@@ -1,5 +1,5 @@
 {
-  "name": "matico_admin_server",
+  "name": "matico_app_server",
   "private": true,
   "version": "1.0.0",
   "scripts": {
