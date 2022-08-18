@@ -16,6 +16,9 @@
     "./matico_charts",
     "./editor"
   ],
+  "devDependencies": {
+    "nextjs": "12.2.0"
+  },
   "nohoist": [
     "**/webpack**",
     "**/babel-loader**"
