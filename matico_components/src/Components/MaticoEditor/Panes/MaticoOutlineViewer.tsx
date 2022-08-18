@@ -7,7 +7,6 @@ import {
     DialogTrigger,
     Flex,
     Heading,
-    Item,
     Text,
     View
 } from "@adobe/react-spectrum";
@@ -26,27 +25,30 @@ import { usePane } from "Hooks/usePane";
 import { useContainer } from "Hooks/useContainer";
 import {
     closestCenter,
+    closestCorners,
     CollisionDetection,
+    defaultDropAnimationSideEffects,
     DndContext,
+    DragEndEvent,
+    DragOverEvent,
+    DragOverlay,
+    DropAnimation,
     KeyboardSensor,
     MeasuringStrategy,
     MouseSensor,
+    pointerWithin,
+    rectIntersection,
     TouchSensor,
-    useDraggable,
     useDroppable,
     useSensor,
     useSensors
 } from "@dnd-kit/core";
 
 import {
-    arrayMove,
     useSortable,
     SortableContext,
-    sortableKeyboardCoordinates,
-    SortingStrategy,
     verticalListSortingStrategy,
     AnimateLayoutChanges,
-    NewIndexGetter,
     defaultAnimateLayoutChanges
 } from "@dnd-kit/sortable";
 
@@ -54,40 +56,46 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
 import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
 import { IconForPaneType } from "../Utils/PaneDetails";
-import { MultipleContainers } from "../EditorComponents/SortableDraggableList/MultipleContainers";
 import { coordinateGetter } from "../EditorComponents/SortableDraggableList/multipleContainersKeyboardCoordinates";
+import throttle from "lodash/throttle";
+import { createPortal } from "react-dom";
 
-// function addForContainer(container: ContainerPane, inset: number) {
-//   let containerPanes: Array<RowEntryMultiButtonProps> = [];
+// context
 
-//   rowComponents.push(
-//     {
-//       entryName: page.name,
-//       inset: inset,
-//       compact: true,
-//       onSelect: () => setEditPage(page.id),
-//       onRemove: () => removePage(page.id),
-//       onRaise: () => { },
-//       onLower: () => { },
-//       onDuplicate: () => { }
-//     }
+const DraggingContext = React.createContext({
+    activeItem: null
+});
 
-//   )
-//   inset += 1
-// }
+const DraggingProvider: React.FC<{
+    activeItem: any;
+    children: React.ReactNode;
+}> = ({ activeItem, children }) => {
+    return (
+        <DraggingContext.Provider value={activeItem}>
+            {children}
+        </DraggingContext.Provider>
+    );
+};
+
+const useDraggingContext = () => {
+    const ctx = React.useContext(DraggingContext);
+    if (ctx === undefined) throw Error("Not wrapped in <DraggingProvider />.");
+    return ctx;
+};
 
 const HoverableItem = styled.span`
     opacity: 0;
     transition: 125ms opacity;
 `;
 
-const HoverableRow = styled.span`
-    :hover {
+const HoverableRow = styled.div`
+    position: relative;
+    /* :hover {
         background: #cc00007f;
     }
     &:hover ${HoverableItem} {
         opacity: 1;
-    }
+    } */
 `;
 
 const DragButton = styled.button`
@@ -97,67 +105,94 @@ const DragButton = styled.button`
     cursor: grab;
 `;
 
+const ContainerDropTarget = styled.div<{ active: boolean; isOver: boolean }>`
+    border: ${({ active }) =>
+        active
+            ? "1px solid rgba(42, 244, 255, 0.5)"
+            : "1px solid rgba(0,0,0,0)"};
+    background: ${({ isOver }) =>
+        isOver ? "rgba(227, 251, 41, 0.1)" : "rgba(0,0,0,0)"};
+    transition: 125ms;
+`;
 const DragContainer = styled.div`
     transition: 250ms box-shadow;
 `;
 
-const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-  defaultAnimateLayoutChanges({...args, wasDragging: true});
+const DraggableContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 1em;
+    width: 100%;
+    height: 2em;
+    box-shadow: 0px 0px 5px 0px rgba(32, 255, 251, 0.75);
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
+    svg {
+        width: 1.5em;
+        margin-right: 1em;
+    }
+    * {
+        flex-grow: 0;
+    }
+`;
 
+const DraggablePane: React.FC<{
+    activeItem: any;
+}> = ({ activeItem }) => {
+    const pane = activeItem?.data?.current?.pane;
+    return (
+        <DraggableContainer>
+            {IconForPaneType(pane.type)}
+            <Text
+                UNSAFE_style={{
+                    textOverflow: "ellipsis",
+                    overflowX: "hidden",
+                    whiteSpace: "nowrap"
+                }}
+            >
+                {pane.name}
+            </Text>
+        </DraggableContainer>
+    );
+};
 const PaneRow: React.FC<{
     rowPane: PaneRef;
     index: number;
+    depth: number;
+    children?: React.ReactNode;
     addPaneToContainer?: (p: Pane) => void;
-}> = ({ rowPane, addPaneToContainer, index }) => {
-    const {
-        pane,
-        updatePane,
-        removePane,
-        removePaneFromParent,
-        updatePanePosition,
-        parent,
-        raisePane,
-        lowerPane,
-        setPaneOrder,
-        selectPane
-    } = usePane(rowPane);
+}> = ({ rowPane, addPaneToContainer, index, children }) => {
+    const { pane, removePaneFromParent, parent, selectPane } = usePane(rowPane);
 
-    const {
-        active,
-        attributes,
-        isDragging,
-        isSorting,
-        listeners,
-        overIndex,
-        setNodeRef,
-        setActivatorNodeRef,
-        transform,
-        transition
-    } = useSortable({
-        id: pane.id,
-        data: {
-            paneRefId: pane.id,
-            parent,
-            index: index
-        },
-        animateLayoutChanges
-        // getNewIndex,
-    });
-
+    const { attributes, listeners, setNodeRef, transform, transition } =
+        useSortable({
+            id: rowPane.id,
+            data: {
+                paneRefId: rowPane.id,
+                paneId: pane.id,
+                pane,
+                parent,
+                index
+            },
+            // getNewIndex,
+        });
     const style = transform
         ? {
-              transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-              background: "var(--spectrum-global-color-static-gray-900)",
-              boxShadow:
-                  "0px 0px 10px var(--spectrum-global-color-fuchsia-400)",
-              cursor: "grabbing",
-              zIndex: 500
+              transform: `translate(${transform?.x}px, ${transform?.y}px)`,
+              transition
           }
-        : undefined;
+        : {};
 
     return (
-        <HoverableRow>
-            <DragContainer style={style} ref={setNodeRef}>
+        <HoverableRow
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+        >
+            <DragContainer>
                 <View position="relative" width="100%">
                     <Flex
                         direction="row"
@@ -165,7 +200,7 @@ const PaneRow: React.FC<{
                         justifyContent="start"
                         wrap="nowrap"
                     >
-                        <DragButton {...listeners} {...attributes}>
+                        <DragButton>
                             <DragHandle color="positive" />
                         </DragButton>
                         {IconForPaneType(pane.type)}
@@ -200,6 +235,7 @@ const PaneRow: React.FC<{
                     </HoverableItem>
                 </View>
             </DragContainer>
+            {children}
         </HoverableRow>
     );
 };
@@ -207,51 +243,62 @@ const PaneRow: React.FC<{
 const ContainerPaneRow: React.FC<{
     rowPane: PaneRef;
     index: number;
-}> = ({ rowPane, index }) => {
+    depth: number;
+}> = ({ rowPane, index, depth }) => {
     const { pane } = usePane(rowPane);
+    const activeItem = useDraggingContext();
     const { addPaneToContainer } = useContainer(rowPane);
     const { panes } = pane as ContainerPane;
     const { isOver, setNodeRef } = useDroppable({
         id: pane.id,
         data: {
             targetId: pane.id,
+            paneId: pane.id,
+            paneRefId: rowPane.id,
+            depth,
+            index,
             type: "container"
         }
     });
 
-    const style = {
-        border: isOver
-            ? "1px solid var(--spectrum-global-color-fuchsia-400)"
-            : "1px solid rgba(0,0,0,0)",
-        background: isOver
-            ? "var(--spectrum-global-color-static-gray-800)"
-            : undefined,
-        transition: "250ms all"
-    };
+    // @ts-ignore
+    const showDropZone = !!activeItem;
 
     return (
-        <div ref={setNodeRef} style={style}>
-            <PaneRow
-                index={index}
-                rowPane={rowPane}
-                addPaneToContainer={addPaneToContainer}
-            />
-            <PaneList panes={panes} />
+        <div>
+            <ContainerDropTarget
+                ref={setNodeRef}
+                active={showDropZone}
+                isOver={isOver}
+            >
+                <PaneRow
+                    index={index}
+                    rowPane={rowPane}
+                    addPaneToContainer={addPaneToContainer}
+                    depth={depth}
+                />
+            </ContainerDropTarget>
+            <PaneList panes={panes} depth={depth + 1} />
         </div>
     );
 };
 
 const PaneList: React.FC<{
     panes: PaneRef[];
-}> = ({ panes }) => {
-    const [items, setItems] = useState(panes.map((paneRef) => paneRef.id));
+    depth?: number;
+}> = ({ panes, depth = 1 }) => {
+    const items = panes.map((pane) => pane.id);
+
     return (
         <View
             borderStartColor={"gray-500"}
             borderStartWidth={"thick"}
             marginStart="size-50"
         >
-            <SortableContext items={items}>
+            <SortableContext
+                items={items}
+                strategy={verticalListSortingStrategy}
+            >
                 {panes.map((pane, i) => {
                     if (pane.type === "container") {
                         return (
@@ -259,11 +306,17 @@ const PaneList: React.FC<{
                                 key={pane.id}
                                 rowPane={pane}
                                 index={i}
+                                depth={depth}
                             />
                         );
                     } else {
                         return (
-                            <PaneRow key={pane.id} rowPane={pane} index={i} />
+                            <PaneRow
+                                key={pane.id}
+                                rowPane={pane}
+                                index={i}
+                                depth={depth}
+                            />
                         );
                     }
                 })}
@@ -279,70 +332,74 @@ interface PageListProps {
 const PageList: React.FC<PageListProps> = ({ page }) => {
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
+    const activeItem = useDraggingContext();
     const { isOver, setNodeRef } = useDroppable({
         id,
         data: {
             targetId: id,
-            type: "page"
+            type: "page",
+            depth: 0
         }
     });
-
-    const style = {
-        border: isOver
-            ? "1px solid var(--spectrum-global-color-fuchsia-400)"
-            : "1px solid rgba(0,0,0,0)",
-        background: isOver
-            ? "var(--spectrum-global-color-static-gray-800)"
-            : undefined,
-        transition: "250ms all"
-    };
+    const showDropZone = !!activeItem;
 
     return (
-        <div ref={setNodeRef} style={style}>
-            <HoverableRow>
-                <Flex direction="row" justifyContent="space-between">
-                    <View>
-                        <Button variant="primary" onPress={selectPage} isQuiet>
-                            <Text UNSAFE_style={{ paddingRight: ".5em" }}>
-                                {pageName}
-                            </Text>
-                        </Button>
-                    </View>
-                    <HoverableItem>
-                        <Flex direction="row">
-                            <NewPaneDialog onAddPane={addPaneToPage} />
-                            <DialogTrigger
-                                isDismissable
-                                type="popover"
-                                mobileType="tray"
-                                placement="right top"
-                                containerPadding={1}
+        <div style={{ position: "relative" }}>
+            <ContainerDropTarget
+                ref={setNodeRef}
+                active={showDropZone}
+                isOver={isOver}
+            >
+                <HoverableRow>
+                    <Flex direction="row" justifyContent="space-between">
+                        <View>
+                            <Button
+                                variant="primary"
+                                onPress={selectPage}
+                                isQuiet
                             >
-                                <ActionButton isQuiet>
-                                    <Delete />
-                                </ActionButton>
-                                {(close) => (
-                                    <Dialog width="auto">
-                                        <Heading>Delete {name}?</Heading>
-                                        <Content marginTop="size-100">
-                                            <Button
-                                                variant="negative"
-                                                onPress={() => {
-                                                    removePage();
-                                                    close();
-                                                }}
-                                            >
-                                                <Delete /> Delete
-                                            </Button>
-                                        </Content>
-                                    </Dialog>
-                                )}
-                            </DialogTrigger>
-                        </Flex>
-                    </HoverableItem>
-                </Flex>
-            </HoverableRow>
-            <PaneList panes={panes} />
+                                <Text UNSAFE_style={{ paddingRight: ".5em" }}>
+                                    {pageName}
+                                </Text>
+                            </Button>
+                        </View>
+                        <HoverableItem>
+                            <Flex direction="row">
+                                <NewPaneDialog onAddPane={addPaneToPage} />
+                                <DialogTrigger
+                                    isDismissable
+                                    type="popover"
+                                    mobileType="tray"
+                                    placement="right top"
+                                    containerPadding={1}
+                                >
+                                    <ActionButton isQuiet>
+                                        <Delete />
+                                    </ActionButton>
+                                    {(close) => (
+                                        <Dialog width="auto">
+                                            <Heading>Delete {name}?</Heading>
+                                            <Content marginTop="size-100">
+                                                <Button
+                                                    variant="negative"
+                                                    onPress={() => {
+                                                        removePage();
+                                                        close();
+                                                    }}
+                                                >
+                                                    <Delete /> Delete
+                                                </Button>
+                                            </Content>
+                                        </Dialog>
+                                    )}
+                                </DialogTrigger>
+                            </Flex>
+                        </HoverableItem>
+                    </Flex>
+                </HoverableRow>
+                <PaneList panes={panes} />
+                {/* {showDropZone && <IconEl size="M" />} */}
+            </ContainerDropTarget>
         </div>
     );
 };
@@ -362,157 +419,155 @@ export const MaticoOutlineViewer: React.FC = withRouter(
         const { pages, reparentPane, changePaneIndex } = useApp();
         const [activeItem, setActiveItem] =
             useState<Page | PaneRef | null>(null);
+        const handleDrag = throttle(
+            (event: DragOverEvent | DragEndEvent, isDragEnd: boolean) => {
+                const { over, active } = event;
+                const isSelf = active.id === over?.id;
+                if (isSelf || !over) return;
+                const currentParent = active?.data?.current?.parent;
+                const overParent = over?.data?.current?.parent;
+                const overNewParent =
+                    (over?.data?.current?.type === "page" ||
+                        over?.data?.current?.type === "container") &&
+                    currentParent?.id !== over?.id;
+                const haveParents = currentParent && overParent;
+                const overCousinRow =
+                    haveParents && currentParent.id !== overParent.id;
+                const isSibling =
+                    haveParents && currentParent.id === overParent.id;
+
+                if (overNewParent) {
+                    const paneRefId = active?.data?.current?.paneId;
+                    const targetId = over?.id as string;
+                    if (isDragEnd || over?.data?.current?.depth === 0) {
+                        reparentPane(paneRefId, targetId);
+                    }
+                    return;
+                } else if (overCousinRow) {
+                    const paneRefId = active?.data?.current?.paneId;
+                    const targetId = overParent?.id;
+                    reparentPane(paneRefId, targetId);
+                    return;
+                } else if (isSibling && isDragEnd) {
+                    const newIndex = over?.data?.current?.index;
+                    if (
+                        active?.data?.current?.paneId &&
+                        newIndex !== undefined
+                    ) {
+                        changePaneIndex(
+                            active?.data?.current?.paneId,
+                            newIndex
+                        );
+                    }
+                }
+            }
+        );
 
         //@ts-ignore
         const handleDragStart = ({ active }) => setActiveItem(active);
-        const handleDragOver = ({ over, active}) => {
-            const isSelf = active.id === over.id;
-            if (isSelf) return;
-            const currentParent = active?.data?.current?.parent
-            const overParent = over?.data?.current?.parent
-            const overNewParent = (
-                over?.data?.current?.type === "page"
-                ||
-                over?.data?.current?.type === "container"
-            )
-            const haveParents = currentParent && overParent;
-            const overCousinRow = (
-                haveParents && currentParent.id !== overParent.id
-            )
-            const isSibling = (
-                haveParents && currentParent.id === overParent.id
-            )
+        const handleDragOver = (event: DragOverEvent) =>
+            handleDrag(event, false);
+        const handleDragEnd = (event: DragEndEvent) => {
+            handleDrag(event, true);
+            setActiveItem(null);
+        };
 
-            if (overNewParent) {
-                const paneRefId = active?.id;
-                const targetId = over?.id;
-                reparentPane(paneRefId, targetId);
-                return
-            } else if (overCousinRow) {
-                const paneRefId = active?.id;
-                const targetId = overParent?.id;
-                reparentPane(paneRefId, targetId);
-                return
-            } else if (isSibling) {
-                const newIndex = over?.data?.current?.index
-                if (active?.id && newIndex !== undefined) {
-                    changePaneIndex(active?.id, newIndex)
+        const collisionDetectionStrategy: CollisionDetection = useCallback(
+            (args) => {
+                const { active, collisionRect } = args;
+                const currentParent = active?.data?.current?.parent;
+                // const currentDepth = active?.data?.current?.depth;
+                const currentTop = collisionRect.top;
+                // const pointerIntersections = pointerWithin(args);
+                const intersections = rectIntersection(args).filter((intersected) => {
+                    // Filter for not self, to avoid container dropping into itself
+                    const activeId = active.id;
+                    const intersectedId = intersected.id;
+                    const intersectedPaneRefId =
+                        intersected?.data?.droppableContainer?.data?.current
+                            ?.paneRefId;
+                    return (
+                        activeId !== intersectedId &&
+                        activeId !== intersectedPaneRefId
+                    );
+                });
+
+                const parents = intersections.filter((intersected) => {
+                    const intersectedData =
+                        intersected?.data?.droppableContainer?.data?.current;
+                    const intersectedType = intersectedData?.type;
+                    const intersectedId = intersectedData?.targetId;
+                    const isContainer =
+                        ["page", "container"].includes(intersectedType) &&
+                        intersectedId;
+                    const isNewParent = intersectedId !== currentParent?.id;
+                    return isContainer && isNewParent;
+                });
+
+                const siblings = intersections.filter((intersected) => {
+                    const intersectedData =
+                        intersected?.data?.droppableContainer?.data?.current;
+                    const intersectedType = intersectedData?.type;
+                    const intersectedId = intersectedData?.targetId;
+                    const isContainer =
+                        ["page", "container"].includes(intersectedType) &&
+                        intersectedId;
+                    return !isContainer;
+                });
+                if (!parents.length) {
+                    return closestCorners({
+                        ...args,
+                        droppableContainers: siblings.map(
+                            (item) => item.data.droppableContainer
+                        )
+                    });
                 }
-            }
-        }
-        // const handleDragOver = handleDragEnd;
-            // const overContainer = findContainer(overId);
-            // const activeContainer = findContainer(active.id);
-    
-            // if (!overContainer || !activeContainer) {
-            //     return;
-            // }
-    
-            // if (activeContainer !== overContainer) {
-            //     setItems((items) => {
-            //     const activeItems = items[activeContainer];
-            //     const overItems = items[overContainer];
-            //     const overIndex = overItems.indexOf(overId);
-            //     const activeIndex = activeItems.indexOf(active.id);
-    
-            //     let newIndex: number;
-    
-            //     if (overId in items) {
-            //         newIndex = overItems.length + 1;
-            //     } else {
-            //         const isBelowOverItem =
-            //         over &&
-            //         active.rect.current.translated &&
-            //         active.rect.current.translated.top >
-            //             over.rect.top + over.rect.height;
-    
-            //         const modifier = isBelowOverItem ? 1 : 0;
-    
-            //         newIndex =
-            //         overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-            //     }
-    
-            //     recentlyMovedToNewContainer.current = true;
-    
-            //     return {
-            //         ...items,
-            //         [activeContainer]: items[activeContainer].filter(
-            //         (item) => item !== active.id
-            //         ),
-            //         [overContainer]: [
-            //         ...items[overContainer].slice(0, newIndex),
-            //         items[activeContainer][activeIndex],
-            //         ...items[overContainer].slice(
-            //             newIndex,
-            //             items[overContainer].length
-            //         ),
-            //         ],
-            //     };
-            //     });
-            // }
-        // }
-
-        // const collisionDetectionStrategy: CollisionDetection = useCallback(
-        //     (args) => {
-        //         if (activeItem) {
-        //             return closestCenter({
-        //                 ...args,
-        //                 droppableContainers: args.droppableContainers
-        //             });
-        //         }
-
-        //         // // Start by finding any intersecting droppable
-        //         // const pointerIntersections = pointerWithin(args);
-        //         // const intersections =
-        //         //     pointerIntersections.length > 0
-        //         //         ? // If there are droppables intersecting with the pointer, return those
-        //         //           pointerIntersections
-        //         //         : rectIntersection(args);
-        //         // let overId = getFirstCollision(intersections, "id");
-
-        //         // if (overId != null) {
-        //         //     if (overId === TRASH_ID) {
-        //         //         // If the intersecting droppable is the trash, return early
-        //         //         // Remove this if you're not using trashable functionality in your app
-        //         //         return intersections;
-        //         //     }
-
-        //         //     if (overId in items) {
-        //         //         const containerItems = items[overId];
-
-        //         //         // If a container is matched and it contains items (columns 'A', 'B', 'C')
-        //         //         if (containerItems.length > 0) {
-        //         //             // Return the closest droppable within that container
-        //         //             overId = closestCenter({
-        //         //                 ...args,
-        //         //                 droppableContainers:
-        //         //                     args.droppableContainers.filter(
-        //         //                         (container) =>
-        //         //                             container.id !== overId &&
-        //         //                             containerItems.includes(container.id)
-        //         //                     )
-        //         //             })[0]?.id;
-        //         //         }
-        //         //     }
-
-        //         //     lastOverId.current = overId;
-
-        //         //     return [{ id: overId }];
-        //         // }
-
-        //         // // When a draggable item moves to a new container, the layout may shift
-        //         // // and the `overId` may become `null`. We manually set the cached `lastOverId`
-        //         // // to the id of the draggable item that was moved to the new container, otherwise
-        //         // // the previous `overId` will be returned which can cause items to incorrectly shift positions
-        //         // if (recentlyMovedToNewContainer.current) {
-        //         //     lastOverId.current = activeId;
-        //         // }
-
-        //         // // If no droppable is matched, return the last match
-        //         // return lastOverId.current ? [{ id: lastOverId.current }] : [];
-        //     },
-        //     [activeItem, JSON.stringify(pages)]
-        // );
+                if (!siblings.length) {
+                    return closestCorners({
+                        ...args,
+                        droppableContainers: parents.map(
+                            (item) => item.data.droppableContainer
+                        )
+                    });
+                } else {
+                    const closestSibling = closestCorners({
+                        ...args,
+                        droppableContainers: siblings.map(
+                            (item) => item.data.droppableContainer
+                        )
+                    });
+                    const closestParent = closestCorners({
+                        ...args,
+                        droppableContainers: parents.map(
+                            (item) => item.data.droppableContainer
+                        )
+                    });
+                    if (
+                        parents?.length === 1 &&
+                        parents[0]?.data?.droppableContainer?.data?.current
+                            ?.depth === 0
+                    ) {
+                        return closestSibling;
+                    }
+                    const parentTop = closestParent[0]?.data?.droppableContainer?.rect?.current?.top
+                    const parentBottom = closestParent[0]?.data?.droppableContainer?.rect?.current?.bottom
+                    const parentHeight = parentBottom - parentTop
+                    const parentMid = ((parentTop + parentBottom) / 2) - parentHeight / 2
+                    if (
+                        parentMid < currentTop
+                    ) {
+                        return closestParent;
+                    }
+                    return closestCorners({
+                        ...args,
+                        droppableContainers: [...siblings, ...parents].map(
+                            (item) => item.data.droppableContainer
+                        )
+                    });
+                }
+            },
+            [activeItem, JSON.stringify(pages)]
+        );
 
         const sensors = useSensors(
             useSensor(MouseSensor),
@@ -523,28 +578,43 @@ export const MaticoOutlineViewer: React.FC = withRouter(
         );
 
         return (
-            <Flex direction="column">
-                <Heading margin="size-150" alignSelf="start">
-                    Page Outline
-                </Heading>
-                <DndContext
-                    modifiers={[restrictToVerticalAxis]}
-                    onDragStart={handleDragStart}
-                    // onDragEnd={handleDragEnd}
-                    onDragOver={handleDragOver}
-                    // collisionDetection={collisionDetectionStrategy}
-                    sensors={sensors}
-                    measuring={{
-                        droppable: {
-                            strategy: MeasuringStrategy.Always
-                        }
-                    }}
-                >
-                    {pages.map((page) => (
-                        <PageList key={page.id} page={page} />
-                    ))}
-                </DndContext>
-            </Flex>
+            <DraggingProvider activeItem={activeItem}>
+                <View width="100%" height="auto" overflow="hidden auto">
+                    <Flex direction="column">
+                        <Heading margin="size-150" alignSelf="start">
+                            Page Outline
+                        </Heading>
+                        <DndContext
+                            modifiers={[restrictToVerticalAxis]}
+                            onDragStart={handleDragStart}
+                            onDragEnd={handleDragEnd}
+                            // onDragOver={handleDragOver}
+                            collisionDetection={collisionDetectionStrategy}
+                            sensors={sensors}
+                            measuring={{
+                                droppable: {
+                                    strategy: MeasuringStrategy.Always
+                                }
+                            }}
+                        >
+                            {pages.map((page) => (
+                                <PageList key={page.id} page={page} />
+                            ))}
+                            {!!activeItem &&
+                                createPortal(
+                                    <DragOverlay
+                                        adjustScale={false}
+                                    >
+                                        <DraggablePane
+                                            activeItem={activeItem}
+                                        />
+                                    </DragOverlay>,
+                                    document.body
+                                )}
+                        </DndContext>
+                    </Flex>
+                </View>
+            </DraggingProvider>
         );
     }
 );
