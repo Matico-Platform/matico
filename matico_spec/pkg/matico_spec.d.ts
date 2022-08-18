@@ -21,25 +21,6 @@ export enum MapProjection {
 }
 /**
 */
-export enum JoinType {
-  Inner,
-  Outer,
-  Left,
-  Right,
-}
-/**
-*/
-export enum AggregationType {
-  Min,
-  Max,
-  Sum,
-  CumulativeSum,
-  Mean,
-  Median,
-  StandardDeviation,
-}
-/**
-*/
 export enum LinearLayoutDirection {
   Row,
   Column,
@@ -82,6 +63,25 @@ export enum TabBarPosition {
 export enum ScreenUnits {
   Pixels,
   Percent,
+}
+/**
+*/
+export enum JoinType {
+  Inner,
+  Outer,
+  Left,
+  Right,
+}
+/**
+*/
+export enum AggregationType {
+  Min,
+  Max,
+  Sum,
+  CumulativeSum,
+  Mean,
+  Median,
+  StandardDeviation,
 }
 /**
 */
@@ -214,6 +214,11 @@ export class HistogramPane {
 /**
 */
   name: string;
+}
+/**
+*/
+export class ImputeStep {
+  free(): void;
 }
 /**
 */
