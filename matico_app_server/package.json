@@ -33,6 +33,8 @@
     "imagemin-mozjpeg": "^9.0.0",
     "imagemin-optipng": "^8.0.0",
     "imagemin-svgo": "^9.0.0",
+    "katex": "^0.13.18",
+    "lexical": "^0.3.11",
     "next": "^12.2.0",
     "next-auth": "^4.10.3",
     "next-compose-plugins": "^2.2.1",
@@ -48,7 +50,8 @@
     "react-stately": "^3.16.0",
     "react-ui-cards": "^3.0.0",
     "styled-components": "^5.3.1",
-    "swr": "^1.1.1"
+    "swr": "^1.1.1",
+    "verbum": "github:nofurtherinformation/verbum"
   },
   "devDependencies": {
     "@types/logrocket-react": "^3.0.0",

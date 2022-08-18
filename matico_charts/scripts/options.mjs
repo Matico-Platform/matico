@@ -1,8 +1,6 @@
 // import { wasmLoader } from "esbuild-plugin-wasm";
 // import inlineWorkerPlugin from "esbuild-plugin-inline-worker";
 import fs from "fs";
-import plugin from 'node-stdlib-browser/helpers/esbuild/plugin'
-import stdLibBrowser from "node-stdlib-browser"
 import {createRequire} from 'module'
 
 const require = createRequire(import.meta.url)

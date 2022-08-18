@@ -5,8 +5,6 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
     openAnalyzer:false
 })
 
-const Visualizer = require('webpack-visualizer-plugin');
-
 
 const withTM = require("next-transpile-modules")(
   [
@@ -59,10 +57,9 @@ const withTM = require("next-transpile-modules")(
     "@maticoapp/matico_components",
     "verbum",
     "lexical",
-    "katex",
-    "react-mde",
+    "katex"
   ],
-  { resolveSymlinks: false }
+  { resolveSymlinks: true}
 );
 
 const config = {
@@ -118,6 +115,6 @@ const config = {
 };
 
 module.exports= (_phase,{defaultConfig})=>{
-  const plugins = [withTM, withBundleAnalyzer]
+  const plugins = [withTM]
   return plugins.reduce((acc,plugin)=>plugin(acc), config)
 }

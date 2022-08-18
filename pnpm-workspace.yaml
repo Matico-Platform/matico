@@ -1,0 +1,7 @@
+packages:
+  - "editor"
+  - "matico_app_server"
+  - "matico_charts"
+  - "matico_spec"
+  - "matico_components"
+  - "matico_types"

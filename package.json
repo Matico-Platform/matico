@@ -7,15 +7,6 @@
   "author": "Stuart Lynn <stuart.lynn@gmail.com>",
   "license": "MIT",
   "private": true,
-  "workspaces": [
-    "./matico_spec",
-    "./matico_components",
-    "./matico_types",
-    "./matico_admin",
-    "./matico_app_server",
-    "./matico_charts",
-    "./editor"
-  ],
   "nohoist": [
     "**/webpack**",
     "**/babel-loader**"
@@ -28,5 +19,8 @@
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
   },
-  "packageManager": "yarn@3.2.2"
+  "packageManager": "yarn@3.2.2",
+  "devDependencies": {
+    "nx": "^14.5.7"
+  }
 }
