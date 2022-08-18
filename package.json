@@ -20,7 +20,9 @@
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
   },
   "packageManager": "yarn@3.2.2",
+
   "devDependencies": {
-    "nx": "^14.5.7"
+    "nx": "^14.5.7",
+    "next": "^12.2.0"
   }
 }
