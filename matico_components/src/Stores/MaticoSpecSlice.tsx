@@ -82,6 +82,15 @@ export const stateSlice = createSlice({
         addPage: (state, action: PayloadAction<{ page: Page }>) => {
             state.spec.pages.push(action.payload.page);
         },
+        setPageIndex: (state, action: PayloadAction<{pageId: string, newIndex: number}>) => {
+            const {pageId, newIndex} = action.payload;
+            const page = state.spec.pages.find(page => page.id === pageId);
+            if (page) {
+                const oldIndex = state.spec.pages.indexOf(page);
+                state.spec.pages.splice(oldIndex, 1);
+                state.spec.pages.splice(newIndex, 0, page);
+            }
+        },
         removePage: (
             state,
             action: PayloadAction<{
@@ -111,6 +120,26 @@ export const stateSlice = createSlice({
           action: PayloadAction<App>
         )=>{
           state.normalizedSpec = action.payload 
+        },
+        setPaneRefIndex: (
+            state,
+            action: PayloadAction<{
+
+                paneRefId: string;
+                newIndex: number;
+            }>
+        ) => {
+            const { paneRefId, newIndex } = action.payload;
+            const parent = findRefParent(state.spec, paneRefId);
+            if (parent) {
+                //@ts-ignore if parent is found it is known to be of type ContainerPane or Page
+                const panes = parent.panes;
+                const pane = _.remove(
+                    panes,
+                    (p: PaneRef) => p.paneId === paneRefId
+                );
+                panes.splice(newIndex, 0, pane[0]);
+            }
         },
         setPaneOrder: (
             state,
@@ -418,6 +447,7 @@ export const {
     setEditing,
     setSpec,
     addPage,
+    setPageIndex,
     removePage,
     removePane,
     addPaneToPage,
@@ -429,6 +459,7 @@ export const {
     setLayerOrder,
     removeLayer,
     setPaneOrder,
+    setPaneRefIndex,
     setCurrentEditElement,
     addPane,
     addPaneRefToContainer,

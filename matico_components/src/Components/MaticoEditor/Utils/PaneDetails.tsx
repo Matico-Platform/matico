@@ -10,24 +10,26 @@ import { ContainerPane, Layer, Pane, PanePosition } from "@maticoapp/matico_type
 import {v4 as uuid} from 'uuid'
 import {MaticoTextPaneComponents as text} from "Components/Panes/MaticoTextPane";
 
-export const IconForPaneType = (PaneType: string) => {
+export const IconForPaneType = (PaneType: string, props?: any) => {
     switch (PaneType) {
         case "histogram":
-            return <HistogramIcon />;
+            return <HistogramIcon {...props} />;
         case "pieChart":
-            return <PieChartIcon />;
+            return <PieChartIcon {...props} />;
         case "text":
-            return text.icon;
+          const El = text.icon
+          // @ts-ignore
+          return <El {...props} />;
         case "map":
-            return <MapIcon />;
+            return <MapIcon {...props} />;
         case "scatterplot":
-            return <ScatterIcon />;
+            return <ScatterIcon {...props} />;
         case "controls":
-            return <PropertiesIcon />;
+            return <PropertiesIcon {...props}  />;
         case "container":
-            return <Border />; 
+            return <Border {...props} />; 
         case "staticMap":
-            return <MapIcon/>; }
+            return <MapIcon {...props} />; }
 };
 
 type AvaliablePanesSection = {
