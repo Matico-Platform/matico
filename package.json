@@ -15,7 +15,7 @@
     "predeploy": "yarn run build",
     "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
     "dev-editor": "concurrently \"cd matico_components && yarn build-dev\" \"cd editor && yarn start\" ",
-    "build": " (cd matico_spec && yarn build) && yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  yarn workspace matico_app_server build",
+    "build": " (cd matico_spec && pnpm build) && npx nx  build-prod @maticoapp/matico_charts && npx nx  build-prod &@maticoapp/matico_components&  npx nx build matico_app_server ",
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
   },
