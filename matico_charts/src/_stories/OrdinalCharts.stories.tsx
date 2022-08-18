@@ -275,7 +275,7 @@ LineComponentDataExample.args = {
     scaleType: "linear",
     position: "left"
   },
-  xCol: "date",             // actually xCol and yCol
+  xCol: "date",           
   yCol: "value",
   lineFunction: null, 
   layers: [{
@@ -295,14 +295,14 @@ LineComponentFunctionExample.args = {
     scaleType: "linear",
     position: "left"
   },
-  xExtent: [1,4],
-  yExtent: [1,20],
+  xExtent: [-5,20],
+  yExtent: [-1,1],
   xCol: "date",
   yCol: "value", 
   layers: [{
     type: "line",
-    lineFunction: (x) => x**2,
-    xBounds: [1,4],
+    lineFunction: (x) => Math.sin(x),
+    xBounds: [-5,20],
   }],
   data: SampleLineData,
 }

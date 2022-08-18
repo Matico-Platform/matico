@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { LineSpec } from '../../types';
 import { LinePath } from '@visx/shape';
-import { curveLinear } from '@visx/curve';
+import { curveLinear, curveMonotoneX } from '@visx/curve';
 
 // Divides an interval [a, b] into 100 subintervals
 export const intervalPartitioner = (interval: number[]) => {
@@ -43,15 +43,8 @@ export const LineComponent = (props: LineSpec) => {
     ? tickMarks.forEach(element => lineFunctionPoints.push([element, lineFunction(element)]))
     : lineFunctionPoints.push(0)
 
-  console.log(lineFunctionPoints)
-
   const chartData = lineFunction
-    ? [
-        //@ts-ignore
-        [xBounds[0], lineFunction(xBounds[0])],
-        //@ts-ignore
-        [xBounds[1], lineFunction(xBounds[1])],
-      ]
+    ? lineFunctionPoints
     : data;
 
   if (!chartData) return null; 
@@ -61,7 +54,7 @@ export const LineComponent = (props: LineSpec) => {
         stroke={lineColor || 'gray'}
         strokeWidth={lineWidth || 2}
         data={lineFunctionPoints}
-        curve={curveLinear}
+        curve={curveMonotoneX}
         //@ts-ignore
         x={(d) => xScale(d[0])}
         //@ts-ignore
