@@ -58,7 +58,7 @@ function DroppableContainer({
     renderItem,
     getIndex,
     ...props
-}: ContainerProps & {
+}: React.FC<React.PropsWithChildren<ContainerProps>> & {
     disabled?: boolean;
     id: UniqueIdentifier;
     panes: PaneRef[];
@@ -485,7 +485,7 @@ export function MultipleContainers({
                     items={[...containers, PLACEHOLDER_ID]}
                     strategy={verticalListSortingStrategy}
                 >
-                    {pages.map((page as Page) => (
+                    {pages.map((page : any) => (
                         <DroppableContainer
                             key={page.id}
                             id={page.id}

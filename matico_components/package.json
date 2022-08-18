@@ -16,7 +16,6 @@
     "start": "yarn build-dev"
   },
   "dependencies": {
-    "@adobe/react-spectrum": "^3.20.0",
     "@apache-arrow/es5-cjs": "^8.0.0",
     "@deck.gl/core": "^8.8.5",
     "@deck.gl/layers": "^8.8.5",
@@ -41,14 +40,9 @@
     "@nebula.gl/editor": "^1.0.2",
     "@nebula.gl/layers": "^1.0.2",
     "@nebula.gl/overlays": "^1.0.2",
-    "@react-spectrum/color": "3.0.0-beta.14",
-    "@react-spectrum/list": "^3.0.0-rc.0",
     "@react-types/shared": "^3.13.1",
     "@reduxjs/toolkit": "^1.6.2",
-    "@spectrum-icons/illustrations": "^3.2.2",
-    "@spectrum-icons/workflow": "^4.0.1",
     "@types/d3-scale": "^4.0.2",
-    "@uiw/react-md-editor": "^3.7",
     "@visx/geo": "^2.10.0",
     "@visx/legend": "^2.10.0",
     "@visx/responsive": "^2.10.0",
@@ -104,7 +98,8 @@
     "esbuild-plugin-replace": "^1.0.9",
     "esbuild-plugin-wasm": "^1.0.0",
     "node-stdlib-browser": "^1.2.0",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.0.2",
+    "styled-react-modal": "^3.0.0",
     "typescript": "^4.5.3"
   },
   "peerDependencies": {
@@ -112,7 +107,12 @@
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-mde": "^11.5.0",
-    "styled-components": "^5.3.1"
+    "styled-components": "^5.3.1",
+    "styled-react-modal": "^3.0.0",
+    "@adobe/react-spectrum": "^3.20.0",
+    "@react-spectrum/color": "3.0.0-beta.14",
+    "@react-spectrum/list": "^3.0.0-rc.0",
+    "@spectrum-icons/illustrations": "^3.2.2",
+    "@spectrum-icons/workflow": "^4.0.1"
   }
 }

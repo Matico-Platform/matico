@@ -1,6 +1,5 @@
 import React from "react";
 import _ from "lodash";
-import "react-mde/lib/styles/css/react-mde-all.css";
 import {
     ComboBox,
     Flex,
@@ -14,10 +13,6 @@ import { useIconList } from "Hooks/useIconList";
 import { usePage } from "Hooks/usePage";
 import { GatedAction } from "../EditorComponents/GatedAction";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
-import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
-import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { IconForPaneType } from "../Utils/PaneDetails";
-import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
 import {PaneCollectionEditor} from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
 
 export interface PageEditorProps {
