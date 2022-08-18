@@ -3,6 +3,7 @@ import { datasetsReducer } from "./MaticoDatasetSlice";
 import {errorReducer} from "./MaticoErrorSlice";
 import { specReducer } from "./MaticoSpecSlice";
 import { variableReducer } from "./MaticoVariableSlice";
+import { editorReducer } from "./editorSlice";
 import { DatasetServiceMiddleWare } from "./MiddleWare/DatasetServiceMiddleWare";
 
 export const store = configureStore({
@@ -10,7 +11,8 @@ export const store = configureStore({
         variables: variableReducer,
         spec: specReducer,
         errors: errorReducer, 
-        datasets: datasetsReducer
+        datasets: datasetsReducer,
+        editor: editorReducer
     },
     middleware: [DatasetServiceMiddleWare()]
 });
