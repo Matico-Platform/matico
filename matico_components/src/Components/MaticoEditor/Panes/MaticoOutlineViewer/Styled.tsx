@@ -8,7 +8,7 @@ export const HoverableItem = styled.span`
 export const HoverableRow = styled.div`
     position: relative;
     border-bottom: 1px solid var(--spectrum-global-color-gray-200);
-    &:hover ${HoverableItem} {
+    &:hover ${HoverableItem}, &:focus-within ${HoverableItem}, &:focus ${HoverableItem} {
         opacity: 1;
     }
 `;
@@ -50,6 +50,7 @@ export const DraggableContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     box-sizing: border-box;
     padding: 0 1em;
     width: 100%;

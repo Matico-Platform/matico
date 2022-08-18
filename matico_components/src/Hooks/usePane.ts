@@ -33,6 +33,10 @@ export const usePane = (paneRef: PaneRef) => {
         findParent(selector.spec.spec, paneRef.id)
     ) as Page | ContainerPane;
 
+    // after spec update, may have a race condition 
+    // and no parent is present
+    if (!parent) return {};
+
     const currentIndex = _.indexOf(parent.panes, paneRef);
 
     const updatePane = (update: Partial<Pane>) => {
