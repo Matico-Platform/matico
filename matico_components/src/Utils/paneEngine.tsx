@@ -124,7 +124,7 @@ export const PaneSelector: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
         } 
     },[isEdit && currentEditElement?.id])
 
-    const PaneComponent = panes?.[paneType]?.['editablePane'] && editComponent ? panes[paneType]['editablePane'] : panes[paneType]['pane'] || fallbackPanes[paneType];
+    const PaneComponent = panes?.[paneType]?.['editablePane'] && editComponent ? panes[paneType]['editablePane'] : panes?.[paneType]?.['pane'] || fallbackPanes[paneType];
 
     const WrapperComponent = isEdit ? SelectorWrapper : React.Fragment;
 
