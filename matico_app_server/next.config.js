@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
-const withPlugins = require("next-compose-plugins");
 const optimizedImages = require("next-optimized-images");
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+    enabled: process.env.ANALYZE==='true',
+    openAnalyzer:false
+})
+
+const Visualizer = require('webpack-visualizer-plugin');
+
 
 const withTM = require("next-transpile-modules")(
   [
@@ -59,7 +65,7 @@ const withTM = require("next-transpile-modules")(
   { resolveSymlinks: false }
 );
 
-module.exports = withPlugins([withTM, optimizedImages], {
+const config = {
   reactStrictMode: false,
   typescript: {
     ignoreBuildErrors: true,
@@ -109,4 +115,9 @@ module.exports = withPlugins([withTM, optimizedImages], {
 
     return config;
   },
-});
+};
+
+module.exports= (_phase,{defaultConfig})=>{
+  const plugins = [withTM, withBundleAnalyzer]
+  return plugins.reduce((acc,plugin)=>plugin(acc), config)
+}
