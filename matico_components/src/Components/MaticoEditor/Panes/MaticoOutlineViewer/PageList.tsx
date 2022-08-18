@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     ActionButton,
     Button,
@@ -15,15 +15,25 @@ import { usePage } from "Hooks/usePage";
 import Delete from "@spectrum-icons/workflow/Delete";
 import { useDroppable } from "@dnd-kit/core";
 import { NewPaneDialog } from "../../EditorComponents/NewPaneDialog/NewPaneDialog";
-import { HoverableRow, HoverableItem, DragButton } from "./Styled";
+import {
+    HoverableRow,
+    HoverableItem,
+    DragButton,
+    DraggableContainer,
+    DragContainer
+} from "./Styled";
 import { useDraggingContext } from "./DraggingContext";
 import { ContainerDropTarget } from "./Styled";
 import { PaneList } from "./PaneList";
 import { useSortable } from "@dnd-kit/sortable";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
+import styled from "styled-components";
+import { RouteComponentProps } from "react-router-dom";
+import { PageProvider } from "./PageContext";
 interface PageListProps {
     page: Page;
     children?: React.ReactNode;
+    route?: RouteComponentProps;
 }
 
 // const PageListOuter: React.FC<PageListProps> = ({ page, children }) => {
@@ -35,7 +45,7 @@ interface PageListProps {
 // };
 // div style={{ position: "relative", marginTop: "2em", ...style }}
 
-export const PageList: React.FC<PageListProps> = ({ page }) => {
+export const PageList: React.FC<PageListProps> = ({ page, route }) => {
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
     const activeItem = useDraggingContext();
@@ -73,68 +83,97 @@ export const PageList: React.FC<PageListProps> = ({ page }) => {
     const showDropZone = // @ts-ignore
         !!activeItem && activeItem?.data?.current?.type !== "page";
 
+    const navigateToPage = () => {
+        const onPage = route?.location?.path === page.path;
+        !onPage && route?.history.push(page.path);
+    };
+    const handlePageButtonClick = () => {
+        console.log('NAVIGATING TO PAGE')
+        navigateToPage();
+        selectPage();
+    };
+    useEffect(() => {
+        isOver && showDropZone && navigateToPage();
+    }, [isOver]);
+
     return (
-        <HoverableRow
-            {...attributes}
-            {...listeners}
-            ref={setSortableNodeRef}
-            style={{ ...style, marginTop: "1em" }}
-            squash
-        >
+        <PageProvider navigateToPage={navigateToPage}>
             <ContainerDropTarget
                 ref={setNodeRef}
                 active={showDropZone}
                 isOver={isOver}
                 depth={depth}
             >
-                <Flex direction="row" justifyContent="space-between">
-                    <Flex direction="row" alignItems="center">
-                        <HoverableItem>
-                            <DragButton ref={setActivatorNodeRef}>
-                                <DragHandle color="positive" />
-                            </DragButton>
-                        </HoverableItem>
-                        <Button variant="primary" onPress={selectPage} isQuiet>
-                            <Text UNSAFE_style={{ paddingRight: ".5em" }}>
-                                {pageName}
-                            </Text>
-                        </Button>
-                    </Flex>
-                    <HoverableItem>
-                        <Flex direction="row">
-                            <NewPaneDialog onAddPane={addPaneToPage} />
-                            <DialogTrigger
-                                isDismissable
-                                type="popover"
-                                mobileType="tray"
-                                placement="right top"
-                                containerPadding={1}
-                            >
-                                <ActionButton isQuiet>
-                                    <Delete />
-                                </ActionButton>
-                                {(close) => (
-                                    <Dialog width="auto">
-                                        <Heading>Delete {name}?</Heading>
-                                        <Content marginTop="size-100">
-                                            <Button
-                                                variant="negative"
-                                                onPress={() => {
-                                                    removePage();
-                                                    close();
-                                                }}
-                                            >
-                                                <Delete /> Delete
-                                            </Button>
-                                        </Content>
-                                    </Dialog>
-                                )}
-                            </DialogTrigger>
+                <HoverableRow
+                    ref={setSortableNodeRef}
+                    style={{ ...style, marginTop: "1em" }}
+                >
+                    <DragContainer onClick={handlePageButtonClick}>
+                        <Flex direction="row" justifyContent="space-between">
+                            <Flex direction="row" alignItems="center">
+                                <HoverableItem>
+                                    <DragButton
+                                        ref={setActivatorNodeRef}
+                                        {...attributes}
+                                        {...listeners}
+                                    >
+                                        <DragHandle color="positive" />
+                                    </DragButton>
+                                </HoverableItem>
+                                {/* <Button
+                                variant="primary"
+                                onPress={handlePageButtonClick}
+                                isQuiet
+                            > */}
+                                <Text
+                                    UNSAFE_style={{
+                                        padding: "0 .5em",
+                                        fontWeight: "bold"
+                                    }}
+                                >
+                                    {pageName}
+                                </Text>
+                                {/* </Button> */}
+                            </Flex>
+                            <HoverableItem>
+                                <Flex direction="row">
+                                    <NewPaneDialog onAddPane={addPaneToPage} />
+                                    <DialogTrigger
+                                        isDismissable
+                                        type="popover"
+                                        mobileType="tray"
+                                        placement="right top"
+                                        containerPadding={1}
+                                    >
+                                        <ActionButton isQuiet>
+                                            <Delete />
+                                        </ActionButton>
+                                        {(close) => (
+                                            <Dialog width="auto">
+                                                <Heading>
+                                                    Delete {name}?
+                                                </Heading>
+                                                <Content marginTop="size-100">
+                                                    <Button
+                                                        variant="negative"
+                                                        onPress={() => {
+                                                            removePage();
+                                                            close();
+                                                        }}
+                                                    >
+                                                        <Delete /> Delete
+                                                    </Button>
+                                                </Content>
+                                            </Dialog>
+                                        )}
+                                    </DialogTrigger>
+                                </Flex>
+                            </HoverableItem>
                         </Flex>
-                    </HoverableItem>
-                </Flex>
+                    </DragContainer>
+                </HoverableRow>
                 <PaneList panes={panes} />
             </ContainerDropTarget>
-        </HoverableRow>
+        </PageProvider>
     );
 };

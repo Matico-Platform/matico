@@ -48,8 +48,15 @@ export const ContainerDropTarget = styled.div<{
         opacity: ${({ active, isOver }) => (isOver && active ? ".75" : active ? "0.5" : "0")};
     }
 `;
-export const DragContainer = styled.div`
+export const DragContainer = styled.button`
     transition: 250ms box-shadow;
+    border: none;
+    outline: none;
+    background: none;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
 `;
 
 export const DraggableContainer = styled.div`

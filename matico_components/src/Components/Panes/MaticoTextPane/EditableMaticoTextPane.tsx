@@ -22,6 +22,7 @@ import styled from "styled-components";
 import MoreCircle from "@spectrum-icons/workflow/MoreCircle";
 import { useFormattedText } from "Hooks/useFormattedText";
 import { MaticoTextPane } from "./MaticoTextPane";
+import { useMaticoSelector } from "Hooks/redux";
 export interface EditableMaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
     updatePane: (e: any) => void;

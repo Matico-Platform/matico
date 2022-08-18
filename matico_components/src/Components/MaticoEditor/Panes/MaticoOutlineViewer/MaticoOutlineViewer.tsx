@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     ActionButton,
     Button,
@@ -33,7 +33,6 @@ import { PageList } from "./PageList";
 import { HoverableItem, HoverableRow } from "./Styled";
 import {
     SortableContext,
-    verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 
 type MaticoOutlineViewerProps = RouteComponentProps & {};
@@ -44,6 +43,7 @@ export const MaticoOutlineViewer: React.FC = withRouter(
         const { pages, reparentPane, changePaneIndex, addPage, updatePageIndex } = useApp();
         const [activeItem, setActiveItem] =
             useState<Page | PaneRef | null>(null);
+        
         const handleDrag = throttle(
             (event: DragOverEvent | DragEndEvent, isDragEnd: boolean) => {
                 const { over, active } = event;
@@ -146,7 +146,7 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                                 items={pages.map((page) => page.id)}
                             >
                                 {pages.map((page) => (
-                                    <PageList key={page.id} page={page} />
+                                    <PageList key={page.id} page={page} route={{history, location}} />
                                 ))}
                                 {!!activeItem &&
                                     createPortal(

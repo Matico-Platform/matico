@@ -1,25 +1,17 @@
-import React from "react";
-import {
-    ActionButton,
-    Button,
-    Flex,
-    Text,
-    View
-} from "@adobe/react-spectrum";
-import {
-    Pane,
-    PaneRef
-} from "@maticoapp/matico_types/spec";
+import React, { useEffect } from "react";
+import { ActionButton, Flex, Text, View } from "@adobe/react-spectrum";
+import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
 import Delete from "@spectrum-icons/workflow/Delete";
 import { usePane } from "Hooks/usePane";
-import {
-    useSortable,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
 import { NewPaneDialog } from "../../EditorComponents/NewPaneDialog/NewPaneDialog";
 import { IconForPaneType } from "../../Utils/PaneDetails";
 import { HoverableItem, HoverableRow } from "./Styled";
 import { DragContainer, DragButton } from "./Styled";
+import { useMaticoSelector } from "Hooks/redux";
+import { usePageContext } from "./PageContext";
+import { useEditorActions } from "Hooks/useEditorActions";
 
 export const PaneRow: React.FC<{
     rowPane: PaneRef;
@@ -29,34 +21,77 @@ export const PaneRow: React.FC<{
     addPaneToContainer?: (p: Pane) => void;
 }> = ({ rowPane, addPaneToContainer, index, children }) => {
     const { pane, removePaneFromParent, parent, selectPane } = usePane(rowPane);
-    const { attributes, listeners, setNodeRef, transform, transition } =
-        useSortable({
-            id: rowPane.id,
-            data: {
-                paneRefId: rowPane.id,
-                paneId: pane.id,
-                pane,
-                parent,
-                index
-            }
-            // getNewIndex,
-        });
+    const { setHovered } = useEditorActions(rowPane.id);
+    const { currentEditElement } = useMaticoSelector((state) => state.spec);
+    const currentHoveredRef = useMaticoSelector(
+        (state) => state.editor.hoveredRef
+    );
+    const navigateToPage = usePageContext();
+    const isActiveRef = currentEditElement?.id === rowPane.id;
+    const isHoveredRef = currentHoveredRef === rowPane.id;
+    
+    const handleHover = () => {
+        !isActiveRef && setHovered();
+    };
+    const handleMouseLeave = () => {
+        setHovered(null);
+    };
+    const handleClick = () => {
+        selectPane();
+    };
+    
+    useEffect(() => {
+        // @ts-ignore
+        isActiveRef && navigateToPage();
+    }, [isActiveRef]);
 
-    const style = transform
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        setActivatorNodeRef,
+        transform,
+        transition
+    } = useSortable({
+        id: rowPane.id,
+        data: {
+            paneRefId: rowPane.id,
+            paneId: pane.id,
+            pane,
+            parent,
+            index
+        }
+        // getNewIndex,
+    });
+
+    const transformStyle = transform
         ? {
               transform: `translate(${transform?.x}px, ${transform?.y}px)`,
               transition
           }
         : {};
+    const backgroundStyle = {
+        background: isActiveRef
+            ? "var(--spectrum-global-color-gray-200)"
+            : isHoveredRef
+            ? "var(--spectrum-global-color-gray-300)"
+            : "rgba(0,0,0,0)"
+    };
 
     return (
         <HoverableRow
             ref={setNodeRef}
-            style={style}
+            style={{
+                ...transformStyle,
+                ...backgroundStyle
+            }}
             {...attributes}
-            {...listeners}
         >
-            <DragContainer>
+            <DragContainer
+                onMouseEnter={handleHover}
+                onMouseLeave={handleMouseLeave}
+                onClick={handleClick}
+            >
                 <View position="relative" width="100%">
                     <Flex
                         direction="row"
@@ -64,21 +99,27 @@ export const PaneRow: React.FC<{
                         justifyContent="start"
                         wrap="nowrap"
                     >
-                        <DragButton>
+                        <DragButton
+                            {...listeners}
+                            ref={setActivatorNodeRef}
+                        >
                             <DragHandle color="positive" />
                         </DragButton>
-                        {IconForPaneType(pane.type)}
-                        <Button variant="primary" onPress={selectPane} isQuiet>
-                            <Text
-                                UNSAFE_style={{
-                                    textOverflow: "ellipsis",
-                                    overflowX: "hidden",
-                                    whiteSpace: "nowrap"
-                                }}
-                            >
-                                {pane.name}
-                            </Text>
-                        </Button>
+                        {IconForPaneType(pane.type, {
+                            color: isActiveRef ? "positive" : undefined
+                        })}
+                        <Text
+                            UNSAFE_style={{
+                                textOverflow: "ellipsis",
+                                overflowX: "hidden",
+                                whiteSpace: "nowrap",
+                                paddingLeft: ".5em",
+                                fontWeight: "bold"
+                            }}
+                        >
+                            {pane.name}
+                        </Text>
+                        {/* </Button> */}
                     </Flex>
                     <HoverableItem
                         style={{
@@ -103,4 +144,3 @@ export const PaneRow: React.FC<{
         </HoverableRow>
     );
 };
-
