@@ -27,7 +27,7 @@
     "predeploy": "yarn run build",
     "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
     "dev-editor": "concurrently \"cd matico_components && yarn build-dev\" \"cd editor && yarn start\" ",
-    "build": "yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  && (cd matico_app_server yarn prisma generate && yarn build )",
+    "build": "yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  (cd matico_app_server yarn prisma generate && yarn build )",
   
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
