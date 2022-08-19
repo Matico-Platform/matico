@@ -19,7 +19,7 @@ export const AppCard: React.FC<AppCardInterface> = ({
   return (
     <tr>
       <td>
-        <h2>{app.name}</h2>
+        <p><b>{app.name}</b></p>
       </td>
       <td>
         <p>{app.owner.name} </p>

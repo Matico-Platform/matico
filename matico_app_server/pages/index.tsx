@@ -123,7 +123,7 @@ const Home: React.FC<HomePageProps> = ({
     <Content minHeight={"100vh"}>
       <Header />
       <Flex direction="column" gridArea="content" maxWidth="90vw" marginX="auto">
-        <TemplateSelector onSelectTemplate={createNewApp} />
+        <TemplateSelector onSelectTemplate={createNewApp} recentApps={recentApps || initalRecentApps} />
         {userApps && (
           <Flex id="Your Apps" direction="column">
             <Heading>Your Apps</Heading>
