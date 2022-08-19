@@ -23,6 +23,7 @@ export const authOptions = {
     // })
   ],
   adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET
 }
 
 export default NextAuth(authOptions);
