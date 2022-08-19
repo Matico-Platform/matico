@@ -21,9 +21,11 @@ export const Login: React.FC = ()=>{
           <Header>Signin</Header>
           <Content>
             <ActionButton onPress={()=>signIn("github")}>Signin With Github</ActionButton>
+            {/*
             <ActionButton onPress={()=>signIn("google")}>Signin With Google</ActionButton>
             <ActionButton onPress={()=>signIn("gitlab")}>Signin With Gitlab</ActionButton>
             <ActionButton onPress={()=>signIn("facebook")}>Signin With Facebook</ActionButton>
+            */}
             </Content>
           </>
         }
