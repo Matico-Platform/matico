@@ -5,6 +5,7 @@ import {getSession} from "next-auth/react";
 import dynamic from "next/dynamic";
 import {useMemo} from "react";
 import {AppOptionsBar} from "../../../components/AppOptionsBar/AppOptionsBar";
+import {MaticoProvider} from "../../../components/DatasetCreation/S3Provider";
 import {useApp} from "../../../hooks/useApp";
 
 
@@ -19,7 +20,7 @@ export const getServerSideProps:GetServerSideProps =async(context)=>{
     where:{
       id: params ? params[0] : undefined  
     },
-    include:{owner:true, _count:{ select:{colaborators:true}}}
+    include:{owner:true, _count:{select:{colaborators:true}}}
   }) 
 
   if(!app) return {props:{ app: null, error:"Failed to find app"}}
@@ -72,7 +73,9 @@ const AppPresentPage : React.FC<AppPresentPageProps>= ({initialApp,error})=>{
                 }}
                 spec={initialApp.spec}
                 basename={`/apps/edit/${initialApp.id}`}
-                editActive={true} />
+                editActive={true} 
+                datasetProviders={[MaticoProvider]}
+                />
       }
       else if(error){
       return(
