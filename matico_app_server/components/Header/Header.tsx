@@ -4,10 +4,16 @@ export const Header: React.FC= ()=>{
   
   return (
     <Flex  direction='row' alignItems='center' justifyContent='space-between'  width="100%" gridArea={'header'} >
-        <Text>Matico</Text>
-        <View justifySelf="flex-end">
-          <Login />
-        </View>
+        <Flex direction='row'>
+          <View paddingX="size-200" justifySelf='flex-start'>
+            <Text>Matico</Text>
+          </View>
+        </Flex>
+        <Flex direction='row' >
+          <View justifySelf="flex-end" paddingX="size-200">
+            <Login />
+          </View>
+      </Flex>
     </Flex>
   )
 }
