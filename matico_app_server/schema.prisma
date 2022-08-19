@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://matico@localhost:5432/apps?schema=public"
+  url      = "postgresql://dh:1q2w3e4r@localhost:5432/apps?schema=public"
 }
 
 generator client {

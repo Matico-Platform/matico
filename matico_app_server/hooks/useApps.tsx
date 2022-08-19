@@ -57,6 +57,7 @@ export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
     })
       .then((r) => r.json())
       .then((r) =>{
+        console.log(r)
         mutate()
         return r 
       });

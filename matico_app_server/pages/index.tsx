@@ -2,13 +2,13 @@ import type { GetServerSideProps, NextPage } from "next";
 import {
   Divider,
   Flex,
-  Header,
   Grid,
   View,
   ActionButton,
   Text,
   Heading,
   TextField,
+  Content,
 } from "@adobe/react-spectrum";
 import { getSession } from "next-auth/react";
 import { PrismaClient, App, User } from "@prisma/client";
@@ -18,7 +18,10 @@ import { useRouter } from "next/router";
 import { useApps, UseAppsArgs } from "../hooks/useApps";
 import { TemplateSelector } from "../components/TemplateSelector/TemplatesSelector";
 import { userFromSession } from "../utils/db";
-import {useState} from "react";
+import { useState } from "react";
+import { useNotifications } from "../hooks/useNotifications";
+import { Header } from "../components/Header/Header";
+import styled from "styled-components";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const prisma = new PrismaClient();
@@ -48,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })
     : null;
 
-    console.log("user apps are ", userApps)
+  console.log("user apps are ", userApps);
 
   return {
     props: {
@@ -65,25 +68,38 @@ interface HomePageProps {
   initalUserApps?: Array<App>;
 }
 
+const AppsTable = styled.table`
+  margin: 2em 0;
+  border-collapse: collapse;
+  th {
+    text-align: left;
+  }
+  td {
+    border-bottom:1px solid white;
+  }
+`
+
 const Home: React.FC<HomePageProps> = ({
   user,
   initalRecentApps,
   initalUserApps,
 }) => {
   const router = useRouter();
-  const [userSearchTerm, setUserSearchTerm] = useState("")
+  const [userSearchTerm, setUserSearchTerm] = useState("");
+  const { notify, NotificationElement } = useNotifications();
 
   const { apps: recentApps } = useApps(
     { public: true, order: "updatedAt" },
     initalRecentApps
   );
 
-  let userAppParams: UseAppsArgs={
-     ownerId: user?.id, order: "updatedAt"
-  }
+  let userAppParams: UseAppsArgs = {
+    ownerId: user?.id,
+    order: "updatedAt",
+  };
 
-  if(userSearchTerm.length){
-    userAppParams.search = userSearchTerm
+  if (userSearchTerm.length) {
+    userAppParams.search = userSearchTerm;
   }
 
   const { apps: userApps, createAppFromTemplate } = useApps(
@@ -95,45 +111,58 @@ const Home: React.FC<HomePageProps> = ({
 
   const createNewApp = (template: string) => {
     createAppFromTemplate(template).then((app) => {
-      router.push(`/apps/edit/${app.id}`);
+      if (app?.error) {
+        notify(app.error);
+      } else {
+        router.push(`/apps/edit/${app.id}`);
+      }
     });
   };
 
   return (
-    <StandardLayout>
-      <Flex direction="column" gridArea="content">
+    <Content minHeight={"100vh"}>
+      <Header />
+      <Flex direction="column" gridArea="content" maxWidth="90vw" marginX="auto">
         <TemplateSelector onSelectTemplate={createNewApp} />
         {userApps && (
           <Flex id="Your Apps" direction="column">
             <Heading>Your Apps</Heading>
-            <TextField value={userSearchTerm} label="search" onChange={setUserSearchTerm} />
-            <Grid
-              rows={["1fr", "1fr"]}
-              columns={["1fr", "1fr", "1fr"]}
-              flex={1}
-            >
-              {(userApps || initalUserApps).map((userApp: App) => (
-                <AppCard
-                  key={userApp.id}
-                  app={userApp}
-                  includeEdit
-                  includeFork
-                  includeView
-                />
-              ))}
-            </Grid>
+            <TextField
+              value={userSearchTerm}
+              label="search"
+              onChange={setUserSearchTerm}
+            />
+            <AppsTable>
+              <tr>
+                <th>App Name</th>
+                <th>Author</th>
+                <th>Last Modified</th>
+                <th></th>
+              </tr>
+            {(userApps || initalUserApps).map((userApp: App) => (
+              <AppCard
+                key={userApp.id}
+                app={userApp}
+                includeEdit
+                includeFork
+                includeView
+              />
+            ))}
+            </AppsTable>
           </Flex>
         )}
       </Flex>
-      <Flex direction="column" gridArea="toc">
-        <Header>Recent popular apps</Header>
-        <Flex direction="column" flex={1}>
-          {(recentApps ?? initalRecentApps).map((app: App) => (
-            <AppCard key={app.id} app={app} />
-          ))}
-        </Flex>
-      </Flex>
-    </StandardLayout>
+    </Content>
+    //   <Flex direction="column" gridArea="toc">
+    //     <Header>Recent popular apps</Header>
+    //     <Flex direction="column" flex={1}>
+    //       {(recentApps ?? initalRecentApps).map((app: App) => (
+    //         <AppCard key={app.id} app={app} />
+    //       ))}
+    //     </Flex>
+    //   </Flex>
+    //   <NotificationElement />
+    // </StandardLayout>
   );
 };
 
