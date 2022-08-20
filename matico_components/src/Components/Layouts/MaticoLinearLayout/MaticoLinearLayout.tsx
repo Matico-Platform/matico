@@ -16,6 +16,9 @@ import { ParentProvider, useParentContext } from "Hooks/useParentContext";
 import styled from "styled-components";
 import Resize from "@spectrum-icons/workflow/Resize";
 import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import MoveLeftRight from "@spectrum-icons/workflow/MoveLeftRight";
+import MoveUpDown from "@spectrum-icons/workflow/MoveUpDown";
 
 /**
  * If the unit is percent, return percent, otherwise return pixels.
@@ -88,8 +91,30 @@ const LinearPane: React.FC<
 }) => {
     const paneType = paneRef.type;
     const resizableParentRef = useRef<HTMLDivElement>(null);
-    const { normalizedPane, pane, updatePane, selectPane, updatePanePosition } =
-        usePane(paneRef);
+    const {
+        normalizedPane,
+        pane,
+        parent,
+        updatePane,
+        selectPane,
+        updatePanePosition
+    } = usePane(paneRef);
+    const {
+        setNodeRef,
+        setActivatorNodeRef,
+        attributes,
+        listeners,
+        transform
+    } = useSortable({
+        id: paneRef.id,
+        data: {
+            paneRefId: paneRef.id,
+            paneId: pane.id,
+            pane,
+            parent
+        }
+    });
+
     const parentDimensions = useParentContext();
     const onResizeEnd = (event: ResizableDimensions) => {
         const newRect = event.newRect;
@@ -100,8 +125,8 @@ const LinearPane: React.FC<
             xUnits: widthUnits,
             yUnits: heightUnits,
             parentDimensions,
-            newWidth: newRect.width,
-            newHeight: newRect.height
+            newWidth: direction === "row" ? newRect.width : undefined,
+            newHeight: direction === "column" ? newRect.height : undefined
         });
     };
 
@@ -117,16 +142,22 @@ const LinearPane: React.FC<
 
     return (
         <div
-            // ref={setNodeRef}
+            ref={setNodeRef}
             style={{
                 boxShadow:
                     "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
                 boxSizing: "border-box",
-                // transform: transform
-                //     ? `translate(${transform.x}px, ${transform.y}px)`
-                //     : undefined,
-                width: `${width}${handleHorizontalUnits(widthUnits)}`,
-                height: `${height}${handleVerticalUnits(heightUnits)}`,
+                transform: transform
+                    ? `translate(${transform.x}px, ${transform.y}px)`
+                    : undefined,
+                width:
+                    direction === "column"
+                        ? "100%"
+                        : `${width}${handleHorizontalUnits(widthUnits)}`,
+                height:
+                    direction === "row"
+                        ? "100%"
+                        : `${height}${handleVerticalUnits(heightUnits)}`,
                 zIndex: layer,
                 backgroundColor: "static-black",
                 paddingBottom: `${padBottom}${handleVerticalUnits(
@@ -137,7 +168,7 @@ const LinearPane: React.FC<
                     padUnitsRight
                 )}`,
                 paddingTop: `${padTop}${handleVerticalUnits(padUnitsTop)}`,
-                maxWidth: "100%",
+                maxWidth: "100%"
             }}
         >
             <div
@@ -157,24 +188,50 @@ const LinearPane: React.FC<
                 />
 
                 <button
-                    style={direction === "row" ? {
-                        position: "absolute",
-                        right: 0,
-                        bottom: '50%',
-                        transform: 'translate(0, 50%)',
-                    } : {
-                        position: "absolute",
-                        right: '50%',
-                        bottom: 0,
-                        transform: 'translate(50%, 0)',
-                    }}
+                    style={
+                        direction === "row"
+                            ? {
+                                  position: "absolute",
+                                  right: 0,
+                                  bottom: "50%",
+                                  transform: "translate(0, 50%)"
+                              }
+                            : {
+                                  position: "absolute",
+                                  right: "50%",
+                                  bottom: 0,
+                                  transform: "translate(50%, 0)"
+                              }
+                    }
                     onMouseDown={startResize}
                     aria-label="Resize Pane"
                 >
                     <Resize
                         color="positive"
-                        UNSAFE_style={{ transform: `rotate(${direction === "row" ? 45 : 135}deg)` }}
+                        UNSAFE_style={{
+                            transform: `rotate(${
+                                direction === "row" ? 45 : 135
+                            }deg)`
+                        }}
                     />
+                </button>
+                <button
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: "50%",
+                        transform: "translate(-50%, 0)"
+                    }}
+                    ref={setActivatorNodeRef}
+                    {...attributes}
+                    {...listeners}
+                    aria-label="Move Pane"
+                >
+                    {direction === "row" ? (
+                        <MoveLeftRight color="positive" />
+                    ) : (
+                        <MoveUpDown color="positive" />
+                    )}
                 </button>
                 {!!resizeActive && (
                     <span
@@ -194,6 +251,7 @@ const LinearPane: React.FC<
 
 export interface MaticoLinearLayoutInterface {
     paneRefs: Array<PaneRef>;
+    paneRef?: PaneRef;
     direction: LinearLayoutDirection;
     align: Alignment;
     justify: Justification;
@@ -222,26 +280,28 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
     const parentRef = useRef<HTMLDivElement>(null);
     return (
         <LinearParent ref={parentRef}>
-            <ParentProvider parentRef={parentRef}>
-                <Flex
-                    position="relative"
-                    width="100%"
-                    height="100%"
-                    direction={direction}
-                    alignContent={align}
-                    justifyContent={justify}
-                    gap={GapVals[gap]}
-                >
-                    {paneRefs.map((paneRef: PaneRef) => (
-                        <LinearPane
-                            key={paneRef.id}
-                            paneRef={paneRef}
-                            direction={direction}
-                            {...paneRef.position}
-                        />
-                    ))}
-                </Flex>
-            </ParentProvider>
+            <SortableContext items={paneRefs.map((f) => f.id)}>
+                <ParentProvider parentRef={parentRef}>
+                    <Flex
+                        position="relative"
+                        width="100%"
+                        height="100%"
+                        direction={direction}
+                        alignContent={align}
+                        justifyContent={justify}
+                        gap={GapVals[gap]}
+                    >
+                        {paneRefs.map((paneRef: PaneRef) => (
+                            <LinearPane
+                                key={paneRef.id}
+                                paneRef={paneRef}
+                                direction={direction}
+                                {...paneRef.position}
+                            />
+                        ))}
+                    </Flex>
+                </ParentProvider>
+            </SortableContext>
         </LinearParent>
     );
 };

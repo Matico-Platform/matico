@@ -17,7 +17,7 @@ import { usePane } from "Hooks/usePane";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
 import Move from "@spectrum-icons/workflow/Move";
 import { ResizableDimensions, useResizable } from "Hooks/useResizable";
-import { useParentContext } from "Hooks/useParentContext";
+import { ParentProvider, useParentContext } from "Hooks/useParentContext";
 import Resize from "@spectrum-icons/workflow/Resize";
 import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
 
@@ -99,7 +99,7 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
     paneRef
 }) => {
     const paneType = paneRef.type;
-    const { normalizedPane, pane, updatePane, selectPane, updatePanePosition } =
+    const { normalizedPane, pane, updatePane, selectPane, updatePanePosition, parent } =
         usePane(paneRef);
     const parentDimensions = useParentContext();
     const resizableParentRef = useRef<HTMLDivElement>(null);
@@ -108,6 +108,7 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
         attributes,
         listeners,
         setNodeRef,
+        node: droppableRef,
         setActivatorNodeRef,
         transform
     } = useDraggable({
@@ -160,7 +161,7 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
             newX: newRect.x - parentDimensions.x,
             newY: parentDimensions.bottom - newRect.bottom,
             newWidth: newRect.width,
-            newHeight: newRect.height,
+            newHeight: newRect.height
         });
     };
 
@@ -178,100 +179,98 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
     });
 
     return (
-        <div
-            ref={setNodeRef}
-            style={{
-                boxShadow:
-                    "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
-                boxSizing: "border-box",
-                transform: transform
-                    ? `translate(${transform.x}px, ${transform.y}px)`
-                    : undefined,
-                width: `${width}${handleUnits(widthUnits)}`,
-                position: "absolute",
-                height: `${height}${handleUnits(heightUnits)}`,
-                zIndex: layer,
-                left: `${x}${handleUnits(xUnits)}`,
-                bottom: `${y}${handleUnits(yUnits)}`,
-                backgroundColor: "static-black",
-                paddingBottom: `${padBottom}${handleUnits(padUnitsBottom)}`,
-                paddingLeft: `${padLeft}${handleUnits(padUnitsLeft)}`,
-                paddingRight: `${padRight}${handleUnits(padUnitsRight)}`,
-                paddingTop: `${padTop}${handleUnits(padUnitsTop)}`
-            }}
-        >
+        <ParentProvider parentRef={droppableRef}>
             <div
+                ref={setNodeRef}
                 style={{
-                    position: "relative",
-                    width: "100%",
-                    height: "100%"
+                    boxShadow:
+                        "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
+                    boxSizing: "border-box",
+                    transform: transform
+                        ? `translate(${transform.x}px, ${transform.y}px)`
+                        : undefined,
+                    width: `${width}${handleUnits(widthUnits)}`,
+                    position: "absolute",
+                    height: `${height}${handleUnits(heightUnits)}`,
+                    zIndex: layer,
+                    left: `${x}${handleUnits(xUnits)}`,
+                    bottom: `${y}${handleUnits(yUnits)}`,
+                    backgroundColor: "static-black",
+                    paddingBottom: `${padBottom}${handleUnits(padUnitsBottom)}`,
+                    paddingLeft: `${padLeft}${handleUnits(padUnitsLeft)}`,
+                    paddingRight: `${padRight}${handleUnits(padUnitsRight)}`,
+                    paddingTop: `${padTop}${handleUnits(padUnitsTop)}`
                 }}
-                ref={resizableParentRef}
             >
-                <PaneSelector
-                    normalizedPane={normalizedPane}
-                    updatePane={updatePane}
-                    selectPane={selectPane}
-                    paneRef={paneRef}
-                    paneType={paneType}
-                />
-                <DraggableButton
-                    {...listeners}
-                    {...attributes}
-                    ref={setActivatorNodeRef}
+                <div
                     style={{
-                        zIndex: 10
+                        position: "relative",
+                        width: "100%",
+                        height: "100%"
                     }}
-                    aria-label="Drag Pane"
+                    ref={resizableParentRef}
                 >
-                    <DragHandle color="positive" size="M" />
-                </DraggableButton>
-                <button
-                    style={{
-                        position: "absolute",
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 10
-                    }}
-                    onMouseDown={startResize}
-                    aria-label="Resize Pane"
-                >
-                    <Resize
-                        color="positive"
-                        UNSAFE_style={{ transform: "rotate(90deg)" }}
+                    <PaneSelector
+                        normalizedPane={normalizedPane}
+                        updatePane={updatePane}
+                        selectPane={selectPane}
+                        paneRef={paneRef}
+                        paneType={paneType}
                     />
-                </button>
-
-                {!!resizeActive && (
-                    <span
+                    <DraggableButton
+                        {...listeners}
+                        {...attributes}
+                        ref={setActivatorNodeRef}
                         style={{
-                            ...indicatorStyles,
-                            zIndex: 5,
-                            background: "#33ab8455"
+                            zIndex: 10
                         }}
+                        aria-label="Drag Pane"
                     >
-                        {" "}
-                    </span>
-                )}
+                        <DragHandle color="positive" size="M" />
+                    </DraggableButton>
+                    <button
+                        style={{
+                            position: "absolute",
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 10
+                        }}
+                        onMouseDown={startResize}
+                        aria-label="Resize Pane"
+                    >
+                        <Resize
+                            color="positive"
+                            UNSAFE_style={{ transform: "rotate(90deg)" }}
+                        />
+                    </button>
+
+                    {!!resizeActive && (
+                        <span
+                            style={{
+                                ...indicatorStyles,
+                                zIndex: 5,
+                                background: "#33ab8455"
+                            }}
+                        >
+                            {" "}
+                        </span>
+                    )}
+                </div>
             </div>
-        </div>
+        </ParentProvider>
     );
 };
 
 export interface MaticoFreeLayoutInterface {
     paneRefs: Array<PaneRef>;
+    paneRef?: PaneRef;
 }
 
 export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({
     paneRefs
 }) => {
-    const isEdit = useIsEditable();
-    const { setNodeRef } = useDroppable({
-        id: "free-layout"
-    });
-
     return (
-        <FreeArea ref={setNodeRef}>
+        <FreeArea>
             {paneRefs
                 ?.slice(0)
                 .reverse()
