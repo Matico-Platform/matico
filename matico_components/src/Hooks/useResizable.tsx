@@ -10,6 +10,7 @@ export interface ResizableDimensions {
 
 interface ResizableProps {
     ref: React.RefObject<HTMLElement>;
+    orientation?: "horizontal" | "vertical" | "both";
     onResizeStart?: (dimensions: ResizableDimensions) => void;
     onResizeMove?: (dimensions: ResizableDimensions) => void;
     onResizeEnd?: (dimensions: ResizableDimensions) => void;
@@ -25,12 +26,62 @@ const initialDims = {
     newRect: new DOMRect()
 };
 
+const calculateDims = (
+    e: MouseEvent,
+    ref: React.RefObject<HTMLElement>,
+    orientation: "both" | "horizontal" | "vertical",
+    prev?: ResizableDimensions
+) => {
+    const initialRect = ref.current.getBoundingClientRect();
+    const deltaX = e.clientX - initialRect.x - initialRect.width;
+    const deltaY = e.clientY - initialRect.y - initialRect.height;
+    const newWidth = initialRect.width + deltaX;
+    const newHeight = initialRect.height + deltaY;
+    const newX = newWidth > 0 ? initialRect.x : initialRect.x + newWidth;
+    const newY = newHeight > 0 ? initialRect.y : initialRect.y + newHeight;
+    const newRect =
+        orientation === "both"
+            ? new DOMRect(newX, newY, Math.abs(newWidth), Math.abs(newHeight))
+            : orientation === "horizontal"
+            ? new DOMRect(
+                  newX,
+                  initialRect.y,
+                  Math.abs(newWidth),
+                  initialRect.height
+              )
+            : new DOMRect( // vertical
+                  initialRect.x,
+                  newY,
+                  initialRect.width,
+                  Math.abs(newHeight)
+              );
+
+    const newDims = {
+        ...(prev || {}),
+        deltaX,
+        deltaY,
+        newRect
+    } as ResizableDimensions;
+    let styles = {
+        position: "fixed",
+        width: Math.abs(newRect.width),
+        height: Math.abs(newRect.height),
+        left: newRect.x,
+        top: newRect.y
+    };
+    return {
+        styles,
+        newDims
+    };
+};
+
 export const useResizable = ({
     ref,
     onResizeStart,
     onResizeMove,
     onResizeEnd,
-    resetDims = true
+    resetDims = true,
+    orientation = "both"
 }: ResizableProps) => {
     const [dims, setDims] = useState<ResizableDimensions>(initialDims);
     const [active, setActive] = useState<boolean>(false);
@@ -49,7 +100,6 @@ export const useResizable = ({
         bindEvents();
         if (ref.current) {
             const initialRect = ref.current.getBoundingClientRect();
-
             const newDims = {
                 ...dims,
                 initialRect,
@@ -60,43 +110,10 @@ export const useResizable = ({
             onResizeStart && onResizeStart(newDims);
         }
     };
-    const calculateDims = (e: MouseEvent, prev?: ResizableDimensions) => {
-        const initialRect = ref.current.getBoundingClientRect();
-        const deltaX = e.clientX - initialRect.x - initialRect.width;
-        const deltaY = e.clientY - initialRect.y - initialRect.height;
-        const newWidth = initialRect.width + deltaX;
-        const newHeight = initialRect.height + deltaY;
-        const newX = newWidth > 0 ? initialRect.x : initialRect.x + newWidth;
-        const newY = newHeight > 0 ? initialRect.y : initialRect.y + newHeight;
-        const newRect = new DOMRect(
-            newX,
-            newY,
-            Math.abs(newWidth),
-            Math.abs(newHeight)
-        );
-
-        const newDims = {
-            ...(prev || {}),
-            deltaX,
-            deltaY,
-            newRect
-        } as ResizableDimensions;
-        let styles = {
-            position: "fixed",
-            width: Math.abs(newRect.width),
-            height: Math.abs(newRect.height),
-            left: newRect.x,
-            top: newRect.y
-        };
-        return {
-            styles,
-            newDims
-        };
-    };
 
     const onMouseUp = (e: MouseEvent) => {
         unbindEvents();
-        const { newDims } = calculateDims(e, dims);
+        const { newDims } = calculateDims(e, ref, orientation, dims);
         onResizeEnd && onResizeEnd(newDims);
         resetDims && setDims(initialDims);
         setActive(false);
@@ -105,7 +122,12 @@ export const useResizable = ({
     const onMouseMove = (e: MouseEvent) => {
         if (ref.current) {
             setDims((prev) => {
-                const { styles, newDims } = calculateDims(e, prev);
+                const { styles, newDims } = calculateDims(
+                    e,
+                    ref,
+                    orientation,
+                    prev
+                );
                 // @ts-ignore
                 setIndicatorStyles(styles);
                 onResizeMove && onResizeMove(newDims);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
     PanePosition,
     PaneRef,
@@ -10,6 +10,12 @@ import {
 import { View, Flex } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { PaneSelector } from "Utils/paneEngine";
+import { usePane } from "Hooks/usePane";
+import { ResizableDimensions, useResizable } from "Hooks/useResizable";
+import { ParentProvider, useParentContext } from "Hooks/useParentContext";
+import styled from "styled-components";
+import Resize from "@spectrum-icons/workflow/Resize";
+import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
 
 /**
  * If the unit is percent, return percent, otherwise return pixels.
@@ -22,8 +28,7 @@ const handleHorizontalUnits = (unit: string) =>
  * If the unit is Percent, return Viewport height, otherwise return px
  * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
  */
-const handleVerticalUnits = (unit: string) =>
-    unit === "percent" ? "%" : "px";
+const handleVerticalUnits = (unit: string) => (unit === "percent" ? "%" : "px");
 
 /**
  * If the position is horizontal, then return the result of calling handleHorizontalUnits with the
@@ -62,7 +67,9 @@ const handlePositionalRule = (
     }
 };
 
-const LinearPane: React.FC<PanePosition> = ({
+const LinearPane: React.FC<
+    PanePosition & { paneRef: PaneRef; direction: string }
+> = ({
     width,
     height,
     layer,
@@ -76,28 +83,112 @@ const LinearPane: React.FC<PanePosition> = ({
     padUnitsRight,
     padUnitsBottom,
     padUnitsTop,
-    children
+    paneRef,
+    direction
 }) => {
+    const paneType = paneRef.type;
+    const resizableParentRef = useRef<HTMLDivElement>(null);
+    const { normalizedPane, pane, updatePane, selectPane, updatePanePosition } =
+        usePane(paneRef);
+    const parentDimensions = useParentContext();
+    const onResizeEnd = (event: ResizableDimensions) => {
+        const newRect = event.newRect;
+        updateDragOrResize({
+            updatePanePosition,
+            widthUnits,
+            heightUnits,
+            xUnits: widthUnits,
+            yUnits: heightUnits,
+            parentDimensions,
+            newWidth: newRect.width,
+            newHeight: newRect.height
+        });
+    };
+
+    const {
+        active: resizeActive,
+        startResize,
+        indicatorStyles
+    } = useResizable({
+        ref: resizableParentRef,
+        orientation: direction === "row" ? "horizontal" : "vertical",
+        onResizeEnd
+    });
+
     return (
-        <View
-            width={`${width}${handleHorizontalUnits(widthUnits)}`}
-            height={`${height}${handleVerticalUnits(heightUnits)}`}
-            maxWidth={"100%"}
-            zIndex={layer}
-            paddingBottom={`${padBottom}${handleVerticalUnits(padUnitsBottom)}`}
-            paddingStart={`${padLeft}${handleVerticalUnits(padUnitsLeft)}`}
-            paddingEnd={`${padRight}${handleVerticalUnits(padUnitsRight)}`}
-            paddingTop={`${padTop}${handleVerticalUnits(padUnitsTop)}`}
-            UNSAFE_style={{
-                transition:
-                    "bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms",
+        <div
+            // ref={setNodeRef}
+            style={{
                 boxShadow:
                     "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
+                // transform: transform
+                //     ? `translate(${transform.x}px, ${transform.y}px)`
+                //     : undefined,
+                width: `${width}${handleHorizontalUnits(widthUnits)}`,
+                height: `${height}${handleVerticalUnits(heightUnits)}`,
+                zIndex: layer,
+                backgroundColor: "static-black",
+                paddingBottom: `${padBottom}${handleVerticalUnits(
+                    padUnitsBottom
+                )}`,
+                paddingLeft: `${padLeft}${handleVerticalUnits(padUnitsLeft)}`,
+                paddingRight: `${padRight}${handleVerticalUnits(
+                    padUnitsRight
+                )}`,
+                paddingTop: `${padTop}${handleVerticalUnits(padUnitsTop)}`,
+                maxWidth: "100%",
             }}
         >
-            {children}
-        </View>
+            <div
+                style={{
+                    position: "relative",
+                    width: "100%",
+                    height: "100%"
+                }}
+                ref={resizableParentRef}
+            >
+                <PaneSelector
+                    normalizedPane={normalizedPane}
+                    updatePane={updatePane}
+                    selectPane={selectPane}
+                    paneRef={paneRef}
+                    paneType={paneType}
+                />
+
+                <button
+                    style={direction === "row" ? {
+                        position: "absolute",
+                        right: 0,
+                        bottom: '50%',
+                        transform: 'translate(0, 50%)',
+                    } : {
+                        position: "absolute",
+                        right: '50%',
+                        bottom: 0,
+                        transform: 'translate(50%, 0)',
+                    }}
+                    onMouseDown={startResize}
+                    aria-label="Resize Pane"
+                >
+                    <Resize
+                        color="positive"
+                        UNSAFE_style={{ transform: `rotate(${direction === "row" ? 45 : 135}deg)` }}
+                    />
+                </button>
+                {!!resizeActive && (
+                    <span
+                        style={{
+                            ...indicatorStyles,
+                            zIndex: 5,
+                            background: "#33ab8455"
+                        }}
+                    >
+                        {" "}
+                    </span>
+                )}
+            </div>
+        </div>
     );
 };
 
@@ -106,16 +197,20 @@ export interface MaticoLinearLayoutInterface {
     direction: LinearLayoutDirection;
     align: Alignment;
     justify: Justification;
-    gap? : GapSize
+    gap?: GapSize;
 }
 
-const GapVals ={
-  "none" : "size-0",
-  "small": "size-100",
-  "medium":"size-600",
-  "large":"size-1000"
+const GapVals = {
+    none: "size-0",
+    small: "size-100",
+    medium: "size-600",
+    large: "size-1000"
+};
 
-}
+const LinearParent = styled.div`
+    width: 100%;
+    height: 100%;
+`;
 
 export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
     paneRefs,
@@ -124,22 +219,29 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
     justify,
     gap
 }) => {
+    const parentRef = useRef<HTMLDivElement>(null);
     return (
-        <Flex
-            position="relative"
-            width="100%"
-            height="100%"
-            direction={direction}
-            alignContent={align}
-            justifyContent={justify}
-            gap={GapVals[gap]}
-        >
-            {paneRefs.map((paneRef: PaneRef) => (
-                <LinearPane key={paneRef.id} {...paneRef.position}>
-                    <ControlActionBar paneRef={paneRef} />
-                    <PaneSelector paneRef={paneRef} />
-                </LinearPane>
-            ))}
-        </Flex>
+        <LinearParent ref={parentRef}>
+            <ParentProvider parentRef={parentRef}>
+                <Flex
+                    position="relative"
+                    width="100%"
+                    height="100%"
+                    direction={direction}
+                    alignContent={align}
+                    justifyContent={justify}
+                    gap={GapVals[gap]}
+                >
+                    {paneRefs.map((paneRef: PaneRef) => (
+                        <LinearPane
+                            key={paneRef.id}
+                            paneRef={paneRef}
+                            direction={direction}
+                            {...paneRef.position}
+                        />
+                    ))}
+                </Flex>
+            </ParentProvider>
+        </LinearParent>
     );
 };

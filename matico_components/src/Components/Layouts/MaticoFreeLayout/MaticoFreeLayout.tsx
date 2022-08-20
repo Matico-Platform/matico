@@ -19,6 +19,7 @@ import Move from "@spectrum-icons/workflow/Move";
 import { ResizableDimensions, useResizable } from "Hooks/useResizable";
 import { useParentContext } from "Hooks/useParentContext";
 import Resize from "@spectrum-icons/workflow/Resize";
+import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
 
 const FreeArea = styled.div`
     position: relative;
@@ -102,6 +103,7 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
         usePane(paneRef);
     const parentDimensions = useParentContext();
     const resizableParentRef = useRef<HTMLDivElement>(null);
+
     const {
         attributes,
         listeners,
@@ -112,79 +114,56 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
         id: paneRef.id,
         data: {
             paneRefId: paneRef.id,
-            paneId: normalizedPane.id,
+            paneId: pane.id,
             pane: normalizedPane,
             parent: parent
         }
     });
 
-    const updateDragOrResize = ({
-        newX,
-        newY,
-        newWidth,
-        newHeight
-    }: {
-        newX?: number;
-        newY?: number;
-        newWidth?: number;
-        newHeight?: number;
-    }) => {
-        let newDims: {
-            x?: number;
-            y?: number;
-            width?: number;
-            height?: number;
-        } = {};
-
-        if (newX !== undefined) {
-            newDims.x =
-                xUnits === "percent"
-                    ? Math.round((newX / parentDimensions.width) * 1000) / 10
-                    : newX;
-        }
-        if (newY !== undefined) {
-            newDims.y =
-                yUnits === "percent"
-                    ? Math.round((newY / parentDimensions.height) * 1000) / 10
-                    : newY;
-        }
-        if (newWidth !== undefined) {
-            newDims.width =
-                widthUnits === "percent"
-                    ? Math.round((newWidth / parentDimensions.width) * 1000) /
-                      10
-                    : newWidth;
-        }
-        if (newHeight !== undefined) {
-            newDims.height =
-                heightUnits === "percent"
-                    ? Math.round((newHeight / parentDimensions.height) * 1000) /
-                      10
-                    : newHeight;
-        }
-        updatePanePosition(newDims);
-    };
-
     const onDragEnd = (event: DragEndEvent) => {
         if (event.active.id === paneRef.id) {
-            const prevX = xUnits === "percent" ? (paneRef.position.x/100) * parentDimensions.width: paneRef.position.x;
-            const prevY = yUnits === "percent" ? (paneRef.position.y/100) * parentDimensions.height: paneRef.position.y;
+            const prevX =
+                xUnits === "percent"
+                    ? (paneRef.position.x / 100) * parentDimensions.width
+                    : paneRef.position.x;
+            const prevY =
+                yUnits === "percent"
+                    ? (paneRef.position.y / 100) * parentDimensions.height
+                    : paneRef.position.y;
             const { x: deltaX, y: deltaY } = event.delta;
             let newX = prevX + deltaX;
             let newY = prevY - deltaY;
-            updateDragOrResize({ newX, newY });
+
+            updateDragOrResize({
+                updatePanePosition,
+                widthUnits,
+                heightUnits,
+                xUnits,
+                yUnits,
+                parentDimensions,
+                newX,
+                newY
+            });
         }
     };
 
     const onResizeEnd = (event: ResizableDimensions) => {
         const newRect = event.newRect;
+
         updateDragOrResize({
+            updatePanePosition,
+            widthUnits,
+            heightUnits,
+            xUnits,
+            yUnits,
+            parentDimensions,
             newX: newRect.x - parentDimensions.x,
             newY: parentDimensions.bottom - newRect.bottom,
             newWidth: newRect.width,
-            newHeight: newRect.height
+            newHeight: newRect.height,
         });
     };
+
     useDndMonitor({
         onDragEnd
     });
@@ -240,7 +219,10 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
                     {...listeners}
                     {...attributes}
                     ref={setActivatorNodeRef}
-                    style={{}}
+                    style={{
+                        zIndex: 10
+                    }}
+                    aria-label="Drag Pane"
                 >
                     <DragHandle color="positive" size="M" />
                 </DraggableButton>
@@ -248,11 +230,16 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
                     style={{
                         position: "absolute",
                         right: 0,
-                        bottom: 0
+                        bottom: 0,
+                        zIndex: 10
                     }}
                     onMouseDown={startResize}
+                    aria-label="Resize Pane"
                 >
-                    <Resize color="positive" UNSAFE_style={{transform:"rotate(90deg)"}}/>
+                    <Resize
+                        color="positive"
+                        UNSAFE_style={{ transform: "rotate(90deg)" }}
+                    />
                 </button>
 
                 {!!resizeActive && (

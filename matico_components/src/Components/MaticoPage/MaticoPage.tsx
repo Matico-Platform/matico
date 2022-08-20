@@ -8,6 +8,7 @@ import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSen
 import { coordinateGetter } from "Components/MaticoEditor/EditorComponents/SortableDraggableList/multipleContainersKeyboardCoordinates";
 import { ParentProvider } from "Hooks/useParentContext";
 import styled from "styled-components";
+import { restrictToParentElement } from "@dnd-kit/modifiers";
 interface MaticoPageInterface {
     pageId: string;
 }
@@ -51,6 +52,7 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
             // onDragOver={handleDragOver}
             // collisionDetection={collisionDetectionStrategy}
             sensors={sensors}
+            modifiers={[restrictToParentElement]}
         >
             <PageParent ref={parentRef}>
                 <ParentProvider parentRef={parentRef}>
