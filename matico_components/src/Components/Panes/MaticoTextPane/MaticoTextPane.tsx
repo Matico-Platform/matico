@@ -17,6 +17,7 @@ const TextPaneContainer = styled.section<{isReadOnly?:boolean}>`
     height: 100%;
     div.editor-shell {
         margin:0;
+        max-width:initial;
     }
     div.editor-shell, div.editor-container {
         height: 100%;

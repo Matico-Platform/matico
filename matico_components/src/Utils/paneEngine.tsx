@@ -40,7 +40,13 @@ const Wrapper = styled.button<{ interactive?: boolean; isHovered?: boolean }>`
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    &:after {
+    transition:125ms all;
+    border: ${({ isHovered }) =>
+        isHovered
+            ? "4px solid var(--spectrum-global-color-chartreuse-500)"
+            : "none"};
+    /* padding: -4px; */
+    /* &:after {
         box-sizing: border-box;
         content: "";
         display: block;
@@ -53,11 +59,7 @@ const Wrapper = styled.button<{ interactive?: boolean; isHovered?: boolean }>`
         z-index: 1;
         border: 2px solid rgba(0, 0, 0, 0);
         transition: border 125ms;
-        border: ${({ isHovered }) =>
-            isHovered
-                ? "4px solid var(--spectrum-global-color-chartreuse-500)"
-                : "4px solid rgba(0,0,0,0)"};
-    }
+    } */
     pointer-events: ${({ interactive }) => (interactive ? "all" : "none")};
     cursor: ${({ interactive }) => (interactive ? "pointer" : "default")};
     * {
