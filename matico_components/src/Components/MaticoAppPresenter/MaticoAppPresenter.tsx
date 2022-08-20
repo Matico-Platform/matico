@@ -82,7 +82,6 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     //  }, [onStateChange, JSON.stringify(appState)]);
 
     const isEdit = useIsEditable();
-    const Wrapper = isEdit ? DndContext : React.Fragment;
     const [activeItem, setActiveItem] = React.useState(null);
 
     const { reparentPane, changePaneIndex, updatePageIndex } = useApp();
@@ -140,7 +139,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                                         key={page.path}
                                         exact={true}
                                     >
-                                        <Wrapper
+                                        <DndContext
                                             // @ts-ignore
                                             onDragStart={handleDragStart}
                                             onDragEnd={handleDragEnd}
@@ -155,7 +154,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                                                 key={page.path}
                                                 pageId={page.id}
                                             />
-                                        </Wrapper>
+                                        </DndContext>
                                     </Route>
                                 ))}
                             </Switch>

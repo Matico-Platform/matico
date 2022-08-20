@@ -34,6 +34,7 @@ import { HoverableItem, HoverableRow } from "./Styled";
 import {
     SortableContext,
 } from "@dnd-kit/sortable";
+import { handleDrag } from "Utils/dragAndResize/handleDrag";
 
 type MaticoOutlineViewerProps = RouteComponentProps & {};
 
@@ -43,63 +44,14 @@ export const MaticoOutlineViewer: React.FC = withRouter(
         const { pages, reparentPane, changePaneIndex, addPage, updatePageIndex } = useApp();
         const [activeItem, setActiveItem] =
             useState<Page | PaneRef | null>(null);
-        
-        const handleDrag = throttle(
-            (event: DragOverEvent | DragEndEvent, isDragEnd: boolean) => {
-                const { over, active } = event;
-                const isSelf = active.id === over?.id;
-                if (isSelf || !over) return;
-                if (active?.data?.current?.type === "page"){
-                    const overIndex = over?.data?.current?.sortable?.index;
-                    updatePageIndex(active.id as string, overIndex);
-                    return;
-                } 
-                const currentParent = active?.data?.current?.parent;
-                const overParent = over?.data?.current?.parent;
-                const overNewParent =
-                    (over?.data?.current?.type === "page" ||
-                        over?.data?.current?.type === "container") &&
-                    currentParent?.id !== over?.id;
-                const haveParents = currentParent && overParent;
-                const overCousinRow =
-                    haveParents && currentParent.id !== overParent.id;
-                const isSibling =
-                    haveParents && currentParent.id === overParent.id;
-
-                if (overNewParent) {
-                    const paneRefId = active?.data?.current?.paneId;
-                    const targetId = over?.id as string;
-                    if (isDragEnd || over?.data?.current?.depth === 0) {
-                        reparentPane(paneRefId, targetId);
-                    }
-                    return;
-                } else if (overCousinRow) {
-                    const paneRefId = active?.data?.current?.paneId;
-                    const targetId = overParent?.id;
-                    reparentPane(paneRefId, targetId);
-                    return;
-                } else if (isSibling && isDragEnd) {
-                    const newIndex = over?.data?.current?.index;
-                    if (
-                        active?.data?.current?.paneId &&
-                        newIndex !== undefined
-                    ) {
-                        changePaneIndex(
-                            active?.data?.current?.paneId,
-                            newIndex
-                        );
-                    }
-                }
-            },
-            125
-        );
 
         //@ts-ignore
         const handleDragStart = ({ active }) => setActiveItem(active);
-        const handleDragOver = (event: DragOverEvent) =>
-            handleDrag(event, false);
+        const handleDragOver = (event: DragOverEvent) => {
+            handleDrag(event, false, updatePageIndex, reparentPane, changePaneIndex)
+        }
         const handleDragEnd = (event: DragEndEvent) => {
-            handleDrag(event, true);
+            handleDrag(event, true, updatePageIndex, reparentPane, changePaneIndex);
             setActiveItem(null);
         };
 
