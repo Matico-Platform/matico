@@ -10,7 +10,7 @@ export const MaticoTextPaneComponents: PaneParts = {
     pane: MaticoTextPane,
     editablePane: EditableMaticoTextPane,
     sidebarPane: TextPaneEditor,
-    icon: <TextIcon />,
+    icon: TextIcon,
     defaults,
     docs: 'https://www.matico.app/docs/panes/text'
 };

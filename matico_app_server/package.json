@@ -1,5 +1,5 @@
 {
-  "name": "matico_admin_server",
+  "name": "matico_app_server",
   "private": true,
   "version": "1.0.0",
   "scripts": {
@@ -16,8 +16,8 @@
     "@fortawesome/react-fontawesome": "^0.1.16",
     "@loaders.gl/core": "^3.1.4",
     "@loaders.gl/json": "^3.1.4",
-    "@maticoapp/matico_components": "workspace:matico_components",
-    "@maticoapp/matico_types": "workspace:matico_types",
+    "@maticoapp/matico_components": "^1.0.3",
+    "@maticoapp/matico_types": "^0.1.0",
     "@next-auth/prisma-adapter": "^1.0.4",
     "@next/bundle-analyzer": "^12.2.5",
     "@prisma/client": "4.2.1",

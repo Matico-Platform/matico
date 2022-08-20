@@ -26,8 +26,11 @@ import styled from "styled-components";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const prisma = new PrismaClient();
   const session = await getSession(context);
-
-  const user = await userFromSession(session, prisma);
+  
+  let user = null
+  if(session){
+   user = await userFromSession(session, prisma);
+  }
 
   const recentApps = await prisma.app.findMany({
     where: {
@@ -57,7 +60,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       initalRecentApps: JSON.parse(JSON.stringify(recentApps)),
       initalUserApps: JSON.parse(JSON.stringify(userApps)),
-      user: JSON.parse(JSON.stringify(user)),
+      user: user ? JSON.parse(JSON.stringify(user)): null,
     },
   };
 };

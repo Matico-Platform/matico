@@ -9,13 +9,13 @@ interface MaticoPageInterface {
 }
 export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
     let {page} = usePage(pageId)
-    let layout: Layout = page.layout;
+    let layout: Layout = page?.layout;
     let LayoutEngine = selectLayout(layout);
 
     return (
         <View overflow="none auto" width="100%" height="100%">
             <Flex direction="column" width={"100%"} height={"100%"}>
-                <LayoutEngine paneRefs={page.panes} />
+                <LayoutEngine paneRefs={page?.panes} />
             </Flex>
         </View>
     );

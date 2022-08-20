@@ -1,6 +1,6 @@
 {
   "name": "@maticoapp/matico_components",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
