@@ -140,6 +140,7 @@ export const PaneSelector: React.FC<{
                 key={normalizedPane.id}
                 position={paneRef.position}
                 {...normalizedPane}
+                paneRef={paneRef}
                 updatePane={updatePane}
             />
         </WrapperComponent>
