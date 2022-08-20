@@ -181,7 +181,7 @@ export const stateSlice = createSlice({
                     action.payload.paneRef
                 );
             } else {
-                page.panes.push(action.payload.paneRef);
+                page.panes.unshift(action.payload.paneRef);
             }
         },
         removePaneRefFromContainer: (
@@ -251,7 +251,7 @@ export const stateSlice = createSlice({
             if (index) {
                 container.panes.splice(index, 0, action.payload.paneRef);
             } else {
-                container.panes.push(paneRef);
+                container.panes.unshift(paneRef);
             }
         },
         updatePaneDetails: (
