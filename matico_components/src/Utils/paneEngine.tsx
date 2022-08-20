@@ -41,11 +41,14 @@ const Wrapper = styled.button<{ interactive?: boolean; isHovered?: boolean }>`
     background: none;
     width: 100%;
     height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
     box-sizing: border-box;
     border: ${({ isHovered }) =>
         isHovered
             ? "4px solid var(--spectrum-global-color-chartreuse-500)"
-            : "0px solid rgba(0,0,0,0)"};
+            : "4px solid rgba(0,0,0,0)"};
     z-index: 4;
     pointer-events: ${({ interactive }) => (interactive ? "all" : "none")};
     cursor: ${({ interactive }) => (interactive ? "pointer" : "default")};
@@ -58,8 +61,7 @@ const SelectorWrapper: React.FC<{
     paneRef: PaneRef;
     selectPane: () => void;
     normalizedPane: any;
-    children?: React.ReactNode;
-}> = forwardRef(({ paneRef, selectPane, normalizedPane, children }) => {
+}> = forwardRef(({ paneRef, selectPane, normalizedPane }) => {
     const { setHovered } = useEditorActions(paneRef.id);
     const currentHoveredRef = useMaticoSelector(
         (state) => state.editor.hoveredRef
@@ -89,9 +91,7 @@ const SelectorWrapper: React.FC<{
             onMouseLeave={handleMouseLeave}
             interactive={isInteractive}
             isHovered={isSelectedPane}
-        >
-            {children}
-        </Wrapper>
+        />
     );
 });
 
@@ -126,16 +126,10 @@ export const PaneSelector: React.FC<{
             ? panes[paneType]["editablePane"]
             : panes?.[paneType]?.["pane"] || fallbackPanes[paneType];
 
-    const WrapperComponent = isEdit ? SelectorWrapper : React.Fragment;
-
     if (!PaneComponent || !normalizedPane) return null;
 
     return (
-        <WrapperComponent
-            paneRef={paneRef}
-            selectPane={selectPane}
-            normalizedPane={normalizedPane}
-        >
+        <>
             <PaneComponent
                 key={normalizedPane.id}
                 position={paneRef.position}
@@ -143,6 +137,13 @@ export const PaneSelector: React.FC<{
                 paneRef={paneRef}
                 updatePane={updatePane}
             />
-        </WrapperComponent>
+            {isEdit && (
+                <SelectorWrapper
+                    paneRef={paneRef}
+                    selectPane={selectPane}
+                    normalizedPane={normalizedPane}
+                />
+            )}
+        </>
     );
 };
