@@ -12,10 +12,11 @@ import {
   Switch,
 } from "@adobe/react-spectrum";
 import { App, Colaborator } from "@prisma/client";
-import {ColaboratorsEditor} from "../ColaboratorsEditor/ColaboratorsEditor";
+import Link from "next/link";
+import { ColaboratorsEditor } from "../ColaboratorsEditor/ColaboratorsEditor";
 
 export interface AppOptionsBarInterface {
-  app: App & {_count: {colaborators:number}};
+  app: App & { _count: { colaborators: number } };
   onPublicUpdate: (isPublic: boolean) => void;
 }
 export const AppOptionsBar: React.FC<AppOptionsBarInterface> = ({
@@ -27,11 +28,18 @@ export const AppOptionsBar: React.FC<AppOptionsBarInterface> = ({
   };
 
   return (
-    <View paddingX="size-300" paddingY="size-50">
+    <View paddingX="size-300" paddingY="size-50" borderBottomColor={"static-white"} borderBottomWidth="thin">
       <Flex width="100%" direction="row" alignItems="center">
-        <Text flex={1}>Matico</Text>
+        <View flex={1}>
+          <Link href="/">
+            <a style={{fontWeight:'bold', color:"white"}}>
+              <Text>Matico</Text>
+            </a>
+          </Link>
+        </View>
+
         <Flex flex={1} justifyContent="center">
-          <Text>{app.name}</Text>
+          <Text UNSAFE_style={{fontWeight:"bold", color:"var(--spectrum-alias-icon-color-selected-focus)"}}>{app.name}</Text>
         </Flex>
         <Flex justifyContent="end" flex={1} direction="row" gap="size-200">
           <TooltipTrigger delay={0}>

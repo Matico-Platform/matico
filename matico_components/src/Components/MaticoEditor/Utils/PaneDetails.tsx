@@ -203,7 +203,7 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         id:uuid(),
         name:name,
         type: 'container',
-        layout: {type:"linear", gap:"small", direction:"row", justify:'start', align:"center", allowOverflow:false},
+        layout: {type:"linear", gap:"small", direction:"row", justify:'start', align:"center", allowOverflow:true},
         panes:[]
       }
       return {container: rowContainer, additionalPanes:[]}
@@ -213,7 +213,7 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         id:uuid(),
         name:name,
         type: 'container',
-        layout: {type:"linear", gap:"small", direction:"column", justify:'start', align:"center", allowOverflow:false},
+        layout: {type:"linear", gap:"small", direction:"column", justify:'start', align:"center", allowOverflow:true},
         panes:[]
       }
       return {container: columnContainer, additionalPanes:[]}

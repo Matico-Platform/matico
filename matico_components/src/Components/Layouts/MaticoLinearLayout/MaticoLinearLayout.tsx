@@ -20,29 +20,50 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import MoveLeftRight from "@spectrum-icons/workflow/MoveLeftRight";
 import MoveUpDown from "@spectrum-icons/workflow/MoveUpDown";
 
-/**
- * If the unit is percent, return percent, otherwise return pixels.
- * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
- */
-const handleHorizontalUnits = (unit: string) =>
-    unit === "percent" ? "%" : "px";
+type UnitTree = {
+    [position: string]: {
+        [direction: string]: {
+            [unit: string]: string;
+        };
+    };
+};
 
-/**
- * If the unit is Percent, return Viewport height, otherwise return px
- * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
- */
-const handleVerticalUnits = (unit: string) => (unit === "percent" ? "%" : "px");
-
+const unitTree: UnitTree = {
+    vertical: {
+        row: {
+            percent: "%"
+        },
+        column: {
+            percent: "vh"
+        }
+    },
+    horizontal: {
+        row: {
+            percent: "vw"
+        },
+        column: {
+            percent: "%"
+        }
+    }
+};
 /**
  * If the position is horizontal, then return the result of calling handleHorizontalUnits with the
  * unit, otherwise return the result of calling handleVerticalUnits with the unit.
  * @param {string} unit - string - The unit to be converted.
  * @param {'vertical' | 'horizontal'} position - 'vertical' | 'horizontal'
+ * @param {'row | 'column'} direction - 'row' | 'column'
  */
-const handleUnits = (unit: string, position: "vertical" | "horizontal") =>
-    position === "horizontal"
-        ? handleHorizontalUnits(unit)
-        : handleVerticalUnits(unit);
+const handleUnits = (
+    unit: string,
+    position: "vertical" | "horizontal",
+    direction: "row" | "column"
+) => {
+    if (unit === "pixels") {
+        return "px";
+    } else {
+        return unitTree[position][direction][unit];
+    }
+};
 
 /**
  * If the values and units are not undefined, then map over the values and units and join them together
@@ -53,7 +74,8 @@ const handleUnits = (unit: string, position: "vertical" | "horizontal") =>
  */
 const handlePositionalRule = (
     values: Array<number | undefined>,
-    units: Array<string | undefined>
+    units: Array<string | undefined>,
+    direction: "row" | "column"
 ) => {
     if (!values || !units) {
         return "auto";
@@ -63,7 +85,8 @@ const handlePositionalRule = (
                 (value, index) =>
                     `${value || 0}${handleUnits(
                         units[index] || "",
-                        index % 2 === 0 ? "vertical" : "horizontal"
+                        index % 2 === 0 ? "vertical" : "horizontal",
+                        direction
                     )}`
             )
             .join(" ");
@@ -71,7 +94,11 @@ const handlePositionalRule = (
 };
 
 const LinearPane: React.FC<
-    PanePosition & { paneRef: PaneRef; direction: string }
+    PanePosition & {
+        paneRef: PaneRef;
+        allowOverflow?: boolean;
+        direction?: "row" | "column";
+    }
 > = ({
     width,
     height,
@@ -87,6 +114,7 @@ const LinearPane: React.FC<
     padUnitsBottom,
     padUnitsTop,
     paneRef,
+    allowOverflow,
     direction
 }) => {
     const paneType = paneRef.type;
@@ -144,31 +172,43 @@ const LinearPane: React.FC<
         <div
             ref={setNodeRef}
             style={{
-                boxShadow:
-                    "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
-                boxSizing: "border-box",
+                width: `${width}${handleUnits(
+                    widthUnits,
+                    "horizontal",
+                    direction
+                )}`,
+                height: `${height}${handleUnits(
+                    heightUnits,
+                    "vertical",
+                    direction
+                )}`,
+                maxWidth: "100%",
+                zIndex: layer,
+                paddingBottom: `${padBottom}${handleUnits(
+                    padUnitsBottom,
+                    "vertical",
+                    direction
+                )}`,
+                paddingLeft: `${padLeft}${handleUnits(
+                    padUnitsLeft,
+                    "horizontal",
+                    direction
+                )}`,
+                paddingRight: `${padRight}${handleUnits(
+                    padUnitsRight,
+                    "horizontal",
+                    direction
+                )}`,
+                paddingTop: `${padTop}${handleUnits(
+                    padUnitsTop,
+                    "vertical",
+                    direction
+                )}`,
+
                 transform: transform
                     ? `translate(${transform.x}px, ${transform.y}px)`
                     : undefined,
-                width:
-                    direction === "column"
-                        ? "100%"
-                        : `${width}${handleHorizontalUnits(widthUnits)}`,
-                height:
-                    direction === "row"
-                        ? "100%"
-                        : `${height}${handleVerticalUnits(heightUnits)}`,
-                zIndex: layer,
-                backgroundColor: "static-black",
-                paddingBottom: `${padBottom}${handleVerticalUnits(
-                    padUnitsBottom
-                )}`,
-                paddingLeft: `${padLeft}${handleVerticalUnits(padUnitsLeft)}`,
-                paddingRight: `${padRight}${handleVerticalUnits(
-                    padUnitsRight
-                )}`,
-                paddingTop: `${padTop}${handleVerticalUnits(padUnitsTop)}`,
-                maxWidth: "100%"
+                flexShrink: allowOverflow ? 0 : 1
             }}
         >
             <div
@@ -256,6 +296,7 @@ export interface MaticoLinearLayoutInterface {
     align: Alignment;
     justify: Justification;
     gap?: GapSize;
+    allowOverflow?: boolean;
 }
 
 const GapVals = {
@@ -275,17 +316,36 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
     direction,
     align,
     justify,
-    gap
+    gap,
+    allowOverflow
 }) => {
     const parentRef = useRef<HTMLDivElement>(null);
     return (
-        <LinearParent ref={parentRef}>
+        <LinearParent
+            ref={parentRef}
+            style={{
+                overflow: `${
+                    allowOverflow && direction === "row" ? "auto" : "hidden"
+                } ${
+                    allowOverflow && direction === "column" ? "auto" : "hidden"
+                }`
+            }}
+        >
             <SortableContext items={paneRefs.map((f) => f.id)}>
                 <ParentProvider parentRef={parentRef}>
                     <Flex
+                        id="layout-engine"
                         position="relative"
-                        width="100%"
-                        height="100%"
+                        width={
+                            allowOverflow && direction === "row"
+                                ? "fit-content"
+                                : "100%"
+                        }
+                        height={
+                            allowOverflow && direction === "column"
+                                ? "fit-content"
+                                : "100%"
+                        }
                         direction={direction}
                         alignContent={align}
                         justifyContent={justify}
@@ -294,6 +354,7 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
                         {paneRefs.map((paneRef: PaneRef) => (
                             <LinearPane
                                 key={paneRef.id}
+                                allowOverflow={allowOverflow}
                                 paneRef={paneRef}
                                 direction={direction}
                                 {...paneRef.position}
