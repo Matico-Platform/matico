@@ -38,7 +38,7 @@ export const Login: React.FC = () => {
                       Github
                     </div>
                   </ActionButton>
-                  <ActionButton onPress={() => signIn("google")} isQuiet>
+                  {/* <ActionButton onPress={() => signIn("google")} isQuiet>
                     <div>
                       <Icon icon="google" />
                       Google
@@ -55,7 +55,7 @@ export const Login: React.FC = () => {
                       <Icon icon="facebook" />
                       Facebook
                     </div>
-                  </ActionButton>
+                  </ActionButton> */}
                 </Flex>
               )}
             </>
