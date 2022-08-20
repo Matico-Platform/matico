@@ -1,4 +1,4 @@
-import { App, Colaborator, PrismaClient, User } from "@prisma/client";
+import { App, Collaborator, PrismaClient, User } from "@prisma/client";
 import { Session } from "next-auth";
 
 export const userFromSession = async (
@@ -15,7 +15,7 @@ export const userFromSession = async (
 };
 
 export const userHasEdit =(
-  app: App & { colaborators: Colaborator[] },
+  app: App & { collaborators: Collaborator[] },
   user?: User
 ) => {
   if (!user) {
@@ -27,7 +27,7 @@ export const userHasEdit =(
   }
 
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.edit)
+    app.collaborators.find((c: Collaborator) => c.userId === user.id && c.edit)
   ) {
     return true;
   }
@@ -36,7 +36,7 @@ export const userHasEdit =(
 };
 
 export const userHasView =(
-  app: App & { colaborators: Colaborator[] },
+  app: App & { collaborators: Collaborator[] },
   user?: User | null
 ) => {
   if (!user) {
@@ -46,7 +46,7 @@ export const userHasView =(
     return true;
   }
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.view)
+    app.collaborators.find((c: Collaborator) => c.userId === user.id && c.view)
   ) {
     return true;
   }
@@ -55,7 +55,7 @@ export const userHasView =(
 };
 
 export const userHasFork =(
-  app: App & { colaborators: Colaborator[] },
+  app: App & { collaborators: Collaborator[] },
   user?: User
 ) => {
   if (!user) {
@@ -66,7 +66,7 @@ export const userHasFork =(
   }
 
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.view)
+    app.collaborators.find((c: Collaborator) => c.userId === user.id && c.view)
   ) {
     return true;
   }
@@ -75,7 +75,7 @@ export const userHasFork =(
 };
 
 export const userHasManage = (
-  app: App & { colaborators: Colaborator[] },
+  app: App & { collaborators: Collaborator[] },
   user?: User
 ) => {
   if (!user) {
@@ -86,7 +86,7 @@ export const userHasManage = (
   }
 
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.manage)
+    app.collaborators.find((c: Collaborator) => c.userId === user.id && c.manage)
   ) {
     return true;
   }
@@ -100,7 +100,7 @@ export const setAppAccess = async (
   permisions: { view: boolean; edit: boolean; manage: boolean },
   prisma: PrismaClient
 ) => {
-  return prisma.colaborator.upsert({
+  return prisma.collaborator.upsert({
     where: {
       userId_resourceId: {userId:userId,resourceId:app.id},
     },

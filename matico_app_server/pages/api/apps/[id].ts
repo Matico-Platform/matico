@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import {prisma} from "../../../db";
 import {NextApiRequest, NextApiResponse} from "next";
 import { unstable_getServerSession } from "next-auth";
 import { userFromSession, userHasView } from "../../../utils/db";
 import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req:NextApiRequest, res:NextApiResponse) {
-  const prisma = new PrismaClient();
 
   const session = await unstable_getServerSession(req, res, authOptions);
   const user = await userFromSession(session, prisma);
@@ -17,7 +16,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
       where: {
         id: appId,
       },
-      include: { owner: true, _count: { select: { colaborators: true } } },
+      include: { owner: true, _count: { select: { collaborators: true } } },
     });
 
     if (!app) {
@@ -46,7 +45,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
         },
         include: {
           owner:true,
-          _count:{select:{colaborators: true}},
+          _count:{select:{collaborators: true}},
         },
       });
 

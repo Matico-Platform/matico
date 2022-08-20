@@ -1,12 +1,11 @@
-import {PrismaClient} from "@prisma/client";
 import {NextApiRequest, NextApiResponse} from "next";
 import {unstable_getServerSession} from "next-auth";
 import {userFromSession} from "../../../utils/db";
 import {getPresignedUploadUrl} from "../../../utils/s3";
 import {authOptions} from "../auth/[...nextauth]";
+import {prisma} from '../../../db'
 
 export default async function handler(req:NextApiRequest, res: NextApiResponse){
-  const prisma = new PrismaClient();
   const session = await unstable_getServerSession(req, res, authOptions);
 
   const user = await userFromSession(session, prisma);

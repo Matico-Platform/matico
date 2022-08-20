@@ -52,32 +52,6 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
 
 
   // todo: refactor this to enumerations of file types and map MIME types to file types
-  const fileType = (file: File) => {
-    if (file.type.length){
-      switch(file.type){
-        case "application/csv":
-        case "text/csv":
-          return "csv";
-        case "application/geo+json":
-          return "geoJSON" 
-          case "application/zip":
-          return "shp"
-      }
-    } else if (file.name.length) {
-      const fileType = file.name.split('.').slice(-1)[0].toLowerCase()
-      switch(fileType){
-        case "csv":
-          return "csv" 
-        case "geojson":
-          return "geojson"
-        case "zip":
-          return "shp" 
-      } 
-    } else {
-      return null
-    }
-  };
-  
   const dropMessage = isDragActive ? "Drop it here!" : "Drag and drop a file";
   const message = isDragReject
     ? "Only csv, json and geojson files are currently supported"

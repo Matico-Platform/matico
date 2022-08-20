@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { GetServerSideProps, NextPage } from "next";
 import {
   Divider,
@@ -11,20 +12,20 @@ import {
   Content,
 } from "@adobe/react-spectrum";
 import { getSession } from "next-auth/react";
-import { PrismaClient, App, User } from "@prisma/client";
+import { App, User } from "@prisma/client";
 import { AppCard } from "../components/AppCard/AppCard";
 import { StandardLayout } from "../components/StandardLayout/StandardLayout";
 import { useRouter } from "next/router";
 import { useApps, UseAppsArgs } from "../hooks/useApps";
 import { TemplateSelector } from "../components/TemplateSelector/TemplatesSelector";
 import { userFromSession } from "../utils/db";
-import { useState } from "react";
 import { useNotifications } from "../hooks/useNotifications";
 import { Header } from "../components/Header/Header";
 import styled from "styled-components";
 
+import {prisma} from '../db'
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const prisma = new PrismaClient();
   const session = await getSession(context);
   
   let user = null

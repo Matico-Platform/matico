@@ -1,11 +1,12 @@
 import { Flex, ProgressCircle, View } from "@adobe/react-spectrum";
-import { PrismaClient, App } from "@prisma/client";
+import { App } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { userFromSession } from "../../utils/db";
+import {prisma} from '../../db'
 
 const LoadingQuotes: { quote: string; author: string }[] = [
   {
@@ -18,11 +19,10 @@ const LoadingQuotes: { quote: string; author: string }[] = [
   },
 ];
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const prisma = new PrismaClient();
-  const session = await getSession(context);
-  const user = await userFromSession(session, prisma);
-  const params = context.query.params;
+export const getServerSideProps:GetServerSideProps =async(context)=>{
+  const session = await getSession(context)
+  const user = await userFromSession(session, prisma)
+  const params = context.query.params
 
   const app = await prisma.app.findUnique({
     where: {

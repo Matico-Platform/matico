@@ -1,4 +1,4 @@
-import {App, Colaborator, PrismaClient } from "@prisma/client";
+import {App, Collaborator, PrismaClient } from "@prisma/client";
 import {NextApiRequest, NextApiResponse} from "next";
 import { unstable_getServerSession, User } from "next-auth";
 import { setAppAccess, userFromSession, userHasManage } from "../../../../../utils/db"
@@ -17,7 +17,7 @@ export default async function handler(req :NextApiRequest, res: NextApiResponse)
 
   let app  = await prisma.app.findUnique({
     where: { id : appId },
-    include: {owner:true, colaborators:{
+    include: {owner:true, collaborators:{
       include:{
         user: {
           select: {name:true}
@@ -34,7 +34,7 @@ export default async function handler(req :NextApiRequest, res: NextApiResponse)
 
   if(req.method==="DELETE"){
     let id = req.query.id
-    let result = await prisma.colaborator.delete({where:{id:req.query.colaboratorId}})
+    let result = await prisma.collaborator.delete({where:{id:req.query.collaboratorId}})
     res.status(202).json(result)
   }
 }

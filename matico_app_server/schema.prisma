@@ -58,14 +58,14 @@ model User {
   accounts      Account[]
   sessions      Session[]
   apps          App[]
-  colaborations Colaborator[]
+  collaborations Collaborator[]
   Datasets      Dataset[]
 
   @@map("users")
 }
 
 
-model Colaborator {
+model Collaborator {
   id           String  @id @default(cuid())
   user         User    @relation(fields: [userId], references: [id])
   userId       String
@@ -75,7 +75,7 @@ model Colaborator {
   edit         Boolean
   manage       Boolean
   apps         App @relation(fields:[resourceId], references: [id])       
-  @@map("colaborators")
+  @@map("collaborators")
   @@unique([userId,resourceId])
 }
 
@@ -88,7 +88,7 @@ model App {
   description String
   public      Boolean
   ownerId     String
-  colaborators Colaborator[]
+  collaborators Collaborator[]
   noViews     Int @default(0) 
   noForks     Int @default(0) 
   owner       User     @relation(fields: [ownerId], references: [id])

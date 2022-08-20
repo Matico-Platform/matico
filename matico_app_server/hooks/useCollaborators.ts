@@ -1,17 +1,17 @@
-import { Colaborator, User } from "@prisma/client";
+import { Collaborator, User } from "@prisma/client";
 import {useSWRConfig} from "swr";
 import { useApi } from "../utils/api";
 
-export const useColaborators = (appId: string | undefined) => {
+export const useCollaborators = (appId: string | undefined) => {
   const {mutate: mutateGlobal} = useSWRConfig()
   const { data, error, mutate } = useApi(
-    appId ? `/api/apps/${appId}/colaborators` : null,
+    appId ? `/api/apps/${appId}/collaborators` : null,
     {}
   );
 
 
-  const addOrUpdateColaborator = (userId:string , permisions?: {view:boolean, edit:boolean, manage:boolean}) => {
-    fetch(`/api/apps/${appId}/colaborators`, {
+  const addOrUpdateCollaborator = (userId:string , permisions?: {view:boolean, edit:boolean, manage:boolean}) => {
+    fetch(`/api/apps/${appId}/collaborators`, {
       method: "PUT",
       headers: {
         contentType: "application/json",
@@ -25,12 +25,12 @@ export const useColaborators = (appId: string | undefined) => {
     .then(r=>r.json())
       .then((res) => {
         mutateGlobal(`/apps/${appId}`); 
-        mutate(data.map( (c:Colaborator)=>c.id===res.id ? {...c, view: res.view, edit: res.edit, manage:res.manage}: c))
+        mutate(data.map( (c:Collaborator)=>c.id===res.id ? {...c, view: res.view, edit: res.edit, manage:res.manage}: c))
       });
   };
 
-  const removeColaborator = (colaboratorId: string) => {
-    fetch(`/api/apps/${appId}/colaborators/${colaboratorId}`, {
+  const removeCollaborator = (collaboratorId: string) => {
+    fetch(`/api/apps/${appId}/collaborators/${collaboratorId}`, {
       method: "DELETE",
       headers: {
         contentType: "application/json",
@@ -43,10 +43,10 @@ export const useColaborators = (appId: string | undefined) => {
   };
 
   return {
-    colaborators: data,
+    collaborators: data,
     error,
     mutate,
-    addOrUpdateColaborator,
-    removeColaborator,
+    addOrUpdateCollaborator,
+    removeCollaborator,
   };
 };

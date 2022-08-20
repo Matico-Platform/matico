@@ -1,4 +1,5 @@
-import {App, Colaborator, PrismaClient } from "@prisma/client";
+import {App, Collaborator } from "@prisma/client";
+import {prisma} from '../../../../../db'
 import {NextApiRequest, NextApiResponse} from "next";
 import { unstable_getServerSession, User } from "next-auth";
 import { setAppAccess, userFromSession, userHasManage } from "../../../../../utils/db"
@@ -6,7 +7,6 @@ import {authOptions} from "../../../auth/[...nextauth]";
 
 export default async function handler(req :NextApiRequest, res: NextApiResponse) {
   
-  const prisma = new PrismaClient();
   const session = await unstable_getServerSession(req, res, authOptions);
   let user = await userFromSession(session, prisma);
 
@@ -16,7 +16,7 @@ export default async function handler(req :NextApiRequest, res: NextApiResponse)
 
   let app  = await prisma.app.findUnique({
     where: { id : appId },
-    include: {owner:true, colaborators:{
+    include: {owner:true, collaborators:{
       include:{
         user: {
           select: {name:true}
@@ -35,7 +35,7 @@ export default async function handler(req :NextApiRequest, res: NextApiResponse)
   if(req.method==="GET"){
     let id = req.query.id
     //@ts-ignore
-    res.status(200).json(app!.colaborators)
+    res.status(200).json(app!.collaborators)
   }
 
   if(req.method==="PUT"){

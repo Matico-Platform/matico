@@ -11,12 +11,12 @@ import {
   Heading,
   Switch,
 } from "@adobe/react-spectrum";
-import { App, Colaborator } from "@prisma/client";
 import Link from "next/link";
-import { ColaboratorsEditor } from "../ColaboratorsEditor/ColaboratorsEditor";
+import { App, Collaborator } from "@prisma/client";
+import {CollaboratorsEditor} from "../CollaboratorsEditor/CollaboratorsEditor";
 
 export interface AppOptionsBarInterface {
-  app: App & { _count: { colaborators: number } };
+  app: App & {_count: {Collaborators:number}};
   onPublicUpdate: (isPublic: boolean) => void;
 }
 export const AppOptionsBar: React.FC<AppOptionsBarInterface> = ({
@@ -53,11 +53,11 @@ export const AppOptionsBar: React.FC<AppOptionsBarInterface> = ({
             <Tooltip>{app.public ? "Make Private" : "Make Public"}</Tooltip>
           </TooltipTrigger>
           <DialogTrigger isDismissable={true}>
-            <ActionButton>Colaborators: {app._count.colaborators}</ActionButton>
+            <ActionButton>Collaborators: {app._count.Collaborators}</ActionButton>
             <Dialog>
-              <Heading>Manage Colaborators</Heading>
+              <Heading>Manage Collaborators</Heading>
               <Content>
-                <ColaboratorsEditor app={app} />
+                <CollaboratorsEditor app={app} />
               </Content>
             </Dialog>
           </DialogTrigger>

@@ -14,7 +14,7 @@ export const UserFinder: React.FC<UserFinderInterface> = ({ onSelect }) => {
   return (
     <Flex direction="column" gap="size-200">
       <ComboBox
-        label="Colaborator To Add"
+        label="Collaborator To Add"
         items={users ?? []}
         inputValue={searchTerm}
         onInputChange={setSearchTerm}
@@ -31,7 +31,7 @@ export const UserFinder: React.FC<UserFinderInterface> = ({ onSelect }) => {
           onSelect(users.find((u: User) => u.id === selectedUserId))
         }
       >
-        Add Colaborator
+        Add Collaborator
       </ActionButton>
     </Flex>
   );

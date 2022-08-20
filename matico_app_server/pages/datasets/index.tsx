@@ -1,14 +1,13 @@
 import {Flex} from "@adobe/react-spectrum"
-import {PrismaClient, User} from "@prisma/client";
+import { User} from "@prisma/client";
 import {GetServerSideProps} from "next";
 import {getSession} from "next-auth/react";
 import React from "react"
 import {NewDatasetModal} from "../../components/DatasetCreation/NewDatasetModal";
 import {userFromSession} from "../../utils/db";
-
+import {prisma} from '../../db'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const prisma = new PrismaClient();
   const session = await getSession(context);
   
   let user = null

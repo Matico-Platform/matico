@@ -50,11 +50,11 @@ export const FilePreviewer: React.FC<FilePreviewerInterface> = ({
             {data
               .objects({ limit: 20 })
               .map((row: { [colName: string]: any }, index) =>( 
-                  <Row >
+                  <Row key={`row_${index}`}>
                     {data._names.map((name: string) => {
                       const val =
                         typeof row[name] === "object" ? "data" : row[name];
-                      return <Cell>{val}</Cell>;
+                      return <Cell key={name}>{val}</Cell>;
                     })}
                   </Row>
                 ))
