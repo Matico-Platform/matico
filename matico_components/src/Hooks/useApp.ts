@@ -23,13 +23,12 @@ import {Metadata} from "@maticoapp/matico_types/spec";
 
 export const useApp = () => {
 
+    const dispatch = useMaticoDispatch();
     const app = useMaticoSelector(
         (selector) => selector.spec.spec
     );
 
-    const { metadata, pages, panes, theme, datasetTransforms } = app
-
-    const dispatch = useMaticoDispatch();
+    const { metadata, pages, panes, theme, datasetTransforms } = app || {}
 
     const addPageLocal = (page: Partial<Page>) => {
         dispatch(
