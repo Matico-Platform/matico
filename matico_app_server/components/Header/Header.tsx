@@ -1,19 +1,29 @@
-import {Flex,Text, View} from "@adobe/react-spectrum"
-import {Login} from "../Login/Login"
-export const Header: React.FC= ()=>{
-  
+import { Flex, Text, View } from "@adobe/react-spectrum";
+import { Login } from "../Login/Login";
+export const Header: React.FC = () => {
   return (
-    <Flex  direction='row' alignItems='center' justifyContent='space-between'  width="100%" gridArea={'header'} >
-        <Flex direction='row'>
-          <View paddingX="size-200" justifySelf='flex-start'>
-            <Text>Matico</Text>
-          </View>
-        </Flex>
-        <Flex direction='row' >
-          <View justifySelf="flex-end" paddingX="size-200">
-            <Login />
-          </View>
+    <View
+      paddingY="size-200"
+      width="100%"
+      maxWidth="90vw"
+      marginX="auto"
+      gridArea={"header"}
+      minHeight="size-500"
+    >
+      <Flex
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        width="100%"
+      >
+        <Text UNSAFE_style={{
+          fontSize: "2em",
+          fontWeight: "bold"
+        }}>Matico</Text>
+        <View justifySelf="flex-end">
+          <Login />
+        </View>
       </Flex>
-    </Flex>
-  )
-}
+    </View>
+  );
+};

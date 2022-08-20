@@ -5,18 +5,19 @@ import {Header} from "../Header/Header";
 export const StandardLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <Grid
-      width="100vw"
-      height="100vh"
+      width="100%"
+      minHeight={"100vh"}
+      height="auto"
       areas={{
         base: ["header", "nav", "content", "footer"],
         M: [
           "header   header",
-          "nav      content",
+          "content      content",
           "footer   footer",
         ],
         L: [
           "header header  header",
-          "nav    content toc",
+          "content    content toc",
           "footer footer  footer",
         ],
       }}
@@ -25,8 +26,8 @@ export const StandardLayout: React.FC<PropsWithChildren> = ({ children }) => {
         L: ["size-2000", "1fr", "size-2000"],
       }}
       rows={{
-        M: ["size-300", "auto" ],
-        L: ["size-300", "auto",  "size-1000"]
+        M: ["size-1000", "auto" ],
+        L: ["size-1000", "auto",  "size-1000"]
       }}
       gap="size-100"
     >
