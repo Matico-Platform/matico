@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { forwardRef, useLayoutEffect, useState } from "react";
 import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
 import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoHistogramPane } from "Components/Panes/MaticoHistogramPane/MaticoHistogramPane";
@@ -17,6 +17,8 @@ import { PaneParts } from "Components/Panes/PaneParts";
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 import { useEditorActions } from "Hooks/useEditorActions";
 import styled from "styled-components";
+import { useSortable } from "@dnd-kit/sortable";
+import { useDraggable } from "@dnd-kit/core";
 
 export const fallbackPanes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
@@ -40,24 +42,11 @@ const Wrapper = styled.button<{ interactive?: boolean; isHovered?: boolean }>`
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    &:after {
-        box-sizing: border-box;
-        content: "";
-        display: block;
-        clear: both;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        border: 2px solid rgba(0, 0, 0, 0);
-        transition: border 125ms;
-        border: ${({ isHovered }) =>
-            isHovered
-                ? "4px solid var(--spectrum-global-color-chartreuse-500)"
-                : "4px solid rgba(0,0,0,0)"};
-    }
+    border: ${({ isHovered }) =>
+        isHovered
+            ? "4px solid var(--spectrum-global-color-chartreuse-500)"
+            : "0px solid rgba(0,0,0,0)"};
+    z-index: 4;
     pointer-events: ${({ interactive }) => (interactive ? "all" : "none")};
     cursor: ${({ interactive }) => (interactive ? "pointer" : "default")};
     * {
@@ -70,7 +59,7 @@ const SelectorWrapper: React.FC<{
     selectPane: () => void;
     normalizedPane: any;
     children?: React.ReactNode;
-}> = ({ paneRef, selectPane, normalizedPane, children }) => {
+}> = forwardRef(({ paneRef, selectPane, normalizedPane, children }) => {
     const { setHovered } = useEditorActions(paneRef.id);
     const currentHoveredRef = useMaticoSelector(
         (state) => state.editor.hoveredRef
@@ -104,27 +93,38 @@ const SelectorWrapper: React.FC<{
             {children}
         </Wrapper>
     );
-};
+});
 
-export const PaneSelector: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
-    const paneType = paneRef.type;
-    const { normalizedPane, updatePane, selectPane } = usePane(paneRef);
+export const PaneSelector: React.FC<{
+    paneRef: PaneRef;
+    paneType: string;
+    normalizedPane: any;
+    updatePane: (update: any) => void;
+    selectPane: () => void;
+}> = ({ paneRef, paneType, normalizedPane, updatePane, selectPane }) => {
     const isEdit = useIsEditable();
     const currentEditElement = useMaticoSelector(
         ({ spec }) => spec.currentEditElement
     );
     const [editComponent, setEditComponent] = useState<boolean>(false);
-    
+
     useLayoutEffect(() => {
         const isCurrentEditElement = currentEditElement?.id === paneRef.id;
-        if (isEdit && isCurrentEditElement && panes?.[paneType]?.['editablePane']) {
-            setEditComponent(true)        
+        if (
+            isEdit &&
+            isCurrentEditElement &&
+            panes?.[paneType]?.["editablePane"]
+        ) {
+            setEditComponent(true);
         } else {
-            setEditComponent(false)
-        } 
-    },[isEdit && currentEditElement?.id])
+            setEditComponent(false);
+        }
+    }, [isEdit && currentEditElement?.id]);
 
-    const PaneComponent = panes?.[paneType]?.['editablePane'] && editComponent ? panes[paneType]['editablePane'] : panes?.[paneType]?.['pane'] || fallbackPanes[paneType];
+    const PaneComponent =
+        panes?.[paneType]?.["editablePane"] && editComponent
+            ? panes[paneType]["editablePane"]
+            : panes?.[paneType]?.["pane"] || fallbackPanes[paneType];
 
     const WrapperComponent = isEdit ? SelectorWrapper : React.Fragment;
 
