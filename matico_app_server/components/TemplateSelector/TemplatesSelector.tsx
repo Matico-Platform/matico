@@ -1,11 +1,8 @@
 import {
   Flex,
   Heading,
-  Grid,
   ActionButton,
-  View,
   Divider,
-  Text,
 } from "@adobe/react-spectrum";
 import { App } from "@maticoapp/matico_spec";
 import styled from "styled-components";
@@ -79,7 +76,7 @@ export const TemplateSelector: React.FC<TemplateSelectorInterface> = ({
       <TemplatesOuter>
       <TemplatesContainer>
         {templates.map((template, i) => (
-          <TemplateCard>
+          <TemplateCard key={template.templateSlug}>
             <ActionButton
               key={i}
               onPress={() => onSelectTemplate(template.templateSlug)}
