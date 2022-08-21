@@ -91,7 +91,6 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     };
 
     const handleDragEnd = (event: any) => {
-        console.log(event);
         handleDrag(event, true, updatePageIndex, reparentPane, changePaneIndex);
     };
 

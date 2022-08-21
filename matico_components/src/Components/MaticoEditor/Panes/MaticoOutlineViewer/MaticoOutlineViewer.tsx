@@ -76,14 +76,14 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                                 <Heading marginY="size-0" marginX="size-150">
                                     Page Outline
                                 </Heading>
-                                <HoverableItem>
+                                {/* <HoverableItem> */}
                                     <ActionButton
                                         onPress={() => addPage({})}
                                         isQuiet
-                                    >
+                                        >
                                         Add Page
                                     </ActionButton>
-                                </HoverableItem>
+                                {/* </HoverableItem> */}
                             </Flex>
                         </HoverableRow>
                         <DndContext
