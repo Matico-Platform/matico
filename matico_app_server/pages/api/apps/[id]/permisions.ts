@@ -12,10 +12,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let user = await userFromSession(session, prisma);
   let app = prisma.app.findUnique({
     where: { id: appId },
-    include: {owner:true, colaborators:true} 
+    include: {owner:true, collaborators:true} 
   });
 
   if(req.method==="GET"){
-    res.status(200).json(app.colaborators)
+    res.status(200).json(app.collaborators)
   }
 }

@@ -1,45 +1,55 @@
-import {Divider, Flex} from "@adobe/react-spectrum";
-import {PrismaClient, App} from "@prisma/client";
-import {GetServerSideProps} from "next";
-import {getSession} from "next-auth/react";
+import { Divider, Flex } from "@adobe/react-spectrum";
+import { App } from "@prisma/client";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
 import dynamic from "next/dynamic";
-import {useMemo} from "react";
-import {AppOptionsBar} from "../../../components/AppOptionsBar/AppOptionsBar";
-import {useApp} from "../../../hooks/useApp";
+import { useMemo } from "react";
+import { AppOptionsBar } from "../../../components/AppOptionsBar/AppOptionsBar";
+import { MaticoProvider } from "../../../components/DatasetCreation/S3Provider";
+import { useApp } from "../../../hooks/useApp";
+import { prisma } from "../../../db";
 
-
-const prisma= new PrismaClient()
-
-export const getServerSideProps:GetServerSideProps =async(context)=>{
-  const session = await getSession(context)
-  const user = session?.user?.email ? await prisma.user.findUnique({where:{email:(session?.user?.email as string)}}) : null
-  const params = context.query.params
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  const user = session?.user?.email
+    ? await prisma.user.findUnique({
+        where: { email: session?.user?.email as string },
+      })
+    : null;
+  const params = context.query.params;
 
   const app = await prisma.app.findUnique({
-    where:{
-      id: params ? params[0] : undefined  
+    where: {
+      id: params ? params[0] : undefined,
     },
-    include:{owner:true, _count:{ select:{colaborators:true}}}
-  }) 
+    include: {
+      owner: true,
+      _count: { select: { collaborators: true } },
+    },
+  });
 
-  if(!app) return {props:{ app: null, error:"Failed to find app"}}
+  if (!app) return { props: { app: null, error: "Failed to find app" } };
 
-  if(app.owner.id !== user?.id  ) return { props:{app:null, error:"Unauthorized to view this app"}}
+  if (app.owner.id !== user?.id)
+    return { props: { app: null, error: "Unauthorized to view this app" } };
 
-  return{
-    props:{
-      initialApp:JSON.parse(JSON.stringify(app))
-    }
-  }
-}  
+  return {
+    props: {
+      initialApp: JSON.parse(JSON.stringify(app)),
+    },
+  };
+};
 
-interface AppPresentPageProps{
-  initialApp?:App,
-  error?: string
+interface AppPresentPageProps {
+  initialApp?: App;
+  error?: string;
 }
 
-const AppPresentPage : React.FC<AppPresentPageProps>= ({initialApp,error})=>{
-  console.log("inital app is ",initialApp)
+const AppPresentPage: React.FC<AppPresentPageProps> = ({
+  initialApp,
+  error,
+}) => {
+  console.log("app ", initialApp)
   const MaticoApp = dynamic(
     () =>
       (import("@maticoapp/matico_components") as any).then(
@@ -48,60 +58,60 @@ const AppPresentPage : React.FC<AppPresentPageProps>= ({initialApp,error})=>{
     { ssr: false }
   );
 
-  const {app, updateApp,setPublic}= useApp(initialApp?.id, initialApp)
+  const { app, updateApp, setPublic } = useApp(initialApp?.id, initialApp);
 
-  const onUpdateSpec= (spec: App)=>{
-
-    if(!spec){return }
-
-    const update={
-          name: spec.name,
-          description: spec.description,
-          spec: spec,
+  const onUpdateSpec = (spec: App) => {
+    if (!spec) {
+      return;
     }
 
-    updateApp(update)
-      .catch(e=>{console.log("Failed to udpate app", e.error)})
-  }
+    const update = {
+      name: spec.name,
+      description: spec.description,
+      spec: spec,
+    };
 
-  const editor = useMemo(()=>{
-      if(initialApp){
-        return <MaticoApp 
-                onSpecChange={(spec: any) => {
-                  onUpdateSpec(spec);
-                }}
-                spec={initialApp.spec}
-                basename={`/apps/edit/${initialApp.id}`}
-                editActive={true} />
-      }
-      else if(error){
-      return(
+    updateApp(update).catch((e) => {
+      console.log("Failed to udpate app", e.error);
+    });
+  };
+
+  const editor = useMemo(() => {
+    if (initialApp) {
+      return (
+        <MaticoApp
+          onSpecChange={(spec: any) => {
+            onUpdateSpec(spec);
+          }}
+          spec={initialApp.spec}
+          basename={`/apps/edit/${initialApp.id}`}
+          editActive={true}
+          datasetProviders={[MaticoProvider]}
+        />
+      );
+    } else if (error) {
+      return (
         <Flex height="100%" gridArea="content">
           <h2>{error}</h2>
         </Flex>
-      )
-      }
-    else{
-      return <Flex height="100%" gridArea='content'>
-        <h2>Something really weird went wrong</h2>
-      </Flex>
+      );
+    } else {
+      return (
+        <Flex height="100%" gridArea="content">
+          <h2>Something really weird went wrong</h2>
+        </Flex>
+      );
     }
-  },[initialApp])
+  }, [initialApp]);
 
-
-
-
-  return(
-    <Flex direction='column' height='100vh'>
+  return (
+    <Flex direction="column" height="100vh">
       <AppOptionsBar app={app} onPublicUpdate={setPublic} />
-      <Divider size="S"/>
+      <Divider size="S" />
 
-      <Flex flex={1}>
-        {editor}
-      </Flex>
+      <Flex flex={1}>{editor}</Flex>
     </Flex>
-  ) 
-}
+  );
+};
 
-
-export default AppPresentPage
+export default AppPresentPage;

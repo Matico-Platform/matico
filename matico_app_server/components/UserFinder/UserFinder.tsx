@@ -1,38 +1,42 @@
 import { User } from "@prisma/client";
 import { useSearchUsers } from "../../hooks/useUsers";
-import { ActionButton, ComboBox, Flex, Item } from "@adobe/react-spectrum";
-import { useState } from "react";
+import { ActionButton, Flex, Text, TextField } from "@adobe/react-spectrum";
+import React, { useState } from "react";
 
 export interface UserFinderInterface {
   onSelect: (user: User) => void;
+  label?: string,
+  excludeList?: Array<string>
 }
-export const UserFinder: React.FC<UserFinderInterface> = ({ onSelect }) => {
+export const UserFinder: React.FC<UserFinderInterface> = ({ onSelect, label, excludeList = [] }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   let { users } = useSearchUsers(searchTerm);
+  const validUsers = users ? users.filter((user:User)=> !excludeList.includes(user.id)) : [] 
+
   return (
     <Flex direction="column" gap="size-200">
-      <ComboBox
-        label="Colaborator To Add"
-        items={users ?? []}
-        inputValue={searchTerm}
-        onInputChange={setSearchTerm}
-        onSelectionChange={(id) =>setSelectedUserId(id as string)}
-        selectedKey={selectedUserId}
-        menuTrigger="focus"
-        
-      >
-        {(item: User) => <Item key={item.id}>{item.name} </Item>}
-      </ComboBox>
-      <ActionButton
-        isDisabled={!selectedUserId}
-        onPress={(key) =>
-          onSelect(users.find((u: User) => u.id === selectedUserId))
-        }
-      >
-        Add Colaborator
-      </ActionButton>
+      <TextField
+        label={ label ?? "Search for user"}
+        value={searchTerm}
+        onChange={setSearchTerm}
+        width="100%"
+      />
+      <Flex direction="column">
+        {validUsers &&
+          validUsers.map((user: User) => (
+            <ActionButton key={user.id} onPress={() => onSelect(user)}>
+              <Flex direction="row" gap="size-200">
+                <img src={user.image} width="20px" height="20px" />
+                <Text>{user.name}</Text>
+              </Flex>
+              </ActionButton>
+          ))}
+          { (validUsers.length===0 && searchTerm.length>0) &&
+            <Text>No users found</Text>
+          }
+      </Flex>
     </Flex>
   );
 };

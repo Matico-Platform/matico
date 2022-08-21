@@ -1,10 +1,12 @@
 import * as wasm from './matico_spec_bg.wasm';
 
-const lTextDecoder = typeof TextDecoder === 'undefined' ? (0, module.require)('util').TextDecoder : TextDecoder;
+const heap = new Array(32).fill(undefined);
 
-let cachedTextDecoder = new lTextDecoder('utf-8', { ignoreBOM: true, fatal: true });
+heap.push(undefined, null, true, false);
 
-cachedTextDecoder.decode();
+function getObject(idx) { return heap[idx]; }
+
+let WASM_VECTOR_LEN = 0;
 
 let cachedUint8Memory0 = new Uint8Array();
 
@@ -14,29 +16,6 @@ function getUint8Memory0() {
     }
     return cachedUint8Memory0;
 }
-
-function getStringFromWasm0(ptr, len) {
-    return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
-}
-
-const heap = new Array(32).fill(undefined);
-
-heap.push(undefined, null, true, false);
-
-let heap_next = heap.length;
-
-function addHeapObject(obj) {
-    if (heap_next === heap.length) heap.push(heap.length + 1);
-    const idx = heap_next;
-    heap_next = heap[idx];
-
-    heap[idx] = obj;
-    return idx;
-}
-
-function getObject(idx) { return heap[idx]; }
-
-let WASM_VECTOR_LEN = 0;
 
 const lTextEncoder = typeof TextEncoder === 'undefined' ? (0, module.require)('util').TextEncoder : TextEncoder;
 
@@ -102,6 +81,8 @@ function getInt32Memory0() {
     return cachedInt32Memory0;
 }
 
+let heap_next = heap.length;
+
 function dropObject(idx) {
     if (idx < 36) return;
     heap[idx] = heap_next;
@@ -112,6 +93,25 @@ function takeObject(idx) {
     const ret = getObject(idx);
     dropObject(idx);
     return ret;
+}
+
+const lTextDecoder = typeof TextDecoder === 'undefined' ? (0, module.require)('util').TextDecoder : TextDecoder;
+
+let cachedTextDecoder = new lTextDecoder('utf-8', { ignoreBOM: true, fatal: true });
+
+cachedTextDecoder.decode();
+
+function getStringFromWasm0(ptr, len) {
+    return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
+}
+
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
 }
 
 function isLikeNone(x) {
@@ -142,6 +142,12 @@ export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon
 export const MapProjection = Object.freeze({ GeoConicConformal:0,"0":"GeoConicConformal",GeoTransverseMercator:1,"1":"GeoTransverseMercator",GeoNaturalEarth1:2,"2":"GeoNaturalEarth1",GeoConicEquidistant:3,"3":"GeoConicEquidistant",GeoOrthographic:4,"4":"GeoOrthographic",GeoStereographic:5,"5":"GeoStereographic",GeoMercator:6,"6":"GeoMercator",GeoEquirectangular:7,"7":"GeoEquirectangular", });
 /**
 */
+export const JoinType = Object.freeze({ Inner:0,"0":"Inner",Outer:1,"1":"Outer",Left:2,"2":"Left",Right:3,"3":"Right", });
+/**
+*/
+export const AggregationType = Object.freeze({ Min:0,"0":"Min",Max:1,"1":"Max",Sum:2,"2":"Sum",CumulativeSum:3,"3":"CumulativeSum",Mean:4,"4":"Mean",Median:5,"5":"Median",StandardDeviation:6,"6":"StandardDeviation", });
+/**
+*/
 export const LinearLayoutDirection = Object.freeze({ Row:0,"0":"Row",Column:1,"1":"Column", });
 /**
 */
@@ -158,12 +164,6 @@ export const TabBarPosition = Object.freeze({ Horizontal:0,"0":"Horizontal",Vert
 /**
 */
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
-/**
-*/
-export const JoinType = Object.freeze({ Inner:0,"0":"Inner",Outer:1,"1":"Outer",Left:2,"2":"Left",Right:3,"3":"Right", });
-/**
-*/
-export const AggregationType = Object.freeze({ Min:0,"0":"Min",Max:1,"1":"Max",Sum:2,"2":"Sum",CumulativeSum:3,"3":"CumulativeSum",Mean:4,"4":"Mean",Median:5,"5":"Median",StandardDeviation:6,"6":"StandardDeviation", });
 /**
 */
 export class AggregateStep {
@@ -1688,6 +1688,22 @@ export class SelectionOptions {
 }
 /**
 */
+export class SignedS3ArrowDataset {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_signeds3arrowdataset_free(ptr);
+    }
+}
+/**
+*/
 export class StaticMapPane {
 
     __destroy_into_raw() {
@@ -2030,11 +2046,6 @@ export class WASMCompute {
     }
 }
 
-export function __wbindgen_json_parse(arg0, arg1) {
-    const ret = JSON.parse(getStringFromWasm0(arg0, arg1));
-    return addHeapObject(ret);
-};
-
 export function __wbindgen_json_serialize(arg0, arg1) {
     const obj = getObject(arg1);
     const ret = JSON.stringify(obj === undefined ? null : obj);
@@ -2046,6 +2057,11 @@ export function __wbindgen_json_serialize(arg0, arg1) {
 
 export function __wbindgen_object_drop_ref(arg0) {
     takeObject(arg0);
+};
+
+export function __wbindgen_json_parse(arg0, arg1) {
+    const ret = JSON.parse(getStringFromWasm0(arg0, arg1));
+    return addHeapObject(ret);
 };
 
 export function __wbg_getTime_58b0bdbebd4ef11d(arg0) {

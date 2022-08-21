@@ -3,11 +3,14 @@ import Link from "next/link";
 import Preview from "@spectrum-icons/workflow/Preview";
 import EdinIn from "@spectrum-icons/workflow/EditIn";
 import Branch2 from "@spectrum-icons/workflow/Branch2";
+import React from "react";
+import {DeleteAppDialog} from "../DeleteAppDialog/DeleteAppDialog";
 export interface AppCardInterface {
   app: any;
   includeEdit: boolean;
   includeView: boolean;
   includeFork: boolean;
+  includeDelete: boolean;
 }
 
 export const AppCard: React.FC<AppCardInterface> = ({
@@ -15,6 +18,7 @@ export const AppCard: React.FC<AppCardInterface> = ({
   includeFork,
   includeView = true,
   includeEdit,
+  includeDelete
 }) => {
   return (
     <tr>
@@ -58,6 +62,9 @@ export const AppCard: React.FC<AppCardInterface> = ({
                 </Flex>
               </a>
             </Link>
+          )}
+          {includeDelete && (
+            <DeleteAppDialog appId={app.id}/>
           )}
         </Flex>
       </td>

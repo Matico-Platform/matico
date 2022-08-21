@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { GetServerSideProps, NextPage } from "next";
 import {
   Divider,
@@ -11,20 +12,20 @@ import {
   Content,
 } from "@adobe/react-spectrum";
 import { getSession } from "next-auth/react";
-import { PrismaClient, App, User } from "@prisma/client";
+import { App, User } from "@prisma/client";
 import { AppCard } from "../components/AppCard/AppCard";
 import { StandardLayout } from "../components/StandardLayout/StandardLayout";
 import { useRouter } from "next/router";
 import { useApps, UseAppsArgs } from "../hooks/useApps";
 import { TemplateSelector } from "../components/TemplateSelector/TemplatesSelector";
 import { userFromSession } from "../utils/db";
-import { useState } from "react";
 import { useNotifications } from "../hooks/useNotifications";
 import { Header } from "../components/Header/Header";
 import styled from "styled-components";
 
+import {prisma} from '../db'
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const prisma = new PrismaClient();
   const session = await getSession(context);
   
   let user = null
@@ -123,18 +124,30 @@ const Home: React.FC<HomePageProps> = ({
   };
 
   return (
-    <Content minHeight={"100vh"}>
+    <Content minHeight={"100vh"}
+      
+      UNSAFE_style={{
+        width: "100%",
+        height: "100%",
+        background: "linear-gradient(to top left, #282848, #793169)",
+      }}
+    >
       <Header />
       <Flex direction="column" gridArea="content" maxWidth="90vw" marginX="auto">
         <TemplateSelector onSelectTemplate={createNewApp} recentApps={recentApps || initalRecentApps} />
         {userApps && (
           <Flex id="Your Apps" direction="column">
-            <Heading>Your Apps</Heading>
-            <TextField
-              value={userSearchTerm}
-              label="search"
-              onChange={setUserSearchTerm}
-            />
+            <Heading>
+              <Flex direction={"row"} justifyContent='space-between' alignItems='center'>
+                <Text>Your Apps</Text>
+                <TextField
+                    labelPosition="side"
+                    value={userSearchTerm}
+                    label="search"
+                    onChange={setUserSearchTerm}
+                  />
+                </Flex>
+              </Heading>
             <AppsTable>
               <tr>
                 <th>App Name</th>
@@ -149,6 +162,7 @@ const Home: React.FC<HomePageProps> = ({
                 includeEdit
                 includeFork
                 includeView
+                includeDelete
               />
             ))}
             </AppsTable>

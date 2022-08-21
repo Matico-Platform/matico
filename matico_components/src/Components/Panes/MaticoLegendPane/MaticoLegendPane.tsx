@@ -61,6 +61,7 @@ const useLegend = (
 
     let steps: { scale: any; operation: ScaleFunc }[] = [];
 
+
     if (fillColor?.domain) {
         const { domain, range: valuesOrName } = fillColor;
         const range = Array.isArray(valuesOrName)
@@ -68,7 +69,7 @@ const useLegend = (
             : get(colors, valuesOrName);
 
         const scale = scaleThreshold<number>({
-            domain: [...domain.slice(1), Math.pow(10, 10)],
+            domain: domain && Array.isArray(domain)  ? [...domain.slice(1), Math.pow(10, 10)] :[],
             range
         });
 
@@ -85,7 +86,7 @@ const useLegend = (
             ? valuesOrName
             : get(colors, valuesOrName);
         const scale = scaleThreshold<number>({
-            domain: [...domain.slice(1), Math.pow(10, 10)],
+            domain: domain && Array.isArray(domain) ? [...domain.slice(1), Math.pow(10, 10)] : [],
             range
         });
         steps.push({
@@ -105,7 +106,7 @@ const useLegend = (
                 (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 4 - 1) + 1
             );
             const scale = scaleThreshold<number>({
-                domain: [...domain.slice(1), Math.pow(10, 10)],
+                domain: domain && Array.isArray(domain) ? [...domain.slice(1), Math.pow(10, 10)] : [],
                 range
             });
             steps.push({
@@ -127,7 +128,7 @@ const useLegend = (
                 (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 2 - 3) + 3
             );
             const scale = scaleThreshold<number>({
-                domain: [...domain.slice(1), Math.pow(10, 10)],
+                domain: domain && Array.isArray(domain) ? [...domain.slice(1), Math.pow(10, 10)] : [],
                 range
             });
             steps.push({

@@ -1,11 +1,12 @@
 import { ActionButton, Flex, Grid, repeat } from "@adobe/react-spectrum";
-import { App, PrismaClient } from "@prisma/client";
+import { App } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import {AppCard} from "../../components/AppCard/AppCard";
 import { TemplateSelector } from "../../components/TemplateSelector/TemplatesSelector";
 import { useApps } from "../../hooks/useApps";
 import { userFromSession } from "../../utils/db";
+import {prisma} from '../../db'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const prisma = new PrismaClient();
