@@ -7,24 +7,28 @@ import {
 import { App } from "@maticoapp/matico_spec";
 import styled from "styled-components";
 import { Icon } from "../Icons/Icon";
+import Image from 'next/image'
 
 export interface TemplateSelectorInterface {
   onSelectTemplate: (template: string) => void;
   recentApps: App[];
 }
 
-const templates: { title: string; templateSlug: string }[] = [
+const templates: { title: string; templateSlug: string, image:string}[] = [
   {
     title: "Blank",
     templateSlug: "Blank",
+    image:"blank.png"
   },
   {
     title: "Big Map",
     templateSlug: "BigMap",
+    image:"big_map.png"
   },
   {
     title: "Map With Sidebar",
     templateSlug: "MapWithSidebar",
+    image:"map_sidebar.png"
   },
 ];
 const TemplateCard = styled.div`
@@ -94,7 +98,7 @@ export const TemplateSelector: React.FC<TemplateSelectorInterface> = ({
                 alignItems="center"
                 width="100%"
               >
-                <Icon icon={template.templateSlug} size="5em" />
+                <Image src={`/${template.image}`} width={400} height={295} />
                 <br />
                 <p>{template.title}</p>
               </Flex>
