@@ -24,13 +24,12 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
     let { page } = usePage(pageId);
     let layout: Layout = page?.layout;
     let LayoutEngine = selectLayout(layout);
-
+    
     const parentRef = useRef<HTMLDivElement>(null);
-
     const { isOver, setNodeRef } = useDroppable({
-        id: page.id,
+        id: page?.id,
         data: {
-            targetId: page.id,
+            targetId: page?.id,
             type: "page",
             depth: 0
         }
@@ -38,7 +37,9 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
     const activeItem = useDraggingContext();
     const showDropZone = // @ts-ignore
         !!activeItem && activeItem?.data?.current?.type !== "page";
-
+    if (!page) {
+        return null
+    }
     return (
         <PageParent ref={parentRef}>
             <ParentProvider parentRef={parentRef}>

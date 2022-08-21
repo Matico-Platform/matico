@@ -134,7 +134,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                         <DraggingProvider activeItem={activeItem}>
                             <Switch>
                                 {pages.map((page: Page, index: number) => (
-                                    <Route
+                                    !!page?.id && <Route
                                         path={page.path ? page.path : page.name}
                                         key={page.path}
                                         exact={true}
