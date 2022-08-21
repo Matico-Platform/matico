@@ -63,7 +63,6 @@ const handleUnits = (
     if (unit === "pixels") {
         return "px";
     } else {
-        console.log('units', unit, position, direction, unitTree)
         return unitTree[position][direction][unit];
     }
 };
@@ -98,16 +97,22 @@ const LinearContainer: React.FC<{
             // @ts-ignore
             ref={ref}
             style={{
-                width: direction === "column" ? '100%' : `${width}${handleUnits(
-                    widthUnits,
-                    "horizontal",
-                    direction
-                )}`,
-                height: direction === "row" ? '100%' : `${height}${handleUnits(
-                    heightUnits,
-                    "vertical",
-                    direction
-                )}`,
+                width:
+                    direction === "column"
+                        ? "100%"
+                        : `${width}${handleUnits(
+                              widthUnits,
+                              "horizontal",
+                              direction
+                          )}`,
+                height:
+                    direction === "row"
+                        ? "100%"
+                        : `${height}${handleUnits(
+                              heightUnits,
+                              "vertical",
+                              direction
+                          )}`,
                 maxWidth: "100%",
                 zIndex: layer,
                 paddingBottom: `${padBottom}${handleUnits(
@@ -146,7 +151,8 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
         direction,
         paneRef,
         normalizedPane,
-        position: { widthUnits, heightUnits }
+        position: { widthUnits, heightUnits },
+        parent
     } = useInternalSpec();
     const resizableParentRef = useRef<HTMLDivElement>(null);
     const {
@@ -300,8 +306,8 @@ const LinearPane: React.FC<{
                 selectPane,
                 updatePanePosition,
                 parent,
-                direction,
-                allowOverflow
+                direction: ["row", "column"].includes(direction) ? direction : 'column',
+                allowOverflow: allowOverflow !== undefined ? allowOverflow : true
             }}
         >
             <Wrapper>
@@ -360,8 +366,11 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
             }}
         >
             <SortableContext items={paneRefs.map((f) => f.id)}>
-                <ParentProvider parentRef={parentRef} useViewPortHeight={allowOverflow && direction === "column"}
-                useViewPortWidth={allowOverflow && direction === "row"}>
+                <ParentProvider
+                    parentRef={parentRef}
+                    useViewPortHeight={allowOverflow && direction === "column"}
+                    useViewPortWidth={allowOverflow && direction === "row"}
+                >
                     <Flex
                         id="layout-engine"
                         position="relative"
@@ -380,15 +389,18 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
                         justifyContent={justify}
                         gap={GapVals[gap]}
                     >
-                        {paneRefs.map((paneRef: PaneRef) => (
-                            !!paneRef && <LinearPane
-                                key={paneRef.id}
-                                allowOverflow={allowOverflow}
-                                paneRef={paneRef}
-                                position={paneRef.position}
-                                direction={direction}
-                            />
-                        ))}
+                        {paneRefs.map(
+                            (paneRef: PaneRef) =>
+                                !!paneRef && (
+                                    <LinearPane
+                                        key={paneRef.id}
+                                        allowOverflow={allowOverflow}
+                                        paneRef={paneRef}
+                                        position={paneRef.position}
+                                        direction={direction}
+                                    />
+                                )
+                        )}
                     </Flex>
                 </ParentProvider>
             </SortableContext>
