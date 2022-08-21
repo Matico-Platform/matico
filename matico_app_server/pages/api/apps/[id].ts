@@ -59,6 +59,9 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
 
   if (req.method === "DELETE") {
     try {
+      await prisma.collaborator.deleteMany({
+        where:{resourceId: appId}
+      })
       const deletedApp = await prisma.app.delete({
         where: {
           id: appId,
