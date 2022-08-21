@@ -1,5 +1,7 @@
-import { App, Colaborator, PrismaClient, User } from "@prisma/client";
+import { App, Dataset, Collaborator, PrismaClient, User } from "@prisma/client";
 import { Session } from "next-auth";
+
+type Resource = (App | Dataset) & {collaborators : Collaborator[]};
 
 export const userFromSession = async (
   session: Session | null,
@@ -15,7 +17,7 @@ export const userFromSession = async (
 };
 
 export const userHasEdit =(
-  app: App & { colaborators: Colaborator[] },
+  resource: Resource,
   user?: User
 ) => {
   if (!user) {
@@ -27,7 +29,7 @@ export const userHasEdit =(
   }
 
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.edit)
+    resource.collaborators.find((c: Collaborator) => c.userId === user.id && c.edit)
   ) {
     return true;
   }
@@ -36,17 +38,17 @@ export const userHasEdit =(
 };
 
 export const userHasView =(
-  app: App & { colaborators: Colaborator[] },
+  resource: Resource,
   user?: User | null
 ) => {
   if (!user) {
-    return app.public;
+    return resource.public;
   }
-  if (user.id === app.ownerId) {
+  if (user.id === resource.ownerId) {
     return true;
   }
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.view)
+    resource.collaborators.find((c: Collaborator) => c.userId === user.id && c.view)
   ) {
     return true;
   }
@@ -55,18 +57,18 @@ export const userHasView =(
 };
 
 export const userHasFork =(
-  app: App & { colaborators: Colaborator[] },
+  resource: Resource,
   user?: User
 ) => {
   if (!user) {
-    return app.public;
+    return resource.public;
   }
   if (user.id === app.ownerId) {
     return true;
   }
 
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.view)
+    resource.collaborators.find((c: Collaborator) => c.userId === user.id && c.view)
   ) {
     return true;
   }
@@ -75,18 +77,18 @@ export const userHasFork =(
 };
 
 export const userHasManage = (
-  app: App & { colaborators: Colaborator[] },
+  resource: Resource,
   user?: User
 ) => {
   if (!user) {
     return false;
   }
-  if (user.id === app.ownerId) {
+  if (user.id === resource.ownerId) {
     return true;
   }
 
   if (
-    app.colaborators.find((c: Colaborator) => c.userId === user.id && c.manage)
+    resource.collaborators.find((c: Collaborator) => c.userId === user.id && c.manage)
   ) {
     return true;
   }
@@ -95,27 +97,27 @@ export const userHasManage = (
 };
 
 export const setAppAccess = async (
-  app: App,
+  resource: Resource,
   userId: string,
-  permisions: { view: boolean; edit: boolean; manage: boolean },
+  permissions: { view: boolean; edit: boolean; manage: boolean },
   prisma: PrismaClient
 ) => {
-  return prisma.colaborator.upsert({
+  return prisma.collaborator.upsert({
     where: {
-      userId_resourceId: {userId:userId,resourceId:app.id},
+      userId_resourceId: {userId:userId,resourceId:resource.id},
     },
     create: {
-      view: permisions.view,
-      manage: permisions.manage,
-      edit: permisions.edit,
+      view: permissions.view,
+      manage: permissions.manage,
+      edit: permissions.edit,
       userId: userId,
-      resourceId: app.id,
-      resourceType: "app",
+      resourceId: resource.id,
+      resourceType: "url" in resource ? "dataset" : "app",
     },
     update: {
-      view: permisions.view,
-      manage: permisions.manage,
-      edit: permisions.edit,
+      view: permissions.view,
+      manage: permissions.manage,
+      edit: permissions.edit,
     },
   });
 };

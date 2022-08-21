@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma} from "../../../db";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Templates } from "../../../templates";
 import { unstable_getServerSession } from "next-auth";
@@ -9,7 +9,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const prisma = new PrismaClient();
   const session = await unstable_getServerSession(req, res, authOptions);
 
   const user = await userFromSession(session, prisma);
@@ -22,8 +21,8 @@ export default async function handler(
       orderBy: {},
       include: {
         owner: true,
-        colaborators:
-          query.includeColaborators && query.includeColaborators === "true",
+        collaborators:
+          query.includeCollaborators && query.includeCollaborators === "true",
       },
     };
 
@@ -90,7 +89,7 @@ export default async function handler(
     if (appDetails.forkId) {
       const otherApp = await prisma.app.findUnique({
         where: { id: appDetails.forkId },
-        include: { owner: true, colaborators: true },
+        include: { owner: true, collaborators: true },
       });
 
       if (!otherApp) {

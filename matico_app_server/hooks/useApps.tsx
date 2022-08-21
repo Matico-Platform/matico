@@ -5,7 +5,7 @@ import { useApi } from "../utils/api";
 export interface UseAppsArgs {
   ownerId?: string;
   public?: boolean;
-  includeColaborators?: boolean,
+  includeCollaborators?: boolean,
   order?:string,
   orderDir?: "asc"| "desc",
   take?:number,
