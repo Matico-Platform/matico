@@ -150,6 +150,7 @@ const Home: React.FC<HomePageProps> = ({
                 includeEdit
                 includeFork
                 includeView
+                includeDelete
               />
             ))}
             </AppsTable>
