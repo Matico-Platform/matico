@@ -32,6 +32,11 @@ export const getPresignedUploadUrl = async (userId:string, filename:string)=>{
   return signedUrl
 }
 
+export const deleteDataset = async (userId:string, datasetId:string)=>{
+  const command = new DeleteObjectCommand(bucketParamsForUserUpload(userId,datasetId)) 
+  let deleteResult = await s3Client.send(command)
+}
+
 export const getPresignedGetUrl= async (userId:string, filename:string)=>{
  const command = new GetObjectCommand(bucketParamsForUserUpload(userId,filename));
  const signedUrl = await getSignedUrl(s3Client, command, {

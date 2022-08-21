@@ -18,21 +18,21 @@ export const CollaboratorsEditor: React.FC<CollaboratorsEditorProps> = ({
   app,
 }) => {
   const {
-    Collaborators,
+    collaborators,
     mutate,
     error,
     addOrUpdateCollaborator,
     removeCollaborator,
   } = useCollaborators(app.id);
 
-  const updateCollaborator = (userId: string, permisions: any) => {
-    addOrUpdateCollaborator(userId, permisions);
+  const updateCollaborator = (userId: string, permissions: any) => {
+    addOrUpdateCollaborator(userId, permissions);
   };
 
   return (
     <Flex direction="column" gap={"size-200"}>
-      {Collaborators &&
-        Collaborators.map((collaborator:Collaborator) => (
+      {collaborators &&
+        collaborators.map((collaborator:Collaborator) => (
           <Flex
             key={collaborator.id}
             alignItems="center"
@@ -87,7 +87,7 @@ export const CollaboratorsEditor: React.FC<CollaboratorsEditorProps> = ({
           </Flex>
         ))}
       <Divider size="S" />
-      <UserFinder onSelect={(user) => addOrUpdateCollaborator(user.id)} />
+      <UserFinder label="Search for user to add as collaborator" onSelect={(user) => addOrUpdateCollaborator(user.id)} excludeList={ collaborators ? collaborators.map((c: Collaborator)=>c.userId) : []} />
     </Flex>
   );
 };

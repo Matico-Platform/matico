@@ -6,6 +6,7 @@ import React from "react"
 import {NewDatasetModal} from "../../components/DatasetCreation/NewDatasetModal";
 import {userFromSession} from "../../utils/db";
 import {prisma} from '../../db'
+import {DatasetSelector} from "../../components/DatasetSelector/DatasetSelector";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
@@ -27,6 +28,7 @@ const DatasetsPage : React.FC<DatasetsPageProps> = ({user})=>{
 
   return(
     <Flex>
+      <DatasetSelector onSelectDataset={(d)=>console.log(d)}/>
       <NewDatasetModal />
     </Flex>
   )

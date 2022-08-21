@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { AppOptionsBar } from "../../../components/AppOptionsBar/AppOptionsBar";
 import { MaticoProvider } from "../../../components/DatasetCreation/S3Provider";
 import { useApp } from "../../../hooks/useApp";
-import {prisma} from '../../../db'
+import { prisma } from "../../../db";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
@@ -22,7 +22,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: {
       id: params ? params[0] : undefined,
     },
-    include: { owner: true, _count: { select: { collaborators: true } } },
+    include: {
+      owner: true,
+      _count: { select: { collaborators: true } },
+    },
   });
 
   if (!app) return { props: { app: null, error: "Failed to find app" } };
@@ -46,7 +49,7 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({
   initialApp,
   error,
 }) => {
-  console.log("inital app is ", initialApp);
+  console.log("app ", initialApp)
   const MaticoApp = dynamic(
     () =>
       (import("@maticoapp/matico_components") as any).then(
