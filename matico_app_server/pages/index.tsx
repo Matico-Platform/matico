@@ -130,12 +130,17 @@ const Home: React.FC<HomePageProps> = ({
         <TemplateSelector onSelectTemplate={createNewApp} recentApps={recentApps || initalRecentApps} />
         {userApps && (
           <Flex id="Your Apps" direction="column">
-            <Heading>Your Apps</Heading>
-            <TextField
-              value={userSearchTerm}
-              label="search"
-              onChange={setUserSearchTerm}
-            />
+            <Heading>
+              <Flex direction={"row"} justifyContent='space-between' alignItems='center'>
+                <Text>Your Apps</Text>
+                <TextField
+                    labelPosition="side"
+                    value={userSearchTerm}
+                    label="search"
+                    onChange={setUserSearchTerm}
+                  />
+                </Flex>
+              </Heading>
             <AppsTable>
               <tr>
                 <th>App Name</th>
