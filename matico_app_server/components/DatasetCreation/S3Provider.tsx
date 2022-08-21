@@ -21,8 +21,8 @@ export const MaticoImporter: React.FC<DatasetProviderComponent> = ({
 };
 
 export const MaticoProvider: DatasetProvider = {
-  name: "Matico Datasets",
-  description: "Access your uploaded datasets on matico",
+  name: "Your datasets",
+  description: "Add a dataset you have uploaded to matico",
   component: MaticoImporter,
   parameterEditor: () => <h1>Not implemented</h1>,
 };

@@ -13,10 +13,13 @@ import {
   ButtonGroup,
 } from "@adobe/react-spectrum";
 import { NewUploadDatasetForm } from "./NewUploadDatasetForm";
+import {Dataset} from "@prisma/client";
 
-export interface NewDatasetModalProps {}
+export interface NewDatasetModalProps {
+  onSubmit: (dataset : Dataset & {dataUrl:string})=>void
+}
 
-export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
+export const NewDatasetModal: React.FC<NewDatasetModalProps> = ({onSubmit}) => {
   const [isOpen, setIsOpen] = useState(false);
   // TODO: on-done notification in this component
   return (
@@ -24,7 +27,10 @@ export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
       <Button variant="cta">New Dataset</Button>
       <Dialog width="80vw" height="60vh">
         <Content>
-          <NewUploadDatasetForm />
+          <NewUploadDatasetForm onSubmit={(dataset)=> {
+            setIsOpen(false)
+            onSubmit(dataset)
+          }}/>
         </Content>
         <ButtonGroup>
           <ActionButton onPress={() => setIsOpen(false)}>Cancel</ActionButton>

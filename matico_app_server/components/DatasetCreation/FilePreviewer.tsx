@@ -14,6 +14,7 @@ import {
   TextField,
   View,
 } from "@adobe/react-spectrum";
+import {Dataset} from "@prisma/client";
 import React, { useEffect, useState } from "react";
 
 import { Uploader } from "./Uploader";
@@ -21,7 +22,7 @@ import { useLoadDataset } from "./useLoadDataset";
 
 export interface FilePreviewerInterface{
   file:File;
-  onSubmit?:()=>void;
+  onSubmit?:(dataset:Dataset &{dataUrl:string})=>void;
 }
 
 export const FilePreviewer: React.FC<FilePreviewerInterface> = ({
@@ -82,6 +83,7 @@ export const FilePreviewer: React.FC<FilePreviewerInterface> = ({
           <Uploader
             table={data}
             metadata={{ name, description, public:isPublic }}
+            onDone={(dataset)=> {if(onSubmit) { onSubmit(dataset)}}}
           />
         ) : (
           <Button variant="cta" onPress={() => setUpload(true)}>

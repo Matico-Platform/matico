@@ -23,6 +23,7 @@ export default async function handler(req:NextApiRequest, res: NextApiResponse){
         path:""
       }
     })
-    res.status(200).json(await getPresignedUploadUrl(user!.id, dataset.id))
+    const dataUrl  = await getPresignedUploadUrl(user!.id, dataset.id)
+    res.status(200).json({...dataset, dataUrl})
   }
 }

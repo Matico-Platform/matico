@@ -18,10 +18,7 @@ export default async function handler(
   }
 
   const dataset = await prisma.dataset.findUnique({
-    where: { id: req.query.id },
-    include: {
-      collaborator: true,
-    },
+    where: { id: req.query.id }
   });
 
   if (!dataset) {
@@ -30,6 +27,9 @@ export default async function handler(
   }
 
   if (req.method === "GET") {
+    if(user.id !==dataset.id && dataset.public ===false){
+      res.status(401).json({"error" : "You are not authorizied to use this dataset"})
+    }
     if (req.query.includeDataUrl) {
       const dataUrl = await getPresignedGetUrl(dataset.ownerId, dataset.id);
       res.status(200).json({ ...dataset, dataUrl });
@@ -41,7 +41,10 @@ export default async function handler(
   }
 
   if (req.method === "DELETE") {
-    userHasManage(dataset, user);
+    if (user.id !== dataset.ownerId){
+      res.status(401).json({"error" : "You dont own this dataset"})
+      return 
+    }
     try {
       await deleteDataset(user!.id, req.query.id as string);
       await prisma.dataset.delete({ where: { id: req.query.id } });

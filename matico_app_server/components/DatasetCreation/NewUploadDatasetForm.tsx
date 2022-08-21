@@ -14,13 +14,16 @@ import React, { useCallback, useState } from "react";
 import Upload from "@spectrum-icons/illustrations/Upload";
 import { useDropzone } from "react-dropzone";
 import { FilePreviewer} from "./FilePreviewer";
+import {Dataset} from "@prisma/client";
 
-export interface NewUploadDatasetFormProps {}
+export interface NewUploadDatasetFormProps {
+  onSubmit : (dataset: Dataset & {dataUrl:string})=>void
+}
 
 const VALID_MIME_TYPES = ["application/vnd.ms-excel","application/geo+json","application/json","application/csv","text/csv","text/plain"]
 const VALID_EXTENSIONS = ["csv","geojson","json","zip"]
 
-export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
+export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = ({onSubmit}) => {
   const [acceptedFiles, setAcceptedFiles] = useState<Array<File> | null>(null);
   const [fileRejectionError, setFileRejectionError] = useState<string | null>(null)
 
@@ -91,7 +94,7 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
             <TabPanels>
               {acceptedFiles.map((file: File) => (
                 <Item key={file.name}>
-                  <FilePreviewer file={file} />
+                  <FilePreviewer file={file} onSubmit={(dataset)=> onSubmit(dataset)} />
                 </Item>
               ))}
             </TabPanels>

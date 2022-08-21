@@ -39,7 +39,7 @@ export const DatasetSelector: React.FC<DatasetSelector> = ({
         value={searchTerm}
         onChange={(search) => setSearchTerm(search)}
       />
-        <NewDatasetModal />
+        <NewDatasetModal onSubmit={(dataset)=> onSelectDataset(dataset)}/>
       </Flex>
       
       <View>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ProgressBar } from "@adobe/react-spectrum";
 import axios from 'axios' 
 import ColumnTable from "arquero/dist/types/table/column-table";
+import {Dataset} from "@prisma/client";
 
 export interface UploaderProps {
   table: ColumnTable;
@@ -10,7 +11,7 @@ export interface UploaderProps {
     description:string,
     public:boolean 
   };
-  onDone?: () => void;
+  onDone?: (dataset: Dataset & {dataUrl:string}) => void;
   onFail?: (error: any) => void;
 }
 
@@ -47,17 +48,17 @@ export const Uploader: React.FC<UploaderProps> = ({
   useEffect(() => {
 
     fetch("/api/datasets/upload", {method: "POST",  body:JSON.stringify(metadata), headers:{ContentType:"application/json"} }).then(r=>r.json()).then(
-      (url)=>{
+      (dataset)=>{
         uploadFile(
           table,
-          url,
+          dataset.dataUrl,
           {...metadata},
           setProgress
         )
           .then((response  :any) => {
             setIsDone(true)
             if (onDone) {
-              onDone();
+              onDone(dataset);
             }
           })
           .catch((error: any) => {
