@@ -50,11 +50,8 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
         }
     }
     else if(type==='layer'){
-      console.log("Attempting to get layer ")
       const maps: Array<MapPane>= panes.filter((p:Pane)=> ['map','staticMap'].includes(p.type)) as Array<MapPane>
-      console.log("Maps ", maps)
       const map = maps.find(m=>m.layers.find(l=>l.id===element.id)) 
-      console.log("Map ", map)
       return(<LayerEditor layerId={element.id} mapId={map.id}/>)
     }
     return <AppEditor />;

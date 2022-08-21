@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { useRef, useEffect } from "react";
-import { registerOrUpdateDataset, registerOrUpdateTransform } from "../Stores/MaticoDatasetSlice";
+import { registerOrUpdateDataset, registerOrUpdateTransform, unregisterDataset } from "../Stores/MaticoDatasetSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
-import { useNormalizeSpec } from "./useNormalizeSpec";
 import { Dataset as DatasetSpec, DatasetTransform } from "@maticoapp/matico_types/spec";
 import { useErrorsOfType} from "./useErrors";
 import {MaticoErrorType} from "Stores/MaticoErrorSlice";
@@ -33,7 +32,6 @@ export const useRegisterDatasets = () => {
     const normalizedDatasetSpec =useNormalizedSpecSelector((spec)=>spec?.datasets)
     const normalizedDatasetTransforms =useNormalizedSpecSelector((spec)=>spec?.datasetTransforms)
 
-
     const previousDatasetSpec = useRef<Array<DatasetSpec>>([]);
     const previousTransforms= useRef<Array<DatasetTransform>>([]);
 
@@ -63,6 +61,18 @@ export const useRegisterDatasets = () => {
                 })
             );
         });
+
+        // REMOVE ANY DATASETS THAT HAVE DISSAPEARED FROM THE LAST TIME 
+        previousDatasetSpec.current.forEach((datasetDetails: DatasetSpec)=>{
+          const currentSpec = normalizedDatasetSpec.find(d=>d.name ===datasetDetails.name)
+          if(!currentSpec){
+            dispatch(
+              unregisterDataset({
+                ...datasetDetails 
+              })
+            )
+          }
+        })
         previousDatasetSpec.current = normalizedDatasetSpec;
     }, [normalizedDatasetSpec, previousDatasetSpec]);
 

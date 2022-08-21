@@ -21,6 +21,9 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
     if (!datasets) {
         return <Text>Loading</Text>;
     }
+    if(datasets && Object.keys(datasets).length===0){
+      return <Text>No datasets registered. Add some using the dataset pane on the left toolbar!</Text>
+    }
     return (
         <Picker
             items={Object.values(datasets)}

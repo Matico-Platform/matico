@@ -45,6 +45,10 @@ export interface DatasetServiceInterface {
         limit?: number
     ): void;
     _clearNotifiers(notifierId: string): void;
+
+    unregisterDataset(
+        datasetDetails:DatasetSpec 
+    ) : void ,
     registerOrUpdateDataset(
         datasetDetails: DatasetSpec
     ): Promise<DatasetSummary>;
@@ -66,6 +70,11 @@ export const DatasetService: DatasetServiceInterface = {
     datasetLoaders: {},
     notifiers: {},
 
+    unregisterDataset(dataset:DatasetSpec){
+      delete this.datasets[dataset.name]
+      this._notify(dataset.name)
+      delete this.notifiers[dataset.name]
+    },
     async applyTransform(transform: DatasetTransform) {
         let transformer = new DatasetTransformRunner(transform);
         return Promise.resolve(
@@ -147,6 +156,9 @@ export const DatasetService: DatasetServiceInterface = {
                 if (d) {
                     let data = await d.getData(filters, columns, limit);
                     callback(data);
+                }
+                else{
+                    callback(null)
                 }
             }
         );

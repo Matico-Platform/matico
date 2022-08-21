@@ -54,10 +54,8 @@ const useLegend = (
     scale: any;
 } => {
     let legendEl = "rect";
-    const name = layer?.props?.id;
-    const style = layer?.props?._legend;
 
-    const { fillColor, lineColor, lineWidth, size } = style;
+    const { fillColor, lineColor, lineWidth, size, name} = layer;
 
     let steps: { scale: any; operation: ScaleFunc }[] = [];
 
@@ -228,15 +226,15 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
     }
 };
 
-export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
-    layers = []
+export const MaticoLegendPane: React.FC<{ legends: Array<any> }> = ({
+    legends= [] 
 }) => {
-    const legends = useMemo(
-        () =>
-            layers.map((layer, i) => (
+    const legendPanes = useMemo(
+      () =>{
+            return legends.map((legend, i) => (
                 <Flex key={i} direction="row">
-                    <Legend layer={layer} />
-                    {layers?.length > 1 && i < layers.length - 1 && (
+                    <Legend layer={legend} />
+                    {legends?.length > 1 && i < legends.length - 1 && (
                         <Divider
                             orientation="vertical"
                             size="M"
@@ -244,12 +242,14 @@ export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
                         />
                     )}
                 </Flex>
-            )),
+            ))
+        },
         // @ts-ignore
-        [JSON.stringify(layers.map((layer) => layer?.props?._legend))]
+        [JSON.stringify(legends)]
     );
 
-    return layers && layers.length ? (
+
+    return legends && legends.length ? (
         <View
             position="absolute"
             right=".75em"
@@ -257,7 +257,7 @@ export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
             backgroundColor="default"
             padding="size-100"
         >
-            <Flex direction="row">{legends}</Flex>
+            <Flex direction="row">{legendPanes}</Flex>
         </View>
     ) : null;
 };

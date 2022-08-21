@@ -411,6 +411,14 @@ export const stateSlice = createSlice({
             );
             transform.steps.push(step);
         },
+        removeDataset:(
+            state,
+            action:PayloadAction<{name:string}>
+        )=>{
+          let {name}= action.payload
+          let newDatasets = state.spec.datasets.filter(d=>d.name!== name)
+          state.spec.datasets = newDatasets
+        },
         updateDatasetTransformStep: (
             state,
             action: PayloadAction<{
@@ -452,6 +460,7 @@ export const {
     removePane,
     addPaneToPage,
     updateDatasetSpec,
+    removeDataset,
     updatePaneDetails,
     updatePanePosition,
     addDataset,

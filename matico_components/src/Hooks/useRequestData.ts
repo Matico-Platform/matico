@@ -32,7 +32,7 @@ export const useRequestDataMulti= (requests: Array<DataRequest>)=>{
     return result 
 }
 
-export const useRequestData = (request:DataRequest) => {
+export const useRequestData = (request?:DataRequest) => {
     const dispatch = useMaticoDispatch();
     const requestHash = JSON.stringify(request);
     const notifierId = useMemo(() => uuid(), []);
@@ -40,7 +40,6 @@ export const useRequestData = (request:DataRequest) => {
     const result: Query | null = useMaticoSelector(
         (state) => state.datasets.queries[requestHash]
     );
-
 
     useEffect(() => {
         if (!result && request) {

@@ -78,12 +78,14 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     selectedDataset={histogramPane.dataset.name}
                     onDatasetSelected={updateDataset}
                 />
-                <DatasetColumnSelector
-                    datasetName={histogramPane.dataset.name}
-                    selectedColumn={histogramPane.column}
-                    label="Column"
-                    onColumnSelected={(column) => updateColumn(column.name)}
-                />
+                {dataset &&
+                  <DatasetColumnSelector
+                      datasetName={histogramPane.dataset.name}
+                      selectedColumn={histogramPane.column}
+                      label="Column"
+                      onColumnSelected={(column) => updateColumn(column.name)}
+                  />
+                  }
             </CollapsibleSection>
             {dataset && (
                 <>

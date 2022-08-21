@@ -20,6 +20,7 @@ import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
 import { MVTLayer, TileLayer } from "deck.gl";
 import { Filter } from "@maticoapp/matico_types/spec";
+import {updateLayer} from "@deck.gl/mapbox/deck-utils";
 
 interface MaticoLayerInterface {
     name: string;
@@ -65,10 +66,10 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     
 
     const dataResult = useRequestData(
-      {datasetName: dataset.tiled === false ? source.name : null,
+      dataset ? {datasetName: dataset.tiled === false ? source.name : null,
         filters: source.filters,
         columns:[...requiredCols, "geom"]
-      });
+      } : null);
 
 
     const preparedData = useMemo(() => {
@@ -114,13 +115,15 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         }
     }, [source.name, dataResult, dataset]);
 
-    useEffect(() => {
+
+    const Layer = useEffect(() => {
 
         //If we the dataset is tiled and we dont have data
         //return
-        if (!dataset.tiled) {
+        if (!dataset || !dataset.tiled) {
             if (!dataResult || dataResult.state !== "Done") {
-                return;
+                onUpdate(null)
+                return ;
             }
         }
 
@@ -225,7 +228,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                 }
             }
         };
-        if (!dataset.tiled) {
+        if (!dataset || !dataset.tiled) {
             switch (dataset.geomType) {
                 case GeomType.Point:
                     const getRadius = generateNumericVar(style.size);
@@ -277,20 +280,19 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                     break;
             }
         } else {
-            if (dataset.raster) {
+            if (dataset && dataset.raster) {
                 layer = new TileLayer({
                     id: name,
                     data: dataset.mvtUrl,
                     minZoom: 0,
                     maxZoom: 19,
                     tileSize: 256,
-
                     renderSubLayers: (props) => {
                         const {
                             bbox: { west, south, east, north }
                         } = props.tile;
 
-                        return new BitmapLayer(props, {
+                        layer =new BitmapLayer(props, {
                             data: null,
                             image: props.data,
                             bounds: [west, south, east, north]
@@ -305,6 +307,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         }
 
         onUpdate(layer);
+
     }, [
         name,
         JSON.stringify(style),

@@ -77,7 +77,6 @@ function DroppableContainer({
     renderItem?: any;
     getIndex: (id: UniqueIdentifier) => number;
 }) {
-    console.log(panes)
   const paneIds = panes.map((pane) => pane.id);
     const {
         active,
@@ -204,7 +203,6 @@ export function MultipleContainers({
         pages.map(page => page.id) as UniqueIdentifier[]
     );
     const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-    console.log(activeId)
     const lastOverId = useRef<UniqueIdentifier | null>(null);
     const recentlyMovedToNewContainer = useRef(false);
     const isSortingContainer = activeId ? containers.includes(activeId) : false;
