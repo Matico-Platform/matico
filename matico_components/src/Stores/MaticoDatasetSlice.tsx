@@ -1,17 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DatasetState, DatasetSummary } from "Datasets/Dataset";
-import { Filter, Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
+import { Filter, Dataset as DatasetSpec, DatasetTransform } from "@maticoapp/matico_types/spec";
 import _ from "lodash";
 import {MaticoErrorType, registerError} from "./MaticoErrorSlice";
+import {TransformStepError} from "Datasets/DatasetTransformRunner";
 
 export interface Query {
     state: "Loading" | "Error" | "Done";
     result: any;
 }
+export interface TransformResult{
+    state: "Loading" | "Error" | "Done";
+    result: any;
+    error: TransformStepError | null
+}
 
 export interface DatasetsState {
     datasets: { [datasetName: string]: DatasetSummary };
     queries: { [queryHash: string]: Query };
+    transforms: { [transformId: string]: TransformResult};
     loaders: { [loaderName: string]: any };
 }
 
@@ -31,6 +38,7 @@ export interface DataRequest {
 const initialState: DatasetsState = {
     datasets: {},
     queries: {},
+    transforms:{},
     loaders: {}
 };
 
@@ -39,9 +47,31 @@ export const datasetsSlice = createSlice({
     initialState,
     reducers: {
         // Also triggers middleware
+        registerColumnStatUpdates: (
+            state,
+            action: PayloadAction<{
+                requestHash: string;
+                args: ColumnStatRequest;
+                notifierId: string;
+            }>
+        ) => {
+            const { requestHash, args } = action.payload;
+            state.queries[requestHash] = { state: "Loading", result: null };
+        },
+        // Also triggers middleware
         registerOrUpdateDataset: (
             state,
             action: PayloadAction<DatasetSpec>
+        ) => {
+            state.datasets[action.payload.name] = {
+                name: action.payload.name,
+                state: DatasetState.LOADING,
+                spec: action.payload
+            };
+        },
+        registerOrUpdateTransform: (
+            state,
+            action: PayloadAction<DatasetTransform>
         ) => {
             state.datasets[action.payload.name] = {
                 name: action.payload.name,
@@ -59,6 +89,21 @@ export const datasetsSlice = createSlice({
             };
         },
         // Also triggers middleware
+        requestTransform:(
+          state,
+          action:PayloadAction<DatasetTransform>
+        )=>{
+          state.transforms[action.payload.id] = {
+            result:null,
+            error:null,
+            state: "Loading"
+          } 
+        },
+        gotTransformResult:(state, action:PayloadAction<{transformId:string,result:Array<any>, error:TransformStepError}>)=>{
+          const {transformId, error,result} = action.payload
+          state.transforms[transformId] = {state: error ? "Error" : "Done", result, error}
+        },
+        // Also triggers middleware
         registerDataUpdates: (
             state,
             action: PayloadAction<{
@@ -71,18 +116,6 @@ export const datasetsSlice = createSlice({
             }>
         ) => {
             const { requestHash } = action.payload;
-            state.queries[requestHash] = { state: "Loading", result: null };
-        },
-        // Also triggers middleware
-        registerColumnStatUpdates: (
-            state,
-            action: PayloadAction<{
-                requestHash: string;
-                args: ColumnStatRequest;
-                notifierId: string;
-            }>
-        ) => {
-            const { requestHash, args } = action.payload;
             state.queries[requestHash] = { state: "Loading", result: null };
         },
         gotData: (
@@ -109,7 +142,9 @@ export const datasetsSlice = createSlice({
 export const {
     registerOrUpdateDataset,
     registerDataUpdates,
-    registerColumnStatUpdates
+    registerColumnStatUpdates,
+    registerOrUpdateTransform,
+    requestTransform
 } = datasetsSlice.actions;
 
 export const datasetsReducer = datasetsSlice.reducer;

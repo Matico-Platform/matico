@@ -21,6 +21,7 @@ import { useRequestData } from "Hooks/useRequestData";
 import React from "react";
 import { ComputeParameterEditor } from "DatasetsProviders/ComputeProvider";
 import { useDatasetActions } from "Hooks/useDatasetActions";
+import {DataTable} from "../EditorComponents/DataTable/DataTable";
 
 interface DatasetModalProps {
     dataset: DatasetSummary;
@@ -45,7 +46,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
 
     return (
         <DialogTrigger isDismissable>
-            <ActionButton width="100%">{children}</ActionButton>
+            <ActionButton isQuiet={true} width="100%">{children}</ActionButton>
 
             <Dialog width="80vw">
                 <Heading>{dataset.name}</Heading>
@@ -64,54 +65,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
                                     />
                                 </View>
                             )}
-                            <TableView flex={1} overflowMode="truncate">
-                                <TableHeader>
-                                    {Object.keys(dataRequest.result[0]).map(
-                                        (col) => (
-                                            <Column width={150} align="center">
-                                                <DialogTrigger
-                                                    isDismissable
-                                                    type="popover"
-                                                >
-                                                    <ActionButton
-                                                        margin="size-0"
-                                                        isQuiet
-                                                    >
-                                                        {col}
-                                                    </ActionButton>
-                                                    <Dialog>
-                                                        <Heading>{col}</Heading>
-                                                    </Dialog>
-                                                </DialogTrigger>
-                                            </Column>
-                                        )
-                                    )}
-                                </TableHeader>
-                                <TableBody>
-                                    {dataRequest.result
-                                        .slice(0, 10)
-                                        .map((row: Array<any>) => (
-                                            <Row>
-                                                {Object.values(row).map(
-                                                    (val: any) => (
-                                                        <Cell>
-                                                            <TooltipTrigger
-                                                                delay={0}
-                                                            >
-                                                                <Text>
-                                                                    {val}
-                                                                </Text>
-                                                                <Tooltip>
-                                                                    {val}
-                                                                </Tooltip>
-                                                            </TooltipTrigger>
-                                                        </Cell>
-                                                    )
-                                                )}
-                                            </Row>
-                                        ))}
-                                </TableBody>
-                            </TableView>
+                            <DataTable data={dataRequest.result} />
                         </Flex>
                     )}
                 </Content>

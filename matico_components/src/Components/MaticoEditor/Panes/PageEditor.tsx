@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import "react-mde/lib/styles/css/react-mde-all.css";
+// import "react-mde/lib/styles/css/react-mde-all.css";
 import {
     ComboBox,
     Flex,

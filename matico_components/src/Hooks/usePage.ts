@@ -29,17 +29,21 @@ import {usePaneContainer} from "./usePaneContainer";
 // }
 
 export const usePage = (pageId: string) => {
+    const dispatch = useMaticoDispatch();
     const page = useMaticoSelector((selector) =>
         selector.spec.spec.pages.find((p: Page) => p.id == pageId)
     );
-
+    const {addPaneToContainer, removePaneRefFromContainer} = usePaneContainer(page?.id)
     const allPanes = useMaticoSelector((selector) => selector.spec.spec.panes);
+
+
+    // possible race condition after deletion
+    if (!page) return {};
 
     const panes = page.panes.map((paneRef: PaneRef) =>
         allPanes.find((p: Pane) => p.id === paneRef.paneId)
     );
 
-    const dispatch = useMaticoDispatch();
 
     const updatePage = (update: Partial<Page>) => {
         dispatch(updatePageDetails({ pageId, update }));
@@ -57,9 +61,6 @@ export const usePage = (pageId: string) => {
     const removePageLocal = () => {
         dispatch(removePage({ pageId, removeOrphanPanes: false }));
     };
-
-    const {addPaneToContainer, removePaneRefFromContainer} = usePaneContainer(page.id)
-
 
     return {
         page,

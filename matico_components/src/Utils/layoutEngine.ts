@@ -37,6 +37,7 @@ export const availableLayouts: LayoutLabel[] = [
 ];
 
 export function selectLayout(layout: Layout) {
+    if (!layout) return MaticoFreeLayout;
     switch (layout.type) {
         case "free":
             return MaticoFreeLayout;
@@ -45,6 +46,6 @@ export function selectLayout(layout: Layout) {
         case "tabs":
             return MaticoTabLayout;
         default:
-            return null;
+            return MaticoFreeLayout;
     }
 }

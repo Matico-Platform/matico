@@ -51,13 +51,53 @@ export const DatasetServiceMiddleWare = () => {
                     }
                 });
                 break;
-            case "datasets/request_query":
-                // worker.runQuery(action.payload).then(() => {
-                //   store.dispatch({
-                //     type: "dataset/QUERY_RESULTS",
-                //     payload: {},
-                //   });
-                // });
+            case "datasets/registerOrUpdateTransform":
+                worker
+                    .registerOrUpdateTransform(action.payload, comlink.proxy((datasetSummary: DatasetSummary) => {
+                        store.dispatch({
+                            type: "datasets/datasetReady",
+                            payload: datasetSummary
+                        });
+                    }))
+                    .catch((error: any) => {
+                        console.warn(
+                            "Something went wrong registering transform",
+                            action.payload,
+                            error
+                        );
+                        store.dispatch({
+                            type: "datasets/datasetFailedToLoad",
+                            payload: {
+                                ...action.payload,
+                                error: error.error
+                            }
+                        });
+                    });
+
+                // Once we have started the loading process modify the message
+                // To reflect this
+                //
+                return next({
+                    ...action,
+                    payload: {
+                        name: action.payload.name,
+                        state: DatasetState.LOADING
+                    }
+                });
+                break;
+            case "datasets/requestTransform":
+                worker.applyTransform(action.payload).then((data: Array<any>) => {
+                  store.dispatch({
+                    type: "datasets/gotTransformResult",
+                    payload:{ transformId: action.payload.id, result: data},
+                  });
+                })
+                .catch((err:Error)=>{
+                    store.dispatch({
+                      type: "datasets/gotTransformResult",
+                      payload:{transformId: action.payload.id, error: err}
+                    }) 
+                });
                 break;
             case "datasets/registerColumnStatUpdates":
                 const onStatsUpdate = (data: Array<any>) => {

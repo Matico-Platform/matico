@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import traverse from "traverse";
-import { useMaticoSelector } from "./redux";
-import _ from "lodash";
+import { useMaticoDispatch, useMaticoSelector } from "./redux";
+import _, {update} from "lodash";
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { useRequestColumnStats } from "./useRequestColumnStat";
+import {updateNormalizedSpec} from "Stores/MaticoSpecSlice";
 
-const getRequiredVariableList = (struct: string) => {
+const getRequiredVariableList = (struct: any) => {
     const requiredVariables: Array<string> = [];
     traverse(struct).forEach((node: any) => {
         if (node && node.var) {
@@ -18,7 +19,7 @@ const getRequiredVariableList = (struct: string) => {
 const getRequiredDatasetMetrics = (struct: any) => {
     const requiredDataMetrics: Array<ColumnStatRequest> = [];
     traverse(struct).forEach((node: any) => {
-        if (node && node.dataset) {
+        if (node && node.dataset && node.metric) {
             const { dataset, column, feature_id, metric, filters } = node;
             const requiredMetric = {
                 datasetName: dataset,
@@ -37,7 +38,22 @@ const getRequiredDatasetMetrics = (struct: any) => {
  * and then fetch any dataset values that are required to normalize
  * the section of the spec
  */
-export const useNormalizeSpec = (spec: any) => {
+export const useNormalizeSpec = () => {
+  const [spec,loaded,errors] = useFullyNormalizeSpec();
+  const dispatch = useMaticoDispatch();
+  
+  useEffect(()=>{
+    if(loaded){
+      dispatch(updateNormalizedSpec(spec)) 
+    } 
+  },[JSON.stringify(spec),loaded])
+
+  return [spec,loaded,errors]
+}
+
+export const useFullyNormalizeSpec = ()=>{
+    const spec = useMaticoSelector((selector)=>selector.spec.spec)
+    const dispatch = useMaticoDispatch()
     const [error, setError] = useState<string | null>(null);
 
     // Get a list of required variables for the spec from the global
@@ -54,7 +70,6 @@ export const useNormalizeSpec = (spec: any) => {
             const path = node.var.split(".").slice(1).join(".");
             const variable = variables[variableName];
             if (variable === null || variable === undefined) {
-                console.warn("failed to find variable", variableName);
                 return;
             }
             const value = _.at(variable.value, path)[0];
@@ -70,19 +85,19 @@ export const useNormalizeSpec = (spec: any) => {
         return [specWithVariables, true, null];
     }
 
-    if (!datasetValues.every((dv) => dv && dv.state === "Done")) {
-        return [null, false, null];
-    }
 
     let nodeNumber = 0;
 
     // Identify which data stats the spec needs
     const fullyNormalized = traverse(specWithVariables).map(function (node) {
-        if (node && node.dataset) {
-            this.update(datasetValues[nodeNumber].result);
+        if (node && node.metric) {
+            if(datasetValues[nodeNumber] && datasetValues[nodeNumber].state==="Done"){
+              this.update(datasetValues[nodeNumber].result);
+            }
             nodeNumber += 1;
         }
     });
 
-    return [fullyNormalized, true, error];
+
+    return [fullyNormalized,true,null];
 };

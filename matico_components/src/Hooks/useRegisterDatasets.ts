@@ -1,12 +1,12 @@
 import _ from "lodash";
 import { useRef, useEffect } from "react";
-import { registerOrUpdateDataset } from "../Stores/MaticoDatasetSlice";
+import { registerOrUpdateDataset, registerOrUpdateTransform } from "../Stores/MaticoDatasetSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
-import { useAppSpec } from "./useAppSpec";
 import { useNormalizeSpec } from "./useNormalizeSpec";
-import { Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
+import { Dataset as DatasetSpec, DatasetTransform } from "@maticoapp/matico_types/spec";
 import { useErrorsOfType} from "./useErrors";
 import {MaticoErrorType} from "Stores/MaticoErrorSlice";
+import {useNormalizedSpecSelector} from "./useNormalizedSpecSelector";
 
 /**
  * Registers and keeps datasets in sync with the specification
@@ -14,11 +14,10 @@ import {MaticoErrorType} from "Stores/MaticoErrorSlice";
  * required datasets
  */
 export const useRegisterDatasets = () => {
-    const spec = useAppSpec();
-    const datasets = useMaticoSelector(s=>s.datasets.datasets)
+    const datasets = useNormalizedSpecSelector(s=>s?.datasets) ?? []
     const dispatch = useMaticoDispatch();
     const {clearErrors, throwError} = useErrorsOfType(MaticoErrorType.DatasetError);
-
+  
 
     useEffect(()=>{
       Object.entries(datasets).forEach( ([id,details])=>{
@@ -31,11 +30,13 @@ export const useRegisterDatasets = () => {
       })
     },[datasets])
 
-    const [normalizedDatasetSpec, loadingDatasetSpec, datasetSpecError] =
-        useNormalizeSpec(spec?.datasets);
+    const normalizedDatasetSpec =useNormalizedSpecSelector((spec)=>spec?.datasets)
+    const normalizedDatasetTransforms =useNormalizedSpecSelector((spec)=>spec?.datasetTransforms)
 
 
     const previousDatasetSpec = useRef<Array<DatasetSpec>>([]);
+    const previousTransforms= useRef<Array<DatasetTransform>>([]);
+
 
     useEffect(() => {
         if (!normalizedDatasetSpec) {
@@ -64,4 +65,35 @@ export const useRegisterDatasets = () => {
         });
         previousDatasetSpec.current = normalizedDatasetSpec;
     }, [normalizedDatasetSpec, previousDatasetSpec]);
+
+
+    useEffect(() => {
+        if (!normalizedDatasetTransforms) {
+            return;
+        }
+        // If the full normalized spec is the same as the previous one, simply return
+        if (_.isEqual(normalizedDatasetTransforms, previousTransforms.current)) {
+            return;
+        }
+        normalizedDatasetTransforms.forEach((transformDetails: DatasetTransform) => {
+            clearErrors()
+            const prevSpec = previousTransforms.current.find(
+                (d: DatasetTransform) => d.name === transformDetails.name
+            );
+
+            // Skip if this particular dataset needs no update
+            if (prevSpec && _.isEqual(prevSpec, transformDetails)) {
+                return;
+            }
+
+            dispatch(
+                registerOrUpdateTransform({
+                    ...transformDetails
+                })
+            );
+        });
+        previousTransforms.current = normalizedDatasetTransforms;
+    }, [normalizedDatasetTransforms, previousTransforms]);
+
 };
+

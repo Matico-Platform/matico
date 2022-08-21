@@ -1,4 +1,5 @@
 import {
+  DatasetTransform,
     Page, Pane,
 } from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
@@ -9,16 +10,24 @@ import {
     setCurrentEditElement,
     reparentPaneRef,
     updateTheme,
-    addPane
+    addPane,
+    addDatasetTransform,
+    removeDatasetTransform,
+    updateMetadata,
+    setPaneRefIndex,
+    setPageIndex
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import {Theme} from "@maticoapp/matico_types/spec";
 import {Metadata} from "@maticoapp/matico_types/spec";
 
 export const useApp = () => {
-    const { metadata, pages, panes, theme } = useMaticoSelector(
+
+    const app = useMaticoSelector(
         (selector) => selector.spec.spec
     );
+
+    const { metadata, pages, panes, theme, datasetTransforms } = app
 
     const dispatch = useMaticoDispatch();
 
@@ -58,6 +67,13 @@ export const useApp = () => {
         dispatch(removePage({ pageId, removeOrphanPanes: false }));
     };
 
+    const _addDatasetTransform = ( transform: DatasetTransform) =>{
+        dispatch(addDatasetTransform(transform))
+    }
+    const _removeDatasetTransform= ( transform: DatasetTransform) =>{
+        dispatch(removeDatasetTransform(transform))
+    }
+
     const _updateTheme= (update: Partial<Theme>)=>{
         dispatch(updateTheme({update}))
     }
@@ -78,17 +94,47 @@ export const useApp = () => {
         );
     };
 
+    const changePaneIndex = (
+        paneRefId: string,
+        newIndex: number
+    ) => {
+        dispatch(
+            setPaneRefIndex({
+                paneRefId,
+                newIndex
+            })
+        )
+    }
+
+    const updatePageIndex = (
+        pageId: string,
+        newIndex: number
+    ) => {  
+        dispatch(
+            setPageIndex({
+                pageId,
+                newIndex
+            })
+        )
+    }
+
     return {
+        app,
         pages,
         panes,
         theme,
+        datasetTransforms,
         metadata,
         removePage: removePageLocal,
         addPage: addPageLocal,
+        updatePageIndex,
         updatePage,
         setEditPage,
         reparentPane,
+        changePaneIndex,
         addPane:_addPane,
-        updateTheme: _updateTheme
+        updateTheme: _updateTheme,
+        addDatasetTransform: _addDatasetTransform,
+        removeDatasetTransform: _removeDatasetTransform,
     };
 };

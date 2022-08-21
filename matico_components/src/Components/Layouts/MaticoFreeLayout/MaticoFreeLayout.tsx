@@ -96,11 +96,8 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({
 }) => {
     return (
         <FreeArea>
-            {paneRefs.map((paneRef) => (
+            {paneRefs?.slice(0).reverse().map((paneRef) => (
                 <FreePane key={paneRef.id} {...paneRef.position}>
-                  {/*
-                    <ControlActionBar paneRef={paneRef} />
-                    */}
                     <PaneSelector paneRef={paneRef} />
                 </FreePane>
             ))}

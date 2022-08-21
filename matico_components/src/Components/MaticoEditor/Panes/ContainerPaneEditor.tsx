@@ -17,8 +17,7 @@ export interface SectionEditorProps {
 export const ContainerPaneEditor: React.FC<SectionEditorProps> = ({
     paneRef
 }) => {
-    const { container, removePane, updatePane, updatePanePosition, parent } =
-        useContainer(paneRef);
+    const { container, removePane, updatePane, updatePanePosition, parent } = useContainer(paneRef);
 
     return (
         <Flex width="100%" height="100%" direction="column">

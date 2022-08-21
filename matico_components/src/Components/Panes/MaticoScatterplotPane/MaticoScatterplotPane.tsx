@@ -42,15 +42,17 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     );
     const datasetReady =
       foundDataset && foundDataset.state === DatasetState.READY;
+  
 
-    const [mappedStyle, styleReady] = useNormalizeSpec({
-      dotColor,
-      dotSize,
-    });
+    let columns = [xColumn,yColumn]
+    if(typeof(dotSize) ==='object' && 'variable' in dotSize){
+      columns.push(dotSize.variable)
+    }
+    if(typeof(dotColor) ==='object' && 'variable' in dotColor){
+      columns.push(dotColor.variable)
+    }
 
-    const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
-
-    const chartData = useRequestData({datasetName: dataset.name, filters:dataset.filters, columns:[xColumn,yColumn]});
+    const chartData = useRequestData({datasetName: dataset.name, filters:dataset.filters, columns});
 
 
     const [
@@ -84,11 +86,11 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     
     const Chart = useMemo(() => {
       const data = chartData?.state === "Done" ? chartData.result : [];
+      
 
-      if (!filtersReady) return <h1>Loading</h1>;
-
-      const dotSize = generateNumericVar(mappedStyle?.dotSize);
-      const dotColor = generateColorVar(mappedStyle?.dotColor);
+    
+      const dotSizeFunc= generateNumericVar(dotSize);
+      const dotColorFunc= generateColorVar(dotColor);
 
       const xVals = data.map((d: Record<string,unknown>)=>d[xColumn])
       const yVals = data.map((d: Record<string,unknown>)=>d[yColumn])
@@ -128,8 +130,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
           layers={[
             {
               type: "scatter",
-              color: dotColor,
-              scale: dotSize,
+              color: dotColorFunc,
+              scale: dotSizeFunc
             },
           ]}
           useBrush={{
@@ -166,7 +168,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       );
     }, [
       chartData,
-      mappedStyle
+      dotColor,
+      dotSize
     ]);
 
     return (

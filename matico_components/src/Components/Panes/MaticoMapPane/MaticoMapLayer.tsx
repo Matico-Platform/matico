@@ -56,13 +56,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         bind: true
     } as AutoVariableInterface);
 
-    const [mappedFilters, filtersReady, filterMapError] = useNormalizeSpec(
-        source.filters ? source.filters : []
-    );
-
-    const [mappedStyle, styleReady, styleMapError] = useNormalizeSpec(style);
     let requiredCols: Array<string> = [];
-    traverse(mappedStyle).forEach(function (node: any) {
+    traverse(style).forEach(function (node: any) {
         if (this && this.key === "variable") {
             requiredCols.push(node);
         }
@@ -70,16 +65,13 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     
 
     const dataResult = useRequestData(
-      {datasetName: filtersReady && dataset.tiled === false ? source.name : null,
-        filters:mappedFilters,
+      {datasetName: dataset.tiled === false ? source.name : null,
+        filters: source.filters,
         columns:[...requiredCols, "geom"]
       });
 
 
     const preparedData = useMemo(() => {
-        if (!styleReady) {
-            return [];
-        }
         if (!dataResult) {
             return [];
         }
@@ -120,13 +112,9 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                     geom: convertLine(d.geom)
                 }));
         }
-    }, [source.name, dataResult, styleReady, dataset]);
+    }, [source.name, dataResult, dataset]);
 
     useEffect(() => {
-        // if the style isnt ready return
-        if (!styleReady || !mappedStyle) {
-            return;
-        }
 
         //If we the dataset is tiled and we dont have data
         //return
@@ -137,21 +125,21 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         }
 
         let layer = undefined;
-        const fillColor = generateColorVar(mappedStyle.fillColor, true) ?? [
+        const fillColor = generateColorVar(style.fillColor, true) ?? [
             255, 0, 0, 100
         ];
 
-        const lineColor = generateColorVar(mappedStyle.lineColor, true) ?? [
+        const lineColor = generateColorVar(style.lineColor, true) ?? [
             0, 255, 0, 100
         ];
-        const lineWidth = generateNumericVar(mappedStyle.lineWidth);
-        const lineWidthUnits = mappedStyle.lineUnits ?? "pixels";
-        const lineWidthScale = mappedStyle.lineWidthScale ?? 1;
-        const elevation = generateNumericVar(mappedStyle.elevation) ?? 0;
+        const lineWidth = generateNumericVar(style.lineWidth);
+        const lineWidthUnits = style.lineUnits ?? "pixels";
+        const lineWidthScale = style.lineWidthScale ?? 1;
+        const elevation = generateNumericVar(style.elevation) ?? 0;
         const elevationScale =
-            generateNumericVar(mappedStyle.elevationScale) ?? 1;
-        const opacity = mappedStyle.opacity ?? 1;
-        const visible = mappedStyle.visible ?? true;
+            generateNumericVar(style.elevationScale) ?? 1;
+        const opacity = style.opacity ?? 1;
+        const visible = style.visible ?? true;
         const shouldExtrude =
             elevation !== null &&
             (elevation > 0 || typeof elevation === "function");
@@ -162,15 +150,32 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         const common = {
             getFillColor: (d: Record<string, unknown>) => {
                 try {
+                    let color;
                     if (typeof fillColor === "function") {
-                        return fillColor(d);
+                        color = fillColor(d);
                     }
-                    return fillColor;
+                    else{
+                      color = fillColor;
+                    }
+                    return [color[0], color[1], color[2],color[3]*255]
                 } catch {
                     return [0, 0, 0, 0];
                 }
             },
-            getLineColor: lineColor,
+            getLineColor:  (d: Record<string, unknown>) => {
+                try {
+                    let color;
+                    if (typeof lineColor === "function") {
+                        color = lineColor(d);
+                    }
+                    else{
+                      color = lineColor;
+                    }
+                    return [color[0], color[1], color[2],color[3]*255]
+                } catch {
+                    return [0, 0, 0, 0];
+                }
+            },
             getLineWidth: lineWidth === null ? 10 : lineWidth,
             lineWidthUnits,
             lineWidthScale,
@@ -189,13 +194,13 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             beforeId: beforeId,
             data: dataset.tiled ? dataset.mvtUrl : preparedData,
             updateTriggers: {
-                getFillColor: [JSON.stringify(mappedStyle.fillColor)],
-                getLineColor: [JSON.stringify(mappedStyle.lineColor)],
-                getRadius: [JSON.stringify(mappedStyle.size)],
-                getElevation: [JSON.stringify(mappedStyle.elevation)],
+                getFillColor: [JSON.stringify(style.fillColor)],
+                getLineColor: [JSON.stringify(style.lineColor)],
+                getRadius: [JSON.stringify(style.size)],
+                getElevation: [JSON.stringify(style.elevation)],
                 getLineWidth: [
-                    JSON.stringify(mappedStyle.lineWidth),
-                    JSON.stringify(mappedStyle.lineUnits)
+                    JSON.stringify(style.lineWidth),
+                    JSON.stringify(style.lineUnits)
                 ],
                 extruded: [JSON.stringify(shouldExtrude)],
                 stroked: [JSON.stringify(shouldStroke)]
@@ -203,34 +208,34 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             _legend: {
                 name: name,
                 fillColor: {
-                    domain: mappedStyle?.fillColor?.domain,
-                    range: mappedStyle?.fillColor?.range
+                    domain: style?.fillColor?.domain,
+                    range: style?.fillColor?.range
                 },
                 lineColor: {
-                    domain: mappedStyle?.lineColor?.domain,
-                    range: mappedStyle?.lineColor?.range
+                    domain: style?.lineColor?.domain,
+                    range: style?.lineColor?.range
                 },
                 lineWidth: {
-                    domain: mappedStyle?.lineWidth?.domain,
-                    range: mappedStyle?.lineWidth?.range
+                    domain: style?.lineWidth?.domain,
+                    range: style?.lineWidth?.range
                 },
                 size: {
-                    domain: mappedStyle?.size?.domain,
-                    range: mappedStyle?.size?.range
+                    domain: style?.size?.domain,
+                    range: style?.size?.range
                 }
             }
         };
         if (!dataset.tiled) {
             switch (dataset.geomType) {
                 case GeomType.Point:
-                    const getRadius = generateNumericVar(mappedStyle.size);
+                    const getRadius = generateNumericVar(style.size);
                     const radiusScale = generateNumericVar(
-                        mappedStyle.radiusScale
+                        style.radiusScale
                     );
                     layer = new ScatterplotLayer({
                         filled: true,
-                        radiusUnits: mappedStyle.radiusUnits
-                            ? mappedStyle.radiusUnits
+                        radiusUnits: style.radiusUnits
+                            ? style.radiusUnits
                             : "meters",
                         getRadius: getRadius === null ? 20 : getRadius,
                         //@ts-ignore
@@ -251,13 +256,13 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                         ...common,
                         updateTriggers: {
                             widthScale: [
-                                JSON.stringify(mappedStyle.lineWidthScale)
+                                JSON.stringify(style.lineWidthScale)
                             ],
                             widthUnits: [
-                                JSON.stringify(mappedStyle.lineWidthUnits)
+                                JSON.stringify(style.lineWidthUnits)
                             ],
-                            getWidth: [JSON.stringify(mappedStyle.lineWidth)],
-                            getColor: [JSON.stringify(mappedStyle.lineColor)]
+                            getWidth: [JSON.stringify(style.lineWidth)],
+                            getColor: [JSON.stringify(style.lineColor)]
                         }
                     });
                     break;
@@ -302,10 +307,9 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         onUpdate(layer);
     }, [
         name,
-        JSON.stringify(mappedStyle),
+        JSON.stringify(style),
         dataResult && dataResult.state,
         preparedData,
-        styleReady
     ]);
 
     return <></>;

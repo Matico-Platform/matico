@@ -14,6 +14,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { SelectionOptions } from "@maticoapp/matico_types/spec";
 import { MaticoSelectionLayer } from "./MaticoSelectionLayer";
+import {debounce} from "lodash";
 
 
 //@ts-ignore
@@ -106,7 +107,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     });
 
     //TODO clean this up and properly type
-    const updateViewState = (viewStateUpdate: any) => {
+    const updateViewState = debounce((viewStateUpdate: any) => {
         const viewState = viewStateUpdate.viewState;
         updateView({
             lat: viewState.latitude,
@@ -115,7 +116,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             pitch: viewState.pitch,
             bearing: viewState.bearing
         });
-    };
+    }, 500);
 
     let styleJSON = null;
 
@@ -139,15 +140,17 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     }
 
     return (
-        <View id={id} position="relative" overflow="hidden" width="100%" height="100%">
+        <View key={id} position="relative" overflow="hidden" width="100%" height="100%">
             {currentView && (
                 <>
                     <Map
                         mapLib={maplibregl}
                         key={id}
-                        id={id}
-                        reuseMaps={true}
                         antialias={true}
+                        onDrag={updateViewState}
+                        onZoom={updateViewState}
+                        onPitch={updateViewState}
+                        onRotate={updateViewState}
                         initialViewState={{
                             latitude: currentView.lat,
                             longitude: currentView.lng,
@@ -179,7 +182,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                               interleaved={true}
                               width={"100%"}
                               height={"100%"}
-                              onViewStateChange = {updateViewState} 
                               layers={mls}
                                   />
 
