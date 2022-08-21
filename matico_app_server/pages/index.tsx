@@ -124,7 +124,14 @@ const Home: React.FC<HomePageProps> = ({
   };
 
   return (
-    <Content minHeight={"100vh"}>
+    <Content minHeight={"100vh"}
+      
+      UNSAFE_style={{
+        width: "100%",
+        height: "100%",
+        background: "linear-gradient(to top left, #282848, #793169)",
+      }}
+    >
       <Header />
       <Flex direction="column" gridArea="content" maxWidth="90vw" marginX="auto">
         <TemplateSelector onSelectTemplate={createNewApp} recentApps={recentApps || initalRecentApps} />
