@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { useState, useRef, useMemo } from "react";
+import { MaticoDataContext } from "../../../Contexts/MaticoDataContext/MaticoDataContext";
 import { MaticoPaneInterface } from "../Pane";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { Filter } from "../../../Datasets/Dataset";
@@ -28,6 +29,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     editPath,
     labels
 }) => {
+    const { state: dataState } = useContext(MaticoDataContext);
     const [view, setView] = useState({});
     const chartRef = useRef();
     const containerRef = useRef();
@@ -45,13 +47,16 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     };
 
 
+    const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
+
+    const [mappedStyle, styleReady] = useNormalizeSpec({});
 
     const dataRequest = foundDataset
         ? {
               datasetName: dataset.name,
               column,
               metric: "categoryCounts",
-              filters: dataset.filters,
+              filters: mappedFilters,
               parameters: { no_categories: 10 }
           }
         : null;
@@ -91,7 +96,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
                 {...labels}
             />
         );
-    }, [chartData]);
+    }, [JSON.stringify({ mappedStyle }), chartData]);
 
     if (!foundDataset) {
         return <div>{dataset.name} not found!</div>;

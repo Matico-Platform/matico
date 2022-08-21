@@ -27,7 +27,6 @@ function App() {
     spec = {
       pages: [],
       datasets: [],
-      datasetTransforms:[],
       panes:[],
       metadata:{
         name:"Test App",

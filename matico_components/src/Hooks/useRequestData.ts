@@ -6,6 +6,7 @@ import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import { v4 as uuid } from "uuid";
 
 export interface DataRequest {
+
     datasetName: string,
     filters?: Array<Filter>,
     columns?: Array<string>,

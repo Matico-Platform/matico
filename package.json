@@ -9,16 +9,13 @@
   "private": true,
   "workspaces": [
     "./matico_spec",
+    "./matico_buffer_analysis/pkg",
     "./matico_components",
     "./matico_types",
     "./matico_admin",
-    "./matico_app_server",
     "./matico_charts",
     "./editor"
   ],
-  "devDependencies": {
-    "next": "12.2.0"
-  },
   "nohoist": [
     "**/webpack**",
     "**/babel-loader**"
@@ -27,9 +24,26 @@
     "predeploy": "yarn run build",
     "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
     "dev-editor": "concurrently \"cd matico_components && yarn build-dev\" \"cd editor && yarn start\" ",
-    "build": "yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  (cd matico_app_server && yarn run prisma generate && yarn build )",
+    "build": " (cd matico_spec && wasm-pack build) && yarn workspace matico_components build && yarn workspace editor build",
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
   },
-  "packageManager": "yarn@3.2.2"
+  "devDependencies": {
+    "concurrently": "^6.3.0",
+    "esbuild": "^0.14.51",
+    "netlify-cli": "^6.14.11",
+    "typescript": "^4.1.2"
+  },
+  "packageManager": "yarn@3.2.1",
+  "dependencies": {
+    "@loaders.gl/shapefile": "^3.1.8",
+    "@nebula.gl/layers": "^1.0.2-alpha.1",
+    "@nebula.gl/overlays": "^1.0.2-alpha.1",
+    "@parcel/transformer-react-refresh-wrap": "^2.0.0",
+    "@react-types/button": "^3.5.1",
+    "@zip.js/zip.js": "^2.4.9",
+    "immer": "^9.0.6",
+    "logrocket": "^2.2.0",
+    "logrocket-react": "^5.0.1"
+  }
 }

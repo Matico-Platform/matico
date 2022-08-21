@@ -37,7 +37,6 @@ import DeviceTablet from "@spectrum-icons/workflow/DeviceTablet";
 import DevicePhone from "@spectrum-icons/workflow/DevicePhone";
 import { NavigatorBar } from "Components/MaticoEditor/EditorComponents/NavigatorBar";
 import { BrowserRouter as Router } from "react-router-dom";
-import {URLProvider} from "DatasetsProviders/URLProvider";
 
 interface ResponsiveScreeenLimits {
     height: null | number;
@@ -152,11 +151,14 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                                 <View gridArea="navigator">
                                     <NavigatorBar
                                         datasetProviders={[
-                                            ...datasetProviders,
-                                            URLProvider,
+                                            CSVProvider,
+                                            GeoJSONProvider,
+                                            ArrowProvider,
+                                            COGProvider,
                                             // @ts-ignore
                                             SocrataDatasetProvider,
                                             ComputeProvider,
+                                            ...datasetProviders
                                         ]}
                                     />
                                 </View>
@@ -245,12 +247,13 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                                 <View gridArea="editor">
                                     <MaticoEditor
                                         datasetProviders={[
-                                            ...datasetProviders,
                                             CSVProvider,
                                             GeoJSONProvider,
+                                            COGProvider,
                                             // @ts-ignore
                                             SocrataDatasetProvider,
                                             ComputeProvider,
+                                            ...datasetProviders
                                         ]}
                                         editActive={showEditor}
                                         onSpecChange={onSpecChange}

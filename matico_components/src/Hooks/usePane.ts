@@ -16,7 +16,6 @@ import {
 } from "Stores/MaticoSpecSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
-import {useNormalizedSpecSelector} from "./useNormalizedSpecSelector";
 
 export const usePane = (paneRef: PaneRef) => {
     const dispatch = useMaticoDispatch();
@@ -25,17 +24,9 @@ export const usePane = (paneRef: PaneRef) => {
         selector.spec.spec.panes.find((p: Pane) => p.id == paneRef.paneId)
     );
 
-    const normalizedPane = useNormalizedSpecSelector((selector)=>
-        selector?.panes.find((p:Pane)=>p.id===paneRef.paneId) 
-    )
-
     const parent = useMaticoSelector((selector) =>
         findParent(selector.spec.spec, paneRef.id)
     ) as Page | ContainerPane;
-
-    // after spec update, may have a race condition 
-    // and no parent is present
-    if (!parent) return {};
 
     const currentIndex = _.indexOf(parent.panes, paneRef);
 
@@ -111,7 +102,6 @@ export const usePane = (paneRef: PaneRef) => {
 
     return {
         pane,
-        normalizedPane,
         updatePane,
         removePane: deletePane,
         removePaneFromParent,

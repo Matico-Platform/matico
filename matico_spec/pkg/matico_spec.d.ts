@@ -21,25 +21,6 @@ export enum MapProjection {
 }
 /**
 */
-export enum JoinType {
-  Inner,
-  Outer,
-  Left,
-  Right,
-}
-/**
-*/
-export enum AggregationType {
-  Min,
-  Max,
-  Sum,
-  CumulativeSum,
-  Mean,
-  Median,
-  StandardDeviation,
-}
-/**
-*/
 export enum LinearLayoutDirection {
   Row,
   Column,
@@ -82,16 +63,6 @@ export enum TabBarPosition {
 export enum ScreenUnits {
   Pixels,
   Percent,
-}
-/**
-*/
-export class AggregateStep {
-  free(): void;
-}
-/**
-*/
-export class AggregationSummary {
-  free(): void;
 }
 /**
 */
@@ -178,16 +149,6 @@ export class ControlsPane {
 }
 /**
 */
-export class DatasetTransform {
-  free(): void;
-}
-/**
-*/
-export class FilterStep {
-  free(): void;
-}
-/**
-*/
 export class FreeLayout {
   free(): void;
 /**
@@ -214,16 +175,6 @@ export class HistogramPane {
 /**
 */
   name: string;
-}
-/**
-*/
-export class ImputeStep {
-  free(): void;
-}
-/**
-*/
-export class JoinStep {
-  free(): void;
 }
 /**
 */
@@ -447,11 +398,6 @@ export class SelectionOptions {
 /**
 */
   selection_mode: number;
-}
-/**
-*/
-export class SignedS3ArrowDataset {
-  free(): void;
 }
 /**
 */

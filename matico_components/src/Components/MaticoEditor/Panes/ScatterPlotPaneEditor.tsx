@@ -110,7 +110,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                     columns={dataset?.columns}
                     onUpdateValue={(dotSize) => updatePane({ dotSize })}
                     sliderMin={0}
-                    sliderMax={10}
+                    sliderMax={2000}
                 />
 
                 <ColorVariableEditor

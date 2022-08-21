@@ -11,51 +11,30 @@ import { View, Flex } from "@adobe/react-spectrum";
 import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { PaneSelector } from "Utils/paneEngine";
 
-type UnitTree = {
-    [position: string]: {
-        [direction: string]: {
-            [unit: string]: string;
-        };
-    };
-};
+/**
+ * If the unit is percent, return percent, otherwise return pixels.
+ * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
+ */
+const handleHorizontalUnits = (unit: string) =>
+    unit === "percent" ? "%" : "px";
 
-const unitTree: UnitTree = {
-    vertical: {
-        row: {
-            percent: "%"
-        },
-        column: {
-            percent: "vh"
-        }
-    },
-    horizontal: {
-        row: {
-            percent: "vw"
-        },
-        column: {
-            percent: "%"
-        }
-    }
-};
+/**
+ * If the unit is Percent, return Viewport height, otherwise return px
+ * @param {string} unit - string - This is the unit that the user has selected in the dropdown.
+ */
+const handleVerticalUnits = (unit: string) =>
+    unit === "percent" ? "%" : "px";
 
 /**
  * If the position is horizontal, then return the result of calling handleHorizontalUnits with the
  * unit, otherwise return the result of calling handleVerticalUnits with the unit.
  * @param {string} unit - string - The unit to be converted.
  * @param {'vertical' | 'horizontal'} position - 'vertical' | 'horizontal'
- * @param {'row | 'column'} direction - 'row' | 'column'
  */
-const handleUnits = (
-    unit: string,
-    position: "vertical" | "horizontal",
-    direction: "row" | "column"
-) => {
-    if (unit === "pixels") {
-        return "px";
-    } else {
-        return unitTree[position][direction][unit];
-    }
-};
+const handleUnits = (unit: string, position: "vertical" | "horizontal") =>
+    position === "horizontal"
+        ? handleHorizontalUnits(unit)
+        : handleVerticalUnits(unit);
 
 /**
  * If the values and units are not undefined, then map over the values and units and join them together
@@ -66,8 +45,7 @@ const handleUnits = (
  */
 const handlePositionalRule = (
     values: Array<number | undefined>,
-    units: Array<string | undefined>,
-    direction: "row" | "column"
+    units: Array<string | undefined>
 ) => {
     if (!values || !units) {
         return "auto";
@@ -77,17 +55,14 @@ const handlePositionalRule = (
                 (value, index) =>
                     `${value || 0}${handleUnits(
                         units[index] || "",
-                        index % 2 === 0 ? "vertical" : "horizontal",
-                        direction
+                        index % 2 === 0 ? "vertical" : "horizontal"
                     )}`
             )
             .join(" ");
     }
 };
 
-const LinearPane: React.FC<
-    PanePosition & { allowOverflow?: boolean; direction?: "row" | "column" }
-> = ({
+const LinearPane: React.FC<PanePosition> = ({
     width,
     height,
     layer,
@@ -101,44 +76,18 @@ const LinearPane: React.FC<
     padUnitsRight,
     padUnitsBottom,
     padUnitsTop,
-    children,
-    allowOverflow,
-    direction
+    children
 }) => {
     return (
         <View
-            width={`${width}${handleUnits(
-                widthUnits,
-                "horizontal",
-                direction
-            )}`}
-            height={`${height}${handleUnits(
-                heightUnits,
-                "vertical",
-                direction
-            )}`}
+            width={`${width}${handleHorizontalUnits(widthUnits)}`}
+            height={`${height}${handleVerticalUnits(heightUnits)}`}
             maxWidth={"100%"}
             zIndex={layer}
-            paddingBottom={`${padBottom}${handleUnits(
-                padUnitsBottom,
-                "vertical",
-                direction
-            )}`}
-            paddingStart={`${padLeft}${handleUnits(
-                padUnitsLeft,
-                "horizontal",
-                direction
-            )}`}
-            paddingEnd={`${padRight}${handleUnits(
-                padUnitsRight,
-                "horizontal",
-                direction
-            )}`}
-            paddingTop={`${padTop}${handleUnits(
-                padUnitsTop,
-                "vertical",
-                direction
-            )}`}
+            paddingBottom={`${padBottom}${handleVerticalUnits(padUnitsBottom)}`}
+            paddingStart={`${padLeft}${handleVerticalUnits(padUnitsLeft)}`}
+            paddingEnd={`${padRight}${handleVerticalUnits(padUnitsRight)}`}
+            paddingTop={`${padTop}${handleVerticalUnits(padUnitsTop)}`}
             UNSAFE_style={{
                 transition:
                     "bottom 250ms, left 250ms, width 250ms, height 250ms, background 250ms",
@@ -146,7 +95,6 @@ const LinearPane: React.FC<
                     "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
                 boxSizing: "border-box"
             }}
-            flexShrink={allowOverflow ? 0 : 1}
         >
             {children}
         </View>
@@ -158,62 +106,40 @@ export interface MaticoLinearLayoutInterface {
     direction: LinearLayoutDirection;
     align: Alignment;
     justify: Justification;
-    gap?: GapSize;
-    allowOverflow?: boolean;
+    gap? : GapSize
 }
 
-const GapVals = {
-    none: "size-0",
-    small: "size-100",
-    medium: "size-600",
-    large: "size-1000"
-};
+const GapVals ={
+  "none" : "size-0",
+  "small": "size-100",
+  "medium":"size-600",
+  "large":"size-1000"
+
+}
 
 export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
     paneRefs,
     direction,
     align,
     justify,
-    gap,
-    allowOverflow
+    gap
 }) => {
     return (
-        <View
+        <Flex
+            position="relative"
             width="100%"
             height="100%"
-            overflow={`${allowOverflow && direction === "row" ? "auto" : "hidden"} ${allowOverflow && direction === "column" ? "auto" : "hidden"}
-            `}
+            direction={direction}
+            alignContent={align}
+            justifyContent={justify}
+            gap={GapVals[gap]}
         >
-            <Flex
-                id="layout-engine"
-                position="relative"
-                width={
-                    allowOverflow && direction === "row"
-                        ? "fit-content"
-                        : "100%"
-                }
-                height={
-                    allowOverflow && direction === "column"
-                        ? "fit-content"
-                        : "100%"
-                }
-                direction={direction}
-                alignContent={align}
-                justifyContent={justify}
-                gap={GapVals[gap]}
-            >
-                {paneRefs.map((paneRef: PaneRef) => (
-                    <LinearPane
-                        key={paneRef.id}
-                        allowOverflow={allowOverflow}
-                        direction={direction}
-                        {...paneRef.position}
-                    >
-                        {/* <ControlActionBar paneRef={paneRef} /> */}
-                        <PaneSelector paneRef={paneRef} />
-                    </LinearPane>
-                ))}
-            </Flex>
-        </View>
+            {paneRefs.map((paneRef: PaneRef) => (
+                <LinearPane key={paneRef.id} {...paneRef.position}>
+                    <ControlActionBar paneRef={paneRef} />
+                    <PaneSelector paneRef={paneRef} />
+                </LinearPane>
+            ))}
+        </Flex>
     );
 };

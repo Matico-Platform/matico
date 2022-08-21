@@ -17,9 +17,7 @@ pub enum Dataset {
     #[serde(rename="wasmCompute")]
     WASMCompute(WASMCompute),
     #[serde(rename="arrow")]
-    Arrow(ArrowDataset),
-    #[serde(rename="signedS3Arrow")]
-    SignedS3Arrow(SignedS3ArrowDataset)
+    Arrow(ArrowDataset)
 }
 
 #[wasm_bindgen]
@@ -50,25 +48,6 @@ pub struct GeoJSONDataset {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ArrowDataset {
-    #[wasm_bindgen(skip)]
-    pub name: String,
-
-    #[wasm_bindgen(skip)]
-    pub url: String,
-
-    #[wasm_bindgen(skip)]
-    pub geometry_col: Option<String>,
-
-    #[wasm_bindgen(skip)]
-    pub id_col: Option<String>,
-}
-
-
-#[wasm_bindgen]
-#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct SignedS3ArrowDataset {
     #[wasm_bindgen(skip)]
     pub name: String,
 

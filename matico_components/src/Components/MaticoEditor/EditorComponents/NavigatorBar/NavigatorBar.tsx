@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import { NavigatorBarProps } from "./types";
 import Breakdown from "@spectrum-icons/workflow/Breakdown";
+import Curate from "@spectrum-icons/workflow/Curate";
 import Data from "@spectrum-icons/workflow/Data";
 import Channel from "@spectrum-icons/workflow/Channel";
 import Alert from "@spectrum-icons/workflow/Alert";
@@ -47,6 +48,9 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                         </Item>
                         <Item key="datasets">
                             <Data size="L" />
+                        </Item>
+                        <Item key="dataviews">
+                            <Curate size="L" />
                         </Item>
                         <Item key="state">
                             <Channel size="L" />
@@ -101,6 +105,9 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                     </Item>
                                     <Item key="state">
                                         <MaticoStateViewer />
+                                    </Item>
+                                    <Item key="dataviews">
+                                        <p>Data views, coming soon...</p>
                                     </Item>
                                     <Item key="errors">
                                       <ErrorPanel />

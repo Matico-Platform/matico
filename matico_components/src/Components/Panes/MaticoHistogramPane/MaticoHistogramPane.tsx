@@ -55,20 +55,22 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     );
 
     const datasetReady = foundDataset && foundDataset.state === "READY";
+    const [mappedFilters, filtersReady] = useNormalizeSpec(dataset.filters);
 
-
+    const [mappedStyle, styleReady] = useNormalizeSpec({
+        color
+    });
 
     const dataRequest =
-        foundDataset  
+        foundDataset && filtersReady
             ? {
                   datasetName: dataset.name,
                   column,
                   metric: "histogram",
-                  filters: dataset.filters,
+                  filters: mappedFilters,
                   parameters: { bins: maxbins }
               }
             : null;
-
 
     const chartData = useRequestColumnStat(dataRequest);
 
@@ -86,8 +88,8 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
             data[data.length - 1].binEnd
         ];
 
-        const colorMap = generateColorVar(color);
-  
+        const colorMap = generateColorVar(mappedStyle?.color);
+
         return (
             <MaticoChart
                 xExtent={extent}
@@ -128,17 +130,14 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
                     {
                         type: "bar",
                         //@ts-ignore
-                        color: (d) => {
-                          let c = colorMap(d.binMid)
-                          return [c[0],c[1],c[2]]
-                        } ,
+                        color: colorMap,
                         scale: 11,
                         xAccessor: (d: any) => d.binEnd
                     }
                 ]}
             />
         );
-    }, [JSON.stringify({ labels, color, backgroundColor }), chartData]);
+    }, [JSON.stringify({ labels, mappedStyle, backgroundColor }), chartData]);
 
     return (
         <View width="100%" height="100%" position="relative">

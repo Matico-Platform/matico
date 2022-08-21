@@ -12,8 +12,7 @@ import {
     TabList,
     Item,
     TabPanels,
-    StatusLight,
-    Divider
+    StatusLight
 } from "@adobe/react-spectrum";
 import React, { useState } from "react";
 import { DatasetModal } from "./DatasetModal";
@@ -22,19 +21,18 @@ import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { addDataset } from "Stores/MaticoSpecSlice";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 import { Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
-import {DatasetTransfromPane} from "../EditorComponents/DatasetTransformPane/DatasetTransformPane";
 
 interface DatasetEditorProps {
     dataset: DatasetSummary;
 }
-export const DatasetStatusColors: Record<DatasetState, "yellow" | "negative" | "positive"> =
-    {
-        [DatasetState.LOADING]: "yellow",
-        [DatasetState.ERROR]: "negative",
-        [DatasetState.READY]: "positive"
-    };
 
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
+    let statusColors: Record<DatasetState, "yellow" | "negative" | "positive"> =
+        {
+            [DatasetState.LOADING]: "yellow",
+            [DatasetState.ERROR]: "negative",
+            [DatasetState.READY]: "positive"
+        };
 
     return (
         <DatasetModal dataset={dataset}>
@@ -46,7 +44,7 @@ export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
                 justifyContent="space-between"
             >
                 <Text>{dataset.name}</Text>
-                <StatusLight variant={DatasetStatusColors[dataset.state]} />
+                <StatusLight variant={statusColors[dataset.state]} />
             </Flex>
         </DatasetModal>
     );
@@ -61,12 +59,11 @@ const NewDatasetModal: React.FC<NewDatasetModalProps> = ({
     datasetProviders,
     onSubmit
 }) => {
-    console.log("Dataset providers are ", datasetProviders)
     return (
         <DialogTrigger isDismissable>
-            <ActionButton >Add Dataset</ActionButton>
+            <ActionButton>Add</ActionButton>
             {(close) => (
-                <Dialog width="70vw">
+                <Dialog>
                     <Content>
                         <Tabs>
                             <TabList>
@@ -124,35 +121,33 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
 
     return (
         <Flex height="100%" width="100%" direction="column">
-            <Flex direction='column' gap="size-500">
-              <Heading margin="size-150" alignSelf="start">
-                  Datasets
-              </Heading>
-              <Flex direction="column">
-                <>
-                {Object.entries(datasets).filter(([datasetName,dataset])=>!dataset.transform).map(([datasetName, dataset]) => {
-                      return (
-                            <DatasetEditor
-                                dataset={dataset}
-                                key={datasetName}
-                            />
-                      );
-                  })}
-                </>
+            <Heading margin="size-150" alignSelf="start">
+                Datasets
+            </Heading>
+            <Well>
+                <Heading>
+                    <Flex direction="row" justifyContent="space-between">
+                        <Text>Datasets</Text>
+                        <NewDatasetModal
+                            onSubmit={createDataset}
+                            datasetProviders={datasetProviders}
+                        />
+                    </Flex>
+                </Heading>
 
-              <NewDatasetModal
-                  onSubmit={createDataset}
-                  datasetProviders={datasetProviders}
-              />
-              <Well marginTop="size-1000" alignSelf="end">
-                Load Datasets from a variety of sources 
-              </Well>
-              </Flex>
-            </Flex>
-            <Divider size="S"/>
-            <Flex direction="column">
-                  <DatasetTransfromPane />
-            </Flex>
+                <Flex direction="column">
+                    {Object.entries(datasets).map(([datasetName, dataset]) => {
+                        return (
+                            <ActionButton width="100%">
+                                <DatasetEditor
+                                    dataset={dataset}
+                                    key={datasetName}
+                                />
+                            </ActionButton>
+                        );
+                    })}
+                </Flex>
+            </Well>
         </Flex>
     );
 };

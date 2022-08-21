@@ -8,28 +8,25 @@ import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Border from "@spectrum-icons/workflow/Border";
 import { ContainerPane, Layer, Pane, PanePosition } from "@maticoapp/matico_types/spec";
 import {v4 as uuid} from 'uuid'
-import {MaticoTextPaneComponents as text} from "Components/Panes/MaticoTextPane";
 
-export const IconForPaneType = (PaneType: string, props?: any) => {
+export const IconForPaneType = (PaneType: string) => {
     switch (PaneType) {
         case "histogram":
-            return <HistogramIcon {...props} />;
+            return <HistogramIcon />;
         case "pieChart":
-            return <PieChartIcon {...props} />;
+            return <PieChartIcon />;
         case "text":
-          const El = text.icon
-          // @ts-ignore
-          return <El {...props} />;
+            return <TextIcon />;
         case "map":
-            return <MapIcon {...props} />;
+            return <MapIcon />;
         case "scatterplot":
-            return <ScatterIcon {...props} />;
+            return <ScatterIcon />;
         case "controls":
-            return <PropertiesIcon {...props}  />;
+            return <PropertiesIcon />;
         case "container":
-            return <Border {...props} />; 
+            return <Border />; 
         case "staticMap":
-            return <MapIcon {...props} />; }
+            return <MapIcon/>; }
 };
 
 type AvaliablePanesSection = {
@@ -169,7 +166,10 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         column: null,
         dataset: { name: "unknown", filters: [] }
     },
-    text: text.defaults,
+    text: {
+        content: "New Text Pane",
+        name: "Text Pane"
+    },
     controls: {
         name: "Controls",
         title: "Controls",
@@ -198,22 +198,22 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
       }
       return {container: full, additionalPanes:[]}
     
-    case "column":
+    case "row":
       let rowContainer ={
         id:uuid(),
         name:name,
         type: 'container',
-        layout: {type:"linear", gap:"small", direction:"row", justify:'start', align:"center", allowOverflow:true},
+        layout: {type:"linear", direction:"row", justify:'start', align:"center", allowOverflow:false},
         panes:[]
       }
       return {container: rowContainer, additionalPanes:[]}
 
-    case "row":
+    case "column":
       let columnContainer ={
         id:uuid(),
         name:name,
         type: 'container',
-        layout: {type:"linear", gap:"small", direction:"column", justify:'start', align:"center", allowOverflow:true},
+        layout: {type:"linear", direction:"column", justify:'start', align:"center", allowOverflow:false},
         panes:[]
       }
       return {container: columnContainer, additionalPanes:[]}
@@ -260,8 +260,8 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         id:uuid(),
         type:'container',
         name: `${name}: SideBar`,
-        layout:{type:"linear", direction:"column", gap:"small",  allowOverflow:true, 
-            justify: "start",
+        layout:{type:"linear", direction:"row",  allowOverflow:true, 
+            justify: "flex-start",
             align: "center"
         },
         panes:[]
@@ -271,7 +271,7 @@ export const containerPreset = (name: string, presetType: ContainerPresetTypes) 
         id: uuid(),
         type:"container",
         name:name,
-        layout:{type: "linear", direction:"row", gap:'small', justify:'start', align:"center", allowOverflow:false},
+        layout:{type: "linear", direction:"row", justify:'start', align:"center", allowOverflow:false},
         panes:[
           {id:uuid(), type:'container', paneId:MainContentPane.id, position: {...FullPosition, width:70}},
           {id:uuid(), type:'container', paneId:SideBar.id, position: {...FullPosition, width:30}},

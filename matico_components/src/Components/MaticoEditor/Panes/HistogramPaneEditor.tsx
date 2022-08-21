@@ -32,7 +32,8 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         updatePane({
             dataset: { ...histogramPane.dataset, name: dataset },
             column: null
-        }); };
+        });
+    };
 
     const updateColumn = (column: string) => {
         updatePane({
@@ -105,6 +106,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             columns={columns}
                             onUpdateStyle={(color) => updatePane({ color })}
                         />
+                        <Divider />
                     </CollapsibleSection>
                     <LabelEditor
                         labels={histogramPane.labels}

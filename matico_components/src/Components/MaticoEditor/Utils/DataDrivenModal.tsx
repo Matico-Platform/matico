@@ -196,17 +196,15 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
     const domain = mapping.domain;
     const range = mapping.range;
 
-    const metric = Array.isArray(domain)
-        ? {type:"manual",  bins: domain.length }
-        : domain.metric;
-
+    const [metric, metricParams] = Array.isArray(domain)
+        ? ["manual", { bins: domain.length }]
+        : [domain.type, domain];
 
     //@ts-ignore
-    const noBins = metric.bins;
+    const noBins = metricParams.bins;
 
     let selectedPaletteName =
         typeof range === "string" ? range.split(".")[0] : null;
-
 
     let selectedPalette = selectedPaletteName
         ? //@ts-ignore
@@ -221,6 +219,14 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
     const [domainValues, setDomainValues] = useState<Array<number> | null>(
         Array.isArray(domain) ? domain : []
     );
+
+    const histogram = useRequestColumnStat({
+        datasetName: dataset.name,
+        column: domain.column,
+        metric: "histogram",
+        parameters: { bins: 20 },
+        filters: filters
+    });
 
     const quantiles = useRequestColumnStat({
         datasetName: dataset.name,
@@ -238,27 +244,18 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         filters: filters
     });
 
-   const histogram = useRequestColumnStat({
-        datasetName: dataset.name,
-        column: column.name,
-        metric: "histogram",
-        parameters: { bins: 20 },
-        filters: filters
-    });
-
-
     useEffect(() => {
-        if (metric.type === "quantile" && quantiles && quantiles.state === "Done") {
+        if (metric === "quantile" && quantiles && quantiles.state === "Done") {
             setDomainValues(quantiles.result);
         }
         if (
-            metric.type === "equalInterval" &&
+            metric === "equalInterval" &&
             equalInterval &&
             equalInterval.state === "Done"
         ) {
             setDomainValues(equalInterval.result);
         }
-        if (metric.type === "manual") {
+        if (metric === "manual") {
             setDomainValues(domain);
         }
     }, [metric, noBins, quantiles, equalInterval, column]);
@@ -384,7 +381,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                     <TwoUpCollapsableGrid>
                         <Picker
                             width="100%"
-                            selectedKey={metric.type}
+                            selectedKey={metric}
                             onSelectionChange={(quant) =>
                                 updateQuantization(quant as string)
                             }
@@ -419,7 +416,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                     )}
                 </Flex>
 
-                {["quantile", "equalInterval", "manual"].includes(metric.type) && (
+                {["quantile", "equalInterval", "manual"].includes(metric) && (
                     <Well marginStart="size-300">
                         <Flex direction="column">
                             {domainValues &&
@@ -430,7 +427,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                                                 rangeValues && (
                                                     <ColorPickerDialog
                                                         color={
-                                                            typeof(rangeValues[index]) === 'string' ? {hex: rangeValues[index]} : {rgb: rangeValues[index]}
+                                                            rangeValues[index]
                                                         }
                                                         onColorChange={(
                                                             color
@@ -524,7 +521,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                         xCol="binStart"
                         xLabel={column.name}
                         yLabel={"Count"}
-                        yCol="freq"
+                        yCol="count"
                         data={sanitizedHistogramData}
                         xAxis={{
                             scaleType: "linear",
@@ -605,12 +602,12 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
     onUpdateSpec,
     label
 }) => {
-
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[datasetName]
     );
 
     const column = dataset?.columns.find((col) => col.name === spec.variable);
+    console.log("COLUMN TYPE IS ", column.type);
 
     return (
         <DialogTrigger isDismissable>

@@ -17,18 +17,14 @@ export const ArrowBuilder= async (details: ArrowDataset) => {
   const { url, geometryCol, name } = details;
   const idCol: string | null = null
 
-  console.log("Loading arrow file from ", url)
-
   //@ts-ignore
   let data= await loadArrow(url)
-  let geomCol = data.column(geometryCol ?? "geometry")
-  if(geomCol){
-    let sampleGeom = data.column(geometryCol ?? "geometry").get(0)
-    let geom = wkx.Geometry.parse(Buffer.from(sampleGeom))
 
-  }
+  let sampleGeom = data.column(geometryCol ?? "geometry").get(0)
+  let geom = wkx.Geometry.parse(Buffer.from(sampleGeom))
 
   let geomType= GeomType.Polygon
+
 
   return new LocalDataset(
     name,

@@ -5,16 +5,13 @@ import { MaticoDataState } from "../../Contexts/MaticoDataContext/MaticoDataCont
 import { VariableState } from "../../Stores/MaticoVariableSlice";
 import { MaticoNavBar } from "../MaticoNavBar/MaticoNavBar";
 import { setSpec } from "../../Stores/MaticoSpecSlice";
+import { useAppSpec } from "../../Hooks/useAppSpec";
 import { useMaticoSelector, useMaticoDispatch } from "../../Hooks/redux";
 import { Content, Grid, View } from "@adobe/react-spectrum";
 import { App, Page } from "@maticoapp/matico_types/spec";
 
 import _ from "lodash";
 import { useRegisterDatasets } from "Hooks/useRegisterDatasets";
-import {useSpecNormalizer} from "Hooks/useSpecNormalizer";
-import {useApp} from "Hooks/useApp";
-import {useNormalizeSpec} from "Hooks/useNormalizeSpec";
-import {useNormalizedSpecSelector} from "Hooks/useNormalizedSpecSelector";
 
 interface MaticoAppPresenterProps {
     spec?: App;
@@ -50,24 +47,22 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
         }
     }, []);
 
-    useNormalizeSpec()
-
     // Register the datasets in the spec and keep in sync as changes are made
     useRegisterDatasets();
 
-    const pages = useNormalizedSpecSelector(spec=>spec?.pages)
+    const appSpec = useAppSpec();
 
-   // const appState = useMaticoSelector((state) => state.variables);
+    const appState = useMaticoSelector((state) => state.variables);
 
-   //  useEffect(() => {
-   //      if (onStateChange) {
-   //          onStateChange(appState);
-   //      }
-   //  }, [onStateChange, JSON.stringify(appState)]);
+    useEffect(() => {
+        if (onStateChange) {
+            onStateChange(appState);
+        }
+    }, [onStateChange, JSON.stringify(appState)]);
 
     return (
         <> 
-            {pages && (
+            {appSpec && (
                 <Grid
                     areas={["nav main"]}
                     columns={[
@@ -95,7 +90,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                     </View>
                     <Content gridArea="main">
                         <Switch>
-                            {pages.map((page: Page, index: number) => (
+                            {appSpec.pages.map((page: Page, index: number) => (
                                 <Route
                                     path={page.path ? page.path : page.name}
                                     key={page.path}

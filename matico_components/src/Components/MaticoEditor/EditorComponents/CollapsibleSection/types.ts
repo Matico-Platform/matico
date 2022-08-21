@@ -6,10 +6,6 @@ export type CollapsibleSectionProps = {
      */ 
     title: string;
     /**
-     * @param {React.ReactNode} icon - Optional icon to show in the title bar
-     */ 
-    icon?: React.ReactNode;
-    /**
      * @param {React.ReactNode} children - The child elements displayed in this section.
      */ 
     children: React.ReactNode;

@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Dataset, Page, Pane, Theme, ValidationResult, DatasetTransform};
+use crate::{AutoComplete, Dataset, Page, Pane, Theme, ValidationResult};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -25,7 +25,6 @@ pub struct App {
     pages: Vec<Page>,
     panes: Vec<Pane>,
     datasets: Vec<Dataset>,
-    dataset_transforms: Vec<DatasetTransform>,
     theme: Option<Theme>,
     metadata: Metadata,
 }
@@ -36,7 +35,6 @@ impl Default for App {
             pages: vec![],
             panes: vec![],
             datasets: vec![],
-            dataset_transforms: vec![],
             theme: None,
             metadata: Metadata {
                 name: "New App".into(),

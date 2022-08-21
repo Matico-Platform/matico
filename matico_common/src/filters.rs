@@ -22,14 +22,6 @@ pub struct CategoryFilter {
     is_not_one_of: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct RegExFilter{
-    variable: String,
-    regex:String
-}
-
 #[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
@@ -37,7 +29,6 @@ pub enum Filter {
     NoFilter,
     Range(RangeFilter),
     Category(CategoryFilter),
-    RegEx(RegExFilter)
 }
 
 impl Default for Filter {

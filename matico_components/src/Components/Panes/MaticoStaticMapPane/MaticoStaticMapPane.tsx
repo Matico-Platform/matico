@@ -53,9 +53,12 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
     const datasetReady =
         foundDataset && foundDataset.state === DatasetState.READY;
 
+    const [mappedLayers, layersReady] = useNormalizeSpec(layers);
+
+    const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
 
     const chartData = useRequestDataMulti(
-        layers.map((l) => ({
+        mappedLayers.map((l) => ({
             datasetName: l.source?.name,
             filters: l.source?.filters,
             columns: l.source?.columns
@@ -63,8 +66,9 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
     );
 
     const Chart = useMemo(() => {
+        if (!filtersReady || !layersReady) return <LoadingSpinner />;
 
-        const styledLayers = layers 
+        const styledLayers = mappedLayers
             .map((l: Layer, i: index) => {
                 if (!chartData[i] || chartData[i].state !== "Done") {
                     return null;
@@ -112,7 +116,7 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
             />
             </>
         );
-    }, [chartData, showGraticule, layers, projection]);
+    }, [chartData, mappedLayers, showGraticule, mappedLayers, projection]);
 
     return (
         <View position="relative" width="100%" height="100%">

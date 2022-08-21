@@ -188,8 +188,8 @@ export const generateColorVar = (
                 brewer = brewer[3];
             }
 
-            const mappedRange =brewer.map((c: string | Array[number]) =>
-                    chromaColorFromColorSpecification( typeof(c) ==="string" ? { hex: c } : {rgb:c}, true)
+            const mappedRange =brewer.map((c: string) =>
+                    chromaColorFromColorSpecification({ hex: c }, true)
                 )
 
             const ramp = constructRampFunctionCol(
@@ -198,21 +198,16 @@ export const generateColorVar = (
             );
 
             return (d: any) => {
-                let val 
-                if(typeof(d)==='number'){
-                  val = d
-                }
-                else{
-                  val = d.hasOwnProperty("properties")
-
-                      ? d.properties[variable]
-                      : d[variable];
-                }
+                const val = d.hasOwnProperty("properties")
+                    ? d.properties[variable]
+                    : d[variable];
                 if (!val) {
                     return [0, 0, 0, 0];
                 }
                 let c = ramp(val).rgba();
+                // console.log("VAl is " ,val , " domain ", domain.join(","), c)
                 
+                // c[3] = c[3] * 255;
                 return c;
             };
         } else {

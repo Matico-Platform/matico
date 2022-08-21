@@ -8,7 +8,9 @@ export const useValidator = () => {
     useEffect(() => {
         let f = async () => {
             try {
-                const wasm = await import("@maticoapp/matico_spec");
+                const wasm = await import(
+                    /*webpackChunkName:"spec"*/ "@maticoapp/matico_spec"
+                );
                 setValidator(wasm);
                 setValidatorReady(true);
             } catch (err) {
