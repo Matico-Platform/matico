@@ -291,6 +291,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     onChange={updateBaseMap}
                 />
             </CollapsibleSection>
+            {/*
             <CollapsibleSection title="Selection" isOpen={true}>
                 <Checkbox
                     isSelected={mapPane.selectionoOtions?.selectionEnabled}
@@ -314,6 +315,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                 </Picker>
 
             </CollapsibleSection>
+            */}
             <CollapsibleSection title="Controls" isOpen={true}>
                 <CheckboxGroup
                     value={Object.entries(mapPane.controls ?? {})
