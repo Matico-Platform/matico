@@ -58,7 +58,7 @@ const SelectorWrapper: React.FC<{
     paneRef: PaneRef;
     selectPane: () => void;
     normalizedPane: any;
-}> = forwardRef(({ paneRef, selectPane, normalizedPane }) => {
+}> = forwardRef(({ paneRef, selectPane, normalizedPane }, ref) => {
     const { setHovered } = useEditorActions(paneRef.id);
     const currentHoveredRef = useMaticoSelector(
         (state) => state.editor.hoveredRef
@@ -83,6 +83,8 @@ const SelectorWrapper: React.FC<{
 
     return (
         <Wrapper
+            // @ts-ignore
+            ref={ref}
             onClick={handleClick}
             onMouseEnter={handleHover}
             onMouseLeave={handleMouseLeave}

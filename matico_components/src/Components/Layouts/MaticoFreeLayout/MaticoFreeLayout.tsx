@@ -72,6 +72,18 @@ const FreeContainer: React.FC<{
             padUnitsTop,
         }
     } = useInternalSpec()
+    const parentDimensions = useParentContext();
+    
+    const styleWidth = Math.min(width, widthUnits === "percent" ? 100 : parentDimensions.width);
+    const styleHeight = Math.min(height, heightUnits === "percent" ? 100 : parentDimensions.height);
+    const styleLeft = Math.max(0, Math.min(
+        x,
+        xUnits === "percent" ? 100 - styleWidth : parentDimensions.width - styleWidth
+    ))
+    const styleTop = Math.max(0, Math.min(
+        y,
+        yUnits === "percent" ? 100 - styleHeight : parentDimensions.height - styleHeight
+    ))
 
     return <div
         // @ts-ignore
@@ -80,12 +92,12 @@ const FreeContainer: React.FC<{
             boxShadow:
                 "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
             boxSizing: "border-box",
-            width: `${width}${handleUnits(widthUnits)}`,
+            width: `${styleWidth}${handleUnits(widthUnits)}`,
             position: "absolute",
-            height: `${height}${handleUnits(heightUnits)}`,
+            height: `${styleHeight}${handleUnits(heightUnits)}`,
             zIndex: layer,
-            left: `${x}${handleUnits(xUnits)}`,
-            bottom: `${y}${handleUnits(yUnits)}`,
+            left: `${styleLeft}${handleUnits(xUnits)}`,
+            top: `${styleTop}${handleUnits(yUnits)}`,
             backgroundColor: "static-black",
             paddingBottom: `${padBottom}${handleUnits(padUnitsBottom)}`,
             paddingLeft: `${padLeft}${handleUnits(padUnitsLeft)}`,
@@ -111,7 +123,12 @@ const FreeDraggableActionWrapper: React.FC<{
         paneRef,
         normalizedPane,
         updatePanePosition,
+        parent,
         position: {
+            width,
+            height,
+            x,
+            y,
             xUnits,
             yUnits,
             widthUnits,
@@ -139,18 +156,40 @@ const FreeDraggableActionWrapper: React.FC<{
     const onDragEnd = (event: DragEndEvent) => {
         if (event)
             if (event.active.id === paneRef.id) {
-                console.log(event.over, event.active);
                 const prevX =
                     xUnits === "percent"
-                        ? (paneRef.position.x / 100) * parentDimensions.width
-                        : paneRef.position.x;
+                        ? (x / 100) * parentDimensions.width
+                        : x;
                 const prevY =
                     yUnits === "percent"
-                        ? (paneRef.position.y / 100) * parentDimensions.height
-                        : paneRef.position.y;
+                        ? (y / 100) * parentDimensions.height
+                        : y;
+
+                const prevWidth =
+                        widthUnits === "percent"
+                            ? (width / 100) * parentDimensions.width
+                            : width;
+                const prevHeight =
+                        heightUnits === "percent"
+                            ? (height / 100) * parentDimensions.height
+                            : height;
+    
                 const { x: deltaX, y: deltaY } = event.delta;
-                let newX = prevX + deltaX;
-                let newY = prevY - deltaY;
+                
+                let newX = Math.max(
+                    0, 
+                    Math.min(
+                        prevX + deltaX,
+                        parentDimensions.width - prevWidth
+                    )
+                )
+                let newY = Math.max(
+                    0, 
+                    Math.min(
+                        prevY + deltaY,
+                        parentDimensions.height - prevHeight
+                    )
+                )
 
                 updateDragOrResize({
                     updatePanePosition,
@@ -167,18 +206,33 @@ const FreeDraggableActionWrapper: React.FC<{
 
     const onResizeEnd = (event: ResizableDimensions) => {
         const newRect = event.newRect;
-
+        const newWidth = Math.min(newRect.width, parentDimensions.width);
+        const newHeight = Math.min(newRect.height, parentDimensions.height);
+        let newX = Math.max(
+            0, 
+            Math.min(
+                newRect.x - parentDimensions.x,
+                parentDimensions.width - newWidth
+            )
+        )
+        let newY = Math.max(
+            0, 
+            Math.min(
+                newRect.y - parentDimensions.y,
+                parentDimensions.height - newHeight
+            )
+        )
         updateDragOrResize({
             updatePanePosition,
-            widthUnits,
-            heightUnits,
-            xUnits,
-            yUnits,
-            parentDimensions,
-            newX: newRect.x - parentDimensions.x,
-            newY: parentDimensions.bottom - newRect.bottom,
-            newWidth: newRect.width,
-            newHeight: newRect.height
+                widthUnits,
+                heightUnits,
+                xUnits,
+                yUnits,
+                parentDimensions,
+                newX,
+                newY,
+                newWidth,
+                newHeight
         });
     };
 
