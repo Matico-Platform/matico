@@ -13,7 +13,7 @@ export const MaticoImporter: React.FC<DatasetProviderComponent> = ({
     <Flex direction="column" gap="size-200">
       <DatasetSelector
         onSelectDataset={(dataset) =>
-          onSubmit({ name: dataset.name, description: dataset.description, type: "signedS3Arrow", url: `/api/datasets/${dataset.id}` })
+          onSubmit({ name: dataset.name, description: dataset.description, type: "signedS3Arrow", url: `${window.origin}/api/datasets/${dataset.id}` })
         }
       />
     </Flex>

@@ -26,7 +26,7 @@ function uploadFile(
       onProgress(Math.round((100 * e.loaded) / e.total));
     }
   };
-  return axios.put(url, new Blob(table.toArrowBuffer()),{
+  return axios.put(url, table.toArrowBuffer(),{
     headers:{
       "Access-Control-Allow-Origin":"*",
       "Content-type": "application/vnd.apache.arrow.file"
@@ -48,7 +48,6 @@ export const Uploader: React.FC<UploaderProps> = ({
 
     fetch("/api/datasets/upload", {method: "POST",  body:JSON.stringify(metadata), headers:{ContentType:"application/json"} }).then(r=>r.json()).then(
       (url)=>{
-        console.log("signed url ", url)
         uploadFile(
           table,
           url,
@@ -56,14 +55,12 @@ export const Uploader: React.FC<UploaderProps> = ({
           setProgress
         )
           .then((response  :any) => {
-            console.log("done is ",response.data)
             setIsDone(true)
             if (onDone) {
               onDone();
             }
           })
           .catch((error: any) => {
-            console.log("error is ",error)
             setError(error);
             if (onFail) {
               onFail(error);

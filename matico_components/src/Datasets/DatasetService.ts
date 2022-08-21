@@ -262,16 +262,10 @@ export const DatasetService: DatasetServiceInterface = {
                     transform: false
                 };
             case "signedS3Arrow":
-                const signedUrl = `/${datasetDetails.url}?includeDataUrl=true`
-                console.log("signed url ", signedUrl)
-
-                const signedS3Response = await fetch(
-                   signedUrl 
-                );
+                const signedUrl = `${datasetDetails.url}?includeDataUrl=true`
+                const signedS3Response = await fetch(signedUrl);
                 const signedDataset = await signedS3Response.json();
-                
 
-                console.log("signed arrow dataset ", signedDataset.dataUrl);
                 const signedArrowDataset = await ArrowBuilder({
                     ...datasetDetails,
                     url: signedDataset.dataUrl

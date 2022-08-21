@@ -37,7 +37,6 @@ export const useLoadDataset= (file: File | null) => {
   useEffect(()=>{
     if(file){
       const fType = fileType(file)
-      console.log("f Type is ", file, fType)
       if (fType=== "csv") {
         loadCSV(file).then((table:ColumnTable)=> setData(table));
       }
@@ -48,7 +47,6 @@ export const useLoadDataset= (file: File | null) => {
 
 
   },[file])
-  console.log("Parse data is ", data)
   return { data };
 };
 
@@ -84,7 +82,6 @@ const loadCSV = async (file: File) => {
 };
 
 const loadGeoJSON = async (file: File) => {
-  console.log("trying to load geojson")
   return new Promise<ColumnTable>((resolve, reject) => {
     const reader = new FileReader();
 
