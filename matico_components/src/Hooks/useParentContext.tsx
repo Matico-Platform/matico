@@ -5,7 +5,14 @@ const ParentContext = React.createContext<DOMRect>(new DOMRect());
 export const ParentProvider: React.FC<{
     children: React.ReactNode;
     parentRef: React.RefObject<HTMLElement>;
-}> = ({ children, parentRef }) => {
+    useViewPortY?: boolean;
+    useViewPortX?: boolean;
+    useViewPortHeight?: boolean;
+    useViewPortWidth?: boolean;
+}> = ({ children, parentRef, useViewPortY,
+    useViewPortX,
+    useViewPortHeight,
+    useViewPortWidth }) => {
     const [parentDimension, setParentDimension] = React.useState<DOMRect>(
         new DOMRect()
     );
@@ -13,10 +20,10 @@ export const ParentProvider: React.FC<{
         const parentDimension = parentRef.current?.getBoundingClientRect();
         setParentDimension(
             new DOMRect(
-                parentDimension.x,
-                parentDimension.y,
-                parentDimension.width,
-                parentDimension.height
+                useViewPortY && typeof window !== undefined ? 0 : parentDimension.x,
+                useViewPortX && typeof window !== undefined ? 0 : parentDimension.y,
+                useViewPortHeight && typeof window !== undefined ? window.innerWidth : parentDimension.width,
+                useViewPortWidth && typeof window !== undefined ? window.innerWidth : parentDimension.height
             )
         );
     };

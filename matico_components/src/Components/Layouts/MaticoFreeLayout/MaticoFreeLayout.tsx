@@ -1,25 +1,16 @@
-import React, { useRef } from "react";
+import React, { forwardRef, useRef } from "react";
 import styled from "styled-components";
 import { PanePosition, PaneRef } from "@maticoapp/matico_types/spec";
-import { View } from "@adobe/react-spectrum";
 import { PaneSelector } from "Utils/paneEngine";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
-import { useIsEditable } from "Hooks/useIsEditable";
-import {
-    DragEndEvent,
-    useDndContext,
-    useDndMonitor,
-    useDraggable,
-    useDroppable
-} from "@dnd-kit/core";
-import { useSortable } from "@dnd-kit/sortable";
+import { DragEndEvent, useDndMonitor, useDraggable } from "@dnd-kit/core";
 import { usePane } from "Hooks/usePane";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
-import Move from "@spectrum-icons/workflow/Move";
 import { ResizableDimensions, useResizable } from "Hooks/useResizable";
 import { ParentProvider, useParentContext } from "Hooks/useParentContext";
-import Resize from "@spectrum-icons/workflow/Resize";
+import ArrowRight from "@spectrum-icons/workflow/ArrowRight";
 import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
+import { useIsEditable } from "Hooks/useIsEditable";
+import { InternalSpecProvider, useInternalSpec } from "Hooks/useInteralSpec";
 
 const FreeArea = styled.div`
     position: relative;
@@ -33,28 +24,6 @@ const FreeArea = styled.div`
  */
 const handleUnits = (unit: string) => (unit === "percent" ? "%" : "px");
 
-/**
- * If the values and units are not undefined, then map over the values and units and join them together
- * with a space, for use in the style attribute.
- * @param {Array<number | undefined>} values - number[] | undefined
- * @param {Array<string | undefined>} units - string[] | undefined
- * @returns A string.
- */
-const handlePositionalRule = (
-    values: Array<number | undefined>,
-    units: Array<string | undefined>
-) => {
-    if (!values || !units) {
-        return "auto";
-    } else {
-        return values
-            .map(
-                (value, index) =>
-                    `${value || 0}${handleUnits(units[index] || "")}`
-            )
-            .join(" ");
-    }
-};
 
 const DraggableButton = styled.button`
     position: absolute;
@@ -77,32 +46,78 @@ const DraggableButton = styled.button`
     }
 `;
 
-const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
-    width,
-    height,
-    layer,
-    widthUnits,
-    heightUnits,
-    x,
-    xUnits,
-    y,
-    yUnits,
-    padBottom,
-    padLeft,
-    padRight,
-    padTop,
-    padUnitsBottom,
-    padUnitsLeft,
-    padUnitsRight,
-    padUnitsTop,
-    children,
-    paneRef
+const FreeContainer: React.FC<{
+    ref?: any;
+    style?: React.CSSProperties;
+    children?: React.ReactNode;
+}> = forwardRef(({style,children}, ref) => {
+    const {
+        position: {
+            width,
+            height,
+            layer,
+            widthUnits,
+            heightUnits,
+            x,
+            xUnits,
+            y,
+            yUnits,
+            padBottom,
+            padLeft,
+            padRight,
+            padTop,
+            padUnitsBottom,
+            padUnitsLeft,
+            padUnitsRight,
+            padUnitsTop,
+        }
+    } = useInternalSpec()
+
+    return <div
+        // @ts-ignore
+        ref={ref}
+        style={{
+            boxShadow:
+                "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
+            boxSizing: "border-box",
+            width: `${width}${handleUnits(widthUnits)}`,
+            position: "absolute",
+            height: `${height}${handleUnits(heightUnits)}`,
+            zIndex: layer,
+            left: `${x}${handleUnits(xUnits)}`,
+            bottom: `${y}${handleUnits(yUnits)}`,
+            backgroundColor: "static-black",
+            paddingBottom: `${padBottom}${handleUnits(padUnitsBottom)}`,
+            paddingLeft: `${padLeft}${handleUnits(padUnitsLeft)}`,
+            paddingRight: `${padRight}${handleUnits(padUnitsRight)}`,
+            paddingTop: `${padTop}${handleUnits(padUnitsTop)}`,
+            ...style
+        }}
+    >
+        {children}
+    </div>;
+})
+
+
+const FreeDraggableActionWrapper: React.FC<{
+        children?: React.ReactNode;
+    }
+> = ({
+    children
 }) => {
-    const paneType = paneRef.type;
-    const { normalizedPane, pane, updatePane, selectPane, updatePanePosition, parent } =
-        usePane(paneRef);
     const parentDimensions = useParentContext();
     const resizableParentRef = useRef<HTMLDivElement>(null);
+    const {
+        paneRef,
+        normalizedPane,
+        updatePanePosition,
+        position: {
+            xUnits,
+            yUnits,
+            widthUnits,
+            heightUnits,
+        }
+    } = useInternalSpec();
 
     const {
         attributes,
@@ -115,37 +130,39 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
         id: paneRef.id,
         data: {
             paneRefId: paneRef.id,
-            paneId: pane.id,
+            paneId: normalizedPane.id,
             pane: normalizedPane,
             parent: parent
         }
     });
 
     const onDragEnd = (event: DragEndEvent) => {
-        if (event.active.id === paneRef.id) {
-            const prevX =
-                xUnits === "percent"
-                    ? (paneRef.position.x / 100) * parentDimensions.width
-                    : paneRef.position.x;
-            const prevY =
-                yUnits === "percent"
-                    ? (paneRef.position.y / 100) * parentDimensions.height
-                    : paneRef.position.y;
-            const { x: deltaX, y: deltaY } = event.delta;
-            let newX = prevX + deltaX;
-            let newY = prevY - deltaY;
+        if (event)
+            if (event.active.id === paneRef.id) {
+                console.log(event.over, event.active);
+                const prevX =
+                    xUnits === "percent"
+                        ? (paneRef.position.x / 100) * parentDimensions.width
+                        : paneRef.position.x;
+                const prevY =
+                    yUnits === "percent"
+                        ? (paneRef.position.y / 100) * parentDimensions.height
+                        : paneRef.position.y;
+                const { x: deltaX, y: deltaY } = event.delta;
+                let newX = prevX + deltaX;
+                let newY = prevY - deltaY;
 
-            updateDragOrResize({
-                updatePanePosition,
-                widthUnits,
-                heightUnits,
-                xUnits,
-                yUnits,
-                parentDimensions,
-                newX,
-                newY
-            });
-        }
+                updateDragOrResize({
+                    updatePanePosition,
+                    widthUnits,
+                    heightUnits,
+                    xUnits,
+                    yUnits,
+                    parentDimensions,
+                    newX,
+                    newY
+                });
+            }
     };
 
     const onResizeEnd = (event: ResizableDimensions) => {
@@ -180,26 +197,12 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
 
     return (
         <ParentProvider parentRef={droppableRef}>
-            <div
+            <FreeContainer
                 ref={setNodeRef}
                 style={{
-                    boxShadow:
-                        "0px 10px 15px -3px rgba(0,0,0,0.1),3px -7px 15px -3px rgba(0,0,0,0.05)",
-                    boxSizing: "border-box",
                     transform: transform
                         ? `translate(${transform.x}px, ${transform.y}px)`
-                        : undefined,
-                    width: `${width}${handleUnits(widthUnits)}`,
-                    position: "absolute",
-                    height: `${height}${handleUnits(heightUnits)}`,
-                    zIndex: layer,
-                    left: `${x}${handleUnits(xUnits)}`,
-                    bottom: `${y}${handleUnits(yUnits)}`,
-                    backgroundColor: "static-black",
-                    paddingBottom: `${padBottom}${handleUnits(padUnitsBottom)}`,
-                    paddingLeft: `${padLeft}${handleUnits(padUnitsLeft)}`,
-                    paddingRight: `${padRight}${handleUnits(padUnitsRight)}`,
-                    paddingTop: `${padTop}${handleUnits(padUnitsTop)}`
+                        : undefined
                 }}
             >
                 <div
@@ -210,13 +213,7 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
                     }}
                     ref={resizableParentRef}
                 >
-                    <PaneSelector
-                        normalizedPane={normalizedPane}
-                        updatePane={updatePane}
-                        selectPane={selectPane}
-                        paneRef={paneRef}
-                        paneType={paneType}
-                    />
+                    {children}
                     <DraggableButton
                         {...listeners}
                         {...attributes}
@@ -238,9 +235,9 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
                         onMouseDown={startResize}
                         aria-label="Resize Pane"
                     >
-                        <Resize
+                        <ArrowRight
                             color="positive"
-                            UNSAFE_style={{ transform: "rotate(90deg)" }}
+                            UNSAFE_style={{ transform: "rotate(45deg)" }}
                         />
                     </button>
 
@@ -256,8 +253,47 @@ const FreePane: React.FC<PanePosition & { paneRef: PaneRef }> = ({
                         </span>
                     )}
                 </div>
-            </div>
+            </FreeContainer>
         </ParentProvider>
+    );
+};
+
+const FreePane: React.FC<{position: PanePosition, paneRef: PaneRef }> = ({
+    paneRef,
+    position
+}) => {
+    const paneType = paneRef.type;
+    const {
+        normalizedPane,
+        pane,
+        updatePane,
+        selectPane,
+        updatePanePosition,
+        parent
+    } = usePane(paneRef);
+    const isEdit = useIsEditable();
+    const Wrapper = isEdit ? FreeDraggableActionWrapper : FreeContainer;
+
+    return (
+        <InternalSpecProvider value={{
+            position,
+            paneRef,
+            normalizedPane,
+            updatePane,
+            selectPane,
+            updatePanePosition,
+            parent
+        }}>
+            <Wrapper>
+                <PaneSelector
+                    normalizedPane={normalizedPane}
+                    updatePane={updatePane}
+                    selectPane={selectPane}
+                    paneRef={paneRef}
+                    paneType={paneType}
+                />
+            </Wrapper>
+        </InternalSpecProvider>
     );
 };
 
@@ -271,13 +307,13 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({
 }) => {
     return (
         <FreeArea>
-            {paneRefs
+            {paneRefs // reverse to make the order on the outline reflect render order
                 ?.slice(0)
                 .reverse()
                 .map((paneRef) => (
                     <FreePane
                         key={paneRef.id}
-                        {...paneRef.position}
+                        position={paneRef.position}
                         paneRef={paneRef}
                     />
                 ))}

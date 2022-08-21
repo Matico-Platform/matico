@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { forwardRef, useRef } from "react";
 import {
     PanePosition,
     PaneRef,
@@ -7,8 +7,7 @@ import {
     Alignment,
     GapSize
 } from "@maticoapp/matico_types/spec";
-import { View, Flex } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
+import { Flex } from "@adobe/react-spectrum";
 import { PaneSelector } from "Utils/paneEngine";
 import { usePane } from "Hooks/usePane";
 import { ResizableDimensions, useResizable } from "Hooks/useResizable";
@@ -19,6 +18,8 @@ import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import MoveLeftRight from "@spectrum-icons/workflow/MoveLeftRight";
 import MoveUpDown from "@spectrum-icons/workflow/MoveUpDown";
+import { InternalSpecProvider, useInternalSpec } from "Hooks/useInteralSpec";
+import { useIsEditable } from "Hooks/useIsEditable";
 
 type UnitTree = {
     [position: string]: {
@@ -46,6 +47,7 @@ const unitTree: UnitTree = {
         }
     }
 };
+
 /**
  * If the position is horizontal, then return the result of calling handleHorizontalUnits with the
  * unit, otherwise return the result of calling handleVerticalUnits with the unit.
@@ -61,123 +63,47 @@ const handleUnits = (
     if (unit === "pixels") {
         return "px";
     } else {
+        console.log('units', unit, position, direction, unitTree)
         return unitTree[position][direction][unit];
     }
 };
 
-/**
- * If the values and units are not undefined, then map over the values and units and join them together
- * with a space, for use in the style attribute.
- * @param {Array<number | undefined>} values - number[] | undefined
- * @param {Array<string | undefined>} units - string[] | undefined
- * @returns A string.
- */
-const handlePositionalRule = (
-    values: Array<number | undefined>,
-    units: Array<string | undefined>,
-    direction: "row" | "column"
-) => {
-    if (!values || !units) {
-        return "auto";
-    } else {
-        return values
-            .map(
-                (value, index) =>
-                    `${value || 0}${handleUnits(
-                        units[index] || "",
-                        index % 2 === 0 ? "vertical" : "horizontal",
-                        direction
-                    )}`
-            )
-            .join(" ");
-    }
-};
-
-const LinearPane: React.FC<
-    PanePosition & {
-        paneRef: PaneRef;
-        allowOverflow?: boolean;
-        direction?: "row" | "column";
-    }
-> = ({
-    width,
-    height,
-    layer,
-    widthUnits,
-    heightUnits,
-    padLeft,
-    padRight,
-    padBottom,
-    padTop,
-    padUnitsLeft,
-    padUnitsRight,
-    padUnitsBottom,
-    padUnitsTop,
-    paneRef,
-    allowOverflow,
-    direction
-}) => {
-    const paneType = paneRef.type;
-    const resizableParentRef = useRef<HTMLDivElement>(null);
+const LinearContainer: React.FC<{
+    ref?: any;
+    style?: React.CSSProperties;
+    children?: React.ReactNode;
+}> = forwardRef(({ style, children }, ref) => {
     const {
-        normalizedPane,
-        pane,
-        parent,
-        updatePane,
-        selectPane,
-        updatePanePosition
-    } = usePane(paneRef);
-    const {
-        setNodeRef,
-        setActivatorNodeRef,
-        attributes,
-        listeners,
-        transform
-    } = useSortable({
-        id: paneRef.id,
-        data: {
-            paneRefId: paneRef.id,
-            paneId: pane.id,
-            pane,
-            parent
-        }
-    });
-
-    const parentDimensions = useParentContext();
-    const onResizeEnd = (event: ResizableDimensions) => {
-        const newRect = event.newRect;
-        updateDragOrResize({
-            updatePanePosition,
+        position: {
+            width,
+            height,
+            layer,
             widthUnits,
             heightUnits,
-            xUnits: widthUnits,
-            yUnits: heightUnits,
-            parentDimensions,
-            newWidth: direction === "row" ? newRect.width : undefined,
-            newHeight: direction === "column" ? newRect.height : undefined
-        });
-    };
-
-    const {
-        active: resizeActive,
-        startResize,
-        indicatorStyles
-    } = useResizable({
-        ref: resizableParentRef,
-        orientation: direction === "row" ? "horizontal" : "vertical",
-        onResizeEnd
-    });
+            padBottom,
+            padLeft,
+            padRight,
+            padTop,
+            padUnitsBottom,
+            padUnitsLeft,
+            padUnitsRight,
+            padUnitsTop
+        },
+        direction,
+        allowOverflow
+    } = useInternalSpec();
 
     return (
         <div
-            ref={setNodeRef}
+            // @ts-ignore
+            ref={ref}
             style={{
-                width: `${width}${handleUnits(
+                width: direction === "column" ? '100%' : `${width}${handleUnits(
                     widthUnits,
                     "horizontal",
                     direction
                 )}`,
-                height: `${height}${handleUnits(
+                height: direction === "row" ? '100%' : `${height}${handleUnits(
                     heightUnits,
                     "vertical",
                     direction
@@ -204,11 +130,74 @@ const LinearPane: React.FC<
                     "vertical",
                     direction
                 )}`,
+                flexShrink: allowOverflow ? 0 : 1,
+                ...style
+            }}
+        >
+            {" "}
+            {children}
+        </div>
+    );
+});
 
+const LinearDraggableActionWrapper: React.FC = ({ children }) => {
+    const {
+        updatePanePosition,
+        direction,
+        paneRef,
+        normalizedPane,
+        position: { widthUnits, heightUnits }
+    } = useInternalSpec();
+    const resizableParentRef = useRef<HTMLDivElement>(null);
+    const {
+        setNodeRef,
+        setActivatorNodeRef,
+        attributes,
+        listeners,
+        transform
+    } = useSortable({
+        id: paneRef.id,
+        data: {
+            paneRefId: paneRef.id,
+            paneId: normalizedPane.id,
+            pane: normalizedPane,
+            parent
+        }
+    });
+
+    const parentDimensions = useParentContext();
+
+    const onResizeEnd = (event: ResizableDimensions) => {
+        const newRect = event.newRect;
+        updateDragOrResize({
+            updatePanePosition,
+            widthUnits,
+            heightUnits,
+            xUnits: widthUnits,
+            yUnits: heightUnits,
+            parentDimensions,
+            newWidth: direction === "row" ? newRect.width : undefined,
+            newHeight: direction === "column" ? newRect.height : undefined
+        });
+    };
+
+    const {
+        active: resizeActive,
+        startResize,
+        indicatorStyles
+    } = useResizable({
+        ref: resizableParentRef,
+        orientation: direction === "row" ? "horizontal" : "vertical",
+        onResizeEnd
+    });
+
+    return (
+        <LinearContainer
+            ref={setNodeRef}
+            style={{
                 transform: transform
                     ? `translate(${transform.x}px, ${transform.y}px)`
-                    : undefined,
-                flexShrink: allowOverflow ? 0 : 1
+                    : undefined
             }}
         >
             <div
@@ -219,13 +208,7 @@ const LinearPane: React.FC<
                 }}
                 ref={resizableParentRef}
             >
-                <PaneSelector
-                    normalizedPane={normalizedPane}
-                    updatePane={updatePane}
-                    selectPane={selectPane}
-                    paneRef={paneRef}
-                    paneType={paneType}
-                />
+                {children}
 
                 <button
                     style={
@@ -285,7 +268,52 @@ const LinearPane: React.FC<
                     </span>
                 )}
             </div>
-        </div>
+        </LinearContainer>
+    );
+};
+
+const LinearPane: React.FC<{
+    paneRef: PaneRef;
+    position: PanePosition;
+    allowOverflow?: boolean;
+    direction?: "row" | "column";
+}> = ({ position, paneRef, allowOverflow, direction }) => {
+    const paneType = paneRef.type;
+    const {
+        normalizedPane,
+        pane,
+        parent,
+        updatePane,
+        selectPane,
+        updatePanePosition
+    } = usePane(paneRef);
+    const isEdit = useIsEditable();
+    const Wrapper = isEdit ? LinearDraggableActionWrapper : LinearContainer;
+
+    return (
+        <InternalSpecProvider
+            value={{
+                position,
+                paneRef,
+                normalizedPane,
+                updatePane,
+                selectPane,
+                updatePanePosition,
+                parent,
+                direction,
+                allowOverflow
+            }}
+        >
+            <Wrapper>
+                <PaneSelector
+                    normalizedPane={normalizedPane}
+                    updatePane={updatePane}
+                    selectPane={selectPane}
+                    paneRef={paneRef}
+                    paneType={paneType}
+                />
+            </Wrapper>
+        </InternalSpecProvider>
     );
 };
 
@@ -332,7 +360,8 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
             }}
         >
             <SortableContext items={paneRefs.map((f) => f.id)}>
-                <ParentProvider parentRef={parentRef}>
+                <ParentProvider parentRef={parentRef} useViewPortHeight={allowOverflow && direction === "column"}
+                useViewPortWidth={allowOverflow && direction === "row"}>
                     <Flex
                         id="layout-engine"
                         position="relative"
@@ -352,12 +381,12 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
                         gap={GapVals[gap]}
                     >
                         {paneRefs.map((paneRef: PaneRef) => (
-                            <LinearPane
+                            !!paneRef && <LinearPane
                                 key={paneRef.id}
                                 allowOverflow={allowOverflow}
                                 paneRef={paneRef}
+                                position={paneRef.position}
                                 direction={direction}
-                                {...paneRef.position}
                             />
                         ))}
                     </Flex>

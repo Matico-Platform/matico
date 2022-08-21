@@ -1,31 +1,14 @@
 import React, { useRef } from "react";
-import { Page, Layout } from "@maticoapp/matico_types/spec";
-import { View, Flex } from "@adobe/react-spectrum";
+import { Layout } from "@maticoapp/matico_types/spec";
+import { Flex } from "@adobe/react-spectrum";
 import { selectLayout } from "Utils/layoutEngine";
 import { usePage } from "Hooks/usePage";
-import { useIsEditable } from "Hooks/useIsEditable";
 import {
-    DndContext,
-    KeyboardSensor,
-    MouseSensor,
-    TouchSensor,
     useDroppable,
-    useSensor,
-    useSensors
 } from "@dnd-kit/core";
 import { ParentProvider } from "Hooks/useParentContext";
 import styled from "styled-components";
-import {
-    restrictToParentElement,
-    restrictToWindowEdges
-} from "@dnd-kit/modifiers";
-import { DraggingProvider, useDraggingContext } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/DraggingContext";
-import { handleDrag } from "Utils/dragAndResize/handleDrag";
-import { useApp } from "Hooks/useApp";
-import {
-    layoutCollisionDetection,
-    outlineCollisionDetection
-} from "Components/MaticoEditor/Panes/MaticoOutlineViewer/CollisionDetection";
+import { useDraggingContext } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/DraggingContext";
 import { ContainerDropTarget } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/ContainerDropTarget";
 interface MaticoPageInterface {
     pageId: string;

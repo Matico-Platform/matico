@@ -131,10 +131,9 @@ const generateCollisionDetection = (
             const isContainer =
                 ["page", "container"].includes(intersectedType) &&
                 intersectedId;
-            const isNewParent = intersectedId !== currentParent?.id;
-            return isContainer && isNewParent;
+            // const isNewParent = intersectedId !== currentParent?.id;
+            return isContainer;
         });
-        console.log(parents)
 
         const siblings = intersections.filter((intersected) => {
             const intersectedData =

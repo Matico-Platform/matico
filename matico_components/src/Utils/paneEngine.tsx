@@ -8,7 +8,6 @@ import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoCo
 import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
 import { Pane } from "Components/Panes/Pane";
 import { PaneRef } from "@maticoapp/matico_types/spec";
-import { usePane } from "Hooks/usePane";
 import { MaticoStaticMapPane } from "Components/Panes/MaticoStaticMapPane/MaticoStaticMapPane";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { useMaticoSelector } from "Hooks/redux";
@@ -17,8 +16,6 @@ import { PaneParts } from "Components/Panes/PaneParts";
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 import { useEditorActions } from "Hooks/useEditorActions";
 import styled from "styled-components";
-import { useSortable } from "@dnd-kit/sortable";
-import { useDraggable } from "@dnd-kit/core";
 
 export const fallbackPanes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
