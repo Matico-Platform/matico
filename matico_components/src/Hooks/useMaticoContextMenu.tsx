@@ -154,13 +154,13 @@ const PaneContextItems: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
             <Item disabled>
                 <Flex direction="row">{normalizedPane.name}</Flex>
             </Item>
-            <Submenu label="Snap pane to...">
+            {type === "free" && <Submenu label="Snap pane to...">
                 {PositionPresets.map((preset) => (
                     <Item onClick={() => handleSnap(preset.position)}>
                         {preset.label}
                     </Item>
                 ))}
-            </Submenu>
+            </Submenu>}
             <Separator />
             <Item onClick={selectPane}>Edit</Item>
             {type === "linear" ? (
