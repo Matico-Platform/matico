@@ -42,7 +42,8 @@ const Wrapper = styled.button<{ interactive?: boolean; isHovered?: boolean }>`
     left: 0;
     top: 0;
     box-sizing: border-box;
-    border: ${({ isHovered }) =>
+    transition:125ms all;
+    outline: ${({ isHovered }) =>
         isHovered
             ? "4px solid var(--spectrum-global-color-chartreuse-500)"
             : "4px solid rgba(0,0,0,0)"};

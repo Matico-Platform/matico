@@ -17,8 +17,6 @@ export const ArrowBuilder= async (details: ArrowDataset) => {
   const { url, geometryCol, name } = details;
   const idCol: string | null = null
 
-  console.log("Loading arrow file from ", url)
-
   //@ts-ignore
   let data= await loadArrow(url)
   let geomCol = data.column(geometryCol ?? "geometry")

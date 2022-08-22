@@ -59,6 +59,13 @@ export const datasetsSlice = createSlice({
             state.queries[requestHash] = { state: "Loading", result: null };
         },
         // Also triggers middleware
+        unregisterDataset:(
+          state,
+          action: PayloadAction<DatasetSpec>
+        )=>{
+          delete state.datasets[action.payload.name]
+        },
+        // Also triggers middleware
         registerOrUpdateDataset: (
             state,
             action: PayloadAction<DatasetSpec>
@@ -144,6 +151,7 @@ export const {
     registerDataUpdates,
     registerColumnStatUpdates,
     registerOrUpdateTransform,
+    unregisterDataset,
     requestTransform
 } = datasetsSlice.actions;
 

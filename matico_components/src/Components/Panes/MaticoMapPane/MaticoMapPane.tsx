@@ -19,7 +19,7 @@ import {debounce} from "lodash";
 
 //@ts-ignore
 function DeckGLOverlay(props: MapboxOverlayProps){
-  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props)); 
   overlay.setProps(props)
   return null
 }
@@ -67,33 +67,20 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     controls,
     selectionOptions
 }) => {
-    const [mapLayers, setMapLayers] = useState([]);
+    const [mapLayers, setMapLayers] = useState<Record<string,Layer>>({});
     const edit = useIsEditable();
     const mapRef = useRef();
 
 
-    const updateLayer = (layer: Layer) => {
-        if (!layer) return;
-        setMapLayers((mapLayers) => {
-            if (mapLayers.map((l) => l.id).includes(layer.id)) {
-                return mapLayers.map((l) => (l.id === layer.id ? layer : l));
-            } else {
-                return [...mapLayers, layer];
-            }
-        });
+    const updateLayer = (id:string, layer: Layer) => {
+        setMapLayers({...mapLayers, [id]:layer});
     };
 
-    const validMapLayers: any = useMemo(
-        () =>
-            layers
-                ? layers
-                      .map((layer) =>
-                          mapLayers.find((ml) => ml.id === layer.name)
-                      )
-                      .filter((a) => a)
-                : [],
-        [mapLayers, JSON.stringify(layers)]
-    );
+    let mls = useMemo(()=> ([...layers]
+        .sort((a, b) => (a.order > b.order ? 1 : -1))
+        .map((l) =>
+            mapLayers[l.id]
+        )).filter(a=>a), [layers, mapLayers])
 
     const [currentView, updateView] = useAutoVariable({
         //@ts-ignore
@@ -128,24 +115,22 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
         }
     }
 
-    let mls = ([...layers]
-        .sort((a, b) => (a.order > b.order ? 1 : -1))
-        .map((l) =>
-            validMapLayers.find((ml) => ml.id === l.name)
-        ))
 
-    const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
-    if (selectionLayer){
-        mls.push(selectionLayer) 
-    }
+    console.log("mls ", mls)
+
+    // const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
+    // if (selectionLayer){
+    //     mls.push(selectionLayer) 
+    // }
 
     return (
         <View key={id} position="relative" overflow="hidden" width="100%" height="100%">
             {currentView && (
-                <>
+                    <> 
                     <Map
                         mapLib={maplibregl}
                         key={id}
+                        id={id}
                         antialias={true}
                         onDrag={updateViewState}
                         onZoom={updateViewState}
@@ -178,34 +163,27 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                               <FullscreenControl position="top-right" />
                               }
                     
-                    <DeckGLOverlay
-                              interleaved={true}
-                              width={"100%"}
-                              height={"100%"}
-                              layers={mls}
-                                  />
+                      <DeckGLOverlay
+                                interleaved={true}
+                                width={"100%"}
+                                height={"100%"}
+                                layers={mls}
+                                    />
 
                             
                             </Map>
-                  
                     {layers.map((l) => (
                         <MaticoMapLayer
                             key={l.name}
                             name={l.name}
                             source={l.source}
                             style={l.style}
-                            onUpdate={updateLayer}
+                            onUpdate={(update)=>updateLayer(l.id, update)}
                             mapName={name}
                             beforeId={l.style.beforeId}
                         />
                     ))}
-                       <MaticoSelectionLayer
-                        onUpdate={updateLayer}
-                        selectionEnabled={selectionOptions?.selectionEnabled}
-                        selectionMode={selectionOptions?.selectionMode}
-                        mapName={id}
-                    />
-                    <MaticoLegendPane layers={validMapLayers} />
+                    <MaticoLegendPane legends={mls.map( (l) => l.props._legend)} />
                     
                 </>
             )}

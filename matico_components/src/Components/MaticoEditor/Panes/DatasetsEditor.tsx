@@ -23,6 +23,8 @@ import { addDataset } from "Stores/MaticoSpecSlice";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 import { Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
 import {DatasetTransfromPane} from "../EditorComponents/DatasetTransformPane/DatasetTransformPane";
+import Delete from "@spectrum-icons/workflow/Delete"
+import {useDatasetActions} from "Hooks/useDatasetActions";
 
 interface DatasetEditorProps {
     dataset: DatasetSummary;
@@ -35,20 +37,24 @@ export const DatasetStatusColors: Record<DatasetState, "yellow" | "negative" | "
     };
 
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
+    const {removeDataset}  = useDatasetActions(dataset.name)
 
     return (
+      <Flex direction='row' alignItems='space-between' justifyContent='center' >
         <DatasetModal dataset={dataset}>
             <Flex
                 direction="row"
                 gap="small"
-                width="100%"
+                flex={1}
                 alignItems="center"
                 justifyContent="space-between"
             >
                 <Text>{dataset.name}</Text>
                 <StatusLight variant={DatasetStatusColors[dataset.state]} />
-            </Flex>
+          </Flex>
         </DatasetModal>
+        <ActionButton isQuiet onPress={()=>removeDataset(dataset.name)}> <Delete /> </ActionButton>
+      </Flex>
     );
 };
 
@@ -132,10 +138,10 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
                 <>
                 {Object.entries(datasets).filter(([datasetName,dataset])=>!dataset.transform).map(([datasetName, dataset]) => {
                       return (
-                            <DatasetEditor
-                                dataset={dataset}
-                                key={datasetName}
-                            />
+                              <DatasetEditor
+                                  dataset={dataset}
+                                  key={datasetName}
+                              />
                       );
                   })}
                 </>

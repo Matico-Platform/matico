@@ -42,7 +42,8 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[layer.source.name]
     );
-    const { columns, geomType } = dataset;
+
+    const { columns, geomType } = dataset ?? {columns:null, geomType:null};
 
     const { style } = layer;
     const isPoint = geomType === GeomType.Point;
@@ -78,6 +79,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
             style: defaults.style
         });
     };
+
     const toggleDataDriven = (
         param: string,
         dataDriven: boolean,
@@ -118,20 +120,17 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
         <Flex direction="column">
             <CollapsibleSection title="Datasource" isOpen={true}>
                 <DatasetSelector
-                    selectedDataset={dataset.name}
+                    selectedDataset={dataset?.name}
                     onDatasetSelected={updateDataset}
                 />
-                <FilterEditor
-                    datasetName={dataset.name}
-                    filters={layer.source.filters}
-                    onUpdateFilters={updateFilters}
-                />
             </CollapsibleSection>
+            {dataset &&
+              <>
             {dataset?.geomType !== GeomType.Line && (
                 <CollapsibleSection title="Fill" isOpen={true}>
                     <ColorVariableEditor
                         label="Fill Color"
-                        datasetName={dataset.name}
+                        datasetName={dataset?.name}
                         columns={columns}
                         style={style.fillColor}
                         onUpdateStyle={(style) => {
@@ -185,14 +184,14 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
                 <ColorVariableEditor
                     label="Line Color"
                     style={style.lineColor}
-                    datasetName={dataset.name}
+                    datasetName={dataset?.name}
                     columns={columns}
                     onUpdateStyle={(style) => updateStyle("lineColor", style)}
                 />
                 <SliderVariableEditor
                     label="Line Width"
                     style={style.lineWidth}
-                    datasetName={dataset.name}
+                    datasetName={dataset?.name}
                     columns={columns}
                     onUpdateValue={(style) => updateStyle("lineWidth", style)}
                 />
@@ -234,7 +233,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
                     <SliderVariableEditor
                         label="Elevation"
                         style={style.elevation}
-                        datasetName={dataset.name}
+                        datasetName={dataset?.name}
                         columns={columns}
                         onUpdateValue={(style) =>
                             updateStyle("elevation", style)
@@ -283,6 +282,8 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
                 <CollapsibleSection title="Interleaving" isOpen={true}>
                   <TextField label={"Before layer id"} defaultValue={null} value={style.beforeId} onChange={(val)=> updateStyle("beforeId",val)} />
                 </CollapsibleSection>
+            </>
+            }
         </Flex>
     );
 };

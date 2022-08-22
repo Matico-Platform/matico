@@ -75,13 +75,13 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
           label="Select Portal"
           placeholder="Select a socrata portal to get data from"
           width="100%"
-          defaultItems={portals.slice(0, 100)}
+          defaultItems={portals.slice(0, 100).map(p=>({...p,name:p.domain}))}
           selectedKey={selectedPortalKey}
           onSelectionChange={(key) => setSelectedPortalKey(key as string)}
         >
           {(portal) => (
-            <Item key={portal.domain}>
-              <Text>{portal.domain}</Text>
+            <Item key={portal.name}>
+              <Text>{portal.name}</Text>
               <Text slot="description">{portal.count} datasets</Text>
             </Item>
           )}
@@ -159,37 +159,40 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
         </Flex>
       ) : (
         selectedDataset && (
-          <Flex direction="row" justifyContent="end">
-            <Picker
-              label="Latitude Column"
-              selectedKey={latitudeCol}
-              onSelectionChange={setLatitudeCol}
-              items={selectedDataset.resource.columns_name.map((c) => ({
-                id: c,
-                name: c,
-              }))}
-            >
-              {(item) => <Item key={item.id}>{item.name}</Item>}
-            </Picker>
-            <Picker
-              label="Longitude Column"
-              selectedKey={longitudeCol}
-              onSelectionChange={setLongitudeCol}
-              items={selectedDataset.resource.columns_name.map((c) => ({
-                id: c,
-                name: c,
-              }))}
-            >
-              {(item) => <Item key={item.id}>{item.name}</Item>}
-            </Picker>
-            <Button
-              onPress={() => attemptToLoadDataset(selectedDataset, "CSV")}
-              variant="cta"
-              isDisabled={!(latitudeCol && longitudeCol)}
-            >
-              Load Dataset
-            </Button>
-          </Flex>
+          <Flex direction="column" width="100%" gap='size-200'>
+            <Flex direction="row"  justifyContent="center" gap='size-200'>
+              <Picker
+                label="Latitude Column"
+                selectedKey={latitudeCol}
+                onSelectionChange={setLatitudeCol}
+                items={selectedDataset.resource.columns_name.map((c) => ({
+                  id: c,
+                  name: c,
+                }))}
+              >
+                {(item) => <Item key={item.id}>{item.name}</Item>}
+              </Picker>
+              <Picker
+                label="Longitude Column"
+                selectedKey={longitudeCol}
+                onSelectionChange={setLongitudeCol}
+                items={selectedDataset.resource.columns_name.map((c) => ({
+                  id: c,
+                  name: c,
+                }))}
+              >
+                {(item) => <Item key={item.id}>{item.name}</Item>}
+              </Picker>
+            </Flex>
+
+              <Button
+                onPress={() => attemptToLoadDataset(selectedDataset, "CSV")}
+                variant="cta"
+                isDisabled={!(latitudeCol && longitudeCol)}
+              >
+                Load Dataset
+              </Button>
+            </Flex>
         )
       )}
     </Flex>

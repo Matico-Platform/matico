@@ -16,6 +16,9 @@ export const DatasetServiceMiddleWare = () => {
     return (store: any) => (next: any) => (action: any) => {
         const state = store.getState();
         switch (action.type) {
+            case "datasets/unregisterDataset":
+              worker.unregisterDataset(action.payload)
+              return next(action);
             case "datasets/registerOrUpdateDataset":
                 worker
                     .registerOrUpdateDataset(action.payload)

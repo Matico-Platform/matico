@@ -24,7 +24,6 @@ export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
 }) => {
 
 
-  console.log("in pallet picker ", selectedPalette )
     const colorOptions: Array<{ groupName: string; colors: ColorGroup }> =
       [
       {groupName: "sequential", colors :  MapColorsToGroup("quantitative", "seq")},
@@ -36,8 +35,6 @@ export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
         //@ts-ignore
         onSelectPalette({ name: paletteName, colors: colors[paletteName] });
     };
-
-    console.log("color options are ", colorOptions)
 
     return (
         <Picker
