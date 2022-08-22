@@ -23,6 +23,7 @@ import { userFromSession } from "../utils/db";
 import { useNotifications } from "../hooks/useNotifications";
 import { Header } from "../components/Header/Header";
 import styled from "styled-components";
+import { useMediaQuery } from 'react-responsive'
 
 import { prisma } from "../db";
 import { Login } from "../components/Login/Login";
@@ -99,6 +100,9 @@ const TextStyles = styled.span`
     @media (max-width: 768px) {
       font-size: 4rem;
     }
+    @media (max-width: 500px) {
+      font-size: 3.5rem;
+    }
   }
 `
 const HeroImgOuter = styled.div`
@@ -144,6 +148,9 @@ const Home: React.FC<HomePageProps> = ({
   const router = useRouter();
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const { notify, NotificationElement } = useNotifications();
+  const isMobile = useMediaQuery({
+    query: '(max-width: 768px)'
+  })
 
   const { apps: recentApps } = useApps(
     { public: true, order: "updatedAt" },
@@ -261,7 +268,7 @@ const Home: React.FC<HomePageProps> = ({
               Your platform for geospatial data &amp; analysis.
             </Heading>
             <Flex
-              direction="row"
+              direction={isMobile ? "column" : "row"}
               alignItems="center"
               justifyContent="space-between"
               width="100%"
