@@ -47,6 +47,7 @@
     "react-dropzone": "^11.4.2",
     "react-mde": "^11.5.0",
     "react-paginate": "^8.1.0",
+    "react-responsive": "^9.0.0-beta.10",
     "react-stately": "^3.16.0",
     "react-ui-cards": "^3.0.0",
     "styled-components": "^5.3.1",

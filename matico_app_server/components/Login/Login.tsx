@@ -6,6 +6,7 @@ import {
   Divider,
   Flex,
   Header,
+  View,
 } from "@adobe/react-spectrum";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Icon } from "../Icons/Icon";
@@ -15,7 +16,20 @@ export const Login: React.FC = () => {
 
   return (
     <DialogTrigger type="popover" isDismissable>
-      <ActionButton>{session ? session.user?.name : "Login"}</ActionButton>
+      <View backgroundColor="static-indigo-500">
+        <ActionButton
+          isQuiet
+          UNSAFE_style={{
+            color: "black",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow:
+              "6px -8px 15px -3px rgba(0,0,0,0.1),0px 10px 15px -3px rgba(0,0,0,0.1)",
+          }}
+        >
+          {session ? session.user?.name : "Login"}
+        </ActionButton>
+      </View>
       <Dialog>
         <>
           <Header
