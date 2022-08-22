@@ -83,7 +83,7 @@ const InlineLink = styled.a`
   cursor: pointer;
 `;
 
-const InlineAppCard: React.FC<{ app: App }> = ({ app }) => {
+const InlineAppCard: React.FC<{ app: App & {owner: any, id: string, noViews: number, noForks: number} }> = ({ app }) => {
   return (
     <View
       borderBottomWidth="thin"
@@ -162,6 +162,7 @@ export const TemplateSelector: React.FC<TemplateSelectorInterface> = ({
           >
           <Flex direction="column" flex={1}>
             {recentApps.slice(0,10).map((app: App, i: number) => (
+              // @ts-ignore
               <InlineAppCard key={i} app={app} />
             ))}
           </Flex>
