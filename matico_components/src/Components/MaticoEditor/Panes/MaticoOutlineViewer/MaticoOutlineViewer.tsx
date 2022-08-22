@@ -31,29 +31,44 @@ import { DraggingProvider } from "./DraggingContext";
 import { DraggablePane } from "./DraggablePane";
 import { PageList } from "./PageList";
 import { HoverableItem, HoverableRow } from "./Styled";
-import {
-    SortableContext,
-} from "@dnd-kit/sortable";
+import { SortableContext } from "@dnd-kit/sortable";
+import { PaneList } from "./PaneList";
 
-type MaticoOutlineViewerProps = RouteComponentProps & {};
+type MaticoOutlineViewerProps = RouteComponentProps & {
+    showPanes?: boolean;
+    showTitle?: boolean;
+    panes?: PaneRef[];
+};
 
 export const MaticoOutlineViewer: React.FC = withRouter(
-    ({ history, location }: MaticoOutlineViewerProps) => {
+    ({
+        history,
+        location,
+        showPanes = true,
+        showTitle = true,
+        panes
+    }: MaticoOutlineViewerProps) => {
         // list pages
-        const { pages, reparentPane, changePaneIndex, addPage, updatePageIndex } = useApp();
+        const {
+            pages,
+            reparentPane,
+            changePaneIndex,
+            addPage,
+            updatePageIndex
+        } = useApp();
         const [activeItem, setActiveItem] =
             useState<Page | PaneRef | null>(null);
-        
+
         const handleDrag = throttle(
             (event: DragOverEvent | DragEndEvent, isDragEnd: boolean) => {
                 const { over, active } = event;
                 const isSelf = active.id === over?.id;
                 if (isSelf || !over) return;
-                if (active?.data?.current?.type === "page"){
+                if (active?.data?.current?.type === "page") {
                     const overIndex = over?.data?.current?.sortable?.index;
                     updatePageIndex(active.id as string, overIndex);
                     return;
-                } 
+                }
                 const currentParent = active?.data?.current?.parent;
                 const overParent = over?.data?.current?.parent;
                 const overNewParent =
@@ -119,21 +134,26 @@ export const MaticoOutlineViewer: React.FC = withRouter(
             <DraggingProvider activeItem={activeItem}>
                 <View width="100%" height="auto">
                     <Flex direction="column">
-                        <HoverableRow hideBorder>
-                            <Flex direction="row" alignItems="center">
-                                <Heading marginY="size-0" marginX="size-150">
-                                    Page Outline
-                                </Heading>
-                                <HoverableItem>
-                                    <ActionButton
-                                        onPress={() => addPage({})}
-                                        isQuiet
+                        {showTitle && (
+                            <HoverableRow hideBorder>
+                                <Flex direction="row" alignItems="center">
+                                    <Heading
+                                        marginY="size-0"
+                                        marginX="size-150"
                                     >
-                                        Add Page
-                                    </ActionButton>
-                                </HoverableItem>
-                            </Flex>
-                        </HoverableRow>
+                                        Page Outline
+                                    </Heading>
+                                    <HoverableItem>
+                                        <ActionButton
+                                            onPress={() => addPage({})}
+                                            isQuiet
+                                        >
+                                            Add Page
+                                        </ActionButton>
+                                    </HoverableItem>
+                                </Flex>
+                            </HoverableRow>
+                        )}
                         <DndContext
                             modifiers={[restrictToVerticalAxis]}
                             onDragStart={handleDragStart}
@@ -142,25 +162,32 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                             collisionDetection={collisionDetectionStrategy}
                             sensors={sensors}
                         >
-                            <SortableContext
-                                items={pages.map((page) => page.id)}
-                            >
-                                {pages.map((page) => (
-                                    <PageList key={page.id} page={page} route={{history, location}} />
-                                ))}
-                                {!!activeItem &&
-                                    createPortal(
-                                        <DragOverlay adjustScale={false}>
-                                            <DraggablePane
-                                                activeItem={activeItem}
-                                            />
-                                        </DragOverlay>,
-                                        document.body
-                                    )}
-                            </SortableContext>
+                            {!!panes ? (
+                                <PaneList panes={panes} />
+                            ) : (
+                                <SortableContext
+                                    items={pages.map((page) => page.id)}
+                                >
+                                    {pages.map((page) => (
+                                        <PageList
+                                            key={page.id}
+                                            page={page}
+                                            route={{ history, location }}
+                                            showPanes={showPanes}
+                                        />
+                                    ))}
+                                </SortableContext>
+                            )}
                         </DndContext>
                     </Flex>
                 </View>
+                {!!activeItem &&
+                    createPortal(
+                        <DragOverlay adjustScale={false}>
+                            <DraggablePane activeItem={activeItem} />
+                        </DragOverlay>,
+                        document.body
+                    )}
             </DraggingProvider>
         );
     }

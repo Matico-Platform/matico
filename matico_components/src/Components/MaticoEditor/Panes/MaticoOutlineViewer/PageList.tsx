@@ -34,6 +34,7 @@ interface PageListProps {
     page: Page;
     children?: React.ReactNode;
     route?: RouteComponentProps;
+    showPanes?: boolean;
 }
 
 // const PageListOuter: React.FC<PageListProps> = ({ page, children }) => {
@@ -45,7 +46,7 @@ interface PageListProps {
 // };
 // div style={{ position: "relative", marginTop: "2em", ...style }}
 
-export const PageList: React.FC<PageListProps> = ({ page, route }) => {
+export const PageList: React.FC<PageListProps> = ({ page, route, showPanes=true }) => {
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
     const activeItem = useDraggingContext();
@@ -172,7 +173,7 @@ export const PageList: React.FC<PageListProps> = ({ page, route }) => {
                         </Flex>
                     </DragContainer>
                 </HoverableRow>
-                <PaneList panes={panes} />
+                {showPanes && <PaneList panes={panes} />}
             </ContainerDropTarget>
         </PageProvider>
     );

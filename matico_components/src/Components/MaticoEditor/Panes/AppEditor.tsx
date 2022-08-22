@@ -16,6 +16,7 @@ import { Page } from "@maticoapp/matico_types/spec";
 import { useApp } from "Hooks/useApp";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { ColorPickerDialog } from "../Utils/ColorPickerDialog";
+import { MaticoOutlineViewer } from "./MaticoOutlineViewer";
 
 interface AddPageModalProps {
     onAddPage: (pageName: string) => void;
@@ -138,21 +139,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Pages" isOpen={true}>
-                {pages.map((page: Page) => (
-                    <RowEntryMultiButton
-                        key={page.name}
-                        entryName={page.name}
-                        onRemove={() => removePage(page.id)}
-                        onLower={() => {}}
-                        onRaise={() => {}}
-                        onDuplicate={() => {}}
-                        onSelect={() => setEditPage(page.id)}
-                    />
-                ))}
-                <AddPageModal
-                    validatePageName={validatePageName}
-                    onAddPage={addNewPage}
-                />
+                <MaticoOutlineViewer showPanes={false} />
             </CollapsibleSection>
         </Flex>
     );
