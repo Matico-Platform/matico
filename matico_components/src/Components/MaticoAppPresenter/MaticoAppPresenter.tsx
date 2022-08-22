@@ -15,22 +15,21 @@ import { useRegisterDatasets } from "Hooks/useRegisterDatasets";
 import { useApp } from "Hooks/useApp";
 import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import { useNormalizedSpecSelector } from "Hooks/useNormalizedSpecSelector";
-import { useIsEditable } from "Hooks/useIsEditable";
 import { handleDrag } from "Utils/dragAndResize/handleDrag";
 import {
+    Active,
     DndContext,
     KeyboardSensor,
     MouseSensor,
     TouchSensor,
-    useDroppable,
     useSensor,
     useSensors
 } from "@dnd-kit/core";
 import { coordinateGetter } from "Components/MaticoEditor/EditorComponents/SortableDraggableList/multipleContainersKeyboardCoordinates";
-
-import { DraggingProvider } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/DraggingContext";
 import { layoutCollisionDetection } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/CollisionDetection";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { DragEndEvent } from "@react-types/shared";
+import { setActiveDragItem } from "Stores/editorSlice";
 
 interface MaticoAppPresenterProps {
     spec?: App;
@@ -81,16 +80,15 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     //      }
     //  }, [onStateChange, JSON.stringify(appState)]);
 
-    const isEdit = useIsEditable();
-    const [activeItem, setActiveItem] = React.useState(null);
 
     const { reparentPane, changePaneIndex, updatePageIndex } = useApp();
 
-    const handleDragStart = (event: any) => {
-        setActiveItem(event.active);
+
+    const handleDragStart = ({active}: {active: Active}): void => {
+        // dispatch(setActiveDragItem(active))
     };
 
-    const handleDragEnd = (event: any) => {
+    const handleDragEnd = (event: DragEndEvent) => {
         handleDrag(event, true, updatePageIndex, reparentPane, changePaneIndex);
     };
 
@@ -130,7 +128,6 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                         <MaticoNavBar />
                     </View>
                     <Content gridArea="main">
-                        <DraggingProvider activeItem={activeItem}>
                             <Switch>
                                 {pages.map((page: Page, index: number) => (
                                     !!page?.id && <Route
@@ -157,7 +154,6 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                                     </Route>
                                 ))}
                             </Switch>
-                        </DraggingProvider>
                     </Content>
                 </Grid>
             )}

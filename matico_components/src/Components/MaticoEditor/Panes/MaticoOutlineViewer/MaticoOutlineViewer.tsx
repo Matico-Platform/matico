@@ -24,17 +24,17 @@ import {
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { coordinateGetter } from "../../EditorComponents/SortableDraggableList/multipleContainersKeyboardCoordinates";
-import throttle from "lodash/throttle";
 import { createPortal } from "react-dom";
 import { outlineCollisionDetection } from "./CollisionDetection";
-import { DraggingProvider } from "./DraggingContext";
 import { DraggablePane } from "./DraggablePane";
 import { PageList } from "./PageList";
-import { HoverableItem, HoverableRow } from "./Styled";
+import { HoverableRow } from "./Styled";
 import {
     SortableContext,
 } from "@dnd-kit/sortable";
 import { handleDrag } from "Utils/dragAndResize/handleDrag";
+import { setActiveDragItem } from "Stores/editorSlice";
+import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 
 type MaticoOutlineViewerProps = RouteComponentProps & {};
 
@@ -42,22 +42,21 @@ export const MaticoOutlineViewer: React.FC = withRouter(
     ({ history, location }: MaticoOutlineViewerProps) => {
         // list pages
         const { pages, reparentPane, changePaneIndex, addPage, updatePageIndex } = useApp();
-        const [activeItem, setActiveItem] =
-            useState<Page | PaneRef | null>(null);
-
+        const dispatch = useMaticoDispatch();
+        const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
         //@ts-ignore
-        const handleDragStart = ({ active }) => setActiveItem(active);
-        const handleDragOver = (event: DragOverEvent) => {
-            handleDrag(event, false, updatePageIndex, reparentPane, changePaneIndex)
-        }
+        const handleDragStart = ({ active }) => dispatch(setActiveDragItem(active));
+        // const handleDragOver = (event: DragOverEvent) => {
+        //     handleDrag(event, false, updatePageIndex, reparentPane, changePaneIndex)
+        // }
         const handleDragEnd = (event: DragEndEvent) => {
             handleDrag(event, true, updatePageIndex, reparentPane, changePaneIndex);
-            setActiveItem(null);
+            dispatch(setActiveDragItem(null));
         };
 
         const collisionDetectionStrategy: CollisionDetection = useCallback(
             outlineCollisionDetection,
-            [activeItem, JSON.stringify(pages)]
+            [activeItem?.id, JSON.stringify(pages)]
         );
 
         const sensors = useSensors(
@@ -68,7 +67,6 @@ export const MaticoOutlineViewer: React.FC = withRouter(
             })
         );
         return (
-            <DraggingProvider activeItem={activeItem}>
                 <View width="100%" height="auto">
                     <Flex direction="column">
                         <HoverableRow hideBorder>
@@ -113,7 +111,6 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                         </DndContext>
                     </Flex>
                 </View>
-            </DraggingProvider>
         );
     }
 );

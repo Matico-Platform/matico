@@ -20,13 +20,13 @@ import {
     DragButton,
     DragContainer
 } from "./Styled";
-import { useDraggingContext } from "./DraggingContext";
 import { PaneList } from "./PaneList";
 import { useSortable } from "@dnd-kit/sortable";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
 import { RouteComponentProps } from "react-router-dom";
 import { PageProvider } from "./PageContext";
 import { ContainerDropTarget } from "./ContainerDropTarget";
+import { useMaticoSelector } from "Hooks/redux";
 interface PageListProps {
     page: Page;
     children?: React.ReactNode;
@@ -36,8 +36,8 @@ interface PageListProps {
 export const PageList: React.FC<PageListProps> = ({ page, route }) => {
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
-    const activeItem = useDraggingContext();
-    const depth = 0;
+    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
+     const depth = 0;
     const { isOver, setNodeRef } = useDroppable({
         id,
         data: {

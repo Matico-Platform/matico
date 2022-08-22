@@ -8,8 +8,8 @@ import {
 } from "@dnd-kit/core";
 import { ParentProvider } from "Hooks/useParentContext";
 import styled from "styled-components";
-import { useDraggingContext } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/DraggingContext";
 import { ContainerDropTarget } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/ContainerDropTarget";
+import { useMaticoSelector } from "Hooks/redux";
 interface MaticoPageInterface {
     pageId: string;
 }
@@ -34,7 +34,8 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
             depth: 0
         }
     });
-    const activeItem = useDraggingContext();
+    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
+    
     const showDropZone = // @ts-ignore
         !!activeItem && activeItem?.data?.current?.type !== "page";
     if (!page) {

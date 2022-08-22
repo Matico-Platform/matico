@@ -11,6 +11,7 @@ import ArrowRight from "@spectrum-icons/workflow/ArrowRight";
 import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { InternalSpecProvider, useInternalSpec } from "Hooks/useInteralSpec";
+import { useMaticoSelector } from "Hooks/redux";
 
 const FreeArea = styled.div`
     position: relative;
@@ -266,6 +267,11 @@ const FreeDraggableActionWrapper: React.FC<{
         onResizeEnd
     });
 
+    const currentEditElement = useMaticoSelector(
+        ({ spec }) => spec.currentEditElement
+    );
+    const isEditedPane = currentEditElement?.id === paneRef.id;
+
     return (
         <FreeContainer
             ref={setNodeRef}
@@ -289,7 +295,10 @@ const FreeDraggableActionWrapper: React.FC<{
                     {...attributes}
                     ref={setActivatorNodeRef}
                     style={{
-                        zIndex: 10
+                        zIndex: 10,
+                        opacity: isEditedPane ? 1 : 0,
+                        transition: "opacity 0.2s ease-in-out",
+                        pointerEvents: isEditedPane ? "all" : "none"
                     }}
                     aria-label="Drag Pane"
                 >
@@ -300,7 +309,10 @@ const FreeDraggableActionWrapper: React.FC<{
                         position: "absolute",
                         right: 0,
                         bottom: 0,
-                        zIndex: 10
+                        zIndex: 10,
+                        opacity: isEditedPane ? 1 : 0,
+                        transition: "opacity 0.2s ease-in-out",
+                        pointerEvents: isEditedPane ? "all" : "none"
                     }}
                     onMouseDown={startResize}
                     aria-label="Resize Pane"

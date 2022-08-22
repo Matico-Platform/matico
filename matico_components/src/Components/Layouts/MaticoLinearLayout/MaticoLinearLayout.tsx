@@ -13,13 +13,15 @@ import { usePane } from "Hooks/usePane";
 import { ResizableDimensions, useResizable } from "Hooks/useResizable";
 import { ParentProvider, useParentContext } from "Hooks/useParentContext";
 import styled from "styled-components";
-import Resize from "@spectrum-icons/workflow/Resize";
+import ArrowRight from "@spectrum-icons/workflow/ArrowRight";
+import ArrowDown from "@spectrum-icons/workflow/ArrowDown";
 import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import MoveLeftRight from "@spectrum-icons/workflow/MoveLeftRight";
 import MoveUpDown from "@spectrum-icons/workflow/MoveUpDown";
 import { InternalSpecProvider, useInternalSpec } from "Hooks/useInteralSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
+import { useMaticoSelector } from "Hooks/redux";
 
 type UnitTree = {
     [position: string]: {
@@ -197,6 +199,32 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
         onResizeEnd
     });
 
+    const currentEditElement = useMaticoSelector(
+        ({ spec }) => spec.currentEditElement
+    );
+    const isEditedPane = currentEditElement?.id === paneRef.id;
+
+    const buttonPositionStyle =
+        direction === "row"
+            ? {
+                  position: "absolute",
+                  right: 0,
+                  bottom: "50%",
+                  transform: "translate(0, 50%)"
+              }
+            : {
+                  position: "absolute",
+                  right: "50%",
+                  bottom: 0,
+                  transform: "translate(50%, 0)"
+              };
+    const buttonVisibilityStyle = {
+        opacity: isEditedPane ? 1 : 0,
+        transition: "opacity 0.2s ease-in-out",
+        pointerEvents: isEditedPane ? "all" : "none"
+    }
+    const ArrowEl = direction === "row" ? ArrowRight : ArrowDown;
+
     return (
         <LinearContainer
             ref={setNodeRef}
@@ -217,39 +245,24 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
                 {children}
 
                 <button
-                    style={
-                        direction === "row"
-                            ? {
-                                  position: "absolute",
-                                  right: 0,
-                                  bottom: "50%",
-                                  transform: "translate(0, 50%)"
-                              }
-                            : {
-                                  position: "absolute",
-                                  right: "50%",
-                                  bottom: 0,
-                                  transform: "translate(50%, 0)"
-                              }
-                    }
+                    // @ts-ignore
+                    style={{
+                        ...buttonPositionStyle,
+                        ...buttonVisibilityStyle
+                    }}
                     onMouseDown={startResize}
                     aria-label="Resize Pane"
                 >
-                    <Resize
-                        color="positive"
-                        UNSAFE_style={{
-                            transform: `rotate(${
-                                direction === "row" ? 45 : 135
-                            }deg)`
-                        }}
-                    />
+                    <ArrowEl color="positive" />
                 </button>
-                <button
+                <button 
+                    // @ts-ignore
                     style={{
                         position: "absolute",
                         top: 0,
                         left: "50%",
-                        transform: "translate(-50%, 0)"
+                        transform: "translate(-50%, 0)",
+                        ...buttonVisibilityStyle
                     }}
                     ref={setActivatorNodeRef}
                     {...attributes}
@@ -306,8 +319,11 @@ const LinearPane: React.FC<{
                 selectPane,
                 updatePanePosition,
                 parent,
-                direction: ["row", "column"].includes(direction) ? direction : 'column',
-                allowOverflow: allowOverflow !== undefined ? allowOverflow : true
+                direction: ["row", "column"].includes(direction)
+                    ? direction
+                    : "column",
+                allowOverflow:
+                    allowOverflow !== undefined ? allowOverflow : true
             }}
         >
             <Wrapper>

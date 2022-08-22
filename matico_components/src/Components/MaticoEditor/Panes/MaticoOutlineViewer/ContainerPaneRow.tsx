@@ -10,15 +10,16 @@ import {
 import { PaneRow } from "./PaneRow";
 import { PaneList } from "./PaneList";
 import { usePane } from "Hooks/usePane";
-import { useDraggingContext } from "./DraggingContext";
 import { ContainerDropTarget } from "./ContainerDropTarget";
+import { useMaticoSelector } from "Hooks/redux";
 
 export const ContainerPaneRow: React.FC<{
     rowPane: PaneRef;
     depth: number;
 }> = ({ rowPane, depth }) => {
     const { pane } = usePane(rowPane);
-    const activeItem = useDraggingContext();
+    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
+    
     const { addPaneToContainer } = useContainer(rowPane);
     const { panes } = pane as ContainerPane;
     const { isOver, setNodeRef } = useDroppable({

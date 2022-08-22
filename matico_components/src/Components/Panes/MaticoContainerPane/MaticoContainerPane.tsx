@@ -7,7 +7,7 @@ import { Layout, PaneRef } from "@maticoapp/matico_types/spec";
 import { useDroppable } from "@dnd-kit/core";
 import { usePane } from "Hooks/usePane";
 import { ContainerDropTarget } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/ContainerDropTarget";
-import { useDraggingContext } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/DraggingContext";
+import { useMaticoSelector } from "Hooks/redux";
 
 export interface MaticoContainerPaneInterface extends MaticoPaneInterface {
     title?: string;
@@ -33,7 +33,8 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
             type: "container"
         }
     });
-    const activeItem = useDraggingContext();
+
+    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
     const showDropZone = // @ts-ignore
         !!activeItem && activeItem?.data?.current?.type !== "page";
 
