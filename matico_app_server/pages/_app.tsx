@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps: {session,...pageProps} }: AppProps) {
   return(
     <SessionProvider session={pageProps.session}>
       <SSRProvider>
-        <Provider theme={darkTheme}>
+        <Provider theme={darkTheme} colorScheme="dark">
           <Component {...pageProps} />
       </Provider>
     </SSRProvider>
