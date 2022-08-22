@@ -141,6 +141,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                         theme={darkTheme}
                         width="100%"
                         height="100%"
+                        colorScheme="dark" // todo: gracefully handle light mode
                     >
                         <Grid
                             {...{ columns, rows, areas }}
