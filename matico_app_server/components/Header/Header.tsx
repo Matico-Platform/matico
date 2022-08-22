@@ -78,8 +78,7 @@ export const Header: React.FC<{
             gap="size-450"
             alignItems="center"
             justifySelf="flex-end"
-            UNSAFE_style={{
-            }}
+            UNSAFE_style={{}}
           >
             {!!session && !!createNewApp && (
               <ActionButton
@@ -101,7 +100,11 @@ export const Header: React.FC<{
               target={"_blank"}
               rel="noopener noreferrer"
             >
-              <a target={"_blank"} rel="noopener noreferrer">
+              <a
+                target={"_blank"}
+                rel="noopener noreferrer"
+                style={{ color: "white" }}
+              >
                 Docs
               </a>
             </Link>
@@ -110,7 +113,11 @@ export const Header: React.FC<{
               target={"_blank"}
               rel="noopener noreferrer"
             >
-              <a target={"_blank"} rel="noopener noreferrer">
+              <a
+                target={"_blank"}
+                rel="noopener noreferrer"
+                style={{ color: "white" }}
+              >
                 Github
               </a>
             </Link>

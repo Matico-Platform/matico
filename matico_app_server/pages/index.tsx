@@ -23,7 +23,7 @@ import { userFromSession } from "../utils/db";
 import { useNotifications } from "../hooks/useNotifications";
 import { Header } from "../components/Header/Header";
 import styled from "styled-components";
-import { useMediaQuery } from 'react-responsive'
+import { useMediaQuery } from "react-responsive";
 
 import { prisma } from "../db";
 import { Login } from "../components/Login/Login";
@@ -91,7 +91,7 @@ const TextStyles = styled.span`
   h1 {
     font-size: 10rem;
     line-height: 1;
-    @media (max-width: 1440px){
+    @media (max-width: 1440px) {
       font-size: 8rem;
     }
     @media (max-width: 1024px) {
@@ -104,7 +104,7 @@ const TextStyles = styled.span`
       font-size: 3.5rem;
     }
   }
-`
+`;
 const HeroImgOuter = styled.div`
   position: absolute;
   max-width: 50vw;
@@ -149,8 +149,8 @@ const Home: React.FC<HomePageProps> = ({
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const { notify, NotificationElement } = useNotifications();
   const isMobile = useMediaQuery({
-    query: '(max-width: 768px)'
-  })
+    query: "(max-width: 768px)",
+  });
 
   const { apps: recentApps } = useApps(
     { public: true, order: "updatedAt" },
@@ -198,9 +198,7 @@ const Home: React.FC<HomePageProps> = ({
         overflow: "hidden",
       }}
     >
-      <Header 
-        createNewApp={createNewApp}
-      />
+      <Header createNewApp={createNewApp} />
       {session ? (
         <>
           <Flex
@@ -262,33 +260,34 @@ const Home: React.FC<HomePageProps> = ({
             height="100vh"
           >
             <TextStyles>
-            <Heading
-              level={1}
-            >
-              Your platform for geospatial data &amp; analysis.
-            </Heading>
-            <Flex
-              direction={isMobile ? "column" : "row"}
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-            >
-              <Heading level={2}>
-                Communicate insights. Manage data. All without a line of code.
+              <Heading level={1}>
+                Your platform for geospatial data &amp; analysis.
               </Heading>
-              <Flex direction="row" gap="size-450" 
-              alignItems="center"
-              justifyContent="space-between">
-                <Login />
-                <Link
-                  href="http://matico.app"
-                  target={"_blank"}
-                  rel="noopener noreferrer"
+              <Flex
+                direction={isMobile ? "column" : "row"}
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+              >
+                <Heading level={2} UNSAFE_style={{paddingRight:'2em'}}>
+                  Communicate insights. Manage data. All without a line of code.
+                </Heading>
+                <Flex
+                  direction="row"
+                  gap="size-450"
+                  alignItems="center"
+                  justifyContent="space-between"
                 >
-                  <a>Learn More</a>
-                </Link>
+                  <Login />
+                  <Link
+                    href="http://matico.app"
+                    target={"_blank"}
+                    rel="noopener noreferrer"
+                  >
+                      <a style={{color:'white'}}>Learn More</a>
+                  </Link>
+                </Flex>
               </Flex>
-            </Flex>
             </TextStyles>
           </Flex>
         </>
