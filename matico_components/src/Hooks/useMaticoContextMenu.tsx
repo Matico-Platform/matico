@@ -99,6 +99,17 @@ const getDirectionText = (
                 lowerToBackIcon: LayersBringToFront,
             };
         }
+    } else if (layoutType === "tabs") {
+        return {
+            raise: "Move right",
+            raiseIcon: ChevronRight,
+            raiseToFront: "Send to end",
+            raiseToFrontIcon: ChevronDoubleRight,
+            lower: "Move left",
+            lowerIcon: ChevronLeft,
+            lowerToBack: "Bring to start",
+            lowerToBackIcon:ChevronDoubleLeft,
+        }
     }
     return {
         raise: "Move down",
