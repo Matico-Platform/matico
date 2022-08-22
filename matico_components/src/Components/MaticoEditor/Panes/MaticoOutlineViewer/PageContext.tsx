@@ -17,6 +17,6 @@ export const PageProvider: React.FC<{
 
 export const usePageContext = () => {
     const ctx = React.useContext(PageContext);
-    if (ctx === undefined) throw Error("Not wrapped in <DraggingProvider />.");
+    if (ctx === undefined) throw Error("Not wrapped in <PageContext />.");
     return ctx;
 };

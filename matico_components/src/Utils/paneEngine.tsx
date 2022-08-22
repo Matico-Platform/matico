@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { forwardRef, useLayoutEffect, useState } from "react";
 import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
 import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoHistogramPane } from "Components/Panes/MaticoHistogramPane/MaticoHistogramPane";
@@ -8,7 +8,6 @@ import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoCo
 import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
 import { Pane } from "Components/Panes/Pane";
 import { PaneRef } from "@maticoapp/matico_types/spec";
-import { usePane } from "Hooks/usePane";
 import { MaticoStaticMapPane } from "Components/Panes/MaticoStaticMapPane/MaticoStaticMapPane";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { useMaticoSelector } from "Hooks/redux";
@@ -39,27 +38,16 @@ const Wrapper = styled.button<{ interactive?: boolean; isHovered?: boolean }>`
     background: none;
     width: 100%;
     height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
     box-sizing: border-box;
     transition:125ms all;
     outline: ${({ isHovered }) =>
         isHovered
             ? "4px solid var(--spectrum-global-color-chartreuse-500)"
-            : "none"};
-    /* padding: -4px; */
-    /* &:after {
-        box-sizing: border-box;
-        content: "";
-        display: block;
-        clear: both;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        border: 2px solid rgba(0, 0, 0, 0);
-        transition: border 125ms;
-    } */
+            : "4px solid rgba(0,0,0,0)"};
+    z-index: 4;
     pointer-events: ${({ interactive }) => (interactive ? "all" : "none")};
     cursor: ${({ interactive }) => (interactive ? "pointer" : "default")};
     * {
@@ -71,8 +59,7 @@ const SelectorWrapper: React.FC<{
     paneRef: PaneRef;
     selectPane: () => void;
     normalizedPane: any;
-    children?: React.ReactNode;
-}> = ({ paneRef, selectPane, normalizedPane, children }) => {
+}> = forwardRef(({ paneRef, selectPane, normalizedPane }, ref) => {
     const { setHovered } = useEditorActions(paneRef.id);
     const currentHoveredRef = useMaticoSelector(
         (state) => state.editor.hoveredRef
@@ -97,53 +84,66 @@ const SelectorWrapper: React.FC<{
 
     return (
         <Wrapper
+            // @ts-ignore
+            ref={ref}
             onClick={handleClick}
             onMouseEnter={handleHover}
             onMouseLeave={handleMouseLeave}
             interactive={isInteractive}
             isHovered={isSelectedPane}
-        >
-            {children}
-        </Wrapper>
+        />
     );
-};
+});
 
-export const PaneSelector: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
-    const paneType = paneRef.type;
-    const { normalizedPane, updatePane, selectPane } = usePane(paneRef);
+export const PaneSelector: React.FC<{
+    paneRef: PaneRef;
+    paneType: string;
+    normalizedPane: any;
+    updatePane: (update: any) => void;
+    selectPane: () => void;
+}> = ({ paneRef, paneType, normalizedPane, updatePane, selectPane }) => {
     const isEdit = useIsEditable();
     const currentEditElement = useMaticoSelector(
         ({ spec }) => spec.currentEditElement
     );
     const [editComponent, setEditComponent] = useState<boolean>(false);
-    
+
     useLayoutEffect(() => {
         const isCurrentEditElement = currentEditElement?.id === paneRef.id;
-        if (isEdit && isCurrentEditElement && panes?.[paneType]?.['editablePane']) {
-            setEditComponent(true)        
+        if (
+            isEdit &&
+            isCurrentEditElement &&
+            panes?.[paneType]?.["editablePane"]
+        ) {
+            setEditComponent(true);
         } else {
-            setEditComponent(false)
-        } 
-    },[isEdit && currentEditElement?.id])
+            setEditComponent(false);
+        }
+    }, [isEdit && currentEditElement?.id]);
 
-    const PaneComponent = panes?.[paneType]?.['editablePane'] && editComponent ? panes[paneType]['editablePane'] : panes?.[paneType]?.['pane'] || fallbackPanes[paneType];
-
-    const WrapperComponent = isEdit ? SelectorWrapper : React.Fragment;
+    const PaneComponent =
+        panes?.[paneType]?.["editablePane"] && editComponent
+            ? panes[paneType]["editablePane"]
+            : panes?.[paneType]?.["pane"] || fallbackPanes[paneType];
 
     if (!PaneComponent || !normalizedPane) return null;
 
     return (
-        <WrapperComponent
-            paneRef={paneRef}
-            selectPane={selectPane}
-            normalizedPane={normalizedPane}
-        >
+        <>
             <PaneComponent
                 key={normalizedPane.id}
                 position={paneRef.position}
                 {...normalizedPane}
+                paneRef={paneRef}
                 updatePane={updatePane}
             />
-        </WrapperComponent>
+            {isEdit && (
+                <SelectorWrapper
+                    paneRef={paneRef}
+                    selectPane={selectPane}
+                    normalizedPane={normalizedPane}
+                />
+            )}
+        </>
     );
 };

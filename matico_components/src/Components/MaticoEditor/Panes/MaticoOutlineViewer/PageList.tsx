@@ -8,7 +8,6 @@ import {
     Flex,
     Heading,
     Text,
-    View
 } from "@adobe/react-spectrum";
 import { Page } from "@maticoapp/matico_types/spec";
 import { usePage } from "Hooks/usePage";
@@ -19,37 +18,26 @@ import {
     HoverableRow,
     HoverableItem,
     DragButton,
-    DraggableContainer,
     DragContainer
 } from "./Styled";
-import { useDraggingContext } from "./DraggingContext";
-import { ContainerDropTarget } from "./Styled";
 import { PaneList } from "./PaneList";
 import { useSortable } from "@dnd-kit/sortable";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
-import styled from "styled-components";
 import { RouteComponentProps } from "react-router-dom";
 import { PageProvider } from "./PageContext";
+import { ContainerDropTarget } from "./ContainerDropTarget";
+import { useMaticoSelector } from "Hooks/redux";
 interface PageListProps {
     page: Page;
     children?: React.ReactNode;
     route?: RouteComponentProps;
 }
 
-// const PageListOuter: React.FC<PageListProps> = ({ page, children }) => {
-
-//     return (
-//             {children}
-//         </HoverableRow>
-//     );
-// };
-// div style={{ position: "relative", marginTop: "2em", ...style }}
-
 export const PageList: React.FC<PageListProps> = ({ page, route }) => {
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
-    const activeItem = useDraggingContext();
-    const depth = 0;
+    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
+     const depth = 0;
     const { isOver, setNodeRef } = useDroppable({
         id,
         data: {
@@ -102,7 +90,6 @@ export const PageList: React.FC<PageListProps> = ({ page, route }) => {
                 ref={setNodeRef}
                 active={showDropZone}
                 isOver={isOver}
-                depth={depth}
             >
                 <HoverableRow
                     ref={setSortableNodeRef}
@@ -120,11 +107,6 @@ export const PageList: React.FC<PageListProps> = ({ page, route }) => {
                                         <DragHandle color="positive" />
                                     </DragButton>
                                 </HoverableItem>
-                                {/* <Button
-                                variant="primary"
-                                onPress={handlePageButtonClick}
-                                isQuiet
-                            > */}
                                 <Text
                                     UNSAFE_style={{
                                         padding: "0 .5em",
@@ -133,7 +115,6 @@ export const PageList: React.FC<PageListProps> = ({ page, route }) => {
                                 >
                                     {pageName}
                                 </Text>
-                                {/* </Button> */}
                             </Flex>
                             <HoverableItem>
                                 <Flex direction="row">

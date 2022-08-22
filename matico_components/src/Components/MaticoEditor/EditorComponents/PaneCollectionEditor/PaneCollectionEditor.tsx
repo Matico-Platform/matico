@@ -46,7 +46,7 @@ export const PaneCollectionEditor: React.FC<PaneCollectionEditorProps> = ({
     return (
         <Flex gap={"size-200"} width="100%" direction="column">
             {paneRefs.map((paneRef: PaneRef, index: number) => (
-              <PaneRefButton paneRef={paneRef} />
+              <PaneRefButton paneRef={paneRef} key={index} />
             ))}
             <NewPaneDialog onAddPane={(pane: Pane) => addPaneToContainer(pane)} />
         </Flex>
