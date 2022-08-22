@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import _ from "lodash";
 // import "react-mde/lib/styles/css/react-mde-all.css";
 import {
@@ -28,6 +28,12 @@ export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
 
     const { iconList, filterText, setFilterText, loadMoreIcons } =
         useIconList();
+
+    useEffect(() => {
+        if (page) {
+            setFilterText(page?.icon?.split(' fa-')?.slice(-1)?.[0]?.replace(/-/g, ' ') || '');
+        }
+    },[page?.icon]);
 
     if (!page) {
         return (

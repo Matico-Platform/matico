@@ -39,7 +39,7 @@ export const useApp = () => {
                     id: uuidv4(),
                     layout: { type: "free", allowOverflow:false },
                     panes: [],
-                    icon: pages.length === 0 ? "fa faHome" : "fa faPage",
+                    icon: pages.length === 0 ? "fas fa-home" : "fas fa-newspaper",
                     path: pages.length === 0 ? "/" : `/page_${pages.length}`,
                     ...page
                 }
