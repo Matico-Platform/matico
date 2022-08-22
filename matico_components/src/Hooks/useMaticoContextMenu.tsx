@@ -295,7 +295,7 @@ export const useMaticoContextMenu = ({
     }, [type, id]);
 
     const ContextMenu = () =>
-        createPortal(<Menu id={id}>{contextMenuInner}</Menu>, document.body);
+        createPortal(<Menu id={id} theme="dark" animation="none">{contextMenuInner}</Menu>, document.body);
 
     return {
         ContextMenu,
