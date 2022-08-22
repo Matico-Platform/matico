@@ -17,7 +17,8 @@ export const DraggablePane: React.FC<{
                 UNSAFE_style={{
                     textOverflow: "ellipsis",
                     overflowX: "hidden",
-                    whiteSpace: "nowrap"
+                    whiteSpace: "nowrap",
+                    color:"white"
                 }}
             >
                 {name}

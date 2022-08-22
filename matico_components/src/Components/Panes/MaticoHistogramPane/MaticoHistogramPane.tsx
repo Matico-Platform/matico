@@ -13,6 +13,7 @@ import {useErrorsFor} from "Hooks/useErrors";
 import {MaticoErrorType} from "Stores/MaticoErrorSlice";
 import {HistogramEntry} from "@maticoapp/matico_types/api";
 import {LoadingSpinner} from "Components/MaticoEditor/EditorComponents/LoadingSpinner/LoadingSpinner";
+import {v4 as uuid} from 'uuid'
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
     dataset: { name: string; filters: Array<Filter> };
@@ -35,17 +36,20 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     const [view, setView] = useState({});
     const {errors, throwError, clearErrors} = useErrorsFor(id, MaticoErrorType.PaneError)
 
+    const rangeVariableId = useMemo(() => uuid(),[])
+
     const [
         columnFilter,
         updateFilter
-        //@ts-ignore
     ] = useAutoVariable({
-        //@ts-ignore
-        name: `${column}_range`,
-        //@ts-ignore
-        type: "NoSelection",
-        initialValue: {
-            type: "NoSelection"
+        variable:{
+          id: rangeVariableId,
+          paneId: id,
+          name: `${column}_range`,
+          value:{
+            type: "range",
+            value: "NoSelection"
+          }
         },
         bind: true
     });
@@ -113,14 +117,15 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
                     updateFilter(
                         x0 === x1
                             ? {
-                                  type: "NoSelection",
-                                  variable: column
+                                type:"range",
+                                value: "NoSelection"
                               }
                             : {
-                                  type: "SelectionRange",
-                                  variable: column,
-                                  min: x0,
-                                  max: x1
+                                  type: "range",
+                                  value:{
+                                    min: x0,
+                                    max: x1
+                                  }
                               }
                     )
                 }

@@ -10,6 +10,7 @@ import { View } from "@adobe/react-spectrum";
 import { Layer, MapControls} from "@maticoapp/matico_types/spec";
 import {MapboxOverlayProps, MapboxOverlay} from "@deck.gl/mapbox/typed"
 import maplibregl from 'maplibre-gl';
+import {v4 as uuid} from 'uuid';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { SelectionOptions } from "@maticoapp/matico_types/spec";
@@ -82,26 +83,33 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             mapLayers[l.id]
         )).filter(a=>a), [layers, mapLayers])
 
+    const mapViewVariableId = useMemo(()=> uuid(),[])
+
     const [currentView, updateView] = useAutoVariable({
-        //@ts-ignore
-        name: view.var ? view.var : `${name}_map_loc`,
-        //@ts-ignore
-        type: view.var ? undefined : "mapLocVar",
-        //@ts-ignore
-        initialValue: view.var ? undefined : view,
-        //@ts-ignore
-        bind: view.var ? view.bind : true
+        variable:{
+          name: "CurrentMapView",
+          id: mapViewVariableId,
+          paneId: id,
+          value:{
+            type:"mapview",
+            value: view
+          },
+        },
+        bind:true
     });
 
-    //TODO clean this up and properly type
     const updateViewState = debounce((viewStateUpdate: any) => {
         const viewState = viewStateUpdate.viewState;
+        //@ts-ignore not 100% sure what the type issue here is, seems to thing it can be either a Variable or an update function for a variable.
         updateView({
-            lat: viewState.latitude,
-            lng: viewState.longitude,
-            zoom: viewState.zoom,
-            pitch: viewState.pitch,
-            bearing: viewState.bearing
+            type:"mapview",
+            value:{
+              lat: viewState.latitude,
+              lng: viewState.longitude,
+              zoom: viewState.zoom,
+              pitch: viewState.pitch,
+              bearing: viewState.bearing
+            }
         });
     }, 500);
 
@@ -116,8 +124,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     }
 
 
-    console.log("mls ", mls)
-
     // const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
     // if (selectionLayer){
     //     mls.push(selectionLayer) 
@@ -125,7 +131,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
 
     return (
         <View key={id} position="relative" overflow="hidden" width="100%" height="100%">
-            {currentView && (
+            {currentView && currentView.type === "mapview" && (
                     <> 
                     <Map
                         mapLib={maplibregl}
@@ -137,10 +143,12 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         onPitch={updateViewState}
                         onRotate={updateViewState}
                         initialViewState={{
-                            latitude: currentView.lat,
-                            longitude: currentView.lng,
-                            zoom: currentView.zoom,
-                            ...currentView
+                            latitude: currentView.value.lat,
+                            longitude: currentView.value.lng,
+                            zoom: currentView.value.zoom,
+                            bearing: currentView.value.bearing,
+                            pitch: currentView.value.pitch,
+
                         }}
                             mapboxAccessToken={
                                accessToken 
@@ -179,7 +187,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             source={l.source}
                             style={l.style}
                             onUpdate={(update)=>updateLayer(l.id, update)}
-                            mapName={name}
+                            mapPaneId={id}
                             beforeId={l.style.beforeId}
                         />
                     ))}

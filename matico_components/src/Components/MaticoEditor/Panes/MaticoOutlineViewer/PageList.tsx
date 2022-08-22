@@ -88,7 +88,6 @@ export const PageList: React.FC<PageListProps> = ({ page, route }) => {
         !onPage && route?.history.push(page.path);
     };
     const handlePageButtonClick = () => {
-        console.log('NAVIGATING TO PAGE')
         navigateToPage();
         selectPage();
     };
@@ -106,7 +105,7 @@ export const PageList: React.FC<PageListProps> = ({ page, route }) => {
             >
                 <HoverableRow
                     ref={setSortableNodeRef}
-                    style={{ ...style, marginTop: "1em" }}
+                    style={{ ...style, marginTop: "1em", color:"white" }}
                 >
                     <DragContainer onClick={handlePageButtonClick}>
                         <Flex direction="row" justifyContent="space-between">
@@ -128,7 +127,8 @@ export const PageList: React.FC<PageListProps> = ({ page, route }) => {
                                 <Text
                                     UNSAFE_style={{
                                         padding: "0 .5em",
-                                        fontWeight: "bold"
+                                        fontWeight: "bold",
+                                        color:"white"
                                     }}
                                 >
                                     {pageName}

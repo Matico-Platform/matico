@@ -15,19 +15,18 @@ import {
     generateColorVar,
     generateNumericVar
 } from "./LayerUtils";
-import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
 import { MVTLayer, TileLayer } from "deck.gl";
 import { Filter } from "@maticoapp/matico_types/spec";
-import {updateLayer} from "@deck.gl/mapbox/deck-utils";
+import {v4 as uuid } from 'uuid'
 
 interface MaticoLayerInterface {
     name: string;
     source: { name: string; filters?: Array<Filter> };
     style: any;
     onUpdate: (layerState: any) => void;
-    mapName: string;
+    mapPaneId: string
     beforeId?: string;
 }
 
@@ -35,7 +34,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     source,
     style,
     name,
-    mapName,
+    mapPaneId,
     onUpdate,
     beforeId
 }) => {
@@ -43,19 +42,29 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         (state) => state.datasets.datasets[source.name]
     );
 
-    const [hoverVariable, updateHoverVariable] = useAutoVariable({
-        name: `${mapName}_map_${name}_hover`,
-        type: "any",
-        initialValue: null,
+    const hoverFeatureId = useMemo(()=>uuid(),[])
+    const clickFeatureId = useMemo(()=>uuid(),[])
+    const [hoverVariable, updateHoverVariable] = useAutoVariable({ variable:{
+        name: `${name}_hover_feature`,
+        id: hoverFeatureId,
+        paneId: mapPaneId,
+        value: {
+          type:"geofeature",
+          value: "NoSelection"
+        }
+    },
         bind: true
-    } as AutoVariableInterface);
+    });
 
-    const [clickVariable, updateClickVariable] = useAutoVariable({
-        name: `${mapName}_map_${name}_click`,
-        type: "any",
-        initialValue: null,
-        bind: true
-    } as AutoVariableInterface);
+    const [clickVariable, updateClickVariable] = useAutoVariable({ variable:{
+        name: `${name}_click`,
+        id: clickFeatureId,
+        paneId: mapPaneId,
+        value:{
+          type : "geofeature",
+          value: "NoSelection"
+        },
+    },bind:true });
 
     let requiredCols: Array<string> = [];
     traverse(style).forEach(function (node: any) {
@@ -189,9 +198,14 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             opacity,
             visible,
             onHover: (hoverTarget: { object: Record<string, unknown> }) =>
-                updateHoverVariable(hoverTarget.object),
+              updateHoverVariable({
+                type: "geofeature",
+                value: hoverTarget.object ?? "NoSelection"
+            }),
             onClick: (clickTarget: { object: Record<string, unknown> }) =>
-                updateClickVariable(clickTarget.object),
+              updateClickVariable({
+              type: "geofeature",
+              value: clickTarget.object ?? "NoSelection"}),
             pickable: true,
             id: name,
             beforeId: beforeId,

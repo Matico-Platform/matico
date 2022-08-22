@@ -5,12 +5,13 @@ import _, {update} from "lodash";
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { useRequestColumnStats } from "./useRequestColumnStat";
 import {updateNormalizedSpec} from "Stores/MaticoSpecSlice";
+import {Variable} from "@maticoapp/matico_types/spec"
 
 const getRequiredVariableList = (struct: any) => {
-    const requiredVariables: Array<string> = [];
+    const requiredVariables: Array<Variable> = [];
     traverse(struct).forEach((node: any) => {
-        if (node && node.var) {
-            requiredVariables.push(node.var.split(".")[0]);
+        if (node && "varId" in node) {
+            requiredVariables.push({varId: node.varId, property: node.property});
         }
     });
     return requiredVariables;
