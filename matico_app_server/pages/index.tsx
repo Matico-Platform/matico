@@ -89,7 +89,7 @@ const AppsTable = styled.table`
 
 const TextStyles = styled.span`
   h1 {
-    font-size: 10rem;
+    font-size: 9vw;
     line-height: 1;
     @media (max-width: 1440px) {
       font-size: 8rem;
@@ -105,41 +105,41 @@ const TextStyles = styled.span`
     }
   }
 `;
-const HeroImgOuter = styled.div`
-  position: absolute;
-  max-width: 50vw;
-  max-height: 50vh;
-  top: 35%;
-  right: 0;
-`;
+// const HeroImgOuter = styled.div`
+//   position: absolute;
+//   max-width: 50vw;
+//   max-height: 50vh;
+//   top: 35%;
+//   right: 0;
+// `;
 
-const HeroImg = styled.div`
-  position: relative;
-  img {
-    width: 100%;
+// const HeroImg = styled.div`
+//   position: relative;
+//   img {
+//     width: 100%;
 
-    filter: contrast(2.16) grayscale(0.83) hue-rotate(237deg) invert(0.37)
-      saturate(0.62);
-  }
+//     filter: contrast(2.16) grayscale(0.83) hue-rotate(237deg) invert(0.37)
+//       saturate(0.62);
+//   }
 
-  :after {
-    position: absolute;
-    content: "";
-    display: block;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
+//   :after {
+//     position: absolute;
+//     content: "";
+//     display: block;
+//     top: 0;
+//     left: 0;
+//     height: 100%;
+//     width: 100%;
 
-    background: linear-gradient(
-      to left,
-      rgba(0, 0, 0, 0.4) 0%,
-      rgba(255, 255, 255, 0.4) 100%
-    );
+//     background: linear-gradient(
+//       to left,
+//       rgba(0, 0, 0, 0.4) 0%,
+//       rgba(255, 255, 255, 0.4) 100%
+//     );
 
-    mix-blend-mode: multiply;
-  }
-`;
+//     mix-blend-mode: multiply;
+//   }
+// `;
 const Home: React.FC<HomePageProps> = ({
   user,
   initalRecentApps,
@@ -187,7 +187,7 @@ const Home: React.FC<HomePageProps> = ({
   return (
     <Content
       minHeight={"100vh"}
-      maxHeight={"100vh"}
+      maxHeight={session ? undefined : "100vh"}
       UNSAFE_style={{
         width: "100%",
         height: "100%",
@@ -195,7 +195,7 @@ const Home: React.FC<HomePageProps> = ({
           ? "linear-gradient(to top left, #793169, #282848)"
           : "linear-gradient(to top left, #282848, #793169)",
         transition: "250ms background",
-        overflow: "hidden",
+        overflow: session ? undefined : "hidden",
       }}
     >
       <Header createNewApp={createNewApp} />
