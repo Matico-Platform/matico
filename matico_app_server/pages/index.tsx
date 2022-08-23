@@ -236,7 +236,7 @@ const Home: React.FC<HomePageProps> = ({
                     <TextField
                       labelPosition="side"
                       value={userSearchTerm}
-                      label="search"
+                      label="Search"
                       onChange={setUserSearchTerm}
                     />
                   </Flex>

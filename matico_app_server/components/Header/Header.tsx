@@ -17,6 +17,7 @@ import { useMediaQuery } from "react-responsive";
 import { useApps } from "../../hooks/useApps";
 import ShowMenu from "@spectrum-icons/workflow/ShowMenu";
 import React from "react";
+import { useRouter } from "next/router";
 
 const MobileWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -46,6 +47,8 @@ export const Header: React.FC<{
   const isMobile = useMediaQuery({
     query: "(max-width: 768px)",
   });
+  const router = useRouter();
+
   const Wrapper = isMobile ? MobileWrapper : React.Fragment;
   return (
     <View
@@ -96,11 +99,15 @@ export const Header: React.FC<{
             justifySelf="flex-end"
             UNSAFE_style={{}}
           >
-            {!!session && !!createNewApp && (
+            
               <ActionButton
                 isQuiet
                 onPress={() => {
-                  createNewApp("BigMap");
+                  if (!!session && !!createNewApp) {
+                    createNewApp("Blank");
+                  } else {
+                    router.push(`/apps/demo`);
+                  }
                 }}
                 UNSAFE_style={{
                   cursor: "pointer",
@@ -109,7 +116,7 @@ export const Header: React.FC<{
                 <Add />
                 Start a New App
               </ActionButton>
-            )}
+
             <Login />
             <Link
               href="https://matico.app"

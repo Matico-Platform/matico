@@ -63,5 +63,27 @@ export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
       });
   };
 
-  return { apps, error, mutate, createAppFromTemplate, createAppFromFork};
+  const createAppFromDemo = async (
+    spec: App,
+    name?: string,
+    description?: string
+  ) => {
+    return fetch(`/api/apps/`, {
+      method: "POST",
+      body: JSON.stringify({
+        name: name ?? "My New App",
+        description: description ?? "A new blank app",
+        public: false,
+        spec: JSON.stringify(spec),
+      }),
+    })
+      .then((r) => r.json())
+      .then((r) =>{
+        console.log(r)
+        mutate()
+        return r 
+      });
+  };
+
+  return { apps, error, mutate, createAppFromTemplate, createAppFromFork, createAppFromDemo};
 };
