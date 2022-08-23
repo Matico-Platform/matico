@@ -137,6 +137,10 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             }
         }
 
+        if (!preparedData){
+            return;
+        }
+
         let layer = undefined;
         const fillColor = generateColorVar(style.fillColor, true) ?? [
             255, 0, 0, 100
