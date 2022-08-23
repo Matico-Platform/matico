@@ -4,6 +4,13 @@ import {SessionProvider} from "next-auth/react"
 import {Button, darkTheme, Provider, SSRProvider} from '@adobe/react-spectrum';
 import {StandardLayout} from '../components/StandardLayout/StandardLayout';
 import Head from 'next/head';
+import LogRocket from 'logrocket';
+import setupLogRocketReact from 'logrocket-react';
+
+if (typeof window !== 'undefined') {
+  LogRocket.init('5fasmn/matico');
+  setupLogRocketReact(LogRocket);
+}
 
 
 

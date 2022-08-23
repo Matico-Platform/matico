@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { GetServerSideProps, NextPage } from "next";
 import {
   Divider,
@@ -24,7 +24,7 @@ import { useNotifications } from "../hooks/useNotifications";
 import { Header } from "../components/Header/Header";
 import styled from "styled-components";
 import { useMediaQuery } from "react-responsive";
-
+import LogRocket from "logrocket";
 import { prisma } from "../db";
 import { Login } from "../components/Login/Login";
 import Link from "next/link";
@@ -157,6 +157,19 @@ const Home: React.FC<HomePageProps> = ({
     initalRecentApps
   );
   const { data: session } = useSession();
+
+  useEffect(() => {
+    if(session?.id){
+      // @ts-ignore
+      LogRocket.identify(session.id, {
+        name: session.name,
+        email: session.email,
+      });
+    }
+    else{
+      LogRocket.identify("Annon")
+    }
+  }, [session?.name]);
 
   let userAppParams: UseAppsArgs = {
     ownerId: user?.id,
