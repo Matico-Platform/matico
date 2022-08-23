@@ -1,5 +1,8 @@
-import {Blank} from './Blank'
-
-export const Templates ={
-  Blank  
-}
+import { Blank } from "./Blank";
+import { BigMap } from "./BigMap";
+import { MapWithSidebar } from "./MapWithSidebar";
+export const Templates = {
+  Blank,
+  BigMap,
+  MapWithSidebar,
+};
