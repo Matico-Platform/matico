@@ -43,7 +43,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         updateFilter
     ] = useAutoVariable({
         variable:{
-          id: rangeVariableId,
+          id: id+"_range",
           paneId: id,
           name: `${column}_range`,
           value:{

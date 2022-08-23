@@ -18,12 +18,10 @@ export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
     step,
     name
 }) => {
-    const id = useMemo(() => uuid(), []);
-
 
     const [value, updateValue] = useAutoVariable({
         variable: {
-            id,
+            id:controlPaneId,
             paneId: controlPaneId,
             name: `range_control_${name}`,
             value: {

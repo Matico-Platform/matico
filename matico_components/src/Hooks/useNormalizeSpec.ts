@@ -77,8 +77,9 @@ export const useFullyNormalizeSpec = ()=>{
             if (variable === null || variable === undefined) {
                 return;
             }
-            const value = property ? variable.value.value  : variable.value.value[property]
-            this.update(variable);
+            const value = property ? variable.value.value[property] : variable.value.value
+            console.log("replacing ", node, property, value )
+            this.update(value);
         }
     });
 

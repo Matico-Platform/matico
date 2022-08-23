@@ -152,7 +152,7 @@ export const DatasetService: DatasetServiceInterface = {
             notifierId,
             async (datasetName: string) => {
                 let d = this.datasets[datasetName];
-
+                console.log("sending an update for ", datasetName )
                 if (d) {
                     let data = await d.getData(filters, columns, limit);
                     callback(data);
@@ -200,7 +200,9 @@ export const DatasetService: DatasetServiceInterface = {
         const runTransform = async () => {
             try {
                 const transfromResult = transform.runTransform(this.datasets);
+                console.log("Transform result is ",JSON.stringify(transfromResult.size))
                 if (transfromResult) {
+                    delete this.datasets[datasetTransform.name]
                     let newDataset = new LocalDataset(
                         transform.name,
                         "id",
@@ -220,6 +222,7 @@ export const DatasetService: DatasetServiceInterface = {
                         spec: datasetTransform,
                         transform: true
                     });
+                    this._notify(newDataset.name)
                 }
             } catch (err) {
                 console.log("ERROR RUNNING TRANSFORM ", err);

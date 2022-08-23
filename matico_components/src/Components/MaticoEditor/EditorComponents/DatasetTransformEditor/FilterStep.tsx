@@ -121,7 +121,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     const toggleVariableMin = () => {
         if (typeof min === "number") {
             onUpdateFilter({
-                variable: selectedColumn.name, max, min: { varId: null, property: min },  type:'range'
+                variable: selectedColumn.name, max, min: {var:{ varId: null, property: min }},  type:'range'
             });
         } else {
             onUpdateFilter({
@@ -132,7 +132,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     const toggleVariableMax = () => {
         if (typeof max === "number") {
             onUpdateFilter({
-                 variable: selectedColumn.name, max: { varId: null, property: 'max' }, min, type: 'range' 
+                 variable: selectedColumn.name, max: { var: {varId: null, property: 'max' }}, min, type: 'range' 
             });
         } else {
             onUpdateFilter({

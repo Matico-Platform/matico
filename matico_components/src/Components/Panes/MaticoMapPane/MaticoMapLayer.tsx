@@ -42,8 +42,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         (state) => state.datasets.datasets[source.name]
     );
 
-    const hoverFeatureId = useMemo(()=>uuid(),[])
-    const clickFeatureId = useMemo(()=>uuid(),[])
+    const hoverFeatureId = useMemo(()=>mapPaneId+"_hover",[])
+    const clickFeatureId = useMemo(()=>mapPaneId+"_click",[])
     const [hoverVariable, updateHoverVariable] = useAutoVariable({ variable:{
         name: `${name}_hover_feature`,
         id: hoverFeatureId,
@@ -80,6 +80,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         columns:[...requiredCols, "geom"]
       } : null);
 
+    console.log("data result is ", dataResult, dataResult?.result)
 
     const preparedData = useMemo(() => {
         if (!dataResult) {
@@ -325,7 +326,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     }, [
         name,
         JSON.stringify(style),
-        dataResult && dataResult.state,
         preparedData,
     ]);
 

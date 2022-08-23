@@ -83,12 +83,11 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             mapLayers[l.id]
         )).filter(a=>a), [layers, mapLayers])
 
-    const mapViewVariableId = useMemo(()=>uuid(),[])
 
     const [currentView, updateView] = useAutoVariable({
         variable:{
           name: "CurrentMapView",
-          id: mapViewVariableId,
+          id: id+"_view",
           paneId: id,
           value:{
             type:"mapview",

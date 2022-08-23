@@ -60,26 +60,31 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       updateXFilter,
       //@ts-ignore
     ] = useAutoVariable({
-      //@ts-ignore
-      name: `${xColumn}_range`,
-      //@ts-ignore
-      type: "NoSelection",
-      initialValue: {
-        type: "NoSelection",
+      variable:{
+      name:`${xColumn}_range`,
+      id: id+"x_filter",      
+      paneId: id,
+      value: {
+          type:'range',
+          value: "NoSelection"
+      }
       },
       bind: true,
     });
+
     const [
       yFilter,
       updateYFilter,
       //@ts-ignore
     ] = useAutoVariable({
-      //@ts-ignore
-      name: `${yColumn}_range`,
-      //@ts-ignore
-      type: "NoSelection",
-      initialValue: {
-        type: "NoSelection",
+      variable:{
+      name:`${yColumn}_range`,
+      id: id+"y_filter",      
+      paneId: id,
+      value: {
+          type:'range',
+          value: "NoSelection"
+      }
       },
       bind: true,
     });
@@ -87,7 +92,6 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     const Chart = useMemo(() => {
       const data = chartData?.state === "Done" ? chartData.result : [];
       
-
     
       const dotSizeFunc= generateNumericVar(dotSize);
       const dotColorFunc= generateColorVar(dotColor);
@@ -144,24 +148,26 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
             updateXFilter(
               x0 === x1
               ? {
-                type: "NoSelection",
-                variable: xColumn
+                type: "range",
+                value: "NoSelection"
               } : {
-                  type: "SelectionRange",
-                  variable: xColumn,
-                  min: x0,
-                  max: x1,
+                  type: "range",
+                  value:{
+                    min: x0,
+                    max: x1,
+                  }
               });
             updateYFilter(
               y0 === y1 
               ? {
-                type: "NoSelection",
-                variable: yColumn
+                type: "range",
+                value: "NoSelection"
               } : {
-                  type: "SelectionRange",
-                  variable: yColumn,
-                  min: y0,
-                  max: y1,
+                  type: "range",
+                  value:{
+                    min: y0,
+                    max: y1,
+                  }
               });
           }}
         />
