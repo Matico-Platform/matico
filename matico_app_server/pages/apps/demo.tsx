@@ -31,8 +31,8 @@ const AppDemoPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('generating app', session, spec)
     if(session?.id && spec){
-      console.log('generating app', session, spec)
         createAppFromDemo(spec, `${session.name} - Matico Demo App`).then((app) => {
             if (app?.error) {
                 console.log(app.error)
