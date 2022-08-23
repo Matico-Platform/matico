@@ -17,6 +17,7 @@
     "./editor"
   ],
   "devDependencies": {
+    "concurrently": "^7.3.0",
     "next": "12.2.0"
   },
   "nohoist": [

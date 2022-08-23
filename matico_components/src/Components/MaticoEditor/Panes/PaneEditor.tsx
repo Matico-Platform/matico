@@ -226,7 +226,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             )}
             <TwoUpCollapsableGrid>
                 <PositionUnitEditor
-                    label="width"
+                    label="Width"
                     value={position.width}
                     units={position.widthUnits}
                     onValueChange={(width) => updatePosition({ width })}
@@ -235,7 +235,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
                     }
                 />
                 <PositionUnitEditor
-                    label="height"
+                    label="Height"
                     value={position.height}
                     units={position.heightUnits}
                     onValueChange={(height) => updatePosition({ height })}

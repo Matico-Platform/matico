@@ -15,11 +15,10 @@ import { useEditorActions } from "Hooks/useEditorActions";
 
 export const PaneRow: React.FC<{
     rowPane: PaneRef;
-    index: number;
     depth: number;
     children?: React.ReactNode;
     addPaneToContainer?: (p: Pane) => void;
-}> = ({ rowPane, addPaneToContainer, index, children }) => {
+}> = ({ rowPane, addPaneToContainer, children }) => {
     const { pane, removePaneFromParent, parent, selectPane } = usePane(rowPane);
     const { setHovered } = useEditorActions(rowPane.id);
     const { currentEditElement } = useMaticoSelector((state) => state.spec);
@@ -58,10 +57,8 @@ export const PaneRow: React.FC<{
             paneRefId: rowPane.id,
             paneId: pane.id,
             pane,
-            parent,
-            index
+            parent
         }
-        // getNewIndex,
     });
 
     const transformStyle = transform

@@ -28,18 +28,16 @@ export const PaneList: React.FC<{
                     if (pane.type === "container") {
                         return (
                             <ContainerPaneRow
-                                key={pane.id}
+                                key={pane.id + i}
                                 rowPane={pane}
-                                index={i}
                                 depth={depth}
                             />
                         );
                     } else {
                         return (
                             <PaneRow
-                                key={pane.id}
+                                key={pane.id + i}
                                 rowPane={pane}
-                                index={i}
                                 depth={depth}
                             />
                         );

@@ -1,18 +1,16 @@
 import React from "react";
-import { PaneRef, TabBarPosition } from "@maticoapp/matico_types/spec";
+import { PanePosition, PaneRef, TabBarPosition } from "@maticoapp/matico_types/spec";
 import {
-    View,
-    Flex,
     Tabs,
     TabList,
     TabPanels,
     Item
 } from "@adobe/react-spectrum";
-import { ControlActionBar } from "Components/MaticoEditor/Utils/ControlActionBar";
 import { PaneSelector } from "Utils/paneEngine";
 import { useMaticoSelector } from "Hooks/redux";
-import { usePaneContainer } from "Hooks/usePaneContainer";
-
+import { InternalSpecProvider } from "Hooks/useInteralSpec";
+import { useIsEditable } from "Hooks/useIsEditable";
+import { usePane } from "Hooks/usePane";
 export interface MaticoTabLayoutInterface {
     paneRefs: Array<PaneRef>;
     tabBarPosition: TabBarPosition;
@@ -24,6 +22,55 @@ const GapVals = {
     medium: "size-600",
     large: "size-1000"
 };
+
+const TabPane: React.FC<{paneRef: PaneRef}> = ({paneRef}) => {
+
+    const paneType = paneRef.type;
+    const {
+        normalizedPane,
+        pane,
+        updatePane,
+        selectPane,
+        updatePanePosition,
+        parent
+    } = usePane(paneRef);
+    const isEdit = useIsEditable();
+    // const Wrapper = isEdit ? FreeDraggableActionWrapper : FreeContainer;
+    console.log(paneRef)
+    return (
+        <InternalSpecProvider
+            value={{
+                position: {
+                    ...paneRef.position,
+                    x: 0,
+                    y: 0,
+                    width: 100,
+                    height: 100,
+                    xUnits: "percent",
+                    yUnits: "percent",
+                    widthUnits: "percent",
+                    heightUnits: "percent"
+                } as PanePosition,
+                paneRef,
+                normalizedPane,
+                updatePane,
+                selectPane,
+                updatePanePosition,
+                parent
+            }}
+        >
+            {/* <Wrapper> */}
+                <PaneSelector
+                    normalizedPane={normalizedPane}
+                    updatePane={updatePane}
+                    selectPane={selectPane}
+                    paneRef={paneRef}
+                    paneType={paneType}
+                />
+            {/* </Wrapper> */}
+        </InternalSpecProvider>
+    );
+}
 
 export const MaticoTabLayout: React.FC<MaticoTabLayoutInterface> = ({
     paneRefs,
@@ -43,8 +90,8 @@ export const MaticoTabLayout: React.FC<MaticoTabLayoutInterface> = ({
             <TabPanels>
                 {(item) => (
                     <Item key={item.id}>
-                        <PaneSelector
-                          paneRef={paneRefs.find((p) => p.id === item.id)}
+                        <TabPane
+                            paneRef={paneRefs.find((p) => p.id === item.id)}
                         />
                     </Item>
                 )}
