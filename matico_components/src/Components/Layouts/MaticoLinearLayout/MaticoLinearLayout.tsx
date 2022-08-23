@@ -166,8 +166,8 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
     } = useSortable({
         id: paneRef.id,
         data: {
-            paneRefId: paneRef.id,
-            paneId: normalizedPane.id,
+            paneRefId: paneRef?.id,
+            paneId: normalizedPane?.id,
             pane: normalizedPane,
             parent
         }
