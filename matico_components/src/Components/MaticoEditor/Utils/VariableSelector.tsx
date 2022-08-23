@@ -10,46 +10,65 @@ import {
     Heading
 } from "@adobe/react-spectrum";
 import { useMaticoSelector } from "Hooks/redux";
+import {Variable} from "@maticoapp/matico_types/spec";
 
 interface VariableSelectorProps {
-    variable?: string;
-    onSelectVariable: (variable: string) => void;
+    variable?: Variable;
+    onSelectVariable: (variable: Variable) => void;
+    allowedTypes: Array<string>;
 }
 export const VariableSelector: React.FC<VariableSelectorProps> = ({
     variable,
     onSelectVariable
 }) => {
-    const state = useMaticoSelector((state) => state.variables.autoVariables);
+    const [options,vars] = useMaticoSelector((state) => {
+        let vars = Object.values(state.variables.autoVariables);
+        let panesIds = Array.from(
+            new Set(
+                state.spec.spec.panes
+                    .filter((p) =>
+                        ["controls", "hisogram", "scatterplot", "map"].includes(
+                            p.type
+                        )
+                    )
+                    .map((p) => p.id)
+            )
+        );
+        let sections: Array<{ name: string; items: Array<any> }> = [];
+        panesIds.forEach((pid) => {
+            const paneName = state.spec.spec.panes.find(
+                (p) => p.id === pid
+            ).name;
+            const variables = vars.filter((v) => v.paneId === pid);
+            sections.push({ name: paneName, items: variables });
+        });
+        return [sections,vars];
+    });
 
-    const mappedState = Object.keys(state).reduce((agg, variableName) => {
-        const variable = state[variableName];
-        if (variable.value) {
-            agg.push({
-                name: variableName,
-                items: Object.keys(variable.value).map((attrName) => ({
-                    name: attrName,
-                    path: `${variableName}.${attrName}`
-                }))
-            });
-        }
 
-        return agg;
-    }, []);
+
+    const selectedVar = variable  ? vars.find(v=>v.id === variable.varId) : null
+    console.log("Variable is ", variable, selectedVar)
+    const suboptions = selectedVar? Object.keys(selectedVar.value.value).map(so => ({name:so, id:so})): null
+
+    console.log("suboptions are", suboptions)
+    console.log("options are ", options)
 
     return (
         <DialogTrigger type="popover" isDismissable={true}>
             <ActionButton>
-                {variable ? variable : "Select filter variable"}
+                {selectedVar ? selectedVar.name : "Select filter variable"}
             </ActionButton>
             {(close) => (
                 <Dialog>
                     <Content>
                         <Heading>Variable</Heading>
                         <Picker
-                            items={mappedState}
-                            onSelectionChange={onSelectVariable}
-                            selectedKey={variable}
-                            width="100%"
+                            label={"Select variable to use"}
+                            width={"100%"}
+                            items={options}
+                            onSelectionChange={(variableId) =>onSelectVariable({varId: variableId as string, property:null})}
+                            selectedKey={selectedVar?.id}
                         >
                             {(section) => (
                                 <Section
@@ -57,14 +76,21 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                                     items={section.items}
                                     title={section.name}
                                 >
-                                    {(variable) => (
-                                        <Item key={variable.path}>
-                                            {variable.name}
+                                    {(v) => (
+                                        <Item key={v.id}>
+                                            {v.name}
                                         </Item>
                                     )}
                                 </Section>
                             )}
                         </Picker>
+                        {suboptions && 
+                        <Picker label={"Property"} items={suboptions} width={"100%"} selectedKey={variable.property}
+                          onSelectionChange={(property)=> onSelectVariable({...variable, property: property as string })}
+                        >
+                            {(item)=><Item key={item.id}>{item.name} </Item>}
+                          </Picker>
+                        }
                     </Content>
                 </Dialog>
             )}

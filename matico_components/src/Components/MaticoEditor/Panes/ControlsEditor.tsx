@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import _ from "lodash";
+import _, {rangeRight} from "lodash";
 
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
@@ -20,7 +20,7 @@ import {
 import SwitchIcon from "@spectrum-icons/workflow/Switch";
 import MenuIcon from "@spectrum-icons/workflow/Menu";
 import { usePane } from "Hooks/usePane";
-import { Control, ControlsPane, PaneRef } from "@maticoapp/matico_types/spec";
+import { Control, ControlsPane, PaneRef, RangeControl, SelectControl } from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { DetailsEditor } from "./DetailsEditor";
 
@@ -30,15 +30,15 @@ interface AddControlModalProps {
 }
 
 const avaliableControls = [
-    { name: "Range", label: "Range" },
-    { name: "Select", label: "Select" }
+    { name: "range", label: "Range" },
+    { name: "select", label: "Select" }
 ];
 
 const IconForControlType = (ControlType: string) => {
     switch (ControlType) {
-        case "Range":
+        case "range":
             return <SwitchIcon />;
-        case "Select":
+        case "select":
             return <MenuIcon />;
     }
 };
@@ -60,7 +60,7 @@ const DefaultForControl: Record<"range" | "select", any> = {
 };
 
 const EditSelectModal: React.FC<{
-    selectProps: any;
+    selectProps: SelectControl;
     onUpdate: (update: any) => void;
 }> = ({ selectProps, onUpdate }) => {
     return (
@@ -97,9 +97,10 @@ const EditSelectModal: React.FC<{
 };
 
 const EditRangeModal: React.FC<{
-    rangeProps: any;
-    onUpdate: (update: any) => void;
+    rangeProps: RangeControl;
+    onUpdate: (update: Partial<RangeControl>) => void;
 }> = ({ rangeProps, onUpdate }) => {
+    console.log("range props ", rangeProps)
     return (
         <DialogTrigger isDismissable type="popover">
             <ActionButton isQuiet>
@@ -110,11 +111,13 @@ const EditRangeModal: React.FC<{
                 <Content>
                     <Flex direction="column" gap="size-150">
                         <TextField
+                            width="100%"
                             description={"Name to use for the variable"}
                             label="name"
                             value={rangeProps.name}
-                            onChange={(name) => onUpdate({ name })}
+                            onChange={(name) => onUpdate({ name})}
                         />
+                        <Flex direction='row' justifyContent={"space-between"}>
                         <NumberField
                             description={"Min value this variable can take"}
                             label="minVal"
@@ -127,6 +130,7 @@ const EditRangeModal: React.FC<{
                             value={rangeProps.max}
                             onChange={(max) => onUpdate({ max })}
                         ></NumberField>
+                      </Flex>
                     </Flex>
                 </Content>
             </Dialog>
@@ -183,6 +187,7 @@ const AddControlModal: React.FC<AddControlModalProps> = ({
                             >
                                 {avaliableControls.map((control) => (
                                     <ActionButton
+                                        key={control.label}
                                         onPress={() => {
                                             attemptToAddControl(
                                                 control.name,
@@ -217,7 +222,7 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     ) => {
         const newControl = {
             ...DefaultForControl[controlType],
-            name: controlName
+            name: controlName,
         };
         updatePane({
             controls: [...controlsPane.controls, newControl]
@@ -264,10 +269,13 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     const updateControlAtIndex = (update: Partial<Control>, index: number) => {
         const controls = controlsPane.controls.map(
             (control: Control, i: number) =>
-                index === i ? { ...control, update } : control
+                index === i ? { ...control, ...update } : control
         );
         updatePane({ controls });
     };
+
+    console.log("Controls ", controlsPane)
+
 
     return (
         <Flex direction="column">
@@ -286,35 +294,25 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
             </CollapsibleSection>
             <CollapsibleSection title="Controls" isOpen={true}>
                 <AddControlModal onAddControl={handleAddControl} />
-                {controlsPane.controls.map((control: any, index: number) => {
-                    const [controlType, controlConfig] =
-                        Object.entries(control)[0];
-                    return (
-                        <RowEntryMultiButton
-                            key={index}
-                            entryName={
-                                controlType === "Range" ? (
+                {controlsPane.controls.map((control: Control, index: number) => {
+                  return (<Flex direction='row' justifyContent='space-between' alignItems='center'>
+                    {control.type === "range" ? (
                                     <EditRangeModal
-                                        rangeProps={controlConfig}
+                                        rangeProps={control}
                                         onUpdate={(update) =>
                                             updateControlAtIndex(update, index)
                                         }
                                     />
                                 ) : (
                                     <EditSelectModal
-                                        selectProps={controlConfig}
+                                        selectProps={control}
                                         onUpdate={(update) =>
                                             updateControlAtIndex(update, index)
                                         }
                                     />
                                 )
-                            }
-                            onRemove={() => deleteControl(index)}
-                            onRaise={() => handleChangeOrder(index, "up")}
-                            onLower={() => handleChangeOrder(index, "down")}
-                            onDuplicate={() => duplicateControl(index)}
-                            onSelect={() => {}}
-                        />
+                    }
+                          </Flex>
                     );
                 })}
             </CollapsibleSection>

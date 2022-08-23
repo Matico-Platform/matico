@@ -11,8 +11,8 @@ import {Variable} from "@maticoapp/matico_types/spec"
 const getRequiredVariableList = (struct: any) => {
     const requiredVariables: Array<Variable> = [];
     traverse(struct).forEach((node: any) => {
-        if (node && node.varId) {
-            requiredVariables.push({varId: node.varId, property: node.property, bind: node.bind});
+        if (node && node.var) {
+            requiredVariables.push(node.var);
         }
     });
     return requiredVariables;
@@ -70,9 +70,9 @@ export const useFullyNormalizeSpec = ()=>{
 
     // Replace the parts of the spec that require variable replacement
     const specWithVariables = traverse(spec).map(function (node) {
-        if (node && node.varId) {
-            const variableId= node.varId;
-            const property = node.property;
+        if (node && node.var) {
+            const variableId= node.var.varId;
+            const property = node.var.property;
             const variable = variables[variableId]
             if (variable === null || variable === undefined) {
                 return;

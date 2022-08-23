@@ -158,16 +158,16 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             >{controls?.navigation && 
                               <NavigationControl position="top-right"/>
                             }
-                            {controls?.scale &&
-                              <ScaleControl position="bottom-right"  />
-                            }
                             {controls?.geolocate &&
                               <GeolocateControl position="top-right" />
                               }
                             {controls?.fullscreen &&
                               <FullscreenControl position="top-right" />
                               }
-                    
+                            {controls?.scale &&
+                              <ScaleControl position="top-right"  />
+                            }
+                      {mls && mls.length > 0 && 
                       <DeckGLOverlay
                                 interleaved={true}
                                 width={"100%"}
@@ -175,6 +175,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                                 layers={mls}
                                     />
 
+                      }
                             
                             </Map>
                     {layers.map((l) => (
