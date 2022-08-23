@@ -23,7 +23,7 @@ import {
 import { GeoJSONProvider } from "DatasetsProviders/GeoJSONProvider";
 import { CSVProvider } from "DatasetsProviders/CSVProvider";
 import { COGProvider } from "DatasetsProviders/COGProvider";
-import { ArrowProvider} from "DatasetsProviders/ArrowProvider";
+import { ArrowProvider } from "DatasetsProviders/ArrowProvider";
 import { App } from "@maticoapp/matico_types/spec";
 
 import { SocrataDatasetProvider } from "DatasetsProviders/SocrataProvider/SocrataProvider";
@@ -37,7 +37,7 @@ import DeviceTablet from "@spectrum-icons/workflow/DeviceTablet";
 import DevicePhone from "@spectrum-icons/workflow/DevicePhone";
 import { NavigatorBar } from "Components/MaticoEditor/EditorComponents/NavigatorBar";
 import { BrowserRouter as Router } from "react-router-dom";
-import {URLProvider} from "DatasetsProviders/URLProvider";
+import { URLProvider } from "DatasetsProviders/URLProvider";
 
 interface ResponsiveScreeenLimits {
     height: null | number;
@@ -104,11 +104,11 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 
     const rows = showEditor
         ? {
-              XL: "100%",
-              L: "100%",
-              M: "100%",
-              S: ["2em", "calc(60% - 2em)", "40%"],
-              base: ["2em", "calc(60% - 2em)", "40%"]
+              XL: "1fr",
+              L: "1fr",
+              M: "1fr",
+              S: ["2em", "calc(3fr - 2em)", "2fr"],
+              base: ["2em", "calc(3fr - 2em)", "2fr"]
           }
         : {
               XL: "100%",
@@ -136,131 +136,128 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 
     return (
         <Provider store={store}>
-                <Router basename={basename}>
-                    <SpectrumProvider
-                        theme={darkTheme}
+            <Router basename={basename}>
+                <SpectrumProvider
+                    theme={darkTheme}
+                    width="100%"
+                    height="100%"
+                    maxHeight="100%"
+                    colorScheme="dark" // todo: gracefully handle light mode
+                >
+                    <Grid
+                        {...{ columns, rows, areas }}
                         width="100%"
+                        maxHeight="100%"
                         height="100%"
-                        colorScheme="dark" // todo: gracefully handle light mode
+                        gap="0"
+                        id="matico-app-grid"
                     >
-                        <Grid
-                            {...{ columns, rows, areas }}
-                            width="100%"
-                            height="100%"
-                            gap="0"
-                        >
-                            {showEditor && (
-                                <View gridArea="navigator">
-                                    <NavigatorBar
-                                        datasetProviders={[
-                                            ...datasetProviders,
-                                            URLProvider,
-                                            // @ts-ignore
-                                            SocrataDatasetProvider,
-                                            ComputeProvider,
-                                        ]}
-                                    />
-                                </View>
-                            )}
+                        {showEditor && (
+                            <View gridArea="navigator">
+                                <NavigatorBar
+                                    datasetProviders={[
+                                        ...datasetProviders,
+                                        URLProvider,
+                                        // @ts-ignore
+                                        SocrataDatasetProvider,
+                                        ComputeProvider
+                                    ]}
+                                />
+                            </View>
+                        )}
+                        <View gridArea="viewer" width="100%" overflow="hidden">
+                            <Flex width="100%" height="100%" direction="column">
+                                {editActive && (
+                                    <Flex
+                                        direction="row"
+                                        justifyContent="center"
+                                        margin="size-100"
+                                    >
+                                        <ActionGroup
+                                            onAction={(key: string) =>
+                                                setResponsiveViewportLimit(key)
+                                            }
+                                        >
+                                            <Item key="desktop">
+                                                <DeviceDesktop size="S" />
+                                            </Item>
+                                            <Item key="tablet">
+                                                <DeviceTablet size="S" />
+                                            </Item>
+                                            <Item key="mobile">
+                                                <DevicePhone size="S" />
+                                            </Item>
+                                        </ActionGroup>
+                                        <Divider
+                                            orientation="vertical"
+                                            height="100%"
+                                            size="M"
+                                            marginStart="size-200"
+                                        />
+                                        <Button
+                                            variant="secondary"
+                                            isQuiet
+                                            onPress={() =>
+                                                setManualShowEditor(
+                                                    (prev) => !prev
+                                                )
+                                            }
+                                        >
+                                            {manualShowEditor ? (
+                                                <>
+                                                    <Visibility
+                                                        size="S"
+                                                        marginEnd="size-100"
+                                                    />
+                                                    Hide Editor
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <VisibilityOff
+                                                        size="S"
+                                                        marginEnd="size-100"
+                                                    />
+                                                    Show Editor
+                                                </>
+                                            )}
+                                        </Button>
+                                    </Flex>
+                                )}
+                                <MaticoAppPresenter
+                                    spec={spec}
+                                    basename={basename}
+                                    onStateChange={onStateChange}
+                                    maxDimensions={
+                                        RESPONSIVE_SCREEN_LIMITS[
+                                            responsiveViewportLimit
+                                        ]
+                                    }
+                                />
+                            </Flex>
+                        </View>
+                        {showEditor && (
                             <View
-                                gridArea="viewer"
-                                width="100%"
+                                gridArea="editor"
+                                height="100%"
                                 overflow="hidden"
                             >
-                                <Flex
-                                    width="100%"
-                                    height="100%"
-                                    direction="column"
-                                >
-                                    {editActive && (
-                                        <Flex
-                                            direction="row"
-                                            justifyContent="center"
-                                            margin="size-100"
-                                        >
-                                            <ActionGroup
-                                                onAction={(key: string) =>
-                                                    setResponsiveViewportLimit(
-                                                        key
-                                                    )
-                                                }
-                                            >
-                                                <Item key="desktop">
-                                                    <DeviceDesktop size="S" />
-                                                </Item>
-                                                <Item key="tablet">
-                                                    <DeviceTablet size="S" />
-                                                </Item>
-                                                <Item key="mobile">
-                                                    <DevicePhone size="S" />
-                                                </Item>
-                                            </ActionGroup>
-                                            <Divider
-                                                orientation="vertical"
-                                                height="100%"
-                                                size="M"
-                                                marginStart="size-200"
-                                            />
-                                            <Button
-                                                variant="secondary"
-                                                isQuiet
-                                                onPress={() =>
-                                                    setManualShowEditor(
-                                                        (prev) => !prev
-                                                    )
-                                                }
-                                            >
-                                                {manualShowEditor ? (
-                                                    <>
-                                                        <Visibility
-                                                            size="S"
-                                                            marginEnd="size-100"
-                                                        />
-                                                        Hide Editor
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <VisibilityOff
-                                                            size="S"
-                                                            marginEnd="size-100"
-                                                        />
-                                                        Show Editor
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </Flex>
-                                    )}
-                                    <MaticoAppPresenter
-                                        spec={spec}
-                                        basename={basename}
-                                        onStateChange={onStateChange}
-                                        maxDimensions={
-                                            RESPONSIVE_SCREEN_LIMITS[
-                                                responsiveViewportLimit
-                                            ]
-                                        }
-                                    />
-                                </Flex>
+                                <MaticoEditor
+                                    datasetProviders={[
+                                        ...datasetProviders,
+                                        CSVProvider,
+                                        GeoJSONProvider,
+                                        // @ts-ignore
+                                        SocrataDatasetProvider,
+                                        ComputeProvider
+                                    ]}
+                                    editActive={showEditor}
+                                    onSpecChange={onSpecChange}
+                                />
                             </View>
-                            {showEditor && (
-                                <View gridArea="editor">
-                                    <MaticoEditor
-                                        datasetProviders={[
-                                            ...datasetProviders,
-                                            CSVProvider,
-                                            GeoJSONProvider,
-                                            // @ts-ignore
-                                            SocrataDatasetProvider,
-                                            ComputeProvider,
-                                        ]}
-                                        editActive={showEditor}
-                                        onSpecChange={onSpecChange}
-                                    />
-                                </View>
-                            )}
-                        </Grid>
-                    </SpectrumProvider>
-                </Router>
+                        )}
+                    </Grid>
+                </SpectrumProvider>
+            </Router>
         </Provider>
     );
 };
