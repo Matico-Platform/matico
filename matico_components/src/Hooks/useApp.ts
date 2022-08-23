@@ -23,13 +23,12 @@ import {Metadata} from "@maticoapp/matico_types/spec";
 
 export const useApp = () => {
 
+    const dispatch = useMaticoDispatch();
     const app = useMaticoSelector(
         (selector) => selector.spec.spec
     );
 
-    const { metadata, pages, panes, theme, datasetTransforms } = app
-
-    const dispatch = useMaticoDispatch();
+    const { metadata, pages, panes, theme, datasetTransforms } = app || {}
 
     const addPageLocal = (page: Partial<Page>) => {
         dispatch(
@@ -39,7 +38,7 @@ export const useApp = () => {
                     id: uuidv4(),
                     layout: { type: "free", allowOverflow:false },
                     panes: [],
-                    icon: pages.length === 0 ? "fa faHome" : "fa faPage",
+                    icon: pages.length === 0 ? "fas fa-home" : "fas fa-newspaper",
                     path: pages.length === 0 ? "/" : `/page_${pages.length}`,
                     ...page
                 }

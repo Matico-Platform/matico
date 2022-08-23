@@ -7,19 +7,19 @@ import { useContainer } from "Hooks/useContainer";
 import {
     useDroppable,
 } from "@dnd-kit/core";
-import { ContainerDropTarget } from "./Styled";
 import { PaneRow } from "./PaneRow";
 import { PaneList } from "./PaneList";
 import { usePane } from "Hooks/usePane";
-import { useDraggingContext } from "./DraggingContext";
+import { ContainerDropTarget } from "./ContainerDropTarget";
+import { useMaticoSelector } from "Hooks/redux";
 
 export const ContainerPaneRow: React.FC<{
     rowPane: PaneRef;
-    index: number;
     depth: number;
-}> = ({ rowPane, index, depth }) => {
+}> = ({ rowPane, depth }) => {
     const { pane } = usePane(rowPane);
-    const activeItem = useDraggingContext();
+    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
+    
     const { addPaneToContainer } = useContainer(rowPane);
     const { panes } = pane as ContainerPane;
     const { isOver, setNodeRef } = useDroppable({
@@ -29,7 +29,6 @@ export const ContainerPaneRow: React.FC<{
             paneId: pane.id,
             paneRefId: rowPane.id,
             depth,
-            index,
             type: "container"
         }
     });
@@ -43,10 +42,8 @@ export const ContainerPaneRow: React.FC<{
                 ref={setNodeRef}
                 active={showDropZone}
                 isOver={isOver}
-                depth={depth}
             >
                 <PaneRow
-                    index={index}
                     rowPane={rowPane}
                     addPaneToContainer={addPaneToContainer}
                     depth={depth}
