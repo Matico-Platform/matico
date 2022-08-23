@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
 import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl, FullscreenControl} from "react-map-gl";
@@ -9,6 +9,7 @@ import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
 import { Layer, MapControls} from "@maticoapp/matico_types/spec";
 import {MapboxOverlayProps, MapboxOverlay} from "@deck.gl/mapbox/typed"
+import {PolygonLayer} from "@deck.gl/layers";
 import maplibregl from 'maplibre-gl';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -23,6 +24,11 @@ function DeckGLOverlay(props: MapboxOverlayProps){
   overlay.setProps(props)
   return null
 }
+
+const PlaceholderLayer = new PolygonLayer({
+    id: "PLACEHOLDER",
+    data: []
+})
 
 const accessToken="pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
 
@@ -68,9 +74,22 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     selectionOptions
 }) => {
     const [mapLayers, setMapLayers] = useState<Record<string,Layer>>({});
+    const [shouldRemount, setShouldRemount] = useState(false);
     const edit = useIsEditable();
     const mapRef = useRef();
+    const parentRef = useRef();
+    const triggerRemount = () => {
+        setShouldRemount(true);
+        setTimeout(() => setShouldRemount(false), 100);
+    }
 
+    useEffect(() => {
+        const refObserver = new ResizeObserver(triggerRemount)
+        refObserver.observe(parentRef.current);
+        return () => {
+            refObserver.disconnect();
+        };
+    }, []);
 
     const updateLayer = (id:string, layer: Layer) => {
         setMapLayers({...mapLayers, [id]:layer});
@@ -116,77 +135,86 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     }
 
 
-    console.log("mls ", mls)
+    // console.log("mls ", mls)
 
     // const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
     // if (selectionLayer){
     //     mls.push(selectionLayer) 
     // }
-
+    console.log('mls', mls)
+    
     return (
-        <View key={id} position="relative" overflow="hidden" width="100%" height="100%">
-            {currentView && (
-                    <> 
-                    <Map
-                        mapLib={maplibregl}
-                        key={id}
-                        id={id}
-                        antialias={true}
-                        onDrag={updateViewState}
-                        onZoom={updateViewState}
-                        onPitch={updateViewState}
-                        onRotate={updateViewState}
-                        initialViewState={{
-                            latitude: currentView.lat,
-                            longitude: currentView.lng,
-                            zoom: currentView.zoom,
-                            ...currentView
-                        }}
-                            mapboxAccessToken={
-                               accessToken 
-                            }
-                            mapStyle={
-                                styleJSON
-                                    ? styleJSON
-                                    : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
-                            }
-                            >{controls?.navigation && 
-                              <NavigationControl position="top-right"/>
-                            }
-                            {controls?.scale &&
-                              <ScaleControl position="bottom-right"  />
-                            }
-                            {controls?.geolocate &&
-                              <GeolocateControl position="top-right" />
-                              }
-                            {controls?.fullscreen &&
-                              <FullscreenControl position="top-right" />
-                              }
-                    
-                      <DeckGLOverlay
-                                interleaved={true}
-                                width={"100%"}
-                                height={"100%"}
-                                layers={mls}
-                                    />
+        <div ref={parentRef} 
+        key={id} 
+        style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            overflow: "hidden"
+        }}
+        >
+                {(currentView && !shouldRemount) && (
+                        <> 
+                        <Map
+                            mapLib={maplibregl}
+                            key={id}
+                            id={id}
+                            antialias={true}
+                            onDrag={updateViewState}
+                            onZoom={updateViewState}
+                            onPitch={updateViewState}
+                            onRotate={updateViewState}
+                            initialViewState={{
+                                latitude: currentView.lat,
+                                longitude: currentView.lng,
+                                zoom: currentView.zoom,
+                                ...currentView
+                            }}
+                                mapboxAccessToken={
+                                accessToken 
+                                }
+                                mapStyle={
+                                    styleJSON
+                                        ? styleJSON
+                                        : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+                                }
+                                >{controls?.navigation && 
+                                <NavigationControl position="top-right"/>
+                                }
+                                {controls?.scale &&
+                                <ScaleControl position="bottom-right"  />
+                                }
+                                {controls?.geolocate &&
+                                <GeolocateControl position="top-right" />
+                                }
+                                {controls?.fullscreen &&
+                                <FullscreenControl position="top-right" />
+                                }
+                        
+                        <DeckGLOverlay
+                                    interleaved={true}
+                                    width={"100%"}
+                                    height={"100%"}
+                                    layers={[...mls,PlaceholderLayer]}
+                                        />
 
-                            
-                            </Map>
-                    {layers.map((l) => (
-                        <MaticoMapLayer
-                            key={l.name}
-                            name={l.name}
-                            source={l.source}
-                            style={l.style}
-                            onUpdate={(update)=>updateLayer(l.id, update)}
-                            mapName={name}
-                            beforeId={l.style.beforeId}
-                        />
-                    ))}
-                    <MaticoLegendPane legends={mls.map( (l) => l.props._legend)} />
-                    
-                </>
-            )}
-        </View>
+                                
+                                </Map>
+                        {layers.map((l) => (
+                            <MaticoMapLayer
+                                key={l.name}
+                                name={l.name}
+                                source={l.source}
+                                style={l.style}
+                                onUpdate={(update)=>updateLayer(l.id, update)}
+                                mapName={name}
+                                beforeId={l.style.beforeId}
+                            />
+                        ))}
+                        <MaticoLegendPane legends={mls.map( (l) => l.props._legend)} />
+                        
+                    </>
+                )}
+        </div>
     );
 };
