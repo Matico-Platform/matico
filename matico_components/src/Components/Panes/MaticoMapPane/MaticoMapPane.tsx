@@ -21,7 +21,7 @@ import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
 import { View } from "@adobe/react-spectrum";
 import { Layer, MapControls } from "@maticoapp/matico_types/spec";
 import { MapboxOverlayProps, MapboxOverlay } from "@deck.gl/mapbox/typed";
-import { PolygonLayer } from "@deck.gl/layers";
+import { ScatterplotLayer } from "@deck.gl/layers";
 import maplibregl from "maplibre-gl";
 import { v4 as uuid } from "uuid";
 
@@ -37,9 +37,13 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
     return null;
 }
 
-const PlaceholderLayer = new PolygonLayer({
+const PlaceholderLayer = new ScatterplotLayer({
     id: "PLACEHOLDER",
-    data: []
+    data: [],
+    getPosition: d=>[0,0],
+    getRadius: 0,
+    getFillColor: [0, 0, 0]
+
 });
 
 const accessToken =
@@ -201,14 +205,12 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         {controls?.scale && (
                             <ScaleControl position="top-right" />
                         )}
-                        {mls && mls.length > 0 && (
-                            <DeckGLOverlay
-                                interleaved={true}
-                                width={"100%"}
-                                height={"100%"}
-                                layers={[...mls, PlaceholderLayer]}
-                            />
-                        )}
+                        <DeckGLOverlay
+                            interleaved={true}
+                            width={"100%"}
+                            height={"100%"}
+                            layers={[...mls, PlaceholderLayer]}
+                        />
                     </Map>
                     {layers.map((l) => (
                         <MaticoMapLayer
