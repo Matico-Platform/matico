@@ -32,15 +32,17 @@ const AppDemoPage: React.FC = () => {
 
   useEffect(() => {
     if(session?.id && spec){
+      console.log('generating app', session, spec)
         createAppFromDemo(spec, `${session.name} - Matico Demo App`).then((app) => {
             if (app?.error) {
                 console.log(app.error)
             } else {
+              console.log('app generated', app)
               router.push(`/apps/edit/${app.id}`);
             }
           });
     }
-  }, [session?.name, spec]);
+  }, [session, spec]);
 
   const onUpdateSpec = (spec: App) => {
     if (spec) {
