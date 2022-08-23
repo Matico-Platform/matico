@@ -202,7 +202,7 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
     const currentEditElement = useMaticoSelector(
         ({ spec }) => spec.currentEditElement
     );
-    const isEditedPane = currentEditElement?.id === paneRef.id;
+    const isEditedPane = paneRef?.id && currentEditElement?.id === paneRef.id;
 
     const buttonPositionStyle =
         direction === "row"
