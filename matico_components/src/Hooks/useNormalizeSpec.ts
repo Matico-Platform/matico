@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useContext } from "react";
 import traverse from "traverse";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
@@ -10,8 +11,8 @@ import {Variable} from "@maticoapp/matico_types/spec"
 const getRequiredVariableList = (struct: any) => {
     const requiredVariables: Array<Variable> = [];
     traverse(struct).forEach((node: any) => {
-        if (node && "varId" in node) {
-            requiredVariables.push({varId: node.varId, property: node.property});
+        if (node && node.varId) {
+            requiredVariables.push({varId: node.varId, property: node.property, bind: node.bind});
         }
     });
     return requiredVariables;
@@ -60,21 +61,24 @@ export const useFullyNormalizeSpec = ()=>{
     // Get a list of required variables for the spec from the global
     // state
     const requiredVariables = getRequiredVariableList(spec);
-    const variables = useMaticoSelector((state) =>
-        _.pick(state.variables.autoVariables, requiredVariables)
-    );
+  
+    const variables = useMaticoSelector((state) =>{
+        let requiredVariableValues : Record<string,any> = {}
+        requiredVariables.forEach(rv=> requiredVariableValues[rv.varId] = state.variables.autoVariables[rv.varId])
+        return requiredVariableValues
+    });
 
     // Replace the parts of the spec that require variable replacement
     const specWithVariables = traverse(spec).map(function (node) {
-        if (node && node.var) {
-            const variableName = node.var.split(".")[0];
-            const path = node.var.split(".").slice(1).join(".");
-            const variable = variables[variableName];
+        if (node && node.varId) {
+            const variableId= node.varId;
+            const property = node.property;
+            const variable = variables[variableId]
             if (variable === null || variable === undefined) {
                 return;
             }
-            const value = _.at(variable.value, path)[0];
-            this.update(value);
+            const value = property ? variable.value.value  : variable.value.value[property]
+            this.update(variable);
         }
     });
 
@@ -102,3 +106,4 @@ export const useFullyNormalizeSpec = ()=>{
 
     return [fullyNormalized,true,null];
 };
+;

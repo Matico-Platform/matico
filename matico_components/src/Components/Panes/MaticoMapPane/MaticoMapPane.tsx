@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useCallback } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
 import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl, FullscreenControl} from "react-map-gl";
@@ -83,7 +83,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             mapLayers[l.id]
         )).filter(a=>a), [layers, mapLayers])
 
-    const mapViewVariableId = useMemo(()=> uuid(),[])
+    const mapViewVariableId = useMemo(()=>uuid(),[])
 
     const [currentView, updateView] = useAutoVariable({
         variable:{
@@ -98,7 +98,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
         bind:true
     });
 
-    const updateViewState = debounce((viewStateUpdate: any) => {
+    const updateViewState = useCallback((viewStateUpdate: any) => {
         const viewState = viewStateUpdate.viewState;
         //@ts-ignore not 100% sure what the type issue here is, seems to thing it can be either a Variable or an update function for a variable.
         updateView({
@@ -111,7 +111,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
               bearing: viewState.bearing
             }
         });
-    }, 500);
+    }, []);
 
     let styleJSON = null;
 
@@ -122,7 +122,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
             styleJSON = baseMap.StyleJSON;
         }
     }
-
 
     // const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
     // if (selectionLayer){
@@ -138,10 +137,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         key={id}
                         id={id}
                         antialias={true}
-                        onDrag={updateViewState}
-                        onZoom={updateViewState}
-                        onPitch={updateViewState}
-                        onRotate={updateViewState}
+                        onMove={(viewState)=>updateViewState(viewState)}
+                        {...currentView}
                         initialViewState={{
                             latitude: currentView.value.lat,
                             longitude: currentView.value.lng,

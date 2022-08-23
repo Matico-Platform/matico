@@ -82,29 +82,17 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
                 <View maxHeight="150px" overflow={"clip auto"}>
                 <CheckboxGroup
                     value={selectedColumns}
-                    onChange={(keys) =>
+                    onChange={(keys) =>{
+                        console.log("keys ", keys)
                         onColumnsSelected(keys)
                     }
+                    }
                 >
-                        {columns.map((c) => (
-                            <Checkbox key={c.name}> {c.name}</Checkbox>
+                  {columns.map((c) => (
+                            <Checkbox key={c.name} value={c.name}>{c.name}</Checkbox>
                         ))}
                 </CheckboxGroup>
               </View>
-                {/*
-                <ListView
-                    width="100%"
-                    maxHeight="200px"
-                    selectionMode="multiple"
-                    items={columns}
-                    selectedKeys={selectedColumns}
-                    onSelectionChange={(keys) =>
-                        onColumnsSelected(Array.from(keys))
-                    }
-                >
-                    {(item) => <Item key={item.name}>{item.name}</Item>}
-                </ListView>
-                */}
                 {description && <Text>{description}</Text>}
             </Flex>
         );

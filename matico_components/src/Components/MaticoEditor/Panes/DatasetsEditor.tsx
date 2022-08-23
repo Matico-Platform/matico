@@ -70,7 +70,7 @@ const NewDatasetModal: React.FC<NewDatasetModalProps> = ({
     console.log("Dataset providers are ", datasetProviders)
     return (
         <DialogTrigger isDismissable>
-            <ActionButton >Add Dataset</ActionButton>
+            <ActionButton isQuiet>Add Dataset</ActionButton>
             {(close) => (
                 <Dialog width="70vw">
                     <Content>
@@ -138,10 +138,13 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
                 <>
                 {Object.entries(datasets).filter(([datasetName,dataset])=>!dataset.transform).map(([datasetName, dataset]) => {
                       return (
+                        <>
                               <DatasetEditor
                                   dataset={dataset}
                                   key={datasetName}
                               />
+                                <Divider size='S' />
+                            </>
                       );
                   })}
                 </>
@@ -150,9 +153,6 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
                   onSubmit={createDataset}
                   datasetProviders={datasetProviders}
               />
-              <Well marginTop="size-1000" alignSelf="end">
-                Load Datasets from a variety of sources 
-              </Well>
               </Flex>
             </Flex>
             <Divider size="S"/>
