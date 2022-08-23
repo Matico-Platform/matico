@@ -156,13 +156,16 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     }
 
     return (
-        <View
-            key={id}
-            position="relative"
-            overflow="hidden"
-            width="100%"
-            height="100%"
+        <div ref={parentRef} 
+        key={id} 
+        style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            overflow: "hidden"
+        }}
         >
+             
             {currentView && currentView.type === "mapview" && (
                 <>
                     <Map
@@ -223,6 +226,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                     />
                 </>
             )}
-        </View>
+        </div>
     );
 };
