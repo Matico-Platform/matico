@@ -29,7 +29,7 @@ import { App } from "@maticoapp/matico_types/spec";
 import { SocrataDatasetProvider } from "DatasetsProviders/SocrataProvider/SocrataProvider";
 import { ComputeProvider } from "DatasetsProviders/ComputeProvider";
 
-import "./fa.min.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import Visibility from "@spectrum-icons/workflow/Visibility";
 import VisibilityOff from "@spectrum-icons/workflow/VisibilityOff";
 import DeviceDesktop from "@spectrum-icons/workflow/DeviceDesktop";
