@@ -31,13 +31,12 @@ const AppDemoPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('generating app', session, spec)
-    if(session?.id && spec){
-        createAppFromDemo(spec, `${session.name} - Matico Demo App`).then((app) => {
+    if(session?.user && spec){
+      const name = session.user.name
+        createAppFromDemo(spec, `${name} - Matico Demo App`).then((app) => {
             if (app?.error) {
                 console.log(app.error)
             } else {
-              console.log('app generated', app)
               router.push(`/apps/edit/${app.id}`);
             }
           });

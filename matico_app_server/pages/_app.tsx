@@ -12,8 +12,6 @@ if (typeof window !== 'undefined') {
   setupLogRocketReact(LogRocket);
 }
 
-
-
 function MyApp({ Component, pageProps: {session,...pageProps} }: AppProps) {
   return(
     <SessionProvider session={pageProps.session}>

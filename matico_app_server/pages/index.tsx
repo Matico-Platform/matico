@@ -159,11 +159,11 @@ const Home: React.FC<HomePageProps> = ({
   const { data: session } = useSession();
 
   useEffect(() => {
-    if(session?.id){
+    if(session?.user?.email && session?.user?.email) {
       // @ts-ignore
-      LogRocket.identify(session.id, {
-        name: session.name,
-        email: session.email,
+      LogRocket.identify(session.user.name, {
+        name: session.user.name,
+        email: session.user.email,
       });
     }
     else{
