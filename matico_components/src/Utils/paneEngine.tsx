@@ -60,7 +60,8 @@ const SelectorWrapper: React.FC<{
     paneRef: PaneRef;
     selectPane: () => void;
     normalizedPane: any;
-}> = forwardRef(({ paneRef, selectPane, normalizedPane }, ref) => {
+    children: React.ReactNode;
+}> = forwardRef(({ paneRef, selectPane, normalizedPane, children }, ref) => {
     const { setHovered } = useEditorActions(paneRef.id);
     const currentHoveredRef = useMaticoSelector(
         (state) => state.editor.hoveredRef
@@ -91,7 +92,6 @@ const SelectorWrapper: React.FC<{
     };
 
     return (
-        <>
         <Wrapper
             // @ts-ignore
             ref={ref}
@@ -101,10 +101,11 @@ const SelectorWrapper: React.FC<{
             interactive={isInteractive}
             isHovered={isSelectedPane}
             onContextMenuCapture={handleContext}
-        />
-        <ContextMenu />
-        </>
-    )
+        >
+            {children}
+            <ContextMenu />
+        </Wrapper>
+    );
 });
 
 const ComponentWrapper: React.FC<{
@@ -152,7 +153,11 @@ export const PaneSelector: React.FC<{
     if (!PaneComponent || !normalizedPane) return null;
 
     return (
-        <>
+        <WrapperComponent
+            paneRef={paneRef}
+            selectPane={selectPane}
+            normalizedPane={normalizedPane}
+        >
             <PaneComponent
                 key={normalizedPane.id}
                 position={paneRef.position}
@@ -160,13 +165,6 @@ export const PaneSelector: React.FC<{
                 paneRef={paneRef}
                 updatePane={updatePane}
             />
-            {isEdit && (
-                <SelectorWrapper
-                    paneRef={paneRef}
-                    selectPane={selectPane}
-                    normalizedPane={normalizedPane}
-                />
-            )}
-        </>
+        </WrapperComponent>
     );
 };
