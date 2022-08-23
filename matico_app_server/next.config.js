@@ -90,7 +90,7 @@ const config = {
                   outputPath: 'static/webfonts/',
                   publicPath: '../webfonts/',
                   // optional, just to prettify file names
-                  name: '[name].[ext]',
+                  // name: '[name].[ext]',
                 }
               },
             ],
@@ -106,7 +106,7 @@ const config = {
                   outputPath: 'static/media/',
                   publicPath: '../media/',
                   // optional, just to prettify file names
-                  name: '[name].[ext]',
+                  // name: '[name].[ext]',
                 }
               },
             ],
