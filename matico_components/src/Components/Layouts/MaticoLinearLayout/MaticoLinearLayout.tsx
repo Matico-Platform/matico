@@ -164,10 +164,10 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
         listeners,
         transform
     } = useSortable({
-        id: paneRef.id,
+        id: paneRef?.id,
         data: {
-            paneRefId: paneRef.id,
-            paneId: normalizedPane.id,
+            paneRefId: paneRef?.id,
+            paneId: normalizedPane?.id,
             pane: normalizedPane,
             parent
         }
@@ -407,7 +407,7 @@ export const MaticoLinearLayout: React.FC<MaticoLinearLayoutInterface> = ({
                     >
                         {paneRefs.map(
                             (paneRef: PaneRef) =>
-                                !!paneRef && (
+                                !!paneRef?.id && (
                                     <LinearPane
                                         key={paneRef.id}
                                         allowOverflow={allowOverflow}
