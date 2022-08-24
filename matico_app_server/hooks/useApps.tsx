@@ -74,7 +74,7 @@ export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
         name: name ?? "My New App",
         description: description ?? "A new blank app",
         public: false,
-        manualSpec: JSON.stringify(spec),
+        manualSpec: spec,
         template: 'Blank'
       }),
     })
