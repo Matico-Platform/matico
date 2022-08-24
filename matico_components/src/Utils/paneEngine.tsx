@@ -114,7 +114,7 @@ const ComponentWrapper: React.FC<{
     normalizedPane: any;
     children?: React.ReactNode;
 }> = ({ paneRef, children }) => {
-    return <div data-id={paneRef.id}>{children}</div>;
+    return <>{children}</>;
 };
 
 export const PaneSelector: React.FC<{
