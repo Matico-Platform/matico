@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { GetServerSideProps, NextPage } from "next";
 import {
   Divider,
@@ -24,7 +24,7 @@ import { useNotifications } from "../hooks/useNotifications";
 import { Header } from "../components/Header/Header";
 import styled from "styled-components";
 import { useMediaQuery } from "react-responsive";
-
+import LogRocket from "logrocket";
 import { prisma } from "../db";
 import { Login } from "../components/Login/Login";
 import Link from "next/link";
@@ -158,6 +158,19 @@ const Home: React.FC<HomePageProps> = ({
   );
   const { data: session } = useSession();
 
+  useEffect(() => {
+    if(session?.user?.email && session?.user?.email) {
+      // @ts-ignore
+      LogRocket.identify(session.user.name, {
+        name: session.user.name,
+        email: session.user.email,
+      });
+    }
+    else{
+      LogRocket.identify("Annon")
+    }
+  }, [session?.name]);
+
   let userAppParams: UseAppsArgs = {
     ownerId: user?.id,
     order: "updatedAt",
@@ -223,7 +236,7 @@ const Home: React.FC<HomePageProps> = ({
                     <TextField
                       labelPosition="side"
                       value={userSearchTerm}
-                      label="search"
+                      label="Search"
                       onChange={setUserSearchTerm}
                     />
                   </Flex>

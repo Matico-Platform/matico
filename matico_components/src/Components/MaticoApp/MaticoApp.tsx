@@ -104,11 +104,11 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
 
     const rows = showEditor
         ? {
-              XL: "100%",
-              L: "100%",
-              M: "100%",
-              S: ["2em", "calc(60% - 2em)", "40%"],
-              base: ["2em", "calc(60% - 2em)", "40%"]
+              XL: "1fr",
+              L: "1fr",
+              M: "1fr",
+              S: ["2em", "calc(3fr - 2em)", "2fr"],
+              base: ["2em", "calc(3fr - 2em)", "2fr"]
           }
         : {
               XL: "100%",
@@ -141,13 +141,16 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                     theme={darkTheme}
                     width="100%"
                     height="100%"
+                    maxHeight="100%"
                     colorScheme="dark" // todo: gracefully handle light mode
                 >
                     <Grid
                         {...{ columns, rows, areas }}
                         width="100%"
+                        maxHeight="100%"
                         height="100%"
                         gap="0"
+                        id="matico-app-grid"
                     >
                         {showEditor && (
                             <View gridArea="navigator">
@@ -233,7 +236,11 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                             </Flex>
                         </View>
                         {showEditor && (
-                            <View gridArea="editor">
+                            <View
+                                gridArea="editor"
+                                height="100%"
+                                overflow="hidden"
+                            >
                                 <MaticoEditor
                                     datasetProviders={[
                                         ...datasetProviders,

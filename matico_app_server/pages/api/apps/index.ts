@@ -68,7 +68,7 @@ export default async function handler(
 
     const appDetails = JSON.parse(req.body);
 
-    if (!Object.keys(Templates).includes(appDetails.template)) {
+    if (!Object.keys(Templates).includes(appDetails?.template) && !req.body.manualSpec) {
       res.status(401).json({ error: "Unknown template type" });
       return;
     }
@@ -118,6 +118,17 @@ export default async function handler(
         description: appDetails.spec.description as string,
         public: appDetails.public as boolean,
         spec: appDetails.spec,
+      };
+    }
+
+
+    // if passed a manual spec to build off of
+    if (appDetails.manualSpec) {
+      data = {
+        name: appDetails.spec.name as string,
+        description: appDetails.spec.description as string,
+        public: appDetails.public as boolean,
+        spec: appDetails.manualSpec,
       };
     }
 

@@ -109,7 +109,7 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({
       <AppOptionsBar app={app} onPublicUpdate={setPublic} />
       <Divider size="S" />
 
-      <Flex flex={1}>{editor}</Flex>
+      <Flex flex={1} maxHeight={"calc(100vh - 51px)"}>{editor}</Flex>
     </Flex>
   );
 };

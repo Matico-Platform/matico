@@ -27288,10 +27288,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"logrocket-react@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "logrocket-react@npm:5.0.1"
+  peerDependencies:
+    logrocket: ">=2.0"
+    react: ">=17.0"
+    react-dom: ">=17.0"
+  checksum: 28547380bdaffb959dc863e61c0369c1e1680febeef78c9dab3abb7bbbcf13531caa3043acba98532e97904b37675d6872140c9cd146a09fcd351381298f68a9
+  languageName: node
+  linkType: hard
+
 "logrocket@npm:1.0.1":
   version: 1.0.1
   resolution: "logrocket@npm:1.0.1"
   checksum: e1929487e9339eefa5649178707251cca36b28a2e08c87844b870c0ad784dde324f8448300b9ad148e4e54a0acd41467ca64899660c404e30179e125a22c0104
+  languageName: node
+  linkType: hard
+
+"logrocket@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "logrocket@npm:3.0.1"
+  checksum: aa0024101d3696a81f56330726b75bcb20d880a58987f12e61cf83b9bca23964bc3928388ecb0a7bbfb83046db50a9318903de5a812c04ca1deb78b6601fdad1
   languageName: node
   linkType: hard
 
@@ -27750,6 +27768,8 @@ __metadata:
     imagemin-mozjpeg: ^9.0.0
     imagemin-optipng: ^8.0.0
     imagemin-svgo: ^9.0.0
+    logrocket: ^3.0.1
+    logrocket-react: ^5.0.1
     next: ^12.2.0
     next-auth: ^4.10.3
     next-compose-plugins: ^2.2.1

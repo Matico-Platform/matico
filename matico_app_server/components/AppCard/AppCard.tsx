@@ -32,12 +32,12 @@ export const AppCard: React.FC<AppCardInterface> = ({
         <p>{app.updatedAt}</p>
       </td>
       <td>
-        <Flex direction={"row"} justifyContent="space-between">
+        <Flex direction={"row"} justifyContent="space-between" alignItems="center">
           {includeView && (
             <Link href={`/apps/${app.id}`}>
-              <a>
+              <a style={{textDecoration:"none"}}>
                 <Flex direction="row" alignItems="center" gap="size-100" UNSAFE_style={{color:'white'}}>
-                  <Preview />
+                  <Preview size="S" />
                   <p>View</p>
                 </Flex>
               </a>
@@ -45,9 +45,9 @@ export const AppCard: React.FC<AppCardInterface> = ({
           )}
           {includeFork && (
             <Link href={`/apps/${app.id}`}>
-              <a>
+              <a style={{textDecoration:"none"}}>
                 <Flex direction="row" alignItems="center" gap="size-100" UNSAFE_style={{color:'white'}}>
-                  <Branch2 />
+                  <Branch2 size="S" />
                   <p>Fork</p>
                 </Flex>
               </a>
@@ -55,10 +55,10 @@ export const AppCard: React.FC<AppCardInterface> = ({
           )}
           {includeEdit && (
             <Link href={`/apps/edit/${app.id}`}>
-              <a>
+              <a style={{textDecoration:"none"}}>
                 <Flex direction="row" alignItems="center" gap="size-100" UNSAFE_style={{color:'white'}}>
-                  <EdinIn />
-                  <p>edit</p>
+                  <EdinIn size="S" />
+                  <p>Edit</p>
                 </Flex>
               </a>
             </Link>

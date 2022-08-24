@@ -4,7 +4,8 @@ import {
     Item,
     TabPanels,
     TabList,
-    Button
+    Button,
+    Flex
 } from "@adobe/react-spectrum";
 import React, { useState } from "react";
 import { NavigatorBarProps } from "./types";
@@ -29,12 +30,15 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     const {errors} = useErrors()
 
     return (
-        <div>
+        <Flex direction="column" height="100%">
             <View
                 position="relative"
-                maxHeight="100vh"
+                height="calc(100% - 3em)"
                 overflow="visible"
                 paddingTop="3em"
+                UNSAFE_style={{
+                    boxSizing: 'border-box'
+                }}
             >
                 <Tabs
                     aria-labelledby="label-3"
@@ -61,8 +65,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                     <View
                         position="absolute"
                         left="100%"
-                        top="3em"
-                        height="calc(100vh - 3em)"
+                        height="100%"
                         overflow="hidden"
                         minWidth={`20em`}
                         zIndex={500}
@@ -126,6 +129,6 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                     </View>
                 </Tabs>
             </View>
-        </div>
+        </Flex>
     );
 };

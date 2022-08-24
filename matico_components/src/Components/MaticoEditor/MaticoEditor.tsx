@@ -91,28 +91,15 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     if (!editActive) return null;
 
     const height = {
-        L: "95vh",
-        M: "95vh",
+        L: "100%",
+        M: "100%",
         S: "35vh",
         base: "35vh"
     };
 
-    if(spec){
-      return (
-          //@ts-ignore
-
-          <View overflow={"hidden auto"} height={height} paddingTop="3em">
-              <EditPane element={currentEditElement} />
-          </View>
-      );
-
-    }
-    else{
       return(
-          <View overflow={"hidden auto"} height={height} paddingTop="3em">
-            <h1>Loading</h1>
+          <View overflow={"hidden auto"} height={height} paddingTop="3em" UNSAFE_style={{boxSizing: 'border-box'}}>
+            {spec ? <EditPane element={currentEditElement} /> : <h1>Loading</h1>}
           </View>
       )
-    }
-
 };

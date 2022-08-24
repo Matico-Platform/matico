@@ -10,15 +10,16 @@ import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { View } from "@adobe/react-spectrum";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 
-import {colors} from "Utils/colors"
-import {Labels} from "@maticoapp/matico_types/spec";
+import { colors } from "Utils/colors";
+import { Labels } from "@maticoapp/matico_types/spec";
+import { MissingParamsPlaceholder } from "../MissingParamsPlaceholder/MissingParamsPlaceholder";
 
 export interface MaticoPieChartPaneInterface extends MaticoPaneInterface {
     dataset: { name: string; filters: Array<Filter> };
     column: string;
     theme?: string;
     editPath?: string;
-    labels?: Labels
+    labels?: Labels;
 }
 
 export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
@@ -32,7 +33,7 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     const chartRef = useRef();
     const containerRef = useRef();
     const edit = useIsEditable();
-
+    const paramsAreNull = !dataset?.name || !column?.length;
     const foundDataset = useMaticoSelector(
         (state) => state.datasets.datasets[dataset.name]
     );
@@ -44,8 +45,6 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         right: 10
     };
 
-
-
     const dataRequest = foundDataset
         ? {
               datasetName: dataset.name,
@@ -56,34 +55,36 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
           }
         : null;
 
-
     const chartData = useRequestColumnStat(dataRequest);
-
 
     const Chart = useMemo(() => {
         if (!chartData || chartData.state !== "Done") {
             return <View>Loading</View>;
         }
-        
-        const pallet = colors.Pastel["10"] 
-        const others = chartData.result.slice(10,).reduce((agg,r)=> agg+r.count, 0);
-        let data= chartData.result.slice(0,10)
 
-        const colMapping = data.reduce((agg,d,index) => ({...agg, [d.name] : pallet[index%10]} ),{})
-        data.push({name:"others", count: others})
+        const pallet = colors.Pastel["10"];
+        const others = chartData.result
+            .slice(10)
+            .reduce((agg, r) => agg + r.count, 0);
+        let data = chartData.result.slice(0, 10);
 
+        const colMapping = data.reduce(
+            (agg, d, index) => ({ ...agg, [d.name]: pallet[index % 10] }),
+            {}
+        );
+        data.push({ name: "others", count: others });
 
         return (
             <MaticoChart
                 layers={[
                     {
                         type: "pie",
-                        color: (d)=>colMapping[d.name] ?? "gray",
+                        color: (d) => colMapping[d.name] ?? "gray",
                         padding: 0.2,
                         innerRadius: 0.5,
                         valueAccessor: (d: any) => d.count,
                         labelAccessor: (d: any) => d.name,
-                        reverseSort: false,
+                        reverseSort: false
                     }
                 ]}
                 categorical={true}
@@ -93,14 +94,15 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
         );
     }, [chartData]);
 
-    if (!foundDataset) {
-        return <div>{dataset.name} not found!</div>;
-    }
-
     return (
         <View width="100%" height="100%" position="relative">
-            {!foundDataset && <div>{dataset.name} not found!</div>}
-            {Chart}
+            {!!paramsAreNull ? (
+                <MissingParamsPlaceholder paneName="Pie chart" />
+            ) : !foundDataset ? (
+                <div>{dataset.name} not found!</div>
+            ) : (
+                Chart
+            )}
         </View>
     );
 };

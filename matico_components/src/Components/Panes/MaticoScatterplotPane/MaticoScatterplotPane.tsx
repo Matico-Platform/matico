@@ -12,8 +12,9 @@ import {
   generateColorVar,
   generateNumericVar,
 } from "../MaticoMapPane/LayerUtils";
-import { View } from "@adobe/react-spectrum";
+import { Text, Flex, View } from "@adobe/react-spectrum";
 import {ColorSpecification, DatasetRef, Labels} from "@maticoapp/matico_types/spec";
+import { MissingParamsPlaceholder } from "../MissingParamsPlaceholder/MissingParamsPlaceholder";
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
   dataset: DatasetRef;
@@ -52,8 +53,8 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
       columns.push(dotColor.variable)
     }
 
+    const paramsAreNull = dataset.name === "uknown" || columns.includes(null)
     const chartData = useRequestData({datasetName: dataset.name, filters:dataset.filters, columns});
-
 
     const [
       xFilter,
@@ -85,10 +86,10 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
     });
     
     const Chart = useMemo(() => {
+      if (paramsAreNull) return null
       const data = chartData?.state === "Done" ? chartData.result : [];
-      
+      if (!data || !data?.length) return null;
 
-    
       const dotSizeFunc= generateNumericVar(dotSize);
       const dotColorFunc= generateColorVar(dotColor);
 
@@ -178,6 +179,7 @@ export const MaticoScatterplotPane: React.FC<MaticoScatterplotPaneInterface> =
         width="100%"
         height="100%"
       >
+        {!!paramsAreNull && <MissingParamsPlaceholder paneName="Scatterplot" />}
         {Chart}
       </View>
     );

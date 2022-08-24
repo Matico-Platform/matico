@@ -17,6 +17,7 @@ import { useMediaQuery } from "react-responsive";
 import { useApps } from "../../hooks/useApps";
 import ShowMenu from "@spectrum-icons/workflow/ShowMenu";
 import React from "react";
+import { useRouter } from "next/router";
 
 const MobileWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -27,7 +28,9 @@ const MobileWrapper: React.FC<{ children: React.ReactNode }> = ({
         <ShowMenu size="L" />
       </ActionButton>
       <Dialog size="L" UNSAFE_style={{ height: "100vh" }}>
-        <Heading>Matico</Heading>
+        <View position="relative">
+          <Heading>Matico</Heading>
+        </View>
         <Content>
           <Text>Your platform for geospatial data &amp; analysis.</Text>
           {children}
@@ -44,6 +47,8 @@ export const Header: React.FC<{
   const isMobile = useMediaQuery({
     query: "(max-width: 768px)",
   });
+  const router = useRouter();
+
   const Wrapper = isMobile ? MobileWrapper : React.Fragment;
   return (
     <View
@@ -60,18 +65,32 @@ export const Header: React.FC<{
         justifyContent="space-between"
         width="100%"
       >
-        <Flex direction="row" gap="size-150" alignItems="center">
-          <img src="/logo.png" alt="Matico" width="32px" height="32px" />
-          <Text
-            UNSAFE_style={{
-              fontSize: "2em",
-              fontWeight: "bold",
-            }}
+        <View position="relative">
+          <Flex direction="row" gap="size-150" alignItems="center">
+            <img src="/logo.png" alt="Matico" width="32px" height="32px" />
+            <Text
+              UNSAFE_style={{
+                fontSize: "2em",
+                fontWeight: "bold",
+              }}
+            >
+              Matico
+            </Text>
+          </Flex>
+          <View
+            position="absolute"
+            left="100%"
+            bottom="100%"
+            paddingX="size-100"
+            paddingY="size-50"
+            borderRadius="large"
+            UNSAFE_style={{ color: "black", fontSize: ".75em", background: '#fbb854', transform:'translateY(100%)' }}
           >
-            Matico
-          </Text>
-          <View marginStart="size-450" marginTop="size-50"></View>
-        </Flex>
+            <Flex direction="row" alignItems="center" gap="size-150">
+              Beta
+            </Flex>
+          </View>
+        </View>
         <Wrapper>
           <Flex
             direction={isMobile ? "column" : "row"}
@@ -80,11 +99,15 @@ export const Header: React.FC<{
             justifySelf="flex-end"
             UNSAFE_style={{}}
           >
-            {!!session && !!createNewApp && (
+            
               <ActionButton
                 isQuiet
                 onPress={() => {
-                  createNewApp("BigMap");
+                  if (!!session && !!createNewApp) {
+                    createNewApp("Blank");
+                  } else {
+                    router.push(`/apps/demo`);
+                  }
                 }}
                 UNSAFE_style={{
                   cursor: "pointer",
@@ -93,7 +116,7 @@ export const Header: React.FC<{
                 <Add />
                 Start a New App
               </ActionButton>
-            )}
+
             <Login />
             <Link
               href="https://matico.app"
