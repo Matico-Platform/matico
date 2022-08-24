@@ -28,7 +28,7 @@ export default function Tos() {
 
         <p>
           These terms and conditions outline the rules and regulations for the
-          use of Matico's Website, located at
+          use of Matico&apos;s Website, located at
           https://matico-app-server.vercel.app/.
         </p>
 
@@ -40,19 +40,21 @@ export default function Tos() {
 
         <p>
           The following terminology applies to these Terms and Conditions,
-          Privacy Statement and Disclaimer Notice and all Agreements: "Client",
-          "You" and "Your" refers to you, the person log on this website and
-          compliant to the Company’s terms and conditions. "The Company",
-          "Ourselves", "We", "Our" and "Us", refers to our Company. "Party",
-          "Parties", or "Us", refers to both the Client and ourselves. All terms
-          refer to the offer, acceptance and consideration of payment necessary
-          to undertake the process of our assistance to the Client in the most
-          appropriate manner for the express purpose of meeting the Client’s
-          needs in respect of provision of the Company’s stated services, in
-          accordance with and subject to, prevailing law of Netherlands. Any use
-          of the above terminology or other words in the singular, plural,
-          capitalization and/or he/she or they, are taken as interchangeable and
-          therefore as referring to same.
+          Privacy Statement and Disclaimer Notice and all Agreements:
+          &quot;Client&quot;, &quot;You&quot; and &quot;Your&quot; refers to
+          you, the person log on this website and compliant to the Company’s
+          terms and conditions. &quot;The Company&quot;, &quot;Ourselves&quot;,
+          &quot;We&quot;, &quot;Our&quot; and &quot;Us&quot;, refers to our
+          Company. &quot;Party&quot;, &quot;Parties&quot;, or &quot;Us&quot;,
+          refers to both the Client and ourselves. All terms refer to the offer,
+          acceptance and consideration of payment necessary to undertake the
+          process of our assistance to the Client in the most appropriate manner
+          for the express purpose of meeting the Client&apos;s needs in respect
+          of provision of the Company&apos;s stated services, in accordance with
+          and subject to, prevailing law of Netherlands. Any use of the above
+          terminology or other words in the singular, plural, capitalization
+          and/or he/she or they, are taken as interchangeable and therefore as
+          referring to same.
         </p>
 
         <h3>
@@ -61,15 +63,16 @@ export default function Tos() {
 
         <p>
           We employ the use of cookies. By accessing Matico App Server, you
-          agreed to use cookies in agreement with the Matico's Privacy Policy.{" "}
+          agreed to use cookies in agreement with the Matico&apos;s Privacy
+          Policy.{" "}
         </p>
 
         <p>
-          Most interactive websites use cookies to let us retrieve the user’s
-          details for each visit. Cookies are used by our website to enable the
-          functionality of certain areas to make it easier for people visiting
-          our website. Some of our affiliate/advertising partners may also use
-          cookies.
+          Most interactive websites use cookies to let us retrieve the
+          user&apos;s details for each visit. Cookies are used by our website to
+          enable the functionality of certain areas to make it easier for people
+          visiting our website. Some of our affiliate/advertising partners may
+          also use cookies.
         </p>
 
         <h3>
@@ -91,7 +94,7 @@ export default function Tos() {
             <a
               href="https://github.com/matico-Platform/matico"
               target="_blank"
-              rel="noopener"
+              rel="noreferrer"
             >
               Github Repo
             </a>
@@ -159,9 +162,7 @@ export default function Tos() {
           <strong>Hyperlinking to our Content</strong>
         </h3>
 
-        <p>
-          Anyone may hyperlink
-        </p>
+        <p>Anyone may hyperlink</p>
 
         <h3>
           <strong>iFrames</strong>
@@ -190,7 +191,12 @@ export default function Tos() {
           <strong>Your Privacy</strong>
         </h3>
 
-        <p>Please read <Link href="/privacy"><a>Privacy Policy</a></Link></p>
+        <p>
+          Please read{" "}
+          <Link href="/privacy">
+            <a>Privacy Policy</a>
+          </Link>
+        </p>
 
         <h3>
           <strong>Reservation of Rights</strong>
@@ -200,8 +206,8 @@ export default function Tos() {
           We reserve the right to request that you remove all links or any
           particular link to our Website. You approve to immediately remove all
           links to our Website upon request. We also reserve the right to amen
-          these terms and conditions and it’s linking policy at any time. By
-          continuously linking to our Website, you agree to be bound to and
+          these terms and conditions and it&apos;s linking policy at any time.
+          By continuously linking to our Website, you agree to be bound to and
           follow these linking terms and conditions.
         </p>
 
