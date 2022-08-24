@@ -67,8 +67,8 @@ export default async function handler(
     }
 
     const appDetails = JSON.parse(req.body);
-
-    if (!Object.keys(Templates).includes(appDetails?.template) || !req.body.manualSpec) {
+    
+    if (!Object.keys(Templates).includes(appDetails?.template)) {
       res.status(401).json({ error: "Unknown template type" });
       return;
     }
