@@ -285,7 +285,7 @@ const Home: React.FC<HomePageProps> = ({
                 <Heading level={2} UNSAFE_style={{paddingRight:'2em'}}>
                   Communicate insights. Manage data. All without a line of code.
                 </Heading>
-                <Flex
+                {/* <Flex
                   direction="row"
                   gap="size-450"
                   alignItems="center"
@@ -299,7 +299,7 @@ const Home: React.FC<HomePageProps> = ({
                   >
                       <a style={{color:'white'}}>Learn More</a>
                   </Link>
-                </Flex>
+                </Flex> */}
               </Flex>
             </TextStyles>
           </Flex>
