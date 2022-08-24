@@ -5575,6 +5575,7 @@ __metadata:
     papaparse: ^5.3.1
     query-string: ^7.0.1
     react-ace: ^9.5.0
+    react-contexify: ^5.0.0
     react-dom: ^17.0.2
     react-json-view: ^1.21.3
     react-map-gl: ^7.0.18
@@ -33413,6 +33414,18 @@ __metadata:
     react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     react-dom: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 874ddc9ebdd620ac2692e307dfa848d540cc84beed56910a92b8630abcc286f9b8682aba87c8635d969943586adabe5b8222adf3a7bff041d15a9698f17caa4a
+  languageName: node
+  linkType: hard
+
+"react-contexify@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "react-contexify@npm:5.0.0"
+  dependencies:
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 8a7b2419dbe203233950e02ab12ef1ee4c5060888ce64a8a249ba0cc0e0dd690ea20e6399beb3998126a4ffc7e9ea6e813f54a779c8b7f63ab56b7a7b75ed44c
   languageName: node
   linkType: hard
 

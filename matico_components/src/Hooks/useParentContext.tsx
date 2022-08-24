@@ -30,12 +30,14 @@ export const ParentProvider: React.FC<{
 
     useEffect(() => {
         listener();
-        const refObserver = new ResizeObserver(listener).observe(parentRef.current);
+        const refObserver = new ResizeObserver(listener)
+        refObserver.observe(parentRef.current);
         typeof window !== "undefined" &&
             window.addEventListener("resize", listener);
         return () => {
             typeof window !== "undefined" &&
                 window.removeEventListener("resize", listener);
+            refObserver.disconnect();
         };
     }, []);
 

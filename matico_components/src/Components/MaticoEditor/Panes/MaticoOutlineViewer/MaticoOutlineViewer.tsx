@@ -28,29 +28,54 @@ import { createPortal } from "react-dom";
 import { outlineCollisionDetection } from "./CollisionDetection";
 import { DraggablePane } from "./DraggablePane";
 import { PageList } from "./PageList";
-import { HoverableRow } from "./Styled";
-import {
-    SortableContext,
-} from "@dnd-kit/sortable";
+import { HoverableItem, HoverableRow } from "./Styled";
+import { PaneList } from "./PaneList";
+import { SortableContext } from "@dnd-kit/sortable";
 import { handleDrag } from "Utils/dragAndResize/handleDrag";
 import { setActiveDragItem } from "Stores/editorSlice";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 
-type MaticoOutlineViewerProps = RouteComponentProps & {};
+type MaticoOutlineViewerProps = RouteComponentProps & {
+    showPanes?: boolean;
+    showTitle?: boolean;
+    panes?: PaneRef[];
+};
 
 export const MaticoOutlineViewer: React.FC = withRouter(
-    ({ history, location }: MaticoOutlineViewerProps) => {
+    ({
+        history,
+        location,
+        showPanes = true,
+        showTitle = true,
+        panes
+    }: MaticoOutlineViewerProps) => {
         // list pages
-        const { pages, reparentPane, changePaneIndex, addPage, updatePageIndex } = useApp();
+        const {
+            pages,
+            reparentPane,
+            changePaneIndex,
+            addPage,
+            updatePageIndex
+        } = useApp();
         const dispatch = useMaticoDispatch();
-        const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
+        const activeItem = useMaticoSelector(
+            (state) => state.editor.activeDragItem
+        );
+
         //@ts-ignore
-        const handleDragStart = ({ active }) => dispatch(setActiveDragItem(active));
+        const handleDragStart = ({ active }) =>
+            dispatch(setActiveDragItem(active));
         // const handleDragOver = (event: DragOverEvent) => {
         //     handleDrag(event, false, updatePageIndex, reparentPane, changePaneIndex)
         // }
         const handleDragEnd = (event: DragEndEvent) => {
-            handleDrag(event, true, updatePageIndex, reparentPane, changePaneIndex);
+            handleDrag(
+                event,
+                true,
+                updatePageIndex,
+                reparentPane,
+                changePaneIndex
+            );
             dispatch(setActiveDragItem(null));
         };
 
@@ -67,50 +92,59 @@ export const MaticoOutlineViewer: React.FC = withRouter(
             })
         );
         return (
-                <View width="100%" height="auto">
-                    <Flex direction="column">
+            <View width="100%" height="auto">
+                <Flex direction="column">
+                    {showTitle && (
                         <HoverableRow hideBorder>
                             <Flex direction="row" alignItems="center">
                                 <Heading marginY="size-0" marginX="size-150">
                                     Page Outline
                                 </Heading>
-                                {/* <HoverableItem> */}
+                                <HoverableItem>
                                     <ActionButton
                                         onPress={() => addPage({})}
                                         isQuiet
-                                        >
+                                    >
                                         Add Page
                                     </ActionButton>
-                                {/* </HoverableItem> */}
+                                </HoverableItem>
                             </Flex>
                         </HoverableRow>
-                        <DndContext
-                            modifiers={[restrictToVerticalAxis]}
-                            onDragStart={handleDragStart}
-                            onDragEnd={handleDragEnd}
-                            // onDragOver={handleDragOver}
-                            collisionDetection={collisionDetectionStrategy}
-                            sensors={sensors}
-                        >
+                    )}
+                    <DndContext
+                        modifiers={[restrictToVerticalAxis]}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                        // onDragOver={handleDragOver}
+                        collisionDetection={collisionDetectionStrategy}
+                        sensors={sensors}
+                    >
+                        {!!panes ? (
+                            <PaneList panes={panes} />
+                        ) : (
                             <SortableContext
                                 items={pages.map((page) => page.id)}
                             >
                                 {pages.map((page) => (
-                                    <PageList key={page.id} page={page} route={{history, location}} />
+                                    <PageList
+                                        key={page.id}
+                                        page={page}
+                                        route={{ history, location }}
+                                        showPanes={showPanes}
+                                    />
                                 ))}
-                                {!!activeItem &&
-                                    createPortal(
-                                        <DragOverlay adjustScale={false}>
-                                            <DraggablePane
-                                                activeItem={activeItem}
-                                            />
-                                        </DragOverlay>,
-                                        document.body
-                                    )}
                             </SortableContext>
-                        </DndContext>
-                    </Flex>
-                </View>
+                        )}
+                    </DndContext>
+                </Flex>
+                {!!activeItem &&
+                    createPortal(
+                        <DragOverlay adjustScale={false}>
+                            <DraggablePane activeItem={activeItem} />
+                        </DragOverlay>,
+                        document.body
+                    )}
+            </View>
         );
     }
 );

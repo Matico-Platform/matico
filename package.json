@@ -32,5 +32,8 @@
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
   },
-  "packageManager": "yarn@3.2.2"
+  "packageManager": "yarn@3.2.2",
+  "dependencies": {
+    "concurrently": "^7.3.0"
+  }
 }

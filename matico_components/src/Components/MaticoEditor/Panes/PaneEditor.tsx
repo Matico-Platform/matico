@@ -78,7 +78,7 @@ const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
     );
 };
 
-const PositionPresets = [
+export const PositionPresets = [
     {
         id: "full",
         label: "▣ Full",
@@ -151,7 +151,7 @@ const PositionPresets = [
     }
 ];
 
-const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> = ({
+export const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> = ({
     updatePosition
 }) => {
     return (
@@ -160,6 +160,7 @@ const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> = ({
             marginTop={"size-150"}
             summaryIcon={<TextStyle />}
             aria-label="Text style"
+            maxWidth="20vw"
             isEmphasized
             onAction={(key) => {
                 const position = PositionPresets.find(

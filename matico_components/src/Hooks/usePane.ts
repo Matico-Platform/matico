@@ -12,7 +12,8 @@ import {
     findParent,
     setPaneOrder,
     setCurrentEditElement,
-    removePaneRef
+    removePaneRef,
+    setPaneRefIndex
 } from "Stores/MaticoSpecSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
@@ -37,7 +38,7 @@ export const usePane = (paneRef: PaneRef) => {
     // and no parent is present
     if (!parent) return {};
 
-    const currentIndex = _.indexOf(parent.panes, paneRef);
+    const currentIndex = parent.panes.findIndex(({id}) => id === paneRef.id);
 
     const updatePane = (update: Partial<Pane>) => {
         dispatch(updatePaneDetails({ id: paneRef.paneId, update }));
@@ -64,10 +65,19 @@ export const usePane = (paneRef: PaneRef) => {
     const raisePane = () => {
         if (currentIndex < parent.panes.length) {
             dispatch(
-                setPaneOrder({
-                    parentId: parent.id,
-                    paneRef: paneRef,
+                setPaneRefIndex({
+                    paneRefId: pane.id,
                     newIndex: currentIndex + 1
+                })
+            );
+        }
+    };
+    const raisePaneToFront = () => {
+        if (currentIndex < parent.panes.length) {
+            dispatch(
+                setPaneRefIndex({
+                    paneRefId: pane.id,
+                    newIndex: parent.panes.length
                 })
             );
         }
@@ -76,10 +86,20 @@ export const usePane = (paneRef: PaneRef) => {
     const lowerPane = () => {
         if (currentIndex > 0) {
             dispatch(
-                setPaneOrder({
-                    parentId: parent.id,
-                    paneRef: paneRef,
+                setPaneRefIndex({
+                    paneRefId: pane.id,
                     newIndex: currentIndex - 1
+                })
+            );
+        }
+    };
+
+    const lowerPaneToBack = () => {
+        if (currentIndex > 0) {
+            dispatch(
+                setPaneRefIndex({
+                    paneRefId: pane.id,
+                    newIndex: 0
                 })
             );
         }
@@ -118,7 +138,9 @@ export const usePane = (paneRef: PaneRef) => {
         updatePanePosition: _updatePanePosition,
         parent,
         raisePane,
+        raisePaneToFront,
         lowerPane,
+        lowerPaneToBack,
         setPaneOrder: _setPaneOrder,
         selectPane
     };
