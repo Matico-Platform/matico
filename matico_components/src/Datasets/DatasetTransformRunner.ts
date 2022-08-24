@@ -137,12 +137,12 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
         datasets: Record<string, LocalDataset>,
         stepNo: number
     ): ColumnTable {
-        console.log("trying to apply filter step, ",JSON.stringify(step))
+
         try {
           const filterFunc  = (d: Record<string,any>)=>{
               let keep = true 
               step.filters.forEach(f=>{
-                if(f.type==='range'){
+                if(f.type==='range' && f.max && f.min){
                   if(!(f.min < d[f.variable]  &&  d[f.variable] < f.max)) {
                   keep = false 
                   }

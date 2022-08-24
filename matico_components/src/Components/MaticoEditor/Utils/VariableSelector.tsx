@@ -27,7 +27,7 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
             new Set(
                 state.spec.spec.panes
                     .filter((p) =>
-                        ["controls", "hisogram", "scatterplot", "map"].includes(
+                        ["controls", "histogram", "scatterplot", "map"].includes(
                             p.type
                         )
                     )
