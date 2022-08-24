@@ -52,24 +52,24 @@ export const Login: React.FC = () => {
                       Github
                     </div>
                   </ActionButton>
-                  {/* <ActionButton onPress={() => signIn("google")} isQuiet>
+                  <ActionButton onPress={() => signIn("google")} isQuiet>
                     <div>
                       <Icon icon="google" />
                       Google
                     </div>
                   </ActionButton>
-                  <ActionButton onPress={() => signIn("gitlab")} isQuiet>
+                  {/* <ActionButton onPress={() => signIn("gitlab")} isQuiet>
                     <div>
                       <Icon icon="gitlab" />
                       Gitlab
                     </div>
-                  </ActionButton>
+                  </ActionButton> */}
                   <ActionButton onPress={() => signIn("facebook")} isQuiet>
                     <div>
                       <Icon icon="facebook" />
                       Facebook
                     </div>
-                  </ActionButton> */}
+                  </ActionButton>
                 </Flex>
               )}
             </>
