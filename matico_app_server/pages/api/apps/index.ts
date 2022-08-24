@@ -125,8 +125,8 @@ export default async function handler(
     // if passed a manual spec to build off of
     if (appDetails.manualSpec) {
       data = {
-        name: appDetails.spec.name as string,
-        description: appDetails.spec.description as string,
+        name: appDetails.name as string,
+        description: appDetails.description as string,
         public: appDetails.public as boolean,
         spec: appDetails.manualSpec,
       };
