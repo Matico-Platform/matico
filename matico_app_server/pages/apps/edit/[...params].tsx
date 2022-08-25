@@ -8,14 +8,14 @@ import { AppOptionsBar } from "../../../components/AppOptionsBar/AppOptionsBar";
 import { MaticoProvider } from "../../../components/DatasetCreation/S3Provider";
 import { useApp } from "../../../hooks/useApp";
 import { prisma } from "../../../db";
+import {userFromSession} from "../../../utils/db";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-  const user = session?.user?.email
-    ? await prisma.user.findUnique({
-        where: { email: session?.user?.email as string },
-      })
-    : null;
+
+  const user = await userFromSession(session, prisma)
+
+  console.log("User in edit is ", user)
   const params = context.query.params;
 
   const app = await prisma.app.findUnique({
@@ -28,6 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+
+  console.log("App in edit is ", app)
   if (!app) return { props: { app: null, error: "Failed to find app" } };
 
   if (app.owner.id !== user?.id)
