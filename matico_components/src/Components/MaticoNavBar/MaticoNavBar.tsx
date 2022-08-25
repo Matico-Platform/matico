@@ -53,12 +53,12 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
             overflow="hidden auto"
             height="100%"
             maxHeight="100%"
-            backgroundColor={"blue-600"}
             borderWidth="thin"
             borderColor="dark"
             UNSAFE_style={{
                 textAlign: "center",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
+                backgroundColor:"#713066"
             }}
         >
             <ButtonGroup
