@@ -48,7 +48,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
         }
     };
 
-    const primaryColor = theme.primaryColor ? chromaColorFromColorSpecification(theme.primaryColor, false).hex() : "#713066"
+    const primaryColor = theme?.primaryColor ? chromaColorFromColorSpecification(theme.primaryColor, false).hex() : "#713066"
   
 
     return (
