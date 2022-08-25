@@ -42,17 +42,15 @@ export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
   }
 
   const createAppFromTemplate = async (
-    template: string,
-    name?: string,
-    description?: string
+    args: NewAppArgs
   ) => {
     return fetch(`/api/apps/`, {
       method: "POST",
       body: JSON.stringify({
-        name: name ?? "My New App",
-        description: description ?? "A new blank app",
-        public: false,
-        template,
+        name: args.name ?? "My New App",
+        description: args.description ?? "A new blank app",
+        public: args.public ,
+        template: args.template,
       }),
     })
       .then((r) => r.json())

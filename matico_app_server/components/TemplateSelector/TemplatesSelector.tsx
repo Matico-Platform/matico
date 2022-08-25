@@ -13,13 +13,23 @@ import Image from "next/image";
 import Branch2 from "@spectrum-icons/workflow/Branch2";
 import Link from "next/link";
 import Preview from "@spectrum-icons/workflow/Preview";
+import React from "react";
+import {NewMapModal} from "../NewAppModal/NewAppModal";
 
+export type NewAppArgs={
+  template: string, 
+  name:string, 
+  description:string, 
+  public:boolean
+}
 export interface TemplateSelectorInterface {
-  onSelectTemplate: (template: string) => void;
+  onSelectTemplate: (args: NewAppArgs) => void;
   recentApps: App[];
 }
 
-const templates: { title: string; templateSlug: string; image: string }[] = [
+export type Template = { title: string; templateSlug: string; image: string }
+
+const templates: Array<Template>= [
   {
     title: "Blank",
     templateSlug: "Blank",
@@ -121,40 +131,16 @@ export const TemplateSelector: React.FC<TemplateSelectorInterface> = ({
   onSelectTemplate,
   recentApps = [],
 }) => {
-  console.log(recentApps);
   return (
     <Flex id="templates" direction="column" gap="size-500" width="100%">
       <Heading>Get Started With a Template</Heading>
-      <TemplatesOuter>
-        <TemplatesContainer>
+      <Flex direction='row' justifyContent='space-between'>
+        <Flex direction='row' justifyContent='space-around' gap="size-200">
           {templates.map((template, i) => (
-            <TemplateCard key={template.templateSlug}>
-              <ActionButton
-                key={i}
-                onPress={() => onSelectTemplate(template.templateSlug)}
-                isQuiet
-                width="100%"
-                height="auto"
-                margin="0"
-                UNSAFE_style={{
-                  padding: "1em",
-                }}
-              >
-                <Flex
-                  direction="column"
-                  alignContent="center"
-                  alignItems="center"
-                  width="100%"
-                >
-                  <Image src={`/${template.image}`} width={400} height={295} />
-                  <br />
-                  <p>{template.title}</p>
-                </Flex>
-              </ActionButton>
-            </TemplateCard>
+              <NewMapModal template={template} onSelectTemplate={onSelectTemplate} />
           ))}
-        </TemplatesContainer>
-        <TemplatesPopulation>
+          </Flex>
+        <Flex direction='column' gap='size-200'>
           Or Maybe Some Popular Apps?
           <View
             maxHeight="25vh"
@@ -167,8 +153,8 @@ export const TemplateSelector: React.FC<TemplateSelectorInterface> = ({
             ))}
           </Flex>
           </View>
-        </TemplatesPopulation>
-      </TemplatesOuter>
+        </Flex>
+      </Flex>
       <Divider size="S" />
     </Flex>
   );

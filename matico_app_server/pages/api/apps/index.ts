@@ -77,11 +77,12 @@ export default async function handler(
     let data;
     // If we specify a template create a new app from that
     if (appDetails.template) {
+      const template = Templates[appDetails.template]
       data = {
         name: appDetails.name as string,
         description: appDetails.description as string,
         public: appDetails.public as boolean,
-        spec: Templates[appDetails.template],
+        spec:{...template, metadata:{...template.metadata, name: appDetails.name, description: appDetails.description}},
       };
     }
 
