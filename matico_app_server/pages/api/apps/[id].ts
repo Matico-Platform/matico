@@ -44,7 +44,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
           id: appId,
         },
         include: {
-          owner:true,
+           owner: {select:{ name:true, id:true, createdAt:true, image:true }},
           _count:{select:{collaborators: true}},
         },
       });

@@ -41,18 +41,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: {
       public: true,
     },
-    include: { owner: true },
-    orderBy: {
-      createdAt: "desc",
-    },
+    include: { owner: {select:{ name:true, id:true, createdAt:true, image:true }}},
+    orderBy: [{
+      noViews: "desc"},
+      {createdAt: "desc"}
+    ],
   });
+
 
   const userApps = user
     ? await prisma.app.findMany({
         where: {
           ownerId: user.id,
         },
-        include: { owner: true },
+        include: { owner: {select:{ name:true, id:true, createdAt:true, image:true }}},
         orderBy: {
           createdAt: "desc",
         },

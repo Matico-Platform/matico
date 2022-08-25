@@ -31,6 +31,8 @@ export const getServerSideProps:GetServerSideProps =async(context)=>{
     include: { owner: true },
   });
 
+  await prisma.app.update({where: {id: app!.id}, data: {noViews: {increment:1}}})
+
   if (!app) return { props: { app: null, error: "Failed to find app" } };
 
   if (app.owner.id !== user?.id && app.public === false)

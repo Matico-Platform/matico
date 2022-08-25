@@ -102,6 +102,8 @@ export default async function handler(
           .json({ error: "You dont have permision to fork that app" });
       }
 
+      await prisma.app.update({where: {id: otherApp.id} , data:{noForks: {increment:1 }}})
+
       data = {
         name: otherApp!.name as string,
         description: otherApp!.description as string,
