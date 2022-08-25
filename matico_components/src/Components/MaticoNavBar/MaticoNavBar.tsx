@@ -48,6 +48,9 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
         }
     };
 
+    const primaryColor = theme.primaryColor ? chromaColorFromColorSpecification(theme.primaryColor, false).hex() : "#713066"
+  
+
     return (
         <View
             overflow="hidden auto"
@@ -58,7 +61,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
             UNSAFE_style={{
                 textAlign: "center",
                 boxSizing: "border-box",
-                backgroundColor:"#713066"
+                backgroundColor:primaryColor 
             }}
         >
             <ButtonGroup

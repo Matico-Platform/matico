@@ -314,7 +314,7 @@ export const stateSlice = createSlice({
         ) => {
             let theme = state.spec.theme;
             let update = action.payload.update;
-            Object.assign(theme, update);
+            state.spec.theme = Object.assign({},theme, update);
         },
         updateMetadata: (
             state,
