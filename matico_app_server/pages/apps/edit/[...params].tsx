@@ -15,7 +15,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context)
   const user = await userFromSession(session, prisma)
 
-  console.log("User in edit is ", user)
   const params = context.query.params;
 
   const app = await prisma.app.findUnique({
@@ -32,33 +31,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log("App in edit is ", app)
   if (!app) return { props: { app: null, error: "Failed to find app" } };
 
-  // if (app.owner.id !== user?.id)
-  //   return { props: { app: null, error: "Unauthorized to view this app" } };
+  if (app.owner.id !== user?.id)
+    return { props: { app: null, error: "Unauthorized to view this app" } };
 
   return {
     props: {
-      initialApp: JSON.parse(JSON.stringify(app)),
-      user: JSON.parse(JSON.stringify(user)),
-      session: JSON.parse(JSON.stringify(session))
+      initialApp: JSON.parse(JSON.stringify(app))
     },
   };
 };
 
 interface AppPresentPageProps {
   initialApp?: App;
-  user: any,
-  session:any
   error?: string;
 }
 
 const AppPresentPage: React.FC<AppPresentPageProps> = ({
   initialApp,
-  error,
-  user,
-  session
+  error
 }) => {
-
-  console.log("app ", initialApp,user, session)
 
   const MaticoApp = dynamic(
     () =>
