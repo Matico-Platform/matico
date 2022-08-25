@@ -54,7 +54,7 @@ export const AppOptionsBar: React.FC<AppOptionsBarInterface> = ({
               color: "var(--spectrum-alias-icon-color-selected-focus)",
             }}
           >
-            {app.name}
+            {app?.name || 'Matico App'}
           </Text>
         </Flex>
           {children}
