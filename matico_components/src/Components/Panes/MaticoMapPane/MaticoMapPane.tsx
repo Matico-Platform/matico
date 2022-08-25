@@ -67,15 +67,15 @@ export function getNamedStyleJSON(style: string, accessToken: string) {
         case "CartoDBDarkMatter":
             return "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
         case "Light":
-            return `https://api.mapbox.com/styles/v1/mapbox/light-v10?access_token=${accessToken}`;
+            return `https://api.maptiler.com/maps/basic-v2/?key=32rtUQVfWVrA5316PfSR#1.0/0.00000/0.00000`;
         case "Dark":
-            return `https://api.mapbox.com/styles/v1/mapbox/dark-v10?access_token=${accessToken}`;
+            return `https://api.maptiler.com/maps/hybrid/style.json?key=32rtUQVfWVrA5316PfSR`;
         case "Satelite":
-            return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9?access_token=${accessToken}`;
+            return "https://api.maptiler.com/maps/hybrid/style.json?key=32rtUQVfWVrA5316PfSR";
         case "Terrain":
-            return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11?access_token=${accessToken}`;
+            return `https://api.maptiler.com/maps/topo/style.json?key=32rtUQVfWVrA5316PfSR`;
         case "Streets":
-            return `https://api.mapbox.com/styles/v1/mapbox/streets-v11?access_token=${accessToken}`;
+            return `https://api.maptiler.com/maps/streets/style.json?key=32rtUQVfWVrA5316PfSR`;
         default:
             return "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
     }

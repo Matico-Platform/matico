@@ -78,7 +78,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
                     <Image
                         alt="Logo"
                         src={
-                            logo ??
+                          logo && logo.length > 0  ? logo : 
                             "https://www.matico.app/favicon/favicon-32x32.png"
                         }
                     />
