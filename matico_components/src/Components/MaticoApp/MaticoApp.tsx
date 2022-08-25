@@ -159,8 +159,8 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                                         ...datasetProviders,
                                         URLProvider,
                                         // @ts-ignore
-                                        SocrataDatasetProvider,
-                                        ComputeProvider
+                                        SocrataDatasetProvider
+                                        // ComputeProvider
                                     ]}
                                 />
                             </View>
