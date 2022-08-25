@@ -126,6 +126,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
               <TextField label="Name" width="100%" value={metadata.name} onChange={(name)=> updateMetadata({name})}/>
               <TextArea label="description" width="100%" value={metadata.description} onChange={(description)=>updateMetadata({description})}/>
             </CollapsibleSection>
+            {/*
             <CollapsibleSection title="Keys" isOpen={true}>
                 <TextField
                     label="MapBox"
@@ -138,6 +139,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                     width="100%"
                 />
             </CollapsibleSection>
+            */}
             <CollapsibleSection title="Pages" isOpen={true}>
                 <MaticoOutlineViewer showPanes={false} />
             </CollapsibleSection>
