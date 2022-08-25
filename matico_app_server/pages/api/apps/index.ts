@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Templates } from "../../../templates";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { userFromSession, userHasFork } from "../../../utils/db";
+import { userFromSession, userHasFork, userHasView } from "../../../utils/db";
 
 export default async function handler(
   req: NextApiRequest,
@@ -34,8 +34,8 @@ export default async function handler(
       findQuery.where.name = {search: query.search};
     }
 
-    if (query.hasOwnProperty("owner")) {
-      findQuery.where.ownerId = query.owner;
+    if (query.hasOwnProperty("ownerId")) {
+      findQuery.where.ownerId = query.ownerId;
     }
 
     if (query.hasOwnProperty("order")) {
@@ -50,7 +50,8 @@ export default async function handler(
       findQuery.take= query.take
     }
 
-    const apps = await prisma.app.findMany(findQuery);
+    let apps = await prisma.app.findMany(findQuery);
+    apps = apps.filter(a=> userHasView(a, user))
 
     res.status(200).json(apps);
   }

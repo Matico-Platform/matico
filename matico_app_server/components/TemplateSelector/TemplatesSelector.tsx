@@ -91,7 +91,7 @@ const InlineAppCard: React.FC<{ app: App & {owner: any, id: string, noViews: num
       marginY="size-100"
       paddingBottom="size-100"
     >
-      <Flex direction="row" alignItems="center" justifyContent="space-around" UNSAFE_style={{padding:0}}>
+      <Flex direction="row" alignItems="center" justifyContent="space-between" UNSAFE_style={{padding:0}}>
         <View>
           <Text>
             <b>{app.name}</b>

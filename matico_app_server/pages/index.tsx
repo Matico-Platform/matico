@@ -61,21 +61,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })
     : null;
 
-  console.log("user apps are ", userApps);
+  console.log("user ", user, userApps)
 
   return {
     props: {
-      initalRecentApps: JSON.parse(JSON.stringify(recentApps)),
-      initalUserApps: JSON.parse(JSON.stringify(userApps)),
+      initialRecentApps: JSON.parse(JSON.stringify(recentApps)),
+      initialUserApps: JSON.parse(JSON.stringify(userApps)),
       user: user ? JSON.parse(JSON.stringify(user)) : null,
     },
   };
 };
 
 interface HomePageProps {
-  initalRecentApps: Array<App>;
+  initialRecentApps: Array<App>;
   user?: User;
-  initalUserApps?: Array<App>;
+  initialUserApps?: Array<App>;
 }
 
 const AppsTable = styled.table`
@@ -144,8 +144,8 @@ const TextStyles = styled.span`
 // `;
 const Home: React.FC<HomePageProps> = ({
   user,
-  initalRecentApps,
-  initalUserApps,
+  initialRecentApps,
+  initialUserApps,
 }) => {
   const router = useRouter();
   const [userSearchTerm, setUserSearchTerm] = useState("");
@@ -154,10 +154,6 @@ const Home: React.FC<HomePageProps> = ({
     query: "(max-width: 768px)",
   });
 
-  const { apps: recentApps } = useApps(
-    { public: true, order: "updatedAt" },
-    initalRecentApps
-  );
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -184,10 +180,10 @@ const Home: React.FC<HomePageProps> = ({
 
   const { apps: userApps, createAppFromTemplate } = useApps(
     userAppParams,
-    initalUserApps
+    initialUserApps
   );
 
-  console.log("userApps ", userApps, initalUserApps);
+  console.log("userApps ", userApps, initialUserApps);
 
   const createNewApp = (template: string) => {
     createAppFromTemplate(template).then((app) => {
@@ -224,9 +220,9 @@ const Home: React.FC<HomePageProps> = ({
           >
             <TemplateSelector
               onSelectTemplate={createNewApp}
-              recentApps={recentApps || initalRecentApps}
+              recentApps={initialRecentApps}
             />
-            {userApps && (
+            {(userApps ?? initialUserApps) && (
               <Flex id="Your Apps" direction="column">
                 <Heading>
                   <Flex
@@ -250,7 +246,7 @@ const Home: React.FC<HomePageProps> = ({
                     <th>Last Modified</th>
                     <th></th>
                   </tr>
-                  {(userApps || initalUserApps).map((userApp: App) => (
+                  {(userApps ?? initialUserApps).map((userApp: App) => (
                     <AppCard
                       key={userApp.id}
                       app={userApp}
