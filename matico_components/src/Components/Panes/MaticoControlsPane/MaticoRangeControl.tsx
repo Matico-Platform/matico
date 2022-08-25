@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { RangeSlider } from "@adobe/react-spectrum";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
+import { v4 as uuid } from "uuid";
 
 interface MaticoRangeControlInterface {
+    controlPaneId: string;
     min: number;
     max: number;
     step: number;
@@ -10,26 +12,42 @@ interface MaticoRangeControlInterface {
 }
 
 export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
+    controlPaneId,
     min,
     max,
     step,
     name
 }) => {
+
     const [value, updateValue] = useAutoVariable({
-        name: `range_control_${name}`,
-        type: "any",
-        initialValue: { start: min, end: max },
+        variable: {
+            id:controlPaneId,
+            paneId: controlPaneId,
+            name: `range_control_${name}`,
+            value: {
+                type: "range",
+                value: { min, max }
+            }
+        },
         bind: true
     });
+
+    console.log("value is ,",value)
+
     return (
         <RangeSlider
             width="100%"
             label={name}
-            value={value}
+            value={{start:value?.value?.min, end: value?.value?.max}}
             minValue={min}
             maxValue={max}
             step={step}
-            onChange={(val) => updateValue(val)}
+            onChange={(val) =>
+                updateValue({
+                    type: "range",
+                    value: { min: val.start, max: val.end }
+                })
+            }
         />
     );
 };

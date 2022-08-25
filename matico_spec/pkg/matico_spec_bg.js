@@ -142,12 +142,6 @@ export const SelectionMode = Object.freeze({ Rectangle:0,"0":"Rectangle",Polygon
 export const MapProjection = Object.freeze({ GeoConicConformal:0,"0":"GeoConicConformal",GeoTransverseMercator:1,"1":"GeoTransverseMercator",GeoNaturalEarth1:2,"2":"GeoNaturalEarth1",GeoConicEquidistant:3,"3":"GeoConicEquidistant",GeoOrthographic:4,"4":"GeoOrthographic",GeoStereographic:5,"5":"GeoStereographic",GeoMercator:6,"6":"GeoMercator",GeoEquirectangular:7,"7":"GeoEquirectangular", });
 /**
 */
-export const JoinType = Object.freeze({ Inner:0,"0":"Inner",Outer:1,"1":"Outer",Left:2,"2":"Left",Right:3,"3":"Right", });
-/**
-*/
-export const AggregationType = Object.freeze({ Min:0,"0":"Min",Max:1,"1":"Max",Sum:2,"2":"Sum",CumulativeSum:3,"3":"CumulativeSum",Mean:4,"4":"Mean",Median:5,"5":"Median",StandardDeviation:6,"6":"StandardDeviation", });
-/**
-*/
 export const LinearLayoutDirection = Object.freeze({ Row:0,"0":"Row",Column:1,"1":"Column", });
 /**
 */
@@ -164,6 +158,12 @@ export const TabBarPosition = Object.freeze({ Horizontal:0,"0":"Horizontal",Vert
 /**
 */
 export const ScreenUnits = Object.freeze({ Pixels:0,"0":"Pixels",Percent:1,"1":"Percent", });
+/**
+*/
+export const JoinType = Object.freeze({ Inner:0,"0":"Inner",Outer:1,"1":"Outer",Left:2,"2":"Left",Right:3,"3":"Right", });
+/**
+*/
+export const AggregationType = Object.freeze({ Min:0,"0":"Min",Max:1,"1":"Max",Sum:2,"2":"Sum",CumulativeSum:3,"3":"CumulativeSum",Mean:4,"4":"Mean",Median:5,"5":"Median",StandardDeviation:6,"6":"StandardDeviation", });
 /**
 */
 export class AggregateStep {

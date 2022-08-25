@@ -1,25 +1,68 @@
-import { View } from "@maticoapp/matico_spec";
+export type VariableValue = StringVar | NumberVar | MapViewVar | SelectionVar | RangeVar | CategoryVar | BoundsVar | FeatureVar | FeaturesVar | GeoFeatureVar | GeoFeaturesVar | RangeVar
+
+export type MaticoStateVariable={
+  id:string,
+  paneId:string,
+  name: string,
+  value: VariableValue
+}
+
 export type StringVar = {
     type: "string";
-    name: string;
     value: string;
 };
 
 export type NumberVar = {
     type: "number";
-    name: string;
-    value: number;
+    value: string;
 };
 
-export type AnyVar = {
-    type: any;
+export type FeatureVar = {
+    type: "feature";
     name: string;
-    value: any;
+    value: Record<string, any> | "NoSelection" 
 };
 
-export type MapLocVar = {
-    type: "mapLocVar";
-    name: string;
+export type GeoFeatureVar = {
+    type: "geofeature";
+    value: Record<string, any>  | "NoSelection"
+} ;
+
+export type FeaturesVar = {
+    type: "features";
+    value: Array<Record<string, any>> | "NoSelection"
+};
+
+export type GeoFeaturesVar = {
+    type: "geofeatures";
+    value: Array<Record<string, any>> | "NoSelection"
+};
+
+export type SelectionVar={
+    type: "selection";
+    value: Array<string | number> | "NoSelection"
+}
+
+export type CategoryVar={
+    type: 'category';
+    value: {
+      oneOf : Array<string | number>,
+      notOneOf : Array<string | number>
+    }
+}
+
+export type BoundsVar = {
+  type: "bounda",
+  value:{
+    xmin: number,
+    xmax: number,
+    ymin: number,
+    ymax: number
+  }
+}
+
+export type MapViewVar = {
+    type: "mapview";
     value: {
         lat: number;
         lng: number;
@@ -29,28 +72,13 @@ export type MapLocVar = {
     };
 };
 
-interface SelectionRange {
-    name: string;
-    type: "SelectionRange";
+export type RangeVar = {
+    type: "range";
     value: {
-        variable: string;
         min: number;
         max: number;
-    };
-}
-interface NoSelection {
-    name: string;
-    type: "NoSelection";
-    value: {
-        variable: string;
-    };
+    } | "NoSelection";
 }
 
-type Selection = SelectionRange | NoSelection;
 
-export type MaticoStateVariable =
-    | StringVar
-    | NumberVar
-    | MapLocVar
-    | AnyVar
-    | Selection;
+

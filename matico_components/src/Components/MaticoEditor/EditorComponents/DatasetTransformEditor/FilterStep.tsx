@@ -1,12 +1,14 @@
 import React from 'react'
-import {DialogTrigger, ActionButton, Dialog, Content, Flex, Picker, Item, NumberField, ToggleButton, Divider, Text} from '@adobe/react-spectrum';
+import {DialogTrigger, ActionButton, Dialog, Content, Flex, Picker, Item, NumberField, ToggleButton, Divider, Text } from '@adobe/react-spectrum';
 import {VariableSelector} from 'Components/MaticoEditor/Utils/VariableSelector';
 import {Column} from '@maticoapp/matico_types/api/Column';
-import {FilterStep} from '@maticoapp/matico_types/spec';
+import {FilterStep,Filter} from '@maticoapp/matico_types/spec';
 import FunctionIcon from "@spectrum-icons/workflow/Function";
+import {FilterEditor} from 'Components/MaticoEditor/Utils/FilterEditor';
+import {DatasetColumnSelector} from 'Components/MaticoEditor/Utils/DatasetColumnSelector';
 
 interface FilterEditor {
-    columns: Array<Column>;
+    datasetId: string, 
     selectedColumn: Column;
     onUpdateFilter: (newFilter: any) => void;
 }
@@ -25,6 +27,14 @@ export const FilterStepEditor: React.FC<{
     onChange: (update: Partial<FilterStep>) => void;
     datasetId: string;
 }> = ({ filterStep, onChange, datasetId }) => {
+
+  const updateFilterAtIndex= (update:Filter,index:number)=>{
+    console.log("update ", update, " index ", index)
+    onChange({filters: filterStep.filters.map((filter:Filter,i:number)=>
+      index===i ? update : filter 
+                                     )})
+  }
+
     return (
           <Flex direction="row" gap={"size-300"}>
             <Flex direction="column" width="size-1000">
@@ -32,6 +42,24 @@ export const FilterStepEditor: React.FC<{
             </Flex>
               <Divider orientation="vertical" size="S" />
             <Flex direction="column" gap="size-200">
+              {filterStep.filters.map((f,index)=>
+                f.type==='range' ? 
+                <RangeFilterEditor 
+                  datasetId={datasetId}
+                  selectedColumn={{name:f.variable, colType:"number"}}
+                  max ={f.max}
+                  min ={f.min}
+                  onUpdateFilter={(update)=> updateFilterAtIndex(update,index)}
+                  />
+                  :
+                <CategoryFilter
+                  datasetId={datasetId}
+                  selectedColumn={{name:f.variable, colType:"number"}}
+                  categories={[]}
+                  onUpdateFilter={(update)=> onChange(update)}
+                  />
+              )}
+
                   <FilterTypeDialog onSubmit={(newFilter) =>onChange({filters: [...filterStep.filters, newFilter]})}/>
             </Flex>
         </Flex>
@@ -51,11 +79,10 @@ const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
                             <ActionButton
                                 onPress={() => {
                                     onSubmit({
-                                        Range: {
                                             variable: null,
                                             min: 0,
-                                            max: 100
-                                        }
+                                            max: 100,
+                                            type:'range'
                                     });
                                     close();
                                 }}
@@ -65,10 +92,9 @@ const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
                             <ActionButton
                                 onPress={() => {
                                     onSubmit({
-                                        Category: {
                                             variable: null,
-                                            is_one_of: []
-                                        }
+                                            is_one_of: [],
+                                            type:'category'
                                     });
                                     close();
                                 }}
@@ -85,48 +111,47 @@ const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
 
 
 const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
-    columns,
-    selectedColumn,
+    datasetId,
     min,
     max,
-    onUpdateFilter
+    onUpdateFilter,
+    selectedColumn
 }) => {
 
     const toggleVariableMin = () => {
         if (typeof min === "number") {
             onUpdateFilter({
-                Range: { variable: selectedColumn.name, max, min: { var: "" } }
+                variable: selectedColumn.name, max, min: {var:{ varId: null, property: min }},  type:'range'
             });
         } else {
             onUpdateFilter({
-                Range: { variable: selectedColumn.name, max, min: 0 }
+                variable: selectedColumn.name, max, min: 0,type:'range' 
             });
         }
     };
     const toggleVariableMax = () => {
         if (typeof max === "number") {
             onUpdateFilter({
-                Range: { variable: selectedColumn.name, max: { var: "" }, min }
+                 variable: selectedColumn.name, max: { var: {varId: null, property: 'max' }}, min, type: 'range' 
             });
         } else {
             onUpdateFilter({
-                Range: { variable: selectedColumn.name, max: 0, min }
+                 variable: selectedColumn.name, max: 0, min, type: 'range' 
             });
         }
     };
+
+    console.log("Type min max ",typeof(min) , typeof(max))
+
     return (
         <Flex direction="row" gap="size-100" alignItems="end">
-            <Picker
-                label="column"
-                items={columns}
-                selectedKey={selectedColumn?.name}
-                onSelectionChange={(variable) =>
-                    onUpdateFilter({ Range: { variable, max, min } })
-                }
-            >
-                {(column) => <Item key={column.name}>{column.name}</Item>}
-            </Picker>
-
+            <DatasetColumnSelector datasetName={datasetId}
+            selectedColumn={selectedColumn.name}
+            onColumnSelected={(column)=>
+                        onUpdateFilter({
+             variable: column.name, min, max ,type:"range"
+                        })
+            }/>
             {typeof min === "number" ? (
                 <NumberField
                     key="min_val"
@@ -134,20 +159,20 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
                     label="min"
                     onChange={(min) =>
                         onUpdateFilter({
-                            Range: { variable: selectedColumn.name, min, max }
+                            type:'range', variable: selectedColumn.name, min, max 
                         })
                     }
                 />
             ) : (
                 <VariableSelector
                     variable={min.var}
+                    allowedTypes={["range"]}
                     onSelectVariable={(newVar) =>
                         onUpdateFilter({
-                            Range: {
                                 max,
                                 min: { var: newVar },
-                                variable: selectedColumn.name
-                            }
+                                variable: selectedColumn.name,
+                                type:'range'
                         })
                     }
                 />
@@ -167,7 +192,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
                     key="max_val"
                     onChange={(max) =>
                         onUpdateFilter({
-                            Range: { variable: selectedColumn.name, max, min }
+                           type:'range', variable: selectedColumn.name, max, min 
                         })
                     }
                 />
@@ -176,11 +201,10 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
                     variable={max.var}
                     onSelectVariable={(newVar) =>
                         onUpdateFilter({
-                            Range: {
+                                type:"range",
                                 max: { var: newVar },
                                 min,
                                 variable: selectedColumn.name
-                            }
                         })
                     }
                 />
@@ -197,20 +221,20 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
 };
 
 const CategoryFilter: React.FC<CategoryFilterProps> = ({
-    columns,
+    datasetId,
     selectedColumn,
     categories,
     onUpdateFilter
 }) => {
     return (
         <Flex direction="row">
-            <Picker
-                label="column"
-                items={columns}
-                selectedKey={selectedColumn?.name}
-            >
-                {(column) => <Item key={column.name}>{column.name}</Item>}
-            </Picker>
+            <DatasetColumnSelector datasetName={datasetId}
+              selectedColumn={selectedColumn}
+              onColumnSelected={(column)=>
+                        onUpdateFilter({
+                range: { variable: column.name, min, max }
+                        })
+            }/>
         </Flex>
     );
 };

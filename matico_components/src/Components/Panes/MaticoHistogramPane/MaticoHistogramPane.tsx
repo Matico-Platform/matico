@@ -13,6 +13,7 @@ import { useErrorsFor } from "Hooks/useErrors";
 import { MaticoErrorType } from "Stores/MaticoErrorSlice";
 import { HistogramEntry } from "@maticoapp/matico_types/api";
 import { LoadingSpinner } from "Components/MaticoEditor/EditorComponents/LoadingSpinner/LoadingSpinner";
+import { v4 as uuid } from "uuid";
 import { MissingParamsPlaceholder } from "../MissingParamsPlaceholder/MissingParamsPlaceholder";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
@@ -34,22 +35,23 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     id
 }) => {
     const [view, setView] = useState({});
+    const rangeVariableId = useMemo(() => uuid(), []);
+
     const { errors, throwError, clearErrors } = useErrorsFor(
         id,
         MaticoErrorType.PaneError
     );
     const paramsAreNull = !dataset?.name || !column?.length;
-    const [
-        columnFilter,
-        updateFilter
-        //@ts-ignore
-    ] = useAutoVariable({
-        //@ts-ignore
-        name: `${column}_range`,
-        //@ts-ignore
-        type: "NoSelection",
-        initialValue: {
-            type: "NoSelection"
+
+    const [columnFilter, updateFilter] = useAutoVariable({
+        variable: {
+            id: id + "_range",
+            paneId: id,
+            name: `${column}_range`,
+            value: {
+                type: "range",
+                value: "NoSelection"
+            }
         },
         bind: true
     });
@@ -112,14 +114,15 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
                     updateFilter(
                         x0 === x1
                             ? {
-                                  type: "NoSelection",
-                                  variable: column
+                                  type: "range",
+                                  value: "NoSelection"
                               }
                             : {
-                                  type: "SelectionRange",
-                                  variable: column,
-                                  min: x0,
-                                  max: x1
+                                  type: "range",
+                                  value: {
+                                      min: x0,
+                                      max: x1
+                                  }
                               }
                     )
                 }

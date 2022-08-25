@@ -1,22 +1,32 @@
-import React, { Key } from "react";
+import React, {  useMemo } from "react";
 import { Item, Picker } from "@adobe/react-spectrum";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
+import { v4 as uuid } from "uuid";
 
 interface MaticoSelectControlInterface {
+    controlPaneId: string;
     options: Array<string | number>;
     name: string;
     defaultValue: string;
 }
 
 export const MaticoSelectControl: React.FC<MaticoSelectControlInterface> = ({
+    controlPaneId,
     options,
     name,
     defaultValue
 }) => {
+    const id = useMemo(() => uuid(), []);
     const [value, updateValue] = useAutoVariable({
-        name: `select_control_${name}`,
-        type: "any",
-        initialValue: null,
+        variable: {
+            id:controlPaneId,
+            paneId: controlPaneId,
+            name: `select_control_${name}`,
+            value: {
+                type: "category",
+                value: { oneOf: [] as Array<string | number>, notOneOf: [] }
+            }
+        },
         bind: true
     });
 
@@ -25,7 +35,12 @@ export const MaticoSelectControl: React.FC<MaticoSelectControlInterface> = ({
             width={"100%"}
             items={options.map((o) => ({ key: o }))}
             selectedKey={value}
-            onSelectionChange={(option) => updateValue(option)}
+            onSelectionChange={(option) =>
+                updateValue({
+                    type: "category",
+                    value: { oneOf: [option as string], notOneOf: [] }
+                })
+            }
             label={name}
             defaultSelectedKey={defaultValue}
         >

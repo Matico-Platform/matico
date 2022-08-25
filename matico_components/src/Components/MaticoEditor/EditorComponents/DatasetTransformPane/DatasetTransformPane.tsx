@@ -48,18 +48,20 @@ export const NewDatasetTransformModal: React.FC<{
             hideArrow
         >
             <ActionButton isQuiet aria-label="Add Map Layer" width="100%">
-                Add Transforms
+                Add Transform
             </ActionButton>
             {(close) => (
                 <Dialog >
                     <Content >
                         <Flex direction="column" gap="size-200">
                             <TextField
+                                width="100%"
                                 label="Transform Name"
                                 value={name}
                                 onChange={setName}
                             />
                             <TextArea
+                                width="100%"
                                 label="Transform Description"
                                 value={description}
                                 onChange={setDescription}
@@ -98,16 +100,12 @@ export const DatasetTransfromPane: React.FC = () => {
                         <DatasetTransformDialog
                             key={transform.id}
                             transformId={transform.id}
-                            state={datasets[transform.name].state}
+                            state={datasets[transform.name]?.state}
                         />
                 ))}
             </Flex>
 
             <NewDatasetTransformModal onSubmit={addDatasetTransform} />
-            <Well marginTop="size-1000" alignSelf="end">
-                Dataset Transforms allow you to modify, aggregate, join and
-                filter datasets that you import in to Matico.
-            </Well>
         </Flex>
     );
 };

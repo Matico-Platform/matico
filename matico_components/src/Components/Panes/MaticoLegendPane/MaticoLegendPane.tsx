@@ -173,7 +173,7 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
     } else {
         return (
             <View>
-                <Text UNSAFE_style={{ fontWeight: "bold" }}>{name}</Text>
+                <Text UNSAFE_style={{ fontWeight: "bold", color:"white" }}>{name}</Text>
                 <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
                     {(labels) => {
                         //@ts-ignore
@@ -213,7 +213,7 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
                                                 />
                                             )}
                                         </svg>
-                                        <Text marginStart={"size-100"}>
+                                        <Text marginStart={"size-100"} UNSAFE_style={{color:"white"}}>
                                             {i > 0 ? label.text : `> ${val}`}
                                         </Text>
                                     </LegendItem>

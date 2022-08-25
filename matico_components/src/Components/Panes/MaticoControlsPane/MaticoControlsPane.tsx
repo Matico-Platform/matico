@@ -41,6 +41,7 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
                                     case "range":
                                         return (
                                             <MaticoRangeControl
+                                                controlPaneId={id}
                                                 min={controlSpec.min as number}
                                                 max={controlSpec.max as number}
                                                 step={
@@ -53,6 +54,7 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
                                         //@ts-ignore
                                         return (
                                             <MaticoSelectControl
+                                                controlPaneId={id}
                                                 options={
                                                     controlSpec.options as Array<
                                                         string | number

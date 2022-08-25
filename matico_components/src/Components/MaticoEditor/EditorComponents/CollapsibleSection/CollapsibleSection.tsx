@@ -1,7 +1,8 @@
-import { Button, Flex, View } from "@adobe/react-spectrum";
+import { Button, Flex, View, Text } from "@adobe/react-spectrum";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 import React, { useState } from "react";
 import { CollapsibleSectionProps } from "./types";
+
 
 export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     title = "",
@@ -35,7 +36,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     ...titleStyle
                 }}
             >
-              {icon}{title}
+              <Flex direction='row' gap='size-200' justifyContent='start' alignItems='center'>
+                {icon}{title}
+              </Flex>
                 <ChevronDown
                     aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
                     size="XS"
