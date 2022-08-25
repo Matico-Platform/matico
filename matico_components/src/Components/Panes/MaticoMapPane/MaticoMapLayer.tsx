@@ -80,8 +80,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         columns:[...requiredCols, "geom"]
       } : null);
 
-    console.log("data result is ", dataResult, dataResult?.result)
-
     const preparedData = useMemo(() => {
         if (!dataResult) {
             return [];

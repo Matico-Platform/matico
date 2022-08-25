@@ -35,9 +35,6 @@ export const useRegisterDatasets = () => {
     const previousDatasetSpec = useRef<Array<DatasetSpec>>([]);
     const previousTransforms= useRef<Array<DatasetTransform>>([]);
 
-
-    console.log("normalizedDatasetTransforms ",  normalizedDatasetTransforms)
-
     useEffect(() => {
         if (!normalizedDatasetSpec) {
             return;
