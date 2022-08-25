@@ -112,6 +112,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
     return (
         <Flex width="100%" height="100%" direction="column">
             <CollapsibleSection title="Theme" isOpen={true}>
+                
                 <Text>Primary Color</Text>
                 <ColorPickerDialog
                     // @ts-ignore
@@ -125,7 +126,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                     onColorChange={(color) => updateTheme({secondaryColor:color})}
                 />
                 
-                <TextField label='App Image URL' value={theme.logoUrl} onChange={(logoUrl)=> updateTheme({logoUrl})} width="100%"/>
+                <TextField label='App Image URL' value={theme?.logoUrl} onChange={(logoUrl)=> updateTheme({logoUrl})} width="100%"/>
             </CollapsibleSection>
             <CollapsibleSection title="Metadata" isOpen={true}>
               <TextField label="Name" width="100%" value={metadata.name} onChange={(name)=> updateMetadata({name})}/>

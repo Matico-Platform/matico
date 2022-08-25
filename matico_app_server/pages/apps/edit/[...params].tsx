@@ -11,8 +11,8 @@ import { prisma } from "../../../db";
 import {userFromSession} from "../../../utils/db";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
 
+  const session = await getSession(context)
   const user = await userFromSession(session, prisma)
 
   console.log("User in edit is ", user)
@@ -57,6 +57,7 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({
   user,
   session
 }) => {
+
   console.log("app ", initialApp,user, session)
 
   const MaticoApp = dynamic(
