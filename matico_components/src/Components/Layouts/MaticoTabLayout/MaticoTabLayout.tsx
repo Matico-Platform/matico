@@ -4,13 +4,16 @@ import {
     Tabs,
     TabList,
     TabPanels,
-    Item
+    Item,
+    Flex,
+    Text
 } from "@adobe/react-spectrum";
 import { PaneSelector } from "Utils/paneEngine";
 import { useMaticoSelector } from "Hooks/redux";
 import { InternalSpecProvider } from "Hooks/useInteralSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { usePane } from "Hooks/usePane";
+import Alert from "@spectrum-icons/workflow/Alert";
 export interface MaticoTabLayoutInterface {
     paneRefs: Array<PaneRef>;
     tabBarPosition: TabBarPosition;
@@ -81,6 +84,32 @@ export const MaticoTabLayout: React.FC<MaticoTabLayoutInterface> = ({
         id: pr.id,
         name: panes[i].name
     }));
+
+
+    if(tabs.length ===0){
+      return (
+        <Flex
+            width="100%"
+            height="100%"
+            justifyContent="center"
+            alignItems="center"
+            UNSAFE_style={{ background: "white" }}
+        >
+            <Text
+                UNSAFE_style={{
+                    color: "var(--spectrum-global-color-magenta-400)",
+                    textAlign:'center'
+                }}
+            >
+                <Alert size="L" />
+                <br/>
+                No tabs defined. Add a subpane to this container to add it as a tab
+                <br/>
+                <i>Click to open editor</i>
+            </Text>
+        </Flex>
+      )
+    }
 
     return (
         <Tabs width="100%" height="100%" orientation={tabBarPosition} arial-label="Tabs" items={tabs}>
