@@ -6,7 +6,8 @@ import {
     TabPanels,
     Item,
     Flex,
-    Text
+    Text,
+    View
 } from "@adobe/react-spectrum";
 import { PaneSelector } from "Utils/paneEngine";
 import { useMaticoSelector } from "Hooks/redux";
@@ -116,15 +117,17 @@ export const MaticoTabLayout: React.FC<MaticoTabLayoutInterface> = ({
             <TabList>
                 {(item) => <Item key={item.id}>{item.name}</Item>}
             </TabList>
-            <TabPanels>
-                {(item) => (
-                    <Item key={item.id}>
-                        <TabPane
-                            paneRef={paneRefs.find((p) => p.id === item.id)}
-                        />
-                    </Item>
-                )}
-            </TabPanels>
+            <View width="100%" height='100%' position={'relative'}>
+              <TabPanels>
+                  {(item) => (
+                      <Item key={item.id}>
+                          <TabPane
+                              paneRef={paneRefs.find((p) => p.id === item.id)}
+                          />
+                      </Item>
+                  )}
+              </TabPanels>
+          </View>
         </Tabs>
     );
 };
