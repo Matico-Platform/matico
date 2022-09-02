@@ -4,9 +4,13 @@ import {ParameterOptions, ParameterValue, SpecParameter} from "@maticoapp/matico
 const analysisCache: Record<string, any> = {};
 
 export const loadAnalysis = async (url: string) => {
-    const wasm = await import(/* webpackIgnore: true */ url);
+    console.log("starting import ", url)
+    const wasm = await import(/* webpackIgnore: true */url);
+    console.log("Wasm import is ", wasm)
     await wasm.default();
+    console.log("wasm is inialized " )
     let key = Object.keys(wasm).find((k) => k.includes("Interface"));
+    console.log("key is ", key)
     return wasm[key].new();
 };
 
@@ -49,6 +53,7 @@ export const useAnalysis = (url: string | null) => {
 
         // Or fetch it and cache it
         if (url) {
+            console.log("loading from url ", url)
             loadAnalysis(url)
                 .then((module) => {
                     setAnalysis(module);
@@ -60,6 +65,7 @@ export const useAnalysis = (url: string | null) => {
                     setError(null);
                 })
                 .catch((e) => {
+                    debugger
                     setAnalysis(null);
                     setError(e.to_string());
                 });

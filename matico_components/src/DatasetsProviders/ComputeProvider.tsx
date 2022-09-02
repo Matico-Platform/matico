@@ -268,8 +268,9 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
 
     const setAnalysis = (key: string) => {
         const compute = computes.find((c) => c.name === key);
+        console.log("compute is ", compute)
         const computeURL = compute
-            ? `http://localhost:8000/compute${compute.path}`
+            ? compute.path
             : null;
         setSpec({ url: computeURL, params: [], name: spec.name });
         setSelectedCompute(compute);

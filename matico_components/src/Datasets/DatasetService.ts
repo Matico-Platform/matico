@@ -347,6 +347,7 @@ export const DatasetService: DatasetServiceInterface = {
                     transform: false
                 };
             case "wasmCompute":
+                console.log("generateing compute dataset ", datasetDetails)
                 const wasmCompute = await WasmComputeBuilder(
                     datasetDetails,
                     this.datasets
