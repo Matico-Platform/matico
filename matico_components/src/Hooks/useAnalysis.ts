@@ -4,13 +4,10 @@ import {ParameterOptions, ParameterValue, SpecParameter} from "@maticoapp/matico
 const analysisCache: Record<string, any> = {};
 
 export const loadAnalysis = async (url: string) => {
-    console.log("starting import ", url)
-    const wasm = await import(/* webpackIgnore: true */url);
-    console.log("Wasm import is ", wasm)
+    //This is nasty as F but only way I can figure out to make next happy
+    const wasm = await ( new Function("url"," let get_url = async () => await import(url); return get_url()")(url)) ;
     await wasm.default();
-    console.log("wasm is inialized " )
     let key = Object.keys(wasm).find((k) => k.includes("Interface"));
-    console.log("key is ", key)
     return wasm[key].new();
 };
 
@@ -47,12 +44,17 @@ export const useAnalysis = (url: string | null) => {
         // simply return it.
 
         if (url in analysisCache) {
-            setAnalysis(analysisCache[url]);
-            return;
+            let cachedAnalysis = analysisCache[url]
+            setAnalysis(cachedAnalysis);
+            let options = cachedAnalysis.options();
+            setOptions(options)
+            let defaults = populateDefaults(options)               
+            setDefaults(defaults)
+
         }
 
         // Or fetch it and cache it
-        if (url) {
+        else if (url) {
             console.log("loading from url ", url)
             loadAnalysis(url)
                 .then((module) => {
