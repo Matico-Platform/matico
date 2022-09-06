@@ -37,6 +37,7 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
       panes:[],
       pages:[],
       datasets:[],
+      datasetTransforms:[],
       theme:{
         primaryColor: {hex:"#FF0000"},
         secondaryColor: {hex:"#FF0000"},
