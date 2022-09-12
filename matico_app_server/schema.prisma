@@ -4,23 +4,23 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? 
-  access_token       String? 
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? 
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -48,62 +48,70 @@ model VerificationToken {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  apps          App[]
+  id             String         @id @default(cuid())
+  name           String?
+  email          String?        @unique
+  emailVerified  DateTime?
+  image          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  accounts       Account[]
+  sessions       Session[]
+  apps           App[]
   collaborations Collaborator[]
-  Datasets      Dataset[]
+  Datasets       Dataset[]
 
   @@map("users")
 }
 
+enum ResourceType {
+  App
+  Dataset
+}
 
 model Collaborator {
-  id           String  @id @default(cuid())
-  user         User    @relation(fields: [userId], references: [id])
+  id           String       @id @default(cuid())
+  user         User         @relation(fields: [userId], references: [id])
   userId       String
   resourceId   String
-  resourceType String
+  resourceType ResourceType
   view         Boolean
   edit         Boolean
   manage       Boolean
-  apps         App @relation(fields:[resourceId], references: [id])       
+  app          App?         @relation("AppColaborator", fields: [resourceId], references: [id], map: "app_colaboration_id")
+  dataset      Dataset?     @relation("DatasetColaborator", fields: [resourceId], references: [id], map: "dataset_colaboration_id")
+
+  @@unique([userId, resourceId])
   @@map("collaborators")
-  @@unique([userId,resourceId])
 }
 
 model App {
-  id          String   @id @default(cuid())
-  spec        Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-  name        String
-  description String
-  public      Boolean
-  ownerId     String
-  collaborators Collaborator[]
-  noViews     Int @default(0) 
-  noForks     Int @default(0) 
-  owner       User     @relation(fields: [ownerId], references: [id])
+  id            String         @id @default(cuid())
+  spec          Json
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+  name          String
+  description   String
+  public        Boolean
+  ownerId       String
+  noViews       Int            @default(0)
+  noForks       Int            @default(0)
+  owner         User           @relation(fields: [ownerId], references: [id])
+  collaborators Collaborator[] @relation("AppColaborator")
+
   @@map("apps")
 }
 
-
 model Dataset {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  name        String
-  description String
-  public      Boolean
-  path        String
-  ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id])
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  name          String
+  description   String
+  public        Boolean
+  path          String
+  ownerId       String
+  owner         User           @relation(fields: [ownerId], references: [id])
+  collaborators Collaborator[] @relation("DatasetColaborator")
+
   @@map("datasets")
 }

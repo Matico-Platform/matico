@@ -1,4 +1,4 @@
-import { App, Dataset, Collaborator, PrismaClient, User } from "@prisma/client";
+import { App, Dataset, Collaborator, PrismaClient, User, ResourceType } from "@prisma/client";
 import { Session } from "next-auth";
 
 type Resource = (App | Dataset) & {collaborators : Collaborator[]};
@@ -24,7 +24,7 @@ export const userHasEdit =(
     return false;
   }
 
-  if (user.id === app.ownerId) {
+  if (user.id === resource.ownerId) {
     return true;
   }
 
@@ -63,7 +63,7 @@ export const userHasFork =(
   if (!user) {
     return resource.public;
   }
-  if (user.id === app.ownerId) {
+  if (user.id === resource.ownerId) {
     return true;
   }
 
@@ -98,10 +98,23 @@ export const userHasManage = (
 
 export const setAppAccess = async (
   resource: Resource,
+  resourceType: ResourceType,
   userId: string,
   permissions: { view: boolean; edit: boolean; manage: boolean },
   prisma: PrismaClient
 ) => {
+
+  let linkedResource;
+
+  switch(resourceType){
+    case ResourceType.App:
+      linkedResource = {app:{connect:{id:resource.id}}}
+      break
+    case ResourceType.Dataset:
+      linkedResource = {app:{connect:{id:resource.id}}}
+      break
+  }
+
   return prisma.collaborator.upsert({
     where: {
       userId_resourceId: {userId:userId,resourceId:resource.id},
@@ -110,9 +123,9 @@ export const setAppAccess = async (
       view: permissions.view,
       manage: permissions.manage,
       edit: permissions.edit,
-      userId: userId,
-      resourceId: resource.id,
-      resourceType: "url" in resource ? "dataset" : "app",
+      user: {connect:{id:userId}},
+      resourceType: "url" in resource ? "App" : "Dataset",
+      ...linkedResource
     },
     update: {
       view: permissions.view,
