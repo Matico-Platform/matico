@@ -1,9 +1,10 @@
-import {App, Collaborator } from "@prisma/client";
+import {App, Collaborator, ResourceType } from "@prisma/client";
 import {prisma} from '../../../../../db'
 import {NextApiRequest, NextApiResponse} from "next";
 import { unstable_getServerSession, User } from "next-auth";
 import { setAppAccess, userFromSession, userHasManage } from "../../../../../utils/db"
 import {authOptions} from "../../../auth/[...nextauth]";
+
 
 export default async function handler(req :NextApiRequest, res: NextApiResponse) {
   
@@ -45,7 +46,7 @@ export default async function handler(req :NextApiRequest, res: NextApiResponse)
     if(!app){ res.status(404).json({error:"Failed to find app"})}
 
     
-    const result = await setAppAccess(app!,userId, permissions,prisma)
+    const result = await setAppAccess(app!, ResourceType.App, userId, permissions,prisma)
     res.status(200).json(result)
   }
 }

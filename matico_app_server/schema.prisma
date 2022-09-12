@@ -60,9 +60,9 @@ model User {
   apps           App[]
   collaborations Collaborator[]
   Datasets       Dataset[]
-
   @@map("users")
 }
+
 
 enum ResourceType {
   App
@@ -73,15 +73,16 @@ model Collaborator {
   id           String       @id @default(cuid())
   user         User         @relation(fields: [userId], references: [id])
   userId       String
-  resourceId   String
+  appId        String?
+  datasetId    String?
   resourceType ResourceType
   view         Boolean
   edit         Boolean
   manage       Boolean
-  app          App?         @relation("AppColaborator", fields: [resourceId], references: [id], map: "app_colaboration_id")
-  dataset      Dataset?     @relation("DatasetColaborator", fields: [resourceId], references: [id], map: "dataset_colaboration_id")
+  app          App?         @relation("AppColaborator", fields: [appId], references: [id], map: "app_colaboration_id")
+  dataset      Dataset?     @relation("DatasetColaborator", fields: [datasetId], references: [id], map: "dataset_colaboration_id")
 
-  @@unique([userId, resourceId])
+  @@unique([userId, appId, datasetId])
   @@map("collaborators")
 }
 

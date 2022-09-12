@@ -111,9 +111,10 @@ export const setAppAccess = async (
       linkedResource = {app:{connect:{id:resource.id}}}
       break
     case ResourceType.Dataset:
-      linkedResource = {app:{connect:{id:resource.id}}}
+      linkedResource = {dataset:{connect:{id:resource.id}}}
       break
   }
+
 
   return prisma.collaborator.upsert({
     where: {
