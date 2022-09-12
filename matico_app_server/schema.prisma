@@ -82,7 +82,6 @@ model Collaborator {
   app          App?         @relation("AppColaborator", fields: [appId], references: [id], map: "app_colaboration_id")
   dataset      Dataset?     @relation("DatasetColaborator", fields: [datasetId], references: [id], map: "dataset_colaboration_id")
 
-  @@unique([userId, appId, datasetId])
   @@map("collaborators")
 }
 
