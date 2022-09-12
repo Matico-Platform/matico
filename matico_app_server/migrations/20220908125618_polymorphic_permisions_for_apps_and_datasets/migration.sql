@@ -9,7 +9,7 @@ CREATE TYPE "ResourceType" AS ENUM ('App', 'Dataset');
 
 -- AlterTable
 ALTER TABLE "collaborators" DROP COLUMN "resourceType",
-ADD COLUMN     "resourceType" "ResourceType" NOT NULL;
+ADD COLUMN     "resourceType" "ResourceType" NOT NULL DEFAULT 'App';
 
 -- RenameForeignKey
 ALTER TABLE "collaborators" RENAME CONSTRAINT "collaborators_resourceId_fkey" TO "app_colaboration_id";
