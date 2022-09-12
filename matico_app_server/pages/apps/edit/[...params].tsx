@@ -1,5 +1,5 @@
 import { Divider, Flex } from "@adobe/react-spectrum";
-import { App } from "@prisma/client";
+import { App, ResourceType } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import dynamic from "next/dynamic";
@@ -8,7 +8,7 @@ import { AppOptionsBar } from "../../../components/AppOptionsBar/AppOptionsBar";
 import { MaticoProvider } from "../../../components/DatasetCreation/S3Provider";
 import { useApp } from "../../../hooks/useApp";
 import { prisma } from "../../../db";
-import {userFromSession} from "../../../utils/db";
+import {userFromSession, userHasEdit} from "../../../utils/db";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 
@@ -17,21 +17,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const params = context.query.params;
 
+  const appId = params ? params[0] : undefined 
+
   const app = await prisma.app.findUnique({
     where: {
-      id: params ? params[0] : undefined,
+      id: appId,
     },
     include: {
       owner: true,
       _count: { select: { collaborators: true } },
+      collaborators:true
     },
   });
 
-
-  console.log("App in edit is ", app)
+  if (!user) return { props: { app: null, error: "You need to be logged in to do this" } };
   if (!app) return { props: { app: null, error: "Failed to find app" } };
 
-  if (app.owner.id !== user?.id)
+  const allowedToEdit  = userHasEdit(app ,user)
+
+  if (app.owner.id !== user?.id && allowedToEdit === false)
     return { props: { app: null, error: "Unauthorized to view this app" } };
 
   return {
