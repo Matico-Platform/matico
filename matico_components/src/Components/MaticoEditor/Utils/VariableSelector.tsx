@@ -11,11 +11,25 @@ import {
 } from "@adobe/react-spectrum";
 import { useMaticoSelector } from "Hooks/redux";
 import {Variable} from "@maticoapp/matico_types/spec";
+import {MaticoStateVariable} from "index";
 
 interface VariableSelectorProps {
     variable?: Variable;
     onSelectVariable: (variable: Variable) => void;
     allowedTypes: Array<string>;
+}
+
+function suboptionsForVariableType(variable : MaticoStateVariable){
+  if(!variable) return null 
+  switch(variable.value.type){
+    case "range":
+      return [{id:"min", name:"Min"}, {id:"max", name:"Max"}]
+    case "mapview":
+      return [{id:"lat", name:"Latitude"}, {id:"lng", name:"Longitude"}, {id:"zoom", name:"Zoom"}, {id:"pitch", name:"Pitch"}, {id:"bearing", name:"Bearing"}]
+    default:
+      return Object.keys(variable.value.value).map(so => ({name:so, id:so}))
+  }
+
 }
 export const VariableSelector: React.FC<VariableSelectorProps> = ({
     variable,
@@ -49,7 +63,11 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
 
     const selectedVar = variable  ? vars.find(v=>v.id === variable.varId) : null
     console.log("Variable is ", variable, selectedVar)
-    const suboptions = selectedVar? Object.keys(selectedVar.value.value).map(so => ({name:so, id:so})): null
+    // const suboptions = selectedVar? Object.keys(selectedVar.value.value).map(so => ({name:so, id:so})): null
+
+    const suboptions = suboptionsForVariableType(selectedVar)
+
+
 
     console.log("suboptions are", suboptions)
     console.log("options are ", options)
