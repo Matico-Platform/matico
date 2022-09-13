@@ -376,7 +376,12 @@ export const stateSlice = createSlice({
             state,
             action: PayloadAction<DatasetTransform>
         ) => {
-            state.spec.datasetTransforms.push(action.payload);
+            if(state.spec.datasetTransforms){
+              state.spec.datasetTransforms.push(action.payload);
+            }
+            else{
+              state.spec.datasetTransforms=[action.payload];
+            }
         },
 
         removeDatasetTransform: (
