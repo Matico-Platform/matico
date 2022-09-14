@@ -56,11 +56,8 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     const mapPane = pane as MapPane;
 
-
-    console.log("Map pane is ",mapPane)
-
     const mapPaneCurrentView = useMaticoSelector(
-        (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
+        (state) => state.variables.autoVariables[`${mapPane.id}_view`]
     );
 
     const dispatch = useMaticoDispatch();
@@ -109,7 +106,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     );
 
     const setViewFromMap = () => {
-        updateView(mapPaneCurrentView.value);
+        updateView(mapPaneCurrentView?.value?.value);
     };
 
     if (!mapPane) {
