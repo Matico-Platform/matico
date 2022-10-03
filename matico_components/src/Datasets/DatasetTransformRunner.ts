@@ -108,9 +108,13 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
             );
         }
 
+
         let otherSource = datasets[step.otherSourceId]._data;
         let joinColumns = [step.joinColumnsLeft, step.joinColumnsRight];
-
+  
+        if(!(step.joinColumnsLeft && step.joinColumnsRight)){
+          return workingTable
+        }
         switch (step.joinType) {
             case "left":
                 workingTable = workingTable.join_left(otherSource, joinColumns);
@@ -128,6 +132,7 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
                 workingTable = workingTable.cross(otherSource, joinColumns);
                 break;
         }
+
         return workingTable;
     }
 

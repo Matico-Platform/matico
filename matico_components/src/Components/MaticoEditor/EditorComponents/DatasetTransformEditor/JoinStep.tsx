@@ -52,7 +52,7 @@ export const JoinStepEditor: React.FC<{
                             <DatasetColumnSelector
                                 label="Left Join Column"
                                 labelPosition="side"
-                                datasetName={joinStep.otherSourceId}
+                                datasetName={datasetId}
                                 selectedColumn={
                                     joinStep.joinColumnsLeft
                                         ? joinStep.joinColumnsLeft[index]
