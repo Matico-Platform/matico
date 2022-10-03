@@ -27,7 +27,7 @@ export default async function handler(
   }
 
   if (req.method === "GET") {
-    if(user.id !==dataset.id && dataset.public ===false){
+    if(user.id !==dataset.ownerId && dataset.public ===false){
       res.status(401).json({"error" : "You are not authorizied to use this dataset"})
     }
     if (req.query.includeDataUrl) {
