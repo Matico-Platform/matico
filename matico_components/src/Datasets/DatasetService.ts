@@ -2,9 +2,7 @@ import {
     Dataset,
     Column,
     GeomType,
-    DatasetSummary,
-    DatasetState,
-    Filter
+    DatasetSummary, DatasetState, Filter
 } from "Datasets/Dataset";
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { CSVBuilder } from "./CSVBuilder";
@@ -17,10 +15,11 @@ import {
     Dataset as DatasetSpec,
     DatasetTransform
 } from "@maticoapp/matico_types/spec";
-import { ArrowBuilder } from "./ArrowBuilder";
+import { ArrowBuilder, getGeomType } from "./ArrowBuilder";
 import { DatasetTransformRunner } from "./DatasetTransformRunner";
 import { LocalDataset } from "./LocalDataset";
 import { constructColumnListFromTable } from "./utils";
+import {FixedSizeList} from "@apache-arrow/es5-cjs";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -200,7 +199,9 @@ export const DatasetService: DatasetServiceInterface = {
         const runTransform = async () => {
             try {
                 const transfromResult = transform.runTransform(this.datasets);
-                console.log("Transform result is ",JSON.stringify(transfromResult.size))
+                const geomCol = transfromResult.toArrow().schema.fields.find((tr)=>[4,16,12].includes(tr.typeId))
+                let geomType = geomCol ?  getGeomType(transfromResult.column(geomCol.name)) : null
+
                 if (transfromResult) {
                     delete this.datasets[datasetTransform.name]
                     let newDataset = new LocalDataset(
@@ -208,14 +209,14 @@ export const DatasetService: DatasetServiceInterface = {
                         "id",
                         constructColumnListFromTable(transfromResult),
                         transfromResult,
-                        GeomType.Polygon
+                        geomType
                     );
                     this.datasets[datasetTransform.name] = newDataset;
                     updateCallback({
                         name: newDataset.name,
                         state: DatasetState.READY,
                         columns: await newDataset.columns(),
-                        geomType: GeomType.Polygon,
+                        geomType: geomType,
                         local: true,
                         raster: false,
                         tiled: false,
@@ -230,7 +231,6 @@ export const DatasetService: DatasetServiceInterface = {
         };
 
         try {
-            this._clearNotifiers(transform.id);
         } catch (err) {
             console.log(err);
         }

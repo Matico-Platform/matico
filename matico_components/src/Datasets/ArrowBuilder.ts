@@ -4,6 +4,7 @@ import { LocalDataset } from "./LocalDataset";
 import { loadArrow, escape} from "arquero";
 import wkx from "wkx";
 import {ArrowDataset} from "@maticoapp/matico_types/spec";
+import {ColumnType} from "arquero/dist/types/table/column";
 
 interface ArrowBuilder{
   name: string;
@@ -12,20 +13,11 @@ interface ArrowBuilder{
   idCol?:string
 }
 
-
-export const ArrowBuilder= async (details: ArrowDataset) => {
-  const { url, geometryCol, name } = details;
-  const idCol: string | null = null
-
-  try{
-  //@ts-ignore
-  let data= await loadArrow(url)
-    let geomCol = data.column(geometryCol ?? "geom")
-
-    let geomType = null 
-    if(geomCol){
+export const getGeomType = (geomCol: ColumnType)=>{
       let sampleGeom = geomCol.get(0)
       let geom = wkx.Geometry.parse(Buffer.from(sampleGeom))
+      let geomType = null 
+
       //@ts-ignore
       switch(geom.toGeoJSON().type){
         case "Point":
@@ -41,8 +33,20 @@ export const ArrowBuilder= async (details: ArrowDataset) => {
         case "MultiPolygon":
           geomType=GeomType.Polygon
       } 
-    }
+    return  geomType
+}
 
+
+export const ArrowBuilder= async (details: ArrowDataset) => {
+  const { url, geometryCol, name } = details;
+  const idCol: string | null = null
+
+  try{
+  //@ts-ignore
+  let data= await loadArrow(url)
+    let geomCol = data.column(geometryCol ?? "geom")
+
+    let geomType = geomCol ? getGeomType(geomCol) : null
 
     return new LocalDataset(
       name,

@@ -78,7 +78,6 @@ export const useFullyNormalizeSpec = ()=>{
                 return;
             }
             const value = property ? variable.value.value[property] : variable.value.value
-            console.log("replacing ", node, property, value )
             this.update(value);
         }
     });

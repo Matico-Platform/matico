@@ -123,6 +123,8 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         }
     }, [source.name, dataResult, dataset]);
 
+    console.log("Data REsult ", dataResult, dataset)
+
 
     const Layer = useEffect(() => {
 
@@ -287,6 +289,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                     });
                     break;
                 case GeomType.Polygon:
+                    console.log("Polygon layer ",)
                     //@ts-ignore
                     layer = new PolygonLayer({
                         //@ts-ignore
