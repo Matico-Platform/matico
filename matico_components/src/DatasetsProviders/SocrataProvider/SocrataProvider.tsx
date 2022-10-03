@@ -10,10 +10,7 @@ import {
   Link,
   ProgressBar,
   Button,
-  Heading,
-} from "@adobe/react-spectrum";
-
-import {
+  Heading, Switch, } from "@adobe/react-spectrum"; import {
   DatasetProviderComponent,
   DatasetProvider,
 } from "Datasets/DatasetProvider";
@@ -34,6 +31,7 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
 
   const [latitudeCol, setLatitudeCol] = useState<string | null>(null);
   const [longitudeCol, setLongitudeCol] = useState<string | null>(null);
+  const [includeGeom, setIncludeGeom] = useState<boolean >(false)
 
   const selectedPortal = portals
     ? portals.find(
@@ -51,8 +49,7 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
     if(format==='GeoJSON'){
       onSubmit({
           type:'geoJSON',
-          url: `https://${dataset.metadata.domain}/api/geospatial/${dataset.resource.id}?method=export&format=GeoJSON`,
-          name: dataset.resource.name,
+          url: `https://${dataset.metadata.domain}/api/geospatial/${dataset.resource.id}?method=export&format=GeoJSON`, name: dataset.resource.name,
       });
     }
     else{
@@ -60,8 +57,8 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
           type: 'csv',
           url: `https://${dataset.metadata.domain}/api/views/${dataset.resource.id}/rows.csv?accessType=DOWNLOAD`,
           name: dataset.resource.name,
-          latCol: latitudeCol,
-          lngCol: longitudeCol,
+          latCol: includeGeom ? latitudeCol : null,
+          lngCol: includeGeom ? longitudeCol : null,
           idColumn:""
       });
 
@@ -161,34 +158,40 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
         selectedDataset && (
           <Flex direction="column" width="100%" gap='size-200'>
             <Flex direction="row"  justifyContent="center" gap='size-200'>
-              <Picker
-                label="Latitude Column"
-                selectedKey={latitudeCol}
-                onSelectionChange={setLatitudeCol}
-                items={selectedDataset.resource.columns_name.map((c) => ({
-                  id: c,
-                  name: c,
-                }))}
-              >
-                {(item) => <Item key={item.id}>{item.name}</Item>}
-              </Picker>
-              <Picker
-                label="Longitude Column"
-                selectedKey={longitudeCol}
-                onSelectionChange={setLongitudeCol}
-                items={selectedDataset.resource.columns_name.map((c) => ({
-                  id: c,
-                  name: c,
-                }))}
-              >
-                {(item) => <Item key={item.id}>{item.name}</Item>}
-              </Picker>
+              <Switch onChange={setIncludeGeom} isSelected={includeGeom}>Add Geometry</Switch>
+              {includeGeom && 
+                <>
+
+                <Picker
+                  label="Latitude Column"
+                  selectedKey={latitudeCol}
+                  onSelectionChange={setLatitudeCol}
+                  items={selectedDataset.resource.columns_name.map((c) => ({
+                    id: c,
+                    name: c,
+                  }))}
+                >
+                  {(item) => <Item key={item.id}>{item.name}</Item>}
+                </Picker>
+                <Picker
+                  label="Longitude Column"
+                  selectedKey={longitudeCol}
+                  onSelectionChange={setLongitudeCol}
+                  items={selectedDataset.resource.columns_name.map((c) => ({
+                    id: c,
+                    name: c,
+                  }))}
+                >
+                  {(item) => <Item key={item.id}>{item.name}</Item>}
+                </Picker>
+                </>
+              }
             </Flex>
 
               <Button
                 onPress={() => attemptToLoadDataset(selectedDataset, "CSV")}
                 variant="cta"
-                isDisabled={!(latitudeCol && longitudeCol)}
+                isDisabled={!(!includeGeom || ( includeGeom && latitudeCol && longitudeCol))}
               >
                 Load Dataset
               </Button>
