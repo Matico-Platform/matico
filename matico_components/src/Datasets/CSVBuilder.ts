@@ -29,15 +29,16 @@ export const CSVBuilder = async (details: CSVDataset) => {
 
   let data= await loadCSV(url,{})
   let geomType = extractGeomType(latCol,lngCol)
-
-
-  let geoms = data.select({[latCol] : 'lat', [lngCol]:"lng"}).derive({
-    geom:escape((d)=>{
-      return new wkx.Point(d.lng,d.lat).toWkb()
+  if(geomType !== GeomType.None){
+    let geoms = data.select({[latCol] : 'lat', [lngCol]:"lng"}).derive({
+      geom:escape((d)=>{
+        return new wkx.Point(d.lng,d.lat).toWkb()
+      })
     })
-  })
-  
-  data= data.assign(geoms.select("geom"))
+    
+    data= data.assign(geoms.select("geom"))
+  }
+
 
   return new LocalDataset(
     name,
