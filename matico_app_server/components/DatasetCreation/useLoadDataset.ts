@@ -5,49 +5,68 @@ import { useEffect, useState } from "react";
 import wkx from "wkx";
 
 const fileType = (file: File) => {
-  if (file.type.length){
-    switch(file.type){
+  if (file.type.length) {
+    switch (file.type) {
       case "application/csv":
       case "text/csv":
         return "csv";
       case "application/geo+json":
       case "application/json":
-        return "geojson" 
-        case "application/zip":
-        return "shp"
+        return "geojson";
+      case "application/zip":
+        return "shp";
     }
   } else if (file.name.length) {
-    const fileType = file.name.split('.').slice(-1)[0].toLowerCase()
-    switch(fileType){
+    const fileType = file.name.split(".").slice(-1)[0].toLowerCase();
+    switch (fileType) {
       case "csv":
-        return "csv" 
+        return "csv";
       case "geojson":
       case "json":
-        return "geojson"
+        return "geojson";
       case "zip":
-        return "shp" 
-    } 
+        return "shp";
+    }
   } else {
-    return null
+    return null;
   }
 };
-  
-export const useLoadDataset= (file: File | null) => {
+
+export const useLoadDataset = (
+  file: File | null,
+  latCol?: string,
+  lngCol?: string
+) => {
+  const [rawData, setRawData] = useState<ColumnTable | null>(null);
   const [data, setData] = useState<ColumnTable | null>(null);
-  useEffect(()=>{
-    if(file){
-      const fType = fileType(file)
-      if (fType=== "csv") {
-        loadCSV(file).then((table:ColumnTable)=> setData(table));
+  const [fType, setFType] = useState<"csv" | "geojson" | null>(null);
+  useEffect(() => {
+    if (file) {
+      const fType = fileType(file);
+      if (fType === "csv") {
+        loadCSV(file).then((table: ColumnTable) => setRawData(table));
+        setFType("csv");
       }
-      if(fType === "geojson"){
-        loadGeoJSON(file).then((table:ColumnTable)=> setData(table));
+      if (fType === "geojson") {
+        loadGeoJSON(file).then((table: ColumnTable) => setRawData(table));
+        setFType("geojson");
       }
     }
+  }, [file]);
 
+  useEffect(()=>{
+      if (fType === "csv" && latCol && lngCol && rawData){
+        setData(assignGeomColsFromLatLng(rawData, latCol, lngCol))
+      }
+      else{
+        setData(rawData)
+      }
+  },[rawData,latCol,lngCol,fType])
 
-  },[file])
-  return { data };
+  return {
+    data,
+    fileType: fType,
+  };
 };
 
 export const assignGeomColsFromLatLng = (
@@ -55,6 +74,7 @@ export const assignGeomColsFromLatLng = (
   latCol: string,
   lngCol: string
 ) => {
+  console.log("Assigning lat lng column ")
   let geoms = table.select({ [latCol]: "lat", [lngCol]: "lng" }).derive({
     geom: escape((d: { lat: number; lng: number }) => {
       return new wkx.Point(d.lng, d.lat).toWkb();
