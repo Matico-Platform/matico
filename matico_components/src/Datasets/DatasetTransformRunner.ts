@@ -3,18 +3,33 @@ import {
     AggregationType,
     DatasetTransform,
     DatasetTransformStep,
+    ColumnTransformStep,
     FilterStep,
-    JoinStep
+    ColumnTransform,
+    JoinStep,
+    StringOpts,
+    IntOpts,
+    DateOpts,
+    FloatOpts
 } from "@maticoapp/matico_types/spec";
 import ColumnTable from "arquero/dist/types/table/column-table";
 import { applyFilters, LocalDataset } from "./LocalDataset";
-import { op, escape} from "arquero";
+import { op, escape } from "arquero";
+
+export interface TransformStepPreview {
+    table: ColumnTable;
+    noRows: number;
+}
 
 export class TransformStepError extends Error {
     public transformId: string;
     public stepNo: number;
-
-    constructor(transformId: string, stepNo: number, message: string) {
+    constructor(
+        transformId: string,
+        stepNo: number,
+        message: string,
+        retainStepPreview: boolean = false
+    ) {
         super(message);
         this.name = "TransformStepError";
         this.message = message;
@@ -24,10 +39,18 @@ export class TransformStepError extends Error {
 }
 
 export interface DatasetTransformRunnerInterface extends DatasetTransform {
+    retainStepPreview: boolean;
+    stepPreviews: Array<TransformStepPreview>;
     requiredDatasets(): Array<string>;
     runTransform(datasets: Record<string, LocalDataset>): ColumnTable;
     applyStep(
         step: DatasetTransformStep,
+        table: ColumnTable,
+        datasets: Record<string, LocalDataset>,
+        stepNo: number
+    ): ColumnTable;
+    applyColumnTransform(
+        step: ColumnTransformStep,
         table: ColumnTable,
         datasets: Record<string, LocalDataset>,
         stepNo: number
@@ -50,28 +73,45 @@ export interface DatasetTransformRunnerInterface extends DatasetTransform {
         datasets: Record<string, LocalDataset>,
         stepNo: number
     ): ColumnTable;
+    convertToDate(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: DateOpts
+    ): ColumnTable;
+    convertToString(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: StringOpts
+    ): ColumnTable;
+    convertToFloat(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: FloatOpts
+    ): ColumnTable;
+    convertToInt(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: IntOpts
+    ): ColumnTable;
 }
 
-function oppTypeToOp(aggType: AggregationType, column:string): any {
-    console.log("getting op type for ", aggType);
+function oppTypeToOp(aggType: AggregationType, column: string): any {
     switch (aggType) {
         case "min":
-            console.log("retruning min");
             return op.min(column);
         case "max":
-            console.log("retruning max");
             return op.max(column);
         case "sum":
-            console.log("retruning sum");
             return op.sum(column);
         case "mean":
-            console.log("retruning mean");
             return op.mean(column);
         case "median":
-            console.log("retruning median");
             return op.median(column);
         case "standardDeviation":
-            console.log("retruning stddev");
             return op.stdev(column);
         default:
             throw new Error(`Aggregation method not supported : {aggType}`);
@@ -84,13 +124,20 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
     description: string;
     sourceId: string;
     steps: DatasetTransformStep[];
+    retainStepPreview: boolean;
+    public stepPreviews: Array<TransformStepPreview>;
 
-    constructor(datasetTransform: DatasetTransform) {
+    constructor(
+        datasetTransform: DatasetTransform,
+        retainStepPreview: boolean
+    ) {
         this.id = datasetTransform.id;
-        (this.name = datasetTransform.name),
-            (this.description = datasetTransform.description),
-            (this.sourceId = datasetTransform.sourceId),
-            (this.steps = datasetTransform.steps);
+        this.retainStepPreview = retainStepPreview;
+        this.stepPreviews = [];
+        this.name = datasetTransform.name;
+        this.description = datasetTransform.description;
+        this.sourceId = datasetTransform.sourceId;
+        this.steps = datasetTransform.steps;
     }
 
     applyJoin(
@@ -108,12 +155,11 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
             );
         }
 
-
         let otherSource = datasets[step.otherSourceId]._data;
         let joinColumns = [step.joinColumnsLeft, step.joinColumnsRight];
-  
-        if(!(step.joinColumnsLeft && step.joinColumnsRight)){
-          return workingTable
+
+        if (!(step.joinColumnsLeft && step.joinColumnsRight)) {
+            return workingTable;
         }
         switch (step.joinType) {
             case "left":
@@ -136,31 +182,125 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
         return workingTable;
     }
 
+    convertToDate(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: DateOpts
+    ) {
+        return table;
+    }
+    convertToString(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: StringOpts
+    ) {
+        return table;
+    }
+    convertToFloat(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: FloatOpts
+    ) {
+        return table;
+    }
+    convertToInt(
+        table: ColumnTable,
+        column: string,
+        fromType: string,
+        details: FloatOpts
+    ) {
+        return table;
+    }
+    applyColumnTransform(
+        step: ColumnTransformStep,
+        table: ColumnTable,
+        datasets: Record<string, LocalDataset>,
+        stepNo: number
+    ): ColumnTable {
+        let workingTable = table;
+        step.transforms.each((transform: ColumnTransform) => {
+            switch (transform.type) {
+                case "rename":
+                    workingTable = workingTable.rename({
+                        [step.column]: transform.to
+                    });
+                case "drop":
+                    workingTable = workingTable.select(
+                        workingTable
+                            .toArrow()
+                            .schema.fields.map((c) => c.name)
+                            .filter((name) => name !== step.column)
+                    );
+                case "changeType":
+                    let fromType = workingTable
+                        .toArrow()
+                        .schema.fields.find((c) => c.name)?.type;
+                    switch (transform.to) {
+                        case "date":
+                            workingTable = this.convertToDate(
+                                workingTable,
+                                transform.column,
+                                fromType,
+                                transform.to
+                            );
+                        case "string":
+                            workingTable = this.convertToString(
+                                workingTable,
+                                transform.column,
+                                fromType,
+                                transform.to
+                            );
+                        case "float":
+                            workingTable = this.convertToFloat(
+                                workingTable,
+                                transform.column,
+                                fromType,
+                                transform.to
+                            );
+                        case "int":
+                            workingTable = this.convertToInt(
+                                workingTable,
+                                transform.column,
+                                fromType,
+                                transform.to
+                            );
+                    }
+            }
+        });
+        return workingTable;
+    }
     applyFilter(
         step: FilterStep,
         table: ColumnTable,
         datasets: Record<string, LocalDataset>,
         stepNo: number
     ): ColumnTable {
-
         try {
-          const filterFunc  = (d: Record<string,any>)=>{
-              let keep = true 
-              step.filters.forEach(f=>{
-                if(f.type==='range' && f.max && f.min){
-                  if(!(f.min < d[f.variable]  &&  d[f.variable] < f.max)) {
-                  keep = false 
-                  }
-                }
-                if(f.type==='category'){
-                  if(!f.isOneOf.includes(d[f.variable])){
-                    keep = false
-                  }
-                }
-              })
-              return keep
-          }
-          return table.filter(escape(filterFunc))
+            const filterFunc = (d: Record<string, any>) => {
+                let keep = true;
+                step.filters.forEach((f) => {
+                    if (
+                        f.type === "range" &&
+                        !(f.max === undefined || f.max === null) &&
+                        !(f.min === undefined || f.min === null)
+                    ) {
+                        if (!(f.min < d[f.variable] && d[f.variable] < f.max)) {
+                            keep = false;
+                        }
+                    }
+                    if (f.type === "category") {
+                        if (!f.isOneOf.includes(d[f.variable])) {
+                            keep = false;
+                        }
+                    }
+                });
+                return keep;
+            };
+            let result = table.filter(escape(filterFunc));
+            return result;
         } catch (err) {
             throw new TransformStepError(
                 this.id,
@@ -179,7 +319,7 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
         let rollUps = step.aggregate.reduce(
             (rollUps, agg) => ({
                 ...rollUps,
-                [agg.rename ?? `${agg.aggType}_${agg.column}`]:  oppTypeToOp(
+                [agg.rename ?? `${agg.aggType}_${agg.column}`]: oppTypeToOp(
                     agg.aggType,
                     agg.column
                 )
@@ -197,6 +337,12 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
         let baseTable = datasets[this.sourceId]._data;
         this.steps.forEach((step, index) => {
             baseTable = this.applyStep(step, baseTable, datasets, index);
+            if(this.retainStepPreview){
+              this.stepPreviews.push({
+                table: baseTable.slice(0,10).reify(),
+                noRows: baseTable.size
+              })
+            }
         });
         return baseTable;
     }

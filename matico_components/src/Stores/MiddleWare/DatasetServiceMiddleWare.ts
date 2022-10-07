@@ -89,10 +89,10 @@ export const DatasetServiceMiddleWare = () => {
                 });
                 break;
             case "datasets/requestTransform":
-                worker.applyTransform(action.payload).then((data: Array<any>) => {
+                worker.applyTransform(action.payload, true).then((result: any) => {
                   store.dispatch({
                     type: "datasets/gotTransformResult",
-                    payload:{ transformId: action.payload.id, result: data},
+                    payload:{ transformId: action.payload.id, result},
                   });
                 })
                 .catch((err:Error)=>{

@@ -16,6 +16,7 @@ pub enum DatasetTransformStep{
    Aggregate(AggregateStep),
    Join(JoinStep),
    Compute(WASMCompute),
+   ColumnTransformStep(ColumnTransformStep)
 } 
 
 impl Default for DatasetTransformStep{
@@ -51,6 +52,7 @@ pub struct AggregateStep{
     #[wasm_bindgen(skip)]
     pub aggregate:Vec<AggregationSummary>
 }
+
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
 #[serde(rename_all = "camelCase")]
@@ -59,6 +61,123 @@ pub struct FilterStep{
     #[wasm_bindgen(skip)]
     pub filters:Vec<Filter>
 }
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct Rename{
+    #[wasm_bindgen(skip)]
+    pub to: String
+}
+
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[serde(rename_all = "camelCase", tag="type")]
+#[ts(export)]
+pub enum ColumnTransform{
+    ChangeType(ChangeType),
+    Rename(Rename),
+    Drop
+}
+
+impl Default for ColumnTransform{
+    fn default() -> Self {
+        ColumnTransform::Drop
+    }
+}
+
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[serde(rename_all = "camelCase", tag="type")]
+#[ts(export)]
+pub struct DateOpts{
+    format: Option<String>
+}
+
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[serde(rename_all = "camelCase", tag="type")]
+#[ts(export)]
+pub struct StringOpts{
+    template: Option<String>
+}
+
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[serde(rename_all = "camelCase", tag="type")]
+#[ts(export)]
+pub struct IntOpts{
+    pub null_val: Option<i32>
+}
+
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[serde(rename_all = "camelCase", tag="type")]
+#[ts(export)]
+pub struct FloatOpts{
+    pub null_val: Option<i32>
+}
+impl Default for DateOpts{
+    fn default() -> Self {
+       DateOpts{
+          format:Some("YYYY-MM-DD".into()) 
+        } 
+    }
+}
+impl Default for StringOpts{
+    fn default() -> Self {
+       StringOpts{
+          template:None 
+        } 
+    }
+}
+
+impl Default for IntOpts{
+    fn default() -> Self {
+        IntOpts{
+            null_val:None
+        }
+    }
+}
+
+impl Default for FloatOpts{
+    fn default() -> Self {
+        FloatOpts{
+            null_val:None
+        }
+    }
+}
+
+
+#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+#[serde(rename_all = "camelCase", tag="type")]
+#[ts(export)]
+pub enum ChangeType{
+    Date(DateOpts),
+    String(StringOpts),
+    Int(IntOpts),
+    Float(FloatOpts)
+}
+
+impl Default for ChangeType{
+    fn default() -> Self {
+        ChangeType::Int(IntOpts::default())
+    }
+}
+
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ColumnTransformStep{
+    #[wasm_bindgen(skip)]
+    pub column: String,
+    #[wasm_bindgen(skip)]
+    pub transform: ColumnTransform
+}
+
+// impl Default for ColumnTransform{
+//     fn default() -> Self {
+//         ColumnTransform { column: "".into(), transform: ColumnTransformOp::Int}
+//     }
+// }
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]

@@ -41,6 +41,11 @@ export const useRequestData = (request?:DataRequest) => {
         (state) => state.datasets.queries[requestHash]
     );
 
+    const dataset = useMaticoSelector(
+        (state)=> state.datasets.datasets[request.datasetName]
+    )
+    console.log("dataset is ",dataset)
+
     useEffect(() => {
         if (!result && request) {
             dispatch(

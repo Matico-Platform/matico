@@ -168,6 +168,11 @@ export class CSVDataset {
 }
 /**
 */
+export class ColumnTransformStep {
+  free(): void;
+}
+/**
+*/
 export class ContainerPane {
   free(): void;
 }
@@ -422,6 +427,11 @@ export class PieChartPane {
 /**
 */
 export class RangeControl {
+  free(): void;
+}
+/**
+*/
+export class Rename {
   free(): void;
 }
 /**

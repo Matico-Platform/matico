@@ -26,7 +26,6 @@ import Compute from "@spectrum-icons/workflow/Calculator";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { CollapsibleSection } from "../CollapsibleSection";
 import Delete from "@spectrum-icons/workflow/Delete";
-import { useTransform } from "Hooks/useTransform";
 import { LoadingSpinner } from "../LoadingSpinner/LoadingSpinner";
 import { JoinStepEditor } from "./JoinStep";
 import { AggregateStepEditor } from "./AggregateStep";
@@ -34,6 +33,7 @@ import { FilterStepEditor } from "./FilterStep";
 import { AddTransformStepDialog } from "./AddTransformStep";
 import { DatasetState } from "Datasets/Dataset";
 import { DatasetStatusColors } from "Components/MaticoEditor/Panes/DatasetsEditor";
+import {useRequestData} from "Hooks/useRequestData";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -140,7 +140,8 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
         addStep
     } = useDatasetTransform(transformId);
 
-    const transformResult = useTransform(datasetTransform);
+    const transformResult = useRequestData({datasetName:datasetTransform.name});
+    console.log("Transform result ", transformResult)
 
     return (
         <Flex direction="column" gap={"size-300"} width="100%" height="100%">

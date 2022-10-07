@@ -34,7 +34,7 @@ export interface DatasetServiceInterface {
         notifierId: string,
         notifier: Notifier
     ) => void;
-    applyTransform: (transform: DatasetTransform) => Promise<any>;
+    applyTransform: (transform: DatasetTransform, retainStepPreview?:boolean) => Promise<any>;
     registerForUpdates(
         datasetName: string,
         callback: (data: Array<any>) => void,
@@ -75,10 +75,12 @@ export const DatasetService: DatasetServiceInterface = {
       delete this.notifiers[dataset.name]
     },
     async applyTransform(transform: DatasetTransform) {
-        let transformer = new DatasetTransformRunner(transform);
-        return Promise.resolve(
-            transformer.runTransform(this.datasets).objects()
-        );
+        let transformer = new DatasetTransformRunner(transform, true);
+
+        return Promise.resolve({
+            data:transformer.runTransform(this.datasets).objects(),
+            stepPreviews: transformer.stepPreviews
+        });
     },
 
     async registerColumnData(
@@ -192,9 +194,9 @@ export const DatasetService: DatasetServiceInterface = {
     },
     async registerOrUpdateTransform(
         datasetTransform: DatasetTransform,
-        updateCallback: (summart: DatasetSummary) => void
+        updateCallback: (summary: DatasetSummary) => void
     ) {
-        const transform = new DatasetTransformRunner(datasetTransform);
+        const transform = new DatasetTransformRunner(datasetTransform,true);
 
         const runTransform = async () => {
             try {
@@ -212,6 +214,7 @@ export const DatasetService: DatasetServiceInterface = {
                         geomType
                     );
                     this.datasets[datasetTransform.name] = newDataset;
+                    console.log("Returning with update callback")
                     updateCallback({
                         name: newDataset.name,
                         state: DatasetState.READY,
@@ -221,7 +224,8 @@ export const DatasetService: DatasetServiceInterface = {
                         raster: false,
                         tiled: false,
                         spec: datasetTransform,
-                        transform: true
+                        transform: true,
+                        steps: transform.stepPreviews
                     });
                     this._notify(newDataset.name)
                 }

@@ -494,6 +494,22 @@ export class CSVDataset {
 }
 /**
 */
+export class ColumnTransformStep {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_columntransformstep_free(ptr);
+    }
+}
+/**
+*/
 export class ContainerPane {
 
     __destroy_into_raw() {
@@ -1587,6 +1603,22 @@ export class RangeControl {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_rangecontrol_free(ptr);
+    }
+}
+/**
+*/
+export class Rename {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_rename_free(ptr);
     }
 }
 /**
