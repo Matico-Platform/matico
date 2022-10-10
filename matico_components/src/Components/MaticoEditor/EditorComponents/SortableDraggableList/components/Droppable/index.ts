@@ -1,1 +1,1 @@
-export {Droppable} from './Droppable';
+export { Droppable } from "./Droppable";

@@ -14,7 +14,7 @@ import {
     ContainerPane,
     MapPane
 } from "@maticoapp/matico_types/spec";
-import {LayerEditor} from "./Panes/LayerEditor";
+import { LayerEditor } from "./Panes/LayerEditor";
 
 export interface MaticoEditorProps {
     editActive: boolean;
@@ -30,7 +30,6 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
         return <AppEditor />;
     }
     const { type, id, parentId } = element;
-
 
     if (type === "page") {
         return <PageEditor id={id} />;
@@ -48,11 +47,12 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
             const Editor = Editors[paneRef.type];
             return <Editor paneRef={paneRef} />;
         }
-    }
-    else if(type==='layer'){
-      const maps: Array<MapPane>= panes.filter((p:Pane)=> ['map','staticMap'].includes(p.type)) as Array<MapPane>
-      const map = maps.find(m=>m.layers.find(l=>l.id===element.id)) 
-      return(<LayerEditor layerId={element.id} mapId={map.id}/>)
+    } else if (type === "layer") {
+        const maps: Array<MapPane> = panes.filter((p: Pane) =>
+            ["map", "staticMap"].includes(p.type)
+        ) as Array<MapPane>;
+        const map = maps.find((m) => m.layers.find((l) => l.id === element.id));
+        return <LayerEditor layerId={element.id} mapId={map.id} />;
     }
     return <AppEditor />;
 };
@@ -97,9 +97,18 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
         base: "35vh"
     };
 
-      return(
-          <View overflow={"hidden auto"} height={height} paddingTop="3em" UNSAFE_style={{boxSizing: 'border-box'}}>
-            {spec ? <EditPane element={currentEditElement} /> : <h1>Loading</h1>}
-          </View>
-      )
+    return (
+        <View
+            overflow={"hidden auto"}
+            height={height}
+            paddingTop="3em"
+            UNSAFE_style={{ boxSizing: "border-box" }}
+        >
+            {spec ? (
+                <EditPane element={currentEditElement} />
+            ) : (
+                <h1>Loading</h1>
+            )}
+        </View>
+    );
 };

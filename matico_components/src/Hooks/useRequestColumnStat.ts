@@ -48,7 +48,6 @@ export const useRequestColumnStats = (requests: Array<ColumnStatRequest>) => {
 
     const notifierId = useMemo(() => uuid(), []);
 
-
     useEffect(() => {
         if (!haveAll && requests) {
             requests.forEach((request, index) => {

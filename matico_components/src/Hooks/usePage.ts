@@ -9,7 +9,7 @@ import {
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
 import { DefaultPosition } from "Components/MaticoEditor/Utils/PaneDetails";
-import {usePaneContainer} from "./usePaneContainer";
+import { usePaneContainer } from "./usePaneContainer";
 
 // interface ParentActions {
 //     addPaneToParent: (p: Pane, position: PanePosition) => void;
@@ -33,9 +33,10 @@ export const usePage = (pageId: string) => {
     const page = useMaticoSelector((selector) =>
         selector.spec.spec.pages.find((p: Page) => p.id == pageId)
     );
-    const {addPaneToContainer, removePaneRefFromContainer} = usePaneContainer(page?.id)
+    const { addPaneToContainer, removePaneRefFromContainer } = usePaneContainer(
+        page?.id
+    );
     const allPanes = useMaticoSelector((selector) => selector.spec.spec.panes);
-
 
     // possible race condition after deletion
     if (!page) return {};
@@ -43,7 +44,6 @@ export const usePage = (pageId: string) => {
     const panes = page.panes.map((paneRef: PaneRef) =>
         allPanes.find((p: Pane) => p.id === paneRef.paneId)
     );
-
 
     const updatePage = (update: Partial<Page>) => {
         dispatch(updatePageDetails({ pageId, update }));

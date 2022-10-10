@@ -12,10 +12,10 @@ export const updateDragOrResize = ({
 }: {
     updatePanePosition: (position: any) => void;
     parentDimensions: DOMRect;
-    xUnits: string, 
-    yUnits: string,
-    widthUnits: string,
-    heightUnits: string,
+    xUnits: string;
+    yUnits: string;
+    widthUnits: string;
+    heightUnits: string;
     newX?: number;
     newY?: number;
     newWidth?: number;

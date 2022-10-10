@@ -7,7 +7,7 @@ import {
     DialogTrigger,
     Flex,
     Heading,
-    Text,
+    Text
 } from "@adobe/react-spectrum";
 import { Page } from "@maticoapp/matico_types/spec";
 import { usePage } from "Hooks/usePage";
@@ -43,11 +43,17 @@ interface PageListProps {
 // };
 // div style={{ position: "relative", marginTop: "2em", ...style }}
 
-export const PageList: React.FC<PageListProps> = ({ page, route, showPanes=true }) => {
+export const PageList: React.FC<PageListProps> = ({
+    page,
+    route,
+    showPanes = true
+}) => {
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
-    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
-     const depth = 0;
+    const activeItem = useMaticoSelector(
+        (state) => state.editor.activeDragItem
+    );
+    const depth = 0;
     const { isOver, setNodeRef } = useDroppable({
         id,
         data: {
@@ -102,7 +108,7 @@ export const PageList: React.FC<PageListProps> = ({ page, route, showPanes=true 
             >
                 <HoverableRow
                     ref={setSortableNodeRef}
-                    style={{ ...style, marginTop: "1em", color:"white" }}
+                    style={{ ...style, marginTop: "1em", color: "white" }}
                 >
                     <DragContainer onClick={handlePageButtonClick}>
                         <Flex direction="row" justifyContent="space-between">
@@ -120,7 +126,7 @@ export const PageList: React.FC<PageListProps> = ({ page, route, showPanes=true 
                                     UNSAFE_style={{
                                         padding: "0 .5em",
                                         fontWeight: "bold",
-                                        color:"white"
+                                        color: "white"
                                     }}
                                 >
                                     {pageName}

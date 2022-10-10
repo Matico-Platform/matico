@@ -3,7 +3,6 @@ import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 import React, { useState } from "react";
 import { CollapsibleSectionProps } from "./types";
 
-
 export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     title = "",
     children = null,
@@ -36,9 +35,15 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     ...titleStyle
                 }}
             >
-              <Flex direction='row' gap='size-200' justifyContent='start' alignItems='center'>
-                {icon}{title}
-              </Flex>
+                <Flex
+                    direction="row"
+                    gap="size-200"
+                    justifyContent="start"
+                    alignItems="center"
+                >
+                    {icon}
+                    {title}
+                </Flex>
                 <ChevronDown
                     aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
                     size="XS"
@@ -48,7 +53,11 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     }}
                 />
             </Button>
-            <View height={open ? "auto" : 0} overflow="hidden hidden" padding="size-100">
+            <View
+                height={open ? "auto" : 0}
+                overflow="hidden hidden"
+                padding="size-100"
+            >
                 <Flex
                     direction="column"
                     alignItems="start"

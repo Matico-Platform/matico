@@ -28,7 +28,7 @@ import { FilterEditor } from "Components/MaticoEditor/Utils/FilterEditor";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 
 interface ColumnTransformEditorProps {
-    datasetId: string,
+    datasetId: string;
     transform: ColumnTransform;
     onUpdateTransform: (update: Partial<ColumnTransform>) => void;
 }
@@ -66,9 +66,14 @@ export const ColumnTransformStepEditor: React.FC<{
     //     index===i ? update : filter
     //                                    )})
     // }
-    const addNewTransform= ()=>{
-      onChange({transforms: [...step.transforms, {column: "", to:{"type":'string'}}]})
-    }
+    const addNewTransform = () => {
+        onChange({
+            transforms: [
+                ...step.transforms,
+                { column: "", to: { type: "string" } }
+            ]
+        });
+    };
 
     return (
         <Flex direction="row" gap={"size-300"}>
@@ -84,7 +89,9 @@ export const ColumnTransformStepEditor: React.FC<{
                         onUpdateTransform={(update) => console.log(update)}
                     />
                 ))}
-                <ActionButton onPress={()=>addNewTransform()}>Add new</ActionButton>
+                <ActionButton onPress={() => addNewTransform()}>
+                    Add new
+                </ActionButton>
             </Flex>
         </Flex>
     );

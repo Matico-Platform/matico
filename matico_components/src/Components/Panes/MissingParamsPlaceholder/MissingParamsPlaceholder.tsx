@@ -19,9 +19,9 @@ export const MissingParamsPlaceholder: React.FC<{ paneName: string }> = ({
                 }}
             >
                 <Alert size="L" />
-                <br/>
+                <br />
                 {paneName} missing parameters
-                <br/>
+                <br />
                 <i>Click to open editor</i>
             </Text>
         </Flex>

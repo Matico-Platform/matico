@@ -48,8 +48,9 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
         }
     };
 
-    const primaryColor = theme?.primaryColor ? chromaColorFromColorSpecification(theme.primaryColor, false).hex() : "#713066"
-  
+    const primaryColor = theme?.primaryColor
+        ? chromaColorFromColorSpecification(theme.primaryColor, false).hex()
+        : "#713066";
 
     return (
         <View
@@ -61,7 +62,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
             UNSAFE_style={{
                 textAlign: "center",
                 boxSizing: "border-box",
-                backgroundColor:primaryColor 
+                backgroundColor: primaryColor
             }}
         >
             <ButtonGroup
@@ -78,8 +79,9 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
                     <Image
                         alt="Logo"
                         src={
-                          logo && logo.length > 0  ? logo : 
-                            "https://www.matico.app/favicon/favicon-32x32.png"
+                            logo && logo.length > 0
+                                ? logo
+                                : "https://www.matico.app/favicon/favicon-32x32.png"
                         }
                     />
                 </Link>

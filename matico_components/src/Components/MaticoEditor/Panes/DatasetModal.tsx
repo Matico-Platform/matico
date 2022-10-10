@@ -21,7 +21,7 @@ import { useRequestData } from "Hooks/useRequestData";
 import React from "react";
 import { ComputeParameterEditor } from "DatasetsProviders/ComputeProvider";
 import { useDatasetActions } from "Hooks/useDatasetActions";
-import {DataTable} from "../EditorComponents/DataTable/DataTable";
+import { DataTable } from "../EditorComponents/DataTable/DataTable";
 
 interface DatasetModalProps {
     dataset: DatasetSummary;
@@ -31,22 +31,22 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
     children,
     dataset
 }) => {
-    const dataRequest = useRequestData(
-      {
-        datasetName:dataset.name,
+    const dataRequest = useRequestData({
+        datasetName: dataset.name,
         filters: [],
         columns: dataset.columns
             ?.filter((c) => c.type !== "geometry")
             .map((c) => c.name),
-            limit:10
-      });
+        limit: 10
+    });
 
     const { updateDataset } = useDatasetActions(dataset.name);
 
-
     return (
         <DialogTrigger isDismissable>
-            <ActionButton isQuiet={true} width="100%">{children}</ActionButton>
+            <ActionButton isQuiet={true} width="100%">
+                {children}
+            </ActionButton>
 
             <Dialog width="80vw">
                 <Heading>{dataset.name}</Heading>

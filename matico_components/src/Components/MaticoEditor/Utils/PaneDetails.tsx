@@ -6,9 +6,14 @@ import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Border from "@spectrum-icons/workflow/Border";
-import { ContainerPane, Layer, Pane, PanePosition } from "@maticoapp/matico_types/spec";
-import {v4 as uuid} from 'uuid'
-import {MaticoTextPaneComponents as text} from "Components/Panes/MaticoTextPane";
+import {
+    ContainerPane,
+    Layer,
+    Pane,
+    PanePosition
+} from "@maticoapp/matico_types/spec";
+import { v4 as uuid } from "uuid";
+import { MaticoTextPaneComponents as text } from "Components/Panes/MaticoTextPane";
 
 export const IconForPaneType = (PaneType: string, props?: any) => {
     switch (PaneType) {
@@ -17,19 +22,20 @@ export const IconForPaneType = (PaneType: string, props?: any) => {
         case "pieChart":
             return <PieChartIcon {...props} />;
         case "text":
-          const El = text.icon
-          // @ts-ignore
-          return <El {...props} />;
+            const El = text.icon;
+            // @ts-ignore
+            return <El {...props} />;
         case "map":
             return <MapIcon {...props} />;
         case "scatterplot":
             return <ScatterIcon {...props} />;
         case "controls":
-            return <PropertiesIcon {...props}  />;
+            return <PropertiesIcon {...props} />;
         case "container":
-            return <Border {...props} />; 
+            return <Border {...props} />;
         case "staticMap":
-            return <MapIcon {...props} />; }
+            return <MapIcon {...props} />;
+    }
 };
 
 type AvaliablePanesSection = {
@@ -85,9 +91,7 @@ export const DefaultPosition: PanePosition = {
     padUnitsBottom: "pixels"
 };
 
-
-export const FullPosition : PanePosition={
-
+export const FullPosition: PanePosition = {
     x: 0,
     y: 0,
     width: 100,
@@ -106,7 +110,7 @@ export const FullPosition : PanePosition={
     padUnitsRight: "pixels",
     padUnitsTop: "pixels",
     padUnitsBottom: "pixels"
-}
+};
 
 const DefaultView = {
     lat: 40.794983,
@@ -140,14 +144,22 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         view: DefaultView,
         layers: [],
         baseMap: { type: "named", name: "CartoDBVoyager", affiliation: "" },
-        controls: { scale:true, geolocate:true, navigation:true, fullscreen:true },
-        selectionOptions:{selectionEnabled:false, selectionMode:"rectangle"}
+        controls: {
+            scale: true,
+            geolocate: true,
+            navigation: true,
+            fullscreen: true
+        },
+        selectionOptions: {
+            selectionEnabled: false,
+            selectionMode: "rectangle"
+        }
     },
     staticMap: {
         name: "New Map",
         layers: [],
         showGraticule: false,
-        projection:"geoOrthographic" 
+        projection: "geoOrthographic"
     },
     scatterplot: {
         name: "New Scatter",
@@ -177,111 +189,165 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
     },
     container: {
         name: "Container",
-        layout: { type: "free"},
+        layout: { type: "free" },
         panes: []
     }
 };
 
-export type ContainerPresetTypes = "full" | "mainSideBar" | "row" | "column" | "tabs";
+export type ContainerPresetTypes =
+    | "full"
+    | "mainSideBar"
+    | "row"
+    | "column"
+    | "tabs";
 
-export const containerPreset = (name: string, presetType: ContainerPresetTypes) => {
+export const containerPreset = (
+    name: string,
+    presetType: ContainerPresetTypes
+) => {
+    switch (presetType) {
+        case "full":
+            let full = {
+                id: uuid(),
+                name: name,
+                layout: { type: "free", allowOverflow: false },
+                type: "container",
+                panes: []
+            };
+            return { container: full, additionalPanes: [] };
 
-  switch(presetType){
-    case "full":
+        case "column":
+            let rowContainer = {
+                id: uuid(),
+                name: name,
+                type: "container",
+                layout: {
+                    type: "linear",
+                    gap: "small",
+                    direction: "row",
+                    justify: "start",
+                    align: "center",
+                    allowOverflow: true
+                },
+                panes: []
+            };
+            return { container: rowContainer, additionalPanes: [] };
 
-      let full ={
-        id:uuid(),
-        name:name,
-        layout: {type:"free", allowOverflow:false},
-        type: 'container',
-        panes:[]
-      }
-      return {container: full, additionalPanes:[]}
-    
-    case "column":
-      let rowContainer ={
-        id:uuid(),
-        name:name,
-        type: 'container',
-        layout: {type:"linear", gap:"small", direction:"row", justify:'start', align:"center", allowOverflow:true},
-        panes:[]
-      }
-      return {container: rowContainer, additionalPanes:[]}
+        case "row":
+            let columnContainer = {
+                id: uuid(),
+                name: name,
+                type: "container",
+                layout: {
+                    type: "linear",
+                    gap: "small",
+                    direction: "column",
+                    justify: "start",
+                    align: "center",
+                    allowOverflow: true
+                },
+                panes: []
+            };
+            return { container: columnContainer, additionalPanes: [] };
 
-    case "row":
-      let columnContainer ={
-        id:uuid(),
-        name:name,
-        type: 'container',
-        layout: {type:"linear", gap:"small", direction:"column", justify:'start', align:"center", allowOverflow:true},
-        panes:[]
-      }
-      return {container: columnContainer, additionalPanes:[]}
+        case "tabs":
+            let tabOne = {
+                id: uuid(),
+                type: "container",
+                name: `${name}: Tab 1`,
+                layout: { type: "free", allowOverflow: false },
+                panes: []
+            };
+            let tabTwo = {
+                id: uuid(),
+                type: "container",
+                name: `${name}: Tab 2`,
+                layout: { type: "free", allowOverflow: false },
+                panes: []
+            };
+            let tabContainer = {
+                id: uuid(),
+                name: name,
+                type: "container",
+                layout: { type: "tabs", tabBarPosition: "horizontal" },
+                panes: [
+                    {
+                        id: uuid(),
+                        type: "container",
+                        paneId: tabOne.id,
+                        position: { ...FullPosition, width: 100, heigh: 100 }
+                    },
+                    {
+                        id: uuid(),
+                        type: "container",
+                        paneId: tabTwo.id,
+                        position: { ...FullPosition, width: 100, heigh: 100 }
+                    }
+                ]
+            };
+            return {
+                container: tabContainer,
+                additionalPanes: [tabOne, tabTwo]
+            };
 
-    case "tabs":
-      let tabOne = {
-        id:uuid(),
-        type: 'container',
-        name: `${name}: Tab 1`,
-        layout: {type: 'free', allowOverflow:false},
-        panes:[]
-      }
-      let tabTwo= {
-        id:uuid(),
-        type: 'container',
-        name: `${name}: Tab 2`,
-        layout: {type: 'free', allowOverflow:false},
-        panes:[]
-      }
-      let tabContainer={
-        id:uuid(),
-        name:name,
-        type:'container',
-        layout:{type:'tabs', tabBarPosition:'horizontal'},
-        panes:[
-          {id:uuid(), type:'container', paneId:tabOne.id, position: {...FullPosition, width:100, heigh:100}},
-          {id:uuid(), type:'container', paneId:tabTwo.id, position: {...FullPosition, width:100, heigh:100}},
-        ]
-      }
-      return {container: tabContainer, additionalPanes:[tabOne,tabTwo]}
+        case "mainSideBar":
+            let MainContentPane = {
+                id: uuid(),
+                type: "container",
+                name: `${name}: Main`,
+                layout: { type: "free", allowOverflow: false },
+                panes: []
+            };
 
+            let SideBar = {
+                id: uuid(),
+                type: "container",
+                name: `${name}: SideBar`,
+                layout: {
+                    type: "linear",
+                    direction: "column",
+                    gap: "small",
+                    allowOverflow: true,
+                    justify: "start",
+                    align: "center"
+                },
+                panes: []
+            };
 
-    case "mainSideBar":
+            let mainSideBarHorizontal = {
+                id: uuid(),
+                type: "container",
+                name: name,
+                layout: {
+                    type: "linear",
+                    direction: "row",
+                    gap: "small",
+                    justify: "start",
+                    align: "center",
+                    allowOverflow: false
+                },
+                panes: [
+                    {
+                        id: uuid(),
+                        type: "container",
+                        paneId: MainContentPane.id,
+                        position: { ...FullPosition, width: 70 }
+                    },
+                    {
+                        id: uuid(),
+                        type: "container",
+                        paneId: SideBar.id,
+                        position: { ...FullPosition, width: 30 }
+                    }
+                ]
+            };
 
-      let MainContentPane = {
-        id: uuid(),
-        type: 'container',
-        name:`${name}: Main`,
-        layout:{type:"free", allowOverflow:false },
-        panes:[]
-      }
+            return {
+                container: mainSideBarHorizontal,
+                additionalPanes: [MainContentPane, SideBar]
+            };
 
-      let SideBar= {
-        id:uuid(),
-        type:'container',
-        name: `${name}: SideBar`,
-        layout:{type:"linear", direction:"column", gap:"small",  allowOverflow:true, 
-            justify: "start",
-            align: "center"
-        },
-        panes:[]
-      }
-  
-      let mainSideBarHorizontal ={
-        id: uuid(),
-        type:"container",
-        name:name,
-        layout:{type: "linear", direction:"row", gap:'small', justify:'start', align:"center", allowOverflow:false},
-        panes:[
-          {id:uuid(), type:'container', paneId:MainContentPane.id, position: {...FullPosition, width:70}},
-          {id:uuid(), type:'container', paneId:SideBar.id, position: {...FullPosition, width:30}},
-        ]
-      }
-
-      return {container: mainSideBarHorizontal, additionalPanes:[MainContentPane,SideBar]}
-
-      default:
-        throw(`Unsupported container layout ${ presetType}`)
-
+        default:
+            throw `Unsupported container layout ${presetType}`;
     }
-}
+};

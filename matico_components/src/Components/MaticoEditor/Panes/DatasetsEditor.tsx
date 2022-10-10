@@ -22,39 +22,48 @@ import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
 import { addDataset } from "Stores/MaticoSpecSlice";
 import { DatasetProvider } from "Datasets/DatasetProvider";
 import { Dataset as DatasetSpec } from "@maticoapp/matico_types/spec";
-import {DatasetTransfromPane} from "../EditorComponents/DatasetTransformPane/DatasetTransformPane";
-import Delete from "@spectrum-icons/workflow/Delete"
-import {useDatasetActions} from "Hooks/useDatasetActions";
+import { DatasetTransfromPane } from "../EditorComponents/DatasetTransformPane/DatasetTransformPane";
+import Delete from "@spectrum-icons/workflow/Delete";
+import { useDatasetActions } from "Hooks/useDatasetActions";
 
 interface DatasetEditorProps {
     dataset: DatasetSummary;
 }
-export const DatasetStatusColors: Record<DatasetState, "yellow" | "negative" | "positive"> =
-    {
-        [DatasetState.LOADING]: "yellow",
-        [DatasetState.ERROR]: "negative",
-        [DatasetState.READY]: "positive"
-    };
+export const DatasetStatusColors: Record<
+    DatasetState,
+    "yellow" | "negative" | "positive"
+> = {
+    [DatasetState.LOADING]: "yellow",
+    [DatasetState.ERROR]: "negative",
+    [DatasetState.READY]: "positive"
+};
 
 export const DatasetEditor: React.FC<DatasetEditorProps> = ({ dataset }) => {
-    const {removeDataset}  = useDatasetActions(dataset.name)
+    const { removeDataset } = useDatasetActions(dataset.name);
 
     return (
-      <Flex direction='row' alignItems='space-between' justifyContent='center' >
-        <DatasetModal dataset={dataset}>
-            <Flex
-                direction="row"
-                gap="small"
-                flex={1}
-                alignItems="center"
-                justifyContent="space-between"
-            >
-                <Text>{dataset.name}</Text>
-                <StatusLight variant={DatasetStatusColors[dataset.state]} />
-          </Flex>
-        </DatasetModal>
-        <ActionButton isQuiet onPress={()=>removeDataset(dataset.name)}> <Delete /> </ActionButton>
-      </Flex>
+        <Flex
+            direction="row"
+            alignItems="space-between"
+            justifyContent="center"
+        >
+            <DatasetModal dataset={dataset}>
+                <Flex
+                    direction="row"
+                    gap="small"
+                    flex={1}
+                    alignItems="center"
+                    justifyContent="space-between"
+                >
+                    <Text>{dataset.name}</Text>
+                    <StatusLight variant={DatasetStatusColors[dataset.state]} />
+                </Flex>
+            </DatasetModal>
+            <ActionButton isQuiet onPress={() => removeDataset(dataset.name)}>
+                {" "}
+                <Delete />{" "}
+            </ActionButton>
+        </Flex>
     );
 };
 
@@ -129,34 +138,38 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
 
     return (
         <Flex height="100%" width="100%" direction="column">
-            <Flex direction='column' gap="size-500">
-              <Heading margin="size-150" alignSelf="start">
-                  Datasets
-              </Heading>
-              <Flex direction="column">
-                <>
-                {Object.entries(datasets).filter(([datasetName,dataset])=>!dataset.transform).map(([datasetName, dataset]) => {
-                      return (
-                        <>
-                              <DatasetEditor
-                                  dataset={dataset}
-                                  key={datasetName}
-                              />
-                                <Divider size='S' />
-                            </>
-                      );
-                  })}
-                </>
+            <Flex direction="column" gap="size-500">
+                <Heading margin="size-150" alignSelf="start">
+                    Datasets
+                </Heading>
+                <Flex direction="column">
+                    <>
+                        {Object.entries(datasets)
+                            .filter(
+                                ([datasetName, dataset]) => !dataset.transform
+                            )
+                            .map(([datasetName, dataset]) => {
+                                return (
+                                    <>
+                                        <DatasetEditor
+                                            dataset={dataset}
+                                            key={datasetName}
+                                        />
+                                        <Divider size="S" />
+                                    </>
+                                );
+                            })}
+                    </>
 
-              <NewDatasetModal
-                  onSubmit={createDataset}
-                  datasetProviders={datasetProviders}
-              />
-              </Flex>
+                    <NewDatasetModal
+                        onSubmit={createDataset}
+                        datasetProviders={datasetProviders}
+                    />
+                </Flex>
             </Flex>
-            <Divider size="S"/>
+            <Divider size="S" />
             <Flex direction="column">
-                  <DatasetTransfromPane />
+                <DatasetTransfromPane />
             </Flex>
         </Flex>
     );

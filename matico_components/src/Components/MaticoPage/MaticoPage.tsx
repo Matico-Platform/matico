@@ -3,9 +3,7 @@ import { Layout } from "@maticoapp/matico_types/spec";
 import { Flex } from "@adobe/react-spectrum";
 import { selectLayout } from "Utils/layoutEngine";
 import { usePage } from "Hooks/usePage";
-import {
-    useDroppable,
-} from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
 import { ParentProvider } from "Hooks/useParentContext";
 import styled from "styled-components";
 import { ContainerDropTarget } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/ContainerDropTarget";
@@ -24,7 +22,7 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
     let { page } = usePage(pageId);
     let layout: Layout = page?.layout;
     let LayoutEngine = selectLayout(layout);
-    
+
     const parentRef = useRef<HTMLDivElement>(null);
     const { isOver, setNodeRef } = useDroppable({
         id: page?.id,
@@ -34,12 +32,14 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
             depth: 0
         }
     });
-    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
-    
+    const activeItem = useMaticoSelector(
+        (state) => state.editor.activeDragItem
+    );
+
     const showDropZone = // @ts-ignore
         !!activeItem && activeItem?.data?.current?.type !== "page";
     if (!page) {
-        return null
+        return null;
     }
     return (
         <PageParent ref={parentRef}>

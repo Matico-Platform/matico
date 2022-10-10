@@ -19,14 +19,14 @@ import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
 import { MVTLayer, TileLayer } from "deck.gl";
 import { Filter } from "@maticoapp/matico_types/spec";
-import {v4 as uuid } from 'uuid'
+import { v4 as uuid } from "uuid";
 
 interface MaticoLayerInterface {
     name: string;
     source: { name: string; filters?: Array<Filter> };
     style: any;
     onUpdate: (layerState: any) => void;
-    mapPaneId: string
+    mapPaneId: string;
     beforeId?: string;
 }
 
@@ -42,29 +42,33 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         (state) => state.datasets.datasets[source.name]
     );
 
-    const hoverFeatureId = useMemo(()=>mapPaneId+"_hover",[])
-    const clickFeatureId = useMemo(()=>mapPaneId+"_click",[])
-    const [hoverVariable, updateHoverVariable] = useAutoVariable({ variable:{
-        name: `${name}_hover_feature`,
-        id: hoverFeatureId,
-        paneId: mapPaneId,
-        value: {
-          type:"geofeature",
-          value: "NoSelection"
-        }
-    },
+    const hoverFeatureId = useMemo(() => mapPaneId + "_hover", []);
+    const clickFeatureId = useMemo(() => mapPaneId + "_click", []);
+    const [hoverVariable, updateHoverVariable] = useAutoVariable({
+        variable: {
+            name: `${name}_hover_feature`,
+            id: hoverFeatureId,
+            paneId: mapPaneId,
+            value: {
+                type: "geofeature",
+                value: "NoSelection"
+            }
+        },
         bind: true
     });
 
-    const [clickVariable, updateClickVariable] = useAutoVariable({ variable:{
-        name: `${name}_click`,
-        id: clickFeatureId,
-        paneId: mapPaneId,
-        value:{
-          type : "geofeature",
-          value: "NoSelection"
+    const [clickVariable, updateClickVariable] = useAutoVariable({
+        variable: {
+            name: `${name}_click`,
+            id: clickFeatureId,
+            paneId: mapPaneId,
+            value: {
+                type: "geofeature",
+                value: "NoSelection"
+            }
         },
-    },bind:true });
+        bind: true
+    });
 
     let requiredCols: Array<string> = [];
     traverse(style).forEach(function (node: any) {
@@ -72,13 +76,16 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             requiredCols.push(node);
         }
     });
-    
 
     const dataResult = useRequestData(
-      dataset ? {datasetName: dataset.tiled === false ? source.name : null,
-        filters: source.filters,
-        columns:[...requiredCols, "geom"]
-      } : null);
+        dataset
+            ? {
+                  datasetName: dataset.tiled === false ? source.name : null,
+                  filters: source.filters,
+                  columns: [...requiredCols, "geom"]
+              }
+            : null
+    );
 
     const preparedData = useMemo(() => {
         if (!dataResult) {
@@ -124,17 +131,16 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     }, [source.name, dataResult, dataset]);
 
     const Layer = useEffect(() => {
-
         //If we the dataset is tiled and we dont have data
         //return
         if (!dataset || !dataset.tiled) {
             if (!dataResult || dataResult.state !== "Done") {
-                onUpdate(null)
-                return ;
+                onUpdate(null);
+                return;
             }
         }
 
-        if (!preparedData){
+        if (!preparedData) {
             return;
         }
 
@@ -150,8 +156,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         const lineWidthUnits = style.lineUnits ?? "pixels";
         const lineWidthScale = style.lineWidthScale ?? 1;
         const elevation = generateNumericVar(style.elevation) ?? 0;
-        const elevationScale =
-            generateNumericVar(style.elevationScale) ?? 1;
+        const elevationScale = generateNumericVar(style.elevationScale) ?? 1;
         const opacity = style.opacity ?? 1;
         const visible = style.visible ?? true;
         const shouldExtrude =
@@ -167,25 +172,23 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                     let color;
                     if (typeof fillColor === "function") {
                         color = fillColor(d);
+                    } else {
+                        color = fillColor;
                     }
-                    else{
-                      color = fillColor;
-                    }
-                    return [color[0], color[1], color[2],color[3]*255]
+                    return [color[0], color[1], color[2], color[3] * 255];
                 } catch {
                     return [0, 0, 0, 0];
                 }
             },
-            getLineColor:  (d: Record<string, unknown>) => {
+            getLineColor: (d: Record<string, unknown>) => {
                 try {
                     let color;
                     if (typeof lineColor === "function") {
                         color = lineColor(d);
+                    } else {
+                        color = lineColor;
                     }
-                    else{
-                      color = lineColor;
-                    }
-                    return [color[0], color[1], color[2],color[3]*255]
+                    return [color[0], color[1], color[2], color[3] * 255];
                 } catch {
                     return [0, 0, 0, 0];
                 }
@@ -200,14 +203,15 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             opacity,
             visible,
             onHover: (hoverTarget: { object: Record<string, unknown> }) =>
-              updateHoverVariable({
-                type: "geofeature",
-                value: hoverTarget.object ?? "NoSelection"
-            }),
+                updateHoverVariable({
+                    type: "geofeature",
+                    value: hoverTarget.object ?? "NoSelection"
+                }),
             onClick: (clickTarget: { object: Record<string, unknown> }) =>
-              updateClickVariable({
-              type: "geofeature",
-              value: clickTarget.object ?? "NoSelection"}),
+                updateClickVariable({
+                    type: "geofeature",
+                    value: clickTarget.object ?? "NoSelection"
+                }),
             pickable: true,
             id: name,
             beforeId: beforeId,
@@ -248,9 +252,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             switch (dataset.geomType) {
                 case GeomType.Point:
                     const getRadius = generateNumericVar(style.size);
-                    const radiusScale = generateNumericVar(
-                        style.radiusScale
-                    );
+                    const radiusScale = generateNumericVar(style.radiusScale);
                     layer = new ScatterplotLayer({
                         filled: true,
                         radiusUnits: style.radiusUnits
@@ -274,19 +276,15 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                         getPath: (d) => d.geom,
                         ...common,
                         updateTriggers: {
-                            widthScale: [
-                                JSON.stringify(style.lineWidthScale)
-                            ],
-                            widthUnits: [
-                                JSON.stringify(style.lineWidthUnits)
-                            ],
+                            widthScale: [JSON.stringify(style.lineWidthScale)],
+                            widthUnits: [JSON.stringify(style.lineWidthUnits)],
                             getWidth: [JSON.stringify(style.lineWidth)],
                             getColor: [JSON.stringify(style.lineColor)]
                         }
                     });
                     break;
                 case GeomType.Polygon:
-                    console.log("Polygon layer ",)
+                    console.log("Polygon layer ");
                     //@ts-ignore
                     layer = new PolygonLayer({
                         //@ts-ignore
@@ -309,7 +307,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                             bbox: { west, south, east, north }
                         } = props.tile;
 
-                        layer =new BitmapLayer(props, {
+                        layer = new BitmapLayer(props, {
                             data: null,
                             image: props.data,
                             bounds: [west, south, east, north]
@@ -324,12 +322,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         }
 
         onUpdate(layer);
-
-    }, [
-        name,
-        JSON.stringify(style),
-        preparedData,
-    ]);
+    }, [name, JSON.stringify(style), preparedData]);
 
     return <></>;
 };

@@ -31,12 +31,12 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
     description,
     onColumnSelected
 }) => {
-    const foundDataset = useMaticoSelector(
-        (state) => datasetName ? state.datasets.datasets[datasetName] : null
+    const foundDataset = useMaticoSelector((state) =>
+        datasetName ? state.datasets.datasets[datasetName] : null
     );
 
     const datasetColumns = foundDataset ? foundDataset.columns : [];
-    const cols = columns ?? datasetColumns
+    const cols = columns ?? datasetColumns;
 
     return (
         <Picker
@@ -57,7 +57,7 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
 
 export interface DatasetColumnSelectorMulitProps {
     datasetName?: string;
-    columns? : Array<Column>;
+    columns?: Array<Column>;
     selectedColumns?: Array<string>;
     onColumnsSelected: (columns: Array<string>) => void;
     labelPosition?: "top" | "side";
@@ -75,29 +75,30 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
         label,
         description
     }) => {
-        const foundDataset = useMaticoSelector(
-            (state) => datasetName ? state.datasets.datasets[datasetName] : null
+        const foundDataset = useMaticoSelector((state) =>
+            datasetName ? state.datasets.datasets[datasetName] : null
         );
 
         const datasetColumns = foundDataset ? foundDataset.columns : [];
-        const cols = columns ?? datasetColumns
+        const cols = columns ?? datasetColumns;
 
         return (
             <Flex direction="column">
                 <Heading>{label}</Heading>
                 <View maxHeight="150px" overflow={"clip auto"}>
-                <CheckboxGroup
-                    value={selectedColumns}
-                    onChange={(keys) =>{
-                        onColumnsSelected(keys)
-                    }
-                    }
-                >
-                  {cols.map((c: Column) => (
-                            <Checkbox key={c.name} value={c.name}>{c.name}</Checkbox>
+                    <CheckboxGroup
+                        value={selectedColumns}
+                        onChange={(keys) => {
+                            onColumnsSelected(keys);
+                        }}
+                    >
+                        {cols.map((c: Column) => (
+                            <Checkbox key={c.name} value={c.name}>
+                                {c.name}
+                            </Checkbox>
                         ))}
-                </CheckboxGroup>
-              </View>
+                    </CheckboxGroup>
+                </View>
                 {description && <Text>{description}</Text>}
             </Flex>
         );

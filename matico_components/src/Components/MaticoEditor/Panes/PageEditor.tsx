@@ -18,7 +18,7 @@ import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { IconForPaneType } from "../Utils/PaneDetails";
 import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
-import {PaneCollectionEditor} from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
+import { PaneCollectionEditor } from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
 
 export interface PageEditorProps {
     id: string;
@@ -31,9 +31,12 @@ export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
 
     useEffect(() => {
         if (page) {
-            setFilterText(page?.icon?.split(' fa-')?.slice(-1)?.[0]?.replace(/-/g, ' ') || '');
+            setFilterText(
+                page?.icon?.split(" fa-")?.slice(-1)?.[0]?.replace(/-/g, " ") ||
+                    ""
+            );
         }
-    },[page?.icon]);
+    }, [page?.icon]);
 
     if (!page) {
         return (
@@ -88,7 +91,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
             </CollapsibleSection>
 
             <CollapsibleSection title="Panes" isOpen={true}>
-              <PaneCollectionEditor containerId={page.id}/>
+                <PaneCollectionEditor containerId={page.id} />
             </CollapsibleSection>
 
             <CollapsibleSection title="Danger Zone" isOpen={true}>

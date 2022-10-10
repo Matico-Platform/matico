@@ -1,4 +1,4 @@
-import React, {  useMemo } from "react";
+import React, { useMemo } from "react";
 import { Item, Picker } from "@adobe/react-spectrum";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { v4 as uuid } from "uuid";
@@ -19,7 +19,7 @@ export const MaticoSelectControl: React.FC<MaticoSelectControlInterface> = ({
     const id = useMemo(() => uuid(), []);
     const [value, updateValue] = useAutoVariable({
         variable: {
-            id:controlPaneId,
+            id: controlPaneId,
             paneId: controlPaneId,
             name: `select_control_${name}`,
             value: {

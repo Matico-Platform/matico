@@ -12,7 +12,7 @@ export const useLayer = (layerId: string, mapId: string) => {
         selector.spec.spec.panes.find((p: Pane) => p.id === mapId)
     );
     const dispatch = useMaticoDispatch();
-    const mapPane = ["map","staticMap"].includes(pane.type) ? pane : null;
+    const mapPane = ["map", "staticMap"].includes(pane.type) ? pane : null;
 
     const layer = mapPane.layers.find((layer: Layer) => layer.id === layerId);
 

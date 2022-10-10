@@ -2,7 +2,9 @@ import {
     Dataset,
     Column,
     GeomType,
-    DatasetSummary, DatasetState, Filter
+    DatasetSummary,
+    DatasetState,
+    Filter
 } from "Datasets/Dataset";
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { CSVBuilder } from "./CSVBuilder";
@@ -19,7 +21,7 @@ import { ArrowBuilder, getGeomType } from "./ArrowBuilder";
 import { DatasetTransformRunner } from "./DatasetTransformRunner";
 import { LocalDataset } from "./LocalDataset";
 import { constructColumnListFromTable } from "./utils";
-import {FixedSizeList} from "@apache-arrow/es5-cjs";
+import { FixedSizeList } from "@apache-arrow/es5-cjs";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
@@ -34,7 +36,10 @@ export interface DatasetServiceInterface {
         notifierId: string,
         notifier: Notifier
     ) => void;
-    applyTransform: (transform: DatasetTransform, retainStepPreview?:boolean) => Promise<any>;
+    applyTransform: (
+        transform: DatasetTransform,
+        retainStepPreview?: boolean
+    ) => Promise<any>;
     registerForUpdates(
         datasetName: string,
         callback: (data: Array<any>) => void,
@@ -45,9 +50,7 @@ export interface DatasetServiceInterface {
     ): void;
     _clearNotifiers(notifierId: string): void;
 
-    unregisterDataset(
-        datasetDetails:DatasetSpec 
-    ) : void ,
+    unregisterDataset(datasetDetails: DatasetSpec): void;
     registerOrUpdateDataset(
         datasetDetails: DatasetSpec
     ): Promise<DatasetSummary>;
@@ -69,16 +72,16 @@ export const DatasetService: DatasetServiceInterface = {
     datasetLoaders: {},
     notifiers: {},
 
-    unregisterDataset(dataset:DatasetSpec){
-      delete this.datasets[dataset.name]
-      this._notify(dataset.name)
-      delete this.notifiers[dataset.name]
+    unregisterDataset(dataset: DatasetSpec) {
+        delete this.datasets[dataset.name];
+        this._notify(dataset.name);
+        delete this.notifiers[dataset.name];
     },
     async applyTransform(transform: DatasetTransform) {
         let transformer = new DatasetTransformRunner(transform, true);
 
         return Promise.resolve({
-            data:transformer.runTransform(this.datasets).objects(),
+            data: transformer.runTransform(this.datasets).objects(),
             stepPreviews: transformer.stepPreviews
         });
     },
@@ -156,9 +159,8 @@ export const DatasetService: DatasetServiceInterface = {
                 if (d) {
                     let data = await d.getData(filters, columns, limit);
                     callback(data);
-                }
-                else{
-                    callback(null)
+                } else {
+                    callback(null);
                 }
             }
         );
@@ -195,16 +197,22 @@ export const DatasetService: DatasetServiceInterface = {
         datasetTransform: DatasetTransform,
         updateCallback: (summary: DatasetSummary) => void
     ) {
-        const transform = new DatasetTransformRunner(datasetTransform,true);
+        const transform = new DatasetTransformRunner(datasetTransform, true);
 
         const runTransform = async () => {
             try {
                 const transfromResult = transform.runTransform(this.datasets);
-                const geomCol = transfromResult.toArrow().schema.fields.find((tr)=>[4,16,12].includes(tr.typeId))
-                let geomType = geomCol ?  getGeomType(transfromResult.column(geomCol.name)) : null
+                const geomCol = transfromResult
+                    .toArrow()
+                    .schema.fields.find((tr) =>
+                        [4, 16, 12].includes(tr.typeId)
+                    );
+                let geomType = geomCol
+                    ? getGeomType(transfromResult.column(geomCol.name))
+                    : null;
 
                 if (transfromResult) {
-                    delete this.datasets[datasetTransform.name]
+                    delete this.datasets[datasetTransform.name];
                     let newDataset = new LocalDataset(
                         transform.name,
                         "id",
@@ -225,7 +233,7 @@ export const DatasetService: DatasetServiceInterface = {
                         transform: true,
                         steps: transform.stepPreviews
                     });
-                    this._notify(newDataset.name)
+                    this._notify(newDataset.name);
                 }
             } catch (err) {
                 console.log("ERROR RUNNING TRANSFORM ", err);
@@ -279,7 +287,7 @@ export const DatasetService: DatasetServiceInterface = {
                     transform: false
                 };
             case "signedS3Arrow":
-                const signedUrl = `${datasetDetails.url}?includeDataUrl=true`
+                const signedUrl = `${datasetDetails.url}?includeDataUrl=true`;
                 const signedS3Response = await fetch(signedUrl);
                 const signedDataset = await signedS3Response.json();
 

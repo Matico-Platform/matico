@@ -1,1 +1,1 @@
-export {FloatingControls} from './FloatingControls';
+export { FloatingControls } from "./FloatingControls";

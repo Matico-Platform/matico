@@ -18,8 +18,8 @@ import { MaticoRawSpecEditor } from "Components/MaticoEditor/Panes/MaticoRawSpec
 import { MaticoStateViewer } from "Components/MaticoEditor/Panes/MaticoStateViewer";
 import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
-import {useErrors} from "Hooks/useErrors";
-import {ErrorPanel} from "../ErrorPanel/ErrorPanel";
+import { useErrors } from "Hooks/useErrors";
+import { ErrorPanel } from "../ErrorPanel/ErrorPanel";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -27,7 +27,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     const [showPanel, setShowPanel] = useState<boolean>(false);
     const handleShowPanel = () => setShowPanel(true);
     const handleHidePanel = () => setShowPanel(false);
-    const {errors} = useErrors()
+    const { errors } = useErrors();
 
     return (
         <Flex direction="column" height="100%">
@@ -37,7 +37,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                 overflow="visible"
                 paddingTop="3em"
                 UNSAFE_style={{
-                    boxSizing: 'border-box'
+                    boxSizing: "border-box"
                 }}
             >
                 <Tabs
@@ -56,7 +56,12 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                             <Channel size="L" />
                         </Item>
                         <Item key="errors">
-                          <Alert color={errors.length > 0 ? 'notice' : 'positive'} size="L" />
+                            <Alert
+                                color={
+                                    errors.length > 0 ? "notice" : "positive"
+                                }
+                                size="L"
+                            />
                         </Item>
                         <Item key="spec">
                             <DocumentOutline size="L" />
@@ -106,7 +111,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                         <MaticoStateViewer />
                                     </Item>
                                     <Item key="errors">
-                                      <ErrorPanel />
+                                        <ErrorPanel />
                                     </Item>
                                 </TabPanels>
                                 <Button

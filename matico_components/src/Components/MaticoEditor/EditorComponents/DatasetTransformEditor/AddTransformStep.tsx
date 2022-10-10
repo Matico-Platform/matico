@@ -1,8 +1,15 @@
-import React from 'react'
-import {DialogTrigger, ActionButton, Dialog, Heading, Content,  repeat} from '@adobe/react-spectrum';
-import {DatasetTransformStep} from '@maticoapp/matico_types/spec';
-import {DefaultGrid} from 'Components/MaticoEditor/Utils/DefaultGrid';
-import Filter from "@spectrum-icons/workflow/Filter"
+import React from "react";
+import {
+    DialogTrigger,
+    ActionButton,
+    Dialog,
+    Heading,
+    Content,
+    repeat
+} from "@adobe/react-spectrum";
+import { DatasetTransformStep } from "@maticoapp/matico_types/spec";
+import { DefaultGrid } from "Components/MaticoEditor/Utils/DefaultGrid";
+import Filter from "@spectrum-icons/workflow/Filter";
 import Join from "@spectrum-icons/workflow/Merge";
 import AggregateIcon from "@spectrum-icons/workflow/GraphBarHorizontal";
 import Column from "@spectrum-icons/workflow/ColumnSettings";
@@ -35,7 +42,7 @@ export const AddTransformStepDialog: React.FC<{
         } as DatasetTransformStep);
         close();
     };
-    const addColumnTransform= (close: () => void) => {
+    const addColumnTransform = (close: () => void) => {
         onAdd({
             type: "columnTransform",
             transforms: []
@@ -50,8 +57,8 @@ export const AddTransformStepDialog: React.FC<{
             joinType: "inner",
             joinColumnsLeft: [],
             joinColumnsRight: [],
-            leftPrefix:"",
-            rightPrefix:""
+            leftPrefix: "",
+            rightPrefix: ""
         } as DatasetTransformStep);
         close();
     };
@@ -86,9 +93,11 @@ export const AddTransformStepDialog: React.FC<{
                                 <Join />
                                 Join
                             </ActionButton>
-                            <ActionButton onPress={() => addColumnTransform(close)}>
-                                <Column/>
-                                Column Transform 
+                            <ActionButton
+                                onPress={() => addColumnTransform(close)}
+                            >
+                                <Column />
+                                Column Transform
                             </ActionButton>
                         </DefaultGrid>
                     </Content>
@@ -97,4 +106,3 @@ export const AddTransformStepDialog: React.FC<{
         </DialogTrigger>
     );
 };
-

@@ -15,12 +15,12 @@ import {
 import ColumnTable from "arquero/dist/types/table/column-table";
 import { applyFilters, LocalDataset } from "./LocalDataset";
 import { op, escape } from "arquero";
-import {getGeomType} from "./ArrowBuilder";
-import {constructColumnListFromTable} from "./utils";
+import { getGeomType } from "./ArrowBuilder";
+import { constructColumnListFromTable } from "./utils";
 
 export interface TransformStepPreview {
-    table: Array<Record<string,any>>;
-    columns: Array<any>,
+    table: Array<Record<string, any>>;
+    columns: Array<any>;
     noRows: number;
 }
 
@@ -319,23 +319,19 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
         datasets: Record<string, LocalDataset>,
         stepNo: number
     ): ColumnTable {
-        let rollUps = step.aggregate.reduce(
-            (rollUps, agg) => {
-              if(agg.column){
+        let rollUps = step.aggregate.reduce((rollUps, agg) => {
+            if (agg.column) {
                 return {
-                  ...rollUps,
-                  [agg.rename ?? `${agg.aggType}_${agg.column}`]: oppTypeToOp(
-                      agg.aggType,
-                      agg.column
-                  )
-                }
-              }
-              else{
-                return rollUps 
-              }
-            },
-            {}
-        );
+                    ...rollUps,
+                    [agg.rename ?? `${agg.aggType}_${agg.column}`]: oppTypeToOp(
+                        agg.aggType,
+                        agg.column
+                    )
+                };
+            } else {
+                return rollUps;
+            }
+        }, {});
         return table.groupby(step.groupByColumns).rollup(rollUps);
     }
 
@@ -345,16 +341,16 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
 
     runTransform(datasets: Record<string, LocalDataset>) {
         let baseTable = datasets[this.sourceId]._data;
-        this.stepPreviews=[]
+        this.stepPreviews = [];
 
         this.steps.forEach((step, index) => {
             baseTable = this.applyStep(step, baseTable, datasets, index);
-            if(this.retainStepPreview){
-              this.stepPreviews.push({
-                table: baseTable.slice(0,10).objects(),
-                columns: constructColumnListFromTable(baseTable),
-                noRows: baseTable.size
-              })
+            if (this.retainStepPreview) {
+                this.stepPreviews.push({
+                    table: baseTable.slice(0, 10).objects(),
+                    columns: constructColumnListFromTable(baseTable),
+                    noRows: baseTable.size
+                });
             }
         });
         return baseTable;

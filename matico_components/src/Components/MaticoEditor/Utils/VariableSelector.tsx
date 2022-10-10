@@ -10,8 +10,8 @@ import {
     Heading
 } from "@adobe/react-spectrum";
 import { useMaticoSelector } from "Hooks/redux";
-import {Variable} from "@maticoapp/matico_types/spec";
-import {MaticoStateVariable} from "index";
+import { Variable } from "@maticoapp/matico_types/spec";
+import { MaticoStateVariable } from "index";
 
 interface VariableSelectorProps {
     variable?: Variable;
@@ -19,31 +19,45 @@ interface VariableSelectorProps {
     allowedTypes: Array<string>;
 }
 
-function suboptionsForVariableType(variable : MaticoStateVariable){
-  if(!variable) return null 
-  switch(variable.value.type){
-    case "range":
-      return [{id:"min", name:"Min"}, {id:"max", name:"Max"}]
-    case "mapview":
-      return [{id:"lat", name:"Latitude"}, {id:"lng", name:"Longitude"}, {id:"zoom", name:"Zoom"}, {id:"pitch", name:"Pitch"}, {id:"bearing", name:"Bearing"}]
-    default:
-      return Object.keys(variable.value.value).map(so => ({name:so, id:so}))
-  }
-
+function suboptionsForVariableType(variable: MaticoStateVariable) {
+    if (!variable) return null;
+    switch (variable.value.type) {
+        case "range":
+            return [
+                { id: "min", name: "Min" },
+                { id: "max", name: "Max" }
+            ];
+        case "mapview":
+            return [
+                { id: "lat", name: "Latitude" },
+                { id: "lng", name: "Longitude" },
+                { id: "zoom", name: "Zoom" },
+                { id: "pitch", name: "Pitch" },
+                { id: "bearing", name: "Bearing" }
+            ];
+        default:
+            return Object.keys(variable.value.value).map((so) => ({
+                name: so,
+                id: so
+            }));
+    }
 }
 export const VariableSelector: React.FC<VariableSelectorProps> = ({
     variable,
     onSelectVariable
 }) => {
-    const [options,vars] = useMaticoSelector((state) => {
+    const [options, vars] = useMaticoSelector((state) => {
         let vars = Object.values(state.variables.autoVariables);
         let panesIds = Array.from(
             new Set(
                 state.spec.spec.panes
                     .filter((p) =>
-                        ["controls", "histogram", "scatterplot", "map"].includes(
-                            p.type
-                        )
+                        [
+                            "controls",
+                            "histogram",
+                            "scatterplot",
+                            "map"
+                        ].includes(p.type)
                     )
                     .map((p) => p.id)
             )
@@ -56,15 +70,15 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
             const variables = vars.filter((v) => v.paneId === pid);
             sections.push({ name: paneName, items: variables });
         });
-        return [sections,vars];
+        return [sections, vars];
     });
 
-
-
-    const selectedVar = variable  ? vars.find(v=>v.id === variable.varId) : null
+    const selectedVar = variable
+        ? vars.find((v) => v.id === variable.varId)
+        : null;
     // const suboptions = selectedVar? Object.keys(selectedVar.value.value).map(so => ({name:so, id:so})): null
 
-    const suboptions = suboptionsForVariableType(selectedVar)
+    const suboptions = suboptionsForVariableType(selectedVar);
 
     return (
         <DialogTrigger type="popover" isDismissable={true}>
@@ -79,7 +93,12 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                             label={"Select variable to use"}
                             width={"100%"}
                             items={options}
-                            onSelectionChange={(variableId) =>onSelectVariable({varId: variableId as string, property:null})}
+                            onSelectionChange={(variableId) =>
+                                onSelectVariable({
+                                    varId: variableId as string,
+                                    property: null
+                                })
+                            }
                             selectedKey={selectedVar?.id}
                         >
                             {(section) => (
@@ -88,21 +107,28 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                                     items={section.items}
                                     title={section.name}
                                 >
-                                    {(v) => (
-                                        <Item key={v.id}>
-                                            {v.name}
-                                        </Item>
-                                    )}
+                                    {(v) => <Item key={v.id}>{v.name}</Item>}
                                 </Section>
                             )}
                         </Picker>
-                        {suboptions && 
-                        <Picker label={"Property"} items={suboptions} width={"100%"} selectedKey={variable.property}
-                          onSelectionChange={(property)=> onSelectVariable({...variable, property: property as string })}
-                        >
-                            {(item)=><Item key={item.id}>{item.name} </Item>}
-                          </Picker>
-                        }
+                        {suboptions && (
+                            <Picker
+                                label={"Property"}
+                                items={suboptions}
+                                width={"100%"}
+                                selectedKey={variable.property}
+                                onSelectionChange={(property) =>
+                                    onSelectVariable({
+                                        ...variable,
+                                        property: property as string
+                                    })
+                                }
+                            >
+                                {(item) => (
+                                    <Item key={item.id}>{item.name} </Item>
+                                )}
+                            </Picker>
+                        )}
                     </Content>
                 </Dialog>
             )}

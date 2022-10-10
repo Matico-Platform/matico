@@ -1,11 +1,23 @@
-export type VariableValue = StringVar | NumberVar | MapViewVar | SelectionVar | RangeVar | CategoryVar | BoundsVar | FeatureVar | FeaturesVar | GeoFeatureVar | GeoFeaturesVar | RangeVar
+export type VariableValue =
+    | StringVar
+    | NumberVar
+    | MapViewVar
+    | SelectionVar
+    | RangeVar
+    | CategoryVar
+    | BoundsVar
+    | FeatureVar
+    | FeaturesVar
+    | GeoFeatureVar
+    | GeoFeaturesVar
+    | RangeVar;
 
-export type MaticoStateVariable={
-  id:string,
-  paneId:string,
-  name: string,
-  value: VariableValue
-}
+export type MaticoStateVariable = {
+    id: string;
+    paneId: string;
+    name: string;
+    value: VariableValue;
+};
 
 export type StringVar = {
     type: "string";
@@ -20,46 +32,46 @@ export type NumberVar = {
 export type FeatureVar = {
     type: "feature";
     name: string;
-    value: Record<string, any> | "NoSelection" 
+    value: Record<string, any> | "NoSelection";
 };
 
 export type GeoFeatureVar = {
     type: "geofeature";
-    value: Record<string, any>  | "NoSelection"
-} ;
+    value: Record<string, any> | "NoSelection";
+};
 
 export type FeaturesVar = {
     type: "features";
-    value: Array<Record<string, any>> | "NoSelection"
+    value: Array<Record<string, any>> | "NoSelection";
 };
 
 export type GeoFeaturesVar = {
     type: "geofeatures";
-    value: Array<Record<string, any>> | "NoSelection"
+    value: Array<Record<string, any>> | "NoSelection";
 };
 
-export type SelectionVar={
+export type SelectionVar = {
     type: "selection";
-    value: Array<string | number> | "NoSelection"
-}
+    value: Array<string | number> | "NoSelection";
+};
 
-export type CategoryVar={
-    type: 'category';
+export type CategoryVar = {
+    type: "category";
     value: {
-      oneOf : Array<string | number>,
-      notOneOf : Array<string | number>
-    }
-}
+        oneOf: Array<string | number>;
+        notOneOf: Array<string | number>;
+    };
+};
 
 export type BoundsVar = {
-  type: "bounda",
-  value:{
-    xmin: number,
-    xmax: number,
-    ymin: number,
-    ymax: number
-  }
-}
+    type: "bounda";
+    value: {
+        xmin: number;
+        xmax: number;
+        ymin: number;
+        ymax: number;
+    };
+};
 
 export type MapViewVar = {
     type: "mapview";
@@ -74,11 +86,10 @@ export type MapViewVar = {
 
 export type RangeVar = {
     type: "range";
-    value: {
-        min: number;
-        max: number;
-    } | "NoSelection";
-}
-
-
-
+    value:
+        | {
+              min: number;
+              max: number;
+          }
+        | "NoSelection";
+};

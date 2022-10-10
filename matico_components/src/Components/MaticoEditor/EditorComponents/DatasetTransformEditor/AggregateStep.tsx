@@ -1,14 +1,27 @@
-import React from 'react'
+import React from "react";
 
-import {AggregateStep, AggregationSummary} from "@maticoapp/matico_types/spec";
-import {Flex, Divider, Picker, Item, TextField, ActionButton} from '@adobe/react-spectrum';
-import {DatasetColumnSelectorMulti, DatasetColumnSelector} from 'Components/MaticoEditor/Utils/DatasetColumnSelector';
-import {Column} from 'Datasets/Dataset';
+import {
+    AggregateStep,
+    AggregationSummary
+} from "@maticoapp/matico_types/spec";
+import {
+    Flex,
+    Divider,
+    Picker,
+    Item,
+    TextField,
+    ActionButton
+} from "@adobe/react-spectrum";
+import {
+    DatasetColumnSelectorMulti,
+    DatasetColumnSelector
+} from "Components/MaticoEditor/Utils/DatasetColumnSelector";
+import { Column } from "Datasets/Dataset";
 
 export const AggregateStepEditor: React.FC<{
     step: AggregateStep;
     datasetId?: string;
-    columns? : Array<Column>
+    columns?: Array<Column>;
     onChange: (update: Partial<AggregateStep>) => void;
 }> = ({ step, datasetId, onChange, columns }) => {
     const updateAggregate = (
@@ -42,7 +55,9 @@ export const AggregateStepEditor: React.FC<{
                                 datasetName={datasetId}
                                 selectedColumn={agg.column}
                                 onColumnSelected={(column) =>
-                                    updateAggregate(index, { column : column.name })
+                                    updateAggregate(index, {
+                                        column: column.name
+                                    })
                                 }
                             />
                             <Picker
@@ -92,4 +107,3 @@ export const AggregateStepEditor: React.FC<{
         </Flex>
     );
 };
-

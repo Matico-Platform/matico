@@ -1,13 +1,11 @@
 import { Dataset, Column, GeomType, DatasetState } from "./Dataset";
 
-import {  desc, op, escape, bin} from "arquero";
+import { desc, op, escape, bin } from "arquero";
 
 import _ from "lodash";
 //@ts-ignore
 
-import {
-    Filter,
-} from "@maticoapp/matico_types/spec";
+import { Filter } from "@maticoapp/matico_types/spec";
 
 import ColumnTable from "arquero/dist/types/table/column-table";
 
@@ -37,12 +35,12 @@ const applyFilter = (table: ColumnTable, filter: Filter) => {
 };
 
 export const applyFilters = (table: ColumnTable, filters?: Array<Filter>) => {
-    if(!filters) return table;
-    let tempTable = table
-    filters.forEach((filter)=>{
-      tempTable= applyFilter(tempTable,filter)
-    })
-    return tempTable
+    if (!filters) return table;
+    let tempTable = table;
+    filters.forEach((filter) => {
+        tempTable = applyFilter(tempTable, filter);
+    });
+    return tempTable;
 };
 
 export class LocalDataset implements Dataset {
@@ -99,7 +97,7 @@ export class LocalDataset implements Dataset {
     getColumnMax(column: string, filters?: Array<Filter>) {
         const { max } = applyFilters(this._data, filters)
             .rollup({ max: op.max(column) })
-            .object() as {max: number};
+            .object() as { max: number };
         return Promise.resolve(max);
     }
 
@@ -125,8 +123,11 @@ export class LocalDataset implements Dataset {
             .groupby(column)
             .count()
             .orderby(desc("count"))
-            .objects() 
-            .map( (r: Record<string,any>) => ({name: r[column], count: r.count}))
+            .objects()
+            .map((r: Record<string, any>) => ({
+                name: r[column],
+                count: r.count
+            }));
         return Promise.resolve(counts);
     }
 
@@ -136,7 +137,7 @@ export class LocalDataset implements Dataset {
         filters?: Array<Filter>
     ) {
         const counts = applyFilters(this._data, filters)
-            .groupby(column) 
+            .groupby(column)
             .count()
             .orderby(desc("count"))
             .array(column) as Array<string | number>;
@@ -179,7 +180,9 @@ export class LocalDataset implements Dataset {
             .rollup(quantiles)
             .object();
 
-        return Promise.resolve(Object.values(result).sort((a,b)=>a > b ? 1 : -1));
+        return Promise.resolve(
+            Object.values(result).sort((a, b) => (a > b ? 1 : -1))
+        );
     }
 
     async getJenksBins(column: string, bins: number, filters?: Array<Filter>) {
@@ -193,20 +196,20 @@ export class LocalDataset implements Dataset {
         filters?: Array<Filter>
     ) {
         let result = applyFilters(this._data, filters)
-            .groupby({ bin: bin(column, {maxbins:noBins}) })
+            .groupby({ bin: bin(column, { maxbins: noBins }) })
             .count()
             .impute(
-            { count: () => 0 }, // set imputed counts to zero
-            { expand: { bin: d => op.sequence(...op.bins(d.bin)) } } 
-          )
-          .orderby('bin')
-          .objects() as Array<{ bin: number; count: number }>;
+                { count: () => 0 }, // set imputed counts to zero
+                { expand: { bin: (d) => op.sequence(...op.bins(d.bin)) } }
+            )
+            .orderby("bin")
+            .objects() as Array<{ bin: number; count: number }>;
 
-        const binSize = result[1].bin - result[0].bin
-        let mappedResult = result.map((r,index) => ({
-            binStart: r.bin ,
-            binEnd: r.bin+binSize ,
-            binMid: r.bin+0.5*binSize,
+        const binSize = result[1].bin - result[0].bin;
+        let mappedResult = result.map((r, index) => ({
+            binStart: r.bin,
+            binEnd: r.bin + binSize,
+            binMid: r.bin + 0.5 * binSize,
             freq: r.count
         }));
 
@@ -223,7 +226,7 @@ export class LocalDataset implements Dataset {
             return this._filterCache[cacheKey];
         }
         const results = applyFilters(this._data, filters ?? [])
-            .select(columns ?? this._columns.map(c=>c.name))
+            .select(columns ?? this._columns.map((c) => c.name))
             .objects({ limit });
 
         this._filterCache[JSON.stringify(filters)] = results;

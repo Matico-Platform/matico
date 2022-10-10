@@ -1,12 +1,11 @@
-
 import { useState, useEffect, useContext } from "react";
 import traverse from "traverse";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
-import _, {update} from "lodash";
+import _, { update } from "lodash";
 import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
 import { useRequestColumnStats } from "./useRequestColumnStat";
-import {updateNormalizedSpec} from "Stores/MaticoSpecSlice";
-import {Variable} from "@maticoapp/matico_types/spec"
+import { updateNormalizedSpec } from "Stores/MaticoSpecSlice";
+import { Variable } from "@maticoapp/matico_types/spec";
 
 const getRequiredVariableList = (struct: any) => {
     const requiredVariables: Array<Variable> = [];
@@ -41,43 +40,49 @@ const getRequiredDatasetMetrics = (struct: any) => {
  * the section of the spec
  */
 export const useNormalizeSpec = () => {
-  const [spec,loaded,errors] = useFullyNormalizeSpec();
-  const dispatch = useMaticoDispatch();
-  
-  useEffect(()=>{
-    if(loaded){
-      dispatch(updateNormalizedSpec(spec)) 
-    } 
-  },[JSON.stringify(spec),loaded])
+    const [spec, loaded, errors] = useFullyNormalizeSpec();
+    const dispatch = useMaticoDispatch();
 
-  return [spec,loaded,errors]
-}
+    useEffect(() => {
+        if (loaded) {
+            dispatch(updateNormalizedSpec(spec));
+        }
+    }, [JSON.stringify(spec), loaded]);
 
-export const useFullyNormalizeSpec = ()=>{
-    const spec = useMaticoSelector((selector)=>selector.spec.spec)
-    const dispatch = useMaticoDispatch()
+    return [spec, loaded, errors];
+};
+
+export const useFullyNormalizeSpec = () => {
+    const spec = useMaticoSelector((selector) => selector.spec.spec);
+    const dispatch = useMaticoDispatch();
     const [error, setError] = useState<string | null>(null);
 
     // Get a list of required variables for the spec from the global
     // state
     const requiredVariables = getRequiredVariableList(spec);
-  
-    const variables = useMaticoSelector((state) =>{
-        let requiredVariableValues : Record<string,any> = {}
-        requiredVariables.forEach(rv=> requiredVariableValues[rv.varId] = state.variables.autoVariables[rv.varId])
-        return requiredVariableValues
+
+    const variables = useMaticoSelector((state) => {
+        let requiredVariableValues: Record<string, any> = {};
+        requiredVariables.forEach(
+            (rv) =>
+                (requiredVariableValues[rv.varId] =
+                    state.variables.autoVariables[rv.varId])
+        );
+        return requiredVariableValues;
     });
 
     // Replace the parts of the spec that require variable replacement
     const specWithVariables = traverse(spec).map(function (node) {
         if (node && node.var) {
-            const variableId= node.var.varId;
+            const variableId = node.var.varId;
             const property = node.var.property;
-            const variable = variables[variableId]
+            const variable = variables[variableId];
             if (variable === null || variable === undefined) {
                 return;
             }
-            const value = property ? variable.value.value[property] : variable.value.value
+            const value = property
+                ? variable.value.value[property]
+                : variable.value.value;
             this.update(value);
         }
     });
@@ -90,20 +95,20 @@ export const useFullyNormalizeSpec = ()=>{
         return [specWithVariables, true, null];
     }
 
-
     let nodeNumber = 0;
 
     // Identify which data stats the spec needs
     const fullyNormalized = traverse(specWithVariables).map(function (node) {
         if (node && node.metric) {
-            if(datasetValues[nodeNumber] && datasetValues[nodeNumber].state==="Done"){
-              this.update(datasetValues[nodeNumber].result);
+            if (
+                datasetValues[nodeNumber] &&
+                datasetValues[nodeNumber].state === "Done"
+            ) {
+                this.update(datasetValues[nodeNumber].result);
             }
             nodeNumber += 1;
         }
     });
 
-
-    return [fullyNormalized,true,null];
+    return [fullyNormalized, true, null];
 };
-;

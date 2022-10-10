@@ -2,7 +2,7 @@ import {
     NumberField,
     TextField,
     ToggleButton,
-    Flex 
+    Flex
 } from "@adobe/react-spectrum";
 import React from "react";
 import { VariableSelector } from "./VariableSelector";
@@ -33,7 +33,12 @@ export const ValueOrVariableInput: React.FC<ValueOrVariableInputProps> = ({
     };
 
     return (
-        <Flex direction='row' gap="size-100" justifyContent='start' alignItems='end'>
+        <Flex
+            direction="row"
+            gap="size-100"
+            justifyContent="start"
+            alignItems="end"
+        >
             {isVariable && (
                 <VariableSelector
                     variable={value.var}

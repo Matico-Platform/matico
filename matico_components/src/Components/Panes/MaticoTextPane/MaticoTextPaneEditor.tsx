@@ -4,7 +4,7 @@ import { View, Flex, Text, TextField } from "@adobe/react-spectrum";
 import { RemovePaneDialog } from "Components/MaticoEditor//Utils/RemovePaneDialog";
 import { PaneRef } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
-import {CollapsibleSection} from "Components/MaticoEditor/EditorComponents/CollapsibleSection";
+import { CollapsibleSection } from "Components/MaticoEditor/EditorComponents/CollapsibleSection";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;

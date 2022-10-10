@@ -1,5 +1,3 @@
 import { MaticoOutlineViewer } from "./MaticoOutlineViewer";
 
-export {
-    MaticoOutlineViewer
-}
+export { MaticoOutlineViewer };
