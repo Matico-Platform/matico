@@ -62,15 +62,9 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
 
 
     const selectedVar = variable  ? vars.find(v=>v.id === variable.varId) : null
-    console.log("Variable is ", variable, selectedVar)
     // const suboptions = selectedVar? Object.keys(selectedVar.value.value).map(so => ({name:so, id:so})): null
 
     const suboptions = suboptionsForVariableType(selectedVar)
-
-
-
-    console.log("suboptions are", suboptions)
-    console.log("options are ", options)
 
     return (
         <DialogTrigger type="popover" isDismissable={true}>

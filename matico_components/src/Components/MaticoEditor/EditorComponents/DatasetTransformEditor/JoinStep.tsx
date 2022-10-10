@@ -4,16 +4,18 @@ import {JoinStep} from '@maticoapp/matico_types/spec';
 import Delete from '@spectrum-icons/workflow/Delete';
 import {DatasetColumnSelector} from 'Components/MaticoEditor/Utils/DatasetColumnSelector';
 import {DatasetSelector} from 'Components/MaticoEditor/Utils/DatasetSelector';
+import {Column} from 'Datasets/Dataset';
 
 export const JoinStepEditor: React.FC<{
     joinStep: JoinStep;
     onChange: (update: Partial<JoinStep>) => void;
-    datasetId: string;
-}> = ({ joinStep, onChange, datasetId }) => {
+    columns?: Array<Column>;
+    datasetId?: string;
+}> = ({ joinStep, onChange, datasetId, columns }) => {
 
     return (
         <Flex direction="row" gap={"size-300"}>
-            <Flex direction="column" width="size-1000">
+            <Flex direction="column" minWidth="size-1250">
                 <DatasetSelector
                     label="Dataset to join with"
                     labelPosition="top"
@@ -53,6 +55,7 @@ export const JoinStepEditor: React.FC<{
                                 label="Left Join Column"
                                 labelPosition="side"
                                 datasetName={datasetId}
+                                columns={columns}
                                 selectedColumn={
                                     joinStep.joinColumnsLeft
                                         ? joinStep.joinColumnsLeft[index]

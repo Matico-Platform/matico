@@ -106,9 +106,6 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
     };
 
   
-    console.log("Theme is ", theme)
-
-
     return (
         <Flex width="100%" height="100%" direction="column">
             <CollapsibleSection title="Theme" isOpen={true}>

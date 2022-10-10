@@ -153,7 +153,6 @@ export const DatasetService: DatasetServiceInterface = {
             notifierId,
             async (datasetName: string) => {
                 let d = this.datasets[datasetName];
-                console.log("sending an update for ", datasetName )
                 if (d) {
                     let data = await d.getData(filters, columns, limit);
                     callback(data);
@@ -214,7 +213,6 @@ export const DatasetService: DatasetServiceInterface = {
                         geomType
                     );
                     this.datasets[datasetTransform.name] = newDataset;
-                    console.log("Returning with update callback")
                     updateCallback({
                         name: newDataset.name,
                         state: DatasetState.READY,
@@ -351,7 +349,6 @@ export const DatasetService: DatasetServiceInterface = {
                     transform: false
                 };
             case "wasmCompute":
-                console.log("generateing compute dataset ", datasetDetails)
                 const wasmCompute = await WasmComputeBuilder(
                     datasetDetails,
                     this.datasets

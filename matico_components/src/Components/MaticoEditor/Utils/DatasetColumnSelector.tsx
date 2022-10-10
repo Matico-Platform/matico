@@ -89,7 +89,6 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
                 <CheckboxGroup
                     value={selectedColumns}
                     onChange={(keys) =>{
-                        console.log("keys ", keys)
                         onColumnsSelected(keys)
                     }
                     }

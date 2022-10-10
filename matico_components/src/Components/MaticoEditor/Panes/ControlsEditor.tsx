@@ -100,7 +100,6 @@ const EditRangeModal: React.FC<{
     rangeProps: RangeControl;
     onUpdate: (update: Partial<RangeControl>) => void;
 }> = ({ rangeProps, onUpdate }) => {
-    console.log("range props ", rangeProps)
     return (
         <DialogTrigger isDismissable type="popover">
             <ActionButton isQuiet>
@@ -273,9 +272,6 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         );
         updatePane({ controls });
     };
-
-    console.log("Controls ", controlsPane)
-
 
     return (
         <Flex direction="column">

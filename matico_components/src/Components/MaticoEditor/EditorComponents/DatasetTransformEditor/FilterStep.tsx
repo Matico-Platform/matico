@@ -38,7 +38,7 @@ export const FilterStepEditor: React.FC<{
 
     return (
           <Flex direction="row" gap={"size-300"}>
-            <Flex direction="column" width="size-1000">
+            <Flex direction="column" maxWidth="size-1250">
               <Text>Filters allow you to select a subset of dataset rows based on some kind of condition</Text>
             </Flex>
               <Divider orientation="vertical" size="S" />
@@ -121,7 +121,6 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     selectedColumn,
     columns
 }) => {
-    console.log("Range Filter Editor ", datasetId)
     const toggleVariableMin = () => {
         if (typeof min === "number") {
             onUpdateFilter({

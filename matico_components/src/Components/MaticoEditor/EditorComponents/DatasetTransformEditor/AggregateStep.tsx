@@ -23,7 +23,7 @@ export const AggregateStepEditor: React.FC<{
     };
 
     return (
-        <Flex direction="row" gap="size-200">
+        <Flex direction="row" gap="size-200" minWidth={"size-1250"}>
             <DatasetColumnSelectorMulti
                 label="Columns to group by"
                 datasetName={datasetId}

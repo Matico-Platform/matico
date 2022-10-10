@@ -43,8 +43,6 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     onUpdateFilter
 }) => {
 
-    console.log("Range filter columns ", columns)
-
     const toggleVariableMin = () => {
         if (typeof min === "number") {
             onUpdateFilter({

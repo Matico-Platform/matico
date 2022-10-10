@@ -40,7 +40,6 @@ const TabPane: React.FC<{paneRef: PaneRef}> = ({paneRef}) => {
     } = usePane(paneRef);
     const isEdit = useIsEditable();
     // const Wrapper = isEdit ? FreeDraggableActionWrapper : FreeContainer;
-    console.log(paneRef)
     return (
         <InternalSpecProvider
             value={{

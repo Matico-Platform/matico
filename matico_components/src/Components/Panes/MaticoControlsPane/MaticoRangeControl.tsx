@@ -32,8 +32,6 @@ export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
         bind: true
     });
 
-    console.log("value is ,",value)
-
     return (
         <RangeSlider
             width="100%"

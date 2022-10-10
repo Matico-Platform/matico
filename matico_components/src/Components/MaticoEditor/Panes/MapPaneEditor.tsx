@@ -95,8 +95,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
             .map((variable)=> ({...variable, mapName: state.spec.spec.panes.find(p=>p.id===variable.paneId).name}))
     );
 
-    console.log("Other map panes ", otherMapPanes)
-
     const syncedMapPaneView = useMaticoSelector((state) =>
         //@ts-ignore
         mapPane.view.var

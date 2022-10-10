@@ -123,9 +123,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         }
     }, [source.name, dataResult, dataset]);
 
-    console.log("Data REsult ", dataResult, dataset)
-
-
     const Layer = useEffect(() => {
 
         //If we the dataset is tiled and we dont have data
