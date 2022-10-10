@@ -10,4 +10,4 @@ export type NumericEditorProps = {
     onValueChange: (value: number) => void;
     onUnitsChange?: (unit: string) => void;
     isDisabled?: boolean;
-}
+};

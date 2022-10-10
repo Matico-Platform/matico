@@ -1,10 +1,7 @@
 import React, { useMemo } from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { Content, View } from "@adobe/react-spectrum";
-import {
-    EditorComposer,
-    Editor,
-} from "verbum";
+import { EditorComposer, Editor } from "verbum";
 import styled from "styled-components";
 export interface MaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
@@ -13,13 +10,14 @@ export interface MaticoTextPaneInterface extends MaticoPaneInterface {
     children?: React.ReactNode;
 }
 
-const TextPaneContainer = styled.section<{isReadOnly?:boolean}>`
+const TextPaneContainer = styled.section<{ isReadOnly?: boolean }>`
     height: 100%;
     div.editor-shell {
-        margin:0;
-        max-width:initial;
+        margin: 0;
+        max-width: initial;
     }
-    div.editor-shell, div.editor-container {
+    div.editor-shell,
+    div.editor-container {
         height: 100%;
         overflow-y: auto;
         border-radius: 0;
@@ -27,27 +25,29 @@ const TextPaneContainer = styled.section<{isReadOnly?:boolean}>`
     .ContentEditable__root {
         resize: none;
     }
-    iframe, img, iframe div {
+    iframe,
+    img,
+    iframe div {
         max-width: 100%;
     }
-    `
+`;
 
 export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
     content,
-    handleContent=()=>{},
-    isReadOnly=true,
+    handleContent = () => {},
+    isReadOnly = true,
     children
 }) => {
     const parsedContent = useMemo(() => {
         try {
             JSON.parse(content);
-            return content
+            return content;
         } catch {
-            const parsedContent = `{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"${content}\",\"type\":\"text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}`    
-            return parsedContent
+            const parsedContent = `{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"${content}\",\"type\":\"text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}`;
+            return parsedContent;
         }
-    }, [])
-    
+    }, []);
+
     return (
         <View
             position="relative"
@@ -56,9 +56,7 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
             height="100%"
             backgroundColor={isReadOnly ? "transparent" : "default"}
         >
-            <TextPaneContainer
-                isReadOnly={isReadOnly}
-            >
+            <TextPaneContainer isReadOnly={isReadOnly}>
                 <EditorComposer>
                     <Editor
                         hashtagsEnabled={true}

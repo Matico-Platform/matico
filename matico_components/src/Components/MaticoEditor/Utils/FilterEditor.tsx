@@ -42,7 +42,6 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     max,
     onUpdateFilter
 }) => {
-
     const toggleVariableMin = () => {
         if (typeof min === "number") {
             onUpdateFilter({
@@ -200,7 +199,6 @@ const EditorForFilter: React.FC<{
     return <Text>Failed to get filter type</Text>;
 };
 
-
 interface FilterBlockProps {
     filters: Array<Filter>;
     columns: Array<Column>;
@@ -253,8 +251,8 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
         );
 
     return (
-          <Flex direction="column">
-              <FilterBlock {...{ columns, filters, updateFilter }} />
-          </Flex>
+        <Flex direction="column">
+            <FilterBlock {...{ columns, filters, updateFilter }} />
+        </Flex>
     );
 };

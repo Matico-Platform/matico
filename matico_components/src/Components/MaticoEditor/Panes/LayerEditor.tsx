@@ -43,7 +43,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
         (state) => state.datasets.datasets[layer.source.name]
     );
 
-    const { columns, geomType } = dataset ?? {columns:null, geomType:null};
+    const { columns, geomType } = dataset ?? { columns: null, geomType: null };
 
     const { style } = layer;
     const isPoint = geomType === GeomType.Point;
@@ -124,166 +124,191 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
                     onDatasetSelected={updateDataset}
                 />
             </CollapsibleSection>
-            {dataset &&
-              <>
-            {dataset?.geomType !== GeomType.Line && (
-                <CollapsibleSection title="Fill" isOpen={true}>
-                    <ColorVariableEditor
-                        label="Fill Color"
-                        datasetName={dataset?.name}
-                        columns={columns}
-                        style={style.fillColor}
-                        onUpdateStyle={(style) => {
-                            updateStyle("fillColor", style);
-                        }}
-                    />
-                </CollapsibleSection>
-            )}
-            {dataset?.geomType === GeomType.Point && (
-                <CollapsibleSection title="Radius" isOpen={true}>
-                    <SliderVariableEditor
-                        label="Point Radius"
-                        style={style.size}
-                        datasetName={dataset.name}
-                        columns={columns}
-                        onUpdateValue={(style) => updateStyle("size", style)}
-                        sliderMin={0}
-                        sliderMax={20}
-                    />
-                    <TwoUpCollapsableGrid
-                        gridProps={{
-                            marginTop: "size-100"
-                        }}
-                    >
-                        <NumberField
-                            value={style.radiusScale}
-                            label="Multiplier"
-                            labelPosition="side"
-                            arial-label="Point radius multiplier"
-                            maxValue={100000}
-                            minValue={0.001}
-                            onChange={(val) => updateStyle("radiusScale", val)}
-                        />
-                        <Picker
-                            alignSelf={"flex-end"}
-                            label="Units"
-                            labelPosition="side"
-                            aria-label="Point radius units"
-                            selectedKey={style.radiusUnits}
-                            onSelectionChange={(units) =>
-                                updateStyle("radiusUnits", units as string)
-                            }
-                        >
-                            <Item key="meters">Meters</Item>
-                            <Item key="pixels">Pixels</Item>
-                        </Picker>
-                    </TwoUpCollapsableGrid>
-                </CollapsibleSection>
-            )}
-            <CollapsibleSection title="Line" isOpen={true}>
-                <ColorVariableEditor
-                    label="Line Color"
-                    style={style.lineColor}
-                    datasetName={dataset?.name}
-                    columns={columns}
-                    onUpdateStyle={(style) => updateStyle("lineColor", style)}
-                />
-                <SliderVariableEditor
-                    label="Line Width"
-                    style={style.lineWidth}
-                    datasetName={dataset?.name}
-                    columns={columns}
-                    onUpdateValue={(style) => updateStyle("lineWidth", style)}
-                />
-                {style.lineWidth !== -1 && (
-                    <TwoUpCollapsableGrid
-                        gridProps={{
-                            marginTop: "size-100"
-                        }}
-                    >
-                        <NumberField
-                            value={style.lineWidthScale}
-                            label="Multiplier"
-                            aria-label="Line width multiplier"
-                            labelPosition="side"
-                            maxValue={10000}
-                            minValue={1}
-                            onChange={(val) =>
-                                updateStyle("lineWidthScale", val)
+            {dataset && (
+                <>
+                    {dataset?.geomType !== GeomType.Line && (
+                        <CollapsibleSection title="Fill" isOpen={true}>
+                            <ColorVariableEditor
+                                label="Fill Color"
+                                datasetName={dataset?.name}
+                                columns={columns}
+                                style={style.fillColor}
+                                onUpdateStyle={(style) => {
+                                    updateStyle("fillColor", style);
+                                }}
+                            />
+                        </CollapsibleSection>
+                    )}
+                    {dataset?.geomType === GeomType.Point && (
+                        <CollapsibleSection title="Radius" isOpen={true}>
+                            <SliderVariableEditor
+                                label="Point Radius"
+                                style={style.size}
+                                datasetName={dataset.name}
+                                columns={columns}
+                                onUpdateValue={(style) =>
+                                    updateStyle("size", style)
+                                }
+                                sliderMin={0}
+                                sliderMax={20}
+                            />
+                            <TwoUpCollapsableGrid
+                                gridProps={{
+                                    marginTop: "size-100"
+                                }}
+                            >
+                                <NumberField
+                                    value={style.radiusScale}
+                                    label="Multiplier"
+                                    labelPosition="side"
+                                    arial-label="Point radius multiplier"
+                                    maxValue={100000}
+                                    minValue={0.001}
+                                    onChange={(val) =>
+                                        updateStyle("radiusScale", val)
+                                    }
+                                />
+                                <Picker
+                                    alignSelf={"flex-end"}
+                                    label="Units"
+                                    labelPosition="side"
+                                    aria-label="Point radius units"
+                                    selectedKey={style.radiusUnits}
+                                    onSelectionChange={(units) =>
+                                        updateStyle(
+                                            "radiusUnits",
+                                            units as string
+                                        )
+                                    }
+                                >
+                                    <Item key="meters">Meters</Item>
+                                    <Item key="pixels">Pixels</Item>
+                                </Picker>
+                            </TwoUpCollapsableGrid>
+                        </CollapsibleSection>
+                    )}
+                    <CollapsibleSection title="Line" isOpen={true}>
+                        <ColorVariableEditor
+                            label="Line Color"
+                            style={style.lineColor}
+                            datasetName={dataset?.name}
+                            columns={columns}
+                            onUpdateStyle={(style) =>
+                                updateStyle("lineColor", style)
                             }
                         />
-                        <Picker
-                            label="Units"
-                            aria-label="Line width units"
-                            labelPosition="side"
-                            alignSelf={"flex-end"}
-                            selectedKey={style.lineUnits}
-                            onSelectionChange={(units) =>
-                                updateStyle("lineUnits", units)
-                            }
-                        >
-                            <Item key="meters">Meters</Item>
-                            <Item key="pixels">Pixels</Item>
-                        </Picker>
-                    </TwoUpCollapsableGrid>
-                )}
-            </CollapsibleSection>
-            {dataset?.geomType === GeomType.Polygon && (
-                <CollapsibleSection title="3D" isOpen={true}>
-                    <SliderVariableEditor
-                        label="Elevation"
-                        style={style.elevation}
-                        datasetName={dataset?.name}
-                        columns={columns}
-                        onUpdateValue={(style) =>
-                            updateStyle("elevation", style)
-                        }
-                        sliderMin={0}
-                        sliderMax={10000}
-                    />
-                    <TwoUpCollapsableGrid>
-                        <NumberField
-                            value={style.elevationScale}
-                            width="100%"
-                            label="Elevation Multiplier"
-                            maxValue={100000}
-                            minValue={1}
-                            onChange={(val) =>
-                                updateStyle("elevationScale", val)
+                        <SliderVariableEditor
+                            label="Line Width"
+                            style={style.lineWidth}
+                            datasetName={dataset?.name}
+                            columns={columns}
+                            onUpdateValue={(style) =>
+                                updateStyle("lineWidth", style)
                             }
                         />
-                    </TwoUpCollapsableGrid>
-                </CollapsibleSection>
-            )}
-            <CollapsibleSection title="Opacity and Visibility" isOpen={true}>
-                <TwoUpCollapsableGrid>
-                    <SliderUnitSelector
-                        label="Layer Opacity"
-                        value={
-                            style.opacity === undefined
-                                ? 1
-                                : (style.opacity as number)
-                        }
-                        sliderMin={0}
-                        sliderMax={1}
-                        sliderStep={0.01}
-                        onUpdateValue={(val) => updateStyle("opacity", val)}
-                    />
-                    <Checkbox
-                        isSelected={
-                            style.visible === undefined ? true : style.visible
-                        }
-                        onChange={() => updateStyle("visible", !style.visible)}
+                        {style.lineWidth !== -1 && (
+                            <TwoUpCollapsableGrid
+                                gridProps={{
+                                    marginTop: "size-100"
+                                }}
+                            >
+                                <NumberField
+                                    value={style.lineWidthScale}
+                                    label="Multiplier"
+                                    aria-label="Line width multiplier"
+                                    labelPosition="side"
+                                    maxValue={10000}
+                                    minValue={1}
+                                    onChange={(val) =>
+                                        updateStyle("lineWidthScale", val)
+                                    }
+                                />
+                                <Picker
+                                    label="Units"
+                                    aria-label="Line width units"
+                                    labelPosition="side"
+                                    alignSelf={"flex-end"}
+                                    selectedKey={style.lineUnits}
+                                    onSelectionChange={(units) =>
+                                        updateStyle("lineUnits", units)
+                                    }
+                                >
+                                    <Item key="meters">Meters</Item>
+                                    <Item key="pixels">Pixels</Item>
+                                </Picker>
+                            </TwoUpCollapsableGrid>
+                        )}
+                    </CollapsibleSection>
+                    {dataset?.geomType === GeomType.Polygon && (
+                        <CollapsibleSection title="3D" isOpen={true}>
+                            <SliderVariableEditor
+                                label="Elevation"
+                                style={style.elevation}
+                                datasetName={dataset?.name}
+                                columns={columns}
+                                onUpdateValue={(style) =>
+                                    updateStyle("elevation", style)
+                                }
+                                sliderMin={0}
+                                sliderMax={10000}
+                            />
+                            <TwoUpCollapsableGrid>
+                                <NumberField
+                                    value={style.elevationScale}
+                                    width="100%"
+                                    label="Elevation Multiplier"
+                                    maxValue={100000}
+                                    minValue={1}
+                                    onChange={(val) =>
+                                        updateStyle("elevationScale", val)
+                                    }
+                                />
+                            </TwoUpCollapsableGrid>
+                        </CollapsibleSection>
+                    )}
+                    <CollapsibleSection
+                        title="Opacity and Visibility"
+                        isOpen={true}
                     >
-                        Layer Visibility
-                    </Checkbox>
-                </TwoUpCollapsableGrid>
-            </CollapsibleSection>
-                <CollapsibleSection title="Interleaving" isOpen={true}>
-                  <TextField label={"Before layer id"} defaultValue={null} value={style.beforeId} onChange={(val)=> updateStyle("beforeId",val)} />
-                </CollapsibleSection>
-            </>
-            }
+                        <TwoUpCollapsableGrid>
+                            <SliderUnitSelector
+                                label="Layer Opacity"
+                                value={
+                                    style.opacity === undefined
+                                        ? 1
+                                        : (style.opacity as number)
+                                }
+                                sliderMin={0}
+                                sliderMax={1}
+                                sliderStep={0.01}
+                                onUpdateValue={(val) =>
+                                    updateStyle("opacity", val)
+                                }
+                            />
+                            <Checkbox
+                                isSelected={
+                                    style.visible === undefined
+                                        ? true
+                                        : style.visible
+                                }
+                                onChange={() =>
+                                    updateStyle("visible", !style.visible)
+                                }
+                            >
+                                Layer Visibility
+                            </Checkbox>
+                        </TwoUpCollapsableGrid>
+                    </CollapsibleSection>
+                    <CollapsibleSection title="Interleaving" isOpen={true}>
+                        <TextField
+                            label={"Before layer id"}
+                            defaultValue={null}
+                            value={style.beforeId}
+                            onChange={(val) => updateStyle("beforeId", val)}
+                        />
+                    </CollapsibleSection>
+                </>
+            )}
         </Flex>
     );
 };

@@ -1,7 +1,4 @@
-import { ColorVariableEditorProps } from './types';
-import { ColorVariableEditor } from './ColorVariableEditor';
+import { ColorVariableEditorProps } from "./types";
+import { ColorVariableEditor } from "./ColorVariableEditor";
 
-export {
-    ColorVariableEditor,
-    ColorVariableEditorProps
-}
+export { ColorVariableEditor, ColorVariableEditorProps };

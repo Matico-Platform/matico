@@ -1,7 +1,4 @@
-import { GeoBoundsSelectorProps } from './types';
-import { GeoBoundsSelector } from './GeoBoundsSelector';
+import { GeoBoundsSelectorProps } from "./types";
+import { GeoBoundsSelector } from "./GeoBoundsSelector";
 
-export {
-    GeoBoundsSelector,
-    GeoBoundsSelectorProps
-}
+export { GeoBoundsSelector, GeoBoundsSelectorProps };

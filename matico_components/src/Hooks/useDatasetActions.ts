@@ -9,7 +9,7 @@ export const useDatasetActions = (name: string) => {
         dispatch(updateDatasetSpec({ name, datasetSpec: spec }));
     };
     const _removeDataset = (name: string) => {
-        dispatch(removeDataset({name}));
+        dispatch(removeDataset({ name }));
     };
     return { updateDataset, removeDataset: _removeDataset };
 };

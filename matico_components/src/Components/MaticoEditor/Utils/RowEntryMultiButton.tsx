@@ -40,7 +40,6 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
     onRaise,
     onDuplicate
 }) => {
-
     const handleActions = (action: string) => {
         switch (action) {
             case "delete":
@@ -61,8 +60,7 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
             default:
                 return;
         }
-    }
-
+    };
 
     return (
         <Flex
@@ -80,13 +78,13 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                     paddingLeft: `calc(${inset}em + 6px)`,
                     borderRadius: 0,
                     cursor: "pointer",
-                    padding:"0 auto 0 0"
+                    padding: "0 auto 0 0"
                 }}
             >
                 <Text
                     justifySelf={"flex-start"}
                     UNSAFE_style={{
-                        textAlign: "left",
+                        textAlign: "left"
                     }}
                     alignSelf={"flex-start"}
                 >
@@ -98,17 +96,15 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
                 type="popover"
                 mobileType="tray"
                 containerPadding={1}
-
             >
-                <ActionButton
-                    isQuiet
-                    flex="0 0 auto"
-                >
+                <ActionButton isQuiet flex="0 0 auto">
                     <Delete />
                 </ActionButton>
                 {(close) => (
                     <Dialog>
-                        <Heading>Are you sure you want to delete {entryName}?</Heading>
+                        <Heading>
+                            Are you sure you want to delete {entryName}?
+                        </Heading>
                         <Content marginTop="size-100">
                             <Button
                                 variant="negative"
@@ -148,8 +144,8 @@ export const RowEntryMultiButton: React.FC<RowEntryMultiButtonProps> = ({
     );
 };
 
-
-{/* <View
+{
+    /* <View
 paddingX="size-150"
 // paddingY={compact ? "size-50" : "size-100"}
 marginStart={`${inset}em`}
@@ -253,4 +249,5 @@ backgroundColor="gray-100"
         </DialogTrigger>
     </View>
 </Flex>
-</View> */}
+</View> */
+}

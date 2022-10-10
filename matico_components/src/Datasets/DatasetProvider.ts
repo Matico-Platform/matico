@@ -1,4 +1,4 @@
-import { DatasetSpec, SpecParameter} from "@maticoapp/matico_types/spec";
+import { DatasetSpec, SpecParameter } from "@maticoapp/matico_types/spec";
 export interface DatasetRecord {
     name: string;
     id: string;

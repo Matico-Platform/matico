@@ -36,7 +36,7 @@ const GeoFeatureVariableViewer: React.FC<{ feature: GeoFeatureVar }> = ({
     );
 };
 
-const RangeFeatureVariableViewer: React.FC<{ feature: RangeVar}> = ({
+const RangeFeatureVariableViewer: React.FC<{ feature: RangeVar }> = ({
     feature
 }) => {
     if (feature.value === "NoSelection") {
@@ -45,23 +45,20 @@ const RangeFeatureVariableViewer: React.FC<{ feature: RangeVar}> = ({
 
     return (
         <Flex direction="column" gap={"size-200"}>
-                    <Flex
-                        direction="row"
-                        justifyContent="start"
-                        gap={"size-200"}
-                    >
-          <Text>Range</Text>
-          <Text>{feature.value.min.toFixed(4)} - {feature.value.max.toFixed(4)}</Text>
-          </Flex>
+            <Flex direction="row" justifyContent="start" gap={"size-200"}>
+                <Text>Range</Text>
+                <Text>
+                    {feature.value.min.toFixed(4)} -{" "}
+                    {feature.value.max.toFixed(4)}
+                </Text>
+            </Flex>
         </Flex>
     );
 };
 
-
-const MapViewFeatureVariableViewer: React.FC<{ feature: MapViewVar}> = ({
+const MapViewFeatureVariableViewer: React.FC<{ feature: MapViewVar }> = ({
     feature
 }) => {
-
     return (
         <Flex direction="column" gap={"size-200"}>
             {Object.entries(feature.value).map(
@@ -119,22 +116,24 @@ export const MaticoStateViewer: React.FC = () => {
                     const pane = panes.find((p) => p.id === paneId);
 
                     return (
-                        <View width='100%'>
-                        <CollapsibleSection
-                            title={pane?.name}
-                            icon={IconForPaneType(pane?.type)}
-                        >
-                            {Object.values(state.autoVariables)
-                                .filter((p) => p.paneId === paneId)
-                                .map((variable) => (
-                                    <CollapsibleSection title={variable.name}>
-                                        <ViewerForVariable
-                                            variable={variable.value}
-                                        />
-                                    </CollapsibleSection>
-                                ))}
-                        </CollapsibleSection>
-                      </View>
+                        <View width="100%">
+                            <CollapsibleSection
+                                title={pane?.name}
+                                icon={IconForPaneType(pane?.type)}
+                            >
+                                {Object.values(state.autoVariables)
+                                    .filter((p) => p.paneId === paneId)
+                                    .map((variable) => (
+                                        <CollapsibleSection
+                                            title={variable.name}
+                                        >
+                                            <ViewerForVariable
+                                                variable={variable.value}
+                                            />
+                                        </CollapsibleSection>
+                                    ))}
+                            </CollapsibleSection>
+                        </View>
                     );
                 })}
             </View>

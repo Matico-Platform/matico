@@ -45,7 +45,5 @@ export const useFormattedText = (content: string) => {
         JSON.stringify(autoVariables)
     ]);
 
-    return [
-        formattedContent
-    ]
+    return [formattedContent];
 };

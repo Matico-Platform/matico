@@ -1,12 +1,7 @@
 import React from "react";
-import {
-    ContainerPane,
-    PaneRef
-} from "@maticoapp/matico_types/spec";
+import { ContainerPane, PaneRef } from "@maticoapp/matico_types/spec";
 import { useContainer } from "Hooks/useContainer";
-import {
-    useDroppable,
-} from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
 import { PaneRow } from "./PaneRow";
 import { PaneList } from "./PaneList";
 import { usePane } from "Hooks/usePane";
@@ -18,8 +13,10 @@ export const ContainerPaneRow: React.FC<{
     depth: number;
 }> = ({ rowPane, depth }) => {
     const { pane } = usePane(rowPane);
-    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
-    
+    const activeItem = useMaticoSelector(
+        (state) => state.editor.activeDragItem
+    );
+
     const { addPaneToContainer } = useContainer(rowPane);
     const { panes } = pane as ContainerPane;
     const { isOver, setNodeRef } = useDroppable({
@@ -34,7 +31,8 @@ export const ContainerPaneRow: React.FC<{
     });
 
     // @ts-ignore
-    const showDropZone = !!activeItem && activeItem?.data?.current?.type !== "page";
+    const showDropZone =
+        !!activeItem && activeItem?.data?.current?.type !== "page";
 
     return (
         <div>

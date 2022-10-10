@@ -40,10 +40,9 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
 const PlaceholderLayer = new ScatterplotLayer({
     id: "PLACEHOLDER",
     data: [],
-    getPosition: d=>[0,0],
+    getPosition: (d) => [0, 0],
     getRadius: 0,
     getFillColor: [0, 0, 0]
-
 });
 
 const accessToken =
@@ -160,16 +159,16 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     }
 
     return (
-        <div ref={parentRef} 
-        key={id} 
-        style={{
-            width: "100%",
-            height: "100%",
-            position: "relative",
-            overflow: "hidden"
-        }}
+        <div
+            ref={parentRef}
+            key={id}
+            style={{
+                width: "100%",
+                height: "100%",
+                position: "relative",
+                overflow: "hidden"
+            }}
         >
-             
             {currentView && currentView.type === "mapview" && (
                 <>
                     <Map

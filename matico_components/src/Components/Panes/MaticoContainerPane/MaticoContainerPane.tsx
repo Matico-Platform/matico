@@ -34,7 +34,9 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
         }
     });
 
-    const activeItem = useMaticoSelector((state) => state.editor.activeDragItem);
+    const activeItem = useMaticoSelector(
+        (state) => state.editor.activeDragItem
+    );
     const showDropZone = // @ts-ignore
         !!activeItem && activeItem?.data?.current?.type !== "page";
 

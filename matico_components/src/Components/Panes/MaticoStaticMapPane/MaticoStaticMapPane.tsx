@@ -53,7 +53,6 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
     const datasetReady =
         foundDataset && foundDataset.state === DatasetState.READY;
 
-
     const chartData = useRequestDataMulti(
         layers.map((l) => ({
             datasetName: l.source?.name,
@@ -63,8 +62,7 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
     );
 
     const Chart = useMemo(() => {
-
-        const styledLayers = layers 
+        const styledLayers = layers
             .map((l: Layer, i: index) => {
                 if (!chartData[i] || chartData[i].state !== "Done") {
                     return null;
@@ -98,18 +96,18 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
             .filter((l) => l);
 
         return (
-          <>
-            <MaticoChart
-                title={labels?.title}
-                subtitle={labels?.subTitle}
-                yExtent={[0, 100]}
-                xExtent={[0, 100]}
-                proj={projection}
-                gratOn={showGraticule}
-                rotation={rotation}
-                layers={styledLayers}
-                data={[]}
-            />
+            <>
+                <MaticoChart
+                    title={labels?.title}
+                    subtitle={labels?.subTitle}
+                    yExtent={[0, 100]}
+                    xExtent={[0, 100]}
+                    proj={projection}
+                    gratOn={showGraticule}
+                    rotation={rotation}
+                    layers={styledLayers}
+                    data={[]}
+                />
             </>
         );
     }, [chartData, showGraticule, layers, projection]);

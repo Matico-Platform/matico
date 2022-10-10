@@ -14,7 +14,7 @@ export const availableLayouts: LayoutLabel[] = [
         name: "free",
         label: "Free Layout",
         default: {
-          allowOverflow : false
+            allowOverflow: false
         }
     },
     {
@@ -24,14 +24,14 @@ export const availableLayouts: LayoutLabel[] = [
             direction: "vertical",
             justify: "flex-start",
             align: "center",
-            allowOverflow:true
+            allowOverflow: true
         }
     },
     {
         name: "tabs",
         label: "Tab Layout",
         default: {
-          tabBarPosition:"horizontal"
+            tabBarPosition: "horizontal"
         }
     }
 ];

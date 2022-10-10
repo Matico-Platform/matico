@@ -82,9 +82,12 @@ export const stateSlice = createSlice({
         addPage: (state, action: PayloadAction<{ page: Page }>) => {
             state.spec.pages.push(action.payload.page);
         },
-        setPageIndex: (state, action: PayloadAction<{pageId: string, newIndex: number}>) => {
-            const {pageId, newIndex} = action.payload;
-            const page = state.spec.pages.find(page => page.id === pageId);
+        setPageIndex: (
+            state,
+            action: PayloadAction<{ pageId: string; newIndex: number }>
+        ) => {
+            const { pageId, newIndex } = action.payload;
+            const page = state.spec.pages.find((page) => page.id === pageId);
             if (page) {
                 const oldIndex = state.spec.pages.indexOf(page);
                 state.spec.pages.splice(oldIndex, 1);
@@ -115,16 +118,12 @@ export const stateSlice = createSlice({
         removePane: (state, action: PayloadAction<{ id: string }>) => {
             _.remove(state.spec.pages, (p: Page) => p.id === action.payload.id);
         },
-        updateNormalizedSpec:(
-          state,
-          action: PayloadAction<App>
-        )=>{
-          state.normalizedSpec = action.payload 
+        updateNormalizedSpec: (state, action: PayloadAction<App>) => {
+            state.normalizedSpec = action.payload;
         },
         setPaneRefIndex: (
             state,
             action: PayloadAction<{
-
                 paneRefId: string;
                 newIndex: number;
             }>
@@ -314,7 +313,7 @@ export const stateSlice = createSlice({
         ) => {
             let theme = state.spec.theme;
             let update = action.payload.update;
-            state.spec.theme = Object.assign({},theme, update);
+            state.spec.theme = Object.assign({}, theme, update);
         },
         updateMetadata: (
             state,
@@ -376,11 +375,10 @@ export const stateSlice = createSlice({
             state,
             action: PayloadAction<DatasetTransform>
         ) => {
-            if(state.spec.datasetTransforms){
-              state.spec.datasetTransforms.push(action.payload);
-            }
-            else{
-              state.spec.datasetTransforms=[action.payload];
+            if (state.spec.datasetTransforms) {
+                state.spec.datasetTransforms.push(action.payload);
+            } else {
+                state.spec.datasetTransforms = [action.payload];
             }
         },
 
@@ -416,13 +414,12 @@ export const stateSlice = createSlice({
             );
             transform.steps.push(step);
         },
-        removeDataset:(
-            state,
-            action:PayloadAction<{name:string}>
-        )=>{
-          let {name}= action.payload
-          let newDatasets = state.spec.datasets.filter(d=>d.name!== name)
-          state.spec.datasets = newDatasets
+        removeDataset: (state, action: PayloadAction<{ name: string }>) => {
+            let { name } = action.payload;
+            let newDatasets = state.spec.datasets.filter(
+                (d) => d.name !== name
+            );
+            state.spec.datasets = newDatasets;
         },
         updateDatasetTransformStep: (
             state,

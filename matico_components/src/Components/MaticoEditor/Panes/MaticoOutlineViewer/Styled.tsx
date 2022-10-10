@@ -5,15 +5,26 @@ export const HoverableItem = styled.span`
     transition: 125ms opacity;
 `;
 
-export const HoverableRow = styled.div<{hideBorder?: boolean, squash?: boolean}>`
+export const HoverableRow = styled.div<{
+    hideBorder?: boolean;
+    squash?: boolean;
+}>`
     position: relative;
-    border-bottom: ${({hideBorder}) => hideBorder ? 'none' : '1px solid var(--spectrum-global-color-gray-200)'};
-    transition:125ms all;
+    border-bottom: ${({ hideBorder }) =>
+        hideBorder
+            ? "none"
+            : "1px solid var(--spectrum-global-color-gray-200)"};
+    transition: 125ms all;
     ${HoverableItem} {
-        width: ${({squash}) => squash ? '0' : 'fit-content'};
+        width: ${({ squash }) => (squash ? "0" : "fit-content")};
         transition: 125ms width;
     }
-    &:hover ${HoverableItem}, &:focus-within ${HoverableItem}, &:focus ${HoverableItem} {
+    &:hover
+        ${HoverableItem},
+        &:focus-within
+        ${HoverableItem},
+        &:focus
+        ${HoverableItem} {
         opacity: 1;
         width: fit-content;
     }

@@ -44,7 +44,7 @@ import { GeoBoundsSelector } from "../EditorComponents/GeoBoundsSelector";
 import { OptionsPopper } from "../EditorComponents/OptionsPopper";
 import { NumericEditor } from "../EditorComponents/NumericEditor";
 import { ParentSize } from "@visx/responsive";
-import {AddLayerModal} from "../EditorComponents/AddLayerModal/AddLayerModal";
+import { AddLayerModal } from "../EditorComponents/AddLayerModal/AddLayerModal";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
@@ -90,12 +90,15 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     const otherMapPanes = useMaticoSelector((state) =>
         Object.values(state.variables.autoVariables)
-            .filter((variable) => variable.value.type==='mapview')
-            .filter((variable) =>  variable.paneId!== paneRef.paneId )
-            .map((variable)=> ({...variable, mapName: state.spec.spec.panes.find(p=>p.id===variable.paneId).name}))
+            .filter((variable) => variable.value.type === "mapview")
+            .filter((variable) => variable.paneId !== paneRef.paneId)
+            .map((variable) => ({
+                ...variable,
+                mapName: state.spec.spec.panes.find(
+                    (p) => p.id === variable.paneId
+                ).name
+            }))
     );
-
-    console.log("Other map panes ", otherMapPanes)
 
     const syncedMapPaneView = useMaticoSelector((state) =>
         //@ts-ignore
@@ -142,7 +145,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     const startSyncing = (variableId: string) => {
         updatePane({
             ...mapPane,
-            view: { varId: variableId, property:null, bind: true }
+            view: { varId: variableId, property: null, bind: true }
         });
     };
 
@@ -245,9 +248,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                         label="Sync to Another Map View"
                         labelPosition="side"
                         items={otherMapPanes}
-                        selectedKey={
-                            mapPane?.view?.varId
-                        }
+                        selectedKey={mapPane?.view?.varId}
                         onSelectionChange={startSyncing}
                     >
                         {(pane) => <Item key={pane.id}>{pane.mapName}</Item>}
@@ -321,11 +322,20 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     value={Object.entries(mapPane.controls ?? {})
                         .filter(([label, selected]) => selected)
                         .map(([label, selected]) => label)}
-                        //@ts-ignore
-                        onChange={(update)=> updatePane({controls: 
-                        //@ts-ignore
-                            update.reduce((agg: MapControls,val: KeyOf<MapControls>)=> ({...agg, [val] : true}) , {})
-                        })}
+                    //@ts-ignore
+                    onChange={(update) =>
+                        updatePane({
+                            controls:
+                                //@ts-ignore
+                                update.reduce(
+                                    (
+                                        agg: MapControls,
+                                        val: KeyOf<MapControls>
+                                    ) => ({ ...agg, [val]: true }),
+                                    {}
+                                )
+                        })
+                    }
                     label="Map Controls"
                 >
                     <Checkbox value="navigation">Navigation</Checkbox>

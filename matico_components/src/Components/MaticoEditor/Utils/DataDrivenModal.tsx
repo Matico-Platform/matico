@@ -197,16 +197,14 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
     const range = mapping.range;
 
     const metric = Array.isArray(domain)
-        ? {type:"manual",  bins: domain.length }
+        ? { type: "manual", bins: domain.length }
         : domain.metric;
-
 
     //@ts-ignore
     const noBins = metric.bins;
 
     let selectedPaletteName =
         typeof range === "string" ? range.split(".")[0] : null;
-
 
     let selectedPalette = selectedPaletteName
         ? //@ts-ignore
@@ -238,7 +236,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         filters: filters
     });
 
-   const histogram = useRequestColumnStat({
+    const histogram = useRequestColumnStat({
         datasetName: dataset.name,
         column: column.name,
         metric: "histogram",
@@ -246,9 +244,12 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         filters: filters
     });
 
-
     useEffect(() => {
-        if (metric.type === "quantile" && quantiles && quantiles.state === "Done") {
+        if (
+            metric.type === "quantile" &&
+            quantiles &&
+            quantiles.state === "Done"
+        ) {
             setDomainValues(quantiles.result);
         }
         if (
@@ -419,7 +420,9 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                     )}
                 </Flex>
 
-                {["quantile", "equalInterval", "manual"].includes(metric.type) && (
+                {["quantile", "equalInterval", "manual"].includes(
+                    metric.type
+                ) && (
                     <Well marginStart="size-300">
                         <Flex direction="column">
                             {domainValues &&
@@ -430,7 +433,19 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                                                 rangeValues && (
                                                     <ColorPickerDialog
                                                         color={
-                                                            typeof(rangeValues[index]) === 'string' ? {hex: rangeValues[index]} : {rgb: rangeValues[index]}
+                                                            typeof rangeValues[
+                                                                index
+                                                            ] === "string"
+                                                                ? {
+                                                                      hex: rangeValues[
+                                                                          index
+                                                                      ]
+                                                                  }
+                                                                : {
+                                                                      rgb: rangeValues[
+                                                                          index
+                                                                      ]
+                                                                  }
                                                         }
                                                         onColorChange={(
                                                             color
@@ -605,7 +620,6 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
     onUpdateSpec,
     label
 }) => {
-
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[datasetName]
     );

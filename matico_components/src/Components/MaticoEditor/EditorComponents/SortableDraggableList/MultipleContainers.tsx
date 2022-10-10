@@ -77,7 +77,7 @@ function DroppableContainer({
     renderItem?: any;
     getIndex: (id: UniqueIdentifier) => number;
 }) {
-  const paneIds = panes.map((pane) => pane.id);
+    const paneIds = panes.map((pane) => pane.id);
     const {
         active,
         attributes,
@@ -193,14 +193,13 @@ export function MultipleContainers({
     modifiers,
     renderItem,
     strategy = verticalListSortingStrategy,
-    vertical = false,
+    vertical = false
 }: Props) {
     const [items, setItems] = useState<Items>(
-        () =>
-            pages.map(page => page.panes.map(pane => pane.id)) as Items
+        () => pages.map((page) => page.panes.map((pane) => pane.id)) as Items
     );
     const [containers, setContainers] = useState(
-        pages.map(page => page.id) as UniqueIdentifier[]
+        pages.map((page) => page.id) as UniqueIdentifier[]
     );
     const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
     const lastOverId = useRef<UniqueIdentifier | null>(null);
@@ -483,7 +482,7 @@ export function MultipleContainers({
                     items={[...containers, PLACEHOLDER_ID]}
                     strategy={verticalListSortingStrategy}
                 >
-                    {pages.map((page as Page) => (
+                    {pages.map((page: Page) => (
                         <DroppableContainer
                             key={page.id}
                             id={page.id}

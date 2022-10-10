@@ -80,11 +80,9 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     //      }
     //  }, [onStateChange, JSON.stringify(appState)]);
 
-
     const { reparentPane, changePaneIndex, updatePageIndex } = useApp();
 
-
-    const handleDragStart = ({active}: {active: Active}): void => {
+    const handleDragStart = ({ active }: { active: Active }): void => {
         // dispatch(setActiveDragItem(active))
     };
 
@@ -128,32 +126,41 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                         <MaticoNavBar />
                     </View>
                     <Content gridArea="main">
-                            <Switch>
-                                {pages.map((page: Page, index: number) => (
-                                    !!page?.id && <Route
-                                        path={page.path ? page.path : page.name}
-                                        key={page.path}
-                                        exact={true}
-                                    >
-                                        <DndContext
-                                            // @ts-ignore
-                                            onDragStart={handleDragStart}
-                                            onDragEnd={handleDragEnd}
-                                            // onDragOver={handleDragOver}
-                                            collisionDetection={
-                                                layoutCollisionDetection
+                        <Switch>
+                            {pages.map(
+                                (page: Page, index: number) =>
+                                    !!page?.id && (
+                                        <Route
+                                            path={
+                                                page.path
+                                                    ? page.path
+                                                    : page.name
                                             }
-                                            sensors={sensors}
-                                            modifiers={[restrictToWindowEdges]}
+                                            key={page.path}
+                                            exact={true}
                                         >
-                                            <MaticoPage
-                                                key={page.path}
-                                                pageId={page.id}
-                                            />
-                                        </DndContext>
-                                    </Route>
-                                ))}
-                            </Switch>
+                                            <DndContext
+                                                // @ts-ignore
+                                                onDragStart={handleDragStart}
+                                                onDragEnd={handleDragEnd}
+                                                // onDragOver={handleDragOver}
+                                                collisionDetection={
+                                                    layoutCollisionDetection
+                                                }
+                                                sensors={sensors}
+                                                modifiers={[
+                                                    restrictToWindowEdges
+                                                ]}
+                                            >
+                                                <MaticoPage
+                                                    key={page.path}
+                                                    pageId={page.id}
+                                                />
+                                            </DndContext>
+                                        </Route>
+                                    )
+                            )}
+                        </Switch>
                     </Content>
                 </Grid>
             )}

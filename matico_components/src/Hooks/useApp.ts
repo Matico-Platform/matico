@@ -1,7 +1,4 @@
-import {
-  DatasetTransform,
-    Page, Pane,
-} from "@maticoapp/matico_types/spec";
+import { DatasetTransform, Page, Pane } from "@maticoapp/matico_types/spec";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import {
     updatePageDetails,
@@ -18,17 +15,14 @@ import {
     setPageIndex
 } from "../Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
-import {Theme} from "@maticoapp/matico_types/spec";
-import {Metadata} from "@maticoapp/matico_types/spec";
+import { Theme } from "@maticoapp/matico_types/spec";
+import { Metadata } from "@maticoapp/matico_types/spec";
 
 export const useApp = () => {
-
     const dispatch = useMaticoDispatch();
-    const app = useMaticoSelector(
-        (selector) => selector.spec.spec
-    );
+    const app = useMaticoSelector((selector) => selector.spec.spec);
 
-    const { metadata, pages, panes, theme, datasetTransforms } = app || {}
+    const { metadata, pages, panes, theme, datasetTransforms } = app || {};
 
     const addPageLocal = (page: Partial<Page>) => {
         dispatch(
@@ -36,9 +30,10 @@ export const useApp = () => {
                 page: {
                     name: pages.length === 0 ? "Home" : `Page ${pages.length}`,
                     id: uuidv4(),
-                    layout: { type: "free", allowOverflow:false },
+                    layout: { type: "free", allowOverflow: false },
                     panes: [],
-                    icon: pages.length === 0 ? "fas fa-home" : "fas fa-newspaper",
+                    icon:
+                        pages.length === 0 ? "fas fa-home" : "fas fa-newspaper",
                     path: pages.length === 0 ? "/" : `/page_${pages.length}`,
                     ...page
                 }
@@ -55,9 +50,9 @@ export const useApp = () => {
         );
     };
 
-    const _updateMetadata = (update:Partial<Metadata>)=>{
-      dispatch(updateMetadata({update}))
-    }
+    const _updateMetadata = (update: Partial<Metadata>) => {
+        dispatch(updateMetadata({ update }));
+    };
     const updatePage = (pageId: string, update: Partial<Page>) => {
         dispatch(updatePageDetails({ pageId, update }));
     };
@@ -66,25 +61,22 @@ export const useApp = () => {
         dispatch(removePage({ pageId, removeOrphanPanes: false }));
     };
 
-    const _addDatasetTransform = ( transform: DatasetTransform) =>{
-        dispatch(addDatasetTransform(transform))
-    }
-    const _removeDatasetTransform= ( transform: DatasetTransform) =>{
-        dispatch(removeDatasetTransform(transform))
-    }
+    const _addDatasetTransform = (transform: DatasetTransform) => {
+        dispatch(addDatasetTransform(transform));
+    };
+    const _removeDatasetTransform = (transform: DatasetTransform) => {
+        dispatch(removeDatasetTransform(transform));
+    };
 
-    const _updateTheme= (update: Partial<Theme>)=>{
-        dispatch(updateTheme({update}))
-    }
+    const _updateTheme = (update: Partial<Theme>) => {
+        dispatch(updateTheme({ update }));
+    };
 
-    const _addPane =(pane: Pane)=>{
-        dispatch(addPane({pane}))
-    }
+    const _addPane = (pane: Pane) => {
+        dispatch(addPane({ pane }));
+    };
 
-    const reparentPane = (
-        paneRefId: string,
-        targetId: string
-    ) => {
+    const reparentPane = (paneRefId: string, targetId: string) => {
         dispatch(
             reparentPaneRef({
                 paneRefId,
@@ -93,29 +85,23 @@ export const useApp = () => {
         );
     };
 
-    const changePaneIndex = (
-        paneRefId: string,
-        newIndex: number
-    ) => {
+    const changePaneIndex = (paneRefId: string, newIndex: number) => {
         dispatch(
             setPaneRefIndex({
                 paneRefId,
                 newIndex
             })
-        )
-    }
+        );
+    };
 
-    const updatePageIndex = (
-        pageId: string,
-        newIndex: number
-    ) => {  
+    const updatePageIndex = (pageId: string, newIndex: number) => {
         dispatch(
             setPageIndex({
                 pageId,
                 newIndex
             })
-        )
-    }
+        );
+    };
 
     return {
         app,
@@ -131,9 +117,9 @@ export const useApp = () => {
         setEditPage,
         reparentPane,
         changePaneIndex,
-        addPane:_addPane,
+        addPane: _addPane,
         updateTheme: _updateTheme,
         addDatasetTransform: _addDatasetTransform,
-        removeDatasetTransform: _removeDatasetTransform,
+        removeDatasetTransform: _removeDatasetTransform
     };
 };

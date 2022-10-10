@@ -1,19 +1,27 @@
-import React from 'react'
-import {Flex, Picker, Item, TextField, Divider, ActionButton} from '@adobe/react-spectrum';
-import {JoinStep} from '@maticoapp/matico_types/spec';
-import Delete from '@spectrum-icons/workflow/Delete';
-import {DatasetColumnSelector} from 'Components/MaticoEditor/Utils/DatasetColumnSelector';
-import {DatasetSelector} from 'Components/MaticoEditor/Utils/DatasetSelector';
+import React from "react";
+import {
+    Flex,
+    Picker,
+    Item,
+    TextField,
+    Divider,
+    ActionButton
+} from "@adobe/react-spectrum";
+import { JoinStep } from "@maticoapp/matico_types/spec";
+import Delete from "@spectrum-icons/workflow/Delete";
+import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
+import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
+import { Column } from "Datasets/Dataset";
 
 export const JoinStepEditor: React.FC<{
     joinStep: JoinStep;
     onChange: (update: Partial<JoinStep>) => void;
-    datasetId: string;
-}> = ({ joinStep, onChange, datasetId }) => {
-
+    columns?: Array<Column>;
+    datasetId?: string;
+}> = ({ joinStep, onChange, datasetId, columns }) => {
     return (
         <Flex direction="row" gap={"size-300"}>
-            <Flex direction="column" width="size-1000">
+            <Flex direction="column" minWidth="size-1250">
                 <DatasetSelector
                     label="Dataset to join with"
                     labelPosition="top"
@@ -35,8 +43,16 @@ export const JoinStepEditor: React.FC<{
                 >
                     {(item) => <Item key={item.id}>{item.name}</Item>}
                 </Picker>
-                <TextField label="Left Prefix" value={joinStep.leftPrefix} onChange={(leftPrefix)=> onChange({leftPrefix})} />
-                <TextField label="Left Prefix" value={joinStep.rightPrefix} onChange={(rightPrefix)=> onChange({rightPrefix})} />
+                <TextField
+                    label="Left Prefix"
+                    value={joinStep.leftPrefix}
+                    onChange={(leftPrefix) => onChange({ leftPrefix })}
+                />
+                <TextField
+                    label="Left Prefix"
+                    value={joinStep.rightPrefix}
+                    onChange={(rightPrefix) => onChange({ rightPrefix })}
+                />
             </Flex>
             <Divider orientation="vertical" size="S" />
             <Flex direction="column" flex={1} gap="size-200">
@@ -53,6 +69,7 @@ export const JoinStepEditor: React.FC<{
                                 label="Left Join Column"
                                 labelPosition="side"
                                 datasetName={datasetId}
+                                columns={columns}
                                 selectedColumn={
                                     joinStep.joinColumnsLeft
                                         ? joinStep.joinColumnsLeft[index]
@@ -63,7 +80,9 @@ export const JoinStepEditor: React.FC<{
                                         joinColumnsLeft:
                                             joinStep.joinColumnsLeft.map(
                                                 (jc, i) =>
-                                                    i === index ? column.name : jc
+                                                    i === index
+                                                        ? column.name
+                                                        : jc
                                             )
                                     });
                                 }}
@@ -82,7 +101,9 @@ export const JoinStepEditor: React.FC<{
                                         joinColumnsRight:
                                             joinStep.joinColumnsRight.map(
                                                 (jc, i) =>
-                                                    i === index ? column.name : jc
+                                                    i === index
+                                                        ? column.name
+                                                        : jc
                                             )
                                     });
                                 }}

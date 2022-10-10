@@ -18,7 +18,7 @@ export const DraggablePane: React.FC<{
                     textOverflow: "ellipsis",
                     overflowX: "hidden",
                     whiteSpace: "nowrap",
-                    color:"white"
+                    color: "white"
                 }}
             >
                 {name}

@@ -18,10 +18,9 @@ export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
     step,
     name
 }) => {
-
     const [value, updateValue] = useAutoVariable({
         variable: {
-            id:controlPaneId,
+            id: controlPaneId,
             paneId: controlPaneId,
             name: `range_control_${name}`,
             value: {
@@ -32,13 +31,11 @@ export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
         bind: true
     });
 
-    console.log("value is ,",value)
-
     return (
         <RangeSlider
             width="100%"
             label={name}
-            value={{start:value?.value?.min, end: value?.value?.max}}
+            value={{ start: value?.value?.min, end: value?.value?.max }}
             minValue={min}
             maxValue={max}
             step={step}

@@ -1,5 +1,3 @@
-import { CompactHorizontalButton } from './CompactHorizontalButton';
+import { CompactHorizontalButton } from "./CompactHorizontalButton";
 
-export {
-    CompactHorizontalButton
-}
+export { CompactHorizontalButton };

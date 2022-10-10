@@ -1,4 +1,4 @@
-export interface MaticoControl{
-  initalValue: any,
-  type: string
+export interface MaticoControl {
+    initalValue: any;
+    type: string;
 }

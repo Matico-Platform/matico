@@ -55,10 +55,9 @@ const useLegend = (
 } => {
     let legendEl = "rect";
 
-    const { fillColor, lineColor, lineWidth, size, name} = layer;
+    const { fillColor, lineColor, lineWidth, size, name } = layer;
 
     let steps: { scale: any; operation: ScaleFunc }[] = [];
-
 
     if (fillColor?.domain) {
         const { domain, range: valuesOrName } = fillColor;
@@ -67,7 +66,10 @@ const useLegend = (
             : get(colors, valuesOrName);
 
         const scale = scaleThreshold<number>({
-            domain: domain && Array.isArray(domain)  ? [...domain.slice(1), Math.pow(10, 10)] :[],
+            domain:
+                domain && Array.isArray(domain)
+                    ? [...domain.slice(1), Math.pow(10, 10)]
+                    : [],
             range
         });
 
@@ -84,7 +86,10 @@ const useLegend = (
             ? valuesOrName
             : get(colors, valuesOrName);
         const scale = scaleThreshold<number>({
-            domain: domain && Array.isArray(domain) ? [...domain.slice(1), Math.pow(10, 10)] : [],
+            domain:
+                domain && Array.isArray(domain)
+                    ? [...domain.slice(1), Math.pow(10, 10)]
+                    : [],
             range
         });
         steps.push({
@@ -104,7 +109,10 @@ const useLegend = (
                 (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 4 - 1) + 1
             );
             const scale = scaleThreshold<number>({
-                domain: domain && Array.isArray(domain) ? [...domain.slice(1), Math.pow(10, 10)] : [],
+                domain:
+                    domain && Array.isArray(domain)
+                        ? [...domain.slice(1), Math.pow(10, 10)]
+                        : [],
                 range
             });
             steps.push({
@@ -126,7 +134,10 @@ const useLegend = (
                 (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 2 - 3) + 3
             );
             const scale = scaleThreshold<number>({
-                domain: domain && Array.isArray(domain) ? [...domain.slice(1), Math.pow(10, 10)] : [],
+                domain:
+                    domain && Array.isArray(domain)
+                        ? [...domain.slice(1), Math.pow(10, 10)]
+                        : [],
                 range
             });
             steps.push({
@@ -173,7 +184,9 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
     } else {
         return (
             <View>
-                <Text UNSAFE_style={{ fontWeight: "bold", color:"white" }}>{name}</Text>
+                <Text UNSAFE_style={{ fontWeight: "bold", color: "white" }}>
+                    {name}
+                </Text>
                 <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
                     {(labels) => {
                         //@ts-ignore
@@ -213,7 +226,10 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
                                                 />
                                             )}
                                         </svg>
-                                        <Text marginStart={"size-100"} UNSAFE_style={{color:"white"}}>
+                                        <Text
+                                            marginStart={"size-100"}
+                                            UNSAFE_style={{ color: "white" }}
+                                        >
                                             {i > 0 ? label.text : `> ${val}`}
                                         </Text>
                                     </LegendItem>
@@ -227,10 +243,10 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
 };
 
 export const MaticoLegendPane: React.FC<{ legends: Array<any> }> = ({
-    legends= [] 
+    legends = []
 }) => {
     const legendPanes = useMemo(
-      () =>{
+        () => {
             return legends.map((legend, i) => (
                 <Flex key={i} direction="row">
                     <Legend layer={legend} />
@@ -242,12 +258,11 @@ export const MaticoLegendPane: React.FC<{ legends: Array<any> }> = ({
                         />
                     )}
                 </Flex>
-            ))
+            ));
         },
         // @ts-ignore
         [JSON.stringify(legends)]
     );
-
 
     return legends && legends.length ? (
         <View

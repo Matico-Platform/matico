@@ -13,10 +13,9 @@ import {
 
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
-import {v4 as uuid} from 'uuid'
+import { v4 as uuid } from "uuid";
 
 export const useDatasetTransform = (datasetTransformId: string) => {
-
     const datasetTransform = useMaticoSelector((selector) =>
         selector.spec.spec.datasetTransforms.find(
             (dt: DatasetTransform) => dt.id === datasetTransformId
@@ -39,9 +38,7 @@ export const useDatasetTransform = (datasetTransformId: string) => {
         dispatch(updateDatasetTransform(update));
     };
 
-    const _updateStep = (
-        update: Partial<DatasetTransformStep>
-    ) => {
+    const _updateStep = (update: Partial<DatasetTransformStep>) => {
         dispatch(
             updateDatasetTransformStep({
                 transformId: datasetTransform.id,
@@ -61,7 +58,10 @@ export const useDatasetTransform = (datasetTransformId: string) => {
 
     const _addStep = (step: DatasetTransformStep) => {
         dispatch(
-            addDatasetTransformStep({ transformId: datasetTransform.id, step:{id: uuid(), ...step }})
+            addDatasetTransformStep({
+                transformId: datasetTransform.id,
+                step: { id: uuid(), ...step }
+            })
         );
     };
 
@@ -74,4 +74,3 @@ export const useDatasetTransform = (datasetTransformId: string) => {
         updateStep: _updateStep
     };
 };
-

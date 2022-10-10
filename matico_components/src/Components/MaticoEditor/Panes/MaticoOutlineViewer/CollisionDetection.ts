@@ -133,19 +133,20 @@ const generateCollisionDetection = (
                 intersectedId;
             return isContainer;
         });
-        const nearestParentIsSameParent = parents.length && parents[0].id === currentParent?.id         
+        const nearestParentIsSameParent =
+            parents.length && parents[0].id === currentParent?.id;
 
         const siblings = intersections.filter((intersected) => {
             const intersectedData =
-            intersected?.data?.droppableContainer?.data?.current;
+                intersected?.data?.droppableContainer?.data?.current;
             const intersectedType = intersectedData?.type;
             const intersectedId = intersectedData?.targetId;
             const isContainer =
-            ["page", "container"].includes(intersectedType) &&
-            intersectedId;
+                ["page", "container"].includes(intersectedType) &&
+                intersectedId;
             return !isContainer;
         });
-        
+
         if (!parents.length || nearestParentIsSameParent) {
             return closestCenter({
                 ...args,

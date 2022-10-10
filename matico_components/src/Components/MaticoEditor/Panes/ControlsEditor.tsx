@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import _, {rangeRight} from "lodash";
+import _, { rangeRight } from "lodash";
 
 import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
 import { PaneEditor } from "./PaneEditor";
@@ -20,7 +20,13 @@ import {
 import SwitchIcon from "@spectrum-icons/workflow/Switch";
 import MenuIcon from "@spectrum-icons/workflow/Menu";
 import { usePane } from "Hooks/usePane";
-import { Control, ControlsPane, PaneRef, RangeControl, SelectControl } from "@maticoapp/matico_types/spec";
+import {
+    Control,
+    ControlsPane,
+    PaneRef,
+    RangeControl,
+    SelectControl
+} from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { DetailsEditor } from "./DetailsEditor";
 
@@ -100,7 +106,6 @@ const EditRangeModal: React.FC<{
     rangeProps: RangeControl;
     onUpdate: (update: Partial<RangeControl>) => void;
 }> = ({ rangeProps, onUpdate }) => {
-    console.log("range props ", rangeProps)
     return (
         <DialogTrigger isDismissable type="popover">
             <ActionButton isQuiet>
@@ -115,22 +120,22 @@ const EditRangeModal: React.FC<{
                             description={"Name to use for the variable"}
                             label="name"
                             value={rangeProps.name}
-                            onChange={(name) => onUpdate({ name})}
+                            onChange={(name) => onUpdate({ name })}
                         />
-                        <Flex direction='row' justifyContent={"space-between"}>
-                        <NumberField
-                            description={"Min value this variable can take"}
-                            label="minVal"
-                            value={rangeProps.min}
-                            onChange={(min) => onUpdate({ min })}
-                        ></NumberField>
-                        <NumberField
-                            description={"Max value this variable can take"}
-                            label="maxVal"
-                            value={rangeProps.max}
-                            onChange={(max) => onUpdate({ max })}
-                        ></NumberField>
-                      </Flex>
+                        <Flex direction="row" justifyContent={"space-between"}>
+                            <NumberField
+                                description={"Min value this variable can take"}
+                                label="minVal"
+                                value={rangeProps.min}
+                                onChange={(min) => onUpdate({ min })}
+                            ></NumberField>
+                            <NumberField
+                                description={"Max value this variable can take"}
+                                label="maxVal"
+                                value={rangeProps.max}
+                                onChange={(max) => onUpdate({ max })}
+                            ></NumberField>
+                        </Flex>
                     </Flex>
                 </Content>
             </Dialog>
@@ -222,7 +227,7 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     ) => {
         const newControl = {
             ...DefaultForControl[controlType],
-            name: controlName,
+            name: controlName
         };
         updatePane({
             controls: [...controlsPane.controls, newControl]
@@ -274,9 +279,6 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         updatePane({ controls });
     };
 
-    console.log("Controls ", controlsPane)
-
-
     return (
         <Flex direction="column">
             <CollapsibleSection title="Details" isOpen={true}>
@@ -294,9 +296,15 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
             </CollapsibleSection>
             <CollapsibleSection title="Controls" isOpen={true}>
                 <AddControlModal onAddControl={handleAddControl} />
-                {controlsPane.controls.map((control: Control, index: number) => {
-                  return (<Flex direction='row' justifyContent='space-between' alignItems='center'>
-                    {control.type === "range" ? (
+                {controlsPane.controls.map(
+                    (control: Control, index: number) => {
+                        return (
+                            <Flex
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                            >
+                                {control.type === "range" ? (
                                     <EditRangeModal
                                         rangeProps={control}
                                         onUpdate={(update) =>
@@ -310,11 +318,11 @@ export const ControlsPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                                             updateControlAtIndex(update, index)
                                         }
                                     />
-                                )
+                                )}
+                            </Flex>
+                        );
                     }
-                          </Flex>
-                    );
-                })}
+                )}
             </CollapsibleSection>
         </Flex>
     );

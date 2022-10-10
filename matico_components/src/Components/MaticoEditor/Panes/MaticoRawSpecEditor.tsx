@@ -20,7 +20,7 @@ import {
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-tomorrow_night";
 import "ace-builds/src-noconflict/ext-language_tools";
-import {useApp} from "Hooks/useApp";
+import { useApp } from "Hooks/useApp";
 
 export const MaticoRawSpecEditor: React.FC = () => {
     const [code, setCode] = useState<string>();
@@ -31,14 +31,13 @@ export const MaticoRawSpecEditor: React.FC = () => {
 
     const { validator, validatorReady, error: validatorError } = useValidator();
 
-    const {app}= useApp();
+    const { app } = useApp();
     const dispatch = useMaticoDispatch();
 
     //Need to figure out how to make sure this updates with other spec changes
     useEffect(() => {
         setCode(JSON.stringify(app, null, 2));
     }, []);
-
 
     const annotations: Ace.Annotation[] = jsonError
         ? json_error_to_annotation(jsonError)
@@ -64,7 +63,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
             }
         }
     }, [JSON.stringify(code), validator, validatorReady]);
-
 
     const combinedErrors = useMemo(() => {
         let combinedErrors = [];

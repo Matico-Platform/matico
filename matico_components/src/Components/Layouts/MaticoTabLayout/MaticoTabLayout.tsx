@@ -1,5 +1,9 @@
 import React from "react";
-import { PanePosition, PaneRef, TabBarPosition } from "@maticoapp/matico_types/spec";
+import {
+    PanePosition,
+    PaneRef,
+    TabBarPosition
+} from "@maticoapp/matico_types/spec";
 import {
     Tabs,
     TabList,
@@ -27,8 +31,7 @@ const GapVals = {
     large: "size-1000"
 };
 
-const TabPane: React.FC<{paneRef: PaneRef}> = ({paneRef}) => {
-
+const TabPane: React.FC<{ paneRef: PaneRef }> = ({ paneRef }) => {
     const paneType = paneRef.type;
     const {
         normalizedPane,
@@ -40,7 +43,6 @@ const TabPane: React.FC<{paneRef: PaneRef}> = ({paneRef}) => {
     } = usePane(paneRef);
     const isEdit = useIsEditable();
     // const Wrapper = isEdit ? FreeDraggableActionWrapper : FreeContainer;
-    console.log(paneRef)
     return (
         <InternalSpecProvider
             value={{
@@ -64,70 +66,80 @@ const TabPane: React.FC<{paneRef: PaneRef}> = ({paneRef}) => {
             }}
         >
             {/* <Wrapper> */}
-                <PaneSelector
-                    normalizedPane={normalizedPane}
-                    updatePane={updatePane}
-                    selectPane={selectPane}
-                    paneRef={paneRef}
-                    paneType={paneType}
-                />
+            <PaneSelector
+                normalizedPane={normalizedPane}
+                updatePane={updatePane}
+                selectPane={selectPane}
+                paneRef={paneRef}
+                paneType={paneType}
+            />
             {/* </Wrapper> */}
         </InternalSpecProvider>
     );
-}
+};
 
 export const MaticoTabLayout: React.FC<MaticoTabLayoutInterface> = ({
     paneRefs,
     tabBarPosition
 }) => {
-  const  panes  = useMaticoSelector((spec)=> paneRefs.map( pr => spec.spec.spec.panes.find((p)=>pr.paneId === p.id)));
+    const panes = useMaticoSelector((spec) =>
+        paneRefs.map((pr) =>
+            spec.spec.spec.panes.find((p) => pr.paneId === p.id)
+        )
+    );
     const tabs: Array<{ id: string; name: string }> = paneRefs.map((pr, i) => ({
         id: pr.id,
         name: panes[i].name
     }));
 
-
-    if(tabs.length ===0){
-      return (
-        <Flex
-            width="100%"
-            height="100%"
-            justifyContent="center"
-            alignItems="center"
-            UNSAFE_style={{ background: "white" }}
-        >
-            <Text
-                UNSAFE_style={{
-                    color: "var(--spectrum-global-color-magenta-400)",
-                    textAlign:'center'
-                }}
+    if (tabs.length === 0) {
+        return (
+            <Flex
+                width="100%"
+                height="100%"
+                justifyContent="center"
+                alignItems="center"
+                UNSAFE_style={{ background: "white" }}
             >
-                <Alert size="L" />
-                <br/>
-                No tabs defined. Add a subpane to this container to add it as a tab
-                <br/>
-                <i>Click to open editor</i>
-            </Text>
-        </Flex>
-      )
+                <Text
+                    UNSAFE_style={{
+                        color: "var(--spectrum-global-color-magenta-400)",
+                        textAlign: "center"
+                    }}
+                >
+                    <Alert size="L" />
+                    <br />
+                    No tabs defined. Add a subpane to this container to add it
+                    as a tab
+                    <br />
+                    <i>Click to open editor</i>
+                </Text>
+            </Flex>
+        );
     }
 
     return (
-        <Tabs width="100%" height="100%" orientation={tabBarPosition} arial-label="Tabs" items={tabs}>
+        <Tabs
+            width="100%"
+            height="100%"
+            orientation={tabBarPosition}
+            arial-label="Tabs"
+            items={tabs}
+        >
             <TabList>
                 {(item) => <Item key={item.id}>{item.name}</Item>}
             </TabList>
-            <View width="100%" height='100%' position={'relative'}>
-              <TabPanels>
-                  {(item) => (
-                      <Item key={item.id}>
-                          <TabPane
-                              paneRef={paneRefs.find((p) => p.id === item.id)}
-                          />
-                      </Item>
-                  )}
-              </TabPanels>
-          </View>
+            <View width="100%" height="100%" position={"relative"}>
+                <TabPanels>
+                    {(item) => (
+                        <Item key={item.id}>
+                            <TabPane
+                                paneRef={paneRefs.find((p) => p.id === item.id)}
+                            />
+                        </Item>
+                    )}
+                </TabPanels>
+            </View>
         </Tabs>
     );
 };

@@ -222,7 +222,7 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
         opacity: isEditedPane ? 1 : 0,
         transition: "opacity 0.2s ease-in-out",
         pointerEvents: isEditedPane ? "all" : "none"
-    }
+    };
     const ArrowEl = direction === "row" ? ArrowRight : ArrowDown;
 
     return (
@@ -255,7 +255,7 @@ const LinearDraggableActionWrapper: React.FC = ({ children }) => {
                 >
                     <ArrowEl color="positive" />
                 </button>
-                <button 
+                <button
                     // @ts-ignore
                     style={{
                         position: "absolute",

@@ -28,7 +28,7 @@ export const PaneRow: React.FC<{
     const navigateToPage = usePageContext();
     const isActiveRef = currentEditElement?.id === rowPane.id;
     const isHoveredRef = currentHoveredRef === rowPane.id;
-    
+
     const handleHover = () => {
         !isActiveRef && setHovered();
     };
@@ -38,7 +38,7 @@ export const PaneRow: React.FC<{
     const handleClick = () => {
         selectPane();
     };
-    
+
     useEffect(() => {
         // @ts-ignore
         isActiveRef && navigateToPage();
@@ -96,10 +96,7 @@ export const PaneRow: React.FC<{
                         justifyContent="start"
                         wrap="nowrap"
                     >
-                        <DragButton
-                            {...listeners}
-                            ref={setActivatorNodeRef}
-                        >
+                        <DragButton {...listeners} ref={setActivatorNodeRef}>
                             <DragHandle color="positive" />
                         </DragButton>
                         {IconForPaneType(pane.type, {

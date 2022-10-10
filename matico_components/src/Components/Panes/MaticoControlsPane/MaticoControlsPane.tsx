@@ -11,7 +11,7 @@ import {
     lightTheme
 } from "@adobe/react-spectrum";
 import { Control } from "@maticoapp/matico_types/spec";
-import {usePane} from "Hooks/usePane";
+import { usePane } from "Hooks/usePane";
 
 export interface MaticoControlsPaneInterface extends MaticoPaneInterface {
     controls: Array<any>;
@@ -23,8 +23,6 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
     title,
     id
 }) => {
-
-
     return (
         <View width="100%" height="100%" position="relative">
             <Flex

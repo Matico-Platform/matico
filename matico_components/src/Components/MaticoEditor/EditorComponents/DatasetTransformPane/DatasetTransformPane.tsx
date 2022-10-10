@@ -14,9 +14,12 @@ import { Dataset, DatasetTransform } from "@maticoapp/matico_types/spec";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { useApp } from "Hooks/useApp";
 import React, { useState } from "react";
-import { DatasetTransformDialog, DatasetTransformEditor } from "../DatasetTransformEditor/DatasetTransformEditor";
+import {
+    DatasetTransformDialog,
+    DatasetTransformEditor
+} from "../DatasetTransformEditor/DatasetTransformEditor";
 import { v4 as uuid } from "uuid";
-import {useMaticoSelector} from "Hooks/redux";
+import { useMaticoSelector } from "Hooks/redux";
 
 export const NewDatasetTransformModal: React.FC<{
     onSubmit: (transform: DatasetTransform) => void;
@@ -27,7 +30,7 @@ export const NewDatasetTransformModal: React.FC<{
     );
     const [dataset, setDataset] = useState<string | null>(null);
 
-    const createTransform = (close: ()=>void) => {
+    const createTransform = (close: () => void) => {
         if (dataset) {
             onSubmit({
                 id: uuid(),
@@ -36,7 +39,7 @@ export const NewDatasetTransformModal: React.FC<{
                 sourceId: dataset,
                 steps: []
             });
-            close()
+            close();
         }
     };
 
@@ -51,8 +54,8 @@ export const NewDatasetTransformModal: React.FC<{
                 Add Transform
             </ActionButton>
             {(close) => (
-                <Dialog >
-                    <Content >
+                <Dialog>
+                    <Content>
                         <Flex direction="column" gap="size-200">
                             <TextField
                                 width="100%"
@@ -73,7 +76,7 @@ export const NewDatasetTransformModal: React.FC<{
                                 onDatasetSelected={setDataset}
                             />
                             <ActionButton
-                            onPress={()=>createTransform(close)}
+                                onPress={() => createTransform(close)}
                                 aria-label="Create"
                             >
                                 Create Transform
@@ -97,11 +100,11 @@ export const DatasetTransfromPane: React.FC = () => {
 
             <Flex direction="column" gap="size-100">
                 {datasetTransforms?.map((transform) => (
-                        <DatasetTransformDialog
-                            key={transform.id}
-                            transformId={transform.id}
-                            state={datasets[transform.name]?.state}
-                        />
+                    <DatasetTransformDialog
+                        key={transform.id}
+                        transformId={transform.id}
+                        state={datasets[transform.name]?.state}
+                    />
                 ))}
             </Flex>
 

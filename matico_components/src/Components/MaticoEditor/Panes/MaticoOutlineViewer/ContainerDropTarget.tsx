@@ -5,11 +5,13 @@ export const ContainerDropTarget = styled.div<{
     isOver: boolean;
 }>`
     background: ${({ isOver, active }) =>
-        isOver && active ? "var(--spectrum-semantic-positive-color-icon)" : "rgba(0,0,0,0)"};
+        isOver && active
+            ? "var(--spectrum-semantic-positive-color-icon)"
+            : "rgba(0,0,0,0)"};
     transition: 125ms all;
     position: relative;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
     &:before {
         content: "";
         position: absolute;
@@ -21,6 +23,7 @@ export const ContainerDropTarget = styled.div<{
         border: 1px solid rgba(81, 255, 249, 0.5);
         transition: 125ms all;
         border-left: 3px solid var(--spectrum-semantic-positive-color-icon);
-        opacity: ${({ active, isOver }) => (isOver && active ? ".75" : active ? "0.5" : "0")};
+        opacity: ${({ active, isOver }) =>
+            isOver && active ? ".75" : active ? "0.5" : "0"};
     }
 `;

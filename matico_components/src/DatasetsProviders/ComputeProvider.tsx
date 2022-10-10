@@ -48,12 +48,12 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     };
 
     return (
-            <ParameterGroup
-                layout="column"
-                parameters={options}
-                values={values}
-                onChange={updateValues}
-            />
+        <ParameterGroup
+            layout="column"
+            parameters={options}
+            values={values}
+            onChange={updateValues}
+        />
     );
 };
 
@@ -66,7 +66,7 @@ const ParameterGroup: React.FC<{
     if (!parameters || !values) return <></>;
 
     return (
-        <Flex direction={layout} gap="size-200" flex={1} >
+        <Flex direction={layout} gap="size-200" flex={1}>
             {Object.keys(parameters).map((key) => {
                 let val = values.find((v: SpecParameter) => v.name === key)
                     .parameter.value;
@@ -249,7 +249,7 @@ const ParameterInput: React.FC<{
                                 })
                             }
                         />
-                    <Footer>{description} </Footer>
+                        <Footer>{description} </Footer>
                     </Content>
                 </Well>
             );
@@ -312,7 +312,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                 </Picker>
             )}
             {analysis && (
-                <Flex direction='column' flex='1'>
+                <Flex direction="column" flex="1">
                     <TextField
                         value={spec.name}
                         onChange={(name: string) => updateSpec({ name })}

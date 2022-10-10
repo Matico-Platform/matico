@@ -1,24 +1,28 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DatasetState, DatasetSummary } from "Datasets/Dataset";
-import { Filter, Dataset as DatasetSpec, DatasetTransform } from "@maticoapp/matico_types/spec";
+import {
+    Filter,
+    Dataset as DatasetSpec,
+    DatasetTransform
+} from "@maticoapp/matico_types/spec";
 import _ from "lodash";
-import {MaticoErrorType, registerError} from "./MaticoErrorSlice";
-import {TransformStepError} from "Datasets/DatasetTransformRunner";
+import { MaticoErrorType, registerError } from "./MaticoErrorSlice";
+import { TransformStepError } from "Datasets/DatasetTransformRunner";
 
 export interface Query {
     state: "Loading" | "Error" | "Done";
     result: any;
 }
-export interface TransformResult{
+export interface TransformResult {
     state: "Loading" | "Error" | "Done";
     result: any;
-    error: TransformStepError | null
+    error: TransformStepError | null;
 }
 
 export interface DatasetsState {
     datasets: { [datasetName: string]: DatasetSummary };
     queries: { [queryHash: string]: Query };
-    transforms: { [transformId: string]: TransformResult};
+    transforms: { [transformId: string]: TransformResult };
     loaders: { [loaderName: string]: any };
 }
 
@@ -38,7 +42,7 @@ export interface DataRequest {
 const initialState: DatasetsState = {
     datasets: {},
     queries: {},
-    transforms:{},
+    transforms: {},
     loaders: {}
 };
 
@@ -59,11 +63,8 @@ export const datasetsSlice = createSlice({
             state.queries[requestHash] = { state: "Loading", result: null };
         },
         // Also triggers middleware
-        unregisterDataset:(
-          state,
-          action: PayloadAction<DatasetSpec>
-        )=>{
-          delete state.datasets[action.payload.name]
+        unregisterDataset: (state, action: PayloadAction<DatasetSpec>) => {
+            delete state.datasets[action.payload.name];
         },
         // Also triggers middleware
         registerOrUpdateDataset: (
@@ -80,11 +81,17 @@ export const datasetsSlice = createSlice({
             state,
             action: PayloadAction<DatasetTransform>
         ) => {
-            state.datasets[action.payload.name] = {
-                name: action.payload.name,
-                state: DatasetState.LOADING,
-                spec: action.payload
-            };
+            if (state.datasets[action.payload.name]) {
+                state.datasets[action.payload.name].state =
+                    DatasetState.LOADING;
+            } else {
+                state.datasets[action.payload.name] = {
+                    name: action.payload.name,
+                    state: DatasetState.LOADING,
+                    spec: action.payload,
+                    transform: true
+                };
+            }
         },
         datasetReady: (state, action: PayloadAction<DatasetSummary>) => {
             state.datasets[action.payload.name] = action.payload;
@@ -96,19 +103,27 @@ export const datasetsSlice = createSlice({
             };
         },
         // Also triggers middleware
-        requestTransform:(
-          state,
-          action:PayloadAction<DatasetTransform>
-        )=>{
-          state.transforms[action.payload.id] = {
-            result:null,
-            error:null,
-            state: "Loading"
-          } 
+        requestTransform: (state, action: PayloadAction<DatasetTransform>) => {
+            state.transforms[action.payload.id] = {
+                result: null,
+                error: null,
+                state: "Loading"
+            };
         },
-        gotTransformResult:(state, action:PayloadAction<{transformId:string,result:Array<any>, error:TransformStepError}>)=>{
-          const {transformId, error,result} = action.payload
-          state.transforms[transformId] = {state: error ? "Error" : "Done", result, error}
+        gotTransformResult: (
+            state,
+            action: PayloadAction<{
+                transformId: string;
+                result: Array<any>;
+                error: TransformStepError;
+            }>
+        ) => {
+            const { transformId, error, result } = action.payload;
+            state.transforms[transformId] = {
+                state: error ? "Error" : "Done",
+                result,
+                error
+            };
         },
         // Also triggers middleware
         registerDataUpdates: (
@@ -123,7 +138,11 @@ export const datasetsSlice = createSlice({
             }>
         ) => {
             const { requestHash } = action.payload;
-            state.queries[requestHash] = { state: "Loading", result: null };
+            if (state.queries[requestHash]) {
+                state.queries[requestHash].state = "Loading";
+            } else {
+                state.queries[requestHash] = { state: "Loading", result: null };
+            }
         },
         gotData: (
             state,

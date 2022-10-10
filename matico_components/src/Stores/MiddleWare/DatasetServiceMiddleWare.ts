@@ -17,8 +17,8 @@ export const DatasetServiceMiddleWare = () => {
         const state = store.getState();
         switch (action.type) {
             case "datasets/unregisterDataset":
-              worker.unregisterDataset(action.payload)
-              return next(action);
+                worker.unregisterDataset(action.payload);
+                return next(action);
             case "datasets/registerOrUpdateDataset":
                 worker
                     .registerOrUpdateDataset(action.payload)
@@ -56,12 +56,15 @@ export const DatasetServiceMiddleWare = () => {
                 break;
             case "datasets/registerOrUpdateTransform":
                 worker
-                    .registerOrUpdateTransform(action.payload, comlink.proxy((datasetSummary: DatasetSummary) => {
-                        store.dispatch({
-                            type: "datasets/datasetReady",
-                            payload: datasetSummary
-                        });
-                    }))
+                    .registerOrUpdateTransform(
+                        action.payload,
+                        comlink.proxy((datasetSummary: DatasetSummary) => {
+                            store.dispatch({
+                                type: "datasets/datasetReady",
+                                payload: datasetSummary
+                            });
+                        })
+                    )
                     .catch((error: any) => {
                         console.warn(
                             "Something went wrong registering transform",
@@ -89,18 +92,23 @@ export const DatasetServiceMiddleWare = () => {
                 });
                 break;
             case "datasets/requestTransform":
-                worker.applyTransform(action.payload).then((data: Array<any>) => {
-                  store.dispatch({
-                    type: "datasets/gotTransformResult",
-                    payload:{ transformId: action.payload.id, result: data},
-                  });
-                })
-                .catch((err:Error)=>{
-                    store.dispatch({
-                      type: "datasets/gotTransformResult",
-                      payload:{transformId: action.payload.id, error: err}
-                    }) 
-                });
+                worker
+                    .applyTransform(action.payload, true)
+                    .then((result: any) => {
+                        store.dispatch({
+                            type: "datasets/gotTransformResult",
+                            payload: { transformId: action.payload.id, result }
+                        });
+                    })
+                    .catch((err: Error) => {
+                        store.dispatch({
+                            type: "datasets/gotTransformResult",
+                            payload: {
+                                transformId: action.payload.id,
+                                error: err
+                            }
+                        });
+                    });
                 break;
             case "datasets/registerColumnStatUpdates":
                 const onStatsUpdate = (data: Array<any>) => {
@@ -114,7 +122,6 @@ export const DatasetServiceMiddleWare = () => {
                         }
                     });
                 };
-
 
                 worker.registerColumnData(
                     action.payload.args,
