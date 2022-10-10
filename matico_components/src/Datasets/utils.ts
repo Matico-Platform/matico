@@ -12,6 +12,9 @@ const arrowTypeToMaticoType= (aType: DataType)=>{
   if(DataType.isUtf8(aType)){
     return "text"
   }
+  if(DataType.isDictionary(aType)){
+    return arrowTypeToMaticoType(aType.valueType)
+  }
   return "unknown"
 }
 

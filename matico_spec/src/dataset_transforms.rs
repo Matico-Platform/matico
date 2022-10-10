@@ -62,29 +62,29 @@ pub struct FilterStep{
     pub filters:Vec<Filter>
 }
 
-#[wasm_bindgen]
-#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct Rename{
-    #[wasm_bindgen(skip)]
-    pub to: String
-}
+// #[wasm_bindgen]
+// #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
+// #[serde(rename_all = "camelCase")]
+// #[ts(export)]
+// pub struct Rename{
+//     #[wasm_bindgen(skip)]
+//     pub to: String
+// }
 
-#[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
-#[serde(rename_all = "camelCase", tag="type")]
-#[ts(export)]
-pub enum ColumnTransform{
-    ChangeType(ChangeType),
-    Rename(Rename),
-    Drop
-}
+// #[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
+// #[serde(rename_all = "camelCase", tag="type")]
+// #[ts(export)]
+// pub enum ColumnTransform{
+//     ChangeType(ChangeType),
+//     Rename(Rename),
+//     Drop
+// }
 
-impl Default for ColumnTransform{
-    fn default() -> Self {
-        ColumnTransform::Drop
-    }
-}
+// impl Default for ColumnTransform{
+//     fn default() -> Self {
+//         ColumnTransform::Drop
+//     }
+// }
 
 #[derive(Serialize, Deserialize, AutoCompleteMe, Debug, TS)]
 #[serde(rename_all = "camelCase", tag="type")]
@@ -166,18 +166,21 @@ impl Default for ChangeType{
 #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct ColumnTransformStep{
+pub struct ColumnTransform{
     #[wasm_bindgen(skip)]
     pub column: String,
     #[wasm_bindgen(skip)]
-    pub transform: ColumnTransform
+    pub to: ChangeType 
 }
 
-// impl Default for ColumnTransform{
-//     fn default() -> Self {
-//         ColumnTransform { column: "".into(), transform: ColumnTransformOp::Int}
-//     }
-// }
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ColumnTransformStep{
+    #[wasm_bindgen(skip)]
+    pub transforms: Vec<ColumnTransform>
+}
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]

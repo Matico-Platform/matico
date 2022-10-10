@@ -5,6 +5,7 @@ import {DefaultGrid} from 'Components/MaticoEditor/Utils/DefaultGrid';
 import Filter from "@spectrum-icons/workflow/Filter"
 import Join from "@spectrum-icons/workflow/Merge";
 import AggregateIcon from "@spectrum-icons/workflow/GraphBarHorizontal";
+import Column from "@spectrum-icons/workflow/ColumnSettings";
 import Compute from "@spectrum-icons/workflow/Calculator";
 
 export const AddTransformStepDialog: React.FC<{
@@ -31,6 +32,13 @@ export const AddTransformStepDialog: React.FC<{
         onAdd({
             type: "compute",
             url: null
+        } as DatasetTransformStep);
+        close();
+    };
+    const addColumnTransform= (close: () => void) => {
+        onAdd({
+            type: "columnTransform",
+            transforms: []
         } as DatasetTransformStep);
         close();
     };
@@ -77,6 +85,10 @@ export const AddTransformStepDialog: React.FC<{
                             <ActionButton onPress={() => addJoin(close)}>
                                 <Join />
                                 Join
+                            </ActionButton>
+                            <ActionButton onPress={() => addColumnTransform(close)}>
+                                <Column/>
+                                Column Transform 
                             </ActionButton>
                         </DefaultGrid>
                     </Content>

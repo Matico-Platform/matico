@@ -32,6 +32,19 @@ export const useRequestDataMulti= (requests: Array<DataRequest>)=>{
     return result 
 }
 
+export const useTransformDataWithSteps = (request?: DataRequest)=>{
+  
+    const transform = useMaticoSelector(
+        (state)=> state.datasets.datasets[request.datasetName]
+    )
+
+  const result  = useRequestData(request)
+  return {
+      ...result,
+      steps: transform.steps
+  }
+
+}
 export const useRequestData = (request?:DataRequest) => {
     const dispatch = useMaticoDispatch();
     const requestHash = JSON.stringify(request);
@@ -40,11 +53,6 @@ export const useRequestData = (request?:DataRequest) => {
     const result: Query | null = useMaticoSelector(
         (state) => state.datasets.queries[requestHash]
     );
-
-    const dataset = useMaticoSelector(
-        (state)=> state.datasets.datasets[request.datasetName]
-    )
-    console.log("dataset is ",dataset)
 
     useEffect(() => {
         if (!result && request) {

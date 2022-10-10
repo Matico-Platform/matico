@@ -3,12 +3,14 @@ import React from 'react'
 import {AggregateStep, AggregationSummary} from "@maticoapp/matico_types/spec";
 import {Flex, Divider, Picker, Item, TextField, ActionButton} from '@adobe/react-spectrum';
 import {DatasetColumnSelectorMulti, DatasetColumnSelector} from 'Components/MaticoEditor/Utils/DatasetColumnSelector';
+import {Column} from 'Datasets/Dataset';
 
 export const AggregateStepEditor: React.FC<{
     step: AggregateStep;
-    datasetId: string;
+    datasetId?: string;
+    columns? : Array<Column>
     onChange: (update: Partial<AggregateStep>) => void;
-}> = ({ step, datasetId, onChange }) => {
+}> = ({ step, datasetId, onChange, columns }) => {
     const updateAggregate = (
         index: number,
         update: Partial<AggregationSummary>
@@ -25,6 +27,7 @@ export const AggregateStepEditor: React.FC<{
             <DatasetColumnSelectorMulti
                 label="Columns to group by"
                 datasetName={datasetId}
+                columns={columns}
                 selectedColumns={step.groupByColumns}
                 onColumnsSelected={(groupByColumns) =>
                     onChange({ groupByColumns })

@@ -80,11 +80,17 @@ export const datasetsSlice = createSlice({
             state,
             action: PayloadAction<DatasetTransform>
         ) => {
+          if(state.datasets[action.payload.name]){
+            state.datasets[action.payload.name].state= DatasetState.LOADING
+          }
+          else{
             state.datasets[action.payload.name] = {
                 name: action.payload.name,
                 state: DatasetState.LOADING,
-                spec: action.payload
+                spec: action.payload,
+                transform:true
             };
+          }
         },
         datasetReady: (state, action: PayloadAction<DatasetSummary>) => {
             state.datasets[action.payload.name] = action.payload;
@@ -108,7 +114,7 @@ export const datasetsSlice = createSlice({
         },
         gotTransformResult:(state, action:PayloadAction<{transformId:string,result:Array<any>, error:TransformStepError}>)=>{
           const {transformId, error,result} = action.payload
-          state.transforms[transformId] = {state: error ? "Error" : "Done", result, error}
+          state.transforms[transformId] = {state: error ? "Error" : "Done", result, error }
         },
         // Also triggers middleware
         registerDataUpdates: (
@@ -123,7 +129,12 @@ export const datasetsSlice = createSlice({
             }>
         ) => {
             const { requestHash } = action.payload;
-            state.queries[requestHash] = { state: "Loading", result: null };
+            if(state.queries[requestHash]){
+              state.queries[requestHash].state = "Loading"
+            }
+            else{
+              state.queries[requestHash] = { state: "Loading", result: null };
+            }
         },
         gotData: (
             state,

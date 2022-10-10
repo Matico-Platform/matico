@@ -16,6 +16,7 @@ import { Column } from "Datasets/Dataset";
 interface DatasetColumnSelectorProps {
     datasetName?: string;
     selectedColumn?: string | null;
+    columns?: Array<Column>;
     onColumnSelected: (column: Column) => void;
     labelPosition?: "top" | "side";
     label?: string;
@@ -24,27 +25,29 @@ interface DatasetColumnSelectorProps {
 export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
     datasetName,
     selectedColumn,
+    columns,
     label = "Column",
     labelPosition = "side",
     description,
     onColumnSelected
 }) => {
     const foundDataset = useMaticoSelector(
-        (state) => state.datasets.datasets[datasetName]
+        (state) => datasetName ? state.datasets.datasets[datasetName] : null
     );
 
-    const columns = foundDataset ? foundDataset.columns : [];
+    const datasetColumns = foundDataset ? foundDataset.columns : [];
+    const cols = columns ?? datasetColumns
 
     return (
         <Picker
             width="100%"
-            items={columns}
+            items={cols}
             label={label ?? `Column from {datasetName}`}
             labelPosition={labelPosition}
-            isDisabled={!datasetName}
+            isDisabled={!cols}
             selectedKey={selectedColumn}
             onSelectionChange={(column) =>
-                onColumnSelected(columns.find((c) => c.name === column))
+                onColumnSelected(cols.find((c) => c.name === column))
             }
         >
             {(column) => <Item key={column.name}>{column.name}</Item>}
@@ -54,6 +57,7 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
 
 export interface DatasetColumnSelectorMulitProps {
     datasetName?: string;
+    columns? : Array<Column>;
     selectedColumns?: Array<string>;
     onColumnsSelected: (columns: Array<string>) => void;
     labelPosition?: "top" | "side";
@@ -66,15 +70,17 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
         datasetName,
         selectedColumns,
         onColumnsSelected,
+        columns,
         labelPosition,
         label,
         description
     }) => {
         const foundDataset = useMaticoSelector(
-            (state) => state.datasets.datasets[datasetName]
+            (state) => datasetName ? state.datasets.datasets[datasetName] : null
         );
 
-        const columns = foundDataset ? foundDataset.columns : [];
+        const datasetColumns = foundDataset ? foundDataset.columns : [];
+        const cols = columns ?? datasetColumns
 
         return (
             <Flex direction="column">
@@ -88,7 +94,7 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
                     }
                     }
                 >
-                  {columns.map((c) => (
+                  {cols.map((c: Column) => (
                             <Checkbox key={c.name} value={c.name}>{c.name}</Checkbox>
                         ))}
                 </CheckboxGroup>
