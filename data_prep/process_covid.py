@@ -32,6 +32,7 @@ with ZipFile("./us_covid_atlas_data_2022-10-11.zip") as zf:
     combined = pd.merge(combined,vaccinations, on=['fips','date'])
     combined = combined.assign(state = combined.fips.str[0:2].apply(lambda x: states_inv[x]) )
     combined.fips = combined.fips.astype(np.int32)
+    combined.date = pd.to_datetime(combined.date)
 
 for (state,df) in combined.groupby('state'):
     df.reset_index().drop(columns=['index']).to_feather(f"covid/{state}.feather", compression='uncompressed')
