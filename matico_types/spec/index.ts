@@ -24,6 +24,7 @@ export * from "./DatasetRef";
 export * from "./DatasetTransform";
 export * from "./DatasetTransformStep";
 export * from "./DatasetVal";
+export * from "./DateFilter";
 export * from "./DateOpts";
 export * from "./DomainVal";
 export * from "./EqualIntervalParams";

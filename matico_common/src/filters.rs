@@ -3,6 +3,7 @@ use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use validator::Validate;
+use chrono::{DateTime, Utc};
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
@@ -12,6 +13,26 @@ pub struct RangeFilter {
     min: Option<VarOr<f32>>,
     max: Option<VarOr<f32>>,
 }
+
+#[derive(Serialize, Clone, Deserialize, Validate, Debug,  AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct DateFilter{
+    variable: String,
+    min: Option<DateTime<Utc>>,
+    max: Option<DateTime<Utc>>
+}
+
+impl Default for DateFilter{
+    fn default() -> Self {
+        Self{
+            min: None,
+            max: None,
+            variable: "".into()
+        }
+    }
+}
+
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
@@ -37,6 +58,7 @@ pub enum Filter {
     NoFilter,
     Range(RangeFilter),
     Category(CategoryFilter),
+    Date(DateFilter),
     RegEx(RegExFilter)
 }
 
