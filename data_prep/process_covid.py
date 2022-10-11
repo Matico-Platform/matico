@@ -34,4 +34,4 @@ with ZipFile("./us_covid_atlas_data_2022-10-11.zip") as zf:
     combined.fips = combined.fips.astype(np.int32)
 
 for (state,df) in combined.groupby('state'):
-    df.drop(index=0).to_feather(f"covid/{state}.feather", compression='uncompressed')
+    df.reset_index().drop(columns=['index']).to_feather(f"covid/{state}.feather", compression='uncompressed')
