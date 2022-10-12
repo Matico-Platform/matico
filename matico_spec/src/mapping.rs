@@ -93,6 +93,17 @@ pub struct LayerStyle {
     
 }
 
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct TooltipColumnSpec {
+    column: String,
+    label: String,
+    formatter: Option<String>
+}
+
+
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -109,6 +120,7 @@ pub struct Layer {
     id: String,
     source: DatasetRef,
     style: LayerStyle,
+    tooltip_columns: Option<Vec<TooltipColumnSpec>>,
 }
 
 #[wasm_bindgen]

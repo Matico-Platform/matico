@@ -13,7 +13,8 @@ import {
     convertLine,
     expandMultiAndConvertPoly,
     generateColorVar,
-    generateNumericVar
+    generateNumericVar,
+    parentContainsClassName
 } from "./LayerUtils";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
@@ -207,11 +208,15 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             elevationScale,
             opacity,
             visible,
-            onHover: (hoverTarget: { object: Record<string, unknown> }) =>
+            onHover: (hoverTarget: { object: Record<string, unknown> }, event: any) => {
+                const toEl = event?.srcEvent?.toElement;
+                const isTooltip = parentContainsClassName(toEl, "matico-tooltip");
+                if (isTooltip) return
                 updateHoverVariable({
                     type: "geofeature",
                     value: hoverTarget.object ?? "NoSelection"
-                }),
+                })
+            },
             onClick: (clickTarget: { object: Record<string, unknown> }) =>
                 updateClickVariable({
                     type: "geofeature",
