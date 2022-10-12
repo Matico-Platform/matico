@@ -1,6 +1,6 @@
 import { wrap } from "comlink";
 import { DatasetServiceInterface } from "Datasets/DatasetService";
-import { DatasetState, DatasetSummary } from "Datasets/Dataset";
+import { DatasetState, DatasetSummary, Datum } from "Datasets/Dataset";
 import * as comlink from "comlink";
 
 //@ts-ignore
@@ -8,6 +8,7 @@ import DatasetServiceWorker from "Datasets/DatasetServiceWorker.worker.ts";
 
 export const DatasetServiceMiddleWare = () => {
     let worker: any | undefined;
+
 
     if (!worker) {
         worker = wrap<DatasetServiceInterface>(DatasetServiceWorker());
@@ -106,6 +107,37 @@ export const DatasetServiceMiddleWare = () => {
                             payload: {
                                 transformId: action.payload.id,
                                 error: err
+                            }
+                        });
+                    });
+                break;
+            case "datasets/requestFeatures":
+                worker
+                    .registerFeatureRequest(
+                        action.payload.args, 
+                        action.payload.notifierId,
+                        comlink.proxy((result: Datum[]) => {
+                            store.dispatch({
+                                type: "datasets/gotFeatures",
+                                payload: {
+                                    result,
+                                    notifierId: action.payload.notifierId
+                                }
+                            });
+                        })
+                    )
+                    .catch((error: any) => {
+                        console.warn(
+                            "Something went wrong requsting features",
+                            action.payload,
+                            error
+                        );
+                        store.dispatch({
+                            type: "datasets/featureRequestFailed",
+                            payload: {
+                                ...action.payload,
+                                notifierId: action.payload.notifierId,
+                                error: error.message
                             }
                         });
                     });

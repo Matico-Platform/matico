@@ -1,6 +1,7 @@
 import { DataType, Field } from "@apache-arrow/es5-cjs";
 import ColumnTable from "arquero/dist/types/table/column-table";
 import { Column } from "./Dataset";
+import * as aq from "arquero";
 
 const arrowTypeToMaticoType = (aType: DataType) => {
     if (
@@ -31,4 +32,10 @@ export const constructColumnListFromTable = (table: ColumnTable) => {
         });
     });
     return columns;
+};
+
+
+export const assignIds = (table:ColumnTable)=>{
+    const ids = aq.table({_matico_id:[...Array(table.size)].map((_,i)=>i)})
+    return table.assign(ids)
 };

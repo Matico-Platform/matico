@@ -6,7 +6,7 @@ import {
     DatasetState,
     Filter
 } from "Datasets/Dataset";
-import { ColumnStatRequest } from "Stores/MaticoDatasetSlice";
+import { ColumnStatRequest, FeatureRequest } from "Stores/MaticoDatasetSlice";
 import { CSVBuilder } from "./CSVBuilder";
 import { GeoJSONBuilder } from "./GeoJSONBuilder";
 import { COGBuilder } from "./COGBuilder";
@@ -25,6 +25,7 @@ import { FixedSizeList } from "@apache-arrow/es5-cjs";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
+
 
 export interface DatasetServiceInterface {
     datasets: { [datasetName: string]: Dataset };
@@ -65,6 +66,12 @@ export interface DatasetServiceInterface {
         notifierId: string,
         callback: (data: unknown) => void
     ): void;
+
+    registerFeatureRequest(
+        args: FeatureRequest,
+        notifierId: string,
+        callback: (data: unknown) => void
+    ): void;
 }
 
 export const DatasetService: DatasetServiceInterface = {
@@ -85,7 +92,6 @@ export const DatasetService: DatasetServiceInterface = {
             stepPreviews: transformer.stepPreviews
         });
     },
-
     async registerColumnData(
         args: ColumnStatRequest,
         notifierId: string,
@@ -168,6 +174,32 @@ export const DatasetService: DatasetServiceInterface = {
         this._notify(datasetName);
     },
 
+    async registerFeatureRequest(
+        args: FeatureRequest,
+        notifierId: string,
+        callback: (data: unknown) => void
+    ){
+        const { datasetName, ids } = args;
+
+        const getFeature = async (datasetName: string, ids: number[]) => {
+            let dataset = this.datasets[datasetName];
+            const result = dataset ? await dataset.getFeatures(ids) : null
+            return result
+        }
+
+        const features = await getFeature(datasetName, ids);
+
+        if (features) {
+            callback(features)
+        }
+        
+        this._registerNotifier(datasetName, notifierId, async () => {
+            const features = await getFeature(datasetName, ids);
+            if (features) {
+                callback(features)
+            }
+        })
+    },
     _registerNotifier(
         datasetName: string,
         notifierId: string,

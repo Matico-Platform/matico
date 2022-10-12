@@ -8,6 +8,8 @@ import _ from "lodash";
 import { Filter } from "@maticoapp/matico_types/spec";
 
 import ColumnTable from "arquero/dist/types/table/column-table";
+import { assignIds } from 'Datasets/utils'
+
 
 const applyFilter = (table: ColumnTable, filter: Filter) => {
     switch (filter.type) {
@@ -58,6 +60,7 @@ export class LocalDataset implements Dataset {
     ) {
         this._isReady = true;
         this._filterCache = [];
+        this._data = assignIds(_data)
     }
 
     isReady() {
@@ -85,8 +88,15 @@ export class LocalDataset implements Dataset {
 
     getFeature(feature_id: string) {
         const results = this._data
-            .filter((d) => d[this.idCol] === feature_id)
+            .filter(escape((d) => d[this.idCol] === feature_id))
             .object();
+        return Promise.resolve(results);
+    }
+
+    getFeatures(feature_ids: number[]) {
+        const results = this._data
+            .filter(escape((d: any) => feature_ids.indexOf(d._matico_id) !== -1))
+            .objects();
         return Promise.resolve(results);
     }
 

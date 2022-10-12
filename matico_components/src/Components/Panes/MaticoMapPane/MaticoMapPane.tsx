@@ -210,18 +210,19 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                             height={"100%"}
                             layers={[...mls, PlaceholderLayer]}
                         />
+                        {layers.map((l) => (
+                            <MaticoMapLayer
+                                key={l.name}
+                                name={l.name}
+                                source={l.source}
+                                style={l.style}
+                                onUpdate={(update) => updateLayer(l.id, update)}
+                                mapPaneId={id}
+                                beforeId={l.style.beforeId}
+                                tooltipColumns={l.tooltipColumns}
+                            />
+                        ))}
                     </Map>
-                    {layers.map((l) => (
-                        <MaticoMapLayer
-                            key={l.name}
-                            name={l.name}
-                            source={l.source}
-                            style={l.style}
-                            onUpdate={(update) => updateLayer(l.id, update)}
-                            mapPaneId={id}
-                            beforeId={l.style.beforeId}
-                        />
-                    ))}
                     <MaticoLegendPane
                         legends={mls.map((l) => l.props._legend)}
                     />

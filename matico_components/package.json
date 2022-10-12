@@ -47,6 +47,8 @@
     "@reduxjs/toolkit": "^1.6.2",
     "@spectrum-icons/illustrations": "^3.2.2",
     "@spectrum-icons/workflow": "^4.0.1",
+    "@turf/centroid": "^6.5.0",
+    "@types/d3-format": "^3.0.1",
     "@types/d3-scale": "^4.0.2",
     "@uiw/react-md-editor": "^3.7",
     "@visx/geo": "^2.10.0",
