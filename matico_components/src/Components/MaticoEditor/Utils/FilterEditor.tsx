@@ -5,6 +5,7 @@ import {
     DialogTrigger,
     Flex,
     Heading,
+    TextField,
     Item,
     NumberField,
     Picker,
@@ -32,7 +33,8 @@ interface RangeFilterEditorProps extends FilterEditor {
 }
 
 interface CategoryFilterProps extends FilterEditor {
-    categories: Array<string>;
+    isOneOf: Array<string | number>;
+    isNotOneOf: Array<string | number>;
 }
 
 const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
@@ -146,10 +148,11 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     );
 };
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({
+const CategoryFilterEditor: React.FC<CategoryFilterProps> = ({
     columns,
     selectedColumn,
-    categories,
+    isOneOf,
+    isNotOneOf,
     onUpdateFilter
 }) => {
     return (
@@ -161,6 +164,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             >
                 {(column) => <Item key={column.name}>{column.name}</Item>}
             </Picker>
+            <TextField label="Is one of " value={isOneOf ? isOneOf.join(",") : ""}/>
         </Flex>
     );
 };
@@ -186,12 +190,13 @@ const EditorForFilter: React.FC<{
         );
     } else if (filterType === "Category") {
         return (
-            <CategoryFilter
+            <CategoryFilterEditor
                 selectedColumn={columns.find(
                     (c) => c.name === filterParams.variable
                 )}
                 columns={columns}
-                categories={filterParams.is_one_of}
+                isOneOf={filterParams.isOneOf}
+                isNotOneOf={filterParams.isNotOneOf}
                 onUpdateFilter={(newValue) => updateFilter(newValue, index)}
             />
         );

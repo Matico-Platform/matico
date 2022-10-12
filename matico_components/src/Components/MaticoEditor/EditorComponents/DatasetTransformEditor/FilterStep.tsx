@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
     DialogTrigger,
     ActionButton,
@@ -12,7 +12,8 @@ import {
     Divider,
     Text,
     DateRangePicker,
-    DatePicker
+    DatePicker,
+    TextField
 } from "@adobe/react-spectrum";
 import { VariableSelector } from "Components/MaticoEditor/Utils/VariableSelector";
 import { FilterStep, Filter } from "@maticoapp/matico_types/spec";
@@ -41,7 +42,8 @@ interface DateRangeFilterEditorProps extends FilterEditor {
 }
 
 interface CategoryFilterProps extends FilterEditor {
-    categories: Array<string>;
+  isOneOf: Array<string|number>, 
+  isNotOneOf: Array<string | number>
 }
 
 export const FilterStepEditor: React.FC<{
@@ -57,6 +59,8 @@ export const FilterStepEditor: React.FC<{
             )
         });
     };
+
+    console.log("filter steps ", filterStep)
 
     return (
         <Flex direction="row" gap={"size-300"}>
@@ -77,7 +81,7 @@ export const FilterStepEditor: React.FC<{
                                     datasetId={datasetId}
                                     selectedColumn={{
                                         name: f.variable,
-                                        colType: "number"
+                                        type: "number"
                                     }}
                                     max={f.max}
                                     min={f.min}
@@ -91,13 +95,10 @@ export const FilterStepEditor: React.FC<{
                                 <CategoryFilter
                                     columns={columns}
                                     datasetId={datasetId}
-                                    selectedColumn={{
-                                        name: f.variable,
-                                        colType: "number"
-                                    }}
-                                    categories={[]}
+                                    selectedColumn={{name: f.variable, type: "number"}}
+                                    isOneOf={f.isOneOf}
                                     onUpdateFilter={(update) =>
-                                        onChange(update)
+                                        updateFilterAtIndex(update,index)
                                     }
                                 />
                             );
@@ -468,22 +469,30 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
 const CategoryFilter: React.FC<CategoryFilterProps> = ({
     datasetId,
     selectedColumn,
-    categories,
+    isOneOf,
     columns,
     onUpdateFilter
 }) => {
     return (
-        <Flex direction="row">
+        <Flex direction="row" gap={"size-200"}>
             <DatasetColumnSelector
                 datasetName={datasetId}
                 columns={columns}
                 selectedColumn={selectedColumn.name}
                 onColumnSelected={(column) =>
                     onUpdateFilter({
-                        categories: { variable: column.name, categories: [] }
+                        type: 'category',
+                        variable :  column.name,
+                        isOneOf: isOneOf
                     })
-                }
+                    }
             />
+              <TextField label="is one of " labelPosition={"side"} value={isOneOf ? isOneOf.join(",") : ""} onChange={(value)=> onUpdateFilter({
+                  type:'category',
+                  variable : selectedColumn.name,
+                  isOneOf: value.split(",").map(v=> isNaN(parseInt(v)) ?  v : parseInt(v))
+
+              })} /> 
         </Flex>
     );
 };

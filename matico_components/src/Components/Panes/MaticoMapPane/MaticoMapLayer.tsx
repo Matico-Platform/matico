@@ -56,7 +56,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             id: hoverFeatureId,
             paneId: mapPaneId,
             value: {
-                type: "geofeature",
+                type: "selection",
                 value: "NoSelection"
             }
         },
@@ -69,7 +69,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             id: clickFeatureId,
             paneId: mapPaneId,
             value: {
-                type: "geofeature",
+                type: "selection",
                 value: "NoSelection"
             }
         },
@@ -215,14 +215,14 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                 const isTooltip = parentContainsClassName(toEl, "matico-tooltip");
                 if (isTooltip) return
                 updateHoverVariable({
-                    type: "geofeature",
-                    value: hoverTarget.object ?? "NoSelection"
+                    type: "selection",
+                    value: hoverTarget.object ? [hoverTarget.object["_matico_id"] as number] :  "NoSelection"
                 })
             },
             onClick: (clickTarget: { object: Record<string, unknown> }) =>
                 updateClickVariable({
-                    type: "geofeature",
-                    value: clickTarget.object ?? "NoSelection"
+                    type: "selection",
+                    value: clickTarget.object ? [clickTarget.object["_matico_id"] as number] :  "NoSelection"
                 }),
             pickable: true,
             id: name,
@@ -340,13 +340,13 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             <MaticoMapTooltip
                 datasetName={dataset?.name}
                 // @ts-ignore
-                id={hoverVariable?.value?._matico_id}
+                id={hoverVariable?.value ? hoverVariable.value[0] : null}
                 columns={tooltipColumns}
                 />
             <MaticoMapTooltip
                 datasetName={dataset?.name}
                 // @ts-ignore
-                id={clickVariable?.value?._matico_id}
+                id={clickVariable?.value ? clickVariable.value[0]: null}
                 columns={tooltipColumns}
                 pinned
             />
