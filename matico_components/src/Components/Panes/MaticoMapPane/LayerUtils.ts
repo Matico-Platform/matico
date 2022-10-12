@@ -236,10 +236,10 @@ export const getColorScale = (range: any) => {
 };
 
 export const parentContainsClassName = (el: HTMLElement, className: string): boolean => {
-    if (el.classList.contains(className)) {
+    if (el?.classList?.contains(className)) {
         return true;
     }
-    if (el.parentElement) {
+    if (el?.parentElement) {
         return parentContainsClassName(el.parentElement, className);
     }
     return false;
