@@ -39,6 +39,12 @@ export interface DataRequest {
     filters: Array<Filter>;
 }
 
+export interface FeatureRequest {
+    datasetName: string;
+    ids: Array<number>;
+    columns?: Array<string>;
+}
+
 const initialState: DatasetsState = {
     datasets: {},
     queries: {},
@@ -125,6 +131,32 @@ export const datasetsSlice = createSlice({
                 error
             };
         },
+        requestFeatures: (
+            state,
+            action: PayloadAction<{
+                notifierId: string,
+                args: FeatureRequest
+            }>
+        ) => {
+            state.queries[action.payload.notifierId] = { state: "Loading", result: null};
+        },
+        gotFeatures: (
+            state,
+            action: PayloadAction<{
+                result: any;
+                notifierId: string;
+            }>
+        ) => {
+            const { result, notifierId } = action.payload;
+            state.queries[notifierId] = { state: "Done", result };
+        },
+
+        featureRequestFailed: (state, action: PayloadAction<{error: string, notifierId: string, result: any}>) => {
+            state.queries[action.payload.notifierId] = {
+                state: 'Error',
+                result: action.payload.result
+            };
+        },
         // Also triggers middleware
         registerDataUpdates: (
             state,
@@ -171,7 +203,8 @@ export const {
     registerColumnStatUpdates,
     registerOrUpdateTransform,
     unregisterDataset,
-    requestTransform
+    requestTransform,
+    requestFeatures
 } = datasetsSlice.actions;
 
 export const datasetsReducer = datasetsSlice.reducer;

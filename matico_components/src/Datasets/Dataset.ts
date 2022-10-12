@@ -62,6 +62,7 @@ export interface Dataset {
         limit?: number
     ) => Promise<Datum[]>;
     getFeature: (feature_id: string) => Promise<Datum | undefined>;
+    getFeatures: (feature_ids: number[]) => Promise<Datum[] | undefined>;
     local: () => boolean;
     tiled: () => boolean;
     raster: () => boolean;

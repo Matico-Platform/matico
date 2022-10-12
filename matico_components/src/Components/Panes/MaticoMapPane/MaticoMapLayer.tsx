@@ -13,12 +13,15 @@ import {
     convertLine,
     expandMultiAndConvertPoly,
     generateColorVar,
-    generateNumericVar
+    generateNumericVar,
+    parentContainsClassName
 } from "./LayerUtils";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
 import { MVTLayer, TileLayer } from "deck.gl";
 import { Filter } from "@maticoapp/matico_types/spec";
+import { MaticoMapTooltip } from "./MaticoMapTooltip";
+import { TooltipColumnSpec } from './MaticoMapTooltip';
 import { v4 as uuid } from "uuid";
 
 interface MaticoLayerInterface {
@@ -27,6 +30,7 @@ interface MaticoLayerInterface {
     style: any;
     onUpdate: (layerState: any) => void;
     mapPaneId: string;
+    tooltipColumns?: TooltipColumnSpec[];
     beforeId?: string;
 }
 
@@ -36,13 +40,15 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     name,
     mapPaneId,
     onUpdate,
-    beforeId
+    beforeId,
+    tooltipColumns=[]
 }) => {
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[source.name]
     );
 
     const hoverFeatureId = useMemo(() => mapPaneId + "_hover", []);
+
     const clickFeatureId = useMemo(() => mapPaneId + "_click", []);
     const [hoverVariable, updateHoverVariable] = useAutoVariable({
         variable: {
@@ -202,11 +208,15 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             elevationScale,
             opacity,
             visible,
-            onHover: (hoverTarget: { object: Record<string, unknown> }) =>
+            onHover: (hoverTarget: { object: Record<string, unknown> }, event: any) => {
+                const toEl = event?.srcEvent?.toElement;
+                const isTooltip = parentContainsClassName(toEl, "matico-tooltip");
+                if (isTooltip) return
                 updateHoverVariable({
                     type: "geofeature",
                     value: hoverTarget.object ?? "NoSelection"
-                }),
+                })
+            },
             onClick: (clickTarget: { object: Record<string, unknown> }) =>
                 updateClickVariable({
                     type: "geofeature",
@@ -324,5 +334,21 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         onUpdate(layer);
     }, [name, JSON.stringify(style), preparedData]);
 
-    return <></>;
+    return (
+        <>
+            <MaticoMapTooltip
+                datasetName={dataset?.name}
+                // @ts-ignore
+                id={hoverVariable?.value?._matico_id}
+                columns={tooltipColumns}
+                />
+            <MaticoMapTooltip
+                datasetName={dataset?.name}
+                // @ts-ignore
+                id={clickVariable?.value?._matico_id}
+                columns={tooltipColumns}
+                pinned
+            />
+        </>
+    );
 };

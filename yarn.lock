@@ -5532,7 +5532,9 @@ __metadata:
     "@reduxjs/toolkit": ^1.6.2
     "@spectrum-icons/illustrations": ^3.2.2
     "@spectrum-icons/workflow": ^4.0.1
+    "@turf/centroid": ^6.5.0
     "@types/chroma-js": ^2.1.3
+    "@types/d3-format": ^3.0.1
     "@types/d3-scale": ^4.0.2
     "@types/geojson": ^7946.0.10
     "@types/lodash": ^4.14.178
@@ -11421,6 +11423,13 @@ __metadata:
   version: 1.4.2
   resolution: "@types/d3-color@npm:1.4.2"
   checksum: 60d0f00ceb53052a142c606465eeec49b264a8dee180ddeda121770bd24e2fe34d8c33140022d929a5bf3d862e6908a55ee86ac629d10ac93f124fb40db7022a
+  languageName: node
+  linkType: hard
+
+"@types/d3-format@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@types/d3-format@npm:3.0.1"
+  checksum: 6819fae7e7c3fce1e44cd56e9b6d8ea5508f708cb7a42793edf82ff914b120bf6cddc35208b1b33ec82615ab82b843c284709f9cea5c3fe1ea5f012106b3d32c
   languageName: node
   linkType: hard
 
