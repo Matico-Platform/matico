@@ -67,3 +67,17 @@ export const getMapData = (i) => {
     return mapdata6.features;
   }
 }
+
+
+export const getLineChartData = (n) => {
+  let date = new Date('1970-01-01');
+  let returnObj = [];
+  for (let i = 0; i < n; i++) {
+    returnObj.push({
+      date: new Date(date),
+      value: i + Math.random() * 50,
+    });
+    date.setDate(date.getDate() + 1);
+  }
+  return returnObj
+}
