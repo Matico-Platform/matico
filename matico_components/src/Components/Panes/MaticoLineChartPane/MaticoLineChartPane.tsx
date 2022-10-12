@@ -74,7 +74,7 @@ export const MaticoLineChartPane: React.FC<MaticoLineChartPaneInterface> =
                 id: id + "x_filter",
                 paneId: id,
                 value: {
-                    type: "range",
+                    type: "dateRange",
                     value: "NoSelection"
                 }
             },
@@ -91,7 +91,7 @@ export const MaticoLineChartPane: React.FC<MaticoLineChartPaneInterface> =
                 id: id + "y_filter",
                 paneId: id,
                 value: {
-                    type: "range",
+                    type: "dateRange",
                     value: "NoSelection"
                 }
             },
@@ -149,21 +149,22 @@ export const MaticoLineChartPane: React.FC<MaticoLineChartPaneInterface> =
                     ]}
                     useBrush={{
                         horizontal: true,
-                        vertical: true
+                        vertical: false
                     }}
                     //@ts-ignore
                     onBrush={({ x0, x1, y0, y1 }) => {
+                        console.log(x0, x1)
                         updateXFilter(
                             x0 === x1
                                 ? {
-                                      type: "range",
+                                      type: "dateRange",
                                       value: "NoSelection"
                                   }
                                 : {
-                                      type: "range",
+                                      type: "dateRange",
                                       value: {
-                                          min: x0,
-                                          max: x1
+                                          min: new Date(x0),
+                                          max: new Date(x1)
                                       }
                                   }
                         );
