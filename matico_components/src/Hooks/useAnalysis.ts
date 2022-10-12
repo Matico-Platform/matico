@@ -70,7 +70,6 @@ export const useAnalysis = (url: string | null) => {
 
         // Or fetch it and cache it
         else if (url) {
-            console.log("loading from url ", url);
             loadAnalysis(url)
                 .then((module) => {
                     setAnalysis(module);

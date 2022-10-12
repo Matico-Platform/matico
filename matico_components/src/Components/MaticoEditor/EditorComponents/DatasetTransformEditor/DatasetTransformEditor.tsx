@@ -62,7 +62,6 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
     state
 }) => {
     const { datasetTransform } = useDatasetTransform(transformId);
-    console.log("dataset transfrom ", datasetTransform);
     return (
         <DialogTrigger isDismissable>
             <ActionButton isQuiet>
@@ -109,7 +108,6 @@ export const TransformStep: React.FC<TransformStepProps> = ({
     const updateStep = (update: Partial<DatasetTransformStep>) => {
         onChange({ ...step, ...update });
     };
-    console.log("Transform step datasetId ", datasetId);
     switch (step.type) {
         case "filter":
             return (
@@ -175,13 +173,6 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     });
     const stepPreviews = transformResult?.steps ?? [];
 
-    console.log(
-        "TRANSFORM RESULT ",
-        transformResult,
-        " STEP PREVIEWS ",
-        stepPreviews
-    );
-
     let PreviewTabs = [];
     let PreviewTabList = [];
 
@@ -229,8 +220,9 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                         label="Base Dataset"
                         labelPosition="top"
                         selectedDataset={datasetTransform.sourceId}
-                        onDatasetSelected={(dataset) =>
+                        onDatasetSelected={(dataset) =>{
                             updateDatasetTransform({ sourceId: dataset })
+                        }
                         }
                     />
                 </Flex>

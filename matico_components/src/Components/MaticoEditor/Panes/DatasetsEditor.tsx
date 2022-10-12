@@ -150,13 +150,13 @@ export const DatasetsEditor: React.FC<DatasetsEditorProps> = ({
                             )
                             .map(([datasetName, dataset]) => {
                                 return (
-                                    <>
+                                    <View key={datasetName}>
                                         <DatasetEditor
                                             dataset={dataset}
                                             key={datasetName}
                                         />
                                         <Divider size="S" />
-                                    </>
+                                    </View>
                                 );
                             })}
                     </>
