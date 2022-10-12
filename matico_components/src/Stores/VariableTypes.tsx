@@ -10,7 +10,7 @@ export type VariableValue =
     | FeaturesVar
     | GeoFeatureVar
     | GeoFeaturesVar
-    | RangeVar;
+    | DateRangeVar;
 
 export type MaticoStateVariable = {
     id: string;
@@ -22,6 +22,14 @@ export type MaticoStateVariable = {
 export type StringVar = {
     type: "string";
     value: string;
+};
+
+export type DateRangeVar= {
+    type: "dateRange";
+    value: {
+      min: Date,
+      max: Date
+    } | "NoSelection";
 };
 
 export type NumberVar = {

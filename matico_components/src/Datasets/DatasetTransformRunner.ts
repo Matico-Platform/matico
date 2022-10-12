@@ -294,6 +294,18 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
                             keep = false;
                         }
                     }
+                    if (
+                        f.type === "date" &&
+                        !(f.max === undefined || f.max === null) &&
+                        !(f.min === undefined || f.min === null)
+                    ) {
+                        let minParsed = typeof(f.min) === 'string' ? new Date(f.min) : f.min
+                        let maxParsed = typeof(f.max) === 'string' ? new Date(f.max) : f.max
+
+                        if (!(minParsed < d[f.variable] && d[f.variable] < maxParsed)) {
+                            keep = false;
+                        }
+                    }
                     if (f.type === "category") {
                         if (!f.isOneOf.includes(d[f.variable])) {
                             keep = false;

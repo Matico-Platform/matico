@@ -10,7 +10,9 @@ import {
     NumberField,
     ToggleButton,
     Divider,
-    Text
+    Text,
+    DateRangePicker,
+    DatePicker
 } from "@adobe/react-spectrum";
 import { VariableSelector } from "Components/MaticoEditor/Utils/VariableSelector";
 import { FilterStep, Filter } from "@maticoapp/matico_types/spec";
@@ -18,6 +20,8 @@ import FunctionIcon from "@spectrum-icons/workflow/Function";
 import { FilterEditor } from "Components/MaticoEditor/Utils/FilterEditor";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { Column } from "Datasets/Dataset";
+import {CalendarDate } from '@internationalized/date';
+
 
 interface FilterEditor {
     datasetId?: string;
@@ -29,6 +33,11 @@ interface FilterEditor {
 interface RangeFilterEditorProps extends FilterEditor {
     min?: number | { var: string };
     max?: number | { var: string };
+}
+
+interface DateRangeFilterEditorProps extends FilterEditor {
+    min?: Date | { var: string };
+    max?: Date | { var: string };
 }
 
 interface CategoryFilterProps extends FilterEditor {
@@ -59,34 +68,57 @@ export const FilterStepEditor: React.FC<{
             </Flex>
             <Divider orientation="vertical" size="S" />
             <Flex direction="column" gap="size-200">
-                {filterStep.filters.map((f, index) =>
-                    f.type === "range" ? (
-                        <RangeFilterEditor
-                            columns={columns}
-                            datasetId={datasetId}
-                            selectedColumn={{
-                                name: f.variable,
-                                colType: "number"
-                            }}
-                            max={f.max}
-                            min={f.min}
-                            onUpdateFilter={(update) =>
-                                updateFilterAtIndex(update, index)
-                            }
-                        />
-                    ) : (
-                        <CategoryFilter
-                            columns={columns}
-                            datasetId={datasetId}
-                            selectedColumn={{
-                                name: f.variable,
-                                colType: "number"
-                            }}
-                            categories={[]}
-                            onUpdateFilter={(update) => onChange(update)}
-                        />
-                    )
-                )}
+                {filterStep.filters.map((f, index) => {
+                    switch (f.type) {
+                        case "range":
+                            return (
+                                <RangeFilterEditor
+                                    columns={columns}
+                                    datasetId={datasetId}
+                                    selectedColumn={{
+                                        name: f.variable,
+                                        colType: "number"
+                                    }}
+                                    max={f.max}
+                                    min={f.min}
+                                    onUpdateFilter={(update) =>
+                                        updateFilterAtIndex(update, index)
+                                    }
+                                />
+                            );
+                        case "category":
+                            return (
+                                <CategoryFilter
+                                    columns={columns}
+                                    datasetId={datasetId}
+                                    selectedColumn={{
+                                        name: f.variable,
+                                        colType: "number"
+                                    }}
+                                    categories={[]}
+                                    onUpdateFilter={(update) =>
+                                        onChange(update)
+                                    }
+                                />
+                            );
+                        case "date":
+                            return (
+                                <DateRangeFilterEditor
+                                    columns={columns}
+                                    datasetId={datasetId}
+                                    selectedColumn={{
+                                        name: f.variable,
+                                        colType: "date"
+                                    }}
+                                    max={f.max}
+                                    min={f.min}
+                                    onUpdateFilter={(update) =>
+                                        updateFilterAtIndex(update, index)
+                                    }
+                                />
+                            );
+                    }
+                })}
 
                 <FilterTypeDialog
                     onSubmit={(newFilter) =>
@@ -109,7 +141,7 @@ const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
             {(close) => (
                 <Dialog>
                     <Content>
-                        <Flex direction="column">
+                        <Flex direction="column" gap={"size-200"}>
                             <ActionButton
                                 onPress={() => {
                                     onSubmit({
@@ -122,6 +154,19 @@ const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
                                 }}
                             >
                                 Range
+                            </ActionButton>
+                            <ActionButton
+                                onPress={() => {
+                                    onSubmit({
+                                        variable: null,
+                                        min: new Date( 2000, 1, 1),
+                                        max: new Date(2022, 1, 1),
+                                        type: "date"
+                                    });
+                                    close();
+                                }}
+                            >
+                                Date Range
                             </ActionButton>
                             <ActionButton
                                 onPress={() => {
@@ -140,6 +185,151 @@ const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
                 </Dialog>
             )}
         </DialogTrigger>
+    );
+};
+
+const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
+    datasetId,
+    min,
+    max,
+    onUpdateFilter,
+    selectedColumn,
+    columns
+}) => {
+
+    const minIsVar= min.hasOwnProperty('var')
+    const maxIsVar= max.hasOwnProperty('var')
+  
+    const minParsed = minIsVar ? min : new Date(min)
+    const maxParsed = maxIsVar ? max : new Date(max)
+
+    const toggleVariableMin = () => {
+        if (!minIsVar) {
+            onUpdateFilter({
+                variable: selectedColumn.name,
+                max: maxParsed,
+                min: { var: { varId: null, property: min } },
+                type: "date"
+            });
+        } else {
+            onUpdateFilter({
+                variable: selectedColumn.name,
+                max: maxParsed,
+                min: new Date(2000,1,1),
+                type: "date"
+            });
+        }
+    };
+    const toggleVariableMax = () => {
+        if (!maxIsVar) {
+            onUpdateFilter({
+                variable: selectedColumn.name,
+                max: { var: { varId: null, property: "max" } },
+                min: minParsed,
+                type: "date"
+            });
+        } else {
+            onUpdateFilter({
+                variable: selectedColumn.name,
+                max: new Date(2022,1,1),
+                min: minParsed,
+                type: "date"
+            });
+        }
+    };
+
+
+
+    return (
+        <Flex direction="row" gap="size-100" alignItems="end">
+            <DatasetColumnSelector
+                columns={columns}
+                datasetName={datasetId}
+                selectedColumn={selectedColumn.name}
+                onColumnSelected={(column) =>
+                    onUpdateFilter({
+                        variable: column.name,
+                        min: minParsed,
+                        max: maxParsed,
+                        type: "date"
+                    })
+                }
+            />
+            {!minIsVar ? (
+                <DatePicker
+                    key="min_val"
+                    value={new CalendarDate(minParsed.getUTCFullYear(),  minParsed.getUTCMonth(),minParsed.getUTCDate() )}
+                    label="min"
+                    granularity="day"
+                    onChange={(min) =>{
+                        onUpdateFilter({
+                            type: "date",
+                            variable: selectedColumn.name,
+                            min: new Date(min.year, min.month, min.day),
+                            max: maxParsed
+                        })
+                    }
+                    }
+                />
+            ) : (
+                <VariableSelector
+                    variable={minParsed.var}
+                    allowedTypes={["dateRange"]}
+                    onSelectVariable={(newVar) =>
+                        onUpdateFilter({
+                            max: maxParsed,
+                            min: { var: newVar },
+                            variable: selectedColumn.name,
+                            type: "date"
+                        })
+                    }
+                />
+            )}
+            <ToggleButton
+                isEmphasized
+                isSelected={minIsVar}
+                onPress={toggleVariableMin}
+            >
+                <FunctionIcon />
+            </ToggleButton>
+
+            { !max.hasOwnProperty('var') ? (
+                <DatePicker
+                    key="max_val"
+                    value={new CalendarDate(maxParsed.getUTCFullYear(),  maxParsed.getUTCMonth(), maxParsed.getUTCDate() )}
+                    label="max"
+                    granularity="day"
+                    onChange={(max) =>
+                        onUpdateFilter({
+                            type: "date",
+                            variable: selectedColumn.name,
+                            min: minParsed,
+                            max: new Date(max.year, max.month, max.day)
+                        })
+                    }
+                />
+            ) : (
+                <VariableSelector
+                    variable={maxParsed.var}
+                    allowedTypes={["dateRange"]}
+                    onSelectVariable={(newVar) =>
+                        onUpdateFilter({
+                            min: minParsed,
+                            max: { var: newVar },
+                            variable: selectedColumn.name,
+                            type: "date"
+                        })
+                    }
+                />
+            )}
+            <ToggleButton
+                isEmphasized
+                isSelected={maxIsVar}
+                onPress={toggleVariableMax}
+            >
+                <FunctionIcon />
+            </ToggleButton>
+        </Flex>
     );
 };
 

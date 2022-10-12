@@ -93,6 +93,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             : null
     );
 
+
     const preparedData = useMemo(() => {
         if (!dataResult) {
             return [];
@@ -135,6 +136,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                 }));
         }
     }, [source.name, dataResult, dataset]);
+
 
     const Layer = useEffect(() => {
         //If we the dataset is tiled and we dont have data
@@ -294,7 +296,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                     });
                     break;
                 case GeomType.Polygon:
-                    console.log("Polygon layer ");
                     //@ts-ignore
                     layer = new PolygonLayer({
                         //@ts-ignore

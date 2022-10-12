@@ -118,6 +118,13 @@ export class LocalDataset implements Dataset {
         return Promise.resolve(min);
     }
 
+    getColumnExtent(column: string, filters?: Array<Filter>){
+      const extent = applyFilters(this._data,filters)
+      .rollup({min:op.min(column), max: op.max(column)})
+      .object() as {min: number, max:number};
+      return Promise.resolve(extent)
+    }
+
     getColumnSum(column: string, filters?: Array<Filter>) {
         const { sum } = applyFilters(this._data, filters)
             .rollup({

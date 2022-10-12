@@ -107,6 +107,9 @@ export const DatasetService: DatasetServiceInterface = {
                         return await dataset.getColumnMax(column);
                     case "min":
                         return dataset.getColumnMin(column);
+
+                    case "extent":
+                        return dataset.getColumnExtent(column);
                     case "equalInterval":
                         return dataset.getEqualIntervalBins(
                             column,

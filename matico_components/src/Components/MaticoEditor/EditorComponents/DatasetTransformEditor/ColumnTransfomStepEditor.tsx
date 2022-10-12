@@ -13,7 +13,6 @@ import {
     Text
 } from "@adobe/react-spectrum";
 import { VariableSelector } from "Components/MaticoEditor/Utils/VariableSelector";
-import { Column } from "@maticoapp/matico_types/api/Column";
 import {
     FilterStep,
     Filter,
@@ -26,18 +25,22 @@ import {
 import FunctionIcon from "@spectrum-icons/workflow/Function";
 import { FilterEditor } from "Components/MaticoEditor/Utils/FilterEditor";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
+import {Column} from "Datasets/Dataset";
 
 interface ColumnTransformEditorProps {
     datasetId: string;
     transform: ColumnTransform;
+    columns: Array<Column>;
     onUpdateTransform: (update: Partial<ColumnTransform>) => void;
 }
 
-const ColumnTransformEditor: React.FC<ColumnTransformEditorProps> = () => {
+const ColumnTransformEditor: React.FC<ColumnTransformEditorProps> = ({datasetId,transfom,columns, onUpdateTransform}) => {
+    console.log("transform ", transform, " Columns ",columns)
     return (
         <Flex>
             <DatasetColumnSelector
                 datasetName={datasetId}
+                columns={columns}
                 onColumnSelected={(column) => console.log("Column is ", column)}
             />
             to
@@ -58,8 +61,9 @@ const ColumnTransformEditor: React.FC<ColumnTransformEditorProps> = () => {
 export const ColumnTransformStepEditor: React.FC<{
     step: ColumnTransformStep;
     onChange: (update: Partial<ColumnTransformStep>) => void;
-    datasetId: string;
-}> = ({ step, onChange, datasetId }) => {
+    datasetId?: string;
+    columns?: Array<Column>
+}> = ({ step, onChange, datasetId, columns }) => {
     // const updateTransformAtIndex= (update:Filter,index:number)=>{
     //   console.log("update ", update, " index ", index)
     //   onChange({filters: columnTransformSep.transforms.map((filter:Filter,i:number)=>
@@ -85,6 +89,7 @@ export const ColumnTransformStepEditor: React.FC<{
                 {step.transforms.map((transform: ColumnTransform) => (
                     <ColumnTransformEditor
                         datasetId={datasetId}
+                        columns={columns}
                         transform={transform}
                         onUpdateTransform={(update) => console.log(update)}
                     />

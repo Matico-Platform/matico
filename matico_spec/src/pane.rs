@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Control, HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane};
+use crate::{AutoComplete, Control, HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane, DateTimeSliderPane};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -36,7 +36,8 @@ pub enum PaneRef {
     Scatterplot(PaneDetails),
     PieChart(PaneDetails),
     Controls(PaneDetails),
-    StaticMap(PaneDetails)
+    StaticMap(PaneDetails),
+    DateTimeSlider(PaneDetails)
 }
 
 impl PaneRef {
@@ -50,6 +51,7 @@ impl PaneRef {
             PaneRef::PieChart(s) => &s.id,
             PaneRef::Controls(s) => &s.id,
             PaneRef::StaticMap(s) => &s.id,
+            PaneRef::DateTimeSlider(s) => &s.id,
         }
     }
 }
@@ -85,6 +87,10 @@ impl TryFrom<(&str, &str)> for PaneRef {
                 ..Default::default()
             })),
             "piechart" => Ok(PaneRef::PieChart(PaneDetails {
+                pane_id,
+                ..Default::default()
+            })),
+            "dateTimeSlider" => Ok(PaneRef::DateTimeSlider(PaneDetails{
                 pane_id,
                 ..Default::default()
             })),
@@ -131,6 +137,10 @@ impl From<Pane> for PaneRef {
                 pane_id: controls.id,
                 ..Default::default()
             }),
+            Pane::DateTimeSlider(slider) => PaneRef::DateTimeSlider(PaneDetails {
+                pane_id: slider.id,
+                ..Default::default()
+            }),
         }
     }
 }
@@ -147,6 +157,7 @@ pub enum Pane {
     Scatterplot(ScatterplotPane),
     PieChart(PieChartPane),
     Controls(ControlsPane),
+    DateTimeSlider(DateTimeSliderPane)
 }
 
 impl Default for Pane {
@@ -182,6 +193,9 @@ impl Validate for Pane {
             }
             Self::Controls(controls) => {
                 ValidationErrors::merge(result, "ScatterplotPane", controls.validate())
+            }
+            Self::DateTimeSlider(slider) => {
+                ValidationErrors::merge(result, "DateTimeSlider", slider.validate())
             }
         }
     }

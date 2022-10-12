@@ -36,8 +36,6 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     const { analysis, error, options } = useAnalysis(spec.url);
     const values = spec.params;
 
-    console.log("spec ", analysis, values, options);
-
     const updateValues = (update: SpecParameter) => {
         onChange({
             ...spec,
@@ -99,7 +97,6 @@ const ParameterInput: React.FC<{
     const { displayName, description } = displayDetails;
     const defaultVal = options.default;
 
-    console.log("rendering option ", name, options);
 
     switch (type) {
         case "numericInt":
@@ -289,11 +286,9 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     const computeOptions = analysis ? analysis.options() : {};
     const description = analysis ? analysis.description() : "";
 
-    console.log("compute options ", computeOptions);
 
     const setAnalysis = (key: string) => {
         const compute = computes.find((c) => c.name === key);
-        console.log("compute is ", compute);
         const computeURL = compute ? compute.path : null;
         setSpec({ url: computeURL, params: [], name: spec.name });
         setSelectedCompute(compute);

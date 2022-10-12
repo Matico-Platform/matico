@@ -574,6 +574,22 @@ export class DatasetTransform {
 }
 /**
 */
+export class DateTimeSliderPane {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_datetimesliderpane_free(ptr);
+    }
+}
+/**
+*/
 export class FilterStep {
 
     __destroy_into_raw() {
@@ -2096,12 +2112,12 @@ export function __wbindgen_json_parse(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-export function __wbg_getTime_58b0bdbebd4ef11d(arg0) {
+export function __wbg_getTime_cb82adb2556ed13e(arg0) {
     const ret = getObject(arg0).getTime();
     return ret;
 };
 
-export function __wbg_new0_adda2d4bcb124f0a() {
+export function __wbg_new0_a57059d72c5b7aee() {
     const ret = new Date();
     return addHeapObject(ret);
 };

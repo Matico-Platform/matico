@@ -25,7 +25,7 @@ import { DataTable } from "../DataTable/DataTable";
 import Filter from "@spectrum-icons/workflow/Filter";
 import Join from "@spectrum-icons/workflow/Merge";
 import AggregateIcon from "@spectrum-icons/workflow/GraphBarHorizontal";
-import Column from "@spectrum-icons/workflow/ColumnSettings";
+import ColumnIcon from "@spectrum-icons/workflow/ColumnSettings";
 import Compute from "@spectrum-icons/workflow/Calculator";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { CollapsibleSection } from "../CollapsibleSection";
@@ -35,7 +35,7 @@ import { JoinStepEditor } from "./JoinStep";
 import { AggregateStepEditor } from "./AggregateStep";
 import { FilterStepEditor } from "./FilterStep";
 import { AddTransformStepDialog } from "./AddTransformStep";
-import { DatasetState } from "Datasets/Dataset";
+import { Column, DatasetState } from "Datasets/Dataset";
 import { DatasetStatusColors } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import {
     useRequestData,
@@ -54,7 +54,7 @@ const IconForStepType: Record<string, React.ReactNode> = {
     aggregate: <AggregateIcon />,
     compute: <Compute />,
     join: <Join />,
-    columnTransform: <Column />
+    columnTransform: <ColumnIcon />
 };
 
 export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
@@ -62,7 +62,6 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
     state
 }) => {
     const { datasetTransform } = useDatasetTransform(transformId);
-    console.log("dataset transfrom ", datasetTransform);
     return (
         <DialogTrigger isDismissable>
             <ActionButton isQuiet>
@@ -94,7 +93,7 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
 export interface TransformStepProps {
     step: DatasetTransformStep;
     onChange: (update: Partial<DatasetTransformStep>) => void;
-    columns?: Array<Columns>;
+    columns?: Array<Column>;
     onRemove: (stepId: string) => void;
     datasetId?: string;
 }
@@ -109,7 +108,6 @@ export const TransformStep: React.FC<TransformStepProps> = ({
     const updateStep = (update: Partial<DatasetTransformStep>) => {
         onChange({ ...step, ...update });
     };
-    console.log("Transform step datasetId ", datasetId);
     switch (step.type) {
         case "filter":
             return (
@@ -175,13 +173,6 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     });
     const stepPreviews = transformResult?.steps ?? [];
 
-    console.log(
-        "TRANSFORM RESULT ",
-        transformResult,
-        " STEP PREVIEWS ",
-        stepPreviews
-    );
-
     let PreviewTabs = [];
     let PreviewTabList = [];
 
@@ -229,8 +220,9 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                         label="Base Dataset"
                         labelPosition="top"
                         selectedDataset={datasetTransform.sourceId}
-                        onDatasetSelected={(dataset) =>
+                        onDatasetSelected={(dataset) =>{
                             updateDatasetTransform({ sourceId: dataset })
+                        }
                         }
                     />
                 </Flex>

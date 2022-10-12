@@ -5,6 +5,8 @@ import PieChartIcon from "@spectrum-icons/workflow/GraphPie";
 import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import PropertiesIcon from "@spectrum-icons/workflow/Properties";
+import Calendar from "@spectrum-icons/workflow/Calendar";
+
 import Border from "@spectrum-icons/workflow/Border";
 import {
     ContainerPane,
@@ -35,6 +37,8 @@ export const IconForPaneType = (PaneType: string, props?: any) => {
             return <Border {...props} />;
         case "staticMap":
             return <MapIcon {...props} />;
+        case "dateTime":
+            return <Calendar {...props} />;
     }
 };
 
@@ -49,6 +53,7 @@ type AvaliablePanesSection = {
             | "scatterplot"
             | "controls"
             | "staticMap"
+            | "dateTimeSlider"
             | "container";
         label: string;
     }>;
@@ -65,7 +70,8 @@ export const AvaliablePanes: Array<AvaliablePanesSection> = [
             { name: "scatterplot", label: "Scatter Plot" },
             { name: "controls", label: "Controls" },
             { name: "container", label: "Container" },
-            { name: "staticMap", label: "Simple Map" }
+            { name: "staticMap", label: "Simple Map" },
+            { name: "dateTimeSlider", label: "Date / Time Slider" }
         ]
     }
 ];
@@ -191,6 +197,11 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         name: "Container",
         layout: { type: "free" },
         panes: []
+    },
+    dateTimeSlider:{
+        name: "DateTimeSlider",
+        column: null,
+        dataset: {name: "unknown", filters:[]}
     }
 };
 

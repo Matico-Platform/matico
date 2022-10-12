@@ -193,6 +193,11 @@ export class DatasetTransform {
 }
 /**
 */
+export class DateTimeSliderPane {
+  free(): void;
+}
+/**
+*/
 export class FilterStep {
   free(): void;
 }

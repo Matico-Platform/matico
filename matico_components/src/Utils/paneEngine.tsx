@@ -17,6 +17,7 @@ import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 import { useEditorActions } from "Hooks/useEditorActions";
 import styled from "styled-components";
 import { useMaticoContextMenu } from "Hooks/useMaticoContextMenu";
+import {MaticoDateTimeSlider} from "Components/Panes/MaticoDateTimeSlider/MaticoDateTimeSlider";
 
 export const fallbackPanes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
@@ -26,7 +27,8 @@ export const fallbackPanes: { [paneType: string]: Pane } = {
     scatterplot: MaticoScatterplotPane,
     pieChart: MaticoPieChartPane,
     controls: MaticoControlsPane,
-    container: MaticoContainerPane
+    container: MaticoContainerPane,
+    dateTimeSlider: MaticoDateTimeSlider
 };
 export const panes: { [paneType: string]: PaneParts } = {
     text: MaticoTextPaneComponents
