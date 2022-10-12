@@ -35,4 +35,17 @@ with ZipFile("./us_covid_atlas_data_2022-10-11.zip") as zf:
     combined.date = pd.to_datetime(combined.date)
 
 for (state,df) in combined.groupby('state'):
-    df.reset_index().drop(columns=['index']).to_feather(f"covid/{state}.feather", compression='uncompressed')
+    result = df.reset_index().drop(columns=['index'])
+    result = result.sort_values('date')
+    result.cases = result.cases - result.groupby('fips').cases.shift(1)
+    result.deaths = result.deaths- result.groupby('fips').deaths.shift(1)
+    result.vaccinations= result.vaccinations- result.groupby('fips').vaccinations.shift(1)
+    result = result.fillna(0)
+    result.reset_index().to_feather(f"covid/{state}.feather", compression='uncompressed')
+
+
+combined.cases = combined.cases - combined.groupby('fips').cases.shift(1)
+combined.deaths = combined.deaths- combined.groupby('fips').deaths.shift(1)
+combined.vaccinations= combined.vaccinations- combined.groupby('fips').vaccinations.shift(1)
+combined=  combined.fillna(0)
+combined.reset_index().to_feather(f"covid/all.feather", compression='uncompressed')
