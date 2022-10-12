@@ -9,10 +9,12 @@ import { StaticMapPaneEditor } from "./Panes/StaticMapEditor";
 import { DateTimeSliderEditor} from "./Panes/DateTimeSliderEditor";
 // new file schema
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
+import { LineChartPaneEditor } from "./Panes/LineChartPaneEditor";
 
 export const Editors = {
     container: ContainerPaneEditor,
     scatterplot: ScatterplotPaneEditor,
+    lineChart: LineChartPaneEditor,
     map: MapPaneEditor,
     text: MaticoTextPaneComponents.sidebarPane,
     histogram: HistogramPaneEditor,

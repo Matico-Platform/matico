@@ -113,6 +113,7 @@ export interface AxisSpec {
     scaleType: ScaleType;
     display?: boolean;
     scaleParams?: OverwriteProperty;
+    tickFormatFunc?: (d: number) => string;
 }
 export interface GridSpec {
     columns: boolean;

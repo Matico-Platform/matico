@@ -11,7 +11,7 @@
     "build-storybook": "build-storybook",
     "build-dev": "node --es-module-specifier-resolution=node scripts/dev.mjs",
     "build-prod": "node --es-module-specifier-resolution=node scripts/build.mjs",
-    "build-types": "tsc --emitDeclarationOnly --outDir dist",
+    "build-types": "rm -rf types && tsc --emitDeclarationOnly --outDir dist",
     "start": "yarn storybook"
   },
   "author": "Dylan Halpern",

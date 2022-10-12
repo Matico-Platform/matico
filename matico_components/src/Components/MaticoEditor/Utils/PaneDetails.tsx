@@ -6,6 +6,7 @@ import MapIcon from "@spectrum-icons/workflow/MapView";
 import ScatterIcon from "@spectrum-icons/workflow/GraphScatter";
 import PropertiesIcon from "@spectrum-icons/workflow/Properties";
 import Calendar from "@spectrum-icons/workflow/Calendar";
+import LineChartIcon from "@spectrum-icons/workflow/GraphTrend";
 
 import Border from "@spectrum-icons/workflow/Border";
 import {
@@ -31,6 +32,8 @@ export const IconForPaneType = (PaneType: string, props?: any) => {
             return <MapIcon {...props} />;
         case "scatterplot":
             return <ScatterIcon {...props} />;
+        case "lineChart":
+            return <LineChartIcon {...props} />;
         case "controls":
             return <PropertiesIcon {...props} />;
         case "container":
@@ -51,6 +54,7 @@ type AvaliablePanesSection = {
             | "pieChart"
             | "text"
             | "scatterplot"
+            | "lineChart"
             | "controls"
             | "staticMap"
             | "dateTimeSlider"
@@ -68,6 +72,7 @@ export const AvaliablePanes: Array<AvaliablePanesSection> = [
             { name: "pieChart", label: "Pie Chart" },
             { name: "text", label: "Text" },
             { name: "scatterplot", label: "Scatter Plot" },
+            { name: "lineChart", label: "Line Chart" },
             { name: "controls", label: "Controls" },
             { name: "container", label: "Container" },
             { name: "staticMap", label: "Simple Map" },
@@ -173,6 +178,14 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         yColumn: null,
         dotColor: { rgb: [1.0, 0.0, 0.0] },
         dotSize: 14,
+        dataset: { name: "uknown", filters: [] }
+    },
+    lineChart: {
+        name: "New Line Chart",
+        xColumn: null,
+        yColumn: null,
+        lineColor: { rgb: [1.0, 0.0, 0.0] },
+        lineWidth: 14,
         dataset: { name: "uknown", filters: [] }
     },
     histogram: {

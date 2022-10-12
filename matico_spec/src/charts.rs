@@ -92,6 +92,42 @@ impl ScatterplotPane {
         self.name = name;
     }
 }
+#[wasm_bindgen]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct LineChartPane {
+    #[wasm_bindgen(skip)]
+    pub name: String,
+    #[wasm_bindgen(skip)]
+    pub id: String,
+    #[wasm_bindgen(skip)]
+    pub dataset: DatasetRef,
+    #[wasm_bindgen(skip)]
+    pub x_column: String,
+    #[wasm_bindgen(skip)]
+    pub y_column: String,
+    #[wasm_bindgen(skip)]
+    pub line_color: Option<MappingVarOr<ColorSpecification>>,
+    #[wasm_bindgen(skip)]
+    pub line_width: Option<MappingVarOr<u32>>,
+    #[wasm_bindgen(skip)]
+    pub labels: Option<Labels>,
+}
+
+#[wasm_bindgen]
+impl LineChartPane {
+    #[wasm_bindgen(getter = name)]
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    #[wasm_bindgen(setter = name)]
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
+}
+
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
