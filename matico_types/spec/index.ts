@@ -26,6 +26,7 @@ export * from "./DatasetTransformStep";
 export * from "./DatasetVal";
 export * from "./DateFilter";
 export * from "./DateOpts";
+export * from "./DateTimeSliderPane";
 export * from "./DomainVal";
 export * from "./EqualIntervalParams";
 export * from "./FeatureRequest";

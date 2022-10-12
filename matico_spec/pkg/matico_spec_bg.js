@@ -574,6 +574,22 @@ export class DatasetTransform {
 }
 /**
 */
+export class DateTimeSliderPane {
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_datetimesliderpane_free(ptr);
+    }
+}
+/**
+*/
 export class FilterStep {
 
     __destroy_into_raw() {

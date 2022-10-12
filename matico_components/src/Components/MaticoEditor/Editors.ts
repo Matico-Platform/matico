@@ -6,7 +6,7 @@ import { ContainerPaneEditor } from "./Panes/ContainerPaneEditor";
 import { LayerEditor } from "./Panes/LayerEditor";
 import { ControlsPaneEditor } from "./Panes/ControlsEditor";
 import { StaticMapPaneEditor } from "./Panes/StaticMapEditor";
-
+import { DateTimeSliderEditor} from "./Panes/DateTimeSliderEditor";
 // new file schema
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 
@@ -19,5 +19,6 @@ export const Editors = {
     pieChart: PieChartPaneEditor,
     layer: LayerEditor,
     controls: ControlsPaneEditor,
-    staticMap: StaticMapPaneEditor
+    staticMap: StaticMapPaneEditor,
+    dateTimeSlider: DateTimeSliderEditor
 };

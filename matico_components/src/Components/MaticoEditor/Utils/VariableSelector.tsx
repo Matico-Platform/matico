@@ -35,6 +35,11 @@ function suboptionsForVariableType(variable: MaticoStateVariable) {
                 { id: "pitch", name: "Pitch" },
                 { id: "bearing", name: "Bearing" }
             ];
+        case "dateRange":
+            return[
+              {id: "min", name:"min"},
+              {id:"max", name:'max'}
+            ]
         default:
             return Object.keys(variable.value.value).map((so) => ({
                 name: so,
@@ -56,6 +61,7 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                             "controls",
                             "histogram",
                             "scatterplot",
+                            "dateTimeSlider",
                             "map"
                         ].includes(p.type)
                     )

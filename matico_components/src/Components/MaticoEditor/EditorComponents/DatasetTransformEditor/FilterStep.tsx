@@ -198,7 +198,7 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
 }) => {
 
     const minIsVar= min.hasOwnProperty('var')
-    const maxIsVar= min.hasOwnProperty('var')
+    const maxIsVar= max.hasOwnProperty('var')
   
     const minParsed = minIsVar ? min : new Date(min)
     const maxParsed = maxIsVar ? max : new Date(max)
@@ -274,7 +274,7 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
             ) : (
                 <VariableSelector
                     variable={minParsed.var}
-                    allowedTypes={["range"]}
+                    allowedTypes={["dateRange"]}
                     onSelectVariable={(newVar) =>
                         onUpdateFilter({
                             max: maxParsed,
@@ -311,12 +311,13 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
             ) : (
                 <VariableSelector
                     variable={maxParsed.var}
+                    allowedTypes={["dateRange"]}
                     onSelectVariable={(newVar) =>
                         onUpdateFilter({
-                            type: "date",
-                            max: { var: newVar },
                             min: minParsed,
-                            variable: selectedColumn.name
+                            max: { var: newVar },
+                            variable: selectedColumn.name,
+                            type: "date"
                         })
                     }
                 />

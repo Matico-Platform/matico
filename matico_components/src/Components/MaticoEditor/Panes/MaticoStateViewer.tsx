@@ -4,6 +4,7 @@ import { Flex, Heading, View, Text } from "@adobe/react-spectrum";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { IconForPaneType } from "../Utils/PaneDetails";
 import { GeoFeatureVar, MapViewVar, RangeVar, VariableValue } from "index";
+import {DateRangeVar} from "Stores/VariableTypes";
 
 const GeoFeatureVariableViewer: React.FC<{ feature: GeoFeatureVar }> = ({
     feature
@@ -56,6 +57,26 @@ const RangeFeatureVariableViewer: React.FC<{ feature: RangeVar }> = ({
     );
 };
 
+const DateRangeFeatureVariableViewer: React.FC<{ feature: DateRangeVar}> = ({
+    feature
+}) => {
+    if (feature.value === "NoSelection") {
+        return <Text>No Selection</Text>;
+    }
+
+    return (
+        <Flex direction="column" gap={"size-200"}>
+            <Flex direction="row" justifyContent="start" gap={"size-200"}>
+                <Text>Range</Text>
+                <Text>
+                    {feature.value.min.toLocaleDateString()} -{" "}
+                    {feature.value.max.toLocaleDateString()}
+                </Text>
+            </Flex>
+        </Flex>
+    );
+};
+
 const MapViewFeatureVariableViewer: React.FC<{ feature: MapViewVar }> = ({
     feature
 }) => {
@@ -93,6 +114,8 @@ const ViewerForVariable: React.FC<{ variable: VariableValue }> = ({
             return <RangeFeatureVariableViewer feature={variable} />;
         case "mapview":
             return <MapViewFeatureVariableViewer feature={variable} />;
+        case "dateRange":
+            return <DateRangeFeatureVariableViewer feature={variable} />;
         default:
             return <Text>{JSON.stringify(variable.value)}</Text>;
     }
