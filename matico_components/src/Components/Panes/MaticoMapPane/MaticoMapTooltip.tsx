@@ -42,6 +42,7 @@ export const MaticoMapTooltip: React.FC<TooltipSpec> = ({
     } = useMemo(() => {
         if (state === "Done" && result?.geom) {
             try {
+                //TODO: not this
                 const coords = convertPoly(
                     wkx.Geometry.parse(Buffer.from(result?.geom))
                 );
