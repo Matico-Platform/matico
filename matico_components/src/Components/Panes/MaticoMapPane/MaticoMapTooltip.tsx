@@ -46,7 +46,9 @@ export const MaticoMapTooltip: React.FC<TooltipSpec> = ({
                 const theGeom = wkx.Geometry.parse(Buffer.from(result?.geom)).toGeoJSON()
                 //@ts-ignore
                 return centroid(theGeom);
-            } catch {
+            } catch (e){
+                console.log("CAUGHT!!!!!!", e)
+                debugger
                 return { geometry: { coordinates: [0, 0] } };
             }
         } else {
