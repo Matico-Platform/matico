@@ -418,7 +418,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
                                                 onSelectionChange={(column) =>
                                                     handleTooltipColumnChange({
                                                         index: i,
-                                                        value: { column },
+                                                        value: { column, label: column },
                                                         action: "update"
                                                     })
                                                 }
