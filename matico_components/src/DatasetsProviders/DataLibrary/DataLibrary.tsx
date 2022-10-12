@@ -1,4 +1,16 @@
-import { Flex, TextField, Button, TabList, TabPanels, ComboBox, Item, Tabs, Text } from "@adobe/react-spectrum";
+import {
+    Flex,
+    TextField,
+    Button,
+    TabList,
+    TabPanels,
+    ComboBox,
+    Item,
+    Tabs,
+    Text,
+    Heading,
+    Well
+} from "@adobe/react-spectrum";
 import {
     DatasetProviderComponent,
     DatasetProvider
@@ -9,11 +21,11 @@ import { LineChartPaneEditor } from "Components/MaticoEditor/Panes/LineChartPane
 import { Dataset } from "Datasets/Dataset";
 
 type DataLibraryEntry = {
-    id: string,
-    name: string,
-    description: string,
-    datasets: any[]
-}
+    id: string;
+    name: string;
+    description: string;
+    datasets: any[];
+};
 
 const states = [
     { name: "Alabama", abbr: "AL" },
@@ -68,27 +80,26 @@ const states = [
     { name: "Washington", abbr: "WA" },
     { name: "West Virginia", abbr: "WV" },
     { name: "Wisconsin", abbr: "WI" },
-    { name: "Wyoming", abbr: "WY" },
-  ];
-  
-  
-const DataLibrary:DataLibraryEntry[] = [
+    { name: "Wyoming", abbr: "WY" }
+];
+
+const DataLibrary: DataLibraryEntry[] = [
     {
-        "id": "covid",
-        "name": "Covid Data",
-        "description": "Covid Data sourced from the New York Times",
+        id: "covid",
+        name: "Covid Data",
+        description: "Covid Data sourced from the New York Times",
         //@ts-ignore
-        "datasets": states.map(state => ({
+        datasets: states.map((state) => ({
             url: `https://matico.s3.us-east-2.amazonaws.com/covid/by_state/${state.abbr}.feather`,
             name: state.name,
             type: "arrow"
         }))
     },
     {
-        "id": "census",
-        "name": "Census Data",
-        "description": "Census Data sourced from the US Census Bureau",
-        "datasets": [
+        id: "census",
+        name: "Census Data",
+        description: "Census Data sourced from the US Census Bureau",
+        datasets: [
             {
                 url: "https://uscovidatlas.org/geojson/county_nyt.geojson",
                 name: "Census Counties (Combined Metro NYC)",
@@ -96,18 +107,17 @@ const DataLibrary:DataLibraryEntry[] = [
             }
         ]
     }
-]
+];
 
 export const DataLibraryImporter: React.FC<DatasetProviderComponent> = ({
     onSubmit
 }) => {
-
     const [selectedDataset, setSelectedDataset] = useState<any>();
-    const [searchValue, setSearchValue] = useState<string>('');
-    console.log(selectedDataset)
+    const [searchValue, setSearchValue] = useState<string>("");
+    console.log(selectedDataset);
     return (
         <Flex direction="column" gap="size-200">
-            <Tabs>
+            <Tabs orientation="vertical">
                 <TabList>
                     {DataLibrary.map((entry) => (
                         <Item key={entry.id}>{entry.name}</Item>
@@ -115,25 +125,43 @@ export const DataLibraryImporter: React.FC<DatasetProviderComponent> = ({
                 </TabList>
                 <TabPanels>
                     {DataLibrary.map((entry) => (
-                    <Item key={entry.id}>
-                        <Flex direction="column" gap="size-200">
-                            <Text>{entry.name}</Text>
-                            <Text>{entry.description}</Text>
-                        <ComboBox label="Select a dataset" onInputChange={setSearchValue} inputValue={searchValue} onSelectionChange={(value:string) => setSelectedDataset(entry.datasets.find(f=>f.name === value))}>
-                            {entry.datasets.map((dataset) => (
-                                <Item key={dataset.name} textValue={dataset.name} >
-                                    {dataset.name}
-                                </Item>
-                            ))}
-                        </ComboBox>
-                        </Flex>
-                    </Item>))}
+                        <Item key={entry.id}>
+                            <Well>
+                                <Flex
+                                    direction="column"
+                                    gap="size-200"
+                                    margin="size-200"
+                                    marginTop="size-100"
+                                >
+                                    <Text>{entry.description}</Text>
+                                    <ComboBox
+                                        label="Select a dataset"
+                                        onInputChange={setSearchValue}
+                                        inputValue={searchValue}
+                                        onSelectionChange={(value: string) =>
+                                            setSelectedDataset(
+                                                entry.datasets.find(
+                                                    (f) => f.name === value
+                                                )
+                                            )
+                                        }
+                                    >
+                                        {entry.datasets.map((dataset) => (
+                                            <Item
+                                                key={dataset.name}
+                                                textValue={dataset.name}
+                                            >
+                                                {dataset.name}
+                                            </Item>
+                                        ))}
+                                    </ComboBox>
+                                </Flex>
+                            </Well>
+                        </Item>
+                    ))}
                 </TabPanels>
             </Tabs>
-            <Button
-                variant="cta"
-                onPress={() => onSubmit(selectedDataset)}
-            >
+            <Button variant="cta" onPress={() => onSubmit(selectedDataset)}>
                 Submit
             </Button>
         </Flex>
