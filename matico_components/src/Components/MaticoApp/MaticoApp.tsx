@@ -27,6 +27,7 @@ import { ArrowProvider } from "DatasetsProviders/ArrowProvider";
 import { App } from "@maticoapp/matico_types/spec";
 
 import { SocrataDatasetProvider } from "DatasetsProviders/SocrataProvider/SocrataProvider";
+import {DataLibraryProvider} from 'DatasetsProviders/DataLibrary/DataLibrary';
 import { ComputeProvider } from "DatasetsProviders/ComputeProvider";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -160,6 +161,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                                         URLProvider,
                                         // @ts-ignore
                                         SocrataDatasetProvider,
+                                        DataLibraryProvider,
                                         ComputeProvider
                                     ]}
                                 />
@@ -248,6 +250,7 @@ export const MaticoApp: React.FC<MaticoAppInterface> = ({
                                         GeoJSONProvider,
                                         // @ts-ignore
                                         SocrataDatasetProvider,
+                                        DataLibraryProvider,
                                         ComputeProvider
                                     ]}
                                     editActive={showEditor}
