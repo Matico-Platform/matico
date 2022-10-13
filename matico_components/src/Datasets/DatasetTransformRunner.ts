@@ -175,12 +175,13 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
                 );
                 break;
             case "inner":
-                workingTable = workingTable.join(otherSource, joinColumns);
+                workingTable = workingTable.lookup(otherSource, joinColumns, "cases");
                 break;
             case "outer":
                 workingTable = workingTable.cross(otherSource, joinColumns);
                 break;
         }
+
 
         return workingTable;
     }
