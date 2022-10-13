@@ -61,6 +61,7 @@ export class LocalDataset implements Dataset {
         this._isReady = true;
         this._filterCache = [];
         this._data = assignIds(_data)
+        this._columns = [..._columns, {name:"_matico_id", type: "number"}]
     }
 
     isReady() {

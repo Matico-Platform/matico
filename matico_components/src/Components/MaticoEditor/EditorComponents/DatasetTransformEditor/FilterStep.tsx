@@ -473,6 +473,22 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     columns,
     onUpdateFilter
 }) => {
+
+    const toggleHasOneOf= () => {
+        if (isOneOf?.hasOwnProperty('var')) {
+            onUpdateFilter({
+                variable: selectedColumn.name,
+                isOneOf: [],
+                type: "category"
+            });
+        } else {
+            onUpdateFilter({
+                variable: selectedColumn.name,
+                isOneOf: {var:{varId:null, property: null}},
+                type: "category"
+            });
+        }
+    };
     return (
         <Flex direction="row" gap={"size-200"}>
             <DatasetColumnSelector
@@ -487,12 +503,32 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                     })
                     }
             />
+              {isOneOf?.hasOwnProperty('var') ? 
+                <VariableSelector
+                    variable={isOneOf.var}
+                    allowedTypes={["selection"]}
+                    onSelectVariable={(newVar) =>
+                        onUpdateFilter({
+                            isOneOf: { var: newVar },
+                            variable: selectedColumn.name,
+                            type: "category"
+                        })
+                    }
+                />
+                :
+
               <TextField label="is one of " labelPosition={"side"} value={isOneOf ? isOneOf.join(",") : ""} onChange={(value)=> onUpdateFilter({
                   type:'category',
                   variable : selectedColumn.name,
                   isOneOf: value.split(",").map(v=> isNaN(parseInt(v)) ?  v : parseInt(v))
 
               })} /> 
+              }
+            <ToggleButton
+                isEmphasized
+                isSelected={isOneOf?.hasOwnProperty("var")}
+                onPress={toggleHasOneOf}
+                />
         </Flex>
     );
 };
