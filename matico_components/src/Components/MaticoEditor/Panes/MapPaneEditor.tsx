@@ -142,6 +142,32 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         });
     };
 
+    const removeLayer = (layerId:string)=>{
+      updatePane({
+        layers: mapPane.layers.filter(layer=>layer.id!==layerId)
+      })
+    }
+
+    
+    const handleChangeOrder = (index: number, direction: "up" | "down") => {
+        const layers = mapPane.layers
+        if (
+            (index === 0 && direction === "up") ||
+            (index === layers.length - 1 && direction === "down")
+        ) {
+            return;
+        }
+
+        let newLayers= [...layers];
+        const changedLayer= newLayers.splice(index, 1)[0];
+        newLayers.splice(
+            direction === "up" ? index - 1 : index + 1,
+            0,
+            changedLayer
+        );
+        updatePane({ layers: newLayers});
+    };
+
     const startSyncing = (variableId: string) => {
         updatePane({
             ...mapPane,
@@ -275,15 +301,15 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                 <AddLayerModal onAddLayer={addLayer} />
                 <Flex marginBottom={"size-200"} direction="column" width="100%">
                     {/* @ts-ignore */}
-                    {mapPane.layers.map((layer) => (
+                    {mapPane.layers.map((layer, index) => (
                         <RowEntryMultiButton
                             key={layer.name}
                             entryName={layer.name}
                             onSelect={() => setLayerEdit(layer.id)}
-                            onRemove={() => {}}
+                            onRemove={() => {removeLayer(layer.id)}}
                             onDuplicate={() => {}}
-                            onRaise={() => {}}
-                            onLower={() => {}}
+                            onRaise={() => {handleChangeOrder(index,"up")}}
+                            onLower={() => {handleChangeOrder(index,"down")}}
                         />
                     ))}
                 </Flex>
