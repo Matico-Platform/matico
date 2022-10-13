@@ -9,6 +9,7 @@ import {
   scaleLog,
   scalePower,
   scaleSqrt,
+  scaleTime
 } from "@visx/scale";
 import { AxisTop, AxisRight, AxisBottom, AxisLeft } from "@visx/axis";
 import debounce from "lodash/debounce";
@@ -29,6 +30,7 @@ const scaleMapping = {
   power: scalePower,
   sqrt: scaleSqrt,
   band: scaleBand,
+  time: scaleTime
 };
 
 const brushInteractionMapping = {
@@ -334,7 +336,7 @@ export default function ContinuousChartspace({
             left={yAxisPos === "right" ? width - margin.left - margin.right : 0}
             scale={yScale}
             //@ts-ignore
-            tickFormat={tickFormatFunc}
+            tickFormat={yAxis?.tickFormatFunc || tickFormatFunc}
             label={yLabel || ""}
           />
         )}
@@ -344,7 +346,7 @@ export default function ContinuousChartspace({
             top={
               xAxisPos === "bottom" ? height - margin.top - margin.bottom : 0
             }//@ts-ignore
-            tickFormat={tickFormatFunc}
+            tickFormat={xAxis?.tickFormatFunc || tickFormatFunc}
             scale={xScale}
             label={xLabel || ""}
           />

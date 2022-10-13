@@ -5482,7 +5482,9 @@ __metadata:
     d3: ^7.3.0
     d3-geo: ^3.0.1
     esbuild: ^0.14.5
-    react: ^18.2.0
+    react: 18
+    react-dom: 18
+    react-hot-loader: ^4.13.0
     rollup: ^2.66.0
     rollup-plugin-dts: ^4.1.0
     rollup-plugin-peer-deps-external: ^2.2.4
@@ -22484,7 +22486,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"global@npm:>=4.3.0, global@npm:^4.4.0":
+"global@npm:>=4.3.0, global@npm:^4.3.0, global@npm:^4.4.0":
   version: 4.4.0
   resolution: "global@npm:4.4.0"
   dependencies:
@@ -33551,7 +33553,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:18.2.0, react-dom@npm:^18.2.0":
+"react-dom@npm:18, react-dom@npm:18.2.0, react-dom@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
   dependencies:
@@ -33654,6 +33656,29 @@ __metadata:
   peerDependencies:
     react: ">=0.12.0"
   checksum: 0b4ff66aac939b0fb288c68466b1702f7e2c51238bec0ca0899cea968c7bebe74a6f6a8dfe23d0771986fca83b32a1c7af7b706caee4b739a216ced48bf3f6bb
+  languageName: node
+  linkType: hard
+
+"react-hot-loader@npm:^4.13.0":
+  version: 4.13.0
+  resolution: "react-hot-loader@npm:4.13.0"
+  dependencies:
+    fast-levenshtein: ^2.0.6
+    global: ^4.3.0
+    hoist-non-react-statics: ^3.3.0
+    loader-utils: ^1.1.0
+    prop-types: ^15.6.1
+    react-lifecycles-compat: ^3.0.4
+    shallowequal: ^1.1.0
+    source-map: ^0.7.3
+  peerDependencies:
+    "@types/react": "^15.0.0 || ^16.0.0 || ^17.0.0 "
+    react: "^15.0.0 || ^16.0.0 || ^17.0.0 "
+    react-dom: "^15.0.0 || ^16.0.0 || ^17.0.0 "
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: effdbf4644ce912ae20ad94be62083970c74b26a59fe24ed0024cf73190a5b3edf59650cb693bdd7b70791df8ab8530de273d73b895c4831a91da8a76683e3a3
   languageName: node
   linkType: hard
 
@@ -34180,7 +34205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:18.2.0, react@npm:^18.2.0":
+"react@npm:18, react@npm:18.2.0, react@npm:^18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
   dependencies:

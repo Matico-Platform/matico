@@ -61,6 +61,7 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                             "controls",
                             "histogram",
                             "scatterplot",
+                            "lineChart",
                             "dateTimeSlider",
                             "map"
                         ].includes(p.type)

@@ -211,9 +211,9 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             opacity,
             visible,
             onHover: (hoverTarget: { object: Record<string, unknown> }, event: any) => {
-                const toEl = event?.srcEvent?.toElement;
-                const isTooltip = parentContainsClassName(toEl, "matico-tooltip");
-                if (isTooltip) return
+                // const toEl = event?.srcEvent?.toElement;
+                // const isTooltip = parentContainsClassName(toEl, "matico-tooltip");
+                // if (isTooltip) return
                 updateHoverVariable({
                     type: "selection",
                     value: hoverTarget.object ? [hoverTarget.object["_matico_id"] as number] :  "NoSelection"

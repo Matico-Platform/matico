@@ -3,6 +3,7 @@ import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
 import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoHistogramPane } from "Components/Panes/MaticoHistogramPane/MaticoHistogramPane";
 import { MaticoScatterplotPane } from "Components/Panes/MaticoScatterplotPane/MaticoScatterplotPane";
+import { MaticoLineChartPane } from "Components/Panes/MaticoLineChartPane/MaticoLineChartPane";
 import { MaticoPieChartPane } from "Components/Panes/MaticoPieChartPane/MaticoPieChartPane";
 import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoControlsPane";
 import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
@@ -25,6 +26,7 @@ export const fallbackPanes: { [paneType: string]: Pane } = {
     text: MaticoTextPane,
     histogram: MaticoHistogramPane,
     scatterplot: MaticoScatterplotPane,
+    lineChart: MaticoLineChartPane,
     pieChart: MaticoPieChartPane,
     controls: MaticoControlsPane,
     container: MaticoContainerPane,

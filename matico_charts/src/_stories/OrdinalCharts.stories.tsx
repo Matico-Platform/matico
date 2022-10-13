@@ -13,11 +13,14 @@ import {
   SampleMapData6,
   SampleCategoricalData,
   SampleHistogramData,
+  Sample2dData,
+  SampleLineChartData,
 } from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
 
 import * as scale from '@visx/scale';
+import { nicelyFormatNumber } from "../Utils";
 
 export default {
   title: "Matico/Ordinal Charts",
@@ -37,6 +40,45 @@ const Template: Story<ChartSpaceSpec> = (args) => (
     <MaticoChart {...args} />
   </div>
 );
+
+
+export const LineChart = Template.bind({});
+LineChart.args = {
+  layers: [
+    {
+      type: "line",
+      lineColor: "steelblue",
+      lineWidth: 0.25,
+    },
+  ],
+  xCol: "date",
+  xAxis: {
+    scaleType: "linear",
+    display: true,
+    position: "bottom",
+    tickFormatFunc: (d) => {
+      const date = new Date(d)
+      const month = date.getMonth() + 1
+      const day = date.getDate()
+      const year = date.getFullYear().toString().slice(-2)
+      return `${month}/${day}/${year}`
+    },
+  },
+  xLabel: "x Label here",
+  yAxis: {
+    scaleType: "linear",
+    display: true,
+    position: "left",
+  },
+  yCol: "value",
+  yLabel: "y Label here",
+  title: "My  Scatterplot",
+  grid: {
+    rows: true,
+    columns: false,
+  },
+  data: SampleLineChartData,
+};
 
 
 export const HorizontalHistogram = Template.bind({});

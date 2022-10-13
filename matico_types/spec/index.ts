@@ -51,6 +51,7 @@ export * from "./Layer";
 export * from "./LayerContentType";
 export * from "./LayerStyle";
 export * from "./Layout";
+export * from "./LineChartPane";
 export * from "./LinearLayout";
 export * from "./LinearLayoutDirection";
 export * from "./MapControls";
