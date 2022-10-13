@@ -5557,7 +5557,7 @@ __metadata:
     "@visx/scale": ^2.2.2
     "@visx/shape": ^2.10.0
     ace-builds: ^1.4.13
-    arquero: ^5.0.0
+    arquero: 5.1.0
     autoprefixer: ^10.4.0
     axios: ^0.25.0
     buffer: ^6.0.3
@@ -13987,7 +13987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"arquero@npm:^5.0.0, arquero@npm:^5.1.0":
+"arquero@npm:5.1.0, arquero@npm:^5.1.0":
   version: 5.1.0
   resolution: "arquero@npm:5.1.0"
   dependencies:
