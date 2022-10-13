@@ -101,7 +101,7 @@ const DataLibrary: DataLibraryEntry[] = [
         description: "Census Data sourced from the US Census Bureau",
         datasets: [
             {
-                url: "https://uscovidatlas.org/geojson/county_nyt.geojson",
+                url: "https://raw.githubusercontent.com/GeoDaCenter/covid/master/public/geojson/county_nyt.geojson",
                 name: "Census Counties (Combined Metro NYC)",
                 type: "geoJSON"
             }
