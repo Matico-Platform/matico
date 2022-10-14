@@ -43,6 +43,7 @@ import {
 } from "Hooks/useRequestData";
 import { ColumnTransformStepEditor } from "./ColumnTransfomStepEditor";
 import { TransformStepPreview } from "Datasets/DatasetTransformRunner";
+import ChevronDoubleRight from "@spectrum-icons/workflow/ChevronDoubleRight";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -108,6 +109,7 @@ export const TransformStep: React.FC<TransformStepProps> = ({
     const updateStep = (update: Partial<DatasetTransformStep>) => {
         onChange({ ...step, ...update });
     };
+    
     switch (step.type) {
         case "filter":
             return (
@@ -220,10 +222,9 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                         label="Base Dataset"
                         labelPosition="top"
                         selectedDataset={datasetTransform.sourceId}
-                        onDatasetSelected={(dataset) =>{
-                            updateDatasetTransform({ sourceId: dataset })
-                        }
-                        }
+                        onDatasetSelected={(dataset) => {
+                            updateDatasetTransform({ sourceId: dataset });
+                        }}
                     />
                 </Flex>
                 <Divider orientation="vertical" size="S" />
@@ -241,46 +242,68 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                             />
                         </Flex>
                     </Heading>
-                    <View overflow={{ y: "auto" }}>
-                        {datasetTransform.steps.map(
-                            (step: DatasetTransformStep, stepNo: number) => (
-                                <Flex flex={1} direction="row">
-                                    <View flex={1}>
-                                        <CollapsibleSection
-                                            title={step.type}
-                                            icon={IconForStepType[step.type]}
-                                        >
-                                            <Flex direction="column">
-                                                <TransformStep
-                                                    key={step.id}
-                                                    step={step}
-                                                    columns={
-                                                        stepNo === 0
-                                                            ? null
-                                                            : stepPreviews
-                                                            ? stepPreviews[
-                                                                  stepNo - 1
-                                                              ].columns
-                                                            : null
-                                                    }
-                                                    onChange={updateStep}
-                                                    onRemove={removeStep}
-                                                    datasetId={
-                                                        datasetTransform.sourceId
-                                                    }
-                                                />
-                                            </Flex>
-                                        </CollapsibleSection>
-                                    </View>
-                                    <ActionButton
-                                        isQuiet
-                                        onPress={() => removeStep(step.id)}
+                    <View maxWidth={"100%"} overflow="auto">
+                        <Flex direction="row" gap="size-200">
+                            {datasetTransform.steps.map(
+                                (
+                                    step: DatasetTransformStep,
+                                    stepNo: number
+                                ) => (
+                                    <View
+                                        maxWidth={"30vw"}
+                                        minWidth="300px"
+                                        paddingEnd="size-200"
+                                        borderEndColor={"gray-600"}
+                                        borderEndWidth="thin"
+                                        position="relative"
                                     >
-                                        <Delete />
-                                    </ActionButton>
-                                </Flex>
-                            )
-                        )}
+                                        <Flex
+                                            direction="row"
+                                            alignItems="center"
+                                            justifyContent="space-between"
+                                            UNSAFE_style={{
+                                                textTransform: "capitalize"
+                                            }}
+                                        >
+                                            <Flex alignItems="center">
+                                                {IconForStepType[step.type]}
+                                                <Text marginStart="size-200">
+                                                    {step?.type}
+                                                </Text>
+                                            </Flex>
+                                            <ActionButton
+                                                isQuiet
+                                                onPress={() =>
+                                                    removeStep(step.id)
+                                                }
+                                            >
+                                                <Delete />
+                                            </ActionButton>
+                                        </Flex>
+                                        <TransformStep
+                                            key={step.id}
+                                            step={step}
+                                            columns={
+                                                stepNo === 0
+                                                    ? null
+                                                    : stepPreviews
+                                                    ? stepPreviews?.[stepNo - 1]
+                                                          ?.columns
+                                                    : null
+                                            }
+                                            onChange={updateStep}
+                                            onRemove={removeStep}
+                                            datasetId={
+                                                datasetTransform.sourceId
+                                            }
+                                        />
+                                        <View position="absolute" left="100%" top="50%" UNSAFE_style={{transform:'translate(-50%, -50%)'}} backgroundColor="gray-50" borderRadius="large">
+                                            <ChevronDoubleRight size="S"/>
+                                        </View>
+                                    </View>
+                                )
+                            )}
+                        </Flex>
                     </View>
                 </Flex>
             </Flex>

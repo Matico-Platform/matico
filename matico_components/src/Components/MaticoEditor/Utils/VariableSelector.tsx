@@ -17,6 +17,7 @@ interface VariableSelectorProps {
     variable?: Variable;
     onSelectVariable: (variable: Variable) => void;
     allowedTypes: Array<string>;
+    inline?: boolean;
 }
 
 function suboptionsForVariableType(variable: MaticoStateVariable) {
@@ -49,7 +50,8 @@ function suboptionsForVariableType(variable: MaticoStateVariable) {
 }
 export const VariableSelector: React.FC<VariableSelectorProps> = ({
     variable,
-    onSelectVariable
+    onSelectVariable,
+    inline=true
 }) => {
     const [options, vars] = useMaticoSelector((state) => {
         let vars = Object.values(state.variables.autoVariables);
@@ -88,15 +90,7 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
     const suboptions = suboptionsForVariableType(selectedVar);
 
     return (
-        <DialogTrigger type="popover" isDismissable={true}>
-            <ActionButton>
-                {selectedVar ? selectedVar.name : "Select filter variable"}
-            </ActionButton>
-            {(close) => (
-                <Dialog>
-                    <Content>
-                        <Heading>Variable</Heading>
-                        <Picker
+                       <><Picker
                             label={"Select variable to use"}
                             width={"100%"}
                             items={options}
@@ -136,9 +130,6 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                                 )}
                             </Picker>
                         )}
-                    </Content>
-                </Dialog>
-            )}
-        </DialogTrigger>
+                        </> 
     );
 };
