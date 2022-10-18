@@ -40,7 +40,7 @@ export const IconForPaneType = (PaneType: string, props?: any) => {
             return <Border {...props} />;
         case "staticMap":
             return <MapIcon {...props} />;
-        case "dateTime":
+        case "dateTimeSlider":
             return <Calendar {...props} />;
     }
 };
