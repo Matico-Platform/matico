@@ -103,10 +103,7 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
     };
 
     const extentResult = useRequestColumnStat(extentRequest);
-
     const extent = extentResult?.result;
-
-    console.log("range", range, extent);
 
     const startDate =
         typeof extent?.min !== "bigint" && !isNaN(+extent?.min)
@@ -146,7 +143,6 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
         : null;
 
     useEffect(() => {
-        console.log('extentDate', extentIsValid, extentDate)
         if (extentDate && range.value === "NoSelection") {
             setRangeValue(extentDate);
         }
