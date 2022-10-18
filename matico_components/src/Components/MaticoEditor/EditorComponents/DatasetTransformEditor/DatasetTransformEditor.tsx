@@ -258,15 +258,15 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                         stepNo === 0
                                                             ? null
                                                             : stepPreviews
-                                                            ? stepPreviews[
+                                                            ? stepPreviews?.[
                                                                   stepNo - 1
-                                                              ].columns
+                                                              ]?.columns
                                                             : null
                                                     }
                                                     onChange={updateStep}
                                                     onRemove={removeStep}
                                                     datasetId={
-                                                        datasetTransform.sourceId
+                                                        datasetTransform?.sourceId
                                                     }
                                                 />
                                             </Flex>
