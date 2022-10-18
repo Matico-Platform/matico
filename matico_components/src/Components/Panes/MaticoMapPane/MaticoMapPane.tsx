@@ -176,7 +176,6 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         ref={mapRef}
                         antialias={true}
                         onMove={(viewState) => updateViewState(viewState)}
-                        reuseMaps={true}
                         {...currentView}
                         initialViewState={{
                             latitude: currentView.value.lat,
