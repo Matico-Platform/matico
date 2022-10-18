@@ -25,6 +25,16 @@ export interface MaticoDateTimeSliderInterface extends MaticoPaneInterface {
 
 const backgroundColor = "#fff";
 
+const PLACEHOLDER_TIME = {
+    start: new Date(0).getTime(),
+    end: new Date().getTime()
+};
+
+const PLACEHOLDER_DATE = {
+    start: new CalendarDate(2000, 1, 1),
+    end: new CalendarDate(2020, 1, 1)
+};
+
 export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
     dataset,
     column = "",
@@ -42,6 +52,29 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
         },
         bind: true
     });
+    const rangeIsValid = range?.value?.min && !isNaN(range.value.min.getTime());
+
+    const rangeTime = rangeIsValid
+        ? {
+              start: range.value.min.getTime(),
+              end: range.value.max.getTime()
+          }
+        : PLACEHOLDER_TIME;
+
+    const rangeDate = rangeIsValid
+        ? {
+              start: new CalendarDate(
+                  range.value.min.getUTCFullYear(),
+                  range.value.min.getUTCMonth(),
+                  range.value.min.getUTCDate()
+              ),
+              end: new CalendarDate(
+                  range.value.max.getUTCFullYear(),
+                  range.value.max.getUTCMonth(),
+                  range.value.max.getUTCDate()
+              )
+          }
+        : PLACEHOLDER_DATE;
 
     const { errors, throwError, clearErrors } = useErrorsFor(
         id,
@@ -68,15 +101,52 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
     const setRangeValue = (value: { min: Date; max: Date }) => {
         setRange({ type: "dateRange", value });
     };
+
     const extentResult = useRequestColumnStat(extentRequest);
 
     const extent = extentResult?.result;
 
-    const extentDate = extent
-        ? { min: new Date(extent.min), max: new Date(extent.max) }
+    console.log("range", range, extent);
+
+    const startDate =
+        typeof extent?.min !== "bigint" && !isNaN(+extent?.min)
+            ? extent.min
+            : null;
+    const endDate =
+        typeof extent?.max !== "bigint" && !isNaN(+extent?.max)
+            ? extent.max
+            : null;
+    const minDate = startDate ? new Date(startDate) : null;
+    const maxDate = endDate ? new Date(endDate) : null;
+    const extentIsValid =
+        minDate &&
+        maxDate &&
+        !isNaN(minDate.getTime()) &&
+        !isNaN(maxDate.getTime());
+
+    const extentDate =
+        extentIsValid && minDate && maxDate
+            ? { min: minDate, max: maxDate }
+            : null;
+
+    const minCalendarDate = extentDate
+        ? new CalendarDate(
+              extentDate.min.getUTCFullYear(),
+              extentDate.min.getUTCMonth(),
+              extentDate.min.getUTCDate()
+          )
+        : null;
+
+    const maxCalendarDate = extentDate
+        ? new CalendarDate(
+              extentDate.max.getUTCFullYear(),
+              extentDate.max.getUTCMonth(),
+              extentDate.max.getUTCDate()
+          )
         : null;
 
     useEffect(() => {
+        console.log('extentDate', extentIsValid, extentDate)
         if (extentDate && range.value === "NoSelection") {
             setRangeValue(extentDate);
         }
@@ -88,10 +158,14 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
             height="100%"
             position="relative"
             backgroundColor={"gray-200"}
+            overflow="hidden"
         >
             {!!paramsAreNull ? (
-                <MissingParamsPlaceholder paneName="Histogram" />
-            ) : !datasetReady || !extent  || !range?.value || range.value==='NoSelection' ? (
+                <MissingParamsPlaceholder paneName="Datetime slider" />
+            ) : !datasetReady ||
+              !extent ||
+              !range?.value ||
+              range.value === "NoSelection" ? (
                 <div>{dataset.name} not found!</div>
             ) : (
                 <Flex
@@ -106,18 +180,16 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
                         alignItems="center"
                         flex={1}
                         gap={"size-200"}
-                        width={'80%'}
-                        justifyContent={'space-around'}
+                        width={"80%"}
+                        justifyContent={"space-around"}
                     >
                         <RangeSlider
                             flex={1}
-                            maxValue={extent.max}
-                            minValue={extent.min}
+                            minValue={startDate}
+                            maxValue={endDate}
                             showValueLabel={false}
-                            value={{
-                                start: range.value.min.getTime(),
-                                end: range.value.max.getTime()
-                            }}
+                            value={rangeTime}
+                            isDisabled={!rangeIsValid}
                             onChange={(val) =>
                                 setRangeValue({
                                     min: new Date(val.start),
@@ -126,21 +198,10 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
                             }
                         />
                         <DateRangePicker
-                            maxValue={
-                                new CalendarDate(
-                                    extentDate.max.getUTCFullYear(),
-                                    extentDate.max.getUTCMonth(),
-                                    extentDate.max.getUTCDate()
-                                )
-                            }
-                            minValue={
-                                new CalendarDate(
-                                    extentDate.min.getUTCFullYear(),
-                                    extentDate.min.getUTCMonth(),
-                                    extentDate.min.getUTCDate()
-                                )
-                            }
+                            minValue={minCalendarDate}
+                            maxValue={maxCalendarDate}
                             granularity="day"
+                            isDisabled={!rangeIsValid}
                             onChange={(newRange) => {
                                 setRangeValue({
                                     min: new Date(
@@ -155,22 +216,31 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
                                     )
                                 });
                             }}
-                            value={{
-                                start: new CalendarDate(
-                                    range.value.min.getUTCFullYear(),
-                                    range.value.min.getUTCMonth(),
-                                    range.value.min.getUTCDate()
-                                ),
-                                end: new CalendarDate(
-                                    range.value.max.getUTCFullYear(),
-                                    range.value.max.getUTCMonth(),
-                                    range.value.max.getUTCDate()
-                                )
-                            }}
+                            value={rangeDate}
                         />
                         {}
                     </Flex>
                 </Flex>
+            )}
+
+            {!rangeIsValid && (
+                <View
+                    position="absolute"
+                    top={0}
+                    left={0}
+                    width="100%"
+                    height="100%"
+                    backgroundColor={"gray-50"}
+                >
+                    <Flex
+                        direction="column"
+                        alignItems="center"
+                        justifyContent="center"
+                    >
+                        Your date range is invalid. Please check your "Data Source" 
+                        settings in the editor.
+                    </Flex>
+                </View>
             )}
         </View>
     );
