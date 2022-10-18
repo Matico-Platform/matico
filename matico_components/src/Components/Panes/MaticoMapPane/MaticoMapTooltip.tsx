@@ -47,8 +47,8 @@ export const MaticoMapTooltip: React.FC<TooltipSpec> = ({
                 //@ts-ignore
                 return centroid(theGeom);
             } catch (e){
-                console.log("CAUGHT!!!!!!", e)
-                debugger
+                // console.log("CAUGHT!!!!!!", e)
+                // debugger
                 return { geometry: { coordinates: [0, 0] } };
             }
         } else {
@@ -68,8 +68,7 @@ export const MaticoMapTooltip: React.FC<TooltipSpec> = ({
         return { label: [text], value: formattedValue };
     });
     // ,[JSON.stringify({columns, result})])
-
-    if (id === undefined || datasetName === undefined || !columns.length)
+    if (id === undefined || id === null || datasetName === undefined || !columns.length)
         return null;
     return (
         <TooltipInner

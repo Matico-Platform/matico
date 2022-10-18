@@ -334,19 +334,18 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
 
         onUpdate(layer);
     }, [name, JSON.stringify(style), preparedData]);
-
     return (
         <>
             <MaticoMapTooltip
                 datasetName={dataset?.name}
                 // @ts-ignore
-                id={hoverVariable?.value ? hoverVariable.value[0] : null}
+                id={hoverVariable?.value && !(hoverVariable?.value === "NoSelection") ? hoverVariable.value[0] : null}
                 columns={tooltipColumns}
                 />
             <MaticoMapTooltip
                 datasetName={dataset?.name}
                 // @ts-ignore
-                id={clickVariable?.value ? clickVariable.value[0]: null}
+                id={clickVariable?.value && !(clickVariable?.value === "NoSelection") ? clickVariable.value[0]: null}
                 columns={tooltipColumns}
                 pinned
             />
