@@ -156,8 +156,15 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
             backgroundColor={"gray-200"}
             overflow="hidden"
         >
-            {!!paramsAreNull ? (
-                <MissingParamsPlaceholder paneName="Datetime slider" />
+            {!!paramsAreNull || !rangeIsValid ? (
+                <MissingParamsPlaceholder
+                    paneName="Datetime slider"
+                    additionalInfo={
+                        !rangeIsValid
+                            ? "Invalid date range, please use a date column."
+                            : null
+                    }
+                />
             ) : !datasetReady ||
               !extent ||
               !range?.value ||
@@ -233,8 +240,8 @@ export const MaticoDateTimeSlider: React.FC<MaticoDateTimeSliderInterface> = ({
                         alignItems="center"
                         justifyContent="center"
                     >
-                        Your date range is invalid. Please check your "Data Source" 
-                        settings in the editor.
+                        Your date range is invalid. Please check your "Data
+                        Source" settings in the editor.
                     </Flex>
                 </View>
             )}
