@@ -98,7 +98,7 @@ export const DatasetTransfromPane: React.FC = () => {
                 Dataset Transforms
             </Heading>
 
-            <Flex direction="column" gap="size-100">
+            <Flex direction="column">
                 {datasetTransforms?.map((transform) => (
                     <DatasetTransformDialog
                         key={transform.id}
