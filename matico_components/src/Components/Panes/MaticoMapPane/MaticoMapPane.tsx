@@ -3,7 +3,8 @@ import React, {
     useMemo,
     useRef,
     useCallback,
-    useEffect
+    useEffect,
+    useLayoutEffect
 } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
@@ -18,13 +19,11 @@ import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
-import { View } from "@adobe/react-spectrum";
 import { Layer, MapControls } from "@maticoapp/matico_types/spec";
 import { MapboxOverlayProps, MapboxOverlay } from "@deck.gl/mapbox/typed";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import maplibregl from "maplibre-gl";
 import { v4 as uuid } from "uuid";
-
 import "maplibre-gl/dist/maplibre-gl.css";
 import { SelectionOptions } from "@maticoapp/matico_types/spec";
 import { MaticoSelectionLayer } from "./MaticoSelectionLayer";
@@ -92,15 +91,14 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     const [mapLayers, setMapLayers] = useState<Record<string, Layer>>({});
     const [shouldRemount, setShouldRemount] = useState(false);
     const edit = useIsEditable();
-    const mapRef = useRef();
+    const mapRef = useRef<any | null>();
     const parentRef = useRef();
-    const triggerRemount = () => {
-        setShouldRemount(true);
-        setTimeout(() => setShouldRemount(false), 100);
-    };
+
+
+    const triggerResize = () => mapRef?.current?.resize();
 
     useEffect(() => {
-        const refObserver = new ResizeObserver(triggerRemount);
+        const refObserver = new ResizeObserver(triggerResize);
         refObserver.observe(parentRef.current);
         return () => {
             refObserver.disconnect();
@@ -175,6 +173,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         mapLib={maplibregl}
                         key={id}
                         id={id}
+                        ref={mapRef}
                         antialias={true}
                         onMove={(viewState) => updateViewState(viewState)}
                         {...currentView}

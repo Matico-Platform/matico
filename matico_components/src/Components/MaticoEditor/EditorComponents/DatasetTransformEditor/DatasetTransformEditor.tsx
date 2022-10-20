@@ -62,32 +62,44 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
     transformId,
     state
 }) => {
-    const { datasetTransform } = useDatasetTransform(transformId);
+    const { datasetTransform, removeTransform } = useDatasetTransform(transformId);
     return (
-        <DialogTrigger isDismissable>
-            <ActionButton isQuiet>
-                <Flex
-                    direction="row"
-                    gap="small"
-                    width="100%"
-                    alignItems="center"
-                    justifyContent="space-between"
-                >
-                    <Text>{datasetTransform.name} </Text>
-                    <StatusLight variant={DatasetStatusColors[state]} />
-                </Flex>
-            </ActionButton>
-            {(close) => (
-                <Dialog width="90vw" height="90vh">
-                    <Content>
-                        <DatasetTransformEditor
-                            state={state}
-                            transformId={transformId}
-                        />
-                    </Content>
-                </Dialog>
-            )}
-        </DialogTrigger>
+        <View
+            borderBottomColor={"gray-300"}
+            borderBottomWidth="thin"
+            padding={0}
+            margin={0}
+        >
+            <Flex direction="row" width="100%">
+                <DialogTrigger isDismissable>
+                    <ActionButton isQuiet flexGrow={1}>
+                        <Flex
+                            direction="row"
+                            gap="small"
+                            width="100%"
+                            alignItems="center"
+                            justifyContent="space-between"
+                        >
+                            <Text>{datasetTransform.name} </Text>
+                            <StatusLight variant={DatasetStatusColors[state]} />
+                        </Flex>
+                    </ActionButton>
+                    {(close) => (
+                        <Dialog width="90vw" height="90vh">
+                            <Content>
+                                <DatasetTransformEditor
+                                    state={state}
+                                    transformId={transformId}
+                                />
+                            </Content>
+                        </Dialog>
+                    )}
+                </DialogTrigger>
+                <ActionButton isQuiet onPress={removeTransform}>
+                    <Delete />
+                </ActionButton>
+            </Flex>
+        </View>
     );
 };
 

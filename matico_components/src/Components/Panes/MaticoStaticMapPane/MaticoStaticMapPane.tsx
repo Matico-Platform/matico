@@ -67,8 +67,7 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
                 if (!chartData[i] || chartData[i].state !== "Done") {
                     return null;
                 }
-                const mappedData = chartData[i].result
-                    .map((d: Record<string, any>) => {
+                const mappedData = chartData[i]?.result?.map((d: Record<string, any>) => {
                         let { geom, ...properties } = d;
                         if (!geom) return null;
                         let geoJSON = wkx.Geometry.parse(
@@ -115,6 +114,8 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
     return (
         <View position="relative" width="100%" height="100%">
             {Chart}
+            {/* @ts-ignore */}
+            <MaticoLegendPane legends={layers?.map(l => ({...l, ...l.style}))||[]} />
         </View>
     );
 };

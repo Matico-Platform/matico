@@ -77,22 +77,25 @@ export const StaticMapComponent: React.FC<
   pointRadius = 3,
   events = true,
 }) => {
-  // Checkers for geometry and properties
-  const geometryChecker = (row: any) => {
-    return row.hasOwnProperty("geometry");
-  }; // This one works, but removing properties for one of the rows will raise a different error on its own
+  // // Checkers for geometry and properties
+  // const geometryChecker = (row: any) => {
+  //   return row.hasOwnProperty("geometry");
+  // }; // This one works, but removing properties for one of the rows will raise a different error on its own
 
-  const propChecker = (row: any) => {
-    return row.hasOwnProperty("properties");
-  };
+  // const propChecker = (row: any) => {
+  //   return row.hasOwnProperty("properties");
+  // };
 
-  console.log("Data is ",data)
+  // console.log("Data is ",data)
+
+  const filteredData = React.useMemo(() => {
+    return data?.filter((row: any) => {
+      return row.hasOwnProperty("geometry") && row.hasOwnProperty("properties");
+    });
+  },[data]);
 
   if (
-    data &&
-    data.every(geometryChecker) &&
-    data.every(propChecker) &&
-    proj in basicProjections
+    filteredData && proj in basicProjections
   ) {
     const projection = basicProjections[proj]()
       //@ts-ignore
@@ -101,7 +104,7 @@ export const StaticMapComponent: React.FC<
           [20, 20],
           [xMax - 20, yMax - 20],
         ],
-        { type: "FeatureCollection", features: data }
+        { type: "FeatureCollection", features: filteredData }
       ) // Translate and scale to fit the object
       .clipExtent([
         [0, 0],
@@ -232,15 +235,17 @@ export const StaticMapComponent: React.FC<
         )}
       </svg>
     );
-  } else if (data && !data.every(geometryChecker)) {
-    throw "StaticMapComponent: geometry is missing from some entries";
-  } else if (data && !data.every(propChecker)) {
-    throw "StaticMapComponent: properties are missing from data";
-  } else if (!(proj in basicProjections)) {
-    throw "StaticMapComponent: projection is not available--check spelling of projection name";
-  } else {
-    throw "StaticMapComponent: issues with loading data";
-  }
+  } 
+  // else if (data && !data.every(geometryChecker)) {
+  //   throw "StaticMapComponent: geometry is missing from some entries";
+  // } else if (data && !data.every(propChecker)) {
+  //   throw "StaticMapComponent: properties are missing from data";
+  // } else if (!(proj in basicProjections)) {
+  //   throw "StaticMapComponent: projection is not available--check spelling of projection name";
+  // } else {
+  //   throw "StaticMapComponent: issues with loading data";
+  // }
+  return null
 };
 
 // every for arrays

@@ -59,8 +59,8 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                             {Object.values(row).map((val: any) => (
                                 <Cell>
                                     <TooltipTrigger delay={0}>
-                                        <Text>{val}</Text>
-                                        <Tooltip>{val}</Tooltip>
+                                        <Text>{val?.toString()}</Text>
+                                        <Tooltip>{val?.toString()}</Tooltip>
                                     </TooltipTrigger>
                                 </Cell>
                             ))}
