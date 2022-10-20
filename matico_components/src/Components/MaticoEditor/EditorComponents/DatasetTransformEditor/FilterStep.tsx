@@ -54,22 +54,30 @@ export const FilterStepEditor: React.FC<{
     onChange: (update: Partial<FilterStep>) => void;
     columns?: Array<Column>;
     datasetId?: string;
-    
 }> = ({ filterStep, onChange, datasetId, columns }) => {
-    const updateFilterAtIndex = (update: Filter, index: number, action: 'update' | 'remove') => {
-        switch(action){
-            case "update":{
-
-        onChange({
-            filters: filterStep.filters.map((filter: Filter, i: number) =>
-                index === i ? update : filter
-            )
-        });
-        break
+    const updateFilterAtIndex = (
+        update: Filter,
+        index: number,
+        action: "update" | "remove"
+    ) => {
+        switch (action) {
+            case "update": {
+                onChange({
+                    filters: filterStep.filters.map(
+                        (filter: Filter, i: number) =>
+                            index === i ? update : filter
+                    )
+                });
+                break;
             }
-            case "remove":{
-                const filters = filterStep.filters
-                onChange({filters: [...filters.slice(0,index),...filters.slice(index+1)]})
+            case "remove": {
+                const filters = filterStep.filters;
+                onChange({
+                    filters: [
+                        ...filters.slice(0, index),
+                        ...filters.slice(index + 1)
+                    ]
+                });
             }
         }
     };
@@ -86,7 +94,8 @@ export const FilterStepEditor: React.FC<{
                 <Divider orientation="horizontal" size="S" />
                 <Flex direction="column" gap="size-200">
                     {filterStep.filters.map((f, index: number) => {
-                        let filterEl;
+                        let filterEl = null;
+                        let filterText = "";
                         switch (f.type) {
                             case "range":
                                 filterEl = (
@@ -100,10 +109,15 @@ export const FilterStepEditor: React.FC<{
                                         max={f.max}
                                         min={f.min}
                                         onUpdateFilter={(update) =>
-                                            updateFilterAtIndex(update, index, "update")
+                                            updateFilterAtIndex(
+                                                update,
+                                                index,
+                                                "update"
+                                            )
                                         }
                                     />
                                 );
+                                filterText = `Filter ${f.variable} between ${f.min} and ${f.max}`;
                             case "category":
                                 filterEl = (
                                     <CategoryFilter
@@ -115,7 +129,11 @@ export const FilterStepEditor: React.FC<{
                                         }}
                                         isOneOf={f.isOneOf}
                                         onUpdateFilter={(update) =>
-                                            updateFilterAtIndex(update, index, "update")
+                                            updateFilterAtIndex(
+                                                update,
+                                                index,
+                                                "update"
+                                            )
                                         }
                                     />
                                 );
@@ -131,14 +149,61 @@ export const FilterStepEditor: React.FC<{
                                         max={f.max}
                                         min={f.min}
                                         onUpdateFilter={(update) =>
-                                            updateFilterAtIndex(update, index, "update")
+                                            updateFilterAtIndex(
+                                                update,
+                                                index,
+                                                "update"
+                                            )
                                         }
                                     />
                                 );
-                            return <Flex gap="size-100" alignItems="center">
-                                <OptionsPopper title={f?.type}>{filterEl}</OptionsPopper>
-                                <ActionButton onPress={()=>updateFilterAtIndex(null, index, "remove")}><Delete /></ActionButton>
-                            </Flex>
+                                if (f.variable) {
+                                    const minText =
+                                        typeof f.min === "object" &&
+                                        f.min.hasOwnProperty("var")
+                                            ? "𝑓.min"
+                                            : new Date(f.min)
+                                                  .toISOString()
+                                                  .slice(0, 10);
+
+                                    const maxText =
+                                        typeof f.max === "object" &&
+                                        f.max.hasOwnProperty("var")
+                                            ? "𝑓.max"
+                                            : new Date(f.max)
+                                                  .toISOString()
+                                                  .slice(0, 10);
+
+                                    filterText = `${
+                                        f.variable || "Variable"
+                                    } between ${minText} & ${maxText}`;
+                                } else {
+                                    filterText = "Select a column to filter";
+                                }
+                                return (
+                                    <Flex gap="size-100" alignItems="center">
+                                        <OptionsPopper
+                                            title={filterText}
+                                            buttonProps={{ flex: "1 1 100%" }}
+                                        >
+                                            {filterEl}
+                                            <ActionButton
+                                                isQuiet
+                                                marginY="size-100"
+                                                onPress={() =>
+                                                    updateFilterAtIndex(
+                                                        null,
+                                                        index,
+                                                        "remove"
+                                                    )
+                                                }
+                                                aria-label="Remove"
+                                            >
+                                                <Delete />
+                                            </ActionButton>
+                                        </OptionsPopper>
+                                    </Flex>
+                                );
                         }
                     })}
 

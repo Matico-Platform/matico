@@ -14,10 +14,12 @@ import Join from "@spectrum-icons/workflow/Merge";
 import AggregateIcon from "@spectrum-icons/workflow/GraphBarHorizontal";
 import Column from "@spectrum-icons/workflow/ColumnSettings";
 import Compute from "@spectrum-icons/workflow/Calculator";
+import Add from "@spectrum-icons/workflow/Add";
 
 export const AddTransformStepDialog: React.FC<{
     onAdd: (type: DatasetTransformStep) => void;
-}> = ({ onAdd }) => {
+    useIcon?: boolean;
+}> = ({ onAdd, useIcon }) => {
     const addFilter = (close: () => void) => {
         onAdd({
             type: "filter",
@@ -65,7 +67,9 @@ export const AddTransformStepDialog: React.FC<{
 
     return (
         <DialogTrigger isDismissable type="popover">
-            <ActionButton isQuiet>Add Transform step</ActionButton>
+            <ActionButton isQuiet aria-label="Add Transform Step">
+                {useIcon ? <Add size="S" /> : "Add Transform step"}
+            </ActionButton>
             {(close) => (
                 <Dialog>
                     <Heading>Step Type</Heading>

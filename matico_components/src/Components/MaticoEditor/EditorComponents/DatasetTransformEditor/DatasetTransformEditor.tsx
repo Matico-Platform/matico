@@ -44,6 +44,7 @@ import {
 import { ColumnTransformStepEditor } from "./ColumnTransfomStepEditor";
 import { TransformStepPreview } from "Datasets/DatasetTransformRunner";
 import ChevronDoubleRight from "@spectrum-icons/workflow/ChevronDoubleRight";
+import Add from "@spectrum-icons/workflow/Add";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -62,7 +63,8 @@ export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
     transformId,
     state
 }) => {
-    const { datasetTransform, removeTransform } = useDatasetTransform(transformId);
+    const { datasetTransform, removeTransform } =
+        useDatasetTransform(transformId);
     return (
         <View
             borderBottomColor={"gray-300"}
@@ -121,7 +123,7 @@ export const TransformStep: React.FC<TransformStepProps> = ({
     const updateStep = (update: Partial<DatasetTransformStep>) => {
         onChange({ ...step, ...update });
     };
-    
+
     switch (step.type) {
         case "filter":
             return (
@@ -216,8 +218,13 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     return (
         <Flex direction="column" gap={"size-300"} width="100%" height="100%">
             <Flex direction="row" gap={"size-300"} alignItems="start" flex={1}>
-                <Flex direction="column">
-                    <Heading>Details</Heading>
+                <Flex direction="column" flex="0 0 0%">
+                    <Heading>Transform</Heading>
+                    <Text>
+                        Add transform steps here. A data table preview is shown
+                        below.
+                    </Text>
+                    <Divider marginY="size-150" size="S" />
                     <TextField
                         label="Transform Name"
                         value={datasetTransform.name}
@@ -240,8 +247,12 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                     />
                 </Flex>
                 <Divider orientation="vertical" size="S" />
-                <Flex flex={1} direction="column">
-                    <Heading>
+                <Flex
+                    flex={"1 1 100%"}
+                    direction="column"
+                    UNSAFE_style={{ overflowX: "auto" }}
+                >
+                    {/* <Heading>
                         <Flex
                             direction="row"
                             justifyContent="space-between"
@@ -253,8 +264,8 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                 onAdd={(newStep) => addStep(newStep)}
                             />
                         </Flex>
-                    </Heading>
-                    <View maxWidth={"100%"} overflow="auto">
+                    </Heading> */}
+                    <View maxWidth={"100%"} overflow="auto auto">
                         <Flex direction="row" gap="size-200">
                             {datasetTransform.steps.map(
                                 (
@@ -309,12 +320,38 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                 datasetTransform.sourceId
                                             }
                                         />
-                                        <View position="absolute" left="100%" top="50%" UNSAFE_style={{transform:'translate(-50%, -50%)'}} backgroundColor="gray-50" borderRadius="large">
-                                            <ChevronDoubleRight size="S"/>
-                                        </View>
+                                        {stepNo <
+                                            datasetTransform.steps.length -
+                                                1 && (
+                                            <View
+                                                position="absolute"
+                                                left="100%"
+                                                top="50%"
+                                                UNSAFE_style={{
+                                                    transform:
+                                                        "translate(-50%, -50%)",
+                                                    borderRadius: "2em"
+                                                }}
+                                                backgroundColor={"gray-50"}
+                                                padding="size-100"
+                                            >
+                                                <ChevronDoubleRight size="S" />
+                                            </View>
+                                        )}
                                     </View>
                                 )
                             )}
+                            <Flex
+                                width="size-500"
+                                height="100%"
+                                alignItems="center"
+                                justifyContent="center"
+                            >
+                                <AddTransformStepDialog
+                                    onAdd={(newStep) => addStep(newStep)}
+                                    useIcon
+                                />
+                            </Flex>
                         </Flex>
                     </View>
                 </Flex>
