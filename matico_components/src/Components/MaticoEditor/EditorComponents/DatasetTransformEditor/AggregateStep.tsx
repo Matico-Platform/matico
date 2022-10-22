@@ -78,7 +78,6 @@ export const AggregateStepEditor: React.FC<{
                                     direction="column"
                                     gap="size-100"
                                     width="100%"
-                                    alignItems="end"
                                 >
                                     <DatasetColumnSelector
                                         datasetName={datasetId}

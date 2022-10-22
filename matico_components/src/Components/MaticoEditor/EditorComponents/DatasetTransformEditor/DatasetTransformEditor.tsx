@@ -218,38 +218,43 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
 
     return (
         <Flex direction="column" gap={"size-150"} width="100%" height="100%">
-            <Flex direction="row" gap="size-300">
+            <Flex
+                direction="row"
+                gap="size-300"
+                alignItems="center"
+                justifyContent="space-between"
+            >
                 <Heading UNSAFE_style={{ margin: 0 }}>Transform</Heading>
                 <Text>
-                    Add transform steps here. A data table preview is shown
-                    below.
+                    Add transform steps here. Preview your data at each step in the table below.
                 </Text>
                 <View maxWidth={"300px"}>
-
-                <OptionsPopper title="Transform Name and Settings">
-                    <TextField
-                        label="Transform Name"
-                        width="100%"
-                        value={datasetTransform.name}
-                        onChange={(name) => updateDatasetTransform({ name })}
-                    />
-                    <TextArea
-                        label="Transform Description"
-                        width="100%"
-                        value={datasetTransform.description}
-                        onChange={(description) =>
-                            updateDatasetTransform({ description })
-                        }
-                    />
-                    <DatasetSelector
-                        label="Base Dataset"
-                        labelPosition="top"
-                        selectedDataset={datasetTransform.sourceId}
-                        onDatasetSelected={(dataset) => {
-                            updateDatasetTransform({ sourceId: dataset });
-                        }}
-                    />
-                </OptionsPopper>
+                    <OptionsPopper title="Transform Name and Settings">
+                        <TextField
+                            label="Transform Name"
+                            width="100%"
+                            value={datasetTransform.name}
+                            onChange={(name) =>
+                                updateDatasetTransform({ name })
+                            }
+                        />
+                        <TextArea
+                            label="Transform Description"
+                            width="100%"
+                            value={datasetTransform.description}
+                            onChange={(description) =>
+                                updateDatasetTransform({ description })
+                            }
+                        />
+                        <DatasetSelector
+                            label="Base Dataset"
+                            labelPosition="top"
+                            selectedDataset={datasetTransform.sourceId}
+                            onDatasetSelected={(dataset) => {
+                                updateDatasetTransform({ sourceId: dataset });
+                            }}
+                        />
+                    </OptionsPopper>
                 </View>
             </Flex>
             <Flex direction="row" gap={"size-300"} alignItems="start" flex={1}>
