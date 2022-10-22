@@ -18,7 +18,7 @@ import {
     View
 } from "@adobe/react-spectrum";
 import { VariableSelector } from "Components/MaticoEditor/Utils/VariableSelector";
-import { FilterStep, Filter } from "@maticoapp/matico_types/spec";
+import { FilterStep, Filter, VarOr } from "@maticoapp/matico_types/spec";
 import FunctionIcon from "@spectrum-icons/workflow/Function";
 import { FilterEditor } from "Components/MaticoEditor/Utils/FilterEditor";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
@@ -39,8 +39,8 @@ interface FilterEditor {
 }
 
 interface RangeFilterEditorProps extends FilterEditor {
-    min?: number | { var: string };
-    max?: number | { var: string };
+    min?: VarOr<number>;
+    max?: VarOr<number>;
 }
 
 interface DateRangeFilterEditorProps extends FilterEditor {
@@ -50,7 +50,7 @@ interface DateRangeFilterEditorProps extends FilterEditor {
 
 interface CategoryFilterProps extends FilterEditor {
     isOneOf: Array<string | number>;
-    isNotOneOf: Array<string | number>;
+    isNotOneOf?: Array<string | number>;
 }
 
 const generateFilterText = (f: Filter) => {
@@ -62,12 +62,12 @@ const generateFilterText = (f: Filter) => {
                 const minText =
                     typeof f?.min === "object" && f?.min?.hasOwnProperty("var")
                         ? "𝑓.min"
-                        : nicelyFormatNumber(f.min);
+                        : nicelyFormatNumber(f.min as number);
 
                 const maxText =
                     typeof f?.max === "object" && f?.max?.hasOwnProperty("var")
                         ? "𝑓.max"
-                        : nicelyFormatNumber(f.max);
+                        : nicelyFormatNumber(f.max as number);
 
                 return `${
                     f.variable || "Variable"
@@ -78,12 +78,12 @@ const generateFilterText = (f: Filter) => {
         }
         case "date": {
             if (f.variable) {
-                const minText =
+                const minText = //@ts-ignore
                     typeof f?.min === "object" && f?.min?.hasOwnProperty("var")
                         ? "𝑓.min"
                         : new Date(f.min).toISOString().slice(0, 10);
 
-                const maxText =
+                const maxText =//@ts-ignore
                     typeof f?.max === "object" && f?.max?.hasOwnProperty("var")
                         ? "𝑓.max"
                         : new Date(f.max).toISOString().slice(0, 10);
