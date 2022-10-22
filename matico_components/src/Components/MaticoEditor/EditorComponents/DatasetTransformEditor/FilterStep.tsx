@@ -98,11 +98,11 @@ const generateFilterText = (f: Filter) => {
         case "category": {
             if (f.variable) {
                 return `${f.variable} ${
-                    f.isOneOf.length > 0
+                    f?.isOneOf?.length > 0
                         ? `is one of ${f.isOneOf.join(", ")}`
                         : ""
                 } ${
-                    f.isNotOneOf.length > 0
+                    f?.isNotOneOf?.length > 0
                         ? `is not one of ${f.isNotOneOf.join(", ")}`
                         : ""
                 }`;
