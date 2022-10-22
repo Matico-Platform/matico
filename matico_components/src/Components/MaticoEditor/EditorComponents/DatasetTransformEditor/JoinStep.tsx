@@ -12,6 +12,16 @@ import Delete from "@spectrum-icons/workflow/Delete";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { Column } from "Datasets/Dataset";
+import { LabelGroup } from "../LabelGroup";
+import { CollapsibleSection } from "../CollapsibleSection";
+
+
+const generateJoinText = (join: JoinStep, index: number): string => {
+    if (!join.joinColumnsLeft[index] || !join.joinColumnsRight[index]) {
+        return 'Select join columns'
+    }
+    return `${join.joinColumnsLeft[index]}-${join.joinColumnsRight[index]}`;
+}
 
 export const JoinStepEditor: React.FC<{
     joinStep: JoinStep;
@@ -20,11 +30,11 @@ export const JoinStepEditor: React.FC<{
     datasetId?: string;
 }> = ({ joinStep, onChange, datasetId, columns }) => {
     return (
-        <Flex direction="row" gap={"size-300"}>
-            <Flex direction="column" minWidth="size-1250">
+        <Flex direction="column" gap={"size-100"}>
+            <Flex direction="column" width="100%" gap="size-50">
                 <DatasetSelector
                     label="Dataset to join with"
-                    labelPosition="top"
+                    labelPosition="side"
                     selectedDataset={joinStep.otherSourceId}
                     onDatasetSelected={(dataset) =>
                         onChange({ otherSourceId: dataset })
@@ -32,6 +42,7 @@ export const JoinStepEditor: React.FC<{
                 />
                 <Picker
                     label="Join Type"
+                    labelPosition="side"
                     onSelectionChange={(joinType) => onChange({ joinType })}
                     selectedKey={joinStep.joinType}
                     items={[
@@ -45,70 +56,81 @@ export const JoinStepEditor: React.FC<{
                 </Picker>
                 <TextField
                     label="Left Prefix"
+                    labelPosition="side"
                     value={joinStep.leftPrefix}
                     onChange={(leftPrefix) => onChange({ leftPrefix })}
                 />
                 <TextField
-                    label="Left Prefix"
+                    label="Right Prefix"
+                    labelPosition="side"
                     value={joinStep.rightPrefix}
                     onChange={(rightPrefix) => onChange({ rightPrefix })}
                 />
             </Flex>
             <Divider orientation="vertical" size="S" />
-            <Flex direction="column" flex={1} gap="size-200">
+            <Flex direction="column" flex={1} gap="size-50">
                 {joinStep.joinColumnsLeft.map(
                     (leftCol: string, index: number) => (
-                        <Flex
-                            key={index}
-                            direction="row"
-                            alignItems="end"
-                            gap="size-300"
-                            width="100%"
-                        >
-                            <DatasetColumnSelector
-                                label="Left Join Column"
-                                labelPosition="side"
-                                datasetName={datasetId}
-                                columns={columns}
-                                selectedColumn={
-                                    joinStep.joinColumnsLeft
-                                        ? joinStep.joinColumnsLeft[index]
-                                        : null
-                                }
-                                onColumnSelected={(column) => {
-                                    onChange({
-                                        joinColumnsLeft:
-                                            joinStep.joinColumnsLeft.map(
-                                                (jc, i) =>
-                                                    i === index
-                                                        ? column.name
-                                                        : jc
-                                            )
-                                    });
-                                }}
-                            />
-                            <DatasetColumnSelector
-                                label="Right Join Column"
-                                labelPosition="side"
-                                datasetName={joinStep.otherSourceId}
-                                selectedColumn={
-                                    joinStep.joinColumnsRight
-                                        ? joinStep.joinColumnsRight[index]
-                                        : null
-                                }
-                                onColumnSelected={(column) => {
-                                    onChange({
-                                        joinColumnsRight:
-                                            joinStep.joinColumnsRight.map(
-                                                (jc, i) =>
-                                                    i === index
-                                                        ? column.name
-                                                        : jc
-                                            )
-                                    });
-                                }}
-                            />
+                        <Flex direction="row" key={index}>
+                            <CollapsibleSection title={generateJoinText(joinStep, index)}>
+                                <Flex
+                                    key={index}
+                                    direction="column"
+                                    alignItems="end"
+                                    gap="size-50"
+                                    width="100%"
+                                >
+                                    <DatasetColumnSelector
+                                        label="Left Join Column"
+                                        labelPosition="side"
+                                        datasetName={datasetId}
+                                        columns={columns}
+                                        selectedColumn={
+                                            joinStep.joinColumnsLeft
+                                                ? joinStep.joinColumnsLeft[
+                                                      index
+                                                  ]
+                                                : null
+                                        }
+                                        onColumnSelected={(column) => {
+                                            onChange({
+                                                joinColumnsLeft:
+                                                    joinStep.joinColumnsLeft.map(
+                                                        (jc, i) =>
+                                                            i === index
+                                                                ? column.name
+                                                                : jc
+                                                    )
+                                            });
+                                        }}
+                                    />
+                                    <DatasetColumnSelector
+                                        label="Right Join Column"
+                                        labelPosition="side"
+                                        datasetName={joinStep.otherSourceId}
+                                        selectedColumn={
+                                            joinStep.joinColumnsRight
+                                                ? joinStep.joinColumnsRight[
+                                                      index
+                                                  ]
+                                                : null
+                                        }
+                                        onColumnSelected={(column) => {
+                                            onChange({
+                                                joinColumnsRight:
+                                                    joinStep.joinColumnsRight.map(
+                                                        (jc, i) =>
+                                                            i === index
+                                                                ? column.name
+                                                                : jc
+                                                    )
+                                            });
+                                        }}
+                                    />
+                                </Flex>
+                            </CollapsibleSection>
                             <ActionButton
+                                isQuiet
                                 onPress={() =>
                                     onChange({
                                         joinColumnsLeft:
@@ -129,7 +151,6 @@ export const JoinStepEditor: React.FC<{
                     )
                 )}
                 <ActionButton
-                    isQuiet
                     onPress={() =>
                         onChange({
                             joinColumnsLeft: [
@@ -143,7 +164,7 @@ export const JoinStepEditor: React.FC<{
                         })
                     }
                 >
-                    Add another column to join on
+                    Add Column Join
                 </ActionButton>
             </Flex>
         </Flex>

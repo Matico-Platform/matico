@@ -247,10 +247,12 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                     />
                 </Flex>
                 <Divider orientation="vertical" size="S" />
+                
                 <Flex
                     flex={"1 1 100%"}
                     direction="column"
-                    UNSAFE_style={{ overflowX: "auto" }}
+                    position={"relative"}
+                    UNSAFE_style={{ overflowX: "hidden" }}
                 >
                     {/* <Heading>
                         <Flex
@@ -265,7 +267,12 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                             />
                         </Flex>
                     </Heading> */}
-                    <View maxWidth={"100%"} overflow="auto auto">
+                    <View
+                        maxWidth={"100%"}
+                        overflow="auto auto"
+                        paddingEnd="size-500"
+                        position="relative"
+                    >
                         <Flex direction="row" gap="size-200">
                             {datasetTransform.steps.map(
                                 (
@@ -275,10 +282,13 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                     <View
                                         maxWidth={"30vw"}
                                         minWidth="300px"
-                                        paddingEnd="size-200"
+                                        paddingEnd={"size-200"}
                                         borderEndColor={"gray-600"}
+                                        marginEnd={stepNo === datasetTransform.steps.length - 1 ? "size-500" : "size-0"}
                                         borderEndWidth="thin"
                                         position="relative"
+                                        maxHeight="40vh"
+                                        overflow="visible auto"
                                     >
                                         <Flex
                                             direction="row"
@@ -320,7 +330,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                 datasetTransform.sourceId
                                             }
                                         />
-                                        {stepNo <
+                                        {/* {stepNo <
                                             datasetTransform.steps.length -
                                                 1 && (
                                             <View
@@ -337,22 +347,26 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                             >
                                                 <ChevronDoubleRight size="S" />
                                             </View>
-                                        )}
+                                        )} */}
                                     </View>
                                 )
                             )}
-                            <Flex
-                                width="size-500"
-                                height="100%"
-                                alignItems="center"
-                                justifyContent="center"
-                            >
-                                <AddTransformStepDialog
-                                    onAdd={(newStep) => addStep(newStep)}
-                                    useIcon
-                                />
-                            </Flex>
                         </Flex>
+                    </View>
+
+                    <View
+                        position={"absolute"}
+                        left="100%"
+                        bottom="50%"
+                        backgroundColor="positive"
+                        UNSAFE_style={{
+                            transform: "translate(-100%, -50%)"
+                        }}
+                    >
+                        <AddTransformStepDialog
+                            onAdd={(newStep) => addStep(newStep)}
+                            useIcon
+                        />
                     </View>
                 </Flex>
             </Flex>

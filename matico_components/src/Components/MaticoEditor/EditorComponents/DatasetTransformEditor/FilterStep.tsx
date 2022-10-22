@@ -26,7 +26,11 @@ import { Column } from "Datasets/Dataset";
 import { CalendarDate } from "@internationalized/date";
 import { OptionsPopper } from "../OptionsPopper";
 import Delete from "@spectrum-icons/workflow/Delete";
-
+import { nicelyFormatNumber } from "Components/Panes/MaticoLegendPane/MaticoLegendPane";
+import { CollapsibleSection } from "../CollapsibleSection";
+import Calendar from "@spectrum-icons/workflow/Calendar";
+import Shapes from "@spectrum-icons/workflow/Shapes";
+import Numbers from "@spectrum-icons/workflow/123";
 interface FilterEditor {
     datasetId?: string;
     selectedColumn: Column;
@@ -48,6 +52,67 @@ interface CategoryFilterProps extends FilterEditor {
     isOneOf: Array<string | number>;
     isNotOneOf: Array<string | number>;
 }
+
+const generateFilterText = (f: Filter) => {
+    switch (f.type) {
+        case "noFilter":
+            return "No filter";
+        case "range": {
+            if (f.variable) {
+                const minText =
+                    typeof f?.min === "object" && f?.min?.hasOwnProperty("var")
+                        ? "𝑓.min"
+                        : nicelyFormatNumber(f.min);
+
+                const maxText =
+                    typeof f?.max === "object" && f?.max?.hasOwnProperty("var")
+                        ? "𝑓.max"
+                        : nicelyFormatNumber(f.max);
+
+                return `${
+                    f.variable || "Variable"
+                } between ${minText} & ${maxText}`;
+            } else {
+                return "Select a column to filter";
+            }
+        }
+        case "date": {
+            if (f.variable) {
+                const minText =
+                    typeof f?.min === "object" && f?.min?.hasOwnProperty("var")
+                        ? "𝑓.min"
+                        : new Date(f.min).toISOString().slice(0, 10);
+
+                const maxText =
+                    typeof f?.max === "object" && f?.max?.hasOwnProperty("var")
+                        ? "𝑓.max"
+                        : new Date(f.max).toISOString().slice(0, 10);
+
+                return `${
+                    f.variable || "Variable"
+                } between ${minText} & ${maxText}`;
+            } else {
+                return "Select a column to filter";
+            }
+        }
+        case "category": {
+            if (f.variable) {
+                return `${f.variable} ${
+                    f.isOneOf.length > 0
+                        ? `is one of ${f.isOneOf.join(", ")}`
+                        : ""
+                } ${
+                    f.isNotOneOf.length > 0
+                        ? `is not one of ${f.isNotOneOf.join(", ")}`
+                        : ""
+                }`;
+            } else {
+                return "Select a column to filter";
+            }
+        }
+    }
+    return "Filter Text";
+};
 
 export const FilterStepEditor: React.FC<{
     filterStep: FilterStep;
@@ -85,17 +150,13 @@ export const FilterStepEditor: React.FC<{
     console.log("filter steps ", filterStep);
 
     return (
-        <View maxHeight="40vh" overflow="auto">
-            <Flex direction="column" gap={"size-300"}>
-                <Text>
-                    Filters allow you to select a subset of dataset rows based
-                    on some kind of condition
-                </Text>
-                <Divider orientation="horizontal" size="S" />
-                <Flex direction="column" gap="size-200">
+        <View>
+            <Flex direction="column" gap={"size-50"}>
+                <Flex direction="column" gap="size-50">
                     {filterStep.filters.map((f, index: number) => {
                         let filterEl = null;
-                        let filterText = "";
+                        let icon = null;
+                        const filterText = generateFilterText(f);
                         switch (f.type) {
                             case "range":
                                 filterEl = (
@@ -117,7 +178,8 @@ export const FilterStepEditor: React.FC<{
                                         }
                                     />
                                 );
-                                filterText = `Filter ${f.variable} between ${f.min} and ${f.max}`;
+                                icon = <Numbers />;
+                                break;
                             case "category":
                                 filterEl = (
                                     <CategoryFilter
@@ -137,6 +199,8 @@ export const FilterStepEditor: React.FC<{
                                         }
                                     />
                                 );
+                                icon = <Shapes />;
+                                break;
                             case "date":
                                 filterEl = (
                                     <DateRangeFilterEditor
@@ -157,54 +221,34 @@ export const FilterStepEditor: React.FC<{
                                         }
                                     />
                                 );
-                                if (f.variable) {
-                                    const minText =
-                                        typeof f.min === "object" &&
-                                        f.min.hasOwnProperty("var")
-                                            ? "𝑓.min"
-                                            : new Date(f.min)
-                                                  .toISOString()
-                                                  .slice(0, 10);
-
-                                    const maxText =
-                                        typeof f.max === "object" &&
-                                        f.max.hasOwnProperty("var")
-                                            ? "𝑓.max"
-                                            : new Date(f.max)
-                                                  .toISOString()
-                                                  .slice(0, 10);
-
-                                    filterText = `${
-                                        f.variable || "Variable"
-                                    } between ${minText} & ${maxText}`;
-                                } else {
-                                    filterText = "Select a column to filter";
-                                }
-                                return (
-                                    <Flex gap="size-100" alignItems="center">
-                                        <OptionsPopper
-                                            title={filterText}
-                                            buttonProps={{ flex: "1 1 100%" }}
-                                        >
-                                            {filterEl}
-                                            <ActionButton
-                                                isQuiet
-                                                marginY="size-100"
-                                                onPress={() =>
-                                                    updateFilterAtIndex(
-                                                        null,
-                                                        index,
-                                                        "remove"
-                                                    )
-                                                }
-                                                aria-label="Remove"
-                                            >
-                                                <Delete />
-                                            </ActionButton>
-                                        </OptionsPopper>
-                                    </Flex>
-                                );
+                                icon = <Calendar />
+                                break;
+                            default:
+                                filterEl = null;
+                                break;
                         }
+                        return (
+                            <Flex gap="size-25" direction="row" alignItems="start">
+                                <CollapsibleSection title={filterText} icon={icon} isOpen={true}>
+                                    {filterEl}
+                                </CollapsibleSection>
+
+                                <ActionButton
+                                        isQuiet
+                                        marginY="size-100"
+                                        onPress={() =>
+                                            updateFilterAtIndex(
+                                                null,
+                                                index,
+                                                "remove"
+                                            )
+                                        }
+                                        aria-label="Remove"
+                                    >
+                                        <Delete />
+                                </ActionButton>
+                            </Flex>
+                        );
                     })}
 
                     <FilterTypeDialog
@@ -328,15 +372,16 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
     return (
         <Flex
             direction="column"
-            gap="size-100"
+            gap="size-50"
             alignItems="end"
             maxWidth="100%"
+            width="100%"
         >
             <DatasetColumnSelector
                 columns={columns}
                 datasetName={datasetId}
                 selectedColumn={selectedColumn.name}
-                labelPosition={"top"}
+                labelPosition="side"
                 onColumnSelected={(column) =>
                     onUpdateFilter({
                         variable: column.name,
@@ -359,7 +404,8 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
                                 minParsed.getUTCDate()
                             )
                         }
-                        label="Minimum"
+                        label="Start"
+                        labelPosition="side"
                         granularity="day"
                         onChange={(min) => {
                             onUpdateFilter({
@@ -405,7 +451,8 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
                                 maxParsed.getUTCDate()
                             )
                         }
-                        label="Maximum"
+                        label="End"
+                        labelPosition="side"
                         granularity="day"
                         onChange={(max) =>
                             onUpdateFilter({
@@ -487,7 +534,13 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     };
 
     return (
-        <Flex direction="row" gap="size-100" alignItems="end" maxWidth={"100%"}>
+        <Flex
+            direction="column"
+            alignItems="end"
+            gap="size-50"
+            maxWidth={"100%"}
+            width="100%"
+        >
             <DatasetColumnSelector
                 columns={columns}
                 datasetName={datasetId}
@@ -501,76 +554,85 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
                     })
                 }
             />
-            {typeof min === "number" ? (
-                <NumberField
-                    key="min_val"
-                    value={min}
-                    label="min"
-                    onChange={(min) =>
-                        onUpdateFilter({
-                            type: "range",
-                            variable: selectedColumn.name,
-                            min,
-                            max
-                        })
-                    }
-                />
-            ) : (
-                <VariableSelector
-                    variable={min.var}
-                    allowedTypes={["range"]}
-                    onSelectVariable={(newVar) =>
-                        onUpdateFilter({
-                            max,
-                            min: { var: newVar },
-                            variable: selectedColumn.name,
-                            type: "range"
-                        })
-                    }
-                />
-            )}
-            <ToggleButton
-                isEmphasized
-                isSelected={typeof min !== "number"}
-                onPress={toggleVariableMin}
-            >
-                <FunctionIcon />
-            </ToggleButton>
-
-            {typeof max === "number" ? (
-                <NumberField
-                    value={max}
-                    label="max"
-                    key="max_val"
-                    onChange={(max) =>
-                        onUpdateFilter({
-                            type: "range",
-                            variable: selectedColumn.name,
-                            max,
-                            min
-                        })
-                    }
-                />
-            ) : (
-                <VariableSelector
-                    variable={max.var}
-                    onSelectVariable={(newVar) =>
-                        onUpdateFilter({
-                            type: "range",
-                            max: { var: newVar },
-                            min,
-                            variable: selectedColumn.name
-                        })
-                    }
-                />
-            )}
-            <ToggleButton
-                isEmphasized
-                isSelected={typeof max !== "number"}
-                onPress={toggleVariableMax}
-            >
-                <FunctionIcon />
-            </ToggleButton>
+            <Flex direction="row" alignItems="end" gap="size-100" width="100%">
+                {typeof min === "number" ? (
+                    <NumberField
+                        key="min_val"
+                        value={min}
+                        flex={1}
+                        labelPosition="side"
+                        label="Min"
+                        onChange={(min) =>
+                            onUpdateFilter({
+                                type: "range",
+                                variable: selectedColumn.name,
+                                min,
+                                max
+                            })
+                        }
+                    />
+                ) : (
+                    <VariableSelector
+                        variable={min.var}
+                        allowedTypes={["range"]}
+                        labelPosition="side"
+                        onSelectVariable={(newVar) =>
+                            onUpdateFilter({
+                                max,
+                                min: { var: newVar },
+                                variable: selectedColumn.name,
+                                type: "range"
+                            })
+                        }
+                    />
+                )}
+                <ToggleButton
+                    isEmphasized
+                    isSelected={typeof min !== "number"}
+                    onPress={toggleVariableMin}
+                >
+                    <FunctionIcon />
+                </ToggleButton>
+            </Flex>
+            <Flex direction="row" alignItems="end" gap="size-100" width="100%">
+                {typeof max === "number" ? (
+                    <NumberField
+                        value={max}
+                        flex={1}
+                        label="Max"
+                        labelPosition="side"
+                        key="max_val"
+                        onChange={(max) =>
+                            onUpdateFilter({
+                                type: "range",
+                                variable: selectedColumn.name,
+                                max,
+                                min
+                            })
+                        }
+                    />
+                ) : (
+                    <VariableSelector
+                        variable={max.var}
+                        labelPosition="side"
+                        onSelectVariable={(newVar) =>
+                            onUpdateFilter({
+                                type: "range",
+                                max: { var: newVar },
+                                min,
+                                variable: selectedColumn.name
+                            })
+                        }
+                    />
+                )}
+                <ToggleButton
+                    isEmphasized
+                    isSelected={typeof max !== "number"}
+                    onPress={toggleVariableMax}
+                >
+                    <FunctionIcon />
+                </ToggleButton>
+            </Flex>
         </Flex>
     );
 };
@@ -598,7 +660,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         }
     };
     return (
-        <Flex direction="row" gap={"size-200"}>
+        <Flex direction="column" gap={"size-200"} width="100%">
             <DatasetColumnSelector
                 datasetName={datasetId}
                 columns={columns}

@@ -11,6 +11,7 @@ import {
     Checkbox
 } from "@adobe/react-spectrum";
 import { Column } from "Datasets/Dataset";
+import { OptionsPopper } from "../EditorComponents/OptionsPopper";
 // import { Item as ListItem, ListView } from "@react-spectrum/list";
 
 interface DatasetColumnSelectorProps {
@@ -81,10 +82,10 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
 
         const datasetColumns = foundDataset ? foundDataset.columns : [];
         const cols = columns ?? datasetColumns;
-
+        console.log(selectedColumns)
         return (
-            <Flex direction="column">
-                <Heading>{label}</Heading>
+            <OptionsPopper title={selectedColumns?.length ? `Group by ${selectedColumns.join(", ")}` : label}>
+                {description && <Text>{description}</Text>}
                 <View maxHeight="150px" overflow={"clip auto"}>
                     <CheckboxGroup
                         value={selectedColumns}
@@ -99,7 +100,6 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
                         ))}
                     </CheckboxGroup>
                 </View>
-                {description && <Text>{description}</Text>}
-            </Flex>
+            </OptionsPopper>
         );
     };

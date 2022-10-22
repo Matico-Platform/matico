@@ -36,7 +36,7 @@ export const AggregateStepEditor: React.FC<{
     };
 
     return (
-        <Flex direction="row" gap="size-200" minWidth={"size-1250"}>
+        <Flex direction="column" gap="size-50">
             <DatasetColumnSelectorMulti
                 label="Columns to group by"
                 datasetName={datasetId}
@@ -47,10 +47,10 @@ export const AggregateStepEditor: React.FC<{
                 }
             />
             <Divider orientation="vertical" size="S" />
-            <Flex direction="column" gap="size-200">
+            <Flex direction="column" gap="size-50">
                 {step.aggregate.map(
                     (agg: AggregationSummary, index: number) => (
-                        <Flex direction="row" gap="size-200">
+                        <Flex direction="column" gap="size-50">
                             <DatasetColumnSelector
                                 datasetName={datasetId}
                                 selectedColumn={agg.column}
@@ -99,7 +99,6 @@ export const AggregateStepEditor: React.FC<{
                             ]
                         })
                     }
-                    isQuiet
                 >
                     Add Aggregate
                 </ActionButton>
