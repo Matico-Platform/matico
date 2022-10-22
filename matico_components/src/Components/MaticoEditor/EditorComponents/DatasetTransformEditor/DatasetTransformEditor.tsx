@@ -45,6 +45,7 @@ import { ColumnTransformStepEditor } from "./ColumnTransfomStepEditor";
 import { TransformStepPreview } from "Datasets/DatasetTransformRunner";
 import ChevronDoubleRight from "@spectrum-icons/workflow/ChevronDoubleRight";
 import Add from "@spectrum-icons/workflow/Add";
+import { OptionsPopper } from "../OptionsPopper";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -216,22 +217,25 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     });
 
     return (
-        <Flex direction="column" gap={"size-300"} width="100%" height="100%">
-            <Flex direction="row" gap={"size-300"} alignItems="start" flex={1}>
-                <Flex direction="column" flex="0 0 0%">
-                    <Heading>Transform</Heading>
-                    <Text>
-                        Add transform steps here. A data table preview is shown
-                        below.
-                    </Text>
-                    <Divider marginY="size-150" size="S" />
+        <Flex direction="column" gap={"size-150"} width="100%" height="100%">
+            <Flex direction="row" gap="size-300">
+                <Heading UNSAFE_style={{ margin: 0 }}>Transform</Heading>
+                <Text>
+                    Add transform steps here. A data table preview is shown
+                    below.
+                </Text>
+                <View maxWidth={"300px"}>
+
+                <OptionsPopper title="Transform Name and Settings">
                     <TextField
                         label="Transform Name"
+                        width="100%"
                         value={datasetTransform.name}
                         onChange={(name) => updateDatasetTransform({ name })}
                     />
                     <TextArea
                         label="Transform Description"
+                        width="100%"
                         value={datasetTransform.description}
                         onChange={(description) =>
                             updateDatasetTransform({ description })
@@ -245,9 +249,10 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                             updateDatasetTransform({ sourceId: dataset });
                         }}
                     />
-                </Flex>
-                <Divider orientation="vertical" size="S" />
-                
+                </OptionsPopper>
+                </View>
+            </Flex>
+            <Flex direction="row" gap={"size-300"} alignItems="start" flex={1}>
                 <Flex
                     flex={"1 1 100%"}
                     direction="column"
@@ -280,14 +285,19 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                     stepNo: number
                                 ) => (
                                     <View
-                                        maxWidth={"30vw"}
-                                        minWidth="300px"
+                                        minWidth={"30vw"}
+                                        maxWidth="350px"
                                         paddingEnd={"size-200"}
                                         borderEndColor={"gray-600"}
-                                        marginEnd={stepNo === datasetTransform.steps.length - 1 ? "size-500" : "size-0"}
+                                        marginEnd={
+                                            stepNo ===
+                                            datasetTransform.steps.length - 1
+                                                ? "size-500"
+                                                : "size-0"
+                                        }
                                         borderEndWidth="thin"
                                         position="relative"
-                                        maxHeight="40vh"
+                                        height="40vh"
                                         overflow="visible auto"
                                     >
                                         <Flex

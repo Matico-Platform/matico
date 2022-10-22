@@ -151,8 +151,8 @@ export const FilterStepEditor: React.FC<{
 
     return (
         <View>
-            <Flex direction="column" gap={"size-50"}>
-                <Flex direction="column" gap="size-50">
+            <Flex direction="column" gap={"size-100"}>
+                <Flex direction="column" gap="size-100">
                     {filterStep.filters.map((f, index: number) => {
                         let filterEl = null;
                         let icon = null;
@@ -372,7 +372,7 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
     return (
         <Flex
             direction="column"
-            gap="size-50"
+            gap="size-100"
             alignItems="end"
             maxWidth="100%"
             width="100%"
@@ -537,7 +537,7 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
         <Flex
             direction="column"
             alignItems="end"
-            gap="size-50"
+            gap="size-100"
             maxWidth={"100%"}
             width="100%"
         >
