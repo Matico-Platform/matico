@@ -48,6 +48,8 @@ import Add from "@spectrum-icons/workflow/Add";
 import { OptionsPopper } from "../OptionsPopper";
 import { colBasis } from "Utils/columnHelper";
 import Data from "@spectrum-icons/workflow/Data";
+import Maximize from "@spectrum-icons/workflow/Maximize";
+import Minimize from "@spectrum-icons/workflow/Minimize";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -193,6 +195,8 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     const stepPreviews = transformResult?.steps ?? [];
 
     const [tab, setTab] = React.useState("input");
+    const [expandedTable, setExpandedTable] = React.useState(false);
+
     let PreviewTabs = [];
     let PreviewTabList = [];
 
@@ -238,19 +242,21 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                 width="100%"
                 height="100%"
             >
-                <Flex
-                    direction="row"
-                    gap={"size-300"}
-                    alignItems="start"
-                    flex={1}
-                >
-                    <Flex
-                        flex={"1 1 100%"}
-                        direction="column"
-                        position={"relative"}
-                        UNSAFE_style={{ overflowX: "hidden" }}
-                    >
-                        {/* <Heading>
+                {!expandedTable && (
+                    <>
+                        <Flex
+                            direction="row"
+                            gap={"size-300"}
+                            alignItems="start"
+                            flex={1}
+                        >
+                            <Flex
+                                flex={"1 1 100%"}
+                                direction="column"
+                                position={"relative"}
+                                UNSAFE_style={{ overflowX: "hidden" }}
+                            >
+                                {/* <Heading>
                         <Flex
                             direction="row"
                             justifyContent="space-between"
@@ -263,101 +269,20 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                             />
                         </Flex>
                     </Heading> */}
-                        <View
-                            maxWidth={"100%"}
-                            overflow="auto auto"
-                            paddingEnd="size-500"
-                            position="relative"
-                        >
-                            <Flex direction="row" gap="size-200">
                                 <View
-                                    minWidth={"30vw"}
-                                    maxWidth="350px"
-                                    paddingEnd={"size-200"}
-                                    borderEndColor={"gray-600"}
-                                    id={`step_input`}
-                                    marginEnd={"size-500"}
-                                    borderEndWidth="thin"
+                                    maxWidth={"100%"}
+                                    overflow="auto auto"
+                                    paddingEnd="size-500"
                                     position="relative"
-                                    height="40vh"
-                                    overflow="visible auto"
                                 >
-                                    <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        justifyContent="space-between"
-                                        UNSAFE_style={{
-                                            textTransform: "capitalize"
-                                        }}
-                                    >
-                                        <Flex
-                                            alignItems="center"
-                                            direction="row"
-                                        >
-                                            <Data />
-                                            <Text marginStart="size-200">
-                                                Input Dataset
-                                            </Text>
-                                        </Flex>
-                                    </Flex>
-                                    <Flex direction="column" gap="size-100" marginTop="size-200">
-                                        <Text>
-                                            Add transform steps here. Preview
-                                            your data at each step in the table
-                                            below.
-                                        </Text>
-                                        <TextField
-                                            label="Transform Name"
-                                            width="100%"
-                                            value={datasetTransform.name}
-                                            onChange={(name) =>
-                                                updateDatasetTransform({
-                                                    name
-                                                })
-                                            }
-                                        />
-                                        <TextArea
-                                            label="Transform Description"
-                                            width="100%"
-                                            value={datasetTransform.description}
-                                            onChange={(description) =>
-                                                updateDatasetTransform({
-                                                    description
-                                                })
-                                            }
-                                        />
-                                        <DatasetSelector
-                                            label="Base Dataset"
-                                            labelPosition="top"
-                                            selectedDataset={
-                                                datasetTransform.sourceId
-                                            }
-                                            onDatasetSelected={(dataset) => {
-                                                updateDatasetTransform({
-                                                    sourceId: dataset
-                                                });
-                                            }}
-                                        />
-                                    </Flex>
-                                </View>
-                                {datasetTransform.steps.map(
-                                    (
-                                        step: DatasetTransformStep,
-                                        stepNo: number
-                                    ) => (
+                                    <Flex direction="row" gap="size-200">
                                         <View
                                             minWidth={"30vw"}
                                             maxWidth="350px"
                                             paddingEnd={"size-200"}
                                             borderEndColor={"gray-600"}
-                                            id={`step_${stepNo}`}
-                                            marginEnd={
-                                                stepNo ===
-                                                datasetTransform.steps.length -
-                                                    1
-                                                    ? "size-500"
-                                                    : "size-0"
-                                            }
+                                            id={`step_input`}
+                                            marginEnd={"size-500"}
                                             borderEndWidth="thin"
                                             position="relative"
                                             height="40vh"
@@ -374,42 +299,145 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                 <Flex
                                                     alignItems="center"
                                                     direction="row"
-                                                    flexBasis={colBasis(7 / 8)}
                                                 >
-                                                    {IconForStepType[step.type]}
+                                                    <Data />
                                                     <Text marginStart="size-200">
-                                                        {step?.type}
+                                                        Input Dataset
                                                     </Text>
                                                 </Flex>
-                                                <ActionButton
-                                                    flexBasis={colBasis(1 / 8)}
-                                                    isQuiet
-                                                    onPress={() =>
-                                                        removeStep(step.id)
-                                                    }
-                                                >
-                                                    <Delete />
-                                                </ActionButton>
                                             </Flex>
-                                            <TransformStep
-                                                key={step.id}
-                                                step={step}
-                                                columns={
-                                                    stepNo === 0
-                                                        ? null
-                                                        : stepPreviews
-                                                        ? stepPreviews?.[
-                                                              stepNo - 1
-                                                          ]?.columns
-                                                        : null
-                                                }
-                                                onChange={updateStep}
-                                                onRemove={removeStep}
-                                                datasetId={
-                                                    datasetTransform.sourceId
-                                                }
-                                            />
-                                            {/* {stepNo <
+                                            <Flex
+                                                direction="column"
+                                                gap="size-100"
+                                                marginTop="size-200"
+                                            >
+                                                <Text>
+                                                    Add transform steps here.
+                                                    Preview your data at each
+                                                    step in the table below.
+                                                </Text>
+                                                <TextField
+                                                    label="Transform Name"
+                                                    width="100%"
+                                                    value={
+                                                        datasetTransform.name
+                                                    }
+                                                    onChange={(name) =>
+                                                        updateDatasetTransform({
+                                                            name
+                                                        })
+                                                    }
+                                                />
+                                                <TextArea
+                                                    label="Transform Description"
+                                                    width="100%"
+                                                    value={
+                                                        datasetTransform.description
+                                                    }
+                                                    onChange={(description) =>
+                                                        updateDatasetTransform({
+                                                            description
+                                                        })
+                                                    }
+                                                />
+                                                <DatasetSelector
+                                                    label="Base Dataset"
+                                                    labelPosition="top"
+                                                    selectedDataset={
+                                                        datasetTransform.sourceId
+                                                    }
+                                                    onDatasetSelected={(
+                                                        dataset
+                                                    ) => {
+                                                        updateDatasetTransform({
+                                                            sourceId: dataset
+                                                        });
+                                                    }}
+                                                />
+                                            </Flex>
+                                        </View>
+                                        {datasetTransform.steps.map(
+                                            (
+                                                step: DatasetTransformStep,
+                                                stepNo: number
+                                            ) => (
+                                                <View
+                                                    minWidth={"30vw"}
+                                                    maxWidth="350px"
+                                                    paddingEnd={"size-200"}
+                                                    borderEndColor={"gray-600"}
+                                                    id={`step_${stepNo}`}
+                                                    marginEnd={
+                                                        stepNo ===
+                                                        datasetTransform.steps
+                                                            .length -
+                                                            1
+                                                            ? "size-500"
+                                                            : "size-0"
+                                                    }
+                                                    borderEndWidth="thin"
+                                                    position="relative"
+                                                    height="40vh"
+                                                    overflow="visible auto"
+                                                >
+                                                    <Flex
+                                                        direction="row"
+                                                        alignItems="center"
+                                                        justifyContent="space-between"
+                                                        UNSAFE_style={{
+                                                            textTransform:
+                                                                "capitalize"
+                                                        }}
+                                                    >
+                                                        <Flex
+                                                            alignItems="center"
+                                                            direction="row"
+                                                            flexBasis={colBasis(
+                                                                7 / 8
+                                                            )}
+                                                        >
+                                                            {
+                                                                IconForStepType[
+                                                                    step.type
+                                                                ]
+                                                            }
+                                                            <Text marginStart="size-200">
+                                                                {step?.type}
+                                                            </Text>
+                                                        </Flex>
+                                                        <ActionButton
+                                                            flexBasis={colBasis(
+                                                                1 / 8
+                                                            )}
+                                                            isQuiet
+                                                            onPress={() =>
+                                                                removeStep(
+                                                                    step.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <Delete />
+                                                        </ActionButton>
+                                                    </Flex>
+                                                    <TransformStep
+                                                        key={step.id}
+                                                        step={step}
+                                                        columns={
+                                                            stepNo === 0
+                                                                ? null
+                                                                : stepPreviews
+                                                                ? stepPreviews?.[
+                                                                      stepNo - 1
+                                                                  ]?.columns
+                                                                : null
+                                                        }
+                                                        onChange={updateStep}
+                                                        onRemove={removeStep}
+                                                        datasetId={
+                                                            datasetTransform.sourceId
+                                                        }
+                                                    />
+                                                    {/* {stepNo <
                                             datasetTransform.steps.length -
                                                 1 && (
                                             <View
@@ -427,29 +455,31 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                 <ChevronDoubleRight size="S" />
                                             </View>
                                         )} */}
-                                        </View>
-                                    )
-                                )}
-                            </Flex>
-                        </View>
+                                                </View>
+                                            )
+                                        )}
+                                    </Flex>
+                                </View>
 
-                        <View
-                            position={"absolute"}
-                            left="100%"
-                            bottom="50%"
-                            backgroundColor="positive"
-                            UNSAFE_style={{
-                                transform: "translate(-100%, -50%)"
-                            }}
-                        >
-                            <AddTransformStepDialog
-                                onAdd={(newStep) => addStep(newStep)}
-                                useIcon
-                            />
-                        </View>
-                    </Flex>
-                </Flex>
-                <Divider size="S" />
+                                <View
+                                    position={"absolute"}
+                                    left="100%"
+                                    bottom="50%"
+                                    backgroundColor="positive"
+                                    UNSAFE_style={{
+                                        transform: "translate(-100%, -50%)"
+                                    }}
+                                >
+                                    <AddTransformStepDialog
+                                        onAdd={(newStep) => addStep(newStep)}
+                                        useIcon
+                                    />
+                                </View>
+                            </Flex>
+                        </Flex>
+                        <Divider size="S" />
+                    </>
+                )}
                 <Flex direction="column" position="relative">
                     {transformResult && transformResult.state == "Loading" && (
                         <LoadingSpinner />
@@ -469,6 +499,17 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                         <TabList>{PreviewTabList}</TabList>
                         <TabPanels>{PreviewTabs}</TabPanels>
                     </Tabs>
+
+                    <ActionButton
+                        position={"absolute"}
+                        right="0px"
+                        aria-label="Expand table"
+                        onPress={() => {
+                            setExpandedTable((prev) => !prev);
+                        }}
+                    >
+                        {expandedTable ? <Minimize /> : <Maximize />}
+                    </ActionButton>
                 </Flex>
             </Flex>
         </View>
