@@ -297,7 +297,7 @@ export const DragAndResizeActionButtons: React.FC<{
                 }}
                 onMouseDown={startResize}
                 aria-label="Resize Pane"
-                className="grid s e sm"
+                className={`grid sm ${layoutType === "free" ? " s e " : direction === "row" ? "center e" : "center s"}`}
             >
                 <ArrowEl
                     color="positive"

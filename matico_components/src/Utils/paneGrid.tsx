@@ -3,8 +3,8 @@ import styled from "styled-components";
 export const PaneGrid = styled.div`
     display: grid;
     position: relative;
-    grid-template-columns: 2.5rem 2.5rem 1fr 3.125rem 1fr 2.5rem 2.5rem;
-    grid-template-rows: 2.5rem 2.5rem 1fr 3.125rem 1fr 2.5rem 2.5rem;
+    grid-template-columns: clamp(10px, 2.5rem, 15%) clamp(10px, 2.5rem, 15%) 1fr clamp(20px, 3.125rem, 25%) 1fr clamp(10px, 2.5rem, 15%) clamp(10px, 2.5rem, 15%);
+    grid-template-rows: clamp(10px, 2.5rem, 15%) clamp(10px, 2.5rem, 15%) 1fr clamp(20px, 3.125rem, 25%) 1fr clamp(10px, 2.5rem, 15%) clamp(10px, 2.5rem, 15%);
     height:100%;
     width:100%;
 
