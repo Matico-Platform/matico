@@ -46,6 +46,7 @@ import { TransformStepPreview } from "Datasets/DatasetTransformRunner";
 import ChevronDoubleRight from "@spectrum-icons/workflow/ChevronDoubleRight";
 import Add from "@spectrum-icons/workflow/Add";
 import { OptionsPopper } from "../OptionsPopper";
+import { colBasis } from "Utils/columnHelper";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -313,13 +314,14 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                 textTransform: "capitalize"
                                             }}
                                         >
-                                            <Flex alignItems="center">
+                                            <Flex alignItems="center" direction="row" flexBasis={colBasis(7/8)}>
                                                 {IconForStepType[step.type]}
                                                 <Text marginStart="size-200">
                                                     {step?.type}
                                                 </Text>
                                             </Flex>
                                             <ActionButton
+                                                flexBasis={colBasis(1/8)}
                                                 isQuiet
                                                 onPress={() =>
                                                     removeStep(step.id)

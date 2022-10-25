@@ -31,6 +31,7 @@ import { CollapsibleSection } from "../CollapsibleSection";
 import Calendar from "@spectrum-icons/workflow/Calendar";
 import Shapes from "@spectrum-icons/workflow/Shapes";
 import Numbers from "@spectrum-icons/workflow/123";
+import { colBasis } from "Utils/columnHelper";
 interface FilterEditor {
     datasetId?: string;
     selectedColumn: Column;
@@ -58,6 +59,7 @@ const generateFilterText = (f: Filter) => {
         case "noFilter":
             return "No filter";
         case "range": {
+            console.log(f);
             if (f.variable) {
                 const minText =
                     typeof f?.min === "object" && f?.min?.hasOwnProperty("var")
@@ -83,7 +85,7 @@ const generateFilterText = (f: Filter) => {
                         ? "𝑓.min"
                         : new Date(f.min).toISOString().slice(0, 10);
 
-                const maxText =//@ts-ignore
+                const maxText = //@ts-ignore
                     typeof f?.max === "object" && f?.max?.hasOwnProperty("var")
                         ? "𝑓.max"
                         : new Date(f.max).toISOString().slice(0, 10);
@@ -221,31 +223,40 @@ export const FilterStepEditor: React.FC<{
                                         }
                                     />
                                 );
-                                icon = <Calendar />
+                                icon = <Calendar />;
                                 break;
                             default:
                                 filterEl = null;
                                 break;
                         }
                         return (
-                            <Flex gap="size-25" direction="row" alignItems="start">
-                                <CollapsibleSection title={filterText} icon={icon} isOpen={true}>
+                            <Flex
+                                gap="size-25"
+                                direction="row"
+                                alignItems="start"
+                            >
+                                <CollapsibleSection
+                                    title={filterText}
+                                    icon={icon}
+                                    isOpen={true}
+                                    outerStyle={{ flexBasis: colBasis(7 / 8) }}
+                                >
                                     {filterEl}
                                 </CollapsibleSection>
 
                                 <ActionButton
-                                        isQuiet
-                                        marginY="size-100"
-                                        onPress={() =>
-                                            updateFilterAtIndex(
-                                                null,
-                                                index,
-                                                "remove"
-                                            )
-                                        }
-                                        aria-label="Remove"
-                                    >
-                                        <Delete />
+                                    isQuiet
+                                    flexBasis={colBasis(1 / 8)}
+                                    onPress={() =>
+                                        updateFilterAtIndex(
+                                            null,
+                                            index,
+                                            "remove"
+                                        )
+                                    }
+                                    aria-label="Remove"
+                                >
+                                    <Delete />
                                 </ActionButton>
                             </Flex>
                         );
@@ -377,26 +388,36 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
             maxWidth="100%"
             width="100%"
         >
-            <DatasetColumnSelector
-                columns={columns}
-                datasetName={datasetId}
-                selectedColumn={selectedColumn.name}
-                labelPosition="side"
-                onColumnSelected={(column) =>
-                    onUpdateFilter({
-                        variable: column.name,
-                        min: minParsed,
-                        max: maxParsed,
-                        type: "date"
-                    })
-                }
-            />
-            <Flex direction="row" alignItems="end" gap="size-100" width="100%">
+            <Flex direction="row" alignItems="center" width="100%">
+                <Text flexBasis={colBasis(2 / 7)}>Column</Text>
+                <View flexBasis={colBasis(5 / 7)}>
+                    <DatasetColumnSelector
+                        columns={columns}
+                        datasetName={datasetId}
+                        selectedColumn={selectedColumn.name}
+                        labelPosition="side"
+                        onColumnSelected={(column) =>
+                            onUpdateFilter({
+                                variable: column.name,
+                                min: minParsed,
+                                max: maxParsed,
+                                type: "date"
+                            })
+                        }
+                    />
+                </View>
+            </Flex>
+            <Flex direction="row" alignItems="end" width="100%">
+                <Text flexBasis={colBasis(2 / 7)} id="start-date-label">
+                    Start Date
+                </Text>
                 {!minIsVar ? (
                     <DatePicker
                         key="min_val"
                         width={0}
                         flex={1}
+                        flexBasis={colBasis(4 / 7)}
+                        aria-labeled-by="start-date-label"
                         value={
                             new CalendarDate(
                                 minParsed.getUTCFullYear(),
@@ -404,8 +425,6 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
                                 minParsed.getUTCDate()
                             )
                         }
-                        label="Start"
-                        labelPosition="side"
                         granularity="day"
                         onChange={(min) => {
                             onUpdateFilter({
@@ -417,33 +436,42 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
                         }}
                     />
                 ) : (
-                    <VariableSelector
-                        variable={minParsed.var}
-                        allowedTypes={["dateRange"]}
-                        onSelectVariable={(newVar) =>
-                            onUpdateFilter({
-                                max: maxParsed,
-                                min: { var: newVar },
-                                variable: selectedColumn.name,
-                                type: "date"
-                            })
-                        }
-                    />
+                    <View flexBasis={colBasis(4 / 7)}>
+                        <VariableSelector
+                            variable={minParsed.var}
+                            allowedTypes={["dateRange"]}
+                            aria-labeled-by="start-date-label"
+                            onSelectVariable={(newVar) =>
+                                onUpdateFilter({
+                                    max: maxParsed,
+                                    min: { var: newVar },
+                                    variable: selectedColumn.name,
+                                    type: "date"
+                                })
+                            }
+                        />
+                    </View>
                 )}
                 <ToggleButton
                     isEmphasized
+                    flexBasis={colBasis(1 / 7)}
                     isSelected={minIsVar}
                     onPress={toggleVariableMin}
                 >
                     <FunctionIcon />
                 </ToggleButton>
             </Flex>
-            <Flex direction="row" alignItems="end" gap="size-100" width="100%">
+            <Flex direction="row" alignItems="end" width="100%">
+                <Text flexBasis={colBasis(2 / 7)} id="end-date-label">
+                    End Date
+                </Text>
                 {!max.hasOwnProperty("var") ? (
                     <DatePicker
                         key="max_val"
                         width={0}
                         flex={1}
+                        flexBasis={colBasis(4 / 7)}
+                        aria-labeled-by="end-date-label"
                         value={
                             new CalendarDate(
                                 maxParsed.getUTCFullYear(),
@@ -451,8 +479,6 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
                                 maxParsed.getUTCDate()
                             )
                         }
-                        label="End"
-                        labelPosition="side"
                         granularity="day"
                         onChange={(max) =>
                             onUpdateFilter({
@@ -467,6 +493,7 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
                     <VariableSelector
                         variable={maxParsed.var}
                         allowedTypes={["dateRange"]}
+                        aria-labeled-by="end-date-label"
                         onSelectVariable={(newVar) =>
                             onUpdateFilter({
                                 min: minParsed,
@@ -481,6 +508,7 @@ const DateRangeFilterEditor: React.FC<DateRangeFilterEditorProps> = ({
                     isEmphasized
                     isSelected={maxIsVar}
                     onPress={toggleVariableMax}
+                    flexBasis={colBasis(1 / 7)}
                 >
                     <FunctionIcon />
                 </ToggleButton>
@@ -541,27 +569,39 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
             maxWidth={"100%"}
             width="100%"
         >
-            <DatasetColumnSelector
-                columns={columns}
-                datasetName={datasetId}
-                selectedColumn={selectedColumn.name}
-                onColumnSelected={(column) =>
-                    onUpdateFilter({
-                        variable: column.name,
-                        min,
-                        max,
-                        type: "range"
-                    })
-                }
-            />
-            <Flex direction="row" alignItems="end" gap="size-100" width="100%">
+            <Flex direction="row" width="100%" alignItems="center">
+                <Text flexBasis={colBasis(2 / 7)} id="filter-column-selector">
+                    Column
+                </Text>
+                <DatasetColumnSelector
+                    columns={columns}
+                    labeledBy={"filter-column-selector"}
+                    datasetName={datasetId}
+                    selectedColumn={selectedColumn.name}
+                    pickerStyle={{
+                        flexBasis: colBasis(5 / 7)
+                    }}
+                    onColumnSelected={(column) =>
+                        onUpdateFilter({
+                            variable: column.name,
+                            min,
+                            max,
+                            type: "range"
+                        })
+                    }
+                />
+            </Flex>
+            <Flex direction="row" alignItems="end" width="100%">
+                <Text flexBasis={colBasis(2 / 7)} id="minimum-text-field">
+                    Minimum
+                </Text>
                 {typeof min === "number" ? (
                     <NumberField
                         key="min_val"
                         value={min}
                         flex={1}
-                        labelPosition="side"
-                        label="Min"
+                        flexBasis={colBasis(4 / 7)}
+                        aria-labeled-by="minimum-text-field"
                         onChange={(min) =>
                             onUpdateFilter({
                                 type: "range",
@@ -572,36 +612,41 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
                         }
                     />
                 ) : (
-                    <VariableSelector
-                        variable={min.var}
-                        allowedTypes={["range"]}
-                        labelPosition="side"
-                        onSelectVariable={(newVar) =>
-                            onUpdateFilter({
-                                max,
-                                min: { var: newVar },
-                                variable: selectedColumn.name,
-                                type: "range"
-                            })
-                        }
-                    />
+                    <View flexBasis={colBasis(4 / 7)}>
+                        <VariableSelector
+                            variable={min.var}
+                            allowedTypes={["range"]}
+                            onSelectVariable={(newVar) =>
+                                onUpdateFilter({
+                                    max,
+                                    min: { var: newVar },
+                                    variable: selectedColumn.name,
+                                    type: "range"
+                                })
+                            }
+                        />
+                    </View>
                 )}
                 <ToggleButton
                     isEmphasized
+                    flexBasis={colBasis(1 / 7)}
                     isSelected={typeof min !== "number"}
                     onPress={toggleVariableMin}
                 >
                     <FunctionIcon />
                 </ToggleButton>
             </Flex>
-            <Flex direction="row" alignItems="end" gap="size-100" width="100%">
+            <Flex direction="row" alignItems="end" width="100%">
+                <Text flexBasis={colBasis(2 / 7)} id="maximum-text-field">
+                    Minimum
+                </Text>
                 {typeof max === "number" ? (
                     <NumberField
                         value={max}
                         flex={1}
-                        label="Max"
-                        labelPosition="side"
+                        aria-labeled-by="maximum-text-field"
                         key="max_val"
+                        flexBasis={colBasis(4 / 7)}
                         onChange={(max) =>
                             onUpdateFilter({
                                 type: "range",
@@ -612,21 +657,24 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
                         }
                     />
                 ) : (
-                    <VariableSelector
-                        variable={max.var}
-                        labelPosition="side"
-                        onSelectVariable={(newVar) =>
-                            onUpdateFilter({
-                                type: "range",
-                                max: { var: newVar },
-                                min,
-                                variable: selectedColumn.name
-                            })
-                        }
-                    />
+                    <View flexBasis={colBasis(4 / 7)}>
+                        <VariableSelector
+                            variable={max.var}
+                            labelPosition="side"
+                            onSelectVariable={(newVar) =>
+                                onUpdateFilter({
+                                    type: "range",
+                                    max: { var: newVar },
+                                    min,
+                                    variable: selectedColumn.name
+                                })
+                            }
+                        />
+                    </View>
                 )}
                 <ToggleButton
                     isEmphasized
+                    flexBasis={colBasis(1 / 7)}
                     isSelected={typeof max !== "number"}
                     onPress={toggleVariableMax}
                 >
@@ -660,54 +708,71 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         }
     };
     return (
-        <Flex direction="column" gap={"size-200"} width="100%">
-            <DatasetColumnSelector
-                datasetName={datasetId}
-                columns={columns}
-                selectedColumn={selectedColumn.name}
-                onColumnSelected={(column) =>
-                    onUpdateFilter({
-                        type: "category",
-                        variable: column.name,
-                        isOneOf: isOneOf
-                    })
-                }
-            />
-            {isOneOf?.hasOwnProperty("var") ? (
-                <VariableSelector
-                    variable={isOneOf.var}
-                    allowedTypes={["selection"]}
-                    onSelectVariable={(newVar) =>
-                        onUpdateFilter({
-                            isOneOf: { var: newVar },
-                            variable: selectedColumn.name,
-                            type: "category"
-                        })
-                    }
-                />
-            ) : (
-                <TextField
-                    label="is one of "
-                    labelPosition={"side"}
-                    value={isOneOf ? isOneOf.join(",") : ""}
-                    onChange={(value) =>
-                        onUpdateFilter({
-                            type: "category",
-                            variable: selectedColumn.name,
-                            isOneOf: value
-                                .split(",")
-                                .map((v) =>
-                                    isNaN(parseInt(v)) ? v : parseInt(v)
-                                )
-                        })
-                    }
-                />
-            )}
-            <ToggleButton
-                isEmphasized
-                isSelected={isOneOf?.hasOwnProperty("var")}
-                onPress={toggleHasOneOf}
-            />
+        <Flex direction="column" gap={"size-100"} width="100%">
+            <Flex direction="row" alignItems="center" width="100%">
+                <Text flexBasis={colBasis(2 / 7)} id="filter-column-selector">
+                    Column
+                </Text>
+                <View flexBasis={colBasis(5 / 7)}>
+                    <DatasetColumnSelector
+                        datasetName={datasetId}
+                        columns={columns}
+                        labeledBy={"filter-column-selector"}
+                        selectedColumn={selectedColumn.name}
+                        onColumnSelected={(column) =>
+                            onUpdateFilter({
+                                type: "category",
+                                variable: column.name,
+                                isOneOf: isOneOf
+                            })
+                        }
+                    />
+                </View>
+            </Flex>
+            <Flex direction="row" alignItems="center" width="100%">
+                <Text flexBasis={colBasis(2 / 7)} id="filter-category-selector">
+                    Value is one of
+                </Text>
+                <View flexBasis={colBasis(4 / 7)}>
+                    {isOneOf?.hasOwnProperty("var") ? (
+                        <VariableSelector
+                            variable={isOneOf.var}
+                            allowedTypes={["selection"]}
+                            onSelectVariable={(newVar) =>
+                                onUpdateFilter({
+                                    isOneOf: { var: newVar },
+                                    variable: selectedColumn.name,
+                                    type: "category"
+                                })
+                            }
+                        />
+                    ) : (
+                        <TextField
+                            labelPosition={"side"}
+                            value={isOneOf ? isOneOf.join(",") : ""}
+                            onChange={(value) =>
+                                onUpdateFilter({
+                                    type: "category",
+                                    variable: selectedColumn.name,
+                                    isOneOf: value
+                                        .split(",")
+                                        .map((v) =>
+                                            isNaN(parseInt(v)) ? v : parseInt(v)
+                                        )
+                                })
+                            }
+                        />
+                    )}
+                </View>
+                <ToggleButton
+                    isEmphasized
+                    flexBasis={colBasis(1 / 7)}
+                    isSelected={isOneOf?.hasOwnProperty("var")}
+                    onPress={toggleHasOneOf}
+                >
+                    <FunctionIcon />
+                </ToggleButton>
+            </Flex>
         </Flex>
     );
 };

@@ -5,7 +5,10 @@ import {
     Item,
     TextField,
     Divider,
-    ActionButton
+    ActionButton,
+    Text,
+    ActionGroup,
+    View
 } from "@adobe/react-spectrum";
 import { JoinStep } from "@maticoapp/matico_types/spec";
 import Delete from "@spectrum-icons/workflow/Delete";
@@ -15,14 +18,14 @@ import { Column } from "Datasets/Dataset";
 import { LabelGroup } from "../LabelGroup";
 import { CollapsibleSection } from "../CollapsibleSection";
 import { TwoUpCollapsableGrid } from "Components/MaticoEditor/Utils/TwoUpCollapsableGrid";
-
+import { colBasis } from "Utils/columnHelper";
 
 const generateJoinText = (join: JoinStep, index: number): string => {
     if (!join.joinColumnsLeft[index] || !join.joinColumnsRight[index]) {
-        return 'Select join columns'
+        return "Select join columns";
     }
     return `${join.joinColumnsLeft[index]}-${join.joinColumnsRight[index]}`;
-}
+};
 
 export const JoinStepEditor: React.FC<{
     joinStep: JoinStep;
@@ -33,51 +36,80 @@ export const JoinStepEditor: React.FC<{
     return (
         <Flex direction="column" gap={"size-100"}>
             <Flex direction="column" width="100%" gap="size-100">
-                <DatasetSelector
-                    label="Dataset to join with"
-                    labelPosition="side"
-                    selectedDataset={joinStep.otherSourceId}
-                    onDatasetSelected={(dataset) =>
-                        onChange({ otherSourceId: dataset })
-                    }
-                />
-                <Picker
-                    label="Join Type"
-                    labelPosition="side"
-                    onSelectionChange={(joinType) => onChange({ joinType })}
-                    selectedKey={joinStep.joinType}
-                    items={[
-                        { id: "left", name: "Left" },
-                        { id: "inner", name: "Inner" },
-                        { id: "right", name: "Right" },
-                        { id: "outer", name: "Outer" }
-                    ]}
-                >
-                    {(item) => <Item key={item.id}>{item.name}</Item>}
-                </Picker>
-                <TwoUpCollapsableGrid>
+                <Flex direction="row" alignItems={"center"}>
+                    <Text
+                        id="dataset-selector-label"
+                        flexBasis={colBasis(2 / 8)}
+                    >
+                        Join to
+                    </Text>
+                    <DatasetSelector
+                        labeledBy="dataset-selector-label"
+                        selectedDataset={joinStep.otherSourceId}
+                        onDatasetSelected={(dataset) =>
+                            onChange({ otherSourceId: dataset })
+                        }
+                        pickerStyle={{ flexBasis: colBasis(6 / 8) }}
+                    />
+                </Flex>
+                <Flex direction="row" alignItems={"center"}>
+                    <Text id="join-type-selector" flexBasis={colBasis(2 / 8)}>
+                        Join Type
+                    </Text>
+
+                    <ActionGroup
+                        aria-labeled-by="join-type-selector"
+                        isEmphasized
+                        flexBasis={colBasis(6 / 8)}
+                        overflowMode="wrap"
+                        selectionMode="single"
+                        selectedKeys={[joinStep.joinType]}
+                        items={[
+                            { id: "left", name: "Left" },
+                            { id: "inner", name: "Inner" },
+                            { id: "right", name: "Right" },
+                            { id: "outer", name: "Outer" }
+                        ]}
+                        onSelectionChange={(joinList) =>
+                            onChange({ joinType: [...joinList][0] })
+                        }
+                    >
+                        {(item) => <Item key={item.id}>{item.name}</Item>}
+                    </ActionGroup>
+                </Flex>
+                <Flex direction="row" alignItems="center">
+                    <Text id="left-prefix-label" flexBasis={colBasis(2 / 8)}>
+                        Left prefix
+                    </Text>
                     <TextField
-                        label="Left Prefix"
-                        labelPosition="side"
                         maxWidth="100%"
+                        flexBasis={colBasis(1.75 / 8)}
+                        aria-labeled-by="left-prefix-label"
                         value={joinStep.leftPrefix}
                         onChange={(leftPrefix) => onChange({ leftPrefix })}
                     />
+                    <View flexBasis={colBasis(0.5 / 8)}> </View>
+                    <Text id="right-prefix-label" flexBasis={colBasis(2 / 8)}>
+                        Right prefix
+                    </Text>
                     <TextField
-                        label="Right Prefix"
-                        labelPosition="side"
                         maxWidth="100%"
+                        flexBasis={colBasis(1.75 / 8)}
+                        aria-labeled-by="right-prefix-label"
                         value={joinStep.rightPrefix}
                         onChange={(rightPrefix) => onChange({ rightPrefix })}
                     />
-                </TwoUpCollapsableGrid>
+                </Flex>
             </Flex>
             <Divider orientation="vertical" size="S" />
             <Flex direction="column" flex={1} gap="size-100">
                 {joinStep.joinColumnsLeft.map(
                     (leftCol: string, index: number) => (
                         <Flex direction="row" key={index}>
-                            <CollapsibleSection title={generateJoinText(joinStep, index)}>
+                            <CollapsibleSection
+                                title={generateJoinText(joinStep, index)}
+                                outerStyle={{ flexBasis: colBasis(7 / 8) }}
+                            >
                                 <Flex
                                     key={index}
                                     direction="column"
@@ -85,17 +117,29 @@ export const JoinStepEditor: React.FC<{
                                     gap="size-100"
                                     width="100%"
                                 >
-                                    <TwoUpCollapsableGrid>
+                                    <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        width="100%"
+                                    >
+                                        <Text
+                                            flexBasis={colBasis(2 / 7)}
+                                            id="left-join-selector-label"
+                                        >
+                                            Left join column
+                                        </Text>
                                         <DatasetColumnSelector
-                                            label="Left Join Column"
-                                            labelPosition="top"
+                                            labeledBy="left-join-selector-label"
+                                            pickerStyle={{
+                                                flexBasis: colBasis(5 / 7)
+                                            }}
                                             datasetName={datasetId}
                                             columns={columns}
                                             selectedColumn={
                                                 joinStep.joinColumnsLeft
                                                     ? joinStep.joinColumnsLeft[
-                                                        index
-                                                    ]
+                                                          index
+                                                      ]
                                                     : null
                                             }
                                             onColumnSelected={(column) => {
@@ -110,15 +154,30 @@ export const JoinStepEditor: React.FC<{
                                                 });
                                             }}
                                         />
+                                    </Flex>
+
+                                    <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        width="100%"
+                                    >
+                                        <Text
+                                            flexBasis={colBasis(2 / 7)}
+                                            id="right-join-selector-label"
+                                        >
+                                            Right join column
+                                        </Text>
                                         <DatasetColumnSelector
-                                            label="Right Join Column"
-                                            labelPosition="top"
+                                            labeledBy="right-join-selector-label"
+                                            pickerStyle={{
+                                                flexBasis: colBasis(5 / 7)
+                                            }}
                                             datasetName={joinStep.otherSourceId}
                                             selectedColumn={
                                                 joinStep.joinColumnsRight
                                                     ? joinStep.joinColumnsRight[
-                                                        index
-                                                    ]
+                                                          index
+                                                      ]
                                                     : null
                                             }
                                             onColumnSelected={(column) => {
@@ -133,11 +192,12 @@ export const JoinStepEditor: React.FC<{
                                                 });
                                             }}
                                         />
-                                    </TwoUpCollapsableGrid>
+                                    </Flex>
                                 </Flex>
                             </CollapsibleSection>
                             <ActionButton
                                 isQuiet
+                                flexBasis={colBasis(1 / 8)}
                                 onPress={() =>
                                     onChange({
                                         joinColumnsLeft:
@@ -151,8 +211,7 @@ export const JoinStepEditor: React.FC<{
                                     })
                                 }
                             >
-                                {" "}
-                                <Delete />{" "}
+                                <Delete />
                             </ActionButton>
                         </Flex>
                     )

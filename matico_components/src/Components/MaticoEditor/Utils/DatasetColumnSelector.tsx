@@ -22,15 +22,19 @@ interface DatasetColumnSelectorProps {
     labelPosition?: "top" | "side";
     label?: string;
     description?: string;
+    labeledBy?: string;
+    pickerStyle?: React.CSSProperties;
 }
 export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
     datasetName,
     selectedColumn,
     columns,
-    label = "Column",
+    label,
     labelPosition = "side",
     description,
-    onColumnSelected
+    onColumnSelected,
+    labeledBy,
+    pickerStyle={}
 }) => {
     const foundDataset = useMaticoSelector((state) =>
         datasetName ? state.datasets.datasets[datasetName] : null
@@ -43,13 +47,15 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
         <Picker
             width="100%"
             items={cols}
-            label={label ?? `Column from {datasetName}`}
+            label={label || undefined}
+            aria-labeled-by={labeledBy || undefined}
             labelPosition={labelPosition}
             isDisabled={!cols}
             selectedKey={selectedColumn}
             onSelectionChange={(column) =>
                 onColumnSelected(cols.find((c) => c.name === column))
             }
+            UNSAFE_style={pickerStyle}
         >
             {(column) => <Item key={column.name}>{column.name}</Item>}
         </Picker>

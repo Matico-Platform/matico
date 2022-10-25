@@ -11,6 +11,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     onToggle = (isOpen: boolean) => {},
     titleStyle = {},
     viewStyle = {},
+    outerStyle = {}
 }) => {
     const [open, setOpen] = useState(isOpen);
     const handleToggle = () => {
@@ -20,7 +21,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         });
     };
     return (
-        <View marginY="size-10" width="100%">
+        <View marginY="size-10" width="100%" minWidth="size-200" UNSAFE_style={outerStyle}>
             <Button
                 variant="primary"
                 isQuiet

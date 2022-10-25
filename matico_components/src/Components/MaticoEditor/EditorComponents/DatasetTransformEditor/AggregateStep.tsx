@@ -13,7 +13,8 @@ import {
     Item,
     TextField,
     ActionButton,
-    ActionGroup
+    ActionGroup,
+    Text
 } from "@adobe/react-spectrum";
 import {
     DatasetColumnSelectorMulti,
@@ -22,6 +23,7 @@ import {
 import { Column } from "Datasets/Dataset";
 import { CollapsibleSection } from "../CollapsibleSection";
 import Delete from "@spectrum-icons/workflow/Delete";
+import { colBasis } from "Utils/columnHelper";
 
 export const AggregateStepEditor: React.FC<{
     step: AggregateStep;
@@ -73,21 +75,33 @@ export const AggregateStepEditor: React.FC<{
                                 titleStyle={{
                                     textTransform: "capitalize"
                                 }}
+                                outerStyle={{
+                                    flexBasis: colBasis(7/8)
+                                }}
                             >
                                 <Flex
                                     direction="column"
                                     gap="size-100"
                                     width="100%"
                                 >
-                                    <DatasetColumnSelector
-                                        datasetName={datasetId}
-                                        selectedColumn={agg.column}
-                                        onColumnSelected={(column) =>
-                                            updateAggregate(index, {
-                                                column: column.name
-                                            })
-                                        }
-                                    />
+                                    <Flex direction="row" alignItems="center">
+                                        <Text flexBasis={colBasis(2 / 7)} id={`dataset-selector-agg-${index}`}>
+                                            Column
+                                        </Text>
+                                        <DatasetColumnSelector
+                                            labeledBy={`dataset-selector-agg-${index}`}
+                                            datasetName={datasetId}
+                                            selectedColumn={agg.column}
+                                            onColumnSelected={(column) =>
+                                                updateAggregate(index, {
+                                                    column: column.name
+                                                })
+                                            }
+                                            pickerStyle={{
+                                                flexBasis: colBasis(5 / 7)
+                                            }}
+                                        />
+                                    </Flex>
                                     {/* <Picker
                                         label="Aggregation Type"
                                         labelPosition="side"
@@ -111,7 +125,6 @@ export const AggregateStepEditor: React.FC<{
                                     </Picker> */}
                                     <ActionGroup
                                         aria-label="Aggregate type"
-                                        density={"compact"}
                                         isEmphasized
                                         overflowMode="wrap"
                                         selectionMode="single"
@@ -137,22 +150,28 @@ export const AggregateStepEditor: React.FC<{
                                             </Item>
                                         )}
                                     </ActionGroup>
-                                    <TextField
-                                        labelPosition="side"
-                                        label="Rename result"
-                                        value={agg.rename}
-                                        onChange={(rename) =>
-                                            updateAggregate(index, { rename })
-                                        }
-                                    />
+                                    <Flex direction="row" alignItems="center">
+                                        <Text flexBasis={colBasis(2 / 7)}>
+                                            Rename result
+                                        </Text>
+                                        <TextField
+                                            flexBasis={colBasis(5 / 7)}
+                                            value={agg.rename}
+                                            onChange={(rename) =>
+                                                updateAggregate(index, {
+                                                    rename
+                                                })
+                                            }
+                                        />
+                                    </Flex>
                                 </Flex>
                             </CollapsibleSection>
 
                             <ActionButton
                                 isQuiet
-                                marginY="size-100"
                                 onPress={() => removeAggregate(index)}
                                 aria-label="Remove"
+                                flexBasis={colBasis(1 / 8)}
                             >
                                 <Delete />
                             </ActionButton>

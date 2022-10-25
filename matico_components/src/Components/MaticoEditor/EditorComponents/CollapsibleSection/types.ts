@@ -26,4 +26,5 @@ export type CollapsibleSectionProps = {
     titleStyle?: React.CSSProperties;
     titleClassName?: string;
     viewStyle?: React.CSSProperties;
+    outerStyle?: React.CSSProperties;
 };
