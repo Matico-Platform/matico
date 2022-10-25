@@ -20,7 +20,7 @@ import {
 } from "@adobe/react-spectrum";
 import { DatasetTransformStep } from "@maticoapp/matico_types/spec";
 import { useDatasetTransform } from "Hooks/useDatasetTransform";
-import React from "react";
+import React, { useEffect } from "react";
 import { DataTable } from "../DataTable/DataTable";
 import Filter from "@spectrum-icons/workflow/Filter";
 import Join from "@spectrum-icons/workflow/Merge";
@@ -47,6 +47,7 @@ import ChevronDoubleRight from "@spectrum-icons/workflow/ChevronDoubleRight";
 import Add from "@spectrum-icons/workflow/Add";
 import { OptionsPopper } from "../OptionsPopper";
 import { colBasis } from "Utils/columnHelper";
+import Data from "@spectrum-icons/workflow/Data";
 
 export interface DatasetTransformEditorProps {
     transformId: string;
@@ -191,6 +192,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     });
     const stepPreviews = transformResult?.steps ?? [];
 
+    const [tab, setTab] = React.useState("input");
     let PreviewTabs = [];
     let PreviewTabList = [];
 
@@ -217,55 +219,38 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
         );
     });
 
+    useEffect(() => {
+        const tabId = tab === "input" ? "step_input" : tab;
+        try {
+            console.log(tabId, document.querySelector(`#${tabId}`));
+            document.querySelector(`#${tabId}`)?.scrollIntoView();
+        } catch {
+            console.log("could not find tab");
+            // ignore
+        }
+    }, [tab]);
+
     return (
-        <Flex direction="column" gap={"size-150"} width="100%" height="100%">
+        <View width="100%" height="100%" overflow="hidden">
             <Flex
-                direction="row"
-                gap="size-300"
-                alignItems="center"
-                justifyContent="space-between"
+                direction="column"
+                gap={"size-150"}
+                width="100%"
+                height="100%"
             >
-                <Heading UNSAFE_style={{ margin: 0 }}>Transform</Heading>
-                <Text>
-                    Add transform steps here. Preview your data at each step in the table below.
-                </Text>
-                <View maxWidth={"300px"}>
-                    <OptionsPopper title="Transform Name and Settings">
-                        <TextField
-                            label="Transform Name"
-                            width="100%"
-                            value={datasetTransform.name}
-                            onChange={(name) =>
-                                updateDatasetTransform({ name })
-                            }
-                        />
-                        <TextArea
-                            label="Transform Description"
-                            width="100%"
-                            value={datasetTransform.description}
-                            onChange={(description) =>
-                                updateDatasetTransform({ description })
-                            }
-                        />
-                        <DatasetSelector
-                            label="Base Dataset"
-                            labelPosition="top"
-                            selectedDataset={datasetTransform.sourceId}
-                            onDatasetSelected={(dataset) => {
-                                updateDatasetTransform({ sourceId: dataset });
-                            }}
-                        />
-                    </OptionsPopper>
-                </View>
-            </Flex>
-            <Flex direction="row" gap={"size-300"} alignItems="start" flex={1}>
                 <Flex
-                    flex={"1 1 100%"}
-                    direction="column"
-                    position={"relative"}
-                    UNSAFE_style={{ overflowX: "hidden" }}
+                    direction="row"
+                    gap={"size-300"}
+                    alignItems="start"
+                    flex={1}
                 >
-                    {/* <Heading>
+                    <Flex
+                        flex={"1 1 100%"}
+                        direction="column"
+                        position={"relative"}
+                        UNSAFE_style={{ overflowX: "hidden" }}
+                    >
+                        {/* <Heading>
                         <Flex
                             direction="row"
                             justifyContent="space-between"
@@ -278,76 +263,153 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                             />
                         </Flex>
                     </Heading> */}
-                    <View
-                        maxWidth={"100%"}
-                        overflow="auto auto"
-                        paddingEnd="size-500"
-                        position="relative"
-                    >
-                        <Flex direction="row" gap="size-200">
-                            {datasetTransform.steps.map(
-                                (
-                                    step: DatasetTransformStep,
-                                    stepNo: number
-                                ) => (
-                                    <View
-                                        minWidth={"30vw"}
-                                        maxWidth="350px"
-                                        paddingEnd={"size-200"}
-                                        borderEndColor={"gray-600"}
-                                        marginEnd={
-                                            stepNo ===
-                                            datasetTransform.steps.length - 1
-                                                ? "size-500"
-                                                : "size-0"
-                                        }
-                                        borderEndWidth="thin"
-                                        position="relative"
-                                        height="40vh"
-                                        overflow="visible auto"
+                        <View
+                            maxWidth={"100%"}
+                            overflow="auto auto"
+                            paddingEnd="size-500"
+                            position="relative"
+                        >
+                            <Flex direction="row" gap="size-200">
+                                <View
+                                    minWidth={"30vw"}
+                                    maxWidth="350px"
+                                    paddingEnd={"size-200"}
+                                    borderEndColor={"gray-600"}
+                                    id={`step_input`}
+                                    marginEnd={"size-500"}
+                                    borderEndWidth="thin"
+                                    position="relative"
+                                    height="40vh"
+                                    overflow="visible auto"
+                                >
+                                    <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        justifyContent="space-between"
+                                        UNSAFE_style={{
+                                            textTransform: "capitalize"
+                                        }}
                                     >
                                         <Flex
-                                            direction="row"
                                             alignItems="center"
-                                            justifyContent="space-between"
-                                            UNSAFE_style={{
-                                                textTransform: "capitalize"
-                                            }}
+                                            direction="row"
                                         >
-                                            <Flex alignItems="center" direction="row" flexBasis={colBasis(7/8)}>
-                                                {IconForStepType[step.type]}
-                                                <Text marginStart="size-200">
-                                                    {step?.type}
-                                                </Text>
-                                            </Flex>
-                                            <ActionButton
-                                                flexBasis={colBasis(1/8)}
-                                                isQuiet
-                                                onPress={() =>
-                                                    removeStep(step.id)
-                                                }
-                                            >
-                                                <Delete />
-                                            </ActionButton>
+                                            <Data />
+                                            <Text marginStart="size-200">
+                                                Input Dataset
+                                            </Text>
                                         </Flex>
-                                        <TransformStep
-                                            key={step.id}
-                                            step={step}
-                                            columns={
-                                                stepNo === 0
-                                                    ? null
-                                                    : stepPreviews
-                                                    ? stepPreviews?.[stepNo - 1]
-                                                          ?.columns
-                                                    : null
-                                            }
-                                            onChange={updateStep}
-                                            onRemove={removeStep}
-                                            datasetId={
-                                                datasetTransform.sourceId
+                                    </Flex>
+                                    <Flex direction="column" gap="size-100" marginTop="size-200">
+                                        <Text>
+                                            Add transform steps here. Preview
+                                            your data at each step in the table
+                                            below.
+                                        </Text>
+                                        <TextField
+                                            label="Transform Name"
+                                            width="100%"
+                                            value={datasetTransform.name}
+                                            onChange={(name) =>
+                                                updateDatasetTransform({
+                                                    name
+                                                })
                                             }
                                         />
-                                        {/* {stepNo <
+                                        <TextArea
+                                            label="Transform Description"
+                                            width="100%"
+                                            value={datasetTransform.description}
+                                            onChange={(description) =>
+                                                updateDatasetTransform({
+                                                    description
+                                                })
+                                            }
+                                        />
+                                        <DatasetSelector
+                                            label="Base Dataset"
+                                            labelPosition="top"
+                                            selectedDataset={
+                                                datasetTransform.sourceId
+                                            }
+                                            onDatasetSelected={(dataset) => {
+                                                updateDatasetTransform({
+                                                    sourceId: dataset
+                                                });
+                                            }}
+                                        />
+                                    </Flex>
+                                </View>
+                                {datasetTransform.steps.map(
+                                    (
+                                        step: DatasetTransformStep,
+                                        stepNo: number
+                                    ) => (
+                                        <View
+                                            minWidth={"30vw"}
+                                            maxWidth="350px"
+                                            paddingEnd={"size-200"}
+                                            borderEndColor={"gray-600"}
+                                            id={`step_${stepNo}`}
+                                            marginEnd={
+                                                stepNo ===
+                                                datasetTransform.steps.length -
+                                                    1
+                                                    ? "size-500"
+                                                    : "size-0"
+                                            }
+                                            borderEndWidth="thin"
+                                            position="relative"
+                                            height="40vh"
+                                            overflow="visible auto"
+                                        >
+                                            <Flex
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                UNSAFE_style={{
+                                                    textTransform: "capitalize"
+                                                }}
+                                            >
+                                                <Flex
+                                                    alignItems="center"
+                                                    direction="row"
+                                                    flexBasis={colBasis(7 / 8)}
+                                                >
+                                                    {IconForStepType[step.type]}
+                                                    <Text marginStart="size-200">
+                                                        {step?.type}
+                                                    </Text>
+                                                </Flex>
+                                                <ActionButton
+                                                    flexBasis={colBasis(1 / 8)}
+                                                    isQuiet
+                                                    onPress={() =>
+                                                        removeStep(step.id)
+                                                    }
+                                                >
+                                                    <Delete />
+                                                </ActionButton>
+                                            </Flex>
+                                            <TransformStep
+                                                key={step.id}
+                                                step={step}
+                                                columns={
+                                                    stepNo === 0
+                                                        ? null
+                                                        : stepPreviews
+                                                        ? stepPreviews?.[
+                                                              stepNo - 1
+                                                          ]?.columns
+                                                        : null
+                                                }
+                                                onChange={updateStep}
+                                                onRemove={removeStep}
+                                                datasetId={
+                                                    datasetTransform.sourceId
+                                                }
+                                            />
+                                            {/* {stepNo <
                                             datasetTransform.steps.length -
                                                 1 && (
                                             <View
@@ -365,45 +427,50 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                 <ChevronDoubleRight size="S" />
                                             </View>
                                         )} */}
-                                    </View>
-                                )
-                            )}
-                        </Flex>
-                    </View>
+                                        </View>
+                                    )
+                                )}
+                            </Flex>
+                        </View>
 
-                    <View
-                        position={"absolute"}
-                        left="100%"
-                        bottom="50%"
-                        backgroundColor="positive"
-                        UNSAFE_style={{
-                            transform: "translate(-100%, -50%)"
-                        }}
+                        <View
+                            position={"absolute"}
+                            left="100%"
+                            bottom="50%"
+                            backgroundColor="positive"
+                            UNSAFE_style={{
+                                transform: "translate(-100%, -50%)"
+                            }}
+                        >
+                            <AddTransformStepDialog
+                                onAdd={(newStep) => addStep(newStep)}
+                                useIcon
+                            />
+                        </View>
+                    </Flex>
+                </Flex>
+                <Divider size="S" />
+                <Flex direction="column" position="relative">
+                    {transformResult && transformResult.state == "Loading" && (
+                        <LoadingSpinner />
+                    )}
+
+                    {transformResult && transformResult.state == "Error" && (
+                        <Text>
+                            Failed to run transform{" "}
+                            {JSON.stringify(transformResult.error)}
+                        </Text>
+                    )}
+                    <Tabs
+                        selectedKey={tab}
+                        // @ts-ignore
+                        onSelectionChange={setTab}
                     >
-                        <AddTransformStepDialog
-                            onAdd={(newStep) => addStep(newStep)}
-                            useIcon
-                        />
-                    </View>
+                        <TabList>{PreviewTabList}</TabList>
+                        <TabPanels>{PreviewTabs}</TabPanels>
+                    </Tabs>
                 </Flex>
             </Flex>
-            <Divider size="S" />
-            <Flex direction="column">
-                {transformResult && transformResult.state == "Loading" && (
-                    <LoadingSpinner />
-                )}
-
-                {transformResult && transformResult.state == "Error" && (
-                    <Text>
-                        Failed to run transform{" "}
-                        {JSON.stringify(transformResult.error)}
-                    </Text>
-                )}
-                <Tabs>
-                    <TabList>{PreviewTabList}</TabList>
-                    <TabPanels>{PreviewTabs}</TabPanels>
-                </Tabs>
-            </Flex>
-        </Flex>
+        </View>
     );
 };
