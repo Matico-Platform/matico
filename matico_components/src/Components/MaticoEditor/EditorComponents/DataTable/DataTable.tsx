@@ -22,9 +22,10 @@ import React, { useMemo } from "react";
 
 export interface DataTableProps {
     data: Array<Record<string, any>>;
+    rowLimit?: number;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ data }) => {
+export const DataTable: React.FC<DataTableProps> = ({ data, rowLimit=10 }) => {
     let table = useMemo(() => {
         if (!data || data.length === 0) {
             return (
@@ -54,7 +55,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {data.slice(0, 10).map((row: Array<any>) => (
+                    {data.slice(0, rowLimit).map((row: Array<any>) => (
                         <Row>
                             {Object.values(row).map((val: any) => (
                                 <Cell>
@@ -69,7 +70,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                 </TableBody>
             </TableView>
         );
-    }, [data]);
+    }, [data, data?.length]);
 
     return (
         <View width="100%" height="100%">

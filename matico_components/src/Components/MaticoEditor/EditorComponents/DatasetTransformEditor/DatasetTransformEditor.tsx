@@ -176,6 +176,9 @@ export const TransformStep: React.FC<TransformStepProps> = ({
 export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     transformId
 }) => {
+    const [tab, setTab] = React.useState("input");
+    const [expandedTable, setExpandedTable] = React.useState(false);
+    const rowLimit = expandedTable ? 30 : 10;
     const {
         datasetTransform,
         updateDatasetTransform,
@@ -190,12 +193,10 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
 
     const inputDataset = useRequestData({
         datasetName: datasetTransform.sourceId,
-        limit: 10
+        limit: rowLimit
     });
-    const stepPreviews = transformResult?.steps ?? [];
 
-    const [tab, setTab] = React.useState("input");
-    const [expandedTable, setExpandedTable] = React.useState(false);
+    const stepPreviews = transformResult?.steps ?? [];
 
     let PreviewTabs = [];
     let PreviewTabList = [];
@@ -204,7 +205,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     PreviewTabs.push(
         <Item key={"input"}>
             {inputDataset && inputDataset.state === "Done" && (
-                <DataTable data={inputDataset.result} />
+                <DataTable data={inputDataset.result} rowLimit={rowLimit} />
             )}
         </Item>
     );
@@ -213,7 +214,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
         const stepPreview = stepPreviews ? stepPreviews[index] : null;
         PreviewTabs.push(
             <Item key={`step_${index}`}>
-                {stepPreview && <DataTable data={stepPreviews[index].table} />}
+                {stepPreview && <DataTable data={stepPreviews[index].table} rowLimit={rowLimit} />}
             </Item>
         );
         PreviewTabList.push(
@@ -480,7 +481,11 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                         <Divider size="S" />
                     </>
                 )}
-                <Flex direction="column" position="relative">
+                <Flex
+                    direction="column"
+                    position="relative"
+                    UNSAFE_style={{ overflowY: "auto" }}
+                >
                     {transformResult && transformResult.state == "Loading" && (
                         <LoadingSpinner />
                     )}
@@ -499,7 +504,6 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                         <TabList>{PreviewTabList}</TabList>
                         <TabPanels>{PreviewTabs}</TabPanels>
                     </Tabs>
-
                     <ActionButton
                         position={"absolute"}
                         right="0px"
