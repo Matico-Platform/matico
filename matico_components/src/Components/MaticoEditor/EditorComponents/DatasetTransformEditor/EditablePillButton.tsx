@@ -63,6 +63,7 @@ export const EditablePillButton: React.FC<EditablePillButtonProps> = ({
                                 if (e.key === "Enter") handleSave();
                             }}
                             onBlur={handleCancel}
+                            autoFocus
                         />
                         <ActionButton
                             isQuiet
