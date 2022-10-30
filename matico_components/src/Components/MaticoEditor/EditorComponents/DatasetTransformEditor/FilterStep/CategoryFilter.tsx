@@ -107,6 +107,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                         datasetName={datasetId}
                         columns={columns}
                         labeledBy={"filter-column-selector"}
+                        ariaLabel="Select a column to filter"
                         selectedColumn={selectedColumn.name}
                         onColumnSelected={(column) =>
                             onUpdateFilter({
@@ -119,11 +120,12 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 </View>
             </Flex>
             <Flex direction="row" alignItems="center">
-                <Text flexBasis={colBasis(2 / 7)} id="filter-column-selector">
+                <Text flexBasis={colBasis(2 / 7)} id="filter-mode-radio-buttons">
                     Filter Mode
                 </Text>
                 <View flexBasis={colBasis(5 / 7)}>
                     <RadioGroup
+                        aria-labeled-by="filter-mode-radio-buttons"
                         orientation="horizontal"
                         value={filterMode}
                         onChange={toggleFilterMode}

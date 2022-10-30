@@ -75,7 +75,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
 
     PreviewTabList.push(<Item key={"input"}>Input Dataset &gt;</Item>);
     PreviewTabs.push(
-        <Item key={"input"}>
+        <Item key={"input"} textValue={"Input dataset table preview"}>
             {inputDataset && inputDataset.state === "Done" && (
                 <DataTable data={inputDataset.result} rowLimit={rowLimit} />
             )}
@@ -85,12 +85,12 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     datasetTransform.steps.forEach((step: any, index: number) => {
         const stepPreview = stepPreviews ? stepPreviews[index] : null;
         PreviewTabs.push(
-            <Item key={`step_${index}`}>
+            <Item key={`step_${index}`} textValue={`Data table preview for step ${index+1}`}>
                 {stepPreview && <DataTable data={stepPreviews[index].table} rowLimit={rowLimit} />}
             </Item>
         );
         PreviewTabList.push(
-            <Item key={`step_${index}`}>
+            <Item key={`step_${index}`} textValue={`Tab for step ${index+1}`}>
                 {step.type} ({stepPreview?.noRows}) &gt;
             </Item>
         );
@@ -99,7 +99,6 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     useEffect(() => {
         const tabId = tab === "input" ? "step_input" : tab;
         try {
-            console.log(tabId, document.querySelector(`#${tabId}`));
             document.querySelector(`#${tabId}`)?.scrollIntoView();
         } catch {
             console.log("could not find tab");
@@ -284,6 +283,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                                 1 / 8
                                                             )}
                                                             isQuiet
+                                                            aria-label="Remove this transform step"
                                                             onPress={() =>
                                                                 removeStep(
                                                                     step.id

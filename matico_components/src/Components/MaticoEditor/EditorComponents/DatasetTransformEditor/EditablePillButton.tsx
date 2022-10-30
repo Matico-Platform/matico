@@ -86,6 +86,7 @@ export const EditablePillButton: React.FC<EditablePillButtonProps> = ({
                             isQuiet
                             onPress={handleEdit}
                             variant="overBackground"
+                            aria-albel={`Edit ${value} filter value`}
                             UNSAFE_style={{
                                 borderRadius:0
                             }}

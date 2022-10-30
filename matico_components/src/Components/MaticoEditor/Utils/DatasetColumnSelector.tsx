@@ -23,6 +23,7 @@ interface DatasetColumnSelectorProps {
     label?: string;
     description?: string;
     labeledBy?: string;
+    ariaLabel?: string;
     pickerStyle?: React.CSSProperties;
 }
 export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
@@ -34,6 +35,7 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
     description,
     onColumnSelected,
     labeledBy,
+    ariaLabel,
     pickerStyle={}
 }) => {
     const foundDataset = useMaticoSelector((state) =>
@@ -49,6 +51,7 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
             items={cols}
             label={label || undefined}
             aria-labeled-by={labeledBy || undefined}
+            aria-label={ariaLabel}
             labelPosition={labelPosition}
             isDisabled={!cols}
             selectedKey={selectedColumn}
@@ -88,7 +91,7 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
 
         const datasetColumns = foundDataset ? foundDataset.columns : [];
         const cols = columns ?? datasetColumns;
-        console.log(selectedColumns)
+        // console.log(selectedColumns)
         return (
             <OptionsPopper title={selectedColumns?.length ? `Group by ${selectedColumns.join(", ")}` : label}>
                 {description && <Text>{description}</Text>}

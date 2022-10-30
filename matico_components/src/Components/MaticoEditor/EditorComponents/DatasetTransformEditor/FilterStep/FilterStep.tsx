@@ -155,6 +155,7 @@ export const FilterStepEditor: React.FC<{
                                 gap="size-25"
                                 direction="row"
                                 alignItems="start"
+                                key={index}
                             >
                                 <CollapsibleSection
                                     title={filterText}
