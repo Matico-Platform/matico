@@ -1,7 +1,6 @@
 import React from "react";
 import {
     Flex,
-    Picker,
     Item,
     TextField,
     Divider,
@@ -10,14 +9,13 @@ import {
     ActionGroup,
     View
 } from "@adobe/react-spectrum";
+// @ts-ignore
 import { JoinStep } from "@maticoapp/matico_types/spec";
 import Delete from "@spectrum-icons/workflow/Delete";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { Column } from "Datasets/Dataset";
-import { LabelGroup } from "../LabelGroup";
 import { CollapsibleSection } from "../CollapsibleSection";
-import { TwoUpCollapsableGrid } from "Components/MaticoEditor/Utils/TwoUpCollapsableGrid";
 import { colBasis } from "Utils/columnHelper";
 
 const generateJoinText = (join: JoinStep, index: number): string => {
@@ -146,7 +144,10 @@ export const JoinStepEditor: React.FC<{
                                                 onChange({
                                                     joinColumnsLeft:
                                                         joinStep.joinColumnsLeft.map(
-                                                            (jc, i) =>
+                                                            (
+                                                                jc: string,
+                                                                i: number
+                                                            ) =>
                                                                 i === index
                                                                     ? column.name
                                                                     : jc
@@ -184,7 +185,10 @@ export const JoinStepEditor: React.FC<{
                                                 onChange({
                                                     joinColumnsRight:
                                                         joinStep.joinColumnsRight.map(
-                                                            (jc, i) =>
+                                                            (
+                                                                jc: string,
+                                                                i: number
+                                                            ) =>
                                                                 i === index
                                                                     ? column.name
                                                                     : jc
@@ -202,11 +206,13 @@ export const JoinStepEditor: React.FC<{
                                     onChange({
                                         joinColumnsLeft:
                                             joinStep.joinColumnsLeft.filter(
-                                                (_, i: number) => i !== index
+                                                (_: any, i: number) =>
+                                                    i !== index
                                             ),
                                         joinColumnsRight:
                                             joinStep.joinColumnsRight.filter(
-                                                (_, i: number) => i !== index
+                                                (_: any, i: number) =>
+                                                    i !== index
                                             )
                                     })
                                 }

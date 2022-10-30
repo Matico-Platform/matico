@@ -7,6 +7,7 @@ import {
     Content,
     repeat
 } from "@adobe/react-spectrum";
+// @ts-ignore
 import { DatasetTransformStep } from "@maticoapp/matico_types/spec";
 import { DefaultGrid } from "Components/MaticoEditor/Utils/DefaultGrid";
 import Filter from "@spectrum-icons/workflow/Filter";

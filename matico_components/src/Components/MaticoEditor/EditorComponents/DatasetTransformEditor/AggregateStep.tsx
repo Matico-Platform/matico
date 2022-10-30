@@ -4,6 +4,7 @@ import {
     AggregateStep,
     AggregationType,
     AggregationSummary
+    // @ts-ignore
 } from "@maticoapp/matico_types/spec";
 
 import {

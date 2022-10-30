@@ -1,23 +1,17 @@
 import {
     ActionButton,
-    Content,
-    Dialog,
-    DialogTrigger,
     Flex,
-    Heading,
-    repeat,
     TextArea,
     TextField,
     View,
     Text,
-    Picker,
     Item,
     Divider,
-    StatusLight,
     TabList,
     TabPanels,
     Tabs
 } from "@adobe/react-spectrum";
+// @ts-ignore
 import { DatasetTransformStep } from "@maticoapp/matico_types/spec";
 import { useDatasetTransform } from "Hooks/useDatasetTransform";
 import React, { useEffect } from "react";
@@ -28,35 +22,21 @@ import AggregateIcon from "@spectrum-icons/workflow/GraphBarHorizontal";
 import ColumnIcon from "@spectrum-icons/workflow/ColumnSettings";
 import Compute from "@spectrum-icons/workflow/Calculator";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
-import { CollapsibleSection } from "../CollapsibleSection";
 import Delete from "@spectrum-icons/workflow/Delete";
 import { LoadingSpinner } from "../LoadingSpinner/LoadingSpinner";
-import { JoinStepEditor } from "./JoinStep";
-import { AggregateStepEditor } from "./AggregateStep";
-import { FilterStepEditor } from "./FilterStep";
 import { AddTransformStepDialog } from "./AddTransformStep";
-import { Column, DatasetState } from "Datasets/Dataset";
-import { DatasetStatusColors } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import {
     useRequestData,
     useTransformDataWithSteps
 } from "Hooks/useRequestData";
-import { ColumnTransformStepEditor } from "./ColumnTransfomStepEditor";
-import { TransformStepPreview } from "Datasets/DatasetTransformRunner";
-import ChevronDoubleRight from "@spectrum-icons/workflow/ChevronDoubleRight";
-import Add from "@spectrum-icons/workflow/Add";
-import { OptionsPopper } from "../OptionsPopper";
 import { colBasis } from "Utils/columnHelper";
 import Data from "@spectrum-icons/workflow/Data";
 import Maximize from "@spectrum-icons/workflow/Maximize";
 import Minimize from "@spectrum-icons/workflow/Minimize";
+import { DatasetTransformEditorProps } from "./types";
+import { TransformStep } from "./TransformStep";
 
-export interface DatasetTransformEditorProps {
-    transformId: string;
-    state: DatasetState;
-}
-
-const IconForStepType: Record<string, React.ReactNode> = {
+export const IconForStepType: Record<string, React.ReactNode> = {
     filter: <Filter />,
     aggregate: <AggregateIcon />,
     compute: <Compute />,
@@ -64,114 +44,6 @@ const IconForStepType: Record<string, React.ReactNode> = {
     columnTransform: <ColumnIcon />
 };
 
-export const DatasetTransformDialog: React.FC<DatasetTransformEditorProps> = ({
-    transformId,
-    state
-}) => {
-    const { datasetTransform, removeTransform } =
-        useDatasetTransform(transformId);
-    return (
-        <View
-            borderBottomColor={"gray-300"}
-            borderBottomWidth="thin"
-            padding={0}
-            margin={0}
-        >
-            <Flex direction="row" width="100%">
-                <DialogTrigger isDismissable>
-                    <ActionButton isQuiet flexGrow={1}>
-                        <Flex
-                            direction="row"
-                            gap="small"
-                            width="100%"
-                            alignItems="center"
-                            justifyContent="space-between"
-                        >
-                            <Text>{datasetTransform.name} </Text>
-                            <StatusLight variant={DatasetStatusColors[state]} />
-                        </Flex>
-                    </ActionButton>
-                    {(close) => (
-                        <Dialog width="90vw" height="90vh">
-                            <Content>
-                                <DatasetTransformEditor
-                                    state={state}
-                                    transformId={transformId}
-                                />
-                            </Content>
-                        </Dialog>
-                    )}
-                </DialogTrigger>
-                <ActionButton isQuiet onPress={removeTransform}>
-                    <Delete />
-                </ActionButton>
-            </Flex>
-        </View>
-    );
-};
-
-export interface TransformStepProps {
-    step: DatasetTransformStep;
-    onChange: (update: Partial<DatasetTransformStep>) => void;
-    columns?: Array<Column>;
-    onRemove: (stepId: string) => void;
-    datasetId?: string;
-}
-
-export const TransformStep: React.FC<TransformStepProps> = ({
-    step,
-    datasetId,
-    onChange,
-    columns,
-    onRemove
-}) => {
-    const updateStep = (update: Partial<DatasetTransformStep>) => {
-        onChange({ ...step, ...update });
-    };
-
-    switch (step.type) {
-        case "filter":
-            return (
-                <FilterStepEditor
-                    filterStep={step}
-                    onChange={updateStep}
-                    datasetId={datasetId}
-                    columns={columns}
-                />
-            );
-        case "join":
-            return (
-                <JoinStepEditor
-                    joinStep={step}
-                    onChange={updateStep}
-                    datasetId={datasetId}
-                    columns={columns}
-                />
-            );
-        case "aggregate":
-            return (
-                <AggregateStepEditor
-                    step={step}
-                    onChange={updateStep}
-                    datasetId={datasetId}
-                    columns={columns}
-                />
-            );
-        case "columnTransform":
-            return (
-                <ColumnTransformStepEditor
-                    step={step}
-                    onChange={updateStep}
-                    datasetId={datasetId}
-                    columns={columns}
-                />
-            );
-        case "compute":
-            return <Text>Compute not implemented</Text>;
-        default:
-            return <Text> Not Implemented</Text>;
-    }
-};
 
 export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     transformId
@@ -210,7 +82,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
         </Item>
     );
 
-    datasetTransform.steps.forEach((step, index: number) => {
+    datasetTransform.steps.forEach((step: any, index: number) => {
         const stepPreview = stepPreviews ? stepPreviews[index] : null;
         PreviewTabs.push(
             <Item key={`step_${index}`}>
@@ -368,6 +240,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                                                     paddingEnd={"size-200"}
                                                     borderEndColor={"gray-600"}
                                                     id={`step_${stepNo}`}
+                                                    key={`step_${stepNo}`}
                                                     marginEnd={
                                                         stepNo ===
                                                         datasetTransform.steps
@@ -493,6 +366,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
                     {transformResult && transformResult.state == "Error" && (
                         <Text>
                             Failed to run transform{" "}
+                            {/* @ts-ignore */}
                             {JSON.stringify(transformResult.error)}
                         </Text>
                     )}
