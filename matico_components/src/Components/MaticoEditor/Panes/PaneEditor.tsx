@@ -114,7 +114,7 @@ export const PositionPresets = [
         label: "◰ Snap Top Left",
         position: {
             x: 0,
-            y: 50,
+            y: 0,
             width: 50,
             height: 50
         }
@@ -124,7 +124,7 @@ export const PositionPresets = [
         label: "◳ Snap Top Right",
         position: {
             x: 50,
-            y: 50,
+            y: 0,
             width: 50,
             height: 50
         }
@@ -134,7 +134,7 @@ export const PositionPresets = [
         label: "◱ Snap Bottom Left",
         position: {
             x: 0,
-            y: 0,
+            y: 50,
             width: 50,
             height: 50
         }
@@ -144,7 +144,7 @@ export const PositionPresets = [
         label: "◲ Snap Bottom Right",
         position: {
             x: 50,
-            y: 0,
+            y: 50,
             width: 50,
             height: 50
         }

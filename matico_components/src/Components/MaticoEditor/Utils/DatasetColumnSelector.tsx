@@ -11,6 +11,7 @@ import {
     Checkbox
 } from "@adobe/react-spectrum";
 import { Column } from "Datasets/Dataset";
+import { OptionsPopper } from "../EditorComponents/OptionsPopper";
 // import { Item as ListItem, ListView } from "@react-spectrum/list";
 
 interface DatasetColumnSelectorProps {
@@ -21,15 +22,21 @@ interface DatasetColumnSelectorProps {
     labelPosition?: "top" | "side";
     label?: string;
     description?: string;
+    labeledBy?: string;
+    ariaLabel?: string;
+    pickerStyle?: React.CSSProperties;
 }
 export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
     datasetName,
     selectedColumn,
     columns,
-    label = "Column",
+    label,
     labelPosition = "side",
     description,
-    onColumnSelected
+    onColumnSelected,
+    labeledBy,
+    ariaLabel,
+    pickerStyle={}
 }) => {
     const foundDataset = useMaticoSelector((state) =>
         datasetName ? state.datasets.datasets[datasetName] : null
@@ -42,13 +49,16 @@ export const DatasetColumnSelector: React.FC<DatasetColumnSelectorProps> = ({
         <Picker
             width="100%"
             items={cols}
-            label={label ?? `Column from {datasetName}`}
+            label={label || undefined}
+            aria-labeled-by={labeledBy || undefined}
+            aria-label={ariaLabel}
             labelPosition={labelPosition}
             isDisabled={!cols}
             selectedKey={selectedColumn}
             onSelectionChange={(column) =>
                 onColumnSelected(cols.find((c) => c.name === column))
             }
+            UNSAFE_style={pickerStyle}
         >
             {(column) => <Item key={column.name}>{column.name}</Item>}
         </Picker>
@@ -81,10 +91,10 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
 
         const datasetColumns = foundDataset ? foundDataset.columns : [];
         const cols = columns ?? datasetColumns;
-
+        // console.log(selectedColumns)
         return (
-            <Flex direction="column">
-                <Heading>{label}</Heading>
+            <OptionsPopper title={selectedColumns?.length ? `Group by ${selectedColumns.join(", ")}` : label}>
+                {description && <Text>{description}</Text>}
                 <View maxHeight="150px" overflow={"clip auto"}>
                     <CheckboxGroup
                         value={selectedColumns}
@@ -99,7 +109,6 @@ export const DatasetColumnSelectorMulti: React.FC<DatasetColumnSelectorMulitProp
                         ))}
                     </CheckboxGroup>
                 </View>
-                {description && <Text>{description}</Text>}
-            </Flex>
+            </OptionsPopper>
         );
     };
