@@ -121,8 +121,8 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     const [currentView, updateView] = useAutoVariable({
         variable: {
             name: "CurrentMapView",
-            id: id + "_view",
-            paneId: id,
+            id: view?.varId ? view.varId : `${id}_view`,
+            paneId: view?.varId ? view?.varId?.split('_view')[0] : id,
             value: {
                 type: "mapview",
                 value: view
@@ -175,15 +175,22 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         id={id}
                         ref={mapRef}
                         antialias={true}
-                        onMove={(viewState) => updateViewState(viewState)}
-                        {...currentView}
-                        initialViewState={{
-                            latitude: currentView.value.lat,
-                            longitude: currentView.value.lng,
-                            zoom: currentView.value.zoom,
-                            bearing: currentView.value.bearing,
-                            pitch: currentView.value.pitch
+                        onMove={(viewState) => {
+                            console.log('viewState',viewState.viewState)
+                            updateViewState(viewState)
                         }}
+                        latitude={currentView?.value?.lat}
+                        longitude={currentView?.value?.lng}
+                        pitch={currentView?.value?.pitch}
+                        bearing={currentView?.value?.bearing}
+                        zoom={currentView?.value?.zoom}
+                        // initialViewState={{
+                        //     latitude: currentView.value.lat,
+                        //     longitude: currentView.value.lng,
+                        //     zoom: currentView.value.zoom,
+                        //     bearing: currentView.value.bearing,
+                        //     pitch: currentView.value.pitch
+                        // }}
                         mapboxAccessToken={accessToken}
                         mapStyle={
                             styleJSON
