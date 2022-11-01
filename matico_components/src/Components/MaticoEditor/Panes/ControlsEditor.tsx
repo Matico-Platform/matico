@@ -14,7 +14,10 @@ import {
     Content,
     TextField,
     Text,
-    repeat
+    repeat,
+    Switch,
+    Radio,
+    RadioGroup
 } from "@adobe/react-spectrum";
 
 import SwitchIcon from "@spectrum-icons/workflow/Switch";
@@ -136,6 +139,16 @@ const EditRangeModal: React.FC<{
                                 onChange={(max) => onUpdate({ max })}
                             ></NumberField>
                         </Flex>
+                        <RadioGroup
+                            label='Event Trigger'
+                            labelPosition="side"
+                            orientation="horizontal"
+                            value={rangeProps.changeEvent || "onChange"}
+                            onChange={(changeEvent) => onUpdate({ changeEvent })}
+                        >
+                            <Radio value="onChange">On Change</Radio>
+                            <Radio value="onEnd">On End</Radio>
+                        </RadioGroup>
                     </Flex>
                 </Content>
             </Dialog>

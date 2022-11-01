@@ -33,6 +33,7 @@ pub struct RangeControl {
     min: VarOr<f32>,
     step: VarOr<f32>,
     default_value: f32,
+    change_event: Option<String>
 }
 
 
