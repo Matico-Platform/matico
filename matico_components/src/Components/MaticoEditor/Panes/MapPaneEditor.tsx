@@ -102,9 +102,9 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     const syncedMapPaneView = useMaticoSelector((state) =>
         //@ts-ignore
-        mapPane.view.var
+        mapPane.view.varId
             ? //@ts-ignore
-              state.variables.autoVariables[mapPane.view.var]
+              state.variables.autoVariables?.[mapPane.view.varId]
             : null
     );
 
@@ -182,10 +182,10 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         });
     };
 
-    const isSynced = syncedMapPaneView ? true : false;
+    const isSynced = !!mapPane?.view?.varId;
     //@ts-ignore
     const isBound = mapPane?.view?.bind ? true : false;
-    const mapView = isSynced ? syncedMapPaneView.value : mapPane.view;
+    const mapView = isSynced ? syncedMapPaneView?.value || {} : mapPane?.view || {};
 
     const toggleBind = () => {
         updateView({
@@ -290,7 +290,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             onPress={stopSyncing}
                             marginTop="size-200"
                             marginBottom="size-200"
-                            isDisabled
+                            isDisabled={!isSynced}
                         >
                             Stop Syncing Map View
                         </ActionButton>
