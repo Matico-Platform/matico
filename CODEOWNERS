@@ -1,4 +1,4 @@
 # This can be modified to be more specific as time goes on, but for the
 # time being we can have it to where at least any PR submitted has
 # all of our accounts attached to it as default reviewers.
-@nofurtherinformation @stuartlynn @michplunkett
+*   @nofurtherinformation @stuartlynn @michplunkett
