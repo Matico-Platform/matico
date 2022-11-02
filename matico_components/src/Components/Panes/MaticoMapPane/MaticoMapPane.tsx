@@ -178,11 +178,11 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         onMove={(viewState) => {
                             updateViewState(viewState)
                         }}
-                        latitude={currentView?.value?.lat}
-                        longitude={currentView?.value?.lng}
-                        pitch={currentView?.value?.pitch}
-                        bearing={currentView?.value?.bearing}
-                        zoom={currentView?.value?.zoom}
+                        latitude={currentView?.value?.lat||0}
+                        longitude={currentView?.value?.lng||0}
+                        pitch={currentView?.value?.pitch||0}
+                        bearing={currentView?.value?.bearing||0}
+                        zoom={currentView?.value?.zoom||0}
                         // initialViewState={{
                         //     latitude: currentView.value.lat,
                         //     longitude: currentView.value.lng,
