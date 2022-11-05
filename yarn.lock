@@ -5467,7 +5467,7 @@ __metadata:
     "@rollup/plugin-typescript": ^8.3.0
     "@storybook/cli": ^6.5.10
     "@storybook/react": ^6.5.10
-    "@types/react": ^17.0.38
+    "@types/react": ^18.0.25
     "@types/styled-components": ^5.1.21
     "@visx/axis": ^2.6.0
     "@visx/brush": ^2.6.0
@@ -5482,8 +5482,8 @@ __metadata:
     d3: ^7.3.0
     d3-geo: ^3.0.1
     esbuild: ^0.14.5
-    react: 18
-    react-dom: 18
+    react: ^18.2.0
+    react-dom: ^18.2.0
     react-hot-loader: ^4.13.0
     rollup: ^2.66.0
     rollup-plugin-dts: ^4.1.0
@@ -12124,7 +12124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^17, @types/react@npm:^17.0.37, @types/react@npm:^17.0.38":
+"@types/react@npm:^17, @types/react@npm:^17.0.37":
   version: 17.0.48
   resolution: "@types/react@npm:17.0.48"
   dependencies:
@@ -12132,6 +12132,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: b683fa33f751ced0b8c8715df9f40de15513c1d7ce66064a75cdfb8805cc913b0b214a2e7022ef0b724bd62a1e8651d040cd265dd0452bde03cca9b8e495742d
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.0.25":
+  version: 18.0.25
+  resolution: "@types/react@npm:18.0.25"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 231d658c45abdef044a716b4502774f1585d8336d73b2f5bd68f181acbfc874b7a457686ecd29b415b43ed0922c309bab7e2cf96832d188a3f4f1b02f2af760a
   languageName: node
   linkType: hard
 
@@ -33553,7 +33564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:18, react-dom@npm:18.2.0, react-dom@npm:^18.2.0":
+"react-dom@npm:18.2.0, react-dom@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
   dependencies:
@@ -34205,7 +34216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:18, react@npm:18.2.0, react@npm:^18.2.0":
+"react@npm:18.2.0, react@npm:^18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
   dependencies:
