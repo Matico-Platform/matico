@@ -162,9 +162,24 @@ export interface Domain {
 export type xyDomainCallback = (d: Domain) => void;
 
 export interface ChartSpaceSpec {
-  //data
   data: DataCollection;
-  // axis specifications
+  layers?: Array<LayerSpec>;
+
+  title?: string;
+  subtitle?: string;
+  attribution?: string;
+
+  dimensions?: WidthAndHeight;
+  useBrush?: BooleanOrBrushSpec;
+  onBrush?: xyDomainCallback;
+
+  margins?: Partial<MarginSpec>;
+
+  updateTrigger?: any;
+}
+
+export interface ContinuousChartSpec extends ChartSpaceSpec {
+  type: 'continuous';
   xCol?: string | AccessorFunction;
   yCol?: string | AccessorFunction;
   xAxis?: boolean | AxisSpec;
@@ -173,22 +188,19 @@ export interface ChartSpaceSpec {
   yLabel?: string;
   xExtent?: ContinuousDomain;
   yExtent?: ContinuousDomain;
-  //categorical plots
-  categorical?: boolean;
+  grid?: boolean | GridSpec;
+} 
+
+export type CategoricalChartSpec = {
+  type: 'categorical';
   valueAccessor?: AccessorFunction;
   labelAccessor?: AccessorFunction;
-  // layers
-  layers?: Array<LayerSpec>;
-  // chart junk
-  title?: string;
-  subtitle?: string;
-  grid?: boolean | GridSpec;
-  attribution?: string;
-  // layout
-  dimensions?: WidthAndHeight;
-  useBrush?: BooleanOrBrushSpec;
-  onBrush?: xyDomainCallback;
-}
+} & ChartSpaceSpec;
+
+export type CartographicChartspec = {
+  type: 'cartographic';
+  projection?: string | Function;
+} & ChartSpaceSpec;
 
 export interface PlotLayersProperties {
   xMax: number;

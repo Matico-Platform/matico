@@ -13,7 +13,7 @@ import mapdata6 from './sample_data/samplelinepolymix.json'
 export const generate2dData = (n) => Array(n)
   .fill(0)
   .map((_, i) => ({
-    x_column: Math.random() * Math.sqrt(i),
+    x_column: Math.random() * (i + 50) * .5,
     y_column: Math.random() * (i + 50) * 2,
     r_column: Math.floor(Math.random() * 10) + 1,
     color_column: Math.random() * 255,
@@ -48,22 +48,22 @@ export const getCategoricalData = (n) => {
 
 export const getMapData = (i) => {
   if (i === 1) {
-    console.log("mapdata:", mapdata);     // California counties
+    // console.log("mapdata:", mapdata);     // California counties
     return mapdata.features;
   } else if (i === 2) {
-    console.log("mapdata2:", mapdata2);   // Illinois counties
+    // console.log("mapdata2:", mapdata2);   // Illinois counties
     return mapdata2.features;
   } else if (i === 3) {
-    console.log("mapdata3:", mapdata3)    // Geojson with only points
+    // console.log("mapdata3:", mapdata3)    // Geojson with only points
     return mapdata3.features;
   } else if (i === 4) {
-    console.log("mapdata4:", mapdata4)    // Geojson with line strings
+    // console.log("mapdata4:", mapdata4)    // Geojson with line strings
     return mapdata4.features;
   } else if (i === 5) {
-    console.log("mapdata5:", mapdata5)    // Geojson with a rectangle (clockwise coordinates work)
+    // console.log("mapdata5:", mapdata5)    // Geojson with a rectangle (clockwise coordinates work)
     return mapdata5.features;
   } else if (i === 6) {
-    console.log("mapdata6:", mapdata6)
+    // console.log("mapdata6:", mapdata6)
     return mapdata6.features;
   }
 }

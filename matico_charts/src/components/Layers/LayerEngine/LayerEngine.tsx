@@ -4,6 +4,7 @@ import { LayerSpec } from "../../types";
 
 import { ScatterLayer } from "../Scatter";
 import { useStore } from "../../../Store/maticoChartStore";
+import { LayerProps } from "./types";
 // import { HeatmapComponent } from './HeatmapComponent';
 
 const LayerMapping = {
@@ -15,8 +16,8 @@ const LayerMapping = {
   // 'heatmap': HeatmapComponent,
 };
 
-const LayerEngine: React.FC = () => {
-  const [layers] = useStore((state) => state.layers);
+export const LayerEngine: React.FC = () => {
+  const layers = useStore((state) => state.layers);
   if (!layers?.length) return null;
   
   return (
@@ -24,9 +25,9 @@ const LayerEngine: React.FC = () => {
       {layers.map((layer: LayerSpec, i: number) => {
         if (!layer) return null;
         const layerType = layer.type as keyof typeof LayerMapping;
-        const Layer = LayerMapping[layerType];
+        const Layer = LayerMapping[layerType] as React.FC<LayerProps>;
         if (!Layer) return null;
-        return <Layer key={`layer-${i}`} index={i} />;
+        return <Layer key={`layer-${i}`} layerIndex={i} />;
       })}
     </Group>
   );

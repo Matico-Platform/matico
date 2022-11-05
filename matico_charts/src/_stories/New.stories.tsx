@@ -33,7 +33,7 @@ export default {
 const Template: Story<ChartSpaceSpec> = (args) => (
   <div
     style={{
-      width: "calc(50%-20px)",
+      width: "100%",
       height: "600px",
     }}
   >
@@ -45,13 +45,15 @@ const Template: Story<ChartSpaceSpec> = (args) => (
 export const LineChart = Template.bind({});
 LineChart.args = {
   layers: [
-    // {
-    //   type: "line",
-    //   lineColor: "steelblue",
-    //   lineWidth: 0.25,
-    // },
+    {
+      type: "scatter",
+      radius: 2
+      // yCol: 'x_column'
+      // lineColor: "steelblue",
+      // lineWidth: 0.25,
+    },
   ],
-//   xCol: "date",
+  xCol: "x_column",
 //   xAxis: {
 //     scaleType: "linear",
 //     display: true,
@@ -70,12 +72,13 @@ LineChart.args = {
 //     display: true,
 //     position: "left",
 //   },
-//   yCol: "value",
+  yCol: "y_column",
 //   yLabel: "y Label here",
 //   title: "My  Scatterplot",
-//   grid: {
-//     rows: true,
-//     columns: false,
-//   },
-  data: SampleLineChartData,
+  grid: {
+    rows: true,
+    columns: false,
+  },
+  data: Sample2dData,
+  type: "continuous"
 };

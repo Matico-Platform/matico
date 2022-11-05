@@ -49,7 +49,8 @@
     "@visx/responsive": "^2.4.1",
     "@visx/shape": "^2.4.0",
     "d3-geo": "^3.0.1",
-    "simple-statistics": "^7.7.3"
+    "simple-statistics": "^7.7.3",
+    "zustand": "^4.1.4"
   },
   "peerDependencies": {
     "react": "^18.2.0"
