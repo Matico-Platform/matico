@@ -75,6 +75,8 @@ LineChart.args = {
   yCol: "y_column",
 //   yLabel: "y Label here",
 //   title: "My  Scatterplot",
+  // useBrush: true,
+  // onBrush: e => console.log(e),
   grid: {
     rows: true,
     columns: false,

@@ -11,15 +11,18 @@ export const Dot: React.FC<DotSpec> = ({
 }) => {
     const [isHovered, setIsHovered] = React.useState(false)
     const d = useStore((state) => state.data[index])
-
+    isHovered && console.log('dot', 
+        xScale(xAccessor(d)),
+        yScale(yAccessor(d)),
+    )
     return <circle
         cx={xScale(xAccessor(d))}
         cy={yScale(yAccessor(d))}
         r={isHovered ? 10 : 3}
         fill="red"
-        style={{
-            transition: "all .1s ease-in-out",
-        }}
+        // style={{
+        //     transition: "all .1s ease-in-out",
+        // }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
     />

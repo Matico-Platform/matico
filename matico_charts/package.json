@@ -47,6 +47,7 @@
     "@visx/heatmap": "^2.1.2",
     "@visx/pattern": "^2.1.2",
     "@visx/responsive": "^2.4.1",
+    "@visx/scale": "^2.2.2",
     "@visx/shape": "^2.4.0",
     "d3-geo": "^3.0.1",
     "simple-statistics": "^7.7.3",

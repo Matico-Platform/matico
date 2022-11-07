@@ -3,5 +3,6 @@ import {
   CategoricalChartSpec,
   ContinuousChartSpec,
 } from "../../types";
+import { ContinuousChartState } from "../Continuous/types";
 
-export type ChartspaceEngineSpec = ContinuousChartSpec | CategoricalChartSpec | CartographicChartspec;
+export type ChartspaceEngineSpec = ({type: "continuous"} & ContinuousChartState) | CategoricalChartSpec | CartographicChartspec;

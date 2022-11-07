@@ -4,7 +4,6 @@ import {
     BooleanOrBrushSpec,
     DataCollection,
     GridSpec,
-    MarginSpec,
     xyDomainCallback,
     LayerSpec
 } from '../../types';
@@ -12,30 +11,34 @@ import {
 import {
     ContinuousDomain
 } from '@visx/scale/lib/types/ScaleConfig'
+import { AnyD3Scale } from '@visx/scale';
 
 export interface ContinuousChartSpaceProps {
     data: DataCollection;
-    layers: LayerSpec[];
     tickFormatFunc?: (d: number) => string;
     xCol: string | AccessorFunction;
     xAxis?: boolean | AxisSpec;
     xAxisPos?: string;
     xLabel?: string;
-    xMax: number;
     xExtent?: ContinuousDomain;
     yCol: string | AccessorFunction;
     yAxis?: boolean | AxisSpec;
     yAxisPos?: string;
     yLabel?: string;
-    yMax: number;
     yExtent?: ContinuousDomain;
     grid?: boolean | GridSpec;
     // rendering props
-    width: number;
-    height: number;
-    margin: MarginSpec, 
-    useBrush: BooleanOrBrushSpec, 
-    onBrush: xyDomainCallback,
-    // inherited layout props, and the rest
-    children: React.ReactNode;
+    useBrush?: BooleanOrBrushSpec, 
+    onBrush?: xyDomainCallback,
 }
+
+export interface ContinuiousChartDerivedState {
+    xAccessor?: AccessorFunction;
+    yAccessor?: AccessorFunction;
+    xBounds?: ContinuousDomain;
+    yBounds?: ContinuousDomain;
+    yScale?: AnyD3Scale;
+    xScale?: AnyD3Scale;
+}
+
+export type ContinuousChartSpaceState = ContinuousChartSpaceProps & ContinuiousChartDerivedState;

@@ -21,13 +21,12 @@ export const ScatterLayer: React.FC<LayerProps> = ({ layerIndex }) => {
     const xScale = useStore((state) => state.xScale);
     const yScale = useStore((state) => state.yScale);
     const data = useStore((state) => state.data);
-    const margins = useStore((state) => state.margins)!;
     const shouldRender =
         xScale && yScale && data?.length && xAccessor && yAccessor;
     if (!shouldRender) return null;
 
     return (
-        <Group top={margins.top} left={margins.left}>
+        <Group>
             {data.map((d: DataRow, i: number) => (
                 <Dot
                     index={i}
