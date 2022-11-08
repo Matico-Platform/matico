@@ -8,11 +8,17 @@ import { ContinuousDomain } from "@visx/scale";
 
 export type LayerAndGlobalState = AnyLayerState & ChartStoreAndActions;
 
-export const useGlobalOrLayer = <T extends keyof LayerAndGlobalState>(
-    key: T,
-    layer?: LayerSpec,
-    layerIndex?: number
-): {
+export const useGlobalOrLayer = <T extends keyof LayerAndGlobalState>({
+    key,
+    shouldUpdate = true,
+    layer,
+    layerIndex,
+}: {
+    key: T;
+    shouldUpdate?: boolean;
+    layer?: LayerSpec;
+    layerIndex?: number;
+}): {
     value: LayerAndGlobalState[T];
     isLayer: boolean;
 } => {
@@ -42,11 +48,11 @@ export const useGlobalOrLayer = <T extends keyof LayerAndGlobalState>(
         case "xAccessor":
         case "yAccessor": {
             const colKey = key === "xAccessor" ? "xCol" : "yCol";
-            const { value: col, isLayer: isLayerCol } = useGlobalOrLayer(
-                colKey,
+            const { value: col, isLayer: isLayerCol } = useGlobalOrLayer({
+                key: colKey,
                 layer,
-                layerIndex
-            );
+                layerIndex,
+            });
 
             const accessor = useStore((state) =>
                 isLayerHook && isLayerCol
@@ -55,7 +61,7 @@ export const useGlobalOrLayer = <T extends keyof LayerAndGlobalState>(
             );
 
             useEffect(() => {
-                if (isLayerCol || !isLayerHook) {
+                if ((isLayerCol || !isLayerHook) && shouldUpdate) {
                     let accessor: AccessorFunction = (_d) => 0;
                     if (isFunc(col)) {
                         accessor = col as AccessorFunction;
@@ -77,21 +83,21 @@ export const useGlobalOrLayer = <T extends keyof LayerAndGlobalState>(
             const colKey = key === "xBounds" ? "xAccessor" : "yAccessor";
             const extentKey = key === "xBounds" ? "xExtent" : "yExtent";
             const { value: accessor, isLayer: isLayerAccessor } =
-                useGlobalOrLayer(colKey, layer, layerIndex);
-            const { value: extent, isLayer: isLayerExtent } = useGlobalOrLayer(
-                extentKey,
+                useGlobalOrLayer({ key: colKey, layer, layerIndex });
+            const { value: extent, isLayer: isLayerExtent } = useGlobalOrLayer({
+                key: extentKey,
                 layer,
-                layerIndex
-            );
-            const { value: data, isLayer: isLayerData } = useGlobalOrLayer(
-                "data",
+                layerIndex,
+            });
+            const { value: data, isLayer: isLayerData } = useGlobalOrLayer({
+                key: "data",
                 layer,
-                layerIndex
-            );
+                layerIndex,
+            });
             const isLayerVal = isLayerAccessor || isLayerExtent || isLayerData;
 
             useEffect(() => {
-                if (isLayerVal || !isLayerHook) {
+                if ((isLayerVal || !isLayerHook) && shouldUpdate) {
                     let bounds: ContinuousDomain | number[] = [0, 0];
                     if (extent) {
                         bounds = extent;
@@ -111,33 +117,31 @@ export const useGlobalOrLayer = <T extends keyof LayerAndGlobalState>(
         }
         case "xScale":
         case "yScale": {
-            const [colKey, accessorKey, dimKey, boundsKey, axisKey] = (
+            const [colKey, dimKey, boundsKey, axisKey] = (
                 key === "xScale"
-                    ? ["xCol", "xAccessor", "xMax", "xBounds", "xAxis"]
-                    : ["yCol", "yAccessor", "yMax", "yBounds", "yAxis"]
+                    ? ["xCol", "xMax", "xBounds", "xAxis"]
+                    : ["yCol", "yMax", "yBounds", "yAxis"]
             ) as (keyof ChartStoreAndActions)[];
 
-            const { value: col, isLayer: isColLayer } = useGlobalOrLayer(
-                colKey,
+            const { value: col, isLayer: isColLayer } = useGlobalOrLayer({
+                key: colKey,
                 layer,
-                layerIndex
-            );
+                layerIndex,
+            });
 
-            const { value: bounds, isLayer: isBoundsLayer } = useGlobalOrLayer(
-                boundsKey,
+            const { value: bounds, isLayer: isBoundsLayer } = useGlobalOrLayer({
+                key: boundsKey,
                 layer,
-                layerIndex
-            );
+                layerIndex,
+            });
 
-            const { value: axis, isLayer: isAxisLayer } = useGlobalOrLayer(
-                boundsKey,
+            const { value: axis, isLayer: isAxisLayer } = useGlobalOrLayer({
+                key: axisKey,
                 layer,
-                layerIndex
-            );
+                layerIndex,
+            });
 
-            const { value: accessor, isLayer: isAccessorLayer } =
-                useGlobalOrLayer(accessorKey, layer, layerIndex);
-
+            const dimMax = useStore((state) => state[dimKey]);
             const axisProps = isObj(axis)
                 ? axis
                 : ({
@@ -146,26 +150,45 @@ export const useGlobalOrLayer = <T extends keyof LayerAndGlobalState>(
                       scaleType: "linear",
                   } as AxisSpec);
 
-            useEffect(() => {
-                if (isAccessorLayer || isBoundsLayer || isAxisLayer) {
-                    let scale;
+            const shouldCalculateLayerScale = isBoundsLayer || isAxisLayer;
+            const shouldCalculateGlobalScale = !isLayerHook;
+            const state = useStore((state) => state);
+            const isReady = !!bounds && !!dimMax && shouldUpdate;
+
+            const updateScale = () => {
+                let scale;
+                const range = key === "xScale" ? [0, dimMax] : [dimMax, 0];
+                if (bounds && dimMax) {
                     const scaleFunc =
                         scaleMapping[(axisProps as AxisSpec).scaleType];
-                    if (bounds && dimMax) {
-                        scale = scaleFunc<any>({
-                            domain: bounds,
-                            range: [0, dimMax],
-                            clamp: true,
-                            ...(isObj(axis)
-                                ? (axis as AxisSpec).scaleParams
-                                : {}),
-                        });
-                        setState({ xScale });
-                    }
+                    scale = scaleFunc<any>({
+                        domain: bounds as ContinuousDomain,
+                        range,
+                        clamp: true,
+                        ...(isObj(axis)
+                            ? // @ts-ignore
+                              (axis as AxisSpec).scaleParams
+                            : {}),
+                    });
+                    setState({ [key]: scale });
                 }
+            };
 
-                return () => isAccessorLayer && setState({ xScale: undefined });
-            }, [col]);
+            useEffect(() => {
+                if (
+                    (shouldCalculateGlobalScale || shouldCalculateLayerScale) &&
+                    isReady
+                ) {
+                    updateScale();
+                }
+                return () =>
+                    shouldCalculateLayerScale && setState({ [key]: undefined });
+            }, [col, dimMax, bounds]);
+
+            return {
+                isLayer: shouldCalculateLayerScale,
+                value: shouldCalculateLayerScale ? layerValue : value,
+            };
         }
         default:
             return {

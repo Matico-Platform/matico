@@ -20,21 +20,21 @@ export const ScatterLayer: React.FC<ScatterLayerComponentsProps> = ({ layerIndex
     const shouldRender =
         xScale && yScale && data?.length && xAccessor && yAccessor;
     if (!shouldRender) return null;
-
-    return (
-        <Group>
-            {data.map((d: DataRow, i: number) => (
-                <Dot
-                    index={i}
-                    key={i}
-                    {...{
-                        xScale,
-                        yScale,
-                        xAccessor,
-                        yAccessor,
-                    }}
-                />
-            ))}
-        </Group>
-    );
+    return null
+    // return (
+    //     <Group>
+    //         {data.map((d: DataRow, i: number) => (
+    //             <Dot
+    //                 index={i}
+    //                 key={i}
+    //                 {...{
+    //                     xScale,
+    //                     yScale,
+    //                     xAccessor,
+    //                     yAccessor,
+    //                 }}
+    //             />
+    //         ))}
+    //     </Group>
+    // );
 };

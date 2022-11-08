@@ -47,9 +47,6 @@ export const useContinuousProps: () => {
     const grid = useStore((state) => (state as ContinuousChartSpec).grid);
     const margins = useStore((state) => state.margins)!;
 
-    const xBounds = useGlobalOrLayer("xBounds");
-    const yBounds = useGlobalOrLayer("yBounds");
-
     // local components
     const showColumnGrid = getBoolOrProperty(grid, true, "columns");
     const showRowGrid = getBoolOrProperty(grid, true, "rows");
@@ -61,7 +58,7 @@ export const useContinuousProps: () => {
               position: "bottom",
               scaleType: "linear",
           } as AxisSpec);
-          
+
     const yAxisProps = isObj(yAxis)
         ? (yAxis as AxisSpec)
         : ({
@@ -90,8 +87,10 @@ export const useContinuousProps: () => {
 
     const XAxisEl = axisMapping[xAxisProps.position];
     const YAxisEl = axisMapping[yAxisProps.position];
-    const xScale = useGlobalOrLayer("xScale");
-    const yScale = useGlobalOrLayer("yScale");
+    const { value: xScale } = useGlobalOrLayer({key:"xScale"});
+    const { value: yScale } = useGlobalOrLayer({key:"yScale"});
+
+    const isReady = xScale && yScale && xMax && yMax && data?.length;
 
     const params = {
         data,
@@ -107,7 +106,7 @@ export const useContinuousProps: () => {
         grid,
     } as ContinuousChartSpec;
 
-    const elements = (
+    const elements = isReady ? (
         <Group style={{ userSelect: "none" }}>
             {!!(showRowGrid && yScale) && (
                 <GridRows
@@ -155,7 +154,7 @@ export const useContinuousProps: () => {
             )}
             {/* TODO labels, selection */}
         </Group>
-    );
+    ) : null;
 
     return {
         params,
