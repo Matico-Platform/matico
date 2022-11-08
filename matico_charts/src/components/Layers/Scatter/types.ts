@@ -1,23 +1,37 @@
+import { AnyD3Scale, ContinuousDomain } from "@visx/scale";
 import { ContinuousChartSpaceProps } from "../../ChartSpace/ContinuousChartSpace.types";
+import { ContinuousChartSpaceState } from "../../ChartSpaces/Continuous/types";
 import { AccessorFunction } from "../../types";
 
-export interface ScatterLayerProps extends Partial<ContinuousChartSpaceProps> {
+export type Shape = "circle" | "square" | "triangle"
+export interface ScatterLayerProps extends Partial<ContinuousChartSpaceState> {
     radiusColumn?: string | AccessorFunction;
-    radiusScale?: number;
-    radiusMin?: number;
-    radiusMax?: number;
+    radiusRange?: ContinuousDomain;
     colorColumn?: string | AccessorFunction;
-    colorScale?: string;
-    colorRange?: string[];
-    colorDomain?: string[];
-    colorReverse?: boolean;
+    colorScheme?: string;
     shapeColumn?: string | AccessorFunction;
-    shapeList?: string[];
+    shapeList?: Shape[];
 }
 
 export interface ScatterLayerComponentsProps {
-    index: number;
+    layerIndex: number;
 }
 
-export type ScatterLayerState = ScatterLayerProps & {
+export interface ScatterLayerDerivedState {
+    radiusAccessor?: AccessorFunction;
+    radiusScale?: AnyD3Scale;
+    colorAccessor?: AccessorFunction;
+    colorScale?: AnyD3Scale;
+    shapeAccessor?: AccessorFunction;
+    shapeScale?: AnyD3Scale;
+
+    xAccessor?: AccessorFunction;
+    yAccessor?: AccessorFunction;
+    xBounds?: ContinuousDomain;
+    yBounds?: ContinuousDomain;
+    yScale?: AnyD3Scale;
+    xScale?: AnyD3Scale;
 }
+
+
+export type ScatterLayerState = ScatterLayerProps & ScatterLayerProps
