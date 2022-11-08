@@ -19,6 +19,5 @@ export interface ScatterLayerComponentsProps {
     index: number;
 }
 
-export interface ScatterLayerState {
-
+export type ScatterLayerState = ScatterLayerProps & {
 }

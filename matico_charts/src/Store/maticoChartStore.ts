@@ -12,6 +12,7 @@ export type MaticoChartStore = ChartspaceEngineSpec & {
     subtitle?: string;
     attribution?: string;
     children?: React.ReactNode;
+    layers: LayerSpec[];
 };
 
 const initialState: MaticoChartStore = {
@@ -40,7 +41,7 @@ export type Actions = {
     ) => any;
 };
 
-export type ChartStoreAndActions = MaticoChartStore & Actions;
+export type ChartStoreAndActions = MaticoChartStore & Actions & ChartspaceEngineSpec
 
 const useStore = create<ChartStoreAndActions>((set) => ({
     ...initialState,
