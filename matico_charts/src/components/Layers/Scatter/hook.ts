@@ -3,21 +3,38 @@ import { useStore } from "../../../Store/maticoChartStore";
 import { ScatterLayerState } from "./types";
 
 export function useScatterLayerState(layerIndex: number): ScatterLayerState {
-    const layer = useStore((state) => state?.layers?.[layerIndex]);
+    const layer = useStore((state) => state?.layers?.[layerIndex])!;
+
+    const { value: data } = useGlobalOrLayer(
+        "data",
+        layer,
+        layerIndex,
+    )
+
     const { value: xAccessor } = useGlobalOrLayer(
-        layer!,
+        "xAccessor",
+        layer,
         layerIndex,
-        "xAccessor"
-    );
-    const { value: yAccessor } = useGlobalOrLayer(
-        layer!,
-        layerIndex,
-        "yAccessor"
     );
     
-    const xScale = useStore((state) => state.xScale);
-    const yScale = useStore((state) => state.yScale);
-    const data = useStore((state) => state.data);
+    const { value: yAccessor } = useGlobalOrLayer(
+        "yAccessor",
+        layer,
+        layerIndex,
+    );
+
+    const { value: xScale } = useGlobalOrLayer(
+        "xScale",
+        layer,
+        layerIndex,
+    );
+    
+    const { value: yScale } = useGlobalOrLayer(
+        "yScale",
+        layer,
+        layerIndex,
+    );
+    
     return {
         xScale,
         yScale,

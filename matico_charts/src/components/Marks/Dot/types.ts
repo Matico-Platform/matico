@@ -1,8 +1,9 @@
+import { AnyD3Scale } from "@visx/scale"
 import { AccessorFunction } from "../../types"
 
 export interface DotSpec {
-    xScale: (d: number) => number
-    yScale: (d: number) => number
+    xScale: AnyD3Scale
+    yScale: AnyD3Scale
     xAccessor: AccessorFunction
     yAccessor: AccessorFunction
     index: number

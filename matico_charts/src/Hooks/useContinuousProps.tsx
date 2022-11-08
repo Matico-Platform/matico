@@ -18,6 +18,7 @@ import { AccessorFunction } from "../../types/components/types";
 import { ContinuousDomain } from "@visx/scale";
 import { Group } from "@visx/group";
 import { useStateValueListener } from "./useStateListeneverValue";
+import { useGlobalOrLayer } from "./useGlobalOrLayer";
 
 export const useContinuousProps: () => {
     elements: React.ReactNode;
@@ -33,77 +34,21 @@ export const useContinuousProps: () => {
 
     const xCol = useStore((state) => (state as ContinuousChartSpec).xCol);
     const yCol = useStore((state) => (state as ContinuousChartSpec).yCol);
+
     const xAxis = useStore((state) => (state as ContinuousChartSpec).xAxis);
     const yAxis = useStore((state) => (state as ContinuousChartSpec).yAxis);
+
     const xLabel = useStore((state) => (state as ContinuousChartSpec).xLabel);
     const yLabel = useStore((state) => (state as ContinuousChartSpec).yLabel);
+
     const xExtent = useStore((state) => (state as ContinuousChartSpec).xExtent);
     const yExtent = useStore((state) => (state as ContinuousChartSpec).yExtent);
+
     const grid = useStore((state) => (state as ContinuousChartSpec).grid);
     const margins = useStore((state) => state.margins)!;
 
-    // global state listeners
-    const yAccessor = useStateValueListener(
-        "yAccessor",
-        () => {
-            let yAccessor: AccessorFunction = (_d) => 0;
-            if (isFunc(yCol)) {
-                yAccessor = yCol as AccessorFunction;
-            } else if (yCol) {
-                yAccessor = (d) => d[yCol as string | number];
-            }
-            setState({ yAccessor });
-            return () => setState({ yAccessor: undefined });
-        },
-        [yCol]
-    );
-
-    const xAccessor = useStateValueListener(
-        "xAccessor",
-        () => {
-            let xAccessor: AccessorFunction = (_d) => 0;
-            if (isFunc(xCol)) {
-                xAccessor = xCol as AccessorFunction;
-            } else if (yCol) {
-                xAccessor = (d) => d[xCol as string | number];
-            }
-            setState({ xAccessor });
-            return () => setState({ xAccessor: undefined });
-        },
-        [xCol]
-    );
-
-    const xBounds = useStateValueListener(
-        "xBounds",
-        () => {
-            let xBounds: ContinuousDomain = [0, 0];
-            if (xExtent) {
-                xBounds = xExtent;
-            } else if (data && xAccessor) {
-                const xData: number[] = data.map(xAccessor);
-                xBounds = [Math.min(...xData), Math.max(...xData)];
-            }
-            setState({ xBounds });
-            return () => setState({ xBounds: undefined });
-        },
-        [xAccessor?.toString(), JSON.stringify(xExtent)]
-    );
-
-    const yBounds = useStateValueListener(
-        "yBounds",
-        () => {
-            let yBounds: ContinuousDomain = [0, 0];
-            if (yExtent) {
-                yBounds = yExtent;
-            } else if (data && yAccessor) {
-                const yData: number[] = data.map(yAccessor);
-                yBounds = [Math.min(...yData), Math.max(...yData)];
-            }
-            setState({ yBounds });
-            return () => setState({ yBounds: undefined });
-        },
-        [yAccessor?.toString(), JSON.stringify(yExtent)]
-    );
+    const xBounds = useGlobalOrLayer("xBounds");
+    const yBounds = useGlobalOrLayer("yBounds");
 
     // local components
     const showColumnGrid = getBoolOrProperty(grid, true, "columns");
@@ -116,6 +61,7 @@ export const useContinuousProps: () => {
               position: "bottom",
               scaleType: "linear",
           } as AxisSpec);
+          
     const yAxisProps = isObj(yAxis)
         ? (yAxis as AxisSpec)
         : ({
@@ -144,43 +90,8 @@ export const useContinuousProps: () => {
 
     const XAxisEl = axisMapping[xAxisProps.position];
     const YAxisEl = axisMapping[yAxisProps.position];
-    const xScale = useStateValueListener(
-        "xScale",
-        () => {
-            let xScale;
-            const xScaleFunc = scaleMapping[xAxisProps.scaleType];
-            if (xBounds && xMax) {
-                xScale = xScaleFunc<number>({
-                    domain: xBounds,
-                    range: [margins.left!, xMax],
-                    clamp: true,
-                    ...(isObj(xAxis) ? (xAxis as AxisSpec).scaleParams : {}),
-                });
-                setState({ xScale });
-            }
-            return () => setState({ xScale: undefined });
-        },
-        [xMax, JSON.stringify(xBounds), JSON.stringify(xAxisProps)]
-    );
-
-    const yScale = useStateValueListener(
-        "yScale",
-        () => {
-            let yScale;
-            const yScaleFunc = scaleMapping[yAxisProps.scaleType];
-            if (yBounds && yMax) {
-                yScale = yScaleFunc<number>({
-                    domain: yBounds,
-                    range: [yMax, margins.top!],
-                    clamp: true,
-                    ...(isObj(yAxis) ? (yAxis as AxisSpec).scaleParams : {}),
-                });
-                setState({ yScale });
-            }
-            return () => setState({ yScale: undefined });
-        },
-        [yMax, JSON.stringify(yBounds), JSON.stringify(yAxisProps)]
-    );
+    const xScale = useGlobalOrLayer("xScale");
+    const yScale = useGlobalOrLayer("yScale");
 
     const params = {
         data,
