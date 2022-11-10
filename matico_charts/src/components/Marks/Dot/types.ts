@@ -1,10 +1,9 @@
-import { AnyD3Scale } from "@visx/scale"
-import { AccessorFunction } from "../../types"
-
+import { DataRow } from "../../types"
 export interface DotSpec {
-    xScale: AnyD3Scale
-    yScale: AnyD3Scale
-    xAccessor: AccessorFunction
-    yAccessor: AccessorFunction
+    x: number
+    y: number
+    color: string
+    radius: number
+    data: DataRow
     index: number
 }

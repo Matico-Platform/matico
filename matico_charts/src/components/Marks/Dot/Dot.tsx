@@ -1,28 +1,24 @@
+import { Circle } from "@visx/shape"
 import React from "react"
-import { useStore } from "../../../Store/maticoChartStore"
 import { DotSpec } from "./types"
 
 export const Dot: React.FC<DotSpec> = ({
-    xScale,
-    xAccessor,
-    yScale,
-    yAccessor,
-    index,
+    x,
+    y,
+    color,
+    radius,
+    data,
+    index
 }) => {
     const [isHovered, setIsHovered] = React.useState(false)
-    const d = useStore((state) => state.data[index])
-    isHovered && console.log('dot', 
-        xScale(xAccessor(d)),
-        yScale(yAccessor(d)),
-    )
-    return <circle
-        cx={xScale(xAccessor(d))}
-        cy={yScale(yAccessor(d))}
-        r={isHovered ? 10 : 3}
-        fill="red"
-        // style={{
-        //     transition: "all .1s ease-in-out",
-        // }}
+    return <Circle
+        cx={x}
+        cy={y}
+        r={isHovered ? radius*2 : radius}
+        fill={color}
+        style={{
+            transition: "r .1s ease-in-out",
+        }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
     />
