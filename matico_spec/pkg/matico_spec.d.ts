@@ -247,6 +247,14 @@ export class Labels {
 }
 /**
 */
+export class LineChartPane {
+  free(): void;
+/**
+*/
+  name: string;
+}
+/**
+*/
 export class LinearLayout {
   free(): void;
 /**

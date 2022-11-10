@@ -20,22 +20,22 @@ pub struct Theme {
 impl Theme {
     #[wasm_bindgen(getter = primaryColor)]
     pub fn get_primary_color(&self) -> JsValue {
-        JsValue::from_serde(&self.primary_color).unwrap()
+        serde_wasm_bindgen::to_value(&self.primary_color).unwrap()
     }
 
     #[wasm_bindgen(setter = primaryColor)]
     pub fn set_primary_color(&mut self, val: JsValue) {
-        self.primary_color = val.into_serde().unwrap();
+        self.primary_color = serde_wasm_bindgen::from_value(val).unwrap();
     }
 
     #[wasm_bindgen(getter = secondaryColor)]
     pub fn get_secondary_color(&self) -> JsValue {
-        JsValue::from_serde(&self.secondary_color).unwrap()
+        serde_wasm_bindgen::to_value(&self.secondary_color).unwrap()
     }
 
     #[wasm_bindgen(setter = secondaryColor)]
     pub fn set_secondary_color(&mut self, val: JsValue) {
-        self.secondary_color = val.into_serde().unwrap();
+        self.secondary_color = serde_wasm_bindgen::from_value(val).unwrap();
     }
 
     #[wasm_bindgen(getter = icon)]

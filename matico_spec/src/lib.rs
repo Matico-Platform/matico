@@ -30,6 +30,10 @@ pub use dataset_transforms::*;
 #[macro_use]
 extern crate matico_spec_derive;
 
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 #[cfg(test)]
 mod tests {
     use super::*;
