@@ -128,7 +128,6 @@ impl LineChartPane {
     }
 }
 
-
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]

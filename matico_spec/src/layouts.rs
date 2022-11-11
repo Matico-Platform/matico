@@ -14,7 +14,9 @@ pub enum Layout {
 
 impl Default for Layout {
     fn default() -> Self {
-        Layout::Free(FreeLayout{allow_overflow:false})
+        Layout::Free(FreeLayout {
+            allow_overflow: false,
+        })
     }
 }
 
@@ -30,43 +32,42 @@ pub enum LinearLayoutDirection {
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
 #[ts(export)]
-pub enum Justification{
-    #[serde(rename="start")]
+pub enum Justification {
+    #[serde(rename = "start")]
     FlexStart,
-    #[serde(rename="end")]
+    #[serde(rename = "end")]
     FlexEnd,
-    #[serde(rename="center")]
+    #[serde(rename = "center")]
     Center,
-    #[serde(rename="space-between")]
+    #[serde(rename = "space-between")]
     SpaceBetween,
-    #[serde(rename="space-around")]
+    #[serde(rename = "space-around")]
     SpaceAround,
-    #[serde(rename="space-evenly")]
-    SpaceEvenly
+    #[serde(rename = "space-evenly")]
+    SpaceEvenly,
 }
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
 #[ts(export)]
-pub enum Alignment{
-    #[serde(rename="start")]
+pub enum Alignment {
+    #[serde(rename = "start")]
     FlexStart,
-    #[serde(rename="end")]
+    #[serde(rename = "end")]
     FlexEnd,
-    #[serde(rename="center")]
+    #[serde(rename = "center")]
     Center,
-    #[serde(rename="stretch")]
+    #[serde(rename = "stretch")]
     Stretch,
-    #[serde(rename="baseline")]
+    #[serde(rename = "baseline")]
     BaseLine,
 }
 
-
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub enum GapSize{
+pub enum GapSize {
     None,
     Small,
     Medium,
@@ -82,33 +83,31 @@ pub struct LinearLayout {
     pub allow_overflow: bool,
     pub justify: Justification,
     pub gap: Option<GapSize>,
-    pub align: Alignment
+    pub align: Alignment,
 }
-
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Clone, Debug, TS, Copy)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub enum TabBarPosition{
+pub enum TabBarPosition {
     Horizontal,
-    Vertical
-}
-
-
-#[wasm_bindgen]
-#[derive(Serialize, Deserialize, Clone, Debug, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct TabLayout{
-    tab_bar_position: TabBarPosition
+    Vertical,
 }
 
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Clone, Debug, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct FreeLayout{
+pub struct TabLayout {
+    tab_bar_position: TabBarPosition,
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct FreeLayout {
     pub allow_overflow: bool,
 }
 
@@ -120,4 +119,3 @@ pub struct GridLayout {
     rows: usize,
     cols: usize,
 }
-

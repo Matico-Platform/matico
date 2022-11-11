@@ -101,11 +101,11 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                 }
 
                 fn register_table(&mut self, table_name: &str, data: &[u8]) -> std::result::Result<(), ::matico_analysis::ArgError> {
-                    
+
                     let mut reader = ::std::io::Cursor::new(data);
                     let table = polars::prelude::IpcReader::new(reader)
                         .finish()
-                        .map_err(|e| 
+                        .map_err(|e|
                                  ::matico_analysis::ArgError::new(table_name,"Failed to register table. Is it an actualy dataframe?".into()))?;
 
                     self.tables.insert(table_name.into(),table);
@@ -143,7 +143,7 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
 
                let mut result_df = self.analysis.run()
                    .map_err(|e| ::wasm_bindgen::JsValue::from_serde(&e).unwrap())?;
-               
+
 
                let mut schema_vec = vec![];
 
@@ -154,7 +154,7 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                     let c = col.to_arrow(0);
                     if let DataType::LargeList(_) = c.data_type(){
                         schema_vec.push(Field::new("geom",DataType::Binary,false));
-                
+
                     let geom_binary :BinaryArray::<i32> = BinaryArray::from_iter(col.list().unwrap().into_iter().
                         map(|row| {
                         let value = row.expect("Row is null");
@@ -178,7 +178,7 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                 let cursor: Cursor<Vec<u8>> = Cursor::new(vec![]);
 
                 let mut writer = FileWriter::try_new(cursor, &schema, None, WriteOptions { compression: None }).unwrap();
-                
+
                 writer.write(&chunks, None).unwrap();
                 writer.finish().unwrap();
                 let mut c = writer.into_inner();

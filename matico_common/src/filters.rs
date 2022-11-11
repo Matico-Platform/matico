@@ -1,9 +1,9 @@
 use crate::{AutoComplete, VarOr};
+use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use validator::Validate;
-use chrono::{DateTime, Utc};
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
@@ -14,25 +14,24 @@ pub struct RangeFilter {
     max: Option<VarOr<f32>>,
 }
 
-#[derive(Serialize, Clone, Deserialize, Validate, Debug,  AutoCompleteMe, TS)]
+#[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct DateFilter{
+pub struct DateFilter {
     variable: String,
     min: Option<DateTime<Utc>>,
-    max: Option<DateTime<Utc>>
+    max: Option<DateTime<Utc>>,
 }
 
-impl Default for DateFilter{
+impl Default for DateFilter {
     fn default() -> Self {
-        Self{
+        Self {
             min: None,
             max: None,
-            variable: "".into()
+            variable: "".into(),
         }
     }
 }
-
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
@@ -46,9 +45,9 @@ pub struct CategoryFilter {
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct RegExFilter{
+pub struct RegExFilter {
     variable: String,
-    regex:String
+    regex: String,
 }
 
 #[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe, TS)]
@@ -59,7 +58,7 @@ pub enum Filter {
     Range(RangeFilter),
     Category(CategoryFilter),
     Date(DateFilter),
-    RegEx(RegExFilter)
+    RegEx(RegExFilter),
 }
 
 impl Default for Filter {
