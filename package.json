@@ -18,6 +18,7 @@
   ],
   "devDependencies": {
     "concurrently": "^7.3.0",
+    "gts": "3.1.1",
     "next": "12.2.0"
   },
   "nohoist": [
