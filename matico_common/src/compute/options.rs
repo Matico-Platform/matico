@@ -1,46 +1,46 @@
 use std::collections::BTreeMap;
 
-use enum_dispatch::enum_dispatch;
-use serde::{Serialize,Deserialize};
 use crate::compute::variables::ParameterValue;
+use enum_dispatch::enum_dispatch;
+use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-
 
 #[enum_dispatch]
 pub trait ValidateParameter {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String>;
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct ParameterOptionDisplayDetails{
+pub struct ParameterOptionDisplayDetails {
     pub description: Option<String>,
-    pub display_name: Option<String>
+    pub display_name: Option<String>,
 }
 
-impl ParameterOptionDisplayDetails{
-    pub fn new<S>(name: Option<S>, description: Option<S>)-> Self
-        where S : Into<String>{
-        ParameterOptionDisplayDetails{
-          display_name: name.map(|s| s.into()),
-          description: description.map(|s|s.into())
-        } 
-    }
-}
-
-impl Default for ParameterOptionDisplayDetails{
-    fn default() -> Self {
-        Self{
-            description:None,
-            display_name:None
+impl ParameterOptionDisplayDetails {
+    pub fn new<S>(name: Option<S>, description: Option<S>) -> Self
+    where
+        S: Into<String>,
+    {
+        ParameterOptionDisplayDetails {
+            display_name: name.map(|s| s.into()),
+            description: description.map(|s| s.into()),
         }
     }
 }
 
+impl Default for ParameterOptionDisplayDetails {
+    fn default() -> Self {
+        Self {
+            description: None,
+            display_name: None,
+        }
+    }
+}
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase" )]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum ColType {
     Text,
@@ -48,13 +48,13 @@ pub enum ColType {
     Geometry,
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct NumericFloatOptions {
     pub range: Option<[f32; 2]>,
     pub default: Option<f32>,
-    pub display_details: ParameterOptionDisplayDetails
+    pub display_details: ParameterOptionDisplayDetails,
 }
 
 impl ValidateParameter for NumericFloatOptions {
@@ -80,17 +80,21 @@ impl ValidateParameter for NumericFloatOptions {
 
 impl Default for NumericFloatOptions {
     fn default() -> Self {
-        Self { range: None , default:None, display_details: Default::default()}
+        Self {
+            range: None,
+            default: None,
+            display_details: Default::default(),
+        }
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct NumericIntOptions {
     pub range: Option<[i32; 2]>,
     pub default: Option<i32>,
-    pub display_details: ParameterOptionDisplayDetails
+    pub display_details: ParameterOptionDisplayDetails,
 }
 
 impl ValidateParameter for NumericIntOptions {
@@ -116,17 +120,21 @@ impl ValidateParameter for NumericIntOptions {
 
 impl Default for NumericIntOptions {
     fn default() -> Self {
-        Self { range: None, default:None, display_details: Default::default()}
+        Self {
+            range: None,
+            default: None,
+            display_details: Default::default(),
+        }
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct NumericCategoryOptions {
     pub allow_multi: bool,
     pub options: Vec<u32>,
-    pub display_details: ParameterOptionDisplayDetails
+    pub display_details: ParameterOptionDisplayDetails,
 }
 
 impl ValidateParameter for NumericCategoryOptions {
@@ -150,18 +158,18 @@ impl Default for NumericCategoryOptions {
         Self {
             allow_multi: false,
             options: vec![],
-            display_details: Default::default()
+            display_details: Default::default(),
         }
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TextCategoryOptions {
     pub allow_multi: bool,
     pub options: Vec<String>,
-    pub display_details: ParameterOptionDisplayDetails
+    pub display_details: ParameterOptionDisplayDetails,
 }
 
 impl Default for TextCategoryOptions {
@@ -169,7 +177,7 @@ impl Default for TextCategoryOptions {
         Self {
             allow_multi: false,
             options: vec![],
-            display_details: Default::default()
+            display_details: Default::default(),
         }
     }
 }
@@ -190,13 +198,13 @@ impl ValidateParameter for TextCategoryOptions {
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ColumnOptions {
     pub allowed_column_types: Option<Vec<ColType>>,
     pub from_dataset: String,
-    pub display_details: ParameterOptionDisplayDetails
+    pub display_details: ParameterOptionDisplayDetails,
 }
 
 impl Default for ColumnOptions {
@@ -204,7 +212,7 @@ impl Default for ColumnOptions {
         Self {
             allowed_column_types: Some(vec![ColType::Text, ColType::Numeric, ColType::Geometry]),
             from_dataset: "".into(),
-            display_details: Default::default()
+            display_details: Default::default(),
         }
     }
 }
@@ -216,20 +224,19 @@ impl ValidateParameter for ColumnOptions {
     }
 }
 
-
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TableOptions {
     pub must_have_geom: bool,
-    pub display_details : ParameterOptionDisplayDetails
+    pub display_details: ParameterOptionDisplayDetails,
 }
 
 impl Default for TableOptions {
     fn default() -> Self {
         Self {
             must_have_geom: false,
-            display_details: Default::default()
+            display_details: Default::default(),
         }
     }
 }
@@ -241,83 +248,80 @@ impl ValidateParameter for TableOptions {
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct BooleanOption {
     pub display_details: ParameterOptionDisplayDetails,
-    pub default: Option<bool> 
-
+    pub default: Option<bool>,
 }
 
-impl Default for BooleanOption{
+impl Default for BooleanOption {
     fn default() -> Self {
-        Self { 
+        Self {
             display_details: Default::default(),
-            default: None
+            default: None,
         }
     }
 }
 
 // TODO figure out how to validate this against table
-impl ValidateParameter for BooleanOption{
+impl ValidateParameter for BooleanOption {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
         Ok(())
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TextOptions {
     pub max_length: Option<usize>,
     pub display_details: ParameterOptionDisplayDetails,
-    pub default: Option<String> 
-
+    pub default: Option<String>,
 }
 
 impl Default for TextOptions {
     fn default() -> Self {
-        Self { 
+        Self {
             max_length: None,
             display_details: Default::default(),
-            default: None
+            default: None,
         }
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct OptionGroup{
-    pub options: BTreeMap<String,ParameterOptions>,
+pub struct OptionGroup {
+    pub options: BTreeMap<String, ParameterOptions>,
     pub display_details: ParameterOptionDisplayDetails,
 }
 
 // TODO implment
-impl ValidateParameter for OptionGroup{
+impl ValidateParameter for OptionGroup {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
         Ok(())
     }
 }
 
 // TODO implment
-impl ValidateParameter for RepeatedOption{
+impl ValidateParameter for RepeatedOption {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
         Ok(())
     }
 }
 
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct RepeatedOption{
+pub struct RepeatedOption {
     pub options: Box<ParameterOptions>,
     pub display_details: ParameterOptionDisplayDetails,
     pub min_times: usize,
     pub max_times: Option<usize>,
 }
-
 
 // TODO figure out how to validate this against table
 impl ValidateParameter for TextOptions {
@@ -342,8 +346,8 @@ impl ValidateParameter for TextOptions {
 }
 
 #[enum_dispatch(ValidateParameter)]
-#[derive(Serialize,Deserialize,TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[derive(Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
 pub enum ParameterOptions {
     OptionGroup(OptionGroup),

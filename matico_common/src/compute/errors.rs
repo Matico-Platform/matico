@@ -1,4 +1,4 @@
-use serde::{Serialize,Deserialize};
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -26,13 +26,15 @@ impl fmt::Display for ArgError {
     }
 }
 
-impl From<ArgError> for ProcessError{
-    fn from (arg_err: ArgError) ->Self{
-       ProcessError { error: format!("{:#?}",arg_err) } 
-    } 
+impl From<ArgError> for ProcessError {
+    fn from(arg_err: ArgError) -> Self {
+        ProcessError {
+            error: format!("{:#?}", arg_err),
+        }
+    }
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct ProcessError {
-    pub error: String
+    pub error: String,
 }

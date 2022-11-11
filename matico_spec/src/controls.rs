@@ -1,4 +1,4 @@
-use crate::{VarOr, DatasetRef,AutoComplete,MappingVarOr};
+use crate::{AutoComplete, DatasetRef, MappingVarOr, VarOr};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -20,7 +20,7 @@ pub enum Control {
 pub struct SelectControl {
     name: String,
     options: VarOr<Vec<String>>,
-    default_value: Option<String>
+    default_value: Option<String>,
 }
 
 #[wasm_bindgen]
@@ -36,12 +36,11 @@ pub struct RangeControl {
     change_event: Option<String>
 }
 
-
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize,Debug,Clone,Validate,TS)]
-#[serde(rename_all="camelCase")]
+#[derive(Serialize, Deserialize, Debug, Clone, Validate, TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct DateTimeSliderPane{
+pub struct DateTimeSliderPane {
     #[wasm_bindgen(skip)]
     pub column: String,
     #[wasm_bindgen(skip)]
@@ -56,6 +55,4 @@ pub struct DateTimeSliderPane{
     pub min: VarOr<DateTime<Utc>>,
     #[wasm_bindgen(skip)]
     pub name: String,
-    
 }
-

@@ -6,7 +6,7 @@ use ts_rs::TS;
 
 // Input structures
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct EqualIntervalParams {
     pub no_bins: usize,
@@ -14,7 +14,7 @@ pub struct EqualIntervalParams {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct LogorithmicParams {
     pub no_bins: usize,
@@ -23,7 +23,7 @@ pub struct LogorithmicParams {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct JenksParams {
     pub no_bins: usize,
@@ -31,7 +31,7 @@ pub struct JenksParams {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct QuantileParams {
     pub no_bins: usize,
@@ -39,14 +39,14 @@ pub struct QuantileParams {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct BasicStatsParams {
     pub treat_null_as_zero: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct HistogramParams {
     pub treat_null_as_zero: Option<bool>,
@@ -56,14 +56,14 @@ pub struct HistogramParams {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ValueCountsParams {
     pub ignore_null: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase", tag="type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
 pub enum StatParams {
     Quantiles(QuantileParams),
@@ -77,7 +77,7 @@ pub enum StatParams {
 // Output types for returning results
 
 #[derive(Serialize, Deserialize, Debug, TS, FromRow)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct QuantileEntry {
     pub quantile: i32,
@@ -90,17 +90,17 @@ pub struct QuantileEntry {
 pub struct QuantileResults(pub Vec<QuantileEntry>);
 
 #[derive(Serialize, Deserialize, Debug, TS, FromRow)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct JenksEntry {
     pub bin_start: f64,
     pub bin_end: f64,
-    pub freq: i64
+    pub freq: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
-pub struct JenksResults(pub Vec<JenksEntry>); 
+pub struct JenksResults(pub Vec<JenksEntry>);
 
 #[derive(Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
@@ -111,7 +111,7 @@ pub struct LogorithmicResults {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS, FromRow)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct BasicStatsResults {
     pub min: f64,
@@ -123,7 +123,7 @@ pub struct BasicStatsResults {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS, FromRow)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ValueCountEntry {
     count: i32,
@@ -131,7 +131,7 @@ pub struct ValueCountEntry {
 }
 
 #[derive(Serialize, Deserialize, Debug, TS, FromRow)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct HistogramEntry {
     bin_start: f64,
@@ -149,7 +149,7 @@ pub struct HistogramResults(pub Vec<HistogramEntry>);
 pub struct ValueCountsResults(pub Vec<ValueCountEntry>);
 
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub enum StatResults {
     Quantiles(QuantileResults),
