@@ -54,9 +54,13 @@ pub trait QueryBuilder<T> {
     /// something more generic depending on how other interfaces use this system
     fn base_query(&self) -> Result<String, crate::errors::ServiceError>;
 
-
     /// Updates the given feature
-    async fn update_feature(db: &T, dataset: Dataset, feature_id: String, update: serde_json::Value)->Result<BTreeMap<String, Option<QueryVal>>,crate::errors::ServiceError>;
+    async fn update_feature(
+        db: &T,
+        dataset: Dataset,
+        feature_id: String,
+        update: serde_json::Value,
+    ) -> Result<BTreeMap<String, Option<QueryVal>>, crate::errors::ServiceError>;
 
     /// Builds the final query taking in to account the base query, the base query, user, filters,
     /// bounds, sort, pagination and tileID

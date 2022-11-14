@@ -10,24 +10,23 @@ use crate::models::{Api, Dataset, StatParams, User};
 
 use crate::utils::{Format, FormatParam, PaginationParams, SortParams};
 use actix_web::{
-    get,
-    put,
+    get, put,
     web::{self, resource},
     HttpResponse,
 };
 use actix_web_lab::extract::Path;
 
+use crate::models::{Permission, PermissionType};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::models::{Permission,PermissionType};
 
 #[derive(Deserialize, Debug)]
 struct QueryString {
     pub q: Option<String>,
 }
 
-#[derive(Deserialize, Display, Debug,PartialEq)]
+#[derive(Deserialize, Display, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
 enum SourceType {
     Dataset,
@@ -226,7 +225,6 @@ async fn get_feature(
     web::Query(columns): web::Query<ColumnSelection>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-
     let mut query = query_for_source(&state.db, &source, query_str.q, query_params).await?;
     let user = User::from_token(&state.db, &logged_in_user.user);
 
@@ -334,16 +332,16 @@ async fn get_column_stat(
 async fn update_feature(
     state: web::Data<State>,
     Path(source): Path<Source>,
-    Path(feature_id):Path<FeatureDetails>,
+    Path(feature_id): Path<FeatureDetails>,
     web::Json(update): web::Json<serde_json::Value>,
     web::Query(format_param): web::Query<FormatParam>,
     logged_in_user: AuthService,
 ) -> Result<HttpResponse, ServiceError> {
-
-
     tracing::info!("BUTTS");
-    if source.source_type != SourceType::Dataset{
-        return Err(ServiceError::BadRequest(format!("You can only update features on datasets")))
+    if source.source_type != SourceType::Dataset {
+        return Err(ServiceError::BadRequest(format!(
+            "You can only update features on datasets"
+        )));
     }
 
     let dataset = Dataset::find(&state.db, source.source_id.unwrap())?;
@@ -352,8 +350,10 @@ async fn update_feature(
     if let Some(user) = logged_in_user.user {
         Permission::check_permission(&state.db, &user.id, &dataset.id, PermissionType::Write)?;
     }
-    let feature = PostgisQueryBuilder::update_feature(&state.data_db, dataset, feature_id.feature_id, update).await?;
-    
+    let feature =
+        PostgisQueryBuilder::update_feature(&state.data_db, dataset, feature_id.feature_id, update)
+            .await?;
+
     let result = QueryResult {
         result: vec![feature],
         execution_type: 0,

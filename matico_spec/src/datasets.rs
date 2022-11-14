@@ -8,18 +8,18 @@ use wasm_bindgen::prelude::*;
 #[ts(export)]
 pub enum Dataset {
     GeoJSON(GeoJSONDataset),
-    #[serde(rename="csv")]
+    #[serde(rename = "csv")]
     CSV(CSVDataset),
     MaticoRemote(MaticoRemoteDataset),
     MaticoApi(MaticoApiDataset),
-    #[serde(rename="cog")]
+    #[serde(rename = "cog")]
     COG(COGDataset),
-    #[serde(rename="wasmCompute")]
+    #[serde(rename = "wasmCompute")]
     WASMCompute(WASMCompute),
-    #[serde(rename="arrow")]
+    #[serde(rename = "arrow")]
     Arrow(ArrowDataset),
-    #[serde(rename="signedS3Arrow")]
-    SignedS3Arrow(SignedS3ArrowDataset)
+    #[serde(rename = "signedS3Arrow")]
+    SignedS3Arrow(SignedS3ArrowDataset),
 }
 
 #[wasm_bindgen]
@@ -63,7 +63,6 @@ pub struct ArrowDataset {
     pub id_col: Option<String>,
 }
 
-
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
 #[serde(rename_all = "camelCase")]
@@ -81,7 +80,6 @@ pub struct SignedS3ArrowDataset {
     #[wasm_bindgen(skip)]
     pub id_col: Option<String>,
 }
-
 
 #[wasm_bindgen]
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
