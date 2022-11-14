@@ -1,8 +1,8 @@
 use geo::Geometry;
 use geozero::{wkb::Wkb, ToGeo};
-use std::collections::BTreeMap;
-pub use polars::prelude::{Series, DataFrame};
 pub use matico_common::*;
+pub use polars::prelude::{DataFrame, Series};
+use std::collections::BTreeMap;
 
 pub trait MaticoAnalysis {
     fn get_parameter(&self, param_name: &str) -> Result<&ParameterValue, ArgError>;
@@ -10,10 +10,10 @@ pub trait MaticoAnalysis {
     fn register_table(&mut self, name: &str, data: &[u8]) -> Result<(), ArgError>;
 }
 
-pub trait MaticoAnalysisRunner{
+pub trait MaticoAnalysisRunner {
     fn options() -> BTreeMap<String, ParameterOptions>;
     fn run(&mut self) -> Result<DataFrame, ProcessError>;
-    fn description()-> Option<String>;
+    fn description() -> Option<String>;
 }
 
 pub fn iter_geom(series: &Series) -> impl Iterator<Item = Geometry<f64>> + '_ {
@@ -25,4 +25,4 @@ pub fn iter_geom(series: &Series) -> impl Iterator<Item = Geometry<f64>> + '_ {
         let vec: Vec<u8> = buffer.into_iter().map(|x| x.unwrap()).collect();
         Wkb(vec).to_geo().expect("unable to convert to geo")
     })
-} 
+}
