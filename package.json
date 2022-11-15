@@ -33,7 +33,7 @@
     "build": "yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  (cd matico_app_server && yarn run prisma generate && yarn build )",
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps",
-    "pretty-write": "yarn prettier --write ."
+    "prettier-write": "yarn prettier --write ."
   },
   "packageManager": "yarn@3.2.2",
   "dependencies": {
