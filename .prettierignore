@@ -1,0 +1,11 @@
+# Ignore artifacts:
+build
+coverage
+
+# Ignore these file types
+*.html
+*.md
+*.yaml
+*.css
+*.cjs
+*.lock
