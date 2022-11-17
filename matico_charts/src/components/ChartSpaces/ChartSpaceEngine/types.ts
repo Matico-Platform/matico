@@ -3,7 +3,7 @@ import {
   CategoricalChartSpec,
   ContinuousChartSpec,
 } from "../../types";
-import { ContinuousChartSpaceState } from "../Continuous/types";
+import { ContinuousChartSpaceState } from "../AxisBased/types";
 
 
 // enum StateMapping {

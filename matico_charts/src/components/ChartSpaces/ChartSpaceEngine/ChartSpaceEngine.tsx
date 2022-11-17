@@ -1,5 +1,5 @@
 import React from "react"
-import {ContinuousChartSpace} from "../Continuous"
+import {ContinuousChartSpace} from "../AxisBased"
 import { useStore } from "../../../Store/maticoChartStore"
 
 const ChartSpaceMapping = {

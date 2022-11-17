@@ -1,6 +1,6 @@
 import { AnyD3Scale, ContinuousDomain } from "@visx/scale";
 import { ContinuousChartSpaceProps } from "../../ChartSpace/ContinuousChartSpace.types";
-import { ContinuousChartSpaceState } from "../../ChartSpaces/Continuous/types";
+import { ContinuousChartSpaceState } from "../../ChartSpaces/AxisBased/types";
 import { AccessorFunction } from "../../types";
 
 export type Shape = "circle" | "square" | "triangle"
