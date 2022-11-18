@@ -31,7 +31,7 @@ diesel = { version = "^1.4.4", features = ["postgres", "r2d2", "chrono", "uuid"]
 diesel_migrations = "^1.4.0"
 r2d2 = "0.8"
 chrono = { version = "0.4.10", features = ["serde"] }
-reqwest = { version = "0.11.9", features = ["json", "multipart"] }
+reqwest = { version = "0.11.9", default-features = false, features = ["blocking", "json", "multipart", "rustls-tls-native-roots"] }
 actix-rt = "1.1.1"
 jsonwebtoken = "7"
 rust-argon2 = "0.8"
