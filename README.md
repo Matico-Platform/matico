@@ -23,7 +23,7 @@ Details on each of these components can be found at [https://matico.app/docs](ht
 ## Running the full environment locally 
 
 You have two choices when running the Matico environment locally. You can either use our dockerized solution or you can run each of the components individually. 
-
+If you are going to install locally, you need to use node version `v16.6.1`.
 
 ### Docker 
 
