@@ -2,10 +2,5 @@
 build
 coverage
 
-# Ignore these file types
-*.html
-*.md
-*.yaml
-*.css
-*.cjs
-*.lock
+# Ignore these file directories
+node_modules/*
