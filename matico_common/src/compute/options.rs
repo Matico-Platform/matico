@@ -18,18 +18,6 @@ pub struct ParameterOptionDisplayDetails {
     pub display_name: Option<String>,
 }
 
-impl ParameterOptionDisplayDetails {
-    pub fn new<S>(name: Option<S>, description: Option<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        ParameterOptionDisplayDetails {
-            display_name: name.map(|s| s.into()),
-            description: description.map(|s| s.into()),
-        }
-    }
-}
-
 impl Default for ParameterOptionDisplayDetails {
     fn default() -> Self {
         Self {
@@ -243,30 +231,6 @@ impl Default for TableOptions {
 
 // TODO figure out how to validate this against table
 impl ValidateParameter for TableOptions {
-    fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
-        Ok(())
-    }
-}
-
-#[derive(Serialize, Deserialize, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct BooleanOption {
-    pub display_details: ParameterOptionDisplayDetails,
-    pub default: Option<bool>,
-}
-
-impl Default for BooleanOption {
-    fn default() -> Self {
-        Self {
-            display_details: Default::default(),
-            default: None,
-        }
-    }
-}
-
-// TODO figure out how to validate this against table
-impl ValidateParameter for BooleanOption {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
         Ok(())
     }

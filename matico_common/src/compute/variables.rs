@@ -112,20 +112,6 @@ impl TryFrom<&ParameterValue> for u32 {
     }
 }
 
-impl TryFrom<&ParameterValue> for bool {
-    type Error = ArgError;
-
-    fn try_from(parameter_value: &ParameterValue) -> Result<bool, Self::Error> {
-        if let ParameterValue::Boolean(val) = parameter_value {
-            return Ok(*val);
-        } else {
-            Err(ArgError::new(
-                "",
-                "Failed to convert ParameterValue to bool",
-            ))
-        }
-    }
-}
 
 impl TryFrom<&ParameterValue> for Vec<u32> {
     type Error = ArgError;
@@ -142,20 +128,6 @@ impl TryFrom<&ParameterValue> for Vec<u32> {
     }
 }
 
-impl TryFrom<&ParameterValue> for Vec<String> {
-    type Error = ArgError;
-
-    fn try_from(parameter_value: &ParameterValue) -> Result<Vec<String>, Self::Error> {
-        if let ParameterValue::TextCategory(val) = parameter_value {
-            return Ok(val.clone());
-        } else {
-            Err(ArgError::new(
-                "",
-                "Failed to convert Numeric Category ParameterValue to  u32",
-            ))
-        }
-    }
-}
 
 impl TryFrom<&ParameterValue> for String {
     type Error = ArgError;
