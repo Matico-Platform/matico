@@ -24,6 +24,7 @@ Details on each of these components can be found at [https://matico.app/docs](ht
 
 You have two choices when running the Matico environment locally. You can either use our dockerized solution or you can run each of the components individually. 
 
+
 ### Docker 
 
 To run the system in docker, simply 
