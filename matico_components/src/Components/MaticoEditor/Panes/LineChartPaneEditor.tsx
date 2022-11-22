@@ -19,9 +19,7 @@ export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 
-export const LineChartPaneEditor: React.FC<PaneEditorProps> = ({
-    paneRef
-}) => {
+export const LineChartPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     const { pane, updatePane, updatePanePosition, parent } = usePane(paneRef);
     const lineChartPane = pane as LineChartPane;
 

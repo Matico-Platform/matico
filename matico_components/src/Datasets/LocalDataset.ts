@@ -8,8 +8,7 @@ import _ from "lodash";
 import { Filter } from "@maticoapp/matico_types/spec";
 
 import ColumnTable from "arquero/dist/types/table/column-table";
-import { assignIds } from 'Datasets/utils'
-
+import { assignIds } from "Datasets/utils";
 
 const applyFilter = (table: ColumnTable, filter: Filter) => {
     switch (filter.type) {
@@ -60,8 +59,8 @@ export class LocalDataset implements Dataset {
     ) {
         this._isReady = true;
         this._filterCache = [];
-        this._data = assignIds(_data)
-        this._columns = [..._columns, {name:"_matico_id", type: "number"}]
+        this._data = assignIds(_data);
+        this._columns = [..._columns, { name: "_matico_id", type: "number" }];
     }
 
     isReady() {
@@ -96,7 +95,9 @@ export class LocalDataset implements Dataset {
 
     getFeatures(feature_ids: number[]) {
         const results = this._data
-            .filter(escape((d: any) => feature_ids.indexOf(d._matico_id) !== -1))
+            .filter(
+                escape((d: any) => feature_ids.indexOf(d._matico_id) !== -1)
+            )
             .objects();
         return Promise.resolve(results);
     }
@@ -119,11 +120,11 @@ export class LocalDataset implements Dataset {
         return Promise.resolve(min);
     }
 
-    getColumnExtent(column: string, filters?: Array<Filter>){
-      const extent = applyFilters(this._data,filters)
-      .rollup({min:op.min(column), max: op.max(column)})
-      .object() as {min: number, max:number};
-      return Promise.resolve(extent)
+    getColumnExtent(column: string, filters?: Array<Filter>) {
+        const extent = applyFilters(this._data, filters)
+            .rollup({ min: op.min(column), max: op.max(column) })
+            .object() as { min: number; max: number };
+        return Promise.resolve(extent);
     }
 
     getColumnSum(column: string, filters?: Array<Filter>) {

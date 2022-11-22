@@ -54,38 +54,36 @@ export const AppOptionsBar: React.FC<AppOptionsBarInterface> = ({
               color: "var(--spectrum-alias-icon-color-selected-focus)",
             }}
           >
-            {app?.name || 'Matico App'}
+            {app?.name || "Matico App"}
           </Text>
         </Flex>
-          {children}
-          {!!onPublicUpdate && !!app && (
-        <Flex justifyContent="end" flex={1} direction="row" gap="size-200">
-
-              <TooltipTrigger delay={0}>
-                <Switch
-                  isEmphasized
-                  isSelected={app.public}
-                  onChange={() => togglePublic()}
-                >
-                  {app.public ? "Public" : "Private"}
-                </Switch>
-                <Tooltip>{app.public ? "Make Private" : "Make Public"}</Tooltip>
-              </TooltipTrigger>
-              <DialogTrigger isDismissable={true}>
-                <ActionButton>
-                  Collaborators: {app._count.collaborators}
-                </ActionButton>
-                <Dialog>
-                  <Heading>Manage Collaborators</Heading>
-                  <Divider />
-                  <Content>
-                    <CollaboratorsEditor app={app} />
-                  </Content>
-                </Dialog>
-              </DialogTrigger>
-
-        </Flex>
-          )}
+        {children}
+        {!!onPublicUpdate && !!app && (
+          <Flex justifyContent="end" flex={1} direction="row" gap="size-200">
+            <TooltipTrigger delay={0}>
+              <Switch
+                isEmphasized
+                isSelected={app.public}
+                onChange={() => togglePublic()}
+              >
+                {app.public ? "Public" : "Private"}
+              </Switch>
+              <Tooltip>{app.public ? "Make Private" : "Make Public"}</Tooltip>
+            </TooltipTrigger>
+            <DialogTrigger isDismissable={true}>
+              <ActionButton>
+                Collaborators: {app._count.collaborators}
+              </ActionButton>
+              <Dialog>
+                <Heading>Manage Collaborators</Heading>
+                <Divider />
+                <Content>
+                  <CollaboratorsEditor app={app} />
+                </Content>
+              </Dialog>
+            </DialogTrigger>
+          </Flex>
+        )}
       </Flex>
     </View>
   );

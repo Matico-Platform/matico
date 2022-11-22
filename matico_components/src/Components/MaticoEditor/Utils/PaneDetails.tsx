@@ -211,10 +211,10 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         layout: { type: "free" },
         panes: []
     },
-    dateTimeSlider:{
+    dateTimeSlider: {
         name: "DateTimeSlider",
         column: null,
-        dataset: {name: "unknown", filters:[]}
+        dataset: { name: "unknown", filters: [] }
     }
 };
 

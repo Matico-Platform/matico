@@ -84,7 +84,12 @@ export const Header: React.FC<{
             paddingX="size-100"
             paddingY="size-50"
             borderRadius="large"
-            UNSAFE_style={{ color: "black", fontSize: ".75em", background: '#fbb854', transform:'translateY(100%)' }}
+            UNSAFE_style={{
+              color: "black",
+              fontSize: ".75em",
+              background: "#fbb854",
+              transform: "translateY(100%)",
+            }}
           >
             <Flex direction="row" alignItems="center" gap="size-150">
               Beta
@@ -99,23 +104,22 @@ export const Header: React.FC<{
             justifySelf="flex-end"
             UNSAFE_style={{}}
           >
-            
-              <ActionButton
-                isQuiet
-                onPress={() => {
-                  if (!!session && !!createNewApp) {
-                    createNewApp("Blank");
-                  } else {
-                    router.push(`/apps/demo`);
-                  }
-                }}
-                UNSAFE_style={{
-                  cursor: "pointer",
-                }}
-              >
-                <Add />
-                Start a New App
-              </ActionButton>
+            <ActionButton
+              isQuiet
+              onPress={() => {
+                if (!!session && !!createNewApp) {
+                  createNewApp("Blank");
+                } else {
+                  router.push(`/apps/demo`);
+                }
+              }}
+              UNSAFE_style={{
+                cursor: "pointer",
+              }}
+            >
+              <Add />
+              Start a New App
+            </ActionButton>
 
             <Login />
             <Link

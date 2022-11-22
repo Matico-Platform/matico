@@ -1,6 +1,5 @@
-
 import { VarOr } from "@maticoapp/matico_types/spec";
-import { Column,DatasetState } from "Datasets/Dataset";
+import { Column, DatasetState } from "Datasets/Dataset";
 import { DatasetTransformStep } from "@maticoapp/matico_types/spec";
 
 export interface FilterEditor {

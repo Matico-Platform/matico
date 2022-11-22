@@ -1,4 +1,3 @@
-
 import { TransformStepProps } from "./types";
 import { DatasetTransformStep } from "@maticoapp/matico_types/spec";
 import React from "react";
@@ -46,7 +45,7 @@ export const TransformStep: React.FC<TransformStepProps> = ({
                     columns={columns}
                 />
             );
-            // @ts-ignore NYI
+        // @ts-ignore NYI
         case "columnTransform":
             return (
                 <ColumnTransformStepEditor

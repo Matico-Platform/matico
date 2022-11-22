@@ -17,8 +17,8 @@ import React, { Key } from "react";
 
 interface VariableEditorProps {
   parameters: Array<any>;
-  values: {[param :string] : any};
-  onValuesChanged: (newParams :{[param :string] : any})=>void;
+  values: { [param: string]: any };
+  onValuesChanged: (newParams: { [param: string]: any }) => void;
   onParametersChanged: (newParams: Array<any>) => void;
   editable: boolean;
 }
@@ -30,14 +30,10 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
   onValuesChanged,
   editable,
 }) => {
-
-  const updateValue=(
-    name:string,
-    value: any
-  )=>{
-    const newValues = {...values, [name]:value}
-    onValuesChanged(newValues)
-  }
+  const updateValue = (name: string, value: any) => {
+    const newValues = { ...values, [name]: value };
+    onValuesChanged(newValues);
+  };
   const updateParameterValue = (
     name: string,
     change: { [value: string]: any }
@@ -109,7 +105,7 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
                 <NumberField
                   label="Value"
                   value={values[p.name] ?? Object.values(p.default_value)[0]}
-                  onChange={(value) => updateValue(p.name, value )}
+                  onChange={(value) => updateValue(p.name, value)}
                   formatOptions={{
                     minimumFractionDigits: 3,
                   }}

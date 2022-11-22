@@ -22,7 +22,7 @@ export const Icon: React.FC<{
 }> = ({ icon, fillColor, size }) => {
   // @ts-ignore
   const IconSvg = Svg[icon];
-  if (!IconSvg) return null
+  if (!IconSvg) return null;
   return (
     <StyledIcon {...{ size, fillColor }}>
       <IconSvg />

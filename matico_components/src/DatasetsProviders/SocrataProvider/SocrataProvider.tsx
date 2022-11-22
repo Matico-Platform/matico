@@ -26,11 +26,13 @@ export const SocrataDatasetExplorer: React.FC<DatasetProviderComponent> = ({
 }) => {
     const portals = usePortals();
 
-    const [selectedPortalKey, setSelectedPortalKey] =
-        useState<null | string>(null);
+    const [selectedPortalKey, setSelectedPortalKey] = useState<null | string>(
+        null
+    );
 
-    const [selectedDatasetId, setSelectedDatasetId] =
-        useState<null | string>(null);
+    const [selectedDatasetId, setSelectedDatasetId] = useState<null | string>(
+        null
+    );
 
     const [latitudeCol, setLatitudeCol] = useState<string | null>(null);
     const [longitudeCol, setLongitudeCol] = useState<string | null>(null);

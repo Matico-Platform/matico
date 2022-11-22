@@ -1,4 +1,4 @@
-export interface FilePreviewerInterface{
-  file:File;
-  onSubmit?:()=>void;
+export interface FilePreviewerInterface {
+  file: File;
+  onSubmit?: () => void;
 }

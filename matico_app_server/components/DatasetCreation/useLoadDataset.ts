@@ -54,14 +54,13 @@ export const useLoadDataset = (
     }
   }, [file]);
 
-  useEffect(()=>{
-      if (fType === "csv" && latCol && lngCol && rawData){
-        setData(assignGeomColsFromLatLng(rawData, latCol, lngCol))
-      }
-      else{
-        setData(rawData)
-      }
-  },[rawData,latCol,lngCol,fType])
+  useEffect(() => {
+    if (fType === "csv" && latCol && lngCol && rawData) {
+      setData(assignGeomColsFromLatLng(rawData, latCol, lngCol));
+    } else {
+      setData(rawData);
+    }
+  }, [rawData, latCol, lngCol, fType]);
 
   return {
     data,
@@ -74,7 +73,7 @@ export const assignGeomColsFromLatLng = (
   latCol: string,
   lngCol: string
 ) => {
-  console.log("Assigning lat lng column ")
+  console.log("Assigning lat lng column ");
   let geoms = table.select({ [latCol]: "lat", [lngCol]: "lng" }).derive({
     geom: escape((d: { lat: number; lng: number }) => {
       return new wkx.Point(d.lng, d.lat).toWkb();

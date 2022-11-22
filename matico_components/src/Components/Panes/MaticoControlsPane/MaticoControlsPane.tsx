@@ -46,7 +46,9 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
                                                     controlSpec.step as number
                                                 }
                                                 name={controlSpec.name}
-                                                changeEvent={controlSpec?.changeEvent}
+                                                changeEvent={
+                                                    controlSpec?.changeEvent
+                                                }
                                             />
                                         );
                                     case "select":

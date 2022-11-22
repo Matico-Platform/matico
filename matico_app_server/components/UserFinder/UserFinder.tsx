@@ -5,20 +5,26 @@ import React, { useState } from "react";
 
 export interface UserFinderInterface {
   onSelect: (user: User) => void;
-  label?: string,
-  excludeList?: Array<string>
+  label?: string;
+  excludeList?: Array<string>;
 }
-export const UserFinder: React.FC<UserFinderInterface> = ({ onSelect, label, excludeList = [] }) => {
+export const UserFinder: React.FC<UserFinderInterface> = ({
+  onSelect,
+  label,
+  excludeList = [],
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   let { users } = useSearchUsers(searchTerm);
-  const validUsers = users ? users.filter((user:User)=> !excludeList.includes(user.id)) : [] 
+  const validUsers = users
+    ? users.filter((user: User) => !excludeList.includes(user.id))
+    : [];
 
   return (
     <Flex direction="column" gap="size-200">
       <TextField
-        label={ label ?? "Search for user"}
+        label={label ?? "Search for user"}
         value={searchTerm}
         onChange={setSearchTerm}
         width="100%"
@@ -31,11 +37,11 @@ export const UserFinder: React.FC<UserFinderInterface> = ({ onSelect, label, exc
                 <img src={user.image} width="20px" height="20px" />
                 <Text>{user.name}</Text>
               </Flex>
-              </ActionButton>
+            </ActionButton>
           ))}
-          { (validUsers.length===0 && searchTerm.length>0) &&
-            <Text>No users found</Text>
-          }
+        {validUsers.length === 0 && searchTerm.length > 0 && (
+          <Text>No users found</Text>
+        )}
       </Flex>
     </Flex>
   );

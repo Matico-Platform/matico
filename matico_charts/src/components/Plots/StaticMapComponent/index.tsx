@@ -92,11 +92,9 @@ export const StaticMapComponent: React.FC<
     return data?.filter((row: any) => {
       return row.hasOwnProperty("geometry") && row.hasOwnProperty("properties");
     });
-  },[data]);
+  }, [data]);
 
-  if (
-    filteredData && proj in basicProjections
-  ) {
+  if (filteredData && proj in basicProjections) {
     const projection = basicProjections[proj]()
       //@ts-ignore
       .fitExtent(
@@ -235,7 +233,7 @@ export const StaticMapComponent: React.FC<
         )}
       </svg>
     );
-  } 
+  }
   // else if (data && !data.every(geometryChecker)) {
   //   throw "StaticMapComponent: geometry is missing from some entries";
   // } else if (data && !data.every(propChecker)) {
@@ -245,9 +243,8 @@ export const StaticMapComponent: React.FC<
   // } else {
   //   throw "StaticMapComponent: issues with loading data";
   // }
-  return null
+  return null;
 };
 
 // every for arrays
 // check if array exists, then check if given entry in array has properties and geometry
-

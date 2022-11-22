@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { CategoryFilterProps } from "../types";
 import {
     ActionButton,
@@ -120,7 +120,10 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 </View>
             </Flex>
             <Flex direction="row" alignItems="center">
-                <Text flexBasis={colBasis(2 / 7)} id="filter-mode-radio-buttons">
+                <Text
+                    flexBasis={colBasis(2 / 7)}
+                    id="filter-mode-radio-buttons"
+                >
                     Filter Mode
                 </Text>
                 <View flexBasis={colBasis(5 / 7)}>

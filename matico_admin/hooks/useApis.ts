@@ -1,4 +1,4 @@
-import {useSWRConfig} from "swr";
+import { useSWRConfig } from "swr";
 import { useSWRAPI, createApi, updateApi } from "../utils/api";
 
 export const useApis = () => {
@@ -16,7 +16,7 @@ export const useApis = () => {
 
 export const useApi = (apiID: string, opts: any) => {
   const { data, error, mutate } = useSWRAPI(`/apis/${apiID}`, opts);
-  const {mutate: allMutate} = useSWRConfig()
+  const { mutate: allMutate } = useSWRConfig();
 
   const attemptUpdateApp = async (api: any) => {
     mutate({ ...data, ...api });
@@ -27,6 +27,9 @@ export const useApi = (apiID: string, opts: any) => {
 };
 
 export const useApiTableData = (api: any, params: { [param: string]: any }) => {
-  const { data, error, mutate } = useSWRAPI(api ? `/apis/${api.id}/run` : null, params);
+  const { data, error, mutate } = useSWRAPI(
+    api ? `/apis/${api.id}/run` : null,
+    params
+  );
   return { data, error: error?.response?.data, mutate };
 };

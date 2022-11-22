@@ -68,7 +68,10 @@ export const PaneSelector: React.FC<{
 
     return (
         <>
-            <div className="grid content" style={{width:'100%', height:"100%"}}>
+            <div
+                className="grid content"
+                style={{ width: "100%", height: "100%" }}
+            >
                 <PaneComponent
                     key={normalizedPane.id}
                     position={paneRef.position}

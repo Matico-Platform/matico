@@ -6,4 +6,12 @@ import type { SelectionOptions } from "./SelectionOptions";
 import type { VarOr } from "./VarOr";
 import type { View } from "./View";
 
-export interface MapPane { name: string, id: string, view: VarOr<View>, layers: Array<Layer>, baseMap: BaseMap | null, controls: MapControls | null, selectionOptions: SelectionOptions | null, }
+export interface MapPane {
+  name: string;
+  id: string;
+  view: VarOr<View>;
+  layers: Array<Layer>;
+  baseMap: BaseMap | null;
+  controls: MapControls | null;
+  selectionOptions: SelectionOptions | null;
+}

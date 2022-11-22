@@ -8,20 +8,23 @@ import { chromaColorFromColorSpecification } from "Components/Panes/MaticoMapPan
 
 interface MaticoNavBarProps {}
 
-const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
-    ({ name, color = "white", size = "normal" }) => {
-        // const iconName = flatIconList.includes(name) ? name : "file";
-        return (
-            <span
-                className={name}
-                style={{
-                    display: "block",
-                    fontSize: "150%",
-                    padding: ".25em"
-                }}
-            />
-        );
-    };
+const NamedButton: React.FC<{
+    name: string;
+    color?: string;
+    size?: string;
+}> = ({ name, color = "white", size = "normal" }) => {
+    // const iconName = flatIconList.includes(name) ? name : "file";
+    return (
+        <span
+            className={name}
+            style={{
+                display: "block",
+                fontSize: "150%",
+                padding: ".25em"
+            }}
+        />
+    );
+};
 
 const HoverLink = styled(Link)`
     text-decoration: none;

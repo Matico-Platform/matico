@@ -59,66 +59,65 @@ const fontSizeOptions: [string, string][] = [
     ["72px", "72px"]
 ];
 
-export const EditableMaticoTextPane: React.FC<EditableMaticoTextPaneInterface> =
-    ({ content, updatePane, ...rest }) => {
-        const edit = useIsEditable();
-        const [formattedText] = useFormattedText(content);
+export const EditableMaticoTextPane: React.FC<
+    EditableMaticoTextPaneInterface
+> = ({ content, updatePane, ...rest }) => {
+    const edit = useIsEditable();
+    const [formattedText] = useFormattedText(content);
 
-        const [toolbarExpanded, setToolbarExpanded] = React.useState(false);
-        const displayContent = edit ? content : formattedText;
+    const [toolbarExpanded, setToolbarExpanded] = React.useState(false);
+    const displayContent = edit ? content : formattedText;
 
-        const handleContent = (content: string) => updatePane({ content });
-        const handleToggleExpanded = () => setToolbarExpanded((prev) => !prev);
+    const handleContent = (content: string) => updatePane({ content });
+    const handleToggleExpanded = () => setToolbarExpanded((prev) => !prev);
 
-        return (
-            <MaticoTextPane
-                content={displayContent}
-                handleContent={handleContent}
-                isReadOnly={!edit}
-                {...rest}
-            >
-                <ToolbarWrapper expanded={toolbarExpanded}>
-                    <ActionButton
-                        isQuiet
-                        aria-label={
-                            toolbarExpanded
-                                ? "Minimize toolbar"
-                                : "Expand toolbar"
-                        }
-                        onPress={handleToggleExpanded}
-                        UNSAFE_style={{
-                            position: "absolute",
-                            top: "0",
-                            right: "0"
-                        }}
-                    >
-                        <MoreCircle />
-                    </ActionButton>
-                    <ToolbarPlugin defaultFontSize="20px">
-                        <FontSizeDropdown fontSizeOptions={fontSizeOptions} />
-                        <AlignDropdown />
-                        <Divider />
-                        <InsertDropdown
-                            enableEquations
-                            enableHorizontalRule
-                            enableYoutube
-                            enableImage
-                            // enableTwitter
-                        />
-                        <Divider />
-                        <BoldButton />
-                        <ItalicButton />
-                        <UnderlineButton />
-                        <Divider />
-                        <TextColorPicker />
-                        <BackgroundColorPicker />
-                        <TextFormatDropdown />
-                        <FontFamilyDropdown />
-                        <Divider />
-                        <InsertLinkButton />
-                        <CodeFormatButton />
-                    </ToolbarPlugin>
-                </ToolbarWrapper>
-            </MaticoTextPane>
-        );
-    };
+    return (
+        <MaticoTextPane
+            content={displayContent}
+            handleContent={handleContent}
+            isReadOnly={!edit}
+            {...rest}
+        >
+            <ToolbarWrapper expanded={toolbarExpanded}>
+                <ActionButton
+                    isQuiet
+                    aria-label={
+                        toolbarExpanded ? "Minimize toolbar" : "Expand toolbar"
+                    }
+                    onPress={handleToggleExpanded}
+                    UNSAFE_style={{
+                        position: "absolute",
+                        top: "0",
+                        right: "0"
+                    }}
+                >
+                    <MoreCircle />
+                </ActionButton>
+                <ToolbarPlugin defaultFontSize="20px">
+                    <FontSizeDropdown fontSizeOptions={fontSizeOptions} />
+                    <AlignDropdown />
+                    <Divider />
+                    <InsertDropdown
+                        enableEquations
+                        enableHorizontalRule
+                        enableYoutube
+                        enableImage
+                        // enableTwitter
+                    />
+                    <Divider />
+                    <BoldButton />
+                    <ItalicButton />
+                    <UnderlineButton />
+                    <Divider />
+                    <TextColorPicker />
+                    <BackgroundColorPicker />
+                    <TextFormatDropdown />
+                    <FontFamilyDropdown />
+                    <Divider />
+                    <InsertLinkButton />
+                    <CodeFormatButton />
+                </ToolbarPlugin>
+            </ToolbarWrapper>
+        </MaticoTextPane>
+    );
+};

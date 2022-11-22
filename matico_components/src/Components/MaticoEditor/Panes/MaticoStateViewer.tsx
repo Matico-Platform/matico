@@ -4,7 +4,7 @@ import { Flex, Heading, View, Text } from "@adobe/react-spectrum";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { IconForPaneType } from "../Utils/PaneDetails";
 import { GeoFeatureVar, MapViewVar, RangeVar, VariableValue } from "index";
-import {DateRangeVar} from "Stores/VariableTypes";
+import { DateRangeVar } from "Stores/VariableTypes";
 
 const GeoFeatureVariableViewer: React.FC<{ feature: GeoFeatureVar }> = ({
     feature
@@ -57,7 +57,7 @@ const RangeFeatureVariableViewer: React.FC<{ feature: RangeVar }> = ({
     );
 };
 
-const DateRangeFeatureVariableViewer: React.FC<{ feature: DateRangeVar}> = ({
+const DateRangeFeatureVariableViewer: React.FC<{ feature: DateRangeVar }> = ({
     feature
 }) => {
     if (feature.value === "NoSelection") {

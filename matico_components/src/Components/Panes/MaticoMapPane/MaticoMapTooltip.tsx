@@ -43,10 +43,12 @@ export const MaticoMapTooltip: React.FC<TooltipSpec> = ({
         if (state === "Done" && result?.geom) {
             try {
                 //TODO: not this
-                const theGeom = wkx.Geometry.parse(Buffer.from(result?.geom)).toGeoJSON()
+                const theGeom = wkx.Geometry.parse(
+                    Buffer.from(result?.geom)
+                ).toGeoJSON();
                 //@ts-ignore
                 return centroid(theGeom);
-            } catch (e){
+            } catch (e) {
                 // console.log("CAUGHT!!!!!!", e)
                 // debugger
                 return { geometry: { coordinates: [0, 0] } };
@@ -68,7 +70,12 @@ export const MaticoMapTooltip: React.FC<TooltipSpec> = ({
         return { label: [text], value: formattedValue };
     });
     // ,[JSON.stringify({columns, result})])
-    if (id === undefined || id === null || datasetName === undefined || !columns.length)
+    if (
+        id === undefined ||
+        id === null ||
+        datasetName === undefined ||
+        !columns.length
+    )
         return null;
     return (
         <TooltipInner
@@ -111,7 +118,7 @@ const TooltipInner: React.FC<TooltipInnerSpec> = ({
                         lineHeight: 1.2,
                         boxShadow: "0 0 4px rgba(0,0,0,0.5)"
                     }}
-                    UNSAFE_className={'matico-tooltip'}
+                    UNSAFE_className={"matico-tooltip"}
                 >
                     {data ? (
                         <Flex direction="column">
@@ -126,14 +133,8 @@ const TooltipInner: React.FC<TooltipInnerSpec> = ({
                     )}
                 </View>
             </Marker>
-            <Marker
-                latitude={latitude}
-                longitude={longitude}
-                anchor="center"
-            >
-                <View
-                    UNSAFE_className={'matico-tooltip'}
-                >
+            <Marker latitude={latitude} longitude={longitude} anchor="center">
+                <View UNSAFE_className={"matico-tooltip"}>
                     {pinned ? (
                         <Pin color="informative" size="S" />
                     ) : (

@@ -1,11 +1,13 @@
-import {prisma} from "../../../db";
-import {NextApiRequest, NextApiResponse} from "next";
+import { prisma } from "../../../db";
+import { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { userFromSession, userHasView } from "../../../utils/db";
 import { authOptions } from "../auth/[...nextauth]";
 
-export default async function handler(req:NextApiRequest, res:NextApiResponse) {
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const session = await unstable_getServerSession(req, res, authOptions);
   const user = await userFromSession(session, prisma);
 
@@ -44,8 +46,10 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
           id: appId,
         },
         include: {
-           owner: {select:{ name:true, id:true, createdAt:true, image:true }},
-          _count:{select:{collaborators: true}},
+          owner: {
+            select: { name: true, id: true, createdAt: true, image: true },
+          },
+          _count: { select: { collaborators: true } },
         },
       });
 
@@ -60,8 +64,8 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
   if (req.method === "DELETE") {
     try {
       await prisma.collaborator.deleteMany({
-        where:{resourceId: appId}
-      })
+        where: { resourceId: appId },
+      });
       const deletedApp = await prisma.app.delete({
         where: {
           id: appId,

@@ -21,7 +21,12 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         });
     };
     return (
-        <View marginY="size-10" width="100%" minWidth="size-200" UNSAFE_style={outerStyle}>
+        <View
+            marginY="size-10"
+            width="100%"
+            minWidth="size-200"
+            UNSAFE_style={outerStyle}
+        >
             <Button
                 variant="primary"
                 isQuiet
@@ -60,7 +65,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                 overflow="hidden hidden"
                 padding="size-50"
                 UNSAFE_style={{
-                    display: open ? "block" : "none",
+                    display: open ? "block" : "none"
                     // ...viewStyle
                 }}
             >

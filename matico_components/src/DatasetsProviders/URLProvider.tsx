@@ -15,8 +15,9 @@ export const URLImporter: React.FC<DatasetProviderComponent> = ({
         lngCol: ""
     });
 
-    const [format, setFormat] =
-        useState<"geoJSON" | "csv" | "arrow">("geoJSON");
+    const [format, setFormat] = useState<"geoJSON" | "csv" | "arrow">(
+        "geoJSON"
+    );
 
     const updateOptions = (update: { [option: string]: string }) => {
         setOptions({ ...options, ...update });

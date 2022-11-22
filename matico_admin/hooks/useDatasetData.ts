@@ -1,4 +1,4 @@
-import {useSWRAPI} from "../utils/api";
+import { useSWRAPI } from "../utils/api";
 
 export const useDatasetData = (
   id: string,
@@ -7,7 +7,7 @@ export const useDatasetData = (
 ) => {
   const offset = page ? page * perPage : 0;
   return useSWRAPI(
-    `/data/dataset/${id}?limit=${perPage}&offset=${offset}&includeMetadata=true`, 
+    `/data/dataset/${id}?limit=${perPage}&offset=${offset}&includeMetadata=true`,
     { refreshInterval: 10000 }
   );
 };

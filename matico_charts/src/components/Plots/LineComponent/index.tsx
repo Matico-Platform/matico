@@ -1,7 +1,7 @@
 //@ts-ignore
-import React from 'react';
-import { LineSpec, PlotLayersProperties } from '../../types';
-import { LinePath } from '@visx/shape';
+import React from "react";
+import { LineSpec, PlotLayersProperties } from "../../types";
+import { LinePath } from "@visx/shape";
 
 export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   const {
@@ -12,7 +12,7 @@ export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
     yAccessor = () => 0,
     xBounds = [0, 0],
     yBounds = [0, 0],
-    lineColor = 'gray',
+    lineColor = "gray",
     lineWidth = 1,
     lineFunction = undefined,
   } = {
@@ -32,7 +32,7 @@ export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   if (lineFunction) {
     return (
       <LinePath
-        stroke={lineColor || 'gray'}
+        stroke={lineColor || "gray"}
         strokeWidth={lineWidth || 2}
         data={chartData}
         //@ts-ignore
@@ -44,7 +44,7 @@ export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   }
   return (
     <LinePath
-      stroke={lineColor || 'gray'}
+      stroke={lineColor || "gray"}
       strokeWidth={2}
       data={chartData}
       //@ts-ignore

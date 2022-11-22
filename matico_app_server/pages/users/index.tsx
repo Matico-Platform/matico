@@ -2,11 +2,11 @@ import { ActionButton, Flex, Grid, repeat } from "@adobe/react-spectrum";
 import { App } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
-import {AppCard} from "../../components/AppCard/AppCard";
+import { AppCard } from "../../components/AppCard/AppCard";
 import { TemplateSelector } from "../../components/TemplateSelector/TemplatesSelector";
 import { useApps } from "../../hooks/useApps";
 import { userFromSession } from "../../utils/db";
-import {prisma} from '../../db'
+import { prisma } from "../../db";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const prisma = new PrismaClient();
@@ -27,7 +27,7 @@ const UserPage: React.FC<{ appName: string; userId: string }> = ({
 }) => {
   const { data: session } = useSession();
 
-  const {apps} = useApps({ ownerId: session?.email as string });
+  const { apps } = useApps({ ownerId: session?.email as string });
 
   const createNewApp = () => {
     fetch("/api/apps", {
@@ -51,13 +51,16 @@ const UserPage: React.FC<{ appName: string; userId: string }> = ({
       <h1>Welcome {}</h1>
       {JSON.stringify(session, null, 2)}
       <TemplateSelector onSelectTemplate={createNewApp} />
-      <Grid 
-              rows={["1fr", "1fr"]}
-              columns={["1fr", "1fr", "1fr"]}
-              >
-      {apps?.map((a:App)=>
-        <AppCard key ={a.id} app={a} includeEdit={true} includeView={true} includeFork={true}/>
-      )}
+      <Grid rows={["1fr", "1fr"]} columns={["1fr", "1fr", "1fr"]}>
+        {apps?.map((a: App) => (
+          <AppCard
+            key={a.id}
+            app={a}
+            includeEdit={true}
+            includeView={true}
+            includeFork={true}
+          />
+        ))}
       </Grid>
     </Flex>
   );

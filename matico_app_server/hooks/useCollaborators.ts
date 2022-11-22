@@ -13,7 +13,7 @@ export const useCollaborators = (appId: string | undefined) => {
     userId: string,
     permissions?: { view: boolean; edit: boolean; manage: boolean }
   ) => {
-    console.log("attempting at add colaborator ", userId,permissions)
+    console.log("attempting at add colaborator ", userId, permissions);
     fetch(`/api/apps/${appId}/collaborators`, {
       method: "PUT",
       headers: {

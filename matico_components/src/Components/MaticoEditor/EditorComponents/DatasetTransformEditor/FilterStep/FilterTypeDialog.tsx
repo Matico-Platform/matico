@@ -7,9 +7,9 @@ import {
     Flex
 } from "@adobe/react-spectrum";
 
-export const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
-    onSubmit
-}) => {
+export const FilterTypeDialog: React.FC<{
+    onSubmit: (newFilter: any) => void;
+}> = ({ onSubmit }) => {
     return (
         <DialogTrigger isDismissable type="popover">
             <ActionButton>Add Filter</ActionButton>

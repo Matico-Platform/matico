@@ -29,7 +29,7 @@ import Edit from "@spectrum-icons/workflow/Edit";
 const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
   datasetsInitial,
 }) => {
-  const { datasets, datasetsError} = useDatasets();
+  const { datasets, datasetsError } = useDatasets();
 
   const colWidth = 200;
 
@@ -45,7 +45,7 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
         </Content>
       </View>
 
-      <Flex gridArea="content" margin="size-1000" direction='column'>
+      <Flex gridArea="content" margin="size-1000" direction="column">
         <Header>
           <Flex
             direction="row"
@@ -63,8 +63,8 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
             aria-label="Example table with static contents"
             selectionMode="multiple"
             marginY="size-40"
-            flex='1'
-            maxHeight='70vh'
+            flex="1"
+            maxHeight="70vh"
           >
             <TableHeader>
               <Column minWidth={colWidth}>Name</Column>
@@ -86,12 +86,16 @@ const Home: NextPage<{ datasetsInitial: Array<any> }> = ({
                     </ALink>
                   </Cell>
                   <Cell>
-                    <Flex direction='row' justifyContent='space-between' alignItems="center">
+                    <Flex
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
                       <Text> {dataset.public ? "Public" : "Private"}</Text>
-                    <ActionButton isQuiet>
-                      <Edit size="S" />
-                    </ActionButton>
-                  </Flex>
+                      <ActionButton isQuiet>
+                        <Edit size="S" />
+                      </ActionButton>
+                    </Flex>
                   </Cell>
                   <Cell>{dataset.sync_dataset ? "Sync" : "Static"}</Cell>
                   <Cell>
