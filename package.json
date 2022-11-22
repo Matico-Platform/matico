@@ -28,6 +28,8 @@
     "**/webpack**",
     "**/babel-loader**"
   ],
+  ,
+  "private": false,
   "scripts": {
     "predeploy": "yarn run build",
     "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
@@ -35,6 +37,9 @@
     "build": "yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  (cd matico_app_server && yarn run prisma generate && yarn build )",
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps",
+    "postinstall": "husky install",
+    "prepublishOnly": "pinst --disable",
+    "postpublish": "pinst --enable",
     "prettier-check": "yarn prettier --check '**/*.{js,ts,jsx,tsx}'",
     "prettier-write": "yarn prettier --write '**/*.{js,ts,jsx,tsx}'"
   },
@@ -42,11 +47,5 @@
   "dependencies": {
     "concurrently": "^7.3.0",
     "pinst": "^3.0.0"
-  },
-  "private": false,
-  "scripts": {
-    "postinstall": "husky install",
-    "prepublishOnly": "pinst --disable",
-    "postpublish": "pinst --enable"
   }
 }
