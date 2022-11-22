@@ -42,5 +42,11 @@
   "dependencies": {
     "concurrently": "^7.3.0",
     "pinst": "^3.0.0"
+  },
+  "private": false,
+  "scripts": {
+    "postinstall": "husky install",
+    "prepublishOnly": "pinst --disable",
+    "postpublish": "pinst --enable"
   }
 }
