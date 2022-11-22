@@ -19,8 +19,8 @@
   "devDependencies": {
     "@types/node": "^14.11.2",
     "concurrently": "^7.3.0",
-    "gts": "^3.1.1",
     "next": "12.2.0",
+    "prettier": "2.7.1",
     "typescript": "~4.7.0"
   },
   "nohoist": [
@@ -34,13 +34,8 @@
     "build": "yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  (cd matico_app_server && yarn run prisma generate && yarn build )",
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps",
-    "lint": "gts lint",
-    "clean": "gts clean",
-    "compile": "tsc",
-    "fix": "gts fix",
-    "prepare": "yarn run compile",
-    "pretest": "yarn run compile",
-    "posttest": "yarn run lint"
+    "prettier-check": "yarn prettier --check '**/*.{js,ts,jsx,tsx}'",
+    "prettier-write": "yarn prettier --write '**/*.{js,ts,jsx,tsx}'"
   },
   "packageManager": "yarn@3.2.2",
   "dependencies": {
