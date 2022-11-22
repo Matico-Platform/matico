@@ -28,7 +28,6 @@
     "**/webpack**",
     "**/babel-loader**"
   ],
-  ,
   "private": false,
   "scripts": {
     "predeploy": "yarn run build",
