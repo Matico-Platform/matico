@@ -40,6 +40,7 @@
   },
   "packageManager": "yarn@3.2.2",
   "dependencies": {
-    "concurrently": "^7.3.0"
+    "concurrently": "^7.3.0",
+    "pinst": "^3.0.0"
   }
 }
