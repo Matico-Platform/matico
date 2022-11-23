@@ -38,7 +38,8 @@
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps",
     "postinstall": "husky install",
     "prepublishOnly": "pinst --disable",
-    "postpublish": "pinst --enable",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable",
     "prettier-check": "yarn prettier --check '**/*.{js,ts,jsx,tsx}'",
     "prettier-write": "yarn prettier --write '**/*.{js,ts,jsx,tsx}'",
     "rust-format":  "cargo fmt"
