@@ -27,7 +27,7 @@
   "nohoist": [
     "**/webpack**",
     "**/babel-loader**"
-  ],
+  ], 
   "scripts": {
     "predeploy": "yarn run build",
     "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
