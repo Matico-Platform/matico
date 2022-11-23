@@ -26,7 +26,6 @@ type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
 
-
 export interface DatasetServiceInterface {
     datasets: { [datasetName: string]: Dataset };
     datasetLoaders: { [loaderName: string]: Loader };
@@ -181,27 +180,27 @@ export const DatasetService: DatasetServiceInterface = {
         args: FeatureRequest,
         notifierId: string,
         callback: (data: unknown) => void
-    ){
+    ) {
         const { datasetName, ids } = args;
 
         const getFeature = async (datasetName: string, ids: number[]) => {
             let dataset = this.datasets[datasetName];
-            const result = dataset ? await dataset.getFeatures(ids) : null
-            return result
-        }
+            const result = dataset ? await dataset.getFeatures(ids) : null;
+            return result;
+        };
 
         const features = await getFeature(datasetName, ids);
 
         if (features) {
-            callback(features)
+            callback(features);
         }
-        
+
         this._registerNotifier(datasetName, notifierId, async () => {
             const features = await getFeature(datasetName, ids);
             if (features) {
-                callback(features)
+                callback(features);
             }
-        })
+        });
     },
     _registerNotifier(
         datasetName: string,

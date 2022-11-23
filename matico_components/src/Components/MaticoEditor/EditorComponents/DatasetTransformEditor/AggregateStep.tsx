@@ -77,7 +77,7 @@ export const AggregateStepEditor: React.FC<{
                                     textTransform: "capitalize"
                                 }}
                                 outerStyle={{
-                                    flexBasis: colBasis(7/8)
+                                    flexBasis: colBasis(7 / 8)
                                 }}
                             >
                                 <Flex
@@ -86,7 +86,10 @@ export const AggregateStepEditor: React.FC<{
                                     width="100%"
                                 >
                                     <Flex direction="row" alignItems="center">
-                                        <Text flexBasis={colBasis(2 / 7)} id={`dataset-selector-agg-${index}`}>
+                                        <Text
+                                            flexBasis={colBasis(2 / 7)}
+                                            id={`dataset-selector-agg-${index}`}
+                                        >
                                             Column
                                         </Text>
                                         <DatasetColumnSelector

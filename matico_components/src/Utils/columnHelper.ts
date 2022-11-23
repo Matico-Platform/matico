@@ -1,1 +1,1 @@
-export const colBasis = (n: number) => `${n*100}%`
+export const colBasis = (n: number) => `${n * 100}%`;

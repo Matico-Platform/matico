@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import { useMemo } from "react";
 import { useSWRAPI, urlForSource, SourceType, Source } from "../utils/api";
 
 export type Page = {
@@ -17,18 +17,22 @@ export const useTableData = (
   sort: Sort,
   page: Page
 ) => {
-
-  let baseUrl = useMemo(()=> {
-    return urlForSource(source)
+  let baseUrl = useMemo(() => {
+    return urlForSource(source);
   }, [source]);
 
-  const params = useMemo(()=>{
+  const params = useMemo(() => {
     return {
-     ...source?.parameters, ...page, ...sort, include_metadata:true, format:'json' 
-  }},[ source,sort, page ])
+      ...source?.parameters,
+      ...page,
+      ...sort,
+      include_metadata: true,
+      format: "json",
+    };
+  }, [source, sort, page]);
 
-  const { data, error, mutate } = useSWRAPI( source ?  baseUrl : null, {
-    params ,
+  const { data, error, mutate } = useSWRAPI(source ? baseUrl : null, {
+    params,
     refreshInterval: 0,
   });
 

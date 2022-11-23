@@ -1,4 +1,4 @@
-import {LabelGroupSpec} from './types';
-import {LabelGroup} from './LabelGroup';
+import { LabelGroupSpec } from "./types";
+import { LabelGroup } from "./LabelGroup";
 
-export {LabelGroup, LabelGroupSpec};
+export { LabelGroup, LabelGroupSpec };

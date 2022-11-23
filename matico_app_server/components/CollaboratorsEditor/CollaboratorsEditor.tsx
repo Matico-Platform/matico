@@ -32,7 +32,7 @@ export const CollaboratorsEditor: React.FC<CollaboratorsEditorProps> = ({
   return (
     <Flex direction="column" gap={"size-200"}>
       {collaborators &&
-        collaborators.map((collaborator:Collaborator) => (
+        collaborators.map((collaborator: Collaborator) => (
           <Flex
             key={collaborator.id}
             alignItems="center"
@@ -42,13 +42,13 @@ export const CollaboratorsEditor: React.FC<CollaboratorsEditorProps> = ({
             <Text>{collaborator.user.name}</Text>
             <Flex direction="row">
               <Switch
-                isEmphasized 
+                isEmphasized
                 isSelected={collaborator.view}
                 onChange={(view) =>
                   updateCollaborator(collaborator.userId, {
                     view,
                     edit: collaborator.edit,
-                    manage:collaborator.manage
+                    manage: collaborator.manage,
                   })
                 }
               >
@@ -61,7 +61,7 @@ export const CollaboratorsEditor: React.FC<CollaboratorsEditorProps> = ({
                   updateCollaborator(collaborator.userId, {
                     view: collaborator.view,
                     edit,
-                    manage: collaborator.manage
+                    manage: collaborator.manage,
                   })
                 }
               >
@@ -80,14 +80,23 @@ export const CollaboratorsEditor: React.FC<CollaboratorsEditorProps> = ({
               >
                 Manage
               </Switch>
-              <ActionButton onPress={()=>removeCollaborator(collaborator.id)} isQuiet>
+              <ActionButton
+                onPress={() => removeCollaborator(collaborator.id)}
+                isQuiet
+              >
                 <Delete />
               </ActionButton>
             </Flex>
           </Flex>
         ))}
       <Divider size="S" />
-      <UserFinder label="Search for user to add as collaborator" onSelect={(user) => addOrUpdateCollaborator(user.id)} excludeList={ collaborators ? collaborators.map((c: Collaborator)=>c.userId) : []} />
+      <UserFinder
+        label="Search for user to add as collaborator"
+        onSelect={(user) => addOrUpdateCollaborator(user.id)}
+        excludeList={
+          collaborators ? collaborators.map((c: Collaborator) => c.userId) : []
+        }
+      />
     </Flex>
   );
 };

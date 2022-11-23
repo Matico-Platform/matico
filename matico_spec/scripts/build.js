@@ -1,4 +1,4 @@
-const esbuild = require('esbuild')
-const options  = require("./options")
+const esbuild = require("esbuild");
+const options = require("./options");
 
-esbuild.build(options)
+esbuild.build(options);

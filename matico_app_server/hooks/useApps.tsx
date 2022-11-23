@@ -5,11 +5,11 @@ import { useApi } from "../utils/api";
 export interface UseAppsArgs {
   ownerId?: string;
   public?: boolean;
-  includeCollaborators?: boolean,
-  order?:string,
-  orderDir?: "asc"| "desc",
-  take?:number,
-  skip?:number,
+  includeCollaborators?: boolean;
+  order?: string;
+  orderDir?: "asc" | "desc";
+  take?: number;
+  skip?: number;
 }
 
 export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
@@ -19,45 +19,42 @@ export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
     mutate,
   } = useApi("/api/apps", { initalData, params: params });
 
-  const createAppFromFork = async(
+  const createAppFromFork = async (
     appId: string,
     name?: string,
     description?: string
-  )=>{
-
+  ) => {
     return fetch(`/api/apps/`, {
       method: "POST",
       body: JSON.stringify({
         name: name ?? "My New App",
         description: description ?? "A new blank app",
         public: false,
-        forkId: appId
+        forkId: appId,
       }),
     })
       .then((r) => r.json())
       .then((r) => {
-        mutate()
-        return r
+        mutate();
+        return r;
       });
-  }
+  };
 
-  const createAppFromTemplate = async (
-    args: NewAppArgs
-  ) => {
+  const createAppFromTemplate = async (args: NewAppArgs) => {
     return fetch(`/api/apps/`, {
       method: "POST",
       body: JSON.stringify({
         name: args.name ?? "My New App",
         description: args.description ?? "A new blank app",
-        public: args.public ,
+        public: args.public,
         template: args.template,
       }),
     })
       .then((r) => r.json())
-      .then((r) =>{
-        console.log(r)
-        mutate()
-        return r 
+      .then((r) => {
+        console.log(r);
+        mutate();
+        return r;
       });
   };
 
@@ -73,16 +70,23 @@ export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
         description: description ?? "A new blank app",
         public: false,
         manualSpec: spec,
-        template: 'Blank'
+        template: "Blank",
       }),
     })
       .then((r) => r.json())
-      .then((r) =>{
-        console.log(r)
-        mutate()
-        return r 
+      .then((r) => {
+        console.log(r);
+        mutate();
+        return r;
       });
   };
 
-  return { apps, error, mutate, createAppFromTemplate, createAppFromFork, createAppFromDemo};
+  return {
+    apps,
+    error,
+    mutate,
+    createAppFromTemplate,
+    createAppFromFork,
+    createAppFromDemo,
+  };
 };

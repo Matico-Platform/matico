@@ -1,15 +1,14 @@
-
 export interface QuerySource {
-    Query: string;
+  Query: string;
 }
 
 export interface DatasetSource {
-    Dataset: string;
+  Dataset: string;
 }
 
 export interface RawQuerySource {
-    RawQuery: string;
+  RawQuery: string;
 }
 export interface GeoJSONSource {
-    url: string;
+  url: string;
 }

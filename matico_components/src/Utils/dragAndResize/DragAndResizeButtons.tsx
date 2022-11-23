@@ -1,8 +1,4 @@
-import React, {
-    useEffect,
-    useLayoutEffect,
-    useRef,
-} from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { DragEndEvent, useDndMonitor, useDraggable } from "@dnd-kit/core";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
@@ -81,7 +77,7 @@ export const DragAndResizeActionButtons: React.FC<{
         setActivatorNodeRef: setSortableActivator,
         attributes: sortableAttributes,
         listeners: sortableListeners,
-        transform: sortableTransform,
+        transform: sortableTransform
     } = useSortable({
         id: paneRef?.id,
         data: {
@@ -92,21 +88,17 @@ export const DragAndResizeActionButtons: React.FC<{
         }
     });
 
-    const listeners = layoutType === "linear"
-        ? sortableListeners
-        : draggableListeners;
+    const listeners =
+        layoutType === "linear" ? sortableListeners : draggableListeners;
 
-    const attributes = layoutType === "linear"
-        ? sortableAttributes
-        : dragAttributes;
+    const attributes =
+        layoutType === "linear" ? sortableAttributes : dragAttributes;
 
-    const setActivatorNodeRef = layoutType === "linear"
-        ? setSortableActivator
-        : setDraggableActivator;
+    const setActivatorNodeRef =
+        layoutType === "linear" ? setSortableActivator : setDraggableActivator;
 
-    const transform = layoutType === "linear"
-        ? sortableTransform
-        : dragTransform;
+    const transform =
+        layoutType === "linear" ? sortableTransform : dragTransform;
 
     const onDragEnd = (event: DragEndEvent) => {
         if (event && event.active.id === paneRef.id) {
@@ -252,7 +244,12 @@ export const DragAndResizeActionButtons: React.FC<{
                 setDraggableNodeRef(paneContainerRef.current);
             }
         }
-    }, [!!paneContainerRef?.current, layoutType, setSortableNodeRef?.toString(), setDraggableNodeRef?.toString()]);
+    }, [
+        !!paneContainerRef?.current,
+        layoutType,
+        setSortableNodeRef?.toString(),
+        setDraggableNodeRef?.toString()
+    ]);
 
     return (
         <>
@@ -297,7 +294,13 @@ export const DragAndResizeActionButtons: React.FC<{
                 }}
                 onMouseDown={startResize}
                 aria-label="Resize Pane"
-                className={`grid sm ${layoutType === "free" ? " s e " : direction === "row" ? "center e" : "center s"}`}
+                className={`grid sm ${
+                    layoutType === "free"
+                        ? " s e "
+                        : direction === "row"
+                        ? "center e"
+                        : "center s"
+                }`}
             >
                 <ArrowEl
                     color="positive"

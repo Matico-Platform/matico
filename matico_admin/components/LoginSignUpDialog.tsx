@@ -73,7 +73,7 @@ export const LoginSignupDialog: React.FC<LoginSignupDialogProps> = ({
                     label="email"
                     placeholder="someone@somedomain.com"
                     value={email}
-                    validationState={ loginError ? "invalid" : 'valid'}
+                    validationState={loginError ? "invalid" : "valid"}
                     onChange={setEmail}
                   />
                   <TextField
@@ -82,7 +82,7 @@ export const LoginSignupDialog: React.FC<LoginSignupDialogProps> = ({
                     placeholder="Very Secure Password"
                     value={password}
                     onChange={setPassword}
-                    validationState={ loginError ? "invalid" : 'valid'}
+                    validationState={loginError ? "invalid" : "valid"}
                     errorMessage={loginError}
                   />
                 </Form>
@@ -94,14 +94,14 @@ export const LoginSignupDialog: React.FC<LoginSignupDialogProps> = ({
                     placeholder="Your name"
                     value={name}
                     onChange={setName}
-                    validationState={ signupError ? "invalid" : 'valid'}
+                    validationState={signupError ? "invalid" : "valid"}
                   />
                   <TextField
                     label="email"
                     placeholder="someone@somedomain.com"
                     value={email}
                     onChange={setEmail}
-                    validationState={ signupError ? "invalid" : 'valid'}
+                    validationState={signupError ? "invalid" : "valid"}
                   />
                   <TextField
                     type="password"
@@ -109,7 +109,7 @@ export const LoginSignupDialog: React.FC<LoginSignupDialogProps> = ({
                     value={password}
                     onChange={setPassword}
                     placeholder="Very Secure Password"
-                    validationState={ signupError ? "invalid" : 'valid'}
+                    validationState={signupError ? "invalid" : "valid"}
                     errorMessage={signupError}
                   />
                 </Form>

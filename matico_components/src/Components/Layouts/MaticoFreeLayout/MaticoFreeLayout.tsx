@@ -151,9 +151,9 @@ const FreePane: React.FC<{ position: PanePosition; paneRef: PaneRef }> = ({
             <FreeContainer ref={paneContainerRef}>
                 {!!isEdit && (
                     <DragAndResizeActionButtons
-                         paneContainerRef={paneContainerRef} 
-                         layoutType="free"
-                         />
+                        paneContainerRef={paneContainerRef}
+                        layoutType="free"
+                    />
                 )}
                 <PaneSelector
                     normalizedPane={normalizedPane}

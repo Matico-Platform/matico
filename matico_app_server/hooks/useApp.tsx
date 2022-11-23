@@ -14,19 +14,19 @@ export const useApp = (appId: string | undefined, initialData?: App) => {
     })
       .then((r) => r.json())
       .then((r) => {
-        mutate(r); 
-        return r 
+        mutate(r);
+        return r;
       });
   };
 
-  const setPublic= async (isPublic: boolean) => {
+  const setPublic = async (isPublic: boolean) => {
     return fetch(`/api/apps/${appId}`, {
       method: "PUT",
-      body: JSON.stringify({id:appId, public:isPublic}),
+      body: JSON.stringify({ id: appId, public: isPublic }),
     })
       .then((r) => r.json())
       .then((r) => mutate(r));
   };
 
-  return { app: data, error, mutate, updateApp, setPublic};
+  return { app: data, error, mutate, updateApp, setPublic };
 };

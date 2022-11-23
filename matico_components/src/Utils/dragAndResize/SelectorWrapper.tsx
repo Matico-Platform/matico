@@ -14,7 +14,7 @@ const Wrapper = styled.span<{ interactive?: boolean; isHovered?: boolean }>`
             ? "4px solid var(--spectrum-global-color-chartreuse-500)"
             : "4px solid rgba(0,0,0,0)"};
     z-index: 4;
-    margin:4px;
+    margin: 4px;
     box-sizing: border-box;
     pointer-events: ${({ interactive }) => (interactive ? "all" : "none")};
     cursor: ${({ interactive }) => (interactive ? "pointer" : "default")};

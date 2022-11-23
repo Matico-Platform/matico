@@ -50,7 +50,6 @@ export const EditablePillButton: React.FC<EditablePillButtonProps> = ({
         setInputValue(event.target.value);
     };
 
-
     return (
         <View borderRadius={"small"} borderColor={pillColor} borderWidth="thin">
             <Flex direction="row" alignItems="center" justifyContent="center">
@@ -89,7 +88,7 @@ export const EditablePillButton: React.FC<EditablePillButtonProps> = ({
                             variant="overBackground"
                             aria-albel={`Edit ${value} filter value`}
                             UNSAFE_style={{
-                                borderRadius:0
+                                borderRadius: 0
                             }}
                         >
                             {value}

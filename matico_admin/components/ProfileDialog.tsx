@@ -8,7 +8,7 @@ import {
 } from "@adobe/react-spectrum";
 import React, { useState } from "react";
 import Link from "next/link";
-import {useUser} from "../hooks/useUser";
+import { useUser } from "../hooks/useUser";
 
 export interface ProfileDialogProps {
   username: string;
@@ -21,13 +21,13 @@ export const ProfileDiaglog: React.FC<ProfileDialogProps> = ({
   popover,
   onLogout,
 }) => {
-  const {user, logout} = useUser()
+  const { user, logout } = useUser();
   const [isOpen, setIsOpen] = useState(false);
 
-  const tryLogout = ()=>{
-    logout()
-    setIsOpen(false)
-  }
+  const tryLogout = () => {
+    logout();
+    setIsOpen(false);
+  };
 
   return (
     <DialogTrigger type={popover ? "popover" : "modal"} isOpen={isOpen}>

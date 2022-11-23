@@ -1,4 +1,3 @@
-
 import {
   Button,
   Cell,
@@ -18,13 +17,15 @@ import React, { useEffect, useState } from "react";
 
 import { FilePreviewerInterface } from "./FilePreviewerInterface";
 import { Uploader } from "./Uploader";
-import { getShpPreview} from "./utils/getShpPreview";
+import { getShpPreview } from "./utils/getShpPreview";
 
 export const ShpFilePreviewer: React.FC<FilePreviewerInterface> = ({
   file,
   onSubmit,
 }) => {
-  const [name, setName] = useState<string>(file.name.split(".").slice(0,-1).join("."));
+  const [name, setName] = useState<string>(
+    file.name.split(".").slice(0, -1).join(".")
+  );
   const [description, setDescription] = useState<string>("");
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const [upload, setUpload] = useState<boolean>(false);
@@ -36,16 +37,16 @@ export const ShpFilePreviewer: React.FC<FilePreviewerInterface> = ({
   const metadata = {
     name,
     description,
-    geom_col:"wkb_geometry",
-    id_col:"ogc_fid",
-    import_params:{
-      Shp:{}
-    }
-  }
+    geom_col: "wkb_geometry",
+    id_col: "ogc_fid",
+    import_params: {
+      Shp: {},
+    },
+  };
 
   useEffect(() => {
     getShpPreview(file).then((batch) => {
-      const data = batch .filter((d: any) => d);
+      const data = batch.filter((d: any) => d);
       const columns = data.reduce(
         (colSet: Set<string>, row: { [col: string]: any }) =>
           new Set([...colSet, ...Object.keys(row)]),
@@ -57,12 +58,14 @@ export const ShpFilePreviewer: React.FC<FilePreviewerInterface> = ({
   }, []);
 
   return (
-    <Flex width="100%" height="100%" direction='column'>
+    <Flex width="100%" height="100%" direction="column">
       {dataPreview && columns && (
         <TableView height="size-2400">
           <TableHeader>
             {Object.keys(dataPreview[0]).map((column) => (
-              <Column width={150} key={column}>{column}</Column>
+              <Column width={150} key={column}>
+                {column}
+              </Column>
             ))}
           </TableHeader>
           <TableBody>
@@ -95,7 +98,10 @@ export const ShpFilePreviewer: React.FC<FilePreviewerInterface> = ({
           Public
         </Switch>
         {upload ? (
-          <Uploader file={file} metadata={{ name, description, import_params:{Shp:{}} }} />
+          <Uploader
+            file={file}
+            metadata={{ name, description, import_params: { Shp: {} } }}
+          />
         ) : (
           <Button variant="cta" onPress={() => setUpload(true)}>
             Upload

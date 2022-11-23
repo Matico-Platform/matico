@@ -44,15 +44,18 @@ export const ArrowBuilder = async (details: ArrowDataset) => {
         //@ts-ignore
         let data = await loadArrow(url);
 
-        
-        let geomColName =geometryCol ?? data._names.find(n => ['geom','geometry'].includes(n.toLowerCase()));
+        let geomColName =
+            geometryCol ??
+            data._names.find((n) =>
+                ["geom", "geometry"].includes(n.toLowerCase())
+            );
 
-        let geomCol =  data.column(geomColName) ;
+        let geomCol = data.column(geomColName);
 
         let geomType = geomCol ? getGeomType(geomCol) : null;
 
-        if(geomCol){
-          data =data.rename({[geomColName] : 'geom'})
+        if (geomCol) {
+            data = data.rename({ [geomColName]: "geom" });
         }
 
         return new LocalDataset(

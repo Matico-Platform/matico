@@ -140,11 +140,13 @@ const EditRangeModal: React.FC<{
                             ></NumberField>
                         </Flex>
                         <RadioGroup
-                            label='Event Trigger'
+                            label="Event Trigger"
                             labelPosition="side"
                             orientation="horizontal"
                             value={rangeProps.changeEvent || "onChange"}
-                            onChange={(changeEvent) => onUpdate({ changeEvent })}
+                            onChange={(changeEvent) =>
+                                onUpdate({ changeEvent })
+                            }
                         >
                             <Radio value="onChange">On Change</Radio>
                             <Radio value="onEnd">On End</Radio>

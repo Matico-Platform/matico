@@ -230,7 +230,11 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
                                             marginStart={"size-100"}
                                             UNSAFE_style={{ color: "white" }}
                                         >
-                                            {i > 0 ? label.text : `> ${nicelyFormatNumber(val)}`}
+                                            {i > 0
+                                                ? label.text
+                                                : `> ${nicelyFormatNumber(
+                                                      val
+                                                  )}`}
                                         </Text>
                                     </LegendItem>
                                 );

@@ -177,7 +177,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     const stopSyncing = () => {
         updatePane({
             ...mapPane,
-            view: {...syncedMapPaneView.value}
+            view: { ...syncedMapPaneView.value }
         });
     };
 

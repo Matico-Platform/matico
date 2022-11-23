@@ -1,19 +1,19 @@
-import { Scale } from '@visx/brush/lib/types';
-import { ContinuousDomain } from '@visx/scale';
+import { Scale } from "@visx/brush/lib/types";
+import { ContinuousDomain } from "@visx/scale";
 //layout
 export type MarginSpec = {
   top: number;
   right: number;
   bottom: number;
   left: number;
-}
+};
 
 export type Domain2D = {
   x0: number;
   x1: number;
   y0: number;
   y1: number;
-}
+};
 // data
 export type DataRow = { [property: string]: any };
 export type DataCollection = Array<DataRow>;
@@ -24,10 +24,10 @@ export type StringColor = string;
 export type RgbColor = [number, number, number];
 export type RgbaColor = [number, number, number, number];
 export type ColorOutput = HexColor | StringColor | RgbColor | RgbaColor;
-export type ShapeOutput = 'circle' | 'rectangle' | 'polygon' | 'text';
-export type ScaleType = 'linear' | 'log' | 'power' | 'sqrt';
-export type YAxisPosition = 'left' | 'right';
-export type XAxisPosition = 'bottom' | 'top';
+export type ShapeOutput = "circle" | "rectangle" | "polygon" | "text";
+export type ScaleType = "linear" | "log" | "power" | "sqrt";
+export type YAxisPosition = "left" | "right";
+export type XAxisPosition = "bottom" | "top";
 
 //scales
 interface ScaleSpec {
@@ -59,7 +59,7 @@ export interface ErrorSpec {
 
 // layers
 export interface BaseLayerSpec {
-  type: 'scatter' | 'line' | 'bar' | 'pie' | 'map';
+  type: "scatter" | "line" | "bar" | "pie" | "map";
   data?: DataCollection;
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
@@ -120,12 +120,18 @@ export interface PieSpec extends BaseLayerSpec {
 }
 
 export interface HeatmapSpec extends BaseLayerSpec {
-  xBins: number,
-  yBins: number,
-  binnedData?: DataCollection[]
+  xBins: number;
+  yBins: number;
+  binnedData?: DataCollection[];
 }
 
-export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec | StaticMapSpec;
+export type LayerSpec =
+  | ScatterSpec
+  | LineSpec
+  | BarSpec
+  | PieSpec
+  | HeatmapSpec
+  | StaticMapSpec;
 
 // layouts
 export type OverwriteProperty = { [property: string]: any };
@@ -134,7 +140,7 @@ export interface AxisSpec {
   scaleType: ScaleType;
   display?: boolean;
   scaleParams?: OverwriteProperty;
-  tickFormatFunc?:  (d: number) => string;
+  tickFormatFunc?: (d: number) => string;
 }
 
 export interface GridSpec {

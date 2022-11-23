@@ -20,7 +20,6 @@ export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
     name,
     changeEvent
 }) => {
-
     const [value, updateValue] = useAutoVariable({
         variable: {
             id: controlPaneId,
@@ -33,7 +32,9 @@ export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
         },
         bind: true
     });
-    const [internalValue, setIntervalValue] = useState(value || {start:0, end:1});
+    const [internalValue, setIntervalValue] = useState(
+        value || { start: 0, end: 1 }
+    );
 
     useEffect(() => {
         setIntervalValue({
@@ -42,12 +43,11 @@ export const MaticoRangeControl: React.FC<MaticoRangeControlInterface> = ({
         });
     }, [value]);
 
-    const handleChange = (val: {start:number, end:number}) => (
+    const handleChange = (val: { start: number; end: number }) =>
         updateValue({
             type: "range",
             value: { min: val.start, max: val.end }
-        })
-    )
+        });
 
     return (
         <RangeSlider

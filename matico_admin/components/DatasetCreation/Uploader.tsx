@@ -48,8 +48,8 @@ export const Uploader: React.FC<UploaderProps> = ({
       { ...metadata, geom_col: "wkb_geometry", id_col: "ogc_fid" },
       setProgress
     )
-      .then((response  :any) => {
-        setIsDone(true)
+      .then((response: any) => {
+        setIsDone(true);
         if (onDone) {
           onDone();
         }

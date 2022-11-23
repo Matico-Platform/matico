@@ -29,11 +29,11 @@ export const assignGeomCols = (
   lngCol: string
 ) => {
   let geoms = table.select({ [latCol]: "lat", [lngCol]: "lng" }).derive({
-    geom: escape((d: {lat:number, lng:number}) => {
+    geom: escape((d: { lat: number; lng: number }) => {
       return new wkx.Point(d.lng, d.lat).toWkb();
     }),
   });
 
   table = table.assign(geoms.select("geom"));
-  return table
+  return table;
 };

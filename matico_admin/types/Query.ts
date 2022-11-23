@@ -1,18 +1,18 @@
 export interface QueryParameter {
-    name: string;
-    description: string;
-    default_value: Record<string, unknown>;
+  name: string;
+  description: string;
+  default_value: Record<string, unknown>;
 }
 
 export interface Query {
-    id: string;
-    name: string;
-    description: string;
-    sql: string;
-    parameters: Array<QueryParameter>;
+  id: string;
+  name: string;
+  description: string;
+  sql: string;
+  parameters: Array<QueryParameter>;
 }
 
 export interface ValueCount {
-    name: string;
-    count: number;
+  name: string;
+  count: number;
 }

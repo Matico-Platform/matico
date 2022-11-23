@@ -106,23 +106,22 @@ export const setAppAccess = async (
   permissions: { view: boolean; edit: boolean; manage: boolean },
   prisma: PrismaClient
 ) => {
-
   let linkedResource;
-  let where: any= {userId:userId, resourceType:resourceType};
+  let where: any = { userId: userId, resourceType: resourceType };
 
   switch (resourceType) {
     case ResourceType.App:
       linkedResource = { app: { connect: { id: resource.id } } };
-      where={...where, appId:resource.id}
+      where = { ...where, appId: resource.id };
       break;
     case ResourceType.Dataset:
       linkedResource = { dataset: { connect: { id: resource.id } } };
-      where={...where, datasetId:resource.id}
+      where = { ...where, datasetId: resource.id };
       break;
   }
 
   let existingPermisions = await prisma.collaborator.findMany({
-    where: where
+    where: where,
   });
 
   if (existingPermisions.length > 1) {
@@ -142,7 +141,7 @@ export const setAppAccess = async (
         edit: permissions.edit,
       },
     });
-  } else if(existingPermisions.length===0) {
+  } else if (existingPermisions.length === 0) {
     return prisma.collaborator.create({
       data: {
         view: permissions.view,

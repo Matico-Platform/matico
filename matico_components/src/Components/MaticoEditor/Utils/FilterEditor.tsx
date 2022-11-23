@@ -155,9 +155,7 @@ const CategoryFilterEditor: React.FC<CategoryFilterProps> = ({
     isNotOneOf,
     onUpdateFilter
 }) => {
-
-    const toggleIsOneOf = ()=>{
-    }
+    const toggleIsOneOf = () => {};
     return (
         <Flex direction="row">
             <Picker
@@ -167,22 +165,25 @@ const CategoryFilterEditor: React.FC<CategoryFilterProps> = ({
             >
                 {(column) => <Item key={column.name}>{column.name}</Item>}
             </Picker>
-            {isOneOf.hasOwnProperty('var') ?
-            <VariableSelector
-                variable={min.var}
-                onSelectVariable={(newVar) =>
-                    onUpdateFilter({
-                        Range: {
-                            max,
-                            min: { var: newVar },
-                            variable: selectedColumn.name
-                        }
-                    })
-                }
-            />
-           : 
-            <TextField label="Is one of " value={isOneOf ? isOneOf.join(",") : ""}/>
-            }
+            {isOneOf.hasOwnProperty("var") ? (
+                <VariableSelector
+                    variable={min.var}
+                    onSelectVariable={(newVar) =>
+                        onUpdateFilter({
+                            Range: {
+                                max,
+                                min: { var: newVar },
+                                variable: selectedColumn.name
+                            }
+                        })
+                    }
+                />
+            ) : (
+                <TextField
+                    label="Is one of "
+                    value={isOneOf ? isOneOf.join(",") : ""}
+                />
+            )}
             <ToggleButton
                 isEmphasized
                 isSelected={isOneOf.hasOwnProperty("var")}

@@ -19,7 +19,7 @@ export const useRequestDataMulti = (requests: Array<DataRequest>) => {
     const notifierId = useMemo(() => uuid(), []);
     const requestObjs = requests.map((r) => ({
         ...r,
-        columns: r.columns ? [...r.columns, '_matico_id'] : undefined,
+        columns: r.columns ? [...r.columns, "_matico_id"] : undefined,
         requestHash: JSON.stringify(r),
         notifierId
     }));
@@ -62,7 +62,9 @@ export const useRequestData = (request?: DataRequest) => {
             dispatch(
                 registerDataUpdates({
                     ...request,
-                    columns: request.columns ? ['_matico_id', ...request.columns] : undefined,
+                    columns: request.columns
+                        ? ["_matico_id", ...request.columns]
+                        : undefined,
                     requestHash,
                     notifierId
                 })

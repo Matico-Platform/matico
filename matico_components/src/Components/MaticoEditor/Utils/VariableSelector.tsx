@@ -37,10 +37,10 @@ function suboptionsForVariableType(variable: MaticoStateVariable) {
                 { id: "bearing", name: "Bearing" }
             ];
         case "dateRange":
-            return[
-              {id: "min", name:"min"},
-              {id:"max", name:'max'}
-            ]
+            return [
+                { id: "min", name: "min" },
+                { id: "max", name: "max" }
+            ];
         default:
             return Object.keys(variable.value.value).map((so) => ({
                 name: so,
@@ -51,7 +51,7 @@ function suboptionsForVariableType(variable: MaticoStateVariable) {
 export const VariableSelector: React.FC<VariableSelectorProps> = ({
     variable,
     onSelectVariable,
-    inline=true
+    inline = true
 }) => {
     const [options, vars] = useMaticoSelector((state) => {
         let vars = Object.values(state.variables.autoVariables);
@@ -90,46 +90,45 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
     const suboptions = suboptionsForVariableType(selectedVar);
 
     return (
-                       <><Picker
-                            label={"Select variable to use"}
-                            width={"100%"}
-                            items={options}
-                            onSelectionChange={(variableId) =>
-                                onSelectVariable({
-                                    varId: variableId as string,
-                                    property: null
-                                })
-                            }
-                            selectedKey={selectedVar?.id}
-                        >
-                            {(section) => (
-                                <Section
-                                    key={section.name}
-                                    items={section.items}
-                                    title={section.name}
-                                >
-                                    {(v) => <Item key={v.id}>{v.name}</Item>}
-                                </Section>
-                            )}
-                        </Picker>
-                        {suboptions && (
-                            <Picker
-                                label={"Property"}
-                                items={suboptions}
-                                width={"100%"}
-                                selectedKey={variable.property}
-                                onSelectionChange={(property) =>
-                                    onSelectVariable({
-                                        ...variable,
-                                        property: property as string
-                                    })
-                                }
-                            >
-                                {(item) => (
-                                    <Item key={item.id}>{item.name} </Item>
-                                )}
-                            </Picker>
-                        )}
-                        </> 
+        <>
+            <Picker
+                label={"Select variable to use"}
+                width={"100%"}
+                items={options}
+                onSelectionChange={(variableId) =>
+                    onSelectVariable({
+                        varId: variableId as string,
+                        property: null
+                    })
+                }
+                selectedKey={selectedVar?.id}
+            >
+                {(section) => (
+                    <Section
+                        key={section.name}
+                        items={section.items}
+                        title={section.name}
+                    >
+                        {(v) => <Item key={v.id}>{v.name}</Item>}
+                    </Section>
+                )}
+            </Picker>
+            {suboptions && (
+                <Picker
+                    label={"Property"}
+                    items={suboptions}
+                    width={"100%"}
+                    selectedKey={variable.property}
+                    onSelectionChange={(property) =>
+                        onSelectVariable({
+                            ...variable,
+                            property: property as string
+                        })
+                    }
+                >
+                    {(item) => <Item key={item.id}>{item.name} </Item>}
+                </Picker>
+            )}
+        </>
     );
 };

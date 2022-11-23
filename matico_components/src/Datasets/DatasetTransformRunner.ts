@@ -175,13 +175,16 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
                 );
                 break;
             case "inner":
-                workingTable = workingTable.lookup(otherSource, joinColumns, "cases");
+                workingTable = workingTable.lookup(
+                    otherSource,
+                    joinColumns,
+                    "cases"
+                );
                 break;
             case "outer":
                 workingTable = workingTable.cross(otherSource, joinColumns);
                 break;
         }
-
 
         return workingTable;
     }
@@ -300,10 +303,17 @@ export class DatasetTransformRunner implements DatasetTransformRunnerInterface {
                         !(f.max === undefined || f.max === null) &&
                         !(f.min === undefined || f.min === null)
                     ) {
-                        let minParsed = typeof(f.min) === 'string' ? new Date(f.min) : f.min
-                        let maxParsed = typeof(f.max) === 'string' ? new Date(f.max) : f.max
+                        let minParsed =
+                            typeof f.min === "string" ? new Date(f.min) : f.min;
+                        let maxParsed =
+                            typeof f.max === "string" ? new Date(f.max) : f.max;
 
-                        if (!(minParsed < d[f.variable] && d[f.variable] < maxParsed)) {
+                        if (
+                            !(
+                                minParsed < d[f.variable] &&
+                                d[f.variable] < maxParsed
+                            )
+                        ) {
                             keep = false;
                         }
                     }

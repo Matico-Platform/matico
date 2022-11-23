@@ -97,7 +97,6 @@ const ParameterInput: React.FC<{
     const { displayName, description } = displayDetails;
     const defaultVal = options.default;
 
-
     switch (type) {
         case "numericInt":
             return (
@@ -260,8 +259,9 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     onSubmit,
     parameters = []
 }) => {
-    const [selectedCompute, setSelectedCompute] =
-        useState<Compute | null>(null);
+    const [selectedCompute, setSelectedCompute] = useState<Compute | null>(
+        null
+    );
 
     const [spec, setSpec] = useState({
         name: "",
@@ -285,7 +285,6 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
 
     const computeOptions = analysis ? analysis.options() : {};
     const description = analysis ? analysis.description() : "";
-
 
     const setAnalysis = (key: string) => {
         const compute = computes.find((c) => c.name === key);

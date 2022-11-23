@@ -134,11 +134,14 @@ export const datasetsSlice = createSlice({
         requestFeatures: (
             state,
             action: PayloadAction<{
-                notifierId: string,
-                args: FeatureRequest
+                notifierId: string;
+                args: FeatureRequest;
             }>
         ) => {
-            state.queries[action.payload.notifierId] = { state: "Loading", result: null};
+            state.queries[action.payload.notifierId] = {
+                state: "Loading",
+                result: null
+            };
         },
         gotFeatures: (
             state,
@@ -151,9 +154,16 @@ export const datasetsSlice = createSlice({
             state.queries[notifierId] = { state: "Done", result };
         },
 
-        featureRequestFailed: (state, action: PayloadAction<{error: string, notifierId: string, result: any}>) => {
+        featureRequestFailed: (
+            state,
+            action: PayloadAction<{
+                error: string;
+                notifierId: string;
+                result: any;
+            }>
+        ) => {
             state.queries[action.payload.notifierId] = {
-                state: 'Error',
+                state: "Error",
                 result: action.payload.result
             };
         },

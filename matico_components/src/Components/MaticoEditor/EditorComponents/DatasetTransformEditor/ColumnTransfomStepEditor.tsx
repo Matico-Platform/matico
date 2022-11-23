@@ -13,7 +13,7 @@ import {
     // @ts-ignore
 } from "@maticoapp/matico_types/spec";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
-import {Column} from "Datasets/Dataset";
+import { Column } from "Datasets/Dataset";
 
 interface ColumnTransformEditorProps {
     datasetId: string;
@@ -22,8 +22,13 @@ interface ColumnTransformEditorProps {
     onUpdateTransform: (update: Partial<ColumnTransform>) => void;
 }
 
-const ColumnTransformEditor: React.FC<ColumnTransformEditorProps> = ({datasetId,transform,columns, onUpdateTransform}) => {
-    console.log("transform ", transform, " Columns ",columns)
+const ColumnTransformEditor: React.FC<ColumnTransformEditorProps> = ({
+    datasetId,
+    transform,
+    columns,
+    onUpdateTransform
+}) => {
+    console.log("transform ", transform, " Columns ", columns);
     return (
         <Flex>
             <DatasetColumnSelector
@@ -50,7 +55,7 @@ export const ColumnTransformStepEditor: React.FC<{
     step: ColumnTransformStep;
     onChange: (update: Partial<ColumnTransformStep>) => void;
     datasetId?: string;
-    columns?: Array<Column>
+    columns?: Array<Column>;
 }> = ({ step, onChange, datasetId, columns }) => {
     // const updateTransformAtIndex= (update:Filter,index:number)=>{
     //   console.log("update ", update, " index ", index)

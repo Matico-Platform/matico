@@ -4,8 +4,8 @@ import styled from "styled-components";
 import { useResizeObserver } from "@dnd-kit/core/dist/hooks/utilities";
 
 const LabelGroupContainer = styled.span<{ target: string; width: number }>`
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
 
     * ${({ target }) => target} {
         min-width: ${({ width }) => width}px !important;
@@ -20,11 +20,11 @@ type useLabelGrroupingFn = (spec: UseLabelGroupingSpec) => { minWidth: number };
 const useLabelGrouping: useLabelGrroupingFn = ({ target, ref }) => {
     const minWidth = 0;
     try {
-        console.log('ref', target)
-        console.log('ref', ref?.current?.children);
+        console.log("ref", target);
+        console.log("ref", ref?.current?.children);
     } catch {}
     // useLayoutEffect(() => {
-        // console.log('ref', ref?.current?.querySelector(target));
+    // console.log('ref', ref?.current?.querySelector(target));
     // }, [ref]);
     // useEffect(() => {
     //     const refObserver = new ResizeObserver(triggerResize);

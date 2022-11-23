@@ -25,7 +25,10 @@ export interface DataTableProps {
     rowLimit?: number;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ data, rowLimit=10 }) => {
+export const DataTable: React.FC<DataTableProps> = ({
+    data,
+    rowLimit = 10
+}) => {
     let table = useMemo(() => {
         if (!data || data.length === 0) {
             return (
@@ -41,10 +44,14 @@ export const DataTable: React.FC<DataTableProps> = ({ data, rowLimit=10 }) => {
         return (
             <TableView flex={1} overflowMode="truncate">
                 <TableHeader>
-                    {Object.keys(data[0]).map((col: string, i:number) => (
+                    {Object.keys(data[0]).map((col: string, i: number) => (
                         <Column width={150} align="center" key={i}>
                             <DialogTrigger isDismissable type="popover">
-                                <ActionButton margin="size-0" isQuiet aria-label={`See more information about ${col}`}>
+                                <ActionButton
+                                    margin="size-0"
+                                    isQuiet
+                                    aria-label={`See more information about ${col}`}
+                                >
                                     {col}
                                 </ActionButton>
                                 <Dialog>
@@ -55,18 +62,24 @@ export const DataTable: React.FC<DataTableProps> = ({ data, rowLimit=10 }) => {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {data.slice(0, rowLimit).map((row: Array<any>, i:number) => (
-                        <Row key={`row${i}`}>
-                            {Object.values(row).map((val: any, j:number) => (
-                                <Cell key={`${j}${i}`}>
-                                    <TooltipTrigger delay={0}>
-                                        <Text>{val?.toString()}</Text>
-                                        <Tooltip>{val?.toString()}</Tooltip>
-                                    </TooltipTrigger>
-                                </Cell>
-                            ))}
-                        </Row>
-                    ))}
+                    {data
+                        .slice(0, rowLimit)
+                        .map((row: Array<any>, i: number) => (
+                            <Row key={`row${i}`}>
+                                {Object.values(row).map(
+                                    (val: any, j: number) => (
+                                        <Cell key={`${j}${i}`}>
+                                            <TooltipTrigger delay={0}>
+                                                <Text>{val?.toString()}</Text>
+                                                <Tooltip>
+                                                    {val?.toString()}
+                                                </Tooltip>
+                                            </TooltipTrigger>
+                                        </Cell>
+                                    )
+                                )}
+                            </Row>
+                        ))}
                 </TableBody>
             </TableView>
         );

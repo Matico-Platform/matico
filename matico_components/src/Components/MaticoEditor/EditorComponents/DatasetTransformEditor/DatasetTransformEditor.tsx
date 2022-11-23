@@ -44,7 +44,6 @@ export const IconForStepType: Record<string, React.ReactNode> = {
     columnTransform: <ColumnIcon />
 };
 
-
 export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     transformId
 }) => {
@@ -85,12 +84,20 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
     datasetTransform.steps.forEach((step: any, index: number) => {
         const stepPreview = stepPreviews ? stepPreviews[index] : null;
         PreviewTabs.push(
-            <Item key={`step_${index}`} textValue={`Data table preview for step ${index+1}`}>
-                {stepPreview && <DataTable data={stepPreviews[index].table} rowLimit={rowLimit} />}
+            <Item
+                key={`step_${index}`}
+                textValue={`Data table preview for step ${index + 1}`}
+            >
+                {stepPreview && (
+                    <DataTable
+                        data={stepPreviews[index].table}
+                        rowLimit={rowLimit}
+                    />
+                )}
             </Item>
         );
         PreviewTabList.push(
-            <Item key={`step_${index}`} textValue={`Tab for step ${index+1}`}>
+            <Item key={`step_${index}`} textValue={`Tab for step ${index + 1}`}>
                 {step.type} ({stepPreview?.noRows}) &gt;
             </Item>
         );
@@ -365,8 +372,7 @@ export const DatasetTransformEditor: React.FC<DatasetTransformEditorProps> = ({
 
                     {transformResult && transformResult.state == "Error" && (
                         <Text>
-                            Failed to run transform{" "}
-                            {/* @ts-ignore */}
+                            Failed to run transform {/* @ts-ignore */}
                             {JSON.stringify(transformResult.error)}
                         </Text>
                     )}

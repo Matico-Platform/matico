@@ -1,10 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {compute} from './list'
+import { compute } from "./list";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-
-  res.status(200).json(compute)
+  res.status(200).json(compute);
 }

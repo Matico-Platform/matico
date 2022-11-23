@@ -40,7 +40,11 @@ export function useMaticoMapView({ view, id }: UseMaticoMapViewProps) {
             paneId: id,
             value: {
                 type: "mapview",
-                value: view?.lat ? view : view?.value?.lat ? view.value : undefined
+                value: view?.lat
+                    ? view
+                    : view?.value?.lat
+                    ? view.value
+                    : undefined
             }
         },
         bind: isBound

@@ -6,18 +6,23 @@ import { DatasetSelector } from "../Utils/DatasetSelector";
 import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
 import { PaneEditor } from "./PaneEditor";
 import { usePane } from "Hooks/usePane";
-import { DateTimeSliderPane, Labels, PaneRef } from "@maticoapp/matico_types/spec";
+import {
+    DateTimeSliderPane,
+    Labels,
+    PaneRef
+} from "@maticoapp/matico_types/spec";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 
-export const  DateTimeSliderEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
+export const DateTimeSliderEditor: React.FC<PaneEditorProps> = ({
+    paneRef
+}) => {
     const { pane, updatePane, parent, updatePanePosition } = usePane(paneRef);
 
     const dateTimeSliderPane = pane as DateTimeSliderPane;
-
 
     const updateDataset = (dataset: string) => {
         updatePane({

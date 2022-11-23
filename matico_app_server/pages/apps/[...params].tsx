@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { userFromSession } from "../../utils/db";
-import {prisma} from '../../db'
+import { prisma } from "../../db";
 
 const LoadingQuotes: { quote: string; author: string }[] = [
   {
@@ -19,10 +19,10 @@ const LoadingQuotes: { quote: string; author: string }[] = [
   },
 ];
 
-export const getServerSideProps:GetServerSideProps =async(context)=>{
-  const session = await getSession(context)
-  const user = await userFromSession(session, prisma)
-  const params = context.query.params
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  const user = await userFromSession(session, prisma);
+  const params = context.query.params;
 
   const app = await prisma.app.findUnique({
     where: {
@@ -31,7 +31,10 @@ export const getServerSideProps:GetServerSideProps =async(context)=>{
     include: { owner: true },
   });
 
-  await prisma.app.update({where: {id: app!.id}, data: {noViews: {increment:1}}})
+  await prisma.app.update({
+    where: { id: app!.id },
+    data: { noViews: { increment: 1 } },
+  });
 
   if (!app) return { props: { app: null, error: "Failed to find app" } };
 
@@ -86,18 +89,14 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({ app, error }) => {
           alignItems: "center",
           background: "linear-gradient(to top left, #282848, #793169)",
           animation: !loading ? "fadeout 1s forwards" : "none",
-          textAlign: 'center'
-          
+          textAlign: "center",
         }}
       >
         <Flex direction="column" alignItems={"center"} justifyContent="center">
           <ProgressCircle aria-label="Loading…" isIndeterminate />
           <p>
-            <i>
-            {randomQuote.quote} 
-            </i>
-            <br/>
-            - {randomQuote.author}
+            <i>{randomQuote.quote}</i>
+            <br />- {randomQuote.author}
           </p>
         </Flex>
       </div>

@@ -33,7 +33,8 @@ export const useDatasetTransform = (datasetTransformId: string) => {
         )
     );
 
-    const removeTransform = () => dispatch(removeDatasetTransform({ id: datasetTransform.id }));
+    const removeTransform = () =>
+        dispatch(removeDatasetTransform({ id: datasetTransform.id }));
 
     const dispatch = useMaticoDispatch();
 

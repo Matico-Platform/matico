@@ -26,8 +26,9 @@ export const MaticoRawSpecEditor: React.FC = () => {
     const [code, setCode] = useState<string>();
     const [isValid, setIsValid] = useState<boolean>(true);
     const [jsonError, setJsonError] = useState<any | null>(null);
-    const [validationResult, setValidationResult] =
-        useState<any[] | null>(null);
+    const [validationResult, setValidationResult] = useState<any[] | null>(
+        null
+    );
 
     const { validator, validatorReady, error: validatorError } = useValidator();
 

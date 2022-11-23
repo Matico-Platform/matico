@@ -23,7 +23,7 @@ export const MaticoApiExplorer: React.FC<DatasetProviderComponent> = ({
 }) => {
   const { apis, error } = useApis();
   const [selectedApiID, setSelectedApiID] = useState<any | null>(null);
-  const [values, setValues] = useState<{[param:string]:any}>({})
+  const [values, setValues] = useState<{ [param: string]: any }>({});
 
   const selectedApi = apis
     ? apis.find((api: any) => api.id === selectedApiID)
@@ -37,7 +37,7 @@ export const MaticoApiExplorer: React.FC<DatasetProviderComponent> = ({
         description: selectedApi.description,
         server_url: `${window.location.origin}/api`,
         api_id: selectedApi.id,
-        params: values
+        params: values,
       },
     };
     onSubmit(spec);
@@ -61,7 +61,7 @@ export const MaticoApiExplorer: React.FC<DatasetProviderComponent> = ({
             parameters={selectedApi.parameters}
             onParametersChanged={(newParams) => console.log(newParams)}
             editable={false}
-            values ={values}
+            values={values}
             onValuesChanged={setValues}
           />
           <ActionButton onPress={submitDataset}>Add Api</ActionButton>

@@ -22,9 +22,15 @@ export function __wbg_set_mapcontrols_navigation(a: number, b: number): void;
 export function __wbg_get_mapcontrols_fullscreen(a: number): number;
 export function __wbg_set_mapcontrols_fullscreen(a: number, b: number): void;
 export function __wbg_get_selectionoptions_selection_enabled(a: number): number;
-export function __wbg_set_selectionoptions_selection_enabled(a: number, b: number): void;
+export function __wbg_set_selectionoptions_selection_enabled(
+  a: number,
+  b: number
+): void;
 export function __wbg_get_selectionoptions_selection_mode(a: number): number;
-export function __wbg_set_selectionoptions_selection_mode(a: number, b: number): void;
+export function __wbg_set_selectionoptions_selection_mode(
+  a: number,
+  b: number
+): void;
 export function __wbg_staticmappane_free(a: number): void;
 export function __wbg_mappane_free(a: number): void;
 export function mappane_get_name(a: number, b: number): void;
@@ -52,7 +58,10 @@ export function linechartpane_get_name(a: number, b: number): void;
 export function piechartpane_get_name(a: number, b: number): void;
 export function __wbg_set_linearlayout_direction(a: number, b: number): void;
 export function __wbg_get_linearlayout_allow_overflow(a: number): number;
-export function __wbg_set_linearlayout_allow_overflow(a: number, b: number): void;
+export function __wbg_set_linearlayout_allow_overflow(
+  a: number,
+  b: number
+): void;
 export function __wbg_get_linearlayout_justify(a: number): number;
 export function __wbg_set_linearlayout_justify(a: number, b: number): void;
 export function __wbg_get_linearlayout_gap(a: number): number;
@@ -70,11 +79,45 @@ export function page_get_path(a: number, b: number): void;
 export function page_set_path(a: number, b: number, c: number): void;
 export function page_get_icon(a: number, b: number): void;
 export function page_set_icon(a: number, b: number, c: number): void;
-export function page_add_pane(a: number, b: number, c: number, d: number, e: number): void;
-export function page_add_pane_before(a: number, b: number, c: number, d: number, e: number, f: number, g: number): void;
-export function page_add_pane_after(a: number, b: number, c: number, d: number, e: number, f: number, g: number): void;
-export function page_move_pane_to_position(a: number, b: number, c: number, d: number): void;
-export function page_add_pane_at_position(a: number, b: number, c: number, d: number, e: number, f: number): void;
+export function page_add_pane(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  e: number
+): void;
+export function page_add_pane_before(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  e: number,
+  f: number,
+  g: number
+): void;
+export function page_add_pane_after(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  e: number,
+  f: number,
+  g: number
+): void;
+export function page_move_pane_to_position(
+  a: number,
+  b: number,
+  c: number,
+  d: number
+): void;
+export function page_add_pane_at_position(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  e: number,
+  f: number
+): void;
 export function page_remove_pane_at_position(a: number, b: number): void;
 export function page_remove_pane(a: number, b: number, c: number): void;
 export function __wbg_tablayout_free(a: number): void;
@@ -113,13 +156,29 @@ export function __wbg_set_paneposition_x(a: number, b: number, c: number): void;
 export function __wbg_get_paneposition_y(a: number, b: number): void;
 export function __wbg_set_paneposition_y(a: number, b: number, c: number): void;
 export function __wbg_get_paneposition_pad_left(a: number, b: number): void;
-export function __wbg_set_paneposition_pad_left(a: number, b: number, c: number): void;
+export function __wbg_set_paneposition_pad_left(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function __wbg_get_paneposition_pad_right(a: number, b: number): void;
-export function __wbg_set_paneposition_pad_right(a: number, b: number, c: number): void;
+export function __wbg_set_paneposition_pad_right(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function __wbg_get_paneposition_pad_top(a: number, b: number): void;
-export function __wbg_set_paneposition_pad_top(a: number, b: number, c: number): void;
+export function __wbg_set_paneposition_pad_top(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function __wbg_get_paneposition_pad_bottom(a: number, b: number): void;
-export function __wbg_set_paneposition_pad_bottom(a: number, b: number, c: number): void;
+export function __wbg_set_paneposition_pad_bottom(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function __wbg_aggregatestep_free(a: number): void;
 export function __wbg_filterstep_free(a: number): void;
 export function __wbg_columntransform_free(a: number): void;
@@ -160,15 +219,31 @@ export function __wbg_wasmcompute_free(a: number): void;
 export function __wbg_maticoremotedataset_free(a: number): void;
 export function __wbg_maticoapidataset_free(a: number): void;
 export function maticoremotedataset_get_description(a: number, b: number): void;
-export function maticoremotedataset_set_description(a: number, b: number, c: number): void;
+export function maticoremotedataset_set_description(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function maticoremotedataset_get_server_url(a: number, b: number): void;
-export function maticoremotedataset_set_server_url(a: number, b: number, c: number): void;
+export function maticoremotedataset_set_server_url(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function maticoremotedataset_get_dataset_id(a: number, b: number): void;
-export function maticoremotedataset_set_dataset_id(a: number, b: number, c: number): void;
+export function maticoremotedataset_set_dataset_id(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function __wbg_csvdataset_free(a: number): void;
 export function csvdataset_get_name(a: number, b: number): void;
 export function csvdataset_set_name(a: number, b: number, c: number): void;
-export function maticoremotedataset_set_name(a: number, b: number, c: number): void;
+export function maticoremotedataset_set_name(
+  a: number,
+  b: number,
+  c: number
+): void;
 export function geojsondataset_set_name(a: number, b: number, c: number): void;
 export function __wbg_signeds3arrowdataset_free(a: number): void;
 export function maticoremotedataset_get_name(a: number, b: number): void;

@@ -103,7 +103,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
         view,
         id
     });
-    
+
     const updateLayer = (id: string, layer: Layer) => {
         setMapLayers({ ...mapLayers, [id]: layer });
     };
