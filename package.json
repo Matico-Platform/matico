@@ -35,7 +35,8 @@
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps",
     "prettier-check": "yarn prettier --check '**/*.{js,ts,jsx,tsx}'",
-    "prettier-write": "yarn prettier --write '**/*.{js,ts,jsx,tsx}'"
+    "prettier-write": "yarn prettier --write '**/*.{js,ts,jsx,tsx}'",
+    "rust-format":  "cargo fmt"
   },
   "packageManager": "yarn@3.2.2",
   "dependencies": {

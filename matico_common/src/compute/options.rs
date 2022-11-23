@@ -20,8 +20,8 @@ pub struct ParameterOptionDisplayDetails {
 
 impl ParameterOptionDisplayDetails {
     pub fn new<S>(name: Option<S>, description: Option<S>) -> Self
-        where
-            S: Into<String>,
+    where
+        S: Into<String>,
     {
         ParameterOptionDisplayDetails {
             display_name: name.map(|s| s.into()),
@@ -271,7 +271,6 @@ impl ValidateParameter for BooleanOption {
         Ok(())
     }
 }
-
 
 #[derive(Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
