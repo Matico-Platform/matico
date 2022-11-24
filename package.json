@@ -28,7 +28,6 @@
     "**/webpack**",
     "**/babel-loader**"
   ],
-  "private": false,
   "scripts": {
     "predeploy": "yarn run build",
     "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
@@ -37,15 +36,12 @@
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps",
     "postinstall": "husky install",
-    "prepublishOnly": "pinst --disable",
-    "postpublish": "pinst --enable",
     "prettier-check": "yarn prettier --check '**/*.{js,ts,jsx,tsx}'",
     "prettier-write": "yarn prettier --write '**/*.{js,ts,jsx,tsx}'",
-    "rust-format":  "cargo fmt"
+    "rust-format": "cargo fmt"
   },
   "packageManager": "yarn@3.2.2",
   "dependencies": {
-    "concurrently": "^7.3.0",
-    "pinst": "^3.0.0"
+    "concurrently": "^7.3.0"
   }
 }
