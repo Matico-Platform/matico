@@ -2427,6 +2427,7 @@ dependencies = [
  "matico_common",
  "matico_spec_derive",
  "serde 1.0.145",
+ "serde-wasm-bindgen",
  "serde_json",
  "serde_yaml",
  "toml",
@@ -2435,6 +2436,7 @@ dependencies = [
  "uuid 0.6.5",
  "validator",
  "wasm-bindgen",
+ "wee_alloc",
 ]
 
 [[package]]
@@ -3830,6 +3832,17 @@ dependencies = [
  "num-traits 0.1.43",
  "regex",
  "serde 0.8.23",
+]
+
+[[package]]
+name = "serde-wasm-bindgen"
+version = "0.4.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3b4c031cd0d9014307d82b8abf653c0290fbdaeb4c02d00c63cf52f728628bf"
+dependencies = [
+ "js-sys",
+ "serde 1.0.145",
+ "wasm-bindgen",
 ]
 
 [[package]]

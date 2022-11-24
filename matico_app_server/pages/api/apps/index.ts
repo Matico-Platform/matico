@@ -1,4 +1,4 @@
-import { prisma} from "../../../db";
+import { prisma } from "../../../db";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Templates } from "../../../templates";
 import { unstable_getServerSession } from "next-auth";
@@ -16,7 +16,7 @@ export default async function handler(
   if (req.method === "GET") {
     const query = req.query;
 
-    let findQuery : Record<string,any>= {
+    let findQuery: Record<string, any> = {
       where: {},
       orderBy: {},
       include: {
@@ -31,7 +31,7 @@ export default async function handler(
     }
 
     if (query.hasOwnProperty("search")) {
-      findQuery.where.name = {search: query.search};
+      findQuery.where.name = { search: query.search };
     }
 
     if (query.hasOwnProperty("ownerId")) {
@@ -39,19 +39,21 @@ export default async function handler(
     }
 
     if (query.hasOwnProperty("order")) {
-      findQuery.orderBy[query.order as string] = query.orderDir ? query.orderDir : "desc";
+      findQuery.orderBy[query.order as string] = query.orderDir
+        ? query.orderDir
+        : "desc";
     }
 
-    if (query.hasOwnProperty("skip")){
-      findQuery.skip= query.skip
+    if (query.hasOwnProperty("skip")) {
+      findQuery.skip = query.skip;
     }
 
-    if (query.hasOwnProperty("take")){
-      findQuery.take= query.take
+    if (query.hasOwnProperty("take")) {
+      findQuery.take = query.take;
     }
 
     let apps = await prisma.app.findMany(findQuery);
-    apps = apps.filter(a=> userHasView(a, user))
+    apps = apps.filter((a) => userHasView(a, user));
 
     res.status(200).json(apps);
   }
@@ -68,7 +70,7 @@ export default async function handler(
     }
 
     const appDetails = JSON.parse(req.body);
-    
+
     if (!Object.keys(Templates).includes(appDetails?.template)) {
       res.status(401).json({ error: "Unknown template type" });
       return;
@@ -77,12 +79,19 @@ export default async function handler(
     let data;
     // If we specify a template create a new app from that
     if (appDetails.template) {
-      const template = Templates[appDetails.template]
+      const template = Templates[appDetails.template];
       data = {
         name: appDetails.name as string,
         description: appDetails.description as string,
         public: appDetails.public as boolean,
-        spec:{...template, metadata:{...template.metadata, name: appDetails.name, description: appDetails.description}},
+        spec: {
+          ...template,
+          metadata: {
+            ...template.metadata,
+            name: appDetails.name,
+            description: appDetails.description,
+          },
+        },
       };
     }
 
@@ -104,7 +113,10 @@ export default async function handler(
           .json({ error: "You dont have permision to fork that app" });
       }
 
-      await prisma.app.update({where: {id: otherApp.id} , data:{noForks: {increment:1 }}})
+      await prisma.app.update({
+        where: { id: otherApp.id },
+        data: { noForks: { increment: 1 } },
+      });
 
       data = {
         name: otherApp!.name as string,
@@ -124,7 +136,6 @@ export default async function handler(
         spec: appDetails.spec,
       };
     }
-
 
     // if passed a manual spec to build off of
     if (appDetails.manualSpec) {

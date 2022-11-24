@@ -1,11 +1,8 @@
-
 const PieChartColors = {
-    "😀": "slateblue",
-    "😂": "cyan",
-    "🥰": "teal",
-    "😎": "navy",
-  };
+  "😀": "slateblue",
+  "😂": "cyan",
+  "🥰": "teal",
+  "😎": "navy",
+};
 
-  export {
-    PieChartColors
-  }
+export { PieChartColors };

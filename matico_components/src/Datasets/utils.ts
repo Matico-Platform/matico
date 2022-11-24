@@ -34,8 +34,9 @@ export const constructColumnListFromTable = (table: ColumnTable) => {
     return columns;
 };
 
-
-export const assignIds = (table:ColumnTable)=>{
-    const ids = aq.table({_matico_id:[...Array(table.size)].map((_,i)=>i)})
-    return table.assign(ids)
+export const assignIds = (table: ColumnTable) => {
+    const ids = aq.table({
+        _matico_id: [...Array(table.size)].map((_, i) => i)
+    });
+    return table.assign(ids);
 };

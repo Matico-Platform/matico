@@ -22,9 +22,13 @@ import React, { useMemo } from "react";
 
 export interface DataTableProps {
     data: Array<Record<string, any>>;
+    rowLimit?: number;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ data }) => {
+export const DataTable: React.FC<DataTableProps> = ({
+    data,
+    rowLimit = 10
+}) => {
     let table = useMemo(() => {
         if (!data || data.length === 0) {
             return (
@@ -40,10 +44,14 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
         return (
             <TableView flex={1} overflowMode="truncate">
                 <TableHeader>
-                    {Object.keys(data[0]).map((col) => (
-                        <Column width={150} align="center">
+                    {Object.keys(data[0]).map((col: string, i: number) => (
+                        <Column width={150} align="center" key={i}>
                             <DialogTrigger isDismissable type="popover">
-                                <ActionButton margin="size-0" isQuiet>
+                                <ActionButton
+                                    margin="size-0"
+                                    isQuiet
+                                    aria-label={`See more information about ${col}`}
+                                >
                                     {col}
                                 </ActionButton>
                                 <Dialog>
@@ -54,22 +62,28 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {data.slice(0, 10).map((row: Array<any>) => (
-                        <Row>
-                            {Object.values(row).map((val: any) => (
-                                <Cell>
-                                    <TooltipTrigger delay={0}>
-                                        <Text>{val}</Text>
-                                        <Tooltip>{val}</Tooltip>
-                                    </TooltipTrigger>
-                                </Cell>
-                            ))}
-                        </Row>
-                    ))}
+                    {data
+                        .slice(0, rowLimit)
+                        .map((row: Array<any>, i: number) => (
+                            <Row key={`row${i}`}>
+                                {Object.values(row).map(
+                                    (val: any, j: number) => (
+                                        <Cell key={`${j}${i}`}>
+                                            <TooltipTrigger delay={0}>
+                                                <Text>{val?.toString()}</Text>
+                                                <Tooltip>
+                                                    {val?.toString()}
+                                                </Tooltip>
+                                            </TooltipTrigger>
+                                        </Cell>
+                                    )
+                                )}
+                            </Row>
+                        ))}
                 </TableBody>
             </TableView>
         );
-    }, [data]);
+    }, [data, data?.length]);
 
     return (
         <View width="100%" height="100%">

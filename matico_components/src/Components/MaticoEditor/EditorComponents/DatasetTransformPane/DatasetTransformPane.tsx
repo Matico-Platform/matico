@@ -4,20 +4,16 @@ import {
     Flex,
     Heading,
     TextField,
-    Well,
-    Text,
     Content,
     Dialog,
     TextArea
 } from "@adobe/react-spectrum";
-import { Dataset, DatasetTransform } from "@maticoapp/matico_types/spec";
+// @ts-ignore
+import { DatasetTransform } from "@maticoapp/matico_types/spec";
 import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
 import { useApp } from "Hooks/useApp";
 import React, { useState } from "react";
-import {
-    DatasetTransformDialog,
-    DatasetTransformEditor
-} from "../DatasetTransformEditor/DatasetTransformEditor";
+import { DatasetTransformDialog } from "../DatasetTransformEditor";
 import { v4 as uuid } from "uuid";
 import { useMaticoSelector } from "Hooks/redux";
 
@@ -98,8 +94,8 @@ export const DatasetTransfromPane: React.FC = () => {
                 Dataset Transforms
             </Heading>
 
-            <Flex direction="column" gap="size-100">
-                {datasetTransforms?.map((transform) => (
+            <Flex direction="column">
+                {datasetTransforms?.map((transform: any) => (
                     <DatasetTransformDialog
                         key={transform.id}
                         transformId={transform.id}

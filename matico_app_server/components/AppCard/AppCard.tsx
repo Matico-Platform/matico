@@ -4,7 +4,7 @@ import Preview from "@spectrum-icons/workflow/Preview";
 import EdinIn from "@spectrum-icons/workflow/EditIn";
 import Branch2 from "@spectrum-icons/workflow/Branch2";
 import React from "react";
-import {DeleteAppDialog} from "../DeleteAppDialog/DeleteAppDialog";
+import { DeleteAppDialog } from "../DeleteAppDialog/DeleteAppDialog";
 export interface AppCardInterface {
   app: any;
   includeEdit: boolean;
@@ -18,12 +18,14 @@ export const AppCard: React.FC<AppCardInterface> = ({
   includeFork,
   includeView = true,
   includeEdit,
-  includeDelete
+  includeDelete,
 }) => {
   return (
     <tr>
       <td>
-        <p><b>{app.name}</b></p>
+        <p>
+          <b>{app.name}</b>
+        </p>
       </td>
       <td>
         <p>{app.owner.name} </p>
@@ -32,11 +34,20 @@ export const AppCard: React.FC<AppCardInterface> = ({
         <p>{app.updatedAt}</p>
       </td>
       <td>
-        <Flex direction={"row"} justifyContent="space-between" alignItems="center">
+        <Flex
+          direction={"row"}
+          justifyContent="space-between"
+          alignItems="center"
+        >
           {includeView && (
             <Link href={`/apps/${app.id}`}>
-              <a style={{textDecoration:"none"}}>
-                <Flex direction="row" alignItems="center" gap="size-100" UNSAFE_style={{color:'white'}}>
+              <a style={{ textDecoration: "none" }}>
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  gap="size-100"
+                  UNSAFE_style={{ color: "white" }}
+                >
                   <Preview size="S" />
                   <p>View</p>
                 </Flex>
@@ -45,8 +56,13 @@ export const AppCard: React.FC<AppCardInterface> = ({
           )}
           {includeFork && (
             <Link href={`/apps/${app.id}`}>
-              <a style={{textDecoration:"none"}}>
-                <Flex direction="row" alignItems="center" gap="size-100" UNSAFE_style={{color:'white'}}>
+              <a style={{ textDecoration: "none" }}>
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  gap="size-100"
+                  UNSAFE_style={{ color: "white" }}
+                >
                   <Branch2 size="S" />
                   <p>Fork</p>
                 </Flex>
@@ -55,17 +71,20 @@ export const AppCard: React.FC<AppCardInterface> = ({
           )}
           {includeEdit && (
             <Link href={`/apps/edit/${app.id}`}>
-              <a style={{textDecoration:"none"}}>
-                <Flex direction="row" alignItems="center" gap="size-100" UNSAFE_style={{color:'white'}}>
+              <a style={{ textDecoration: "none" }}>
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  gap="size-100"
+                  UNSAFE_style={{ color: "white" }}
+                >
                   <EdinIn size="S" />
                   <p>Edit</p>
                 </Flex>
               </a>
             </Link>
           )}
-          {includeDelete && (
-            <DeleteAppDialog appId={app.id}/>
-          )}
+          {includeDelete && <DeleteAppDialog appId={app.id} />}
         </Flex>
       </td>
     </tr>

@@ -3,7 +3,8 @@ import React, {
     useMemo,
     useRef,
     useCallback,
-    useEffect
+    useEffect,
+    useLayoutEffect
 } from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
@@ -18,17 +19,17 @@ import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
-import { View } from "@adobe/react-spectrum";
 import { Layer, MapControls } from "@maticoapp/matico_types/spec";
 import { MapboxOverlayProps, MapboxOverlay } from "@deck.gl/mapbox/typed";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import maplibregl from "maplibre-gl";
 import { v4 as uuid } from "uuid";
-
 import "maplibre-gl/dist/maplibre-gl.css";
 import { SelectionOptions } from "@maticoapp/matico_types/spec";
 import { MaticoSelectionLayer } from "./MaticoSelectionLayer";
 import { debounce } from "lodash";
+import { useMaticoMapView } from "Hooks/useMaticoMapView";
+import { useResizeEvent } from "Hooks/useResizeEvent";
 
 //@ts-ignore
 function DeckGLOverlay(props: MapboxOverlayProps) {
@@ -90,27 +91,22 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     selectionOptions
 }) => {
     const [mapLayers, setMapLayers] = useState<Record<string, Layer>>({});
-    const [shouldRemount, setShouldRemount] = useState(false);
     const edit = useIsEditable();
-    const mapRef = useRef();
-    const parentRef = useRef();
-    const triggerRemount = () => {
-        setShouldRemount(true);
-        setTimeout(() => setShouldRemount(false), 100);
-    };
 
-    useEffect(() => {
-        const refObserver = new ResizeObserver(triggerRemount);
-        refObserver.observe(parentRef.current);
-        return () => {
-            refObserver.disconnect();
-        };
-    }, []);
+    // DOM concerns
+    const mapRef = useRef<any | null>();
+    const parentRef = useRef();
+    useResizeEvent(() => mapRef?.current?.resize(), parentRef);
+
+    // map concerns
+    const { currentView, updateViewState } = useMaticoMapView({
+        view,
+        id
+    });
 
     const updateLayer = (id: string, layer: Layer) => {
         setMapLayers({ ...mapLayers, [id]: layer });
     };
-
     let mls = useMemo(
         () =>
             [...layers]
@@ -119,37 +115,7 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                 .filter((a) => a),
         [layers, mapLayers]
     );
-
-    const [currentView, updateView] = useAutoVariable({
-        variable: {
-            name: "CurrentMapView",
-            id: id + "_view",
-            paneId: id,
-            value: {
-                type: "mapview",
-                value: view
-            }
-        },
-        bind: true
-    });
-
-    const updateViewState = useCallback((viewStateUpdate: any) => {
-        const viewState = viewStateUpdate.viewState;
-        //@ts-ignore not 100% sure what the type issue here is, seems to thing it can be either a Variable or an update function for a variable.
-        updateView({
-            type: "mapview",
-            value: {
-                lat: viewState.latitude,
-                lng: viewState.longitude,
-                zoom: viewState.zoom,
-                pitch: viewState.pitch,
-                bearing: viewState.bearing
-            }
-        });
-    }, []);
-
     let styleJSON = null;
-
     if (baseMap) {
         if (baseMap.type === "named") {
             styleJSON = getNamedStyleJSON(baseMap.name, accessToken);
@@ -175,16 +141,10 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
                         mapLib={maplibregl}
                         key={id}
                         id={id}
+                        ref={mapRef}
                         antialias={true}
-                        onMove={(viewState) => updateViewState(viewState)}
-                        {...currentView}
-                        initialViewState={{
-                            latitude: currentView.value.lat,
-                            longitude: currentView.value.lng,
-                            zoom: currentView.value.zoom,
-                            bearing: currentView.value.bearing,
-                            pitch: currentView.value.pitch
-                        }}
+                        onMove={updateViewState}
+                        {...currentView?.value}
                         mapboxAccessToken={accessToken}
                         mapStyle={
                             styleJSON

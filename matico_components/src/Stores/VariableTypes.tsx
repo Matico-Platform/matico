@@ -24,12 +24,14 @@ export type StringVar = {
     value: string;
 };
 
-export type DateRangeVar= {
+export type DateRangeVar = {
     type: "dateRange";
-    value: {
-      min: Date,
-      max: Date
-    } | "NoSelection";
+    value:
+        | {
+              min: Date;
+              max: Date;
+          }
+        | "NoSelection";
 };
 
 export type NumberVar = {

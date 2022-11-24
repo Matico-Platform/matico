@@ -51,23 +51,23 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
             <Dialog width="80vw">
                 <Heading>{dataset.name}</Heading>
                 <Content>
-                    {dataset.error && <Text>{dataset.error}</Text>}
-                    {dataRequest && dataRequest.state === "Done" && (
-                        <Flex width={"100%"} gap={"size-200"} direction="row">
-                            {dataset.spec?.type === "wasmCompute" && (
-                                <View flex={1}>
-                                    <h1>Compute!</h1>
-                                    <ComputeParameterEditor
-                                        onChange={(update: any) =>
-                                            updateDataset(dataset.name, update)
-                                        }
-                                        spec={dataset.spec}
-                                    />
-                                </View>
-                            )}
+                    <Flex width={"100%"} gap={"size-200"} direction="row">
+                        {dataset.spec?.type === "wasmCompute" && (
+                            <View flex={1}>
+                                <h1>Compute!</h1>
+                                <ComputeParameterEditor
+                                    onChange={(update: any) => {
+                                        updateDataset(dataset.name, update);
+                                    }}
+                                    spec={dataset.spec}
+                                />
+                            </View>
+                        )}
+                        {dataset.error && <Text>{dataset.error}</Text>}
+                        {dataRequest && dataRequest.state === "Done" && (
                             <DataTable data={dataRequest.result} />
-                        </Flex>
-                    )}
+                        )}
+                    </Flex>
                 </Content>
             </Dialog>
         </DialogTrigger>

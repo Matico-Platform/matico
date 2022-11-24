@@ -9,7 +9,6 @@ import DatasetServiceWorker from "Datasets/DatasetServiceWorker.worker.ts";
 export const DatasetServiceMiddleWare = () => {
     let worker: any | undefined;
 
-
     if (!worker) {
         worker = wrap<DatasetServiceInterface>(DatasetServiceWorker());
     }
@@ -114,7 +113,7 @@ export const DatasetServiceMiddleWare = () => {
             case "datasets/requestFeatures":
                 worker
                     .registerFeatureRequest(
-                        action.payload.args, 
+                        action.payload.args,
                         action.payload.notifierId,
                         comlink.proxy((result: Datum[]) => {
                             store.dispatch({

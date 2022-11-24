@@ -14,22 +14,22 @@ import Branch2 from "@spectrum-icons/workflow/Branch2";
 import Link from "next/link";
 import Preview from "@spectrum-icons/workflow/Preview";
 import React from "react";
-import {NewMapModal} from "../NewAppModal/NewAppModal";
+import { NewMapModal } from "../NewAppModal/NewAppModal";
 
-export type NewAppArgs={
-  template: string, 
-  name:string, 
-  description:string, 
-  public:boolean
-}
+export type NewAppArgs = {
+  template: string;
+  name: string;
+  description: string;
+  public: boolean;
+};
 export interface TemplateSelectorInterface {
   onSelectTemplate: (args: NewAppArgs) => void;
   recentApps: App[];
 }
 
-export type Template = { title: string; templateSlug: string; image: string }
+export type Template = { title: string; templateSlug: string; image: string };
 
-const templates: Array<Template>= [
+const templates: Array<Template> = [
   {
     title: "Blank",
     templateSlug: "Blank",
@@ -93,7 +93,9 @@ const InlineLink = styled.a`
   cursor: pointer;
 `;
 
-const InlineAppCard: React.FC<{ app: App & {owner: any, id: string, noViews: number, noForks: number} }> = ({ app }) => {
+const InlineAppCard: React.FC<{
+  app: App & { owner: any; id: string; noViews: number; noForks: number };
+}> = ({ app }) => {
   return (
     <View
       borderBottomWidth="thin"
@@ -101,12 +103,17 @@ const InlineAppCard: React.FC<{ app: App & {owner: any, id: string, noViews: num
       marginY="size-100"
       paddingBottom="size-100"
     >
-      <Flex direction="row" alignItems="center" justifyContent="space-between" UNSAFE_style={{padding:0}}>
+      <Flex
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        UNSAFE_style={{ padding: 0 }}
+      >
         <View>
           <Text>
             <b>{app.name}</b>
           </Text>
-          <br/>
+          <br />
           <Text>{app.owner.name}</Text>
         </View>
         <Flex>
@@ -134,24 +141,24 @@ export const TemplateSelector: React.FC<TemplateSelectorInterface> = ({
   return (
     <Flex id="templates" direction="column" gap="size-500" width="100%">
       <Heading>Get Started With a Template</Heading>
-      <Flex direction='row' justifyContent='space-between'>
-        <Flex direction='row' justifyContent='space-around' gap="size-200">
+      <Flex direction="row" justifyContent="space-between">
+        <Flex direction="row" justifyContent="space-around" gap="size-200">
           {templates.map((template, i) => (
-              <NewMapModal template={template} onSelectTemplate={onSelectTemplate} />
+            <NewMapModal
+              template={template}
+              onSelectTemplate={onSelectTemplate}
+            />
           ))}
-          </Flex>
-        <Flex direction='column' gap='size-200'>
+        </Flex>
+        <Flex direction="column" gap="size-200">
           Or Maybe Some Popular Apps?
-          <View
-            maxHeight="25vh"
-            overflow="none auto"
-          >
-          <Flex direction="column" flex={1}>
-            {recentApps.slice(0,10).map((app: App, i: number) => (
-              // @ts-ignore
-              <InlineAppCard key={i} app={app} />
-            ))}
-          </Flex>
+          <View maxHeight="25vh" overflow="none auto">
+            <Flex direction="column" flex={1}>
+              {recentApps.slice(0, 10).map((app: App, i: number) => (
+                // @ts-ignore
+                <InlineAppCard key={i} app={app} />
+              ))}
+            </Flex>
           </View>
         </Flex>
       </Flex>

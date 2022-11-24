@@ -100,7 +100,7 @@ export const StaticMapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                         { id: "geoConicConformal", name: "Conic Conformal" },
                         {
                             id: "geoTransverseMercator",
-                            name: "Traverse Mercator"
+                            name: "Transverse Mercator"
                         },
                         { id: "geoNaturalEarth1", name: "Natural Earth" },
                         {

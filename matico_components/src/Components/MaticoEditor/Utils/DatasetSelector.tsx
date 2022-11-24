@@ -9,13 +9,17 @@ interface DatasetSelectorProps {
     description?: string;
     label?: string;
     labelPosition?: LabelPosition;
+    labeledBy?: string;
+    pickerStyle?: React.CSSProperties;
 }
 export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
     selectedDataset,
     onDatasetSelected,
     label,
     labelPosition = "side",
-    description
+    description,
+    labeledBy,
+    pickerStyle
 }) => {
     const datasets = useMaticoSelector((state) => state.datasets.datasets);
     if (!datasets) {
@@ -36,11 +40,13 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
             onSelectionChange={(dataset) =>
                 onDatasetSelected(dataset as string)
             }
-            label={label ?? "Dataset"}
+            label={label}
             labelPosition={labelPosition}
             description={description}
             marginY="size-50"
             width="100%"
+            aria-labeled-by={labeledBy}
+            UNSAFE_style={pickerStyle}
         >
             {(dataset) => <Item key={dataset.name}>{dataset.name}</Item>}
         </Picker>

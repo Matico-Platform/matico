@@ -18,19 +18,19 @@ export default function PlotLayers({
   ...rest
 }: PlotLayersSpec) {
   return layers.length ? (
-      <g>
-        {layers.map((layer: any, i: number) => {
-          if (!layer.type) return null;
+    <g>
+      {layers.map((layer: any, i: number) => {
+        if (!layer.type) return null;
+        //@ts-ignore
+        const CurrentComponent = PlotComponentMapping[layer.type];
+        return (
           //@ts-ignore
-          const CurrentComponent = PlotComponentMapping[layer.type];
-          return (
-            //@ts-ignore
-            <CurrentComponent
+          <CurrentComponent
             key={`layer-${i}-${layer.type}`}
-              {...{ data, xMax, yMax, ...rest, ...layer }}
-            />
-          );
-        })}
-      </g>
+            {...{ data, xMax, yMax, ...rest, ...layer }}
+          />
+        );
+      })}
+    </g>
   ) : null;
 }

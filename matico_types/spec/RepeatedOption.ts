@@ -2,4 +2,9 @@
 import type { ParameterOptionDisplayDetails } from "./ParameterOptionDisplayDetails";
 import type { ParameterOptions } from "./ParameterOptions";
 
-export interface RepeatedOption { options: ParameterOptions, displayDetails: ParameterOptionDisplayDetails, minTimes: number, maxTimes: number | null, }
+export interface RepeatedOption {
+  options: ParameterOptions;
+  displayDetails: ParameterOptionDisplayDetails;
+  minTimes: number;
+  maxTimes: number | null;
+}

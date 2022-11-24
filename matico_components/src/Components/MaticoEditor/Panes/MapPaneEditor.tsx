@@ -102,9 +102,9 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     const syncedMapPaneView = useMaticoSelector((state) =>
         //@ts-ignore
-        mapPane.view.var
+        mapPane.view.varId
             ? //@ts-ignore
-              state.variables.autoVariables[mapPane.view.var]
+              state.variables.autoVariables?.[mapPane.view.varId]
             : null
     );
 
@@ -142,15 +142,14 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         });
     };
 
-    const removeLayer = (layerId:string)=>{
-      updatePane({
-        layers: mapPane.layers.filter(layer=>layer.id!==layerId)
-      })
-    }
+    const removeLayer = (layerId: string) => {
+        updatePane({
+            layers: mapPane.layers.filter((layer) => layer.id !== layerId)
+        });
+    };
 
-    
     const handleChangeOrder = (index: number, direction: "up" | "down") => {
-        const layers = mapPane.layers
+        const layers = mapPane.layers;
         if (
             (index === 0 && direction === "up") ||
             (index === layers.length - 1 && direction === "down")
@@ -158,14 +157,14 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
             return;
         }
 
-        let newLayers= [...layers];
-        const changedLayer= newLayers.splice(index, 1)[0];
+        let newLayers = [...layers];
+        const changedLayer = newLayers.splice(index, 1)[0];
         newLayers.splice(
             direction === "up" ? index - 1 : index + 1,
             0,
             changedLayer
         );
-        updatePane({ layers: newLayers});
+        updatePane({ layers: newLayers });
     };
 
     const startSyncing = (variableId: string) => {
@@ -182,10 +181,12 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         });
     };
 
-    const isSynced = syncedMapPaneView ? true : false;
+    const isSynced = !!mapPane?.view?.varId;
     //@ts-ignore
     const isBound = mapPane?.view?.bind ? true : false;
-    const mapView = isSynced ? syncedMapPaneView.value : mapPane.view;
+    const mapView = isSynced
+        ? syncedMapPaneView?.value || {}
+        : mapPane?.view || {};
 
     const toggleBind = () => {
         updateView({
@@ -290,7 +291,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             onPress={stopSyncing}
                             marginTop="size-200"
                             marginBottom="size-200"
-                            isDisabled
+                            isDisabled={!isSynced}
                         >
                             Stop Syncing Map View
                         </ActionButton>
@@ -306,10 +307,16 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             key={layer.name}
                             entryName={layer.name}
                             onSelect={() => setLayerEdit(layer.id)}
-                            onRemove={() => {removeLayer(layer.id)}}
+                            onRemove={() => {
+                                removeLayer(layer.id);
+                            }}
                             onDuplicate={() => {}}
-                            onRaise={() => {handleChangeOrder(index,"up")}}
-                            onLower={() => {handleChangeOrder(index,"down")}}
+                            onRaise={() => {
+                                handleChangeOrder(index, "up");
+                            }}
+                            onLower={() => {
+                                handleChangeOrder(index, "down");
+                            }}
                         />
                     ))}
                 </Flex>

@@ -35,6 +35,7 @@ impl OptionGroupVals {
 #[ts(export)]
 pub enum ParameterValue {
     OptionGroup(OptionGroupVals),
+    Boolean(bool),
     RepeatedOption(Vec<ParameterValue>),
     NumericFloat(f32),
     NumericInt(i32),
@@ -111,11 +112,41 @@ impl TryFrom<&ParameterValue> for u32 {
     }
 }
 
+impl TryFrom<&ParameterValue> for bool {
+    type Error = ArgError;
+
+    fn try_from(parameter_value: &ParameterValue) -> Result<bool, Self::Error> {
+        if let ParameterValue::Boolean(val) = parameter_value {
+            return Ok(*val);
+        } else {
+            Err(ArgError::new(
+                "",
+                "Failed to convert ParameterValue to bool",
+            ))
+        }
+    }
+}
+
 impl TryFrom<&ParameterValue> for Vec<u32> {
     type Error = ArgError;
 
     fn try_from(parameter_value: &ParameterValue) -> Result<Vec<u32>, Self::Error> {
         if let ParameterValue::NumericCategory(val) = parameter_value {
+            return Ok(val.clone());
+        } else {
+            Err(ArgError::new(
+                "",
+                "Failed to convert Numeric Category ParameterValue to  u32",
+            ))
+        }
+    }
+}
+
+impl TryFrom<&ParameterValue> for Vec<String> {
+    type Error = ArgError;
+
+    fn try_from(parameter_value: &ParameterValue) -> Result<Vec<String>, Self::Error> {
+        if let ParameterValue::TextCategory(val) = parameter_value {
             return Ok(val.clone());
         } else {
             Err(ArgError::new(
@@ -152,6 +183,7 @@ pub struct SpecParameter {
 pub enum SpecParameterValue {
     OptionGroup(Vec<SpecParameter>),
     RepeatedOption(Vec<SpecParameterValue>),
+    Boolean(VarOr<bool>),
     NumericFloat(VarOr<f32>),
     NumericInt(VarOr<i32>),
     NumericCategory(VarOr<Vec<u32>>),

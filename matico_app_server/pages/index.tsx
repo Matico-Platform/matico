@@ -41,27 +41,34 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: {
       public: true,
     },
-    include: { owner: {select:{ name:true, id:true, createdAt:true, image:true }}},
-    orderBy: [{
-      noViews: "desc"},
-      {createdAt: "desc"}
+    include: {
+      owner: { select: { name: true, id: true, createdAt: true, image: true } },
+    },
+    orderBy: [
+      {
+        noViews: "desc",
+      },
+      { createdAt: "desc" },
     ],
   });
-
 
   const userApps = user
     ? await prisma.app.findMany({
         where: {
           ownerId: user.id,
         },
-        include: { owner: {select:{ name:true, id:true, createdAt:true, image:true }}},
+        include: {
+          owner: {
+            select: { name: true, id: true, createdAt: true, image: true },
+          },
+        },
         orderBy: {
           createdAt: "desc",
         },
       })
     : null;
 
-  console.log("user ", user, userApps)
+  console.log("user ", user, userApps);
 
   return {
     props: {
@@ -157,15 +164,14 @@ const Home: React.FC<HomePageProps> = ({
   const { data: session } = useSession();
 
   useEffect(() => {
-    if(session?.user?.email && session?.user?.email) {
+    if (session?.user?.email && session?.user?.email) {
       // @ts-ignore
       LogRocket.identify(session.user.name, {
         name: session.user.name,
         email: session.user.email,
       });
-    }
-    else{
-      LogRocket.identify("Annon")
+    } else {
+      LogRocket.identify("Annon");
     }
   }, [session?.name]);
 
@@ -280,7 +286,7 @@ const Home: React.FC<HomePageProps> = ({
                 justifyContent="space-between"
                 width="100%"
               >
-                <Heading level={2} UNSAFE_style={{paddingRight:'2em'}}>
+                <Heading level={2} UNSAFE_style={{ paddingRight: "2em" }}>
                   Communicate insights. Manage data. All without a line of code.
                 </Heading>
                 {/* <Flex

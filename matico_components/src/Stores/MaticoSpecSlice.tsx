@@ -364,11 +364,19 @@ export const stateSlice = createSlice({
             }>
         ) => {
             const { name, datasetSpec } = action.payload;
+            console.log("Updating ", name, " With new spec ", datasetSpec);
             let datasetToUpdate = state.spec.datasets.find(
                 (d: Dataset) => d.name === name
             );
             //@ts-ignore
-            datasetToUpdate = { ...datasetToUpdate, ...datasetSpec };
+            console.log(
+                "Updating ",
+                name,
+                " With new spec ",
+                datasetSpec,
+                current(datasetToUpdate)
+            );
+            Object.assign(datasetToUpdate, datasetSpec);
         },
 
         addDatasetTransform: (

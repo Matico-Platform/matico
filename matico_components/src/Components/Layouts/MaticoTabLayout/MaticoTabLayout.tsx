@@ -130,7 +130,7 @@ export const MaticoTabLayout: React.FC<MaticoTabLayoutInterface> = ({
                 {(item) => <Item key={item.id}>{item.name}</Item>}
             </TabList>
             <View width="100%" height="100%" position={"relative"}>
-                <TabPanels>
+                <TabPanels flex={1} width="100%" height="100%">
                     {(item) => (
                         <Item key={item.id}>
                             <TabPane

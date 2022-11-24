@@ -19,7 +19,7 @@ import {
 
 import { PieChartColors } from "./SampleStyling";
 
-import * as scale from '@visx/scale';
+import * as scale from "@visx/scale";
 import { nicelyFormatNumber } from "../Utils";
 
 export default {
@@ -41,7 +41,6 @@ const Template: Story<ChartSpaceSpec> = (args) => (
   </div>
 );
 
-
 export const LineChart = Template.bind({});
 LineChart.args = {
   layers: [
@@ -57,11 +56,11 @@ LineChart.args = {
     display: true,
     position: "bottom",
     tickFormatFunc: (d) => {
-      const date = new Date(d)
-      const month = date.getMonth() + 1
-      const day = date.getDate()
-      const year = date.getFullYear().toString().slice(-2)
-      return `${month}/${day}/${year}`
+      const date = new Date(d);
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const year = date.getFullYear().toString().slice(-2);
+      return `${month}/${day}/${year}`;
     },
   },
   xLabel: "x Label here",
@@ -80,7 +79,6 @@ LineChart.args = {
   data: SampleLineChartData,
 };
 
-
 export const HorizontalHistogram = Template.bind({});
 HorizontalHistogram.args = {
   yCol: "x1",
@@ -95,13 +93,13 @@ HorizontalHistogram.args = {
   title: "My Histogram",
   grid: {
     rows: true,
-    columns: false
+    columns: false,
   },
   layers: [
     {
       type: "bar",
       color: "steelblue",
-      horizontal: true
+      horizontal: true,
     },
   ],
   data: SampleHistogramData.binned,
@@ -110,25 +108,25 @@ HorizontalHistogram.args = {
 export const HorizontalOrdinal = Template.bind({});
 HorizontalOrdinal.args = {
   yCol: "label",
-  yExtent: SampleCategoricalData.map(f => f.label), // aka keys
+  yExtent: SampleCategoricalData.map((f) => f.label), // aka keys
   yAxis: {
     scaleType: "band",
-    position: "left"
+    position: "left",
   },
   xAxis: {
     scaleType: "linear",
     position: "bottom",
   },
-  xExtent: [0, Math.max(...SampleCategoricalData.map(f => f.count))],
+  xExtent: [0, Math.max(...SampleCategoricalData.map((f) => f.count))],
   xCol: "count",
-  xLabel: "Votes for Emoji to Win Best Actor", 
+  xLabel: "Votes for Emoji to Win Best Actor",
   title: "Emojis per Capita",
   layers: [
     {
       type: "bar",
       color: "teal",
-      padding: .5,
-      horizontal: true
+      padding: 0.5,
+      horizontal: true,
     },
   ],
   data: SampleCategoricalData,
@@ -139,13 +137,13 @@ HorizontalOrdinal.args = {
 export const StaticMapChart = Template.bind({});
 StaticMapChart.args = {
   title: "Counties In California",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   layers: [
     {
       type: "map",
       fill: "red",
-      proj: "geoTransverseMercator"
+      proj: "geoTransverseMercator",
     },
   ],
   data: SampleMapData,
@@ -156,14 +154,14 @@ StaticMapChart.args = {
 export const StaticMapChartNoGrid = Template.bind({});
 StaticMapChartNoGrid.args = {
   title: "Counties In California",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   layers: [
     {
       type: "map",
       fill: "red",
       proj: "geoConicConformal",
-      gratOn: false
+      gratOn: false,
     },
   ],
   data: SampleMapData,
@@ -174,13 +172,15 @@ StaticMapChartNoGrid.args = {
 export const StaticMapChartFillFunc = Template.bind({});
 StaticMapChartFillFunc.args = {
   title: "Counties In California",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   layers: [
     {
       type: "map",
-      fill: (datum) => {return datum["Shape__Area"] < 3082164727 ? "red" : "green"},
-      proj: "geoConicConformal"
+      fill: (datum) => {
+        return datum["Shape__Area"] < 3082164727 ? "red" : "green";
+      },
+      proj: "geoConicConformal",
     },
   ],
   data: SampleMapData,
@@ -191,34 +191,34 @@ StaticMapChartFillFunc.args = {
 export const StaticMapChartProjError = Template.bind({});
 StaticMapChartProjError.args = {
   title: "Median Income in Illinois Counties",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   layers: [
     {
       type: "map",
       fill: "red",
-      proj: "geoMercato"
+      proj: "geoMercato",
     },
   ],
-  data: SampleMapData2
-}
+  data: SampleMapData2,
+};
 
 // Sample coloring function for the next example
 var colorArea = scale.scaleLinear({
   domain: [
-      Math.min(...SampleMapData2.map((f) => f.properties["estimate"])),
-      Math.max(...SampleMapData2.map((f) => f.properties["estimate"])),
+    Math.min(...SampleMapData2.map((f) => f.properties["estimate"])),
+    Math.max(...SampleMapData2.map((f) => f.properties["estimate"])),
   ],
   range: ["Purple", "Orange"],
 });
 
-// Static Map Example 5: 
+// Static Map Example 5:
 // Passing in a custom area-coloring function
 export const StaticMapChartScale = Template.bind({});
 StaticMapChartScale.args = {
   title: "Median Income in Illinois Counties",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   proj: "geoEquirectangular",
   layers: [
     {
@@ -226,76 +226,76 @@ StaticMapChartScale.args = {
       fill: (datum) => colorArea(datum["estimate"]),
     },
   ],
-  data: SampleMapData2
-}
+  data: SampleMapData2,
+};
 
 // Static Map Example 6:
-// Displaying point data 
+// Displaying point data
 export const StaticMapChartPoint = Template.bind({});
 StaticMapChartPoint.args = {
   title: "Testing point data",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   proj: "geoEquirectangular",
   pointRadius: 4,
   fill: "green",
   layers: [
     {
       type: "map",
-    }
+    },
   ],
-  data: SampleMapData3
-}
+  data: SampleMapData3,
+};
 
 // Static Map Example 7:
 // Displaying lines only
 export const StaticMapChartLine = Template.bind({});
 StaticMapChartLine.args = {
   title: "Testing line data",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   proj: "geoEquirectangular",
   strokeWidth: 2,
   strokeColor: "red",
   layers: [
     {
       type: "map",
-      fill: "black"
-    }
+      fill: "black",
+    },
   ],
-  data: SampleMapData4
-}
+  data: SampleMapData4,
+};
 
 // Static Map Example 8:
 // Displaying polygons (e.g. rectangle)
 export const StaticMapChartPoly = Template.bind({});
 StaticMapChartPoly.args = {
   title: "Testing polygon data",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   proj: "geoEquirectangular",
   layers: [
     {
       type: "map",
-      fill: "white"
-    }
+      fill: "white",
+    },
   ],
-  data: SampleMapData5
-}
+  data: SampleMapData5,
+};
 
 // Static Map Example 9:
 // Displaying both polygons and lines
 export const StaticMapChartLinePolyMix = Template.bind({});
 StaticMapChartLinePolyMix.args = {
   title: "Testing a mix of polygon and line data",
-  yExtent: [0,100],
-  xExtent: [0,100],
+  yExtent: [0, 100],
+  xExtent: [0, 100],
   proj: "geoEquirectangular",
   layers: [
     {
       type: "map",
-      fill: "red"
-    }
+      fill: "red",
+    },
   ],
-  data: SampleMapData6
-}
+  data: SampleMapData6,
+};

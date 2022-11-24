@@ -1,31 +1,19 @@
 import React from "react";
 import {
-    DialogTrigger,
     ActionButton,
-    Dialog,
-    Content,
     Flex,
     Picker,
     Item,
-    NumberField,
-    ToggleButton,
     Divider,
     Text
 } from "@adobe/react-spectrum";
-import { VariableSelector } from "Components/MaticoEditor/Utils/VariableSelector";
 import {
-    FilterStep,
-    Filter,
     ColumnTransformStep,
-    DateOpts,
-    FloatOpts,
-    IntOpts,
     ColumnTransform
+    // @ts-ignore
 } from "@maticoapp/matico_types/spec";
-import FunctionIcon from "@spectrum-icons/workflow/Function";
-import { FilterEditor } from "Components/MaticoEditor/Utils/FilterEditor";
 import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColumnSelector";
-import {Column} from "Datasets/Dataset";
+import { Column } from "Datasets/Dataset";
 
 interface ColumnTransformEditorProps {
     datasetId: string;
@@ -34,8 +22,13 @@ interface ColumnTransformEditorProps {
     onUpdateTransform: (update: Partial<ColumnTransform>) => void;
 }
 
-const ColumnTransformEditor: React.FC<ColumnTransformEditorProps> = ({datasetId,transfom,columns, onUpdateTransform}) => {
-    console.log("transform ", transform, " Columns ",columns)
+const ColumnTransformEditor: React.FC<ColumnTransformEditorProps> = ({
+    datasetId,
+    transform,
+    columns,
+    onUpdateTransform
+}) => {
+    console.log("transform ", transform, " Columns ", columns);
     return (
         <Flex>
             <DatasetColumnSelector
@@ -62,7 +55,7 @@ export const ColumnTransformStepEditor: React.FC<{
     step: ColumnTransformStep;
     onChange: (update: Partial<ColumnTransformStep>) => void;
     datasetId?: string;
-    columns?: Array<Column>
+    columns?: Array<Column>;
 }> = ({ step, onChange, datasetId, columns }) => {
     // const updateTransformAtIndex= (update:Filter,index:number)=>{
     //   console.log("update ", update, " index ", index)

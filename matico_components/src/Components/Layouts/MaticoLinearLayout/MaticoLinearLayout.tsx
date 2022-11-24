@@ -10,18 +10,13 @@ import {
 import { Flex } from "@adobe/react-spectrum";
 import { PaneSelector } from "Utils/paneEngine";
 import { usePane } from "Hooks/usePane";
-import { ResizableDimensions, useResizable } from "Hooks/useResizable";
-import { ParentProvider, useParentContext } from "Hooks/useParentContext";
+import { ParentProvider } from "Hooks/useParentContext";
 import styled from "styled-components";
-import ArrowRight from "@spectrum-icons/workflow/ArrowRight";
-import ArrowDown from "@spectrum-icons/workflow/ArrowDown";
-import { updateDragOrResize } from "Utils/dragAndResize/updateDragOrResize";
-import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import MoveLeftRight from "@spectrum-icons/workflow/MoveLeftRight";
-import MoveUpDown from "@spectrum-icons/workflow/MoveUpDown";
+import { SortableContext } from "@dnd-kit/sortable";
 import { InternalSpecProvider, useInternalSpec } from "Hooks/useInteralSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
-import { useMaticoSelector } from "Hooks/redux";
+import { DragAndResizeActionButtons } from "Utils/dragAndResize/DragAndResizeButtons";
+import { PaneGrid } from "Utils/paneGrid";
 
 type UnitTree = {
     [position: string]: {
@@ -95,7 +90,7 @@ const LinearContainer: React.FC<{
     } = useInternalSpec();
 
     return (
-        <div
+        <PaneGrid
             // @ts-ignore
             ref={ref}
             style={{
@@ -143,153 +138,9 @@ const LinearContainer: React.FC<{
         >
             {" "}
             {children}
-        </div>
+        </PaneGrid>
     );
 });
-
-const LinearDraggableActionWrapper: React.FC = ({ children }) => {
-    const {
-        updatePanePosition,
-        direction,
-        paneRef,
-        normalizedPane,
-        position: { widthUnits, heightUnits },
-        parent
-    } = useInternalSpec();
-    const resizableParentRef = useRef<HTMLDivElement>(null);
-    const {
-        setNodeRef,
-        setActivatorNodeRef,
-        attributes,
-        listeners,
-        transform
-    } = useSortable({
-        id: paneRef?.id,
-        data: {
-            paneRefId: paneRef?.id,
-            paneId: normalizedPane?.id,
-            pane: normalizedPane,
-            parent
-        }
-    });
-
-    const parentDimensions = useParentContext();
-
-    const onResizeEnd = (event: ResizableDimensions) => {
-        const newRect = event.newRect;
-        updateDragOrResize({
-            updatePanePosition,
-            widthUnits,
-            heightUnits,
-            xUnits: widthUnits,
-            yUnits: heightUnits,
-            parentDimensions,
-            newWidth: direction === "row" ? newRect.width : undefined,
-            newHeight: direction === "column" ? newRect.height : undefined
-        });
-    };
-
-    const {
-        active: resizeActive,
-        startResize,
-        indicatorStyles
-    } = useResizable({
-        ref: resizableParentRef,
-        orientation: direction === "row" ? "horizontal" : "vertical",
-        onResizeEnd
-    });
-
-    const currentEditElement = useMaticoSelector(
-        ({ spec }) => spec.currentEditElement
-    );
-    const isEditedPane = paneRef?.id && currentEditElement?.id === paneRef.id;
-
-    const buttonPositionStyle =
-        direction === "row"
-            ? {
-                  position: "absolute",
-                  right: 0,
-                  bottom: "50%",
-                  transform: "translate(0, 50%)"
-              }
-            : {
-                  position: "absolute",
-                  right: "50%",
-                  bottom: 0,
-                  transform: "translate(50%, 0)"
-              };
-    const buttonVisibilityStyle = {
-        opacity: isEditedPane ? 1 : 0,
-        transition: "opacity 0.2s ease-in-out",
-        pointerEvents: isEditedPane ? "all" : "none"
-    };
-    const ArrowEl = direction === "row" ? ArrowRight : ArrowDown;
-
-    return (
-        <LinearContainer
-            ref={setNodeRef}
-            style={{
-                transform: transform
-                    ? `translate(${transform.x}px, ${transform.y}px)`
-                    : undefined
-            }}
-        >
-            <div
-                style={{
-                    position: "relative",
-                    width: "100%",
-                    height: "100%"
-                }}
-                ref={resizableParentRef}
-            >
-                {children}
-
-                <button
-                    // @ts-ignore
-                    style={{
-                        ...buttonPositionStyle,
-                        ...buttonVisibilityStyle
-                    }}
-                    onMouseDown={startResize}
-                    aria-label="Resize Pane"
-                >
-                    <ArrowEl color="positive" />
-                </button>
-                <button
-                    // @ts-ignore
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        left: "50%",
-                        transform: "translate(-50%, 0)",
-                        ...buttonVisibilityStyle
-                    }}
-                    ref={setActivatorNodeRef}
-                    {...attributes}
-                    {...listeners}
-                    aria-label="Move Pane"
-                >
-                    {direction === "row" ? (
-                        <MoveLeftRight color="positive" />
-                    ) : (
-                        <MoveUpDown color="positive" />
-                    )}
-                </button>
-                {!!resizeActive && (
-                    <span
-                        style={{
-                            ...indicatorStyles,
-                            zIndex: 5,
-                            background: "#33ab8455"
-                        }}
-                    >
-                        {" "}
-                    </span>
-                )}
-            </div>
-        </LinearContainer>
-    );
-};
 
 const LinearPane: React.FC<{
     paneRef: PaneRef;
@@ -297,6 +148,7 @@ const LinearPane: React.FC<{
     allowOverflow?: boolean;
     direction?: "row" | "column";
 }> = ({ position, paneRef, allowOverflow, direction }) => {
+    const paneContainerRef = useRef<HTMLDivElement>(null);
     const paneType = paneRef.type;
     const {
         normalizedPane,
@@ -307,7 +159,6 @@ const LinearPane: React.FC<{
         updatePanePosition
     } = usePane(paneRef);
     const isEdit = useIsEditable();
-    const Wrapper = isEdit ? LinearDraggableActionWrapper : LinearContainer;
 
     return (
         <InternalSpecProvider
@@ -326,7 +177,13 @@ const LinearPane: React.FC<{
                     allowOverflow !== undefined ? allowOverflow : true
             }}
         >
-            <Wrapper>
+            <LinearContainer ref={paneContainerRef}>
+                {!!isEdit && (
+                    <DragAndResizeActionButtons
+                        paneContainerRef={paneContainerRef}
+                        layoutType="linear"
+                    />
+                )}
                 <PaneSelector
                     normalizedPane={normalizedPane}
                     updatePane={updatePane}
@@ -334,7 +191,7 @@ const LinearPane: React.FC<{
                     paneRef={paneRef}
                     paneType={paneType}
                 />
-            </Wrapper>
+            </LinearContainer>
         </InternalSpecProvider>
     );
 };

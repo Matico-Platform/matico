@@ -59,11 +59,9 @@ export const useAutoVariable = ({
 }: AutoVariableInterface): [VariableValue, (update: VariableValue) => void] => {
     const dispatch = useMaticoDispatch();
 
-    const autoVariables = useMaticoSelector(
-        (state) => state.variables.autoVariables
+    const currentValue = useMaticoSelector(
+        (state) => state.variables.autoVariables?.[variable.id]?.value
     );
-
-    const currentValue = autoVariables[variable.id]?.value;
 
     useEffect(() => {
         if (variable) {

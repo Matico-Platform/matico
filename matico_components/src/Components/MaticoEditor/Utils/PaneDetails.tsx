@@ -40,7 +40,7 @@ export const IconForPaneType = (PaneType: string, props?: any) => {
             return <Border {...props} />;
         case "staticMap":
             return <MapIcon {...props} />;
-        case "dateTime":
+        case "dateTimeSlider":
             return <Calendar {...props} />;
     }
 };
@@ -211,10 +211,10 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         layout: { type: "free" },
         panes: []
     },
-    dateTimeSlider:{
+    dateTimeSlider: {
         name: "DateTimeSlider",
         column: null,
-        dataset: {name: "unknown", filters:[]}
+        dataset: { name: "unknown", filters: [] }
     }
 };
 

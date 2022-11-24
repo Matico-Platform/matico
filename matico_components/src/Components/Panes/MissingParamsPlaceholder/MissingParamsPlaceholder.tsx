@@ -2,9 +2,10 @@ import React from "react";
 import { Text, Flex } from "@adobe/react-spectrum";
 import Alert from "@spectrum-icons/workflow/Alert";
 
-export const MissingParamsPlaceholder: React.FC<{ paneName: string }> = ({
-    paneName
-}) => {
+export const MissingParamsPlaceholder: React.FC<{
+    paneName: string;
+    additionalInfo?: string;
+}> = ({ paneName, additionalInfo }) => {
     return (
         <Flex
             width="100%"
@@ -22,6 +23,12 @@ export const MissingParamsPlaceholder: React.FC<{ paneName: string }> = ({
                 <br />
                 {paneName} missing parameters
                 <br />
+                {additionalInfo ? (
+                    <>
+                        {additionalInfo}
+                        <br />
+                    </>
+                ) : null}
                 <i>Click to open editor</i>
             </Text>
         </Flex>

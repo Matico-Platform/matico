@@ -67,7 +67,7 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[layer.source.name]
     );
-    console.log("columns", dataset?.columns);
+    // console.log("columns", dataset?.columns);
 
     const { columns, geomType } = dataset ?? { columns: null, geomType: null };
 
@@ -418,7 +418,10 @@ export const LayerEditor: React.FC<LayerEditorProps> = ({
                                                 onSelectionChange={(column) =>
                                                     handleTooltipColumnChange({
                                                         index: i,
-                                                        value: { column, label: column },
+                                                        value: {
+                                                            column,
+                                                            label: column
+                                                        },
                                                         action: "update"
                                                     })
                                                 }

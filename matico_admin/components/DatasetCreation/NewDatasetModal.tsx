@@ -12,8 +12,8 @@ import {
   Dialog,
   ButtonGroup,
 } from "@adobe/react-spectrum";
-import {NewSyncDatasetForm} from "./NewSyncDatasetForm";
-import {NewUploadDatasetForm} from "./NewUploadDatasetForm";
+import { NewSyncDatasetForm } from "./NewSyncDatasetForm";
+import { NewUploadDatasetForm } from "./NewUploadDatasetForm";
 
 export interface NewDatasetModalProps {}
 
@@ -22,7 +22,7 @@ export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
   // TODO: on-done notification in this component
   return (
     <DialogTrigger isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
-      <Button variant='cta'>New Dataset</Button>
+      <Button variant="cta">New Dataset</Button>
       <Dialog width="80vw" height="60vh">
         <Content>
           <Tabs height="100%">
@@ -32,7 +32,7 @@ export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
             </TabList>
             <TabPanels width="100%" height="100%">
               <Item key="upload">
-                <NewUploadDatasetForm/>
+                <NewUploadDatasetForm />
               </Item>
               <Item key="sync">
                 <NewSyncDatasetForm />
@@ -41,7 +41,7 @@ export const NewDatasetModal: React.FC<NewDatasetModalProps> = () => {
           </Tabs>
         </Content>
         <ButtonGroup>
-          <ActionButton onPress={() => setIsOpen(false)}>Cancel</ActionButton> 
+          <ActionButton onPress={() => setIsOpen(false)}>Cancel</ActionButton>
         </ButtonGroup>
       </Dialog>
     </DialogTrigger>

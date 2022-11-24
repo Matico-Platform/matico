@@ -7,7 +7,6 @@ import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 // import GitLabProvider from "next-auth/providers/gitlab";
 
-
 export const authOptions = {
   providers: [
     GoogleProvider({
@@ -16,11 +15,11 @@ export const authOptions = {
     }),
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET
+      clientSecret: process.env.GITHUB_SECRET,
     }),
     FacebookProvider({
       clientId: process.env.FB_ID,
-      clientSecret: process.env.FB_SECRET
+      clientSecret: process.env.FB_SECRET,
     }),
     // GitLabProvider({
     //   clientId: process.env.GITLAB_CLIENT_ID,
@@ -28,7 +27,7 @@ export const authOptions = {
     // })
   ],
   adapter: PrismaAdapter(prisma),
-  secret: process.env.NEXTAUTH_SECRET
-}
+  secret: process.env.NEXTAUTH_SECRET,
+};
 
 export default NextAuth(authOptions);

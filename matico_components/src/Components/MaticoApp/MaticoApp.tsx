@@ -27,7 +27,7 @@ import { ArrowProvider } from "DatasetsProviders/ArrowProvider";
 import { App } from "@maticoapp/matico_types/spec";
 
 import { SocrataDatasetProvider } from "DatasetsProviders/SocrataProvider/SocrataProvider";
-import {DataLibraryProvider} from 'DatasetsProviders/DataLibrary/DataLibrary';
+import { DataLibraryProvider } from "DatasetsProviders/DataLibrary/DataLibrary";
 import { ComputeProvider } from "DatasetsProviders/ComputeProvider";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";

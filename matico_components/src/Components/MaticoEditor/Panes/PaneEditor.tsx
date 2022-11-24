@@ -114,7 +114,7 @@ export const PositionPresets = [
         label: "◰ Snap Top Left",
         position: {
             x: 0,
-            y: 50,
+            y: 0,
             width: 50,
             height: 50
         }
@@ -124,7 +124,7 @@ export const PositionPresets = [
         label: "◳ Snap Top Right",
         position: {
             x: 50,
-            y: 50,
+            y: 0,
             width: 50,
             height: 50
         }
@@ -134,7 +134,7 @@ export const PositionPresets = [
         label: "◱ Snap Bottom Left",
         position: {
             x: 0,
-            y: 0,
+            y: 50,
             width: 50,
             height: 50
         }
@@ -144,45 +144,46 @@ export const PositionPresets = [
         label: "◲ Snap Bottom Right",
         position: {
             x: 50,
-            y: 0,
+            y: 50,
             width: 50,
             height: 50
         }
     }
 ];
 
-export const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> =
-    ({ updatePosition }) => {
-        return (
-            <ActionGroup
-                overflowMode="collapse"
-                marginTop={"size-150"}
-                summaryIcon={<TextStyle />}
-                aria-label="Text style"
-                maxWidth="20vw"
-                isEmphasized
-                onAction={(key) => {
-                    const position = PositionPresets.find(
-                        (f) => f.id === key
-                    )?.position;
-                    !!position &&
-                        updatePosition({
-                            ...position,
-                            heightUnits: "percent",
-                            widthUnits: "percent",
-                            xUnits: "percent",
-                            yUnits: "percent"
-                        });
-                }}
-            >
-                {PositionPresets.map(({ id, label }) => (
-                    <Item key={id} textValue={label.slice(2)}>
-                        <Text>{label}</Text>
-                    </Item>
-                ))}
-            </ActionGroup>
-        );
-    };
+export const SnapPaneMenu: React.FC<{
+    updatePosition: (change: any) => void;
+}> = ({ updatePosition }) => {
+    return (
+        <ActionGroup
+            overflowMode="collapse"
+            marginTop={"size-150"}
+            summaryIcon={<TextStyle />}
+            aria-label="Text style"
+            maxWidth="20vw"
+            isEmphasized
+            onAction={(key) => {
+                const position = PositionPresets.find(
+                    (f) => f.id === key
+                )?.position;
+                !!position &&
+                    updatePosition({
+                        ...position,
+                        heightUnits: "percent",
+                        widthUnits: "percent",
+                        xUnits: "percent",
+                        yUnits: "percent"
+                    });
+            }}
+        >
+            {PositionPresets.map(({ id, label }) => (
+                <Item key={id} textValue={label.slice(2)}>
+                    <Text>{label}</Text>
+                </Item>
+            ))}
+        </ActionGroup>
+    );
+};
 
 export const PaneEditor: React.FC<PaneEditorProps> = ({
     position,

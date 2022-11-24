@@ -8,7 +8,8 @@ import {
     updateDatasetTransform,
     updateDatasetTransformStep,
     removeDatasetTransformStep,
-    addDatasetTransformStep
+    addDatasetTransformStep,
+    removeDatasetTransform
 } from "Stores/MaticoSpecSlice";
 
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
@@ -31,6 +32,9 @@ export const useDatasetTransform = (datasetTransformId: string) => {
                 )
         )
     );
+
+    const removeTransform = () =>
+        dispatch(removeDatasetTransform({ id: datasetTransform.id }));
 
     const dispatch = useMaticoDispatch();
 
@@ -71,6 +75,7 @@ export const useDatasetTransform = (datasetTransformId: string) => {
         updateDatasetTransform: _updateDatasetTransform,
         addStep: _addStep,
         removeStep: _removeStep,
-        updateStep: _updateStep
+        updateStep: _updateStep,
+        removeTransform
     };
 };

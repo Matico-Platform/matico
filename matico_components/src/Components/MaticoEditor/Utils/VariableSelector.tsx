@@ -17,6 +17,7 @@ interface VariableSelectorProps {
     variable?: Variable;
     onSelectVariable: (variable: Variable) => void;
     allowedTypes: Array<string>;
+    inline?: boolean;
 }
 
 function suboptionsForVariableType(variable: MaticoStateVariable) {
@@ -36,10 +37,10 @@ function suboptionsForVariableType(variable: MaticoStateVariable) {
                 { id: "bearing", name: "Bearing" }
             ];
         case "dateRange":
-            return[
-              {id: "min", name:"min"},
-              {id:"max", name:'max'}
-            ]
+            return [
+                { id: "min", name: "min" },
+                { id: "max", name: "max" }
+            ];
         default:
             return Object.keys(variable.value.value).map((so) => ({
                 name: so,
@@ -49,7 +50,8 @@ function suboptionsForVariableType(variable: MaticoStateVariable) {
 }
 export const VariableSelector: React.FC<VariableSelectorProps> = ({
     variable,
-    onSelectVariable
+    onSelectVariable,
+    inline = true
 }) => {
     const [options, vars] = useMaticoSelector((state) => {
         let vars = Object.values(state.variables.autoVariables);
@@ -88,57 +90,45 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
     const suboptions = suboptionsForVariableType(selectedVar);
 
     return (
-        <DialogTrigger type="popover" isDismissable={true}>
-            <ActionButton>
-                {selectedVar ? selectedVar.name : "Select filter variable"}
-            </ActionButton>
-            {(close) => (
-                <Dialog>
-                    <Content>
-                        <Heading>Variable</Heading>
-                        <Picker
-                            label={"Select variable to use"}
-                            width={"100%"}
-                            items={options}
-                            onSelectionChange={(variableId) =>
-                                onSelectVariable({
-                                    varId: variableId as string,
-                                    property: null
-                                })
-                            }
-                            selectedKey={selectedVar?.id}
-                        >
-                            {(section) => (
-                                <Section
-                                    key={section.name}
-                                    items={section.items}
-                                    title={section.name}
-                                >
-                                    {(v) => <Item key={v.id}>{v.name}</Item>}
-                                </Section>
-                            )}
-                        </Picker>
-                        {suboptions && (
-                            <Picker
-                                label={"Property"}
-                                items={suboptions}
-                                width={"100%"}
-                                selectedKey={variable.property}
-                                onSelectionChange={(property) =>
-                                    onSelectVariable({
-                                        ...variable,
-                                        property: property as string
-                                    })
-                                }
-                            >
-                                {(item) => (
-                                    <Item key={item.id}>{item.name} </Item>
-                                )}
-                            </Picker>
-                        )}
-                    </Content>
-                </Dialog>
+        <>
+            <Picker
+                label={"Select variable to use"}
+                width={"100%"}
+                items={options}
+                onSelectionChange={(variableId) =>
+                    onSelectVariable({
+                        varId: variableId as string,
+                        property: null
+                    })
+                }
+                selectedKey={selectedVar?.id}
+            >
+                {(section) => (
+                    <Section
+                        key={section.name}
+                        items={section.items}
+                        title={section.name}
+                    >
+                        {(v) => <Item key={v.id}>{v.name}</Item>}
+                    </Section>
+                )}
+            </Picker>
+            {suboptions && (
+                <Picker
+                    label={"Property"}
+                    items={suboptions}
+                    width={"100%"}
+                    selectedKey={variable.property}
+                    onSelectionChange={(property) =>
+                        onSelectVariable({
+                            ...variable,
+                            property: property as string
+                        })
+                    }
+                >
+                    {(item) => <Item key={item.id}>{item.name} </Item>}
+                </Picker>
             )}
-        </DialogTrigger>
+        </>
     );
 };

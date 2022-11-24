@@ -22,7 +22,7 @@ const AppDemoPage: React.FC = () => {
       ),
     { ssr: false }
   );
-  
+
   const [initialSpec, setInitialSpec] = React.useState<App | null>(null);
   const [spec, setSpec] = React.useState<App | null>(null);
   const [lastSaved, setLastSaved] = React.useState<string | null>(null);
@@ -31,36 +31,36 @@ const AppDemoPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if(session?.user && spec){
-      const name = session.user.name
-        createAppFromDemo(spec, `${name} - Matico Demo App`).then((app) => {
-            if (app?.error) {
-                console.log(app.error)
-            } else {
-              router.push(`/apps/edit/${app.id}`);
-            }
-          });
+    if (session?.user && spec) {
+      const name = session.user.name;
+      createAppFromDemo(spec, `${name} - Matico Demo App`).then((app) => {
+        if (app?.error) {
+          console.log(app.error);
+        } else {
+          router.push(`/apps/edit/${app.id}`);
+        }
+      });
     }
   }, [session, spec]);
 
   const onUpdateSpec = (spec: App) => {
     if (spec) {
-        const date = new Date()
-        const hour = date.getHours()
-        const minutes = date.getMinutes()
+      const date = new Date();
+      const hour = date.getHours();
+      const minutes = date.getMinutes();
 
-        localStorage.setItem("matico_app", JSON.stringify(spec));
-        setLastSaved(`Stored locally at ${hour}:${minutes}`);
-        setSpec(spec)
+      localStorage.setItem("matico_app", JSON.stringify(spec));
+      setLastSaved(`Stored locally at ${hour}:${minutes}`);
+      setSpec(spec);
     }
   };
 
   useEffect(() => {
     const app = localStorage.getItem("matico_app");
     if (app) {
-        setInitialSpec(JSON.parse(app));
+      setInitialSpec(JSON.parse(app));
     } else {
-        setInitialSpec(Blank);
+      setInitialSpec(Blank);
     }
   }, []);
 
@@ -83,18 +83,22 @@ const AppDemoPage: React.FC = () => {
           <h2>Loading...</h2>
         </Flex>
       );
-    } 
+    }
   }, [initialSpec]);
 
   return (
     <Flex direction="column" height="100vh">
-      <AppOptionsBar app={{
-        name: "Demo Matico App"
-      }}>
+      <AppOptionsBar
+        app={{
+          name: "Demo Matico App",
+        }}
+      >
         <Flex direction="row" flex={1.5} gap="size-150" alignItems="center">
-        <Text><b>Log in to save &amp; share.</b></Text>
-        <Text>{lastSaved}</Text>
-        <Login/>
+          <Text>
+            <b>Log in to save &amp; share.</b>
+          </Text>
+          <Text>{lastSaved}</Text>
+          <Login />
         </Flex>
       </AppOptionsBar>
       <Divider size="S" />

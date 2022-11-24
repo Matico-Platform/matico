@@ -1,5 +1,5 @@
-import {useSWRAPI} from "../utils/api";
+import { useSWRAPI } from "../utils/api";
 
-export const useSyncHistory= (id:string)=>{
-  return useSWRAPI(`/datasets/${id}/sync_history`,  {refreshInterval:4000}) 
-}
+export const useSyncHistory = (id: string) => {
+  return useSWRAPI(`/datasets/${id}/sync_history`, { refreshInterval: 4000 });
+};

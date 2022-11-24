@@ -44,7 +44,7 @@ export const MaticoContainerPane: React.FC<MaticoContainerPaneInterface> = ({
         <ContainerDropTarget
             style={{
                 position: "relative",
-                overflow: "hidden auto",
+                // overflow: "hidden auto",
                 width: "100%",
                 height: "100%",
                 backgroundColor: edit ? undefined : "transparent"

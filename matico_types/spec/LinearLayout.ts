@@ -4,4 +4,10 @@ import type { GapSize } from "./GapSize";
 import type { Justification } from "./Justification";
 import type { LinearLayoutDirection } from "./LinearLayoutDirection";
 
-export interface LinearLayout { direction: LinearLayoutDirection, allowOverflow: boolean, justify: Justification, gap: GapSize | null, align: Alignment, }
+export interface LinearLayout {
+  direction: LinearLayoutDirection;
+  allowOverflow: boolean;
+  justify: Justification;
+  gap: GapSize | null;
+  align: Alignment;
+}

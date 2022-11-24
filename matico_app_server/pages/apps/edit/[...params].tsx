@@ -8,16 +8,15 @@ import { AppOptionsBar } from "../../../components/AppOptionsBar/AppOptionsBar";
 import { MaticoProvider } from "../../../components/DatasetCreation/S3Provider";
 import { useApp } from "../../../hooks/useApp";
 import { prisma } from "../../../db";
-import {userFromSession, userHasEdit} from "../../../utils/db";
+import { userFromSession, userHasEdit } from "../../../utils/db";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-
-  const session = await getSession(context)
-  const user = await userFromSession(session, prisma)
+  const session = await getSession(context);
+  const user = await userFromSession(session, prisma);
 
   const params = context.query.params;
 
-  const appId = params ? params[0] : undefined 
+  const appId = params ? params[0] : undefined;
 
   const app = await prisma.app.findUnique({
     where: {
@@ -26,21 +25,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     include: {
       owner: true,
       _count: { select: { collaborators: true } },
-      collaborators:true
+      collaborators: true,
     },
   });
 
-  if (!user) return { props: { app: null, error: "You need to be logged in to do this" } };
+  if (!user)
+    return {
+      props: { app: null, error: "You need to be logged in to do this" },
+    };
   if (!app) return { props: { app: null, error: "Failed to find app" } };
 
-  const allowedToEdit  = userHasEdit(app ,user)
+  const allowedToEdit = userHasEdit(app, user);
 
   if (app.owner.id !== user?.id && allowedToEdit === false)
     return { props: { app: null, error: "Unauthorized to view this app" } };
 
   return {
     props: {
-      initialApp: JSON.parse(JSON.stringify(app))
+      initialApp: JSON.parse(JSON.stringify(app)),
     },
   };
 };
@@ -52,9 +54,8 @@ interface AppPresentPageProps {
 
 const AppPresentPage: React.FC<AppPresentPageProps> = ({
   initialApp,
-  error
+  error,
 }) => {
-
   const MaticoApp = dynamic(
     () =>
       (import("@maticoapp/matico_components") as any).then(
@@ -114,7 +115,9 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({
       <AppOptionsBar app={app} onPublicUpdate={setPublic} />
       <Divider size="S" />
 
-      <Flex flex={1} maxHeight={"calc(100vh - 51px)"}>{editor}</Flex>
+      <Flex flex={1} maxHeight={"calc(100vh - 51px)"}>
+        {editor}
+      </Flex>
     </Flex>
   );
 };

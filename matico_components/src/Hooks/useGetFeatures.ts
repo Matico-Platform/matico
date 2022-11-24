@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 //@ts-ignore
 import { v4 as uuid } from "uuid";
 import { useEffect } from "react";
-import { requestFeatures, FeatureRequest as FeatureRequestSpec } from "Stores/MaticoDatasetSlice";
+import {
+    requestFeatures,
+    FeatureRequest as FeatureRequestSpec
+} from "Stores/MaticoDatasetSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 
 export const useGetFeatures = (featureRequest: FeatureRequestSpec) => {
@@ -14,10 +17,12 @@ export const useGetFeatures = (featureRequest: FeatureRequestSpec) => {
     );
 
     useEffect(() => {
-        dispatch(requestFeatures({
-            notifierId,
-            args: featureRequest
-        }));
+        dispatch(
+            requestFeatures({
+                notifierId,
+                args: featureRequest
+            })
+        );
     }, [notifierId]);
 
     return result;

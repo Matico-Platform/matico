@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useDatasetColumns } from "../hooks/useDatasetColumns";
 import { useFeature } from "../hooks/useFeature";
 import { Source } from "../utils/api";
-import {Column} from "@maticoapp/matico_types/api"
+import { Column } from "@maticoapp/matico_types/api";
 
 interface FeatureEditorProps {
   source: Source | null;
@@ -117,8 +117,8 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
       <Flex direction="column" width="100%" height="100%">
         <Header>Edit the selected features properties</Header>
         {columns && feature && (
-            <Form width="100%" height="100%">
-              <View height="100%" maxHeight="350px" overflow='auto'>
+          <Form width="100%" height="100%">
+            <View height="100%" maxHeight="350px" overflow="auto">
               <Grid
                 columns={repeat("auto-fit", "size-2400")}
                 autoRows="size-800"
@@ -149,7 +149,7 @@ export const FeatureEditor: React.FC<FeatureEditorProps> = ({
                 )}
               </Grid>
             </View>
-            </Form>
+          </Form>
         )}
       </Flex>
     </Well>

@@ -7,7 +7,7 @@ import { MaticoScatterplotPane } from "Components/Panes/MaticoScatterplotPane/Ma
 import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
 import { MaticoStaticMapPane } from "./MaticoStaticMapPane/MaticoStaticMapPane";
-import {MaticoDateTimeSlider} from "./MaticoDateTimeSlider/MaticoDateTimeSlider";
+import { MaticoDateTimeSlider } from "./MaticoDateTimeSlider/MaticoDateTimeSlider";
 
 export interface MaticoPaneInterface {
     position: PanePosition;

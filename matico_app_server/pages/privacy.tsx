@@ -92,8 +92,8 @@ export default function Tos() {
         <p>
           Cookies are files with a small amount of data that are commonly used
           as anonymous unique identifiers. These are sent to your browser from
-          the websites that you visit and are stored on your device&pos;s internal
-          memory.
+          the websites that you visit and are stored on your device&pos;s
+          internal memory.
         </p>{" "}
         <p>
           This Service does not use these “cookies” explicitly. However, the app

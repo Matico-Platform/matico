@@ -21,7 +21,7 @@ import { useMaticoSelector } from "Hooks/redux";
 import { MVTLayer, TileLayer } from "deck.gl";
 import { Filter } from "@maticoapp/matico_types/spec";
 import { MaticoMapTooltip } from "./MaticoMapTooltip";
-import { TooltipColumnSpec } from './MaticoMapTooltip';
+import { TooltipColumnSpec } from "./MaticoMapTooltip";
 import { v4 as uuid } from "uuid";
 
 interface MaticoLayerInterface {
@@ -41,7 +41,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     mapPaneId,
     onUpdate,
     beforeId,
-    tooltipColumns=[]
+    tooltipColumns = []
 }) => {
     const dataset = useMaticoSelector(
         (state) => state.datasets.datasets[source.name]
@@ -93,7 +93,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             : null
     );
 
-
     const preparedData = useMemo(() => {
         if (!dataResult) {
             return [];
@@ -136,7 +135,6 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                 }));
         }
     }, [source.name, dataResult, dataset]);
-
 
     const Layer = useEffect(() => {
         //If we the dataset is tiled and we dont have data
@@ -210,19 +208,26 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
             elevationScale,
             opacity,
             visible,
-            onHover: (hoverTarget: { object: Record<string, unknown> }, event: any) => {
+            onHover: (
+                hoverTarget: { object: Record<string, unknown> },
+                event: any
+            ) => {
                 // const toEl = event?.srcEvent?.toElement;
                 // const isTooltip = parentContainsClassName(toEl, "matico-tooltip");
                 // if (isTooltip) return
                 updateHoverVariable({
                     type: "selection",
-                    value: hoverTarget.object ? [hoverTarget.object["_matico_id"] as number] :  "NoSelection"
-                })
+                    value: hoverTarget.object
+                        ? [hoverTarget.object["_matico_id"] as number]
+                        : "NoSelection"
+                });
             },
             onClick: (clickTarget: { object: Record<string, unknown> }) =>
                 updateClickVariable({
                     type: "selection",
-                    value: clickTarget.object ? [clickTarget.object["_matico_id"] as number] :  "NoSelection"
+                    value: clickTarget.object
+                        ? [clickTarget.object["_matico_id"] as number]
+                        : "NoSelection"
                 }),
             pickable: true,
             id: name,
@@ -334,19 +339,28 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
 
         onUpdate(layer);
     }, [name, JSON.stringify(style), preparedData]);
-
     return (
         <>
             <MaticoMapTooltip
                 datasetName={dataset?.name}
                 // @ts-ignore
-                id={hoverVariable?.value ? hoverVariable.value[0] : null}
+                id={
+                    hoverVariable?.value &&
+                    !(hoverVariable?.value === "NoSelection")
+                        ? hoverVariable.value[0]
+                        : null
+                }
                 columns={tooltipColumns}
-                />
+            />
             <MaticoMapTooltip
                 datasetName={dataset?.name}
                 // @ts-ignore
-                id={clickVariable?.value ? clickVariable.value[0]: null}
+                id={
+                    clickVariable?.value &&
+                    !(clickVariable?.value === "NoSelection")
+                        ? clickVariable.value[0]
+                        : null
+                }
                 columns={tooltipColumns}
                 pinned
             />

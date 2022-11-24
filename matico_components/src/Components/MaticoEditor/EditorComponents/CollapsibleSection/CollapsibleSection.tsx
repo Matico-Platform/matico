@@ -9,7 +9,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     icon = null,
     isOpen = false,
     onToggle = (isOpen: boolean) => {},
-    titleStyle = {}
+    titleStyle = {},
+    viewStyle = {},
+    outerStyle = {}
 }) => {
     const [open, setOpen] = useState(isOpen);
     const handleToggle = () => {
@@ -19,7 +21,12 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         });
     };
     return (
-        <View marginY="size-10">
+        <View
+            marginY="size-10"
+            width="100%"
+            minWidth="size-200"
+            UNSAFE_style={outerStyle}
+        >
             <Button
                 variant="primary"
                 isQuiet
@@ -56,13 +63,20 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             <View
                 height={open ? "auto" : 0}
                 overflow="hidden hidden"
-                padding="size-100"
+                padding="size-50"
+                UNSAFE_style={{
+                    display: open ? "block" : "none"
+                    // ...viewStyle
+                }}
             >
                 <Flex
                     direction="column"
                     alignItems="start"
-                    marginY="size-150"
-                    marginX="size-50"
+                    marginY="size-50"
+                    marginX="size-25"
+                    // UNSAFE_style={{
+                    // ...viewStyle,
+                    // }}
                 >
                     {children}
                 </Flex>
