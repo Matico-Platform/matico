@@ -7,7 +7,7 @@ import {
   Heading,
   Header,
   Flex,
-  Text
+  Text,
 } from "@adobe/react-spectrum";
 import { useApis } from "../hooks/useApis";
 import { Link as ALink, ActionButton } from "@adobe/react-spectrum";
@@ -29,7 +29,7 @@ import { NewApiDialog } from "../components/NewApiDialog";
 const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
   const { apis, error, createApi } = useApis();
 
-  const submit = (details:any) => {
+  const submit = (details: any) => {
     createApi(details);
   };
 
@@ -39,11 +39,12 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
         <Heading>Apis</Heading>
         <Content>
           <Text>
-            APIs allow you to build sophisticated query based APIs on top of your datasets
+            APIs allow you to build sophisticated query based APIs on top of
+            your datasets
           </Text>
         </Content>
       </View>
-      <Flex gridArea="content" margin="size-1000" direction='column'>
+      <Flex gridArea="content" margin="size-1000" direction="column">
         <Header>
           <Flex
             direction="row"
@@ -62,7 +63,7 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
         <Divider size="S" />
         {apis && (
           <TableView
-            width='100%'
+            width="100%"
             aria-label="Example table with static contents"
             selectionMode="multiple"
             marginY="size-40"
@@ -75,7 +76,7 @@ const ApisPage: NextPage<{ apisInitial: Array<any> }> = () => {
               <Column align="center">Edit Api</Column>
             </TableHeader>
             <TableBody>
-              {apis.map((api: any, index:number) => (
+              {apis.map((api: any, index: number) => (
                 <Row key={index}>
                   <Cell>
                     <ALink>

@@ -44,7 +44,7 @@ import { GeoBoundsSelector } from "../EditorComponents/GeoBoundsSelector";
 import { OptionsPopper } from "../EditorComponents/OptionsPopper";
 import { NumericEditor } from "../EditorComponents/NumericEditor";
 import { ParentSize } from "@visx/responsive";
-import {AddLayerModal} from "../EditorComponents/AddLayerModal/AddLayerModal";
+import { AddLayerModal } from "../EditorComponents/AddLayerModal/AddLayerModal";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
@@ -57,7 +57,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     const mapPane = pane as MapPane;
 
     const mapPaneCurrentView = useMaticoSelector(
-        (state) => state.variables.autoVariables[`${mapPane.name}_map_loc`]
+        (state) => state.variables.autoVariables[`${mapPane.id}_view`]
     );
 
     const dispatch = useMaticoDispatch();
@@ -89,22 +89,27 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
     };
 
     const otherMapPanes = useMaticoSelector((state) =>
-        Object.keys(state.variables.autoVariables)
-            .filter((k) => k.includes("_map_loc"))
-            .map((k) => ({ name: k.replace("_map_loc", "") }))
-            .filter((k) => k.name !== mapPane.name)
+        Object.values(state.variables.autoVariables)
+            .filter((variable) => variable.value.type === "mapview")
+            .filter((variable) => variable.paneId !== paneRef.paneId)
+            .map((variable) => ({
+                ...variable,
+                mapName: state.spec.spec.panes.find(
+                    (p) => p.id === variable.paneId
+                ).name
+            }))
     );
 
     const syncedMapPaneView = useMaticoSelector((state) =>
         //@ts-ignore
-        mapPane.view.var
+        mapPane.view.varId
             ? //@ts-ignore
-              state.variables.autoVariables[mapPane.view.var]
+              state.variables.autoVariables?.[mapPane.view.varId]
             : null
     );
 
     const setViewFromMap = () => {
-        updateView(mapPaneCurrentView.value);
+        updateView(mapPaneCurrentView?.value?.value);
     };
 
     if (!mapPane) {
@@ -137,24 +142,51 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         });
     };
 
-    const startSyncing = (pane: string) => {
+    const removeLayer = (layerId: string) => {
+        updatePane({
+            layers: mapPane.layers.filter((layer) => layer.id !== layerId)
+        });
+    };
+
+    const handleChangeOrder = (index: number, direction: "up" | "down") => {
+        const layers = mapPane.layers;
+        if (
+            (index === 0 && direction === "up") ||
+            (index === layers.length - 1 && direction === "down")
+        ) {
+            return;
+        }
+
+        let newLayers = [...layers];
+        const changedLayer = newLayers.splice(index, 1)[0];
+        newLayers.splice(
+            direction === "up" ? index - 1 : index + 1,
+            0,
+            changedLayer
+        );
+        updatePane({ layers: newLayers });
+    };
+
+    const startSyncing = (variableId: string) => {
         updatePane({
             ...mapPane,
-            view: { var: `${pane}_map_loc`, bind: true }
+            view: { varId: variableId, property: null, bind: true }
         });
     };
 
     const stopSyncing = () => {
         updatePane({
             ...mapPane,
-            view: { ...syncedMapPaneView.value, var: "", bind: null }
+            view: { ...syncedMapPaneView.value }
         });
     };
 
-    const isSynced = syncedMapPaneView ? true : false;
+    const isSynced = !!mapPane?.view?.varId;
     //@ts-ignore
     const isBound = mapPane?.view?.bind ? true : false;
-    const mapView = isSynced ? syncedMapPaneView.value : mapPane.view;
+    const mapView = isSynced
+        ? syncedMapPaneView?.value || {}
+        : mapPane?.view || {};
 
     const toggleBind = () => {
         updateView({
@@ -192,23 +224,6 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     >
                         Set Map Bounds from Current View
                     </ActionButton>
-                )}
-                {otherMapPanes && otherMapPanes.length > 0 && (
-                    <Picker
-                        width="100%"
-                        label="Sync to Another Map View"
-                        labelPosition="side"
-                        items={otherMapPanes}
-                        selectedKey={
-                            //@ts-ignore
-                            mapPane?.view?.var &&
-                            //@ts-ignore
-                            mapPane.view.var.split("_map_loc")[0]
-                        }
-                        onSelectionChange={startSyncing}
-                    >
-                        {(pane) => <Item key={pane.name}>{pane.name}</Item>}
-                    </Picker>
                 )}
                 <OptionsPopper title="More Map Bounds Options">
                     <TwoUpCollapsableGrid>
@@ -253,6 +268,19 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                         />
                     </TwoUpCollapsableGrid>
                 </OptionsPopper>
+
+                {otherMapPanes && otherMapPanes.length > 0 && (
+                    <Picker
+                        width="100%"
+                        label="Sync to Another Map View"
+                        labelPosition="side"
+                        items={otherMapPanes}
+                        selectedKey={mapPane?.view?.varId}
+                        onSelectionChange={startSyncing}
+                    >
+                        {(pane) => <Item key={pane.id}>{pane.mapName}</Item>}
+                    </Picker>
+                )}
                 {isSynced && (
                     <>
                         <Checkbox isSelected={isBound} onChange={toggleBind}>
@@ -263,7 +291,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             onPress={stopSyncing}
                             marginTop="size-200"
                             marginBottom="size-200"
-                            isDisabled
+                            isDisabled={!isSynced}
                         >
                             Stop Syncing Map View
                         </ActionButton>
@@ -274,15 +302,21 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                 <AddLayerModal onAddLayer={addLayer} />
                 <Flex marginBottom={"size-200"} direction="column" width="100%">
                     {/* @ts-ignore */}
-                    {mapPane.layers.map((layer) => (
+                    {mapPane.layers.map((layer, index) => (
                         <RowEntryMultiButton
                             key={layer.name}
                             entryName={layer.name}
                             onSelect={() => setLayerEdit(layer.id)}
-                            onRemove={() => {}}
+                            onRemove={() => {
+                                removeLayer(layer.id);
+                            }}
                             onDuplicate={() => {}}
-                            onRaise={() => {}}
-                            onLower={() => {}}
+                            onRaise={() => {
+                                handleChangeOrder(index, "up");
+                            }}
+                            onLower={() => {
+                                handleChangeOrder(index, "down");
+                            }}
                         />
                     ))}
                 </Flex>
@@ -291,6 +325,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     onChange={updateBaseMap}
                 />
             </CollapsibleSection>
+            {/*
             <CollapsibleSection title="Selection" isOpen={true}>
                 <Checkbox
                     isSelected={mapPane.selectionoOtions?.selectionEnabled}
@@ -314,16 +349,26 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                 </Picker>
 
             </CollapsibleSection>
+            */}
             <CollapsibleSection title="Controls" isOpen={true}>
                 <CheckboxGroup
                     value={Object.entries(mapPane.controls ?? {})
                         .filter(([label, selected]) => selected)
                         .map(([label, selected]) => label)}
-                        //@ts-ignore
-                        onChange={(update)=> updatePane({controls: 
-                        //@ts-ignore
-                            update.reduce((agg: MapControls,val: KeyOf<MapControls>)=> ({...agg, [val] : true}) , {})
-                        })}
+                    //@ts-ignore
+                    onChange={(update) =>
+                        updatePane({
+                            controls:
+                                //@ts-ignore
+                                update.reduce(
+                                    (
+                                        agg: MapControls,
+                                        val: KeyOf<MapControls>
+                                    ) => ({ ...agg, [val]: true }),
+                                    {}
+                                )
+                        })
+                    }
                     label="Map Controls"
                 >
                     <Checkbox value="navigation">Navigation</Checkbox>

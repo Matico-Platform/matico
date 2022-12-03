@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { MaticoStateVariable } from "./VariableTypes";
+import { MaticoStateVariable, VariableValue } from "./VariableTypes";
 
 export interface VariableState {
-    autoVariables: { [name: string]: MaticoStateVariable };
+    autoVariables: { [id: string]: MaticoStateVariable };
     variables: Array<MaticoStateVariable>;
 }
 
@@ -19,7 +19,13 @@ export const variableSlice = createSlice({
             state,
             action: PayloadAction<MaticoStateVariable>
         ) => {
-            state.autoVariables[action.payload.name] = action.payload;
+            state.autoVariables[action.payload.id] = action.payload;
+        },
+        updateAutoVariable: (
+            state,
+            action: PayloadAction<{ id: string; value: VariableValue }>
+        ) => {
+            state.autoVariables[action.payload.id].value = action.payload.value;
         },
         unregisterAutoVariable: (state, action: PayloadAction<string>) => {
             delete state.autoVariables[action.payload];
@@ -27,7 +33,7 @@ export const variableSlice = createSlice({
     }
 });
 
-export const { setAutoVariable, unregisterAutoVariable } =
+export const { setAutoVariable, unregisterAutoVariable, updateAutoVariable } =
     variableSlice.actions;
 
 export const selectAutoVariables = (state: VariableState) =>

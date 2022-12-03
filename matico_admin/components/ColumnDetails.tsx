@@ -8,7 +8,7 @@ import {
   Grid,
 } from "@adobe/react-spectrum";
 import MoreVertical from "@spectrum-icons/workflow/MoreSmallListVert";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useColumnStat } from "../hooks/useColumnStat";
 import { useDatasetColumn } from "../hooks/useDatasetColumns";
 import { Source } from "../hooks/useTableData";
@@ -20,8 +20,8 @@ interface ColumnDetailProps {
 }
 
 const statForDataType = (dataType: any) => {
-  const histogram = { type:'histogram', noBins: 20} ;
-  const categories = {type:"valueCounts" };
+  const histogram = { type: "histogram", noBins: 20 };
+  const categories = { type: "valueCounts" };
 
   switch (dataType) {
     case "INT4":
@@ -90,12 +90,12 @@ export const ColumnDetails: React.FC<ColumnDetailProps> = ({
   source,
   colName,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const { column , columnError} = useDatasetColumn(source, colName);
+  const [isOpen, setIsOpen] = useState(false);
+  const { column, columnError } = useDatasetColumn(source, colName);
 
   const stat = statForDataType(column?.colType);
 
-  console.log("ATTEMPTING TO GET STAT ", stat, column?.colType, column)
+  console.log("ATTEMPTING TO GET STAT ", stat, column?.colType, column);
   const { data: dataSummary, error: dataSummaryError } = useColumnStat(
     isOpen ? source : null,
     colName,
@@ -110,7 +110,7 @@ export const ColumnDetails: React.FC<ColumnDetailProps> = ({
       <Dialog isDismissable>
         <Heading>{colName}</Heading>
         <Content>
-          {(dataSummary && isOpen) && chartForSummary(dataSummary, colName)}
+          {dataSummary && isOpen && chartForSummary(dataSummary, colName)}
         </Content>
       </Dialog>
     </DialogTrigger>

@@ -1,5 +1,5 @@
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
-import { updateDatasetSpec } from "Stores/MaticoSpecSlice";
+import { updateDatasetSpec, removeDataset } from "Stores/MaticoSpecSlice";
 
 export const useDatasetActions = (name: string) => {
     const datasets = useMaticoSelector((s) => s.datasets);
@@ -8,5 +8,8 @@ export const useDatasetActions = (name: string) => {
     const updateDataset = (name: string, spec: any) => {
         dispatch(updateDatasetSpec({ name, datasetSpec: spec }));
     };
-    return { updateDataset };
+    const _removeDataset = (name: string) => {
+        dispatch(removeDataset({ name }));
+    };
+    return { updateDataset, removeDataset: _removeDataset };
 };

@@ -196,12 +196,12 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
     const domain = mapping.domain;
     const range = mapping.range;
 
-    const [metric, metricParams] = Array.isArray(domain)
-        ? ["manual", { bins: domain.length }]
-        : [domain.type, domain];
+    const metric = Array.isArray(domain)
+        ? { type: "manual", bins: domain.length }
+        : domain.metric;
 
     //@ts-ignore
-    const noBins = metricParams.bins;
+    const noBins = metric.bins;
 
     let selectedPaletteName =
         typeof range === "string" ? range.split(".")[0] : null;
@@ -220,14 +220,6 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         Array.isArray(domain) ? domain : []
     );
 
-    const histogram = useRequestColumnStat({
-        datasetName: dataset.name,
-        column: domain.column,
-        metric: "histogram",
-        parameters: { bins: 20 },
-        filters: filters
-    });
-
     const quantiles = useRequestColumnStat({
         datasetName: dataset.name,
         column: column.name,
@@ -244,18 +236,30 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
         filters: filters
     });
 
+    const histogram = useRequestColumnStat({
+        datasetName: dataset.name,
+        column: column.name,
+        metric: "histogram",
+        parameters: { bins: 20 },
+        filters: filters
+    });
+
     useEffect(() => {
-        if (metric === "quantile" && quantiles && quantiles.state === "Done") {
+        if (
+            metric.type === "quantile" &&
+            quantiles &&
+            quantiles.state === "Done"
+        ) {
             setDomainValues(quantiles.result);
         }
         if (
-            metric === "equalInterval" &&
+            metric.type === "equalInterval" &&
             equalInterval &&
             equalInterval.state === "Done"
         ) {
             setDomainValues(equalInterval.result);
         }
-        if (metric === "manual") {
+        if (metric.type === "manual") {
             setDomainValues(domain);
         }
     }, [metric, noBins, quantiles, equalInterval, column]);
@@ -381,7 +385,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                     <TwoUpCollapsableGrid>
                         <Picker
                             width="100%"
-                            selectedKey={metric}
+                            selectedKey={metric.type}
                             onSelectionChange={(quant) =>
                                 updateQuantization(quant as string)
                             }
@@ -416,7 +420,9 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                     )}
                 </Flex>
 
-                {["quantile", "equalInterval", "manual"].includes(metric) && (
+                {["quantile", "equalInterval", "manual"].includes(
+                    metric.type
+                ) && (
                     <Well marginStart="size-300">
                         <Flex direction="column">
                             {domainValues &&
@@ -427,7 +433,19 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                                                 rangeValues && (
                                                     <ColorPickerDialog
                                                         color={
-                                                            rangeValues[index]
+                                                            typeof rangeValues[
+                                                                index
+                                                            ] === "string"
+                                                                ? {
+                                                                      hex: rangeValues[
+                                                                          index
+                                                                      ]
+                                                                  }
+                                                                : {
+                                                                      rgb: rangeValues[
+                                                                          index
+                                                                      ]
+                                                                  }
                                                         }
                                                         onColorChange={(
                                                             color
@@ -521,7 +539,7 @@ const ContinuousDomain: React.FC<DomainEditorProps> = ({
                         xCol="binStart"
                         xLabel={column.name}
                         yLabel={"Count"}
-                        yCol="count"
+                        yCol="freq"
                         data={sanitizedHistogramData}
                         xAxis={{
                             scaleType: "linear",
@@ -607,7 +625,6 @@ export const DataDrivenModal: React.FC<DataDrivenModalProps> = ({
     );
 
     const column = dataset?.columns.find((col) => col.name === spec.variable);
-    console.log("COLUMN TYPE IS ", column.type);
 
     return (
         <DialogTrigger isDismissable>

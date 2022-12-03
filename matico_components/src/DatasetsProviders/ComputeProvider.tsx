@@ -7,7 +7,10 @@ import {
     Item,
     View,
     Well,
-    Header, Content, ActionButton
+    Footer,
+    Heading,
+    Content,
+    ActionButton
 } from "@adobe/react-spectrum";
 import {
     DatasetProviderComponent,
@@ -21,7 +24,10 @@ import { DatasetColumnSelector } from "Components/MaticoEditor/Utils/DatasetColu
 import { Column } from "Datasets/Dataset";
 import { Compute, useAvaliableCompute } from "Hooks/useAvaliableCompute";
 import { ValueOrVariableInput } from "Components/MaticoEditor/Utils/ValueOrVariableInput";
-import { SpecParameter,SpecParameterValue } from "@maticoapp/matico_types/spec";
+import {
+    SpecParameter,
+    SpecParameterValue
+} from "@maticoapp/matico_types/spec";
 
 export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     spec,
@@ -40,25 +46,25 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     };
 
     return (
-        <View>
-            <ParameterGroup
-                parameters={options}
-                values={values}
-                onChange={updateValues}
-            />
-        </View>
+        <ParameterGroup
+            layout="column"
+            parameters={options}
+            values={values}
+            onChange={updateValues}
+        />
     );
 };
 
 const ParameterGroup: React.FC<{
     parameters: any;
     values: any;
+    layout?: "row" | "column";
     onChange: (update: SpecParameter) => void;
-}> = ({ parameters, values, onChange }) => {
+}> = ({ parameters, values, onChange, layout = "row" }) => {
     if (!parameters || !values) return <></>;
 
     return (
-        <>
+        <Flex direction={layout} gap="size-200" flex={1}>
             {Object.keys(parameters).map((key) => {
                 let val = values.find((v: SpecParameter) => v.name === key)
                     .parameter.value;
@@ -76,7 +82,7 @@ const ParameterGroup: React.FC<{
                     />
                 );
             })}
-        </>
+        </Flex>
     );
 };
 
@@ -87,7 +93,6 @@ const ParameterInput: React.FC<{
     onChange: (update: SpecParameter) => void;
     params: { [key: string]: any };
 }> = ({ name, options, value, onChange, params }) => {
-
     const { type, displayDetails } = options;
     const { displayName, description } = displayDetails;
     const defaultVal = options.default;
@@ -157,76 +162,91 @@ const ParameterInput: React.FC<{
         case "repeatedOption":
             return (
                 <Well>
-                    <Header> {displayName}</Header>
+                    <Heading>
+                        <Flex
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="end"
+                        >
+                            <Text>{displayName}</Text>
+                            <ActionButton
+                                isQuiet={true}
+                                onPress={() => {
+                                    onChange({
+                                        name,
+                                        parameter: {
+                                            type,
+                                            value: [
+                                                ...value,
+                                                ...populateDefaults({
+                                                    [`${name}_${
+                                                        value.length + 1
+                                                    }`]: options.options
+                                                }).map((p) => p.parameter)
+                                            ]
+                                        }
+                                    });
+                                }}
+                            >
+                                Add
+                            </ActionButton>
+                        </Flex>
+                    </Heading>
                     <Content>{description} </Content>
-                    {value.map((instance: SpecParameterValue, index: number) => { 
-                      return (
-                        <ParameterInput
-                            name={""}
-                            options={options.options}
-                            value={instance.value}
-                            onChange={(update) =>{
-                            
-                                onChange({
-                                    name,
-                                    parameter: {
-                                        type,
-                                        value: value.map(
-                                            (
-                                                v: SpecParameterValue,
-                                                v_index: number
-                                            ) =>
-                                                v_index === index ? update.parameter: v
-                                        )
-                                    }
-                                })
-                            }
-                            }
-                            params={params}
-                            key={index}
-                        />
-                    )})}
-                    <ActionButton
-                        onPress={() => {
-                            onChange({
-                                name,
-                                parameter: {
-                                    type,
-                                    value: [
-                                        ...value,
-                                        ...populateDefaults({
-                                            [`${name}_${value.length + 1}`]:
-                                                options.options
-                                        }).map(p=>p.parameter)
-                                    ]
-                                }
-                            });
-                        }}
-                    >
-                        Add
-                    </ActionButton>
+                    {value.map(
+                        (instance: SpecParameterValue, index: number) => {
+                            return (
+                                <ParameterInput
+                                    name={""}
+                                    options={options.options}
+                                    value={instance.value}
+                                    onChange={(update) => {
+                                        onChange({
+                                            name,
+                                            parameter: {
+                                                type,
+                                                value: value.map(
+                                                    (
+                                                        v: SpecParameterValue,
+                                                        v_index: number
+                                                    ) =>
+                                                        v_index === index
+                                                            ? update.parameter
+                                                            : v
+                                                )
+                                            }
+                                        });
+                                    }}
+                                    params={params}
+                                    key={index}
+                                />
+                            );
+                        }
+                    )}
                 </Well>
             );
         case "optionGroup":
             return (
                 <Well>
-                    <Header> {displayName}</Header>
-                    <Content>{description} </Content>
-                    <ParameterGroup
-                        parameters={options.options}
-                        values={value}
-                        onChange={(update) =>
-                            onChange({
-                                name,
-                                parameter: {
-                                    type,
-                                    value: value.map((v: SpecParameter) =>
-                                        v.name === update.name ? update : v
-                                    )
-                                }
-                            })
-                        }
-                    />
+                    <Heading> {displayName}</Heading>
+                    <Content>
+                        <ParameterGroup
+                            parameters={options.options}
+                            values={value}
+                            onChange={(update) =>
+                                onChange({
+                                    name,
+                                    parameter: {
+                                        type,
+                                        value: value.map((v: SpecParameter) =>
+                                            v.name === update.name ? update : v
+                                        )
+                                    }
+                                })
+                            }
+                        />
+                        <Footer>{description} </Footer>
+                    </Content>
                 </Well>
             );
 
@@ -239,15 +259,15 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
     onSubmit,
     parameters = []
 }) => {
-    const [selectedCompute, setSelectedCompute] =
-        useState<Compute | null>(null);
+    const [selectedCompute, setSelectedCompute] = useState<Compute | null>(
+        null
+    );
 
     const [spec, setSpec] = useState({
         name: "",
         url: null,
         params: parameters
     });
-
 
     const computes = useAvaliableCompute();
 
@@ -268,9 +288,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
 
     const setAnalysis = (key: string) => {
         const compute = computes.find((c) => c.name === key);
-        const computeURL = compute
-            ? `http://localhost:8000/compute${compute.path}`
-            : null;
+        const computeURL = compute ? compute.path : null;
         setSpec({ url: computeURL, params: [], name: spec.name });
         setSelectedCompute(compute);
     };
@@ -288,7 +306,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                 </Picker>
             )}
             {analysis && (
-                <>
+                <Flex direction="column" flex="1">
                     <TextField
                         value={spec.name}
                         onChange={(name: string) => updateSpec({ name })}
@@ -307,7 +325,7 @@ export const ComputeImporter: React.FC<DatasetProviderComponent> = ({
                     >
                         Submit
                     </Button>
-                </>
+                </Flex>
             )}
         </Flex>
     );

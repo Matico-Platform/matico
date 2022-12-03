@@ -3,6 +3,7 @@ mod autocomplete;
 mod charts;
 mod colors;
 mod controls;
+mod dataset_transforms;
 mod datasets;
 mod layouts;
 mod mapping;
@@ -16,6 +17,7 @@ pub use autocomplete::*;
 pub use charts::*;
 pub use colors::*;
 pub use controls::*;
+pub use dataset_transforms::*;
 pub use datasets::*;
 pub use layouts::*;
 pub use mapping::*;
@@ -27,6 +29,10 @@ pub use validation::*;
 
 #[macro_use]
 extern crate matico_spec_derive;
+
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[cfg(test)]
 mod tests {

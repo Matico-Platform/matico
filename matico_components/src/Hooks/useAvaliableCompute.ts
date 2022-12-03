@@ -8,10 +8,15 @@ export type Compute = {
 export const useAvaliableCompute = () => {
     const [computes, setComputes] = useState<Array<Compute> | null>(null);
     useEffect(() => {
-        fetch("http://localhost:8000/api/compute")
+        fetch("/api/compute")
             .then((r) => r.json())
             .then((computes: Array<Compute>) => setComputes(computes));
     }, []);
 
-    return computes;
+    return [
+        {
+            name: "Generate Synthetic Data",
+            path: "https://matico.s3.us-east-2.amazonaws.com/compute/synthetic_analysis/matico_synthetic_data_analysis.js"
+        }
+    ];
 };

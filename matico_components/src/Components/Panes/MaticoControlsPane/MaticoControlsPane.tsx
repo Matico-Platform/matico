@@ -11,6 +11,7 @@ import {
     lightTheme
 } from "@adobe/react-spectrum";
 import { Control } from "@maticoapp/matico_types/spec";
+import { usePane } from "Hooks/usePane";
 
 export interface MaticoControlsPaneInterface extends MaticoPaneInterface {
     controls: Array<any>;
@@ -22,9 +23,6 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
     title,
     id
 }) => {
-    const [mappedControls, filtersReady, _] = useNormalizeSpec(controls);
-    if (!filtersReady) return <h1>Loading</h1>;
-
     return (
         <View width="100%" height="100%" position="relative">
             <Flex
@@ -36,23 +34,28 @@ export const MaticoControlsPane: React.FC<MaticoControlsPaneInterface> = ({
                     <View padding="size-200">
                         <Heading>{title}</Heading>
                         <Flex direction="column" gap="size-200">
-                            {mappedControls.map((controlSpec: Control) => {
+                            {controls.map((controlSpec: Control) => {
                                 switch (controlSpec.type) {
                                     case "range":
                                         return (
                                             <MaticoRangeControl
+                                                controlPaneId={id}
                                                 min={controlSpec.min as number}
                                                 max={controlSpec.max as number}
                                                 step={
                                                     controlSpec.step as number
                                                 }
                                                 name={controlSpec.name}
+                                                changeEvent={
+                                                    controlSpec?.changeEvent
+                                                }
                                             />
                                         );
                                     case "select":
                                         //@ts-ignore
                                         return (
                                             <MaticoSelectControl
+                                                controlPaneId={id}
                                                 options={
                                                     controlSpec.options as Array<
                                                         string | number

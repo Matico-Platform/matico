@@ -5,6 +5,7 @@ import {
     DialogTrigger,
     Flex,
     Heading,
+    TextField,
     Item,
     NumberField,
     Picker,
@@ -32,7 +33,8 @@ interface RangeFilterEditorProps extends FilterEditor {
 }
 
 interface CategoryFilterProps extends FilterEditor {
-    categories: Array<string>;
+    isOneOf: Array<string | number>;
+    isNotOneOf: Array<string | number>;
 }
 
 const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
@@ -42,7 +44,6 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     max,
     onUpdateFilter
 }) => {
-
     const toggleVariableMin = () => {
         if (typeof min === "number") {
             onUpdateFilter({
@@ -147,12 +148,14 @@ const RangeFilterEditor: React.FC<RangeFilterEditorProps> = ({
     );
 };
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({
+const CategoryFilterEditor: React.FC<CategoryFilterProps> = ({
     columns,
     selectedColumn,
-    categories,
+    isOneOf,
+    isNotOneOf,
     onUpdateFilter
 }) => {
+    const toggleIsOneOf = () => {};
     return (
         <Flex direction="row">
             <Picker
@@ -162,6 +165,32 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             >
                 {(column) => <Item key={column.name}>{column.name}</Item>}
             </Picker>
+            {isOneOf.hasOwnProperty("var") ? (
+                <VariableSelector
+                    variable={min.var}
+                    onSelectVariable={(newVar) =>
+                        onUpdateFilter({
+                            Range: {
+                                max,
+                                min: { var: newVar },
+                                variable: selectedColumn.name
+                            }
+                        })
+                    }
+                />
+            ) : (
+                <TextField
+                    label="Is one of "
+                    value={isOneOf ? isOneOf.join(",") : ""}
+                />
+            )}
+            <ToggleButton
+                isEmphasized
+                isSelected={isOneOf.hasOwnProperty("var")}
+                onPress={toggleIsOneOf}
+            >
+                <FunctionIcon />
+            </ToggleButton>
         </Flex>
     );
 };
@@ -187,62 +216,18 @@ const EditorForFilter: React.FC<{
         );
     } else if (filterType === "Category") {
         return (
-            <CategoryFilter
+            <CategoryFilterEditor
                 selectedColumn={columns.find(
                     (c) => c.name === filterParams.variable
                 )}
                 columns={columns}
-                categories={filterParams.is_one_of}
+                isOneOf={filterParams.isOneOf}
+                isNotOneOf={filterParams.isNotOneOf}
                 onUpdateFilter={(newValue) => updateFilter(newValue, index)}
             />
         );
     }
     return <Text>Failed to get filter type</Text>;
-};
-
-const FilterTypeDialog: React.FC<{ onSubmit: (newFilter: any) => void }> = ({
-    onSubmit
-}) => {
-    return (
-        <DialogTrigger isDismissable type="popover">
-            <ActionButton>Add Filter</ActionButton>
-            {(close) => (
-                <Dialog>
-                    <Content>
-                        <Flex direction="column">
-                            <ActionButton
-                                onPress={() => {
-                                    onSubmit({
-                                        Range: {
-                                            variable: null,
-                                            min: 0,
-                                            max: 100
-                                        }
-                                    });
-                                    close();
-                                }}
-                            >
-                                Range
-                            </ActionButton>
-                            <ActionButton
-                                onPress={() => {
-                                    onSubmit({
-                                        Category: {
-                                            variable: null,
-                                            is_one_of: []
-                                        }
-                                    });
-                                    close();
-                                }}
-                            >
-                                Category
-                            </ActionButton>
-                        </Flex>
-                    </Content>
-                </Dialog>
-            )}
-        </DialogTrigger>
-    );
 };
 
 interface FilterBlockProps {
@@ -298,15 +283,7 @@ export const FilterEditor: React.FC<FilterEditorProps> = ({
 
     return (
         <Flex direction="column">
-            <Heading>
-                <Flex direction="row" justifyContent="space-between">
-                    <Text>Filters</Text>{" "}
-                    <FilterTypeDialog onSubmit={addFilter} />
-                </Flex>
-            </Heading>
-            <Flex direction="column">
-                <FilterBlock {...{ columns, filters, updateFilter }} />
-            </Flex>
+            <FilterBlock {...{ columns, filters, updateFilter }} />
         </Flex>
     );
 };

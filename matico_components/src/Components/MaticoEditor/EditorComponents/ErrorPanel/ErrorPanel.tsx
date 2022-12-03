@@ -23,7 +23,7 @@ export const ErrorPanel: React.FC<ErrorPanelProps> = () => {
                 <Flex direction="column" flex={1} paddingRight="20px">
                     {errors.map((error) => (
                         <ActionButton key={error.id}>
-                          <Content>{error.message}</Content>
+                            <Content>{error.message}</Content>
                         </ActionButton>
                     ))}
                 </Flex>

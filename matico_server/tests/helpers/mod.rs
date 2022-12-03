@@ -13,11 +13,11 @@ pub type DbPool = r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::pg::PgConne
 pub type DataDbPool = sqlx::PgPool;
 
 pub mod imports;
-pub mod users;
 pub mod stats;
+pub mod users;
 pub use imports::*;
-pub use users::*;
 pub use stats::*;
+pub use users::*;
 
 use once_cell::sync::Lazy;
 

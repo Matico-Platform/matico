@@ -23,7 +23,6 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
     ...props,
     ...props.layer,
   };
-  
 
   const barWidth = horizontal
     ? "bandwidth" in yScale
@@ -33,7 +32,7 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
     : "bandwidth" in xScale
     ? //@ts-ignore
       xScale.bandwidth()
-    : xMax / data.length
+    : xMax / data.length;
 
   const translationPx = barTranslation * barWidth;
 
@@ -41,19 +40,23 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
     ? () => "gray"
     : isFunc(color)
     ? //@ts-ignore
-      (d) => sanitizeColor(color(d))//@ts-ignore
+      (d) => sanitizeColor(color(d)) //@ts-ignore
     : () => sanitizeColor(color);
-    
+
   return horizontal
     ? data.map((entry, i) => (
         <Bar
           key={`bar-${i}`}
           x={0}
           //@ts-ignore
-          y={yScale(yAccessor(entry)) - translationPx  + (barWidth * (padding || 0)/2)}
+          y={
+            yScale(yAccessor(entry)) -
+            translationPx +
+            (barWidth * (padding || 0)) / 2
+          }
           //@ts-ignore
           width={xScale(xAccessor(entry))}
-          height={barWidth  * (1 - (padding || 0))}
+          height={barWidth * (1 - (padding || 0))}
           fill={colorScale(entry)}
         />
       ))
@@ -61,7 +64,11 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
         <Bar
           key={`bar-${i}`}
           //@ts-ignore
-          x={xScale(xAccessor(entry)) - translationPx  + (barWidth * (padding || 0)/2)}
+          x={
+            xScale(xAccessor(entry)) -
+            translationPx +
+            (barWidth * (padding || 0)) / 2
+          }
           //@ts-ignore
           y={yScale(yAccessor(entry))}
           width={barWidth * (1 - (padding || 0))}

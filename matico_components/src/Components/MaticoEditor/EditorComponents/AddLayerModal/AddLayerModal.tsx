@@ -1,7 +1,16 @@
-import {DialogTrigger, ActionButton, Flex, Divider, TextField, ButtonGroup, View, Text} from '@adobe/react-spectrum';
-import {ParentSize} from '@visx/responsive';
-import {DatasetSelector} from 'Components/MaticoEditor/Utils/DatasetSelector';
-import React, {useState} from 'react'
+import {
+    DialogTrigger,
+    ActionButton,
+    Flex,
+    Divider,
+    TextField,
+    ButtonGroup,
+    View,
+    Text
+} from "@adobe/react-spectrum";
+import { ParentSize } from "@visx/responsive";
+import { DatasetSelector } from "Components/MaticoEditor/Utils/DatasetSelector";
+import React, { useState } from "react";
 
 export interface AddLayerModalProps {
     onAddLayer: (name: string, dataset: string) => void;

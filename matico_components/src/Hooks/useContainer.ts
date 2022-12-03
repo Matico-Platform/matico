@@ -7,13 +7,18 @@ import {
 import { usePane } from "./usePane";
 import { v4 as uuidv4 } from "uuid";
 import { DefaultPosition } from "Components/MaticoEditor/Utils/PaneDetails";
-import {usePaneContainer} from "./usePaneContainer";
+import { usePaneContainer } from "./usePaneContainer";
 
 export const useContainer = (paneRef: PaneRef) => {
     const paneProperties = usePane(paneRef);
     const { pane } = paneProperties;
     const dispatch = useMaticoDispatch();
-    const {paneRefs, addPaneToContainer, addPaneRefToContainer, removePaneRefFromContainer} = usePaneContainer(paneRef.paneId)
+    const {
+        paneRefs,
+        addPaneToContainer,
+        addPaneRefToContainer,
+        removePaneRefFromContainer
+    } = usePaneContainer(paneRef.paneId);
 
     const container =
         pane.type === "container"
@@ -28,7 +33,6 @@ export const useContainer = (paneRef: PaneRef) => {
         )
     );
 
-
     const selectSubPane = (subPane: PaneRef) => {
         dispatch(
             setCurrentEditElement({
@@ -38,7 +42,6 @@ export const useContainer = (paneRef: PaneRef) => {
             })
         );
     };
-
 
     return {
         ...paneProperties,

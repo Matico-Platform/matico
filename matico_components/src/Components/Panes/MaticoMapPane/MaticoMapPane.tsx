@@ -1,29 +1,53 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, {
+    useState,
+    useMemo,
+    useRef,
+    useCallback,
+    useEffect,
+    useLayoutEffect
+} from "react";
 import { View as MaticoView } from "@maticoapp/matico_spec";
 import type { MaticoPaneInterface } from "../Pane";
-import Map, { ScaleControl, GeolocateControl, NavigationControl, useControl, FullscreenControl} from "react-map-gl";
+import Map, {
+    ScaleControl,
+    GeolocateControl,
+    NavigationControl,
+    useControl,
+    FullscreenControl
+} from "react-map-gl";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
 import { MaticoMapLayer } from "./MaticoMapLayer";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { MaticoLegendPane } from "../MaticoLegendPane/MaticoLegendPane";
-import { View } from "@adobe/react-spectrum";
-import { Layer, MapControls} from "@maticoapp/matico_types/spec";
-import {MapboxOverlayProps, MapboxOverlay} from "@deck.gl/mapbox/typed"
-import maplibregl from 'maplibre-gl';
-
-import 'maplibre-gl/dist/maplibre-gl.css';
+import { Layer, MapControls } from "@maticoapp/matico_types/spec";
+import { MapboxOverlayProps, MapboxOverlay } from "@deck.gl/mapbox/typed";
+import { ScatterplotLayer } from "@deck.gl/layers";
+import maplibregl from "maplibre-gl";
+import { v4 as uuid } from "uuid";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { SelectionOptions } from "@maticoapp/matico_types/spec";
 import { MaticoSelectionLayer } from "./MaticoSelectionLayer";
-
+import { debounce } from "lodash";
+import { useMaticoMapView } from "Hooks/useMaticoMapView";
+import { useResizeEvent } from "Hooks/useResizeEvent";
 
 //@ts-ignore
-function DeckGLOverlay(props: MapboxOverlayProps){
-  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
-  overlay.setProps(props)
-  return null
+function DeckGLOverlay(props: MapboxOverlayProps) {
+    const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+    overlay.setProps(props);
+    return null;
 }
 
-const accessToken="pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg"
+const PlaceholderLayer = new ScatterplotLayer({
+    id: "PLACEHOLDER",
+    data: [],
+    getPosition: (d) => [0, 0],
+    getRadius: 0,
+    getFillColor: [0, 0, 0]
+});
+
+const accessToken =
+    "pk.eyJ1Ijoic3R1YXJ0LWx5bm4iLCJhIjoiY2t1dThkcG1xM3p2ZzJ3bXhlaHFtdThlYiJ9.rmndXXXrC5HAbxg1Ok8XTg";
 
 export interface MaticoMapPaneInterface extends MaticoPaneInterface {
     view: MaticoView;
@@ -43,15 +67,15 @@ export function getNamedStyleJSON(style: string, accessToken: string) {
         case "CartoDBDarkMatter":
             return "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
         case "Light":
-            return `https://api.mapbox.com/styles/v1/mapbox/light-v10?access_token=${accessToken}`
+            return `https://api.maptiler.com/maps/basic-v2/?key=32rtUQVfWVrA5316PfSR#1.0/0.00000/0.00000`;
         case "Dark":
-            return `https://api.mapbox.com/styles/v1/mapbox/dark-v10?access_token=${accessToken}`
+            return `https://api.maptiler.com/maps/hybrid/style.json?key=32rtUQVfWVrA5316PfSR`;
         case "Satelite":
-            return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9?access_token=${accessToken}`
+            return "https://api.maptiler.com/maps/hybrid/style.json?key=32rtUQVfWVrA5316PfSR";
         case "Terrain":
-            return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11?access_token=${accessToken}`
+            return `https://api.maptiler.com/maps/topo/style.json?key=32rtUQVfWVrA5316PfSR`;
         case "Streets":
-            return `https://api.mapbox.com/styles/v1/mapbox/streets-v11?access_token=${accessToken}`
+            return `https://api.maptiler.com/maps/streets/style.json?key=32rtUQVfWVrA5316PfSR`;
         default:
             return "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
     }
@@ -66,59 +90,32 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
     controls,
     selectionOptions
 }) => {
-    const [mapLayers, setMapLayers] = useState([]);
+    const [mapLayers, setMapLayers] = useState<Record<string, Layer>>({});
     const edit = useIsEditable();
-    const mapRef = useRef();
 
+    // DOM concerns
+    const mapRef = useRef<any | null>();
+    const parentRef = useRef();
+    useResizeEvent(() => mapRef?.current?.resize(), parentRef);
 
-    const updateLayer = (layer: Layer) => {
-        if (!layer) return;
-        setMapLayers((mapLayers) => {
-            if (mapLayers.map((l) => l.id).includes(layer.id)) {
-                return mapLayers.map((l) => (l.id === layer.id ? layer : l));
-            } else {
-                return [...mapLayers, layer];
-            }
-        });
-    };
-
-    const validMapLayers: any = useMemo(
-        () =>
-            layers
-                ? layers
-                      .map((layer) =>
-                          mapLayers.find((ml) => ml.id === layer.name)
-                      )
-                      .filter((a) => a)
-                : [],
-        [mapLayers, JSON.stringify(layers)]
-    );
-
-    const [currentView, updateView] = useAutoVariable({
-        //@ts-ignore
-        name: view.var ? view.var : `${name}_map_loc`,
-        //@ts-ignore
-        type: view.var ? undefined : "mapLocVar",
-        //@ts-ignore
-        initialValue: view.var ? undefined : view,
-        //@ts-ignore
-        bind: view.var ? view.bind : true
+    // map concerns
+    const { currentView, updateViewState } = useMaticoMapView({
+        view,
+        id
     });
 
-    //TODO clean this up and properly type
-    const updateViewState = (viewStateUpdate: any) => {
-        const viewState = viewStateUpdate.viewState;
-        updateView({
-            lat: viewState.latitude,
-            lng: viewState.longitude,
-            zoom: viewState.zoom,
-            pitch: viewState.pitch,
-            bearing: viewState.bearing
-        });
+    const updateLayer = (id: string, layer: Layer) => {
+        setMapLayers({ ...mapLayers, [id]: layer });
     };
-
+    let mls = useMemo(
+        () =>
+            [...layers]
+                .sort((a, b) => (a.order > b.order ? 1 : -1))
+                .map((l) => mapLayers[l.id])
+                .filter((a) => a),
+        [layers, mapLayers]
+    );
     let styleJSON = null;
-
     if (baseMap) {
         if (baseMap.type === "named") {
             styleJSON = getNamedStyleJSON(baseMap.name, accessToken);
@@ -127,86 +124,70 @@ export const MaticoMapPane: React.FC<MaticoMapPaneInterface> = ({
         }
     }
 
-    let mls = ([...layers]
-        .sort((a, b) => (a.order > b.order ? 1 : -1))
-        .map((l) =>
-            validMapLayers.find((ml) => ml.id === l.name)
-        ))
-
-    const selectionLayer = mapLayers.find(s=> s.id ==="selection") 
-    if (selectionLayer){
-        mls.push(selectionLayer) 
-    }
-
     return (
-        <View id={id} position="relative" overflow="hidden" width="100%" height="100%">
-            {currentView && (
+        <div
+            ref={parentRef}
+            key={id}
+            style={{
+                width: "100%",
+                height: "100%",
+                position: "relative",
+                overflow: "hidden"
+            }}
+        >
+            {currentView && currentView.type === "mapview" && (
                 <>
                     <Map
                         mapLib={maplibregl}
                         key={id}
                         id={id}
-                        reuseMaps={true}
+                        ref={mapRef}
                         antialias={true}
-                        initialViewState={{
-                            latitude: currentView.lat,
-                            longitude: currentView.lng,
-                            zoom: currentView.zoom,
-                            ...currentView
-                        }}
-                            mapboxAccessToken={
-                               accessToken 
-                            }
-                            mapStyle={
-                                styleJSON
-                                    ? styleJSON
-                                    : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
-                            }
-                            >{controls?.navigation && 
-                              <NavigationControl position="top-right"/>
-                            }
-                            {controls?.scale &&
-                              <ScaleControl position="bottom-right"  />
-                            }
-                            {controls?.geolocate &&
-                              <GeolocateControl position="top-right" />
-                              }
-                            {controls?.fullscreen &&
-                              <FullscreenControl position="top-right" />
-                              }
-                    
-                    <DeckGLOverlay
-                              interleaved={true}
-                              width={"100%"}
-                              height={"100%"}
-                              onViewStateChange = {updateViewState} 
-                              layers={mls}
-                                  />
-
-                            
-                            </Map>
-                  
-                    {layers.map((l) => (
-                        <MaticoMapLayer
-                            key={l.name}
-                            name={l.name}
-                            source={l.source}
-                            style={l.style}
-                            onUpdate={updateLayer}
-                            mapName={name}
-                            beforeId={l.style.beforeId}
+                        onMove={updateViewState}
+                        {...currentView?.value}
+                        mapboxAccessToken={accessToken}
+                        mapStyle={
+                            styleJSON
+                                ? styleJSON
+                                : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+                        }
+                    >
+                        {controls?.navigation && (
+                            <NavigationControl position="top-right" />
+                        )}
+                        {controls?.geolocate && (
+                            <GeolocateControl position="top-right" />
+                        )}
+                        {controls?.fullscreen && (
+                            <FullscreenControl position="top-right" />
+                        )}
+                        {controls?.scale && (
+                            <ScaleControl position="top-right" />
+                        )}
+                        <DeckGLOverlay
+                            interleaved={true}
+                            width={"100%"}
+                            height={"100%"}
+                            layers={[...mls, PlaceholderLayer]}
                         />
-                    ))}
-                       <MaticoSelectionLayer
-                        onUpdate={updateLayer}
-                        selectionEnabled={selectionOptions?.selectionEnabled}
-                        selectionMode={selectionOptions?.selectionMode}
-                        mapName={id}
+                        {layers.map((l) => (
+                            <MaticoMapLayer
+                                key={l.name}
+                                name={l.name}
+                                source={l.source}
+                                style={l.style}
+                                onUpdate={(update) => updateLayer(l.id, update)}
+                                mapPaneId={id}
+                                beforeId={l.style.beforeId}
+                                tooltipColumns={l.tooltipColumns}
+                            />
+                        ))}
+                    </Map>
+                    <MaticoLegendPane
+                        legends={mls.map((l) => l.props._legend)}
                     />
-                    <MaticoLegendPane layers={validMapLayers} />
-                    
                 </>
             )}
-        </View>
+        </div>
     );
 };

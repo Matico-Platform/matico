@@ -30,10 +30,10 @@ export function mapCoords(array: Array<{ x: number; y: number }>) {
 }
 
 export function convertPoint(wkbGeom: any) {
-    if(!wkbGeom) return null
-    let wkxVal = wkx.Geometry.parse(Buffer.from(wkbGeom)) 
+    if (!wkbGeom) return null;
+    let wkxVal = wkx.Geometry.parse(Buffer.from(wkbGeom));
     //@ts-ignore
-    return [wkxVal.x,wkxVal.y] 
+    return [wkxVal.x, wkxVal.y];
 }
 
 export function convertPoly(poly: Polygon) {
@@ -106,7 +106,7 @@ export const chromaColorFromColorSpecification = (
             color.rgba[2],
             color.rgba[3] / 255.0,
             "rgb"
-        )
+        );
     } else if ("rgb" in color) {
         return chroma(
             color.rgb[0],
@@ -114,7 +114,7 @@ export const chromaColorFromColorSpecification = (
             color.rgb[2],
             alpha ? 0.7 : 1,
             "rgb"
-        )
+        );
     } else if ("hex" in color) {
         return chroma.hex(color.hex);
     } else if ("named" in color) {
@@ -188,26 +188,29 @@ export const generateColorVar = (
                 brewer = brewer[3];
             }
 
-            const mappedRange =brewer.map((c: string) =>
-                    chromaColorFromColorSpecification({ hex: c }, true)
+            const mappedRange = brewer.map((c: string | Array[number]) =>
+                chromaColorFromColorSpecification(
+                    typeof c === "string" ? { hex: c } : { rgb: c },
+                    true
                 )
-
-            const ramp = constructRampFunctionCol(
-                mappedRange,
-                domain
             );
 
+            const ramp = constructRampFunctionCol(mappedRange, domain);
+
             return (d: any) => {
-                const val = d.hasOwnProperty("properties")
-                    ? d.properties[variable]
-                    : d[variable];
+                let val;
+                if (typeof d === "number") {
+                    val = d;
+                } else {
+                    val = d.hasOwnProperty("properties")
+                        ? d.properties[variable]
+                        : d[variable];
+                }
                 if (!val) {
                     return [0, 0, 0, 0];
                 }
                 let c = ramp(val).rgba();
-                // console.log("VAl is " ,val , " domain ", domain.join(","), c)
-                
-                // c[3] = c[3] * 255;
+
                 return c;
             };
         } else {
@@ -230,4 +233,17 @@ export const getColorScale = (range: any) => {
     } else {
         return range;
     }
+};
+
+export const parentContainsClassName = (
+    el: HTMLElement,
+    className: string
+): boolean => {
+    if (el?.classList?.contains(className)) {
+        return true;
+    }
+    if (el?.parentElement) {
+        return parentContainsClassName(el.parentElement, className);
+    }
+    return false;
 };

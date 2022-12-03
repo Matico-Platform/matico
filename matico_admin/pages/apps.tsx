@@ -7,14 +7,14 @@ import {
   Heading,
   Header,
   Flex,
-  Text
+  Text,
 } from "@adobe/react-spectrum";
 import { useApps } from "../hooks/useApps";
 import { Link as ALink, ActionButton } from "@adobe/react-spectrum";
 import Link from "next/link";
 import Edit from "@spectrum-icons/workflow/Edit";
 import Preview from "@spectrum-icons/workflow/Preview";
-import {App as AppSpec} from "@maticoapp/matico_types/spec"
+import { App as AppSpec } from "@maticoapp/matico_types/spec";
 
 import {
   Cell,
@@ -26,34 +26,39 @@ import {
 } from "@adobe/react-spectrum";
 import { useState } from "react";
 import { NewAppDialog } from "../components/NewAppDialog";
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
 
 const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
   const { apps, error, createApp } = useApps();
-  const router = useRouter()
+  const router = useRouter();
 
-  const submit = (details: {name:string, description: string, public: boolean}) => {
+  const submit = (details: {
+    name: string;
+    description: string;
+    public: boolean;
+  }) => {
     const initalSpec = {
-      panes:[],
-      pages:[],
-      datasets:[],
-      theme:{
-        primaryColor: {hex:"#FF0000"},
-        secondaryColor: {hex:"#FF0000"},
-        logoUrl:null
+      panes: [],
+      pages: [],
+      datasets: [],
+      datasetTransforms: [],
+      theme: {
+        primaryColor: { hex: "#FF0000" },
+        secondaryColor: { hex: "#FF0000" },
+        logoUrl: null,
       },
-      metadata:{
+      metadata: {
         name: details.name,
         createdAt: new Date().toISOString(),
-        description: details.description
-      }
-    } as AppSpec
+        description: details.description,
+      },
+    } as AppSpec;
 
     createApp({
       name: details.name,
       description: details.description,
       public: details.public,
-      spec: initalSpec  
+      spec: initalSpec,
     });
   };
 
@@ -97,7 +102,7 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
               <Column align="center">Actions</Column>
             </TableHeader>
             <TableBody>
-              {apps.map((app: any, index:number) => (
+              {apps.map((app: any, index: number) => (
                 <Row key={index}>
                   <Cell>
                     <ALink>
@@ -106,8 +111,18 @@ const Apps: NextPage<{ appsInitial: Array<any> }> = () => {
                   </Cell>
                   <Cell>{app.public ? "Public" : "Private"}</Cell>
                   <Cell>
-                    <ActionButton isQuiet={true} onPress={()=>router.push(`/apps/${app.id}`)}><Preview size="S" /></ActionButton>
-                    <ActionButton isQuiet={true} onPress={()=>router.push(`/apps/edit/${app.id}`)}><Edit size="S" /></ActionButton>
+                    <ActionButton
+                      isQuiet={true}
+                      onPress={() => router.push(`/apps/${app.id}`)}
+                    >
+                      <Preview size="S" />
+                    </ActionButton>
+                    <ActionButton
+                      isQuiet={true}
+                      onPress={() => router.push(`/apps/edit/${app.id}`)}
+                    >
+                      <Edit size="S" />
+                    </ActionButton>
                   </Cell>
                 </Row>
               ))}

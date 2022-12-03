@@ -16,6 +16,7 @@ import { Page } from "@maticoapp/matico_types/spec";
 import { useApp } from "Hooks/useApp";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { ColorPickerDialog } from "../Utils/ColorPickerDialog";
+import { MaticoOutlineViewer } from "./MaticoOutlineViewer";
 
 interface AddPageModalProps {
     onAddPage: (pageName: string) => void;
@@ -87,7 +88,16 @@ const AddPageModal: React.FC<AddPageModalProps> = ({
 interface AppEditorProps {}
 
 export const AppEditor: React.FC<AppEditorProps> = () => {
-    const { theme, pages, addPage, removePage, setEditPage, updateTheme, metadata, updateMetadata} = useApp();
+    const {
+        theme,
+        pages,
+        addPage,
+        removePage,
+        setEditPage,
+        updateTheme,
+        metadata,
+        updateMetadata
+    } = useApp();
 
     const addNewPage = (pageName: string) => {
         addPage({
@@ -104,27 +114,48 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
         return true;
     };
 
-
     return (
         <Flex width="100%" height="100%" direction="column">
             <CollapsibleSection title="Theme" isOpen={true}>
                 <Text>Primary Color</Text>
                 <ColorPickerDialog
                     // @ts-ignore
-                    color={theme?.primaryColor ?? {rgb:[255,0,0]}}
-                    onColorChange={(color) => updateTheme({primaryColor: color})}
+                    color={theme?.primaryColor ?? { rgb: [113, 48, 102] }}
+                    onColorChange={(color) =>
+                        updateTheme({ primaryColor: color })
+                    }
                 />
                 <Text>Secondary Color</Text>
                 <ColorPickerDialog
                     // @ts-ignore
-                    color={theme?.secondaryColor ?? {rgb:[0,255,0]}}
-                    onColorChange={(color) => updateTheme({secondaryColor:color})}
+                    color={theme?.secondaryColor ?? { rgb: [48, 113, 59] }}
+                    onColorChange={(color) =>
+                        updateTheme({ secondaryColor: color })
+                    }
+                />
+
+                <TextField
+                    label="App Image URL"
+                    value={theme?.logoUrl}
+                    onChange={(logoUrl) => updateTheme({ logoUrl })}
+                    width="100%"
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Metadata" isOpen={true}>
-              <TextField label="Name" width="100%" value={metadata.name} onChange={(name)=> updateMetadata({name})}/>
-              <TextArea label="description" width="100%" value={metadata.description} onChange={(description)=>updateMetadata({description})}/>
+                <TextField
+                    label="Name"
+                    width="100%"
+                    value={metadata.name}
+                    onChange={(name) => updateMetadata({ name })}
+                />
+                <TextArea
+                    label="description"
+                    width="100%"
+                    value={metadata.description}
+                    onChange={(description) => updateMetadata({ description })}
+                />
             </CollapsibleSection>
+            {/*
             <CollapsibleSection title="Keys" isOpen={true}>
                 <TextField
                     label="MapBox"
@@ -137,22 +168,9 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                     width="100%"
                 />
             </CollapsibleSection>
+            */}
             <CollapsibleSection title="Pages" isOpen={true}>
-                {pages.map((page: Page) => (
-                    <RowEntryMultiButton
-                        key={page.name}
-                        entryName={page.name}
-                        onRemove={() => removePage(page.id)}
-                        onLower={() => {}}
-                        onRaise={() => {}}
-                        onDuplicate={() => {}}
-                        onSelect={() => setEditPage(page.id)}
-                    />
-                ))}
-                <AddPageModal
-                    validatePageName={validatePageName}
-                    onAddPage={addNewPage}
-                />
+                <MaticoOutlineViewer showPanes={false} />
             </CollapsibleSection>
         </Flex>
     );

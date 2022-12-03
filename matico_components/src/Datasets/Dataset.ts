@@ -9,6 +9,7 @@ import {
     HistogramResults,
     ValueCountsResults
 } from "@maticoapp/matico_types/api";
+import { TransformStepPreview } from "./DatasetTransformRunner";
 
 export enum DatasetState {
     LOADING = "LOADING",
@@ -41,6 +42,8 @@ export interface DatasetSummary {
     raster?: boolean;
     mvtUrl?: string;
     spec: DatasetSpec;
+    transform: boolean;
+    steps?: Array<TransformStepPreview>;
 }
 
 export type HistogramBin = {
@@ -59,6 +62,7 @@ export interface Dataset {
         limit?: number
     ) => Promise<Datum[]>;
     getFeature: (feature_id: string) => Promise<Datum | undefined>;
+    getFeatures: (feature_ids: number[]) => Promise<Datum[] | undefined>;
     local: () => boolean;
     tiled: () => boolean;
     raster: () => boolean;

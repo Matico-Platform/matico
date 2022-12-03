@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Flex, Button, Text } from "@adobe/react-spectrum";
 import AceEditor from "react-ace";
-import brace from 'brace';
-import 'brace/mode/sql';
-import 'brace/mode/c_cpp';
-import 'brace/theme/twilight';
-import 'brace/theme/xcode';
+import brace from "brace";
+import "brace/mode/sql";
+import "brace/mode/c_cpp";
+import "brace/theme/twilight";
+import "brace/theme/xcode";
 
 export interface QueryEditorProps {
   query: string;
@@ -16,7 +16,6 @@ export const QueryEditor: React.FC<QueryEditorProps> = ({
   onQueryChange,
   query,
 }) => {
-
   // const [localQuery, setLocalQuery] = useState<string | null>(null)
   // useEffect(()=>{
   //   if(!localQuery){
@@ -27,21 +26,21 @@ export const QueryEditor: React.FC<QueryEditorProps> = ({
   // const updateQuery = (query:string)=>{
   //   if(onQueryChange){
   //      onQueryChange(query)
-  //   } 
+  //   }
   //   setLocalQuery(query)
   // }
- 
+
   // if(!localQuery) return <h2>Loading</h2>
   return (
-      <AceEditor
-        mode="sql"
-        theme="twilight"
-        value={query}
-        onChange={onQueryChange}
-        name="sql"
-        fontSize="25px"
-        style={{ width: "100%", flex: 1, minHeight:"400px",height:"100%" }}
-        editorProps={{ $blockScrolling: true }}
-      />
+    <AceEditor
+      mode="sql"
+      theme="twilight"
+      value={query}
+      onChange={onQueryChange}
+      name="sql"
+      fontSize="25px"
+      style={{ width: "100%", flex: 1, minHeight: "400px", height: "100%" }}
+      editorProps={{ $blockScrolling: true }}
+    />
   );
 };

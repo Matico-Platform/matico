@@ -1,13 +1,21 @@
 import type { NextPage } from "next";
 import { Layout } from "../../../components/Layout";
-import Link from "next/link"
-import { Divider, Heading, View, Text, Header, Link as ALink, ActionButton } from "@adobe/react-spectrum";
+import Link from "next/link";
+import {
+  Divider,
+  Heading,
+  View,
+  Text,
+  Header,
+  Link as ALink,
+  ActionButton,
+} from "@adobe/react-spectrum";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useApp } from "../../../hooks/useApps";
 import { Content } from "@adobe/react-spectrum";
 import { MaticoServerDatasetProvider } from "../../../datasetProviders/MaticoServerDatasetProvider";
-import {MaticoServerApiProvider} from "../../../datasetProviders/MaticoApiProvider";
+import { MaticoServerApiProvider } from "../../../datasetProviders/MaticoApiProvider";
 
 const Editor: NextPage = () => {
   const MaticoApp = dynamic(
@@ -22,7 +30,7 @@ const Editor: NextPage = () => {
   const appId = params ? params[0] : "";
 
   const { app, updateApp } = useApp(appId);
-  console.log("app is ",app)
+  console.log("app is ", app);
 
   return (
     <Layout hasSidebar={false}>
@@ -37,7 +45,10 @@ const Editor: NextPage = () => {
             onSpecChange={(spec: any) => {
               updateApp({ ...app, spec });
             }}
-            datasetProviders={[MaticoServerDatasetProvider, MaticoServerApiProvider]}
+            datasetProviders={[
+              MaticoServerDatasetProvider,
+              MaticoServerApiProvider,
+            ]}
           />
         )}
       </View>

@@ -6,21 +6,23 @@ import { MaticoPieChartPane } from "Components/Panes/MaticoPieChartPane/MaticoPi
 import { MaticoScatterplotPane } from "Components/Panes/MaticoScatterplotPane/MaticoScatterplotPane";
 import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
-import {MaticoStaticMapPane} from "./MaticoStaticMapPane/MaticoStaticMapPane";
+import { MaticoStaticMapPane } from "./MaticoStaticMapPane/MaticoStaticMapPane";
+import { MaticoDateTimeSlider } from "./MaticoDateTimeSlider/MaticoDateTimeSlider";
 
 export interface MaticoPaneInterface {
-  position: PanePosition;
-  id: string;
-  name: string;
-  background: string;
+    position: PanePosition;
+    id: string;
+    name: string;
+    background: string;
 }
 
 export type Pane =
-  | typeof MaticoControlsPane
-  | typeof MaticoHistogramPane
-  | typeof MaticoMapPane
-  | typeof MaticoPieChartPane
-  | typeof MaticoScatterplotPane
-  | typeof MaticoContainerPane
-  | typeof MaticoTextPane
-  | typeof MaticoStaticMapPane;
+    | typeof MaticoControlsPane
+    | typeof MaticoHistogramPane
+    | typeof MaticoMapPane
+    | typeof MaticoPieChartPane
+    | typeof MaticoScatterplotPane
+    | typeof MaticoContainerPane
+    | typeof MaticoTextPane
+    | typeof MaticoStaticMapPane
+    | typeof MaticoDateTimeSlider;

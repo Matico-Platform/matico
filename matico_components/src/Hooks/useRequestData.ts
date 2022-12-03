@@ -6,34 +6,49 @@ import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import { v4 as uuid } from "uuid";
 
 export interface DataRequest {
-
-    datasetName: string,
-    filters?: Array<Filter>,
-    columns?: Array<string>,
-    limit?: number,
-    requestHash?:string,
-    notifierId?: string
+    datasetName: string;
+    filters?: Array<Filter>;
+    columns?: Array<string>;
+    limit?: number;
+    requestHash?: string;
+    notifierId?: string;
 }
 
-export const useRequestDataMulti= (requests: Array<DataRequest>)=>{
+export const useRequestDataMulti = (requests: Array<DataRequest>) => {
     const dispatch = useMaticoDispatch();
     const notifierId = useMemo(() => uuid(), []);
-    const requestObjs = requests.map((r)=> ({...r, requestHash: JSON.stringify(r),notifierId}))
-    const result = useMaticoSelector((state)=> requestObjs.map(ro => state.datasets.queries[ro.requestHash])).filter(r=>r)
+    const requestObjs = requests.map((r) => ({
+        ...r,
+        columns: r.columns ? [...r.columns, "_matico_id"] : undefined,
+        requestHash: JSON.stringify(r),
+        notifierId
+    }));
+    const result = useMaticoSelector((state) =>
+        requestObjs.map((ro) => state.datasets.queries[ro.requestHash])
+    ).filter((r) => r);
 
-    useEffect(()=>{
-      if(result.length===0 && requestObjs){
-        requestObjs.forEach((request)=>{
-          dispatch(
-          registerDataUpdates(request)
-          )
-        })
-      }
-    },[requestObjs,result])
-    return result 
-}
+    useEffect(() => {
+        if (result.length === 0 && requestObjs) {
+            requestObjs.forEach((request) => {
+                dispatch(registerDataUpdates(request));
+            });
+        }
+    }, [requestObjs, result]);
+    return result;
+};
 
-export const useRequestData = (request:DataRequest) => {
+export const useTransformDataWithSteps = (request?: DataRequest) => {
+    const transform = useMaticoSelector(
+        (state) => state.datasets.datasets[request.datasetName]
+    );
+
+    const result = useRequestData(request);
+    return {
+        ...result,
+        steps: transform.steps
+    };
+};
+export const useRequestData = (request?: DataRequest) => {
     const dispatch = useMaticoDispatch();
     const requestHash = JSON.stringify(request);
     const notifierId = useMemo(() => uuid(), []);
@@ -42,12 +57,14 @@ export const useRequestData = (request:DataRequest) => {
         (state) => state.datasets.queries[requestHash]
     );
 
-
     useEffect(() => {
         if (!result && request) {
             dispatch(
                 registerDataUpdates({
                     ...request,
+                    columns: request.columns
+                        ? ["_matico_id", ...request.columns]
+                        : undefined,
                     requestHash,
                     notifierId
                 })

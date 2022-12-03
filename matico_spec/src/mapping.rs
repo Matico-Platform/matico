@@ -1,6 +1,4 @@
-use crate::{
-    AutoComplete, ColorSpecification, Filter, MappingVarOr, VarOr, Labels,
-};
+use crate::{AutoComplete, ColorSpecification, Filter, Labels, MappingVarOr, VarOr};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -90,7 +88,15 @@ pub struct LayerStyle {
     elevation: Option<MappingVarOr<f32>>,
     elevation_scale: Option<f32>,
     before_id: Option<String>,
-    
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct TooltipColumnSpec {
+    column: String,
+    label: String,
+    formatter: Option<String>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
@@ -109,6 +115,7 @@ pub struct Layer {
     id: String,
     source: DatasetRef,
     style: LayerStyle,
+    tooltip_columns: Option<Vec<TooltipColumnSpec>>,
 }
 
 #[wasm_bindgen]
@@ -187,7 +194,7 @@ impl Default for SelectionMode {
 #[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe, TS, Copy)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub enum MapProjection{
+pub enum MapProjection {
     GeoConicConformal,
     GeoTransverseMercator,
     GeoNaturalEarth1,
@@ -195,15 +202,14 @@ pub enum MapProjection{
     GeoOrthographic,
     GeoStereographic,
     GeoMercator,
-    GeoEquirectangular
+    GeoEquirectangular,
 }
 
-impl Default for MapProjection{
-    fn default()->Self{
+impl Default for MapProjection {
+    fn default() -> Self {
         MapProjection::GeoConicConformal
     }
 }
-
 
 #[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS, Default, Copy)]
@@ -218,7 +224,7 @@ pub struct SelectionOptions {
 #[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct StaticMapPane{
+pub struct StaticMapPane {
     #[wasm_bindgen(skip)]
     pub labels: Option<Labels>,
 
@@ -230,7 +236,7 @@ pub struct StaticMapPane{
 
     #[wasm_bindgen(skip)]
     pub layers: Vec<Layer>,
-    
+
     #[wasm_bindgen(skip)]
     pub projection: Option<MapProjection>,
 
@@ -238,10 +244,8 @@ pub struct StaticMapPane{
     pub show_graticule: Option<bool>,
 
     #[wasm_bindgen(skip)]
-    pub rotation: Option<f32>
-
+    pub rotation: Option<f32>,
 }
-
 
 #[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS)]

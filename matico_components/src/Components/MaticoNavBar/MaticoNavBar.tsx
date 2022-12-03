@@ -8,20 +8,23 @@ import { chromaColorFromColorSpecification } from "Components/Panes/MaticoMapPan
 
 interface MaticoNavBarProps {}
 
-const NamedButton: React.FC<{ name: string; color?: string; size?: string }> =
-    ({ name, color = "white", size = "normal" }) => {
-        // const iconName = flatIconList.includes(name) ? name : "file";
-        return (
-            <span
-                className={name}
-                style={{
-                    display: "block",
-                    fontSize: "150%",
-                    padding: ".25em"
-                }}
-            />
-        );
-    };
+const NamedButton: React.FC<{
+    name: string;
+    color?: string;
+    size?: string;
+}> = ({ name, color = "white", size = "normal" }) => {
+    // const iconName = flatIconList.includes(name) ? name : "file";
+    return (
+        <span
+            className={name}
+            style={{
+                display: "block",
+                fontSize: "150%",
+                padding: ".25em"
+            }}
+        />
+    );
+};
 
 const HoverLink = styled(Link)`
     text-decoration: none;
@@ -48,16 +51,21 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
         }
     };
 
+    const primaryColor = theme?.primaryColor
+        ? chromaColorFromColorSpecification(theme.primaryColor, false).hex()
+        : "#713066";
+
     return (
         <View
             overflow="hidden auto"
             height="100%"
-            maxHeight="100vh"
-            backgroundColor={"blue-600"}
+            maxHeight="100%"
             borderWidth="thin"
             borderColor="dark"
             UNSAFE_style={{
-                textAlign: "center"
+                textAlign: "center",
+                boxSizing: "border-box",
+                backgroundColor: primaryColor
             }}
         >
             <ButtonGroup
@@ -74,8 +82,9 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
                     <Image
                         alt="Logo"
                         src={
-                            logo ??
-                            "https://www.matico.app/favicon/favicon-32x32.png"
+                            logo && logo.length > 0
+                                ? logo
+                                : "https://www.matico.app/favicon/favicon-32x32.png"
                         }
                     />
                 </Link>

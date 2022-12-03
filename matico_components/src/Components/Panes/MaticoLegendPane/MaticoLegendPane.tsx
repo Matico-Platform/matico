@@ -54,10 +54,8 @@ const useLegend = (
     scale: any;
 } => {
     let legendEl = "rect";
-    const name = layer?.props?.id;
-    const style = layer?.props?._legend;
 
-    const { fillColor, lineColor, lineWidth, size } = style;
+    const { fillColor, lineColor, lineWidth, size, name } = layer;
 
     let steps: { scale: any; operation: ScaleFunc }[] = [];
 
@@ -68,7 +66,10 @@ const useLegend = (
             : get(colors, valuesOrName);
 
         const scale = scaleThreshold<number>({
-            domain: [...domain.slice(1), Math.pow(10, 10)],
+            domain:
+                domain && Array.isArray(domain)
+                    ? [...domain.slice(1), Math.pow(10, 10)]
+                    : [],
             range
         });
 
@@ -85,7 +86,10 @@ const useLegend = (
             ? valuesOrName
             : get(colors, valuesOrName);
         const scale = scaleThreshold<number>({
-            domain: [...domain.slice(1), Math.pow(10, 10)],
+            domain:
+                domain && Array.isArray(domain)
+                    ? [...domain.slice(1), Math.pow(10, 10)]
+                    : [],
             range
         });
         steps.push({
@@ -105,7 +109,10 @@ const useLegend = (
                 (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 4 - 1) + 1
             );
             const scale = scaleThreshold<number>({
-                domain: [...domain.slice(1), Math.pow(10, 10)],
+                domain:
+                    domain && Array.isArray(domain)
+                        ? [...domain.slice(1), Math.pow(10, 10)]
+                        : [],
                 range
             });
             steps.push({
@@ -127,7 +134,10 @@ const useLegend = (
                 (step) => (step / max) * (ENTRY_SYMBOL_WIDTH / 2 - 3) + 3
             );
             const scale = scaleThreshold<number>({
-                domain: [...domain.slice(1), Math.pow(10, 10)],
+                domain:
+                    domain && Array.isArray(domain)
+                        ? [...domain.slice(1), Math.pow(10, 10)]
+                        : [],
                 range
             });
             steps.push({
@@ -174,7 +184,9 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
     } else {
         return (
             <View>
-                <Text UNSAFE_style={{ fontWeight: "bold" }}>{name}</Text>
+                <Text UNSAFE_style={{ fontWeight: "bold", color: "white" }}>
+                    {name}
+                </Text>
                 <LegendThreshold scale={scale} labelFormat={nicelyFormatNumber}>
                     {(labels) => {
                         //@ts-ignore
@@ -214,8 +226,15 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
                                                 />
                                             )}
                                         </svg>
-                                        <Text marginStart={"size-100"}>
-                                            {i > 0 ? label.text : `> ${val}`}
+                                        <Text
+                                            marginStart={"size-100"}
+                                            UNSAFE_style={{ color: "white" }}
+                                        >
+                                            {i > 0
+                                                ? label.text
+                                                : `> ${nicelyFormatNumber(
+                                                      val
+                                                  )}`}
                                         </Text>
                                     </LegendItem>
                                 );
@@ -227,15 +246,15 @@ const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
     }
 };
 
-export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
-    layers = []
+export const MaticoLegendPane: React.FC<{ legends: Array<any> }> = ({
+    legends = []
 }) => {
-    const legends = useMemo(
-        () =>
-            layers.map((layer, i) => (
+    const legendPanes = useMemo(
+        () => {
+            return legends.map((legend, i) => (
                 <Flex key={i} direction="row">
-                    <Legend layer={layer} />
-                    {layers?.length > 1 && i < layers.length - 1 && (
+                    <Legend layer={legend} />
+                    {legends?.length > 1 && i < legends.length - 1 && (
                         <Divider
                             orientation="vertical"
                             size="M"
@@ -243,12 +262,13 @@ export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
                         />
                     )}
                 </Flex>
-            )),
+            ));
+        },
         // @ts-ignore
-        [JSON.stringify(layers.map((layer) => layer?.props?._legend))]
+        [JSON.stringify(legends)]
     );
 
-    return layers && layers.length ? (
+    return legends && legends.length ? (
         <View
             position="absolute"
             right=".75em"
@@ -256,7 +276,7 @@ export const MaticoLegendPane: React.FC<{ layers: any[] }> = ({
             backgroundColor="default"
             padding="size-100"
         >
-            <Flex direction="row">{legends}</Flex>
+            <Flex direction="row">{legendPanes}</Flex>
         </View>
     ) : null;
 };

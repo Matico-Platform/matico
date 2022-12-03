@@ -14,7 +14,7 @@ import {
     ContainerPane,
     MapPane
 } from "@maticoapp/matico_types/spec";
-import {LayerEditor} from "./Panes/LayerEditor";
+import { LayerEditor } from "./Panes/LayerEditor";
 
 export interface MaticoEditorProps {
     editActive: boolean;
@@ -30,7 +30,6 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
         return <AppEditor />;
     }
     const { type, id, parentId } = element;
-
 
     if (type === "page") {
         return <PageEditor id={id} />;
@@ -48,14 +47,12 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
             const Editor = Editors[paneRef.type];
             return <Editor paneRef={paneRef} />;
         }
-    }
-    else if(type==='layer'){
-      console.log("Attempting to get layer ")
-      const maps: Array<MapPane>= panes.filter((p:Pane)=> ['map','staticMap'].includes(p.type)) as Array<MapPane>
-      console.log("Maps ", maps)
-      const map = maps.find(m=>m.layers.find(l=>l.id===element.id)) 
-      console.log("Map ", map)
-      return(<LayerEditor layerId={element.id} mapId={map.id}/>)
+    } else if (type === "layer") {
+        const maps: Array<MapPane> = panes.filter((p: Pane) =>
+            ["map", "staticMap"].includes(p.type)
+        ) as Array<MapPane>;
+        const map = maps.find((m) => m.layers.find((l) => l.id === element.id));
+        return <LayerEditor layerId={element.id} mapId={map.id} />;
     }
     return <AppEditor />;
 };
@@ -94,28 +91,24 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     if (!editActive) return null;
 
     const height = {
-        L: "95vh",
-        M: "95vh",
+        L: "100%",
+        M: "100%",
         S: "35vh",
         base: "35vh"
     };
 
-    if(spec){
-      return (
-          //@ts-ignore
-
-          <View overflow={"hidden auto"} height={height} paddingTop="3em">
-              <EditPane element={currentEditElement} />
-          </View>
-      );
-
-    }
-    else{
-      return(
-          <View overflow={"hidden auto"} height={height} paddingTop="3em">
-            <h1>Loading</h1>
-          </View>
-      )
-    }
-
+    return (
+        <View
+            overflow={"hidden auto"}
+            height={height}
+            paddingTop="3em"
+            UNSAFE_style={{ boxSizing: "border-box" }}
+        >
+            {spec ? (
+                <EditPane element={currentEditElement} />
+            ) : (
+                <h1>Loading</h1>
+            )}
+        </View>
+    );
 };

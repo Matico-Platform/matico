@@ -1,4 +1,4 @@
-use crate::{AutoComplete, Dataset, Page, Pane, Theme, ValidationResult};
+use crate::{AutoComplete, Dataset, DatasetTransform, Page, Pane, Theme, ValidationResult};
 use chrono::{DateTime, Utc};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -25,6 +25,7 @@ pub struct App {
     pages: Vec<Page>,
     panes: Vec<Pane>,
     datasets: Vec<Dataset>,
+    dataset_transforms: Vec<DatasetTransform>,
     theme: Option<Theme>,
     metadata: Metadata,
 }
@@ -35,6 +36,7 @@ impl Default for App {
             pages: vec![],
             panes: vec![],
             datasets: vec![],
+            dataset_transforms: vec![],
             theme: None,
             metadata: Metadata {
                 name: "New App".into(),
@@ -54,44 +56,44 @@ impl App {
 
     #[wasm_bindgen(getter=pages)]
     pub fn get_pages(&self) -> JsValue {
-        JsValue::from_serde(&self.pages).unwrap()
+        serde_wasm_bindgen::to_value(&self.pages).unwrap()
     }
 
     #[wasm_bindgen(setter=pages)]
     pub fn set_pages(&mut self, pages: JsValue) {
-        let pages_real = pages.into_serde().unwrap();
+        let pages_real = serde_wasm_bindgen::from_value(pages).unwrap();
         self.pages = pages_real;
     }
 
     #[wasm_bindgen(getter=panes)]
     pub fn get_panes(&self) -> JsValue {
-        JsValue::from_serde(&self.panes).unwrap()
+        serde_wasm_bindgen::to_value(&self.panes).unwrap()
     }
 
     #[wasm_bindgen(setter=panes)]
     pub fn set_panes(&mut self, panes: JsValue) {
-        let panes_real = panes.into_serde().unwrap();
+        let panes_real = serde_wasm_bindgen::from_value(panes).unwrap();
         self.panes = panes_real;
     }
 
     #[wasm_bindgen(getter=theme)]
     pub fn get_theme(&self) -> JsValue {
-        JsValue::from_serde(&self.theme).unwrap()
+        serde_wasm_bindgen::to_value(&self.theme).unwrap()
     }
 
     #[wasm_bindgen(setter=theme)]
     pub fn set_theme(&mut self, pages: JsValue) {
-        self.theme = Some(pages.into_serde().unwrap());
+        self.theme = serde_wasm_bindgen::from_value(pages).ok();
     }
 
     #[wasm_bindgen(getter=datasets)]
     pub fn get_datasets(&self) -> JsValue {
-        JsValue::from_serde(&self.datasets).unwrap()
+        serde_wasm_bindgen::to_value(&self.datasets).unwrap()
     }
 
     #[wasm_bindgen(setter=datasets)]
     pub fn set_datasets(&mut self, datasets: JsValue) {
-        let datasets_real = datasets.into_serde().unwrap();
+        let datasets_real = serde_wasm_bindgen::from_value(datasets).unwrap();
         self.datasets = datasets_real;
     }
 
@@ -117,24 +119,24 @@ impl App {
 
     #[wasm_bindgen(getter = created_at)]
     pub fn get_created_at(&self) -> JsValue {
-        JsValue::from_serde(&self.metadata.created_at).unwrap()
-        // JsValue::from_serde(&self.created_at).unwrap()
+        serde_wasm_bindgen::to_value(&self.metadata.created_at).unwrap()
+        // serde_wasm_bindgen::to_value(&self.created_at).unwrap()
     }
 
     #[wasm_bindgen(setter= created_at)]
     pub fn set_created_at(&mut self, created_at: JsValue) {
-        let date: chrono::DateTime<Utc> = created_at.into_serde().unwrap();
+        let date: chrono::DateTime<Utc> = serde_wasm_bindgen::from_value(created_at).unwrap();
         self.metadata.created_at = date;
     }
 
-    pub fn from_js(val: &JsValue) -> Result<App, JsValue> {
-        let dash: Result<Self, _> = val.into_serde();
-        dash.map_err(|e| JsValue::from_serde(&format!("{}", e)).unwrap())
+    pub fn from_js(val: JsValue) -> Result<App, JsValue> {
+        let dash: Result<Self, _> = serde_wasm_bindgen::from_value(val);
+        dash.map_err(|e| serde_wasm_bindgen::to_value(&format!("{}", e)).unwrap())
     }
 
     pub fn from_json(val: String) -> Result<App, JsValue> {
         let dash: Result<Self, _> = serde_json::from_str(&val);
-        dash.map_err(|e| JsValue::from_serde(&format!("{}", e)).unwrap())
+        dash.map_err(|e| serde_wasm_bindgen::to_value(&format!("{}", e)).unwrap())
     }
 
     pub fn is_valid(&self) -> JsValue {
@@ -148,11 +150,11 @@ impl App {
                 errors: Some(errors),
             },
         };
-        JsValue::from_serde(&error_object).unwrap()
+        serde_wasm_bindgen::to_value(&error_object).unwrap()
     }
 
     pub fn to_js(&self) -> JsValue {
-        JsValue::from_serde(self).unwrap()
+        serde_wasm_bindgen::to_value(self).unwrap()
     }
 
     pub fn to_toml(&self) -> String {

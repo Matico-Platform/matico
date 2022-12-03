@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { uploadFile } from "../../utils/api";
 import { ProgressBar } from "@adobe/react-spectrum";
 
 export interface UploaderProps {
@@ -7,6 +6,30 @@ export interface UploaderProps {
   metadata: any;
   onDone?: () => void;
   onFail?: (error: any) => void;
+}
+
+function uploadFile(
+  file: File,
+  url: string,
+  metadata?: any,
+  onProgress?: (progress: number) => void
+) {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const progress = (e: any) => {
+    if (onProgress) {
+      onProgress(Math.round((100 * e.loaded) / e.total));
+    }
+  };
+
+  return a.post(url, formData, {
+    headers: {
+      Content_Type: "multipart/form-data",
+    },
+    onUploadProgress: progress,
+  });
 }
 
 export const Uploader: React.FC<UploaderProps> = ({
@@ -25,8 +48,8 @@ export const Uploader: React.FC<UploaderProps> = ({
       { ...metadata, geom_col: "wkb_geometry", id_col: "ogc_fid" },
       setProgress
     )
-      .then((response  :any) => {
-        setIsDone(true)
+      .then((response: any) => {
+        setIsDone(true);
         if (onDone) {
           onDone();
         }

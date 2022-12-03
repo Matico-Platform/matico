@@ -1,4 +1,4 @@
-import { Button, Flex, View } from "@adobe/react-spectrum";
+import { Button, Flex, View, Text } from "@adobe/react-spectrum";
 import ChevronDown from "@spectrum-icons/workflow/ChevronDown";
 import React, { useState } from "react";
 import { CollapsibleSectionProps } from "./types";
@@ -6,9 +6,12 @@ import { CollapsibleSectionProps } from "./types";
 export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     title = "",
     children = null,
+    icon = null,
     isOpen = false,
     onToggle = (isOpen: boolean) => {},
-    titleStyle = {}
+    titleStyle = {},
+    viewStyle = {},
+    outerStyle = {}
 }) => {
     const [open, setOpen] = useState(isOpen);
     const handleToggle = () => {
@@ -18,7 +21,12 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         });
     };
     return (
-        <View marginY="size-10">
+        <View
+            marginY="size-10"
+            width="100%"
+            minWidth="size-200"
+            UNSAFE_style={outerStyle}
+        >
             <Button
                 variant="primary"
                 isQuiet
@@ -34,7 +42,15 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     ...titleStyle
                 }}
             >
-                {title}
+                <Flex
+                    direction="row"
+                    gap="size-200"
+                    justifyContent="start"
+                    alignItems="center"
+                >
+                    {icon}
+                    {title}
+                </Flex>
                 <ChevronDown
                     aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
                     size="XS"
@@ -44,12 +60,23 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     }}
                 />
             </Button>
-            <View height={open ? "auto" : 0} overflow="hidden hidden" padding="size-100">
+            <View
+                height={open ? "auto" : 0}
+                overflow="hidden hidden"
+                padding="size-50"
+                UNSAFE_style={{
+                    display: open ? "block" : "none"
+                    // ...viewStyle
+                }}
+            >
                 <Flex
                     direction="column"
                     alignItems="start"
-                    marginY="size-150"
-                    marginX="size-50"
+                    marginY="size-50"
+                    marginX="size-25"
+                    // UNSAFE_style={{
+                    // ...viewStyle,
+                    // }}
                 >
                     {children}
                 </Flex>

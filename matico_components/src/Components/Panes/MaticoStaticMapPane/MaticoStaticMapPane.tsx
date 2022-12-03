@@ -53,12 +53,8 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
     const datasetReady =
         foundDataset && foundDataset.state === DatasetState.READY;
 
-    const [mappedLayers, layersReady] = useNormalizeSpec(layers);
-
-    const [mappedFilters, filtersReady, _] = useNormalizeSpec(dataset.filters);
-
     const chartData = useRequestDataMulti(
-        mappedLayers.map((l) => ({
+        layers.map((l) => ({
             datasetName: l.source?.name,
             filters: l.source?.filters,
             columns: l.source?.columns
@@ -66,15 +62,13 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
     );
 
     const Chart = useMemo(() => {
-        if (!filtersReady || !layersReady) return <LoadingSpinner />;
-
-        const styledLayers = mappedLayers
+        const styledLayers = layers
             .map((l: Layer, i: index) => {
                 if (!chartData[i] || chartData[i].state !== "Done") {
                     return null;
                 }
-                const mappedData = chartData[i].result
-                    .map((d: Record<string, any>) => {
+                const mappedData = chartData[i]?.result
+                    ?.map((d: Record<string, any>) => {
                         let { geom, ...properties } = d;
                         if (!geom) return null;
                         let geoJSON = wkx.Geometry.parse(
@@ -102,25 +96,29 @@ export const MaticoStaticMapPane: React.FC<MaticoStaticMapPaneInterface> = ({
             .filter((l) => l);
 
         return (
-          <>
-            <MaticoChart
-                title={labels?.title}
-                subtitle={labels?.subTitle}
-                yExtent={[0, 100]}
-                xExtent={[0, 100]}
-                proj={projection}
-                gratOn={showGraticule}
-                rotation={rotation}
-                layers={styledLayers}
-                data={[]}
-            />
+            <>
+                <MaticoChart
+                    title={labels?.title}
+                    subtitle={labels?.subTitle}
+                    yExtent={[0, 100]}
+                    xExtent={[0, 100]}
+                    proj={projection}
+                    gratOn={showGraticule}
+                    rotation={rotation}
+                    layers={styledLayers}
+                    data={[]}
+                />
             </>
         );
-    }, [chartData, mappedLayers, showGraticule, mappedLayers, projection]);
+    }, [chartData, showGraticule, layers, projection]);
 
     return (
         <View position="relative" width="100%" height="100%">
             {Chart}
+            {/* @ts-ignore */}
+            <MaticoLegendPane
+                legends={layers?.map((l) => ({ ...l, ...l.style })) || []}
+            />
         </View>
     );
 };
