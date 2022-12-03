@@ -137,12 +137,12 @@ VerticalBoxAndViolin.args = {
   title: "My Boxplot/Violinplot",
   xAxis: {
     scaleType: "band",
-    position: "bottom"
+    position: "bottom",
   },
-  xExtent: SampleDistData.map(d => d.boxPlot.x),
+  xExtent: SampleDistData.map((d) => d.boxPlot.x),
   yAxis: {
     scaleType: "linear",
-    position: "left"
+    position: "left",
   },
   yExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
   layers: [
@@ -163,12 +163,12 @@ HorizontalBoxAndViolin.args = {
   title: "My Boxplot/Violinplot",
   yAxis: {
     scaleType: "band",
-    position: "bottom"
+    position: "bottom",
   },
-  yExtent: SampleDistData2.map(d => d.boxPlot.x),
+  yExtent: SampleDistData2.map((d) => d.boxPlot.x),
   xAxis: {
     scaleType: "linear",
-    position: "left"
+    position: "left",
   },
   xExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
   layers: [
@@ -189,12 +189,12 @@ IrisBoxAndViolin.args = {
   title: "Box and Violin Plots with Iris Data from R",
   xAxis: {
     scaleType: "band",
-    position: "bottom"
+    position: "bottom",
   },
-  xExtent: SampleDistData3.map(d => d.boxPlot.x),
+  xExtent: SampleDistData3.map((d) => d.boxPlot.x),
   yAxis: {
     scaleType: "linear",
-    position: "left"
+    position: "left",
   },
   yExtent: [-1, 8],
   layers: [
@@ -205,28 +205,25 @@ IrisBoxAndViolin.args = {
       boxPlotStroke: "green",
       violinPlotStroke: "red",
       horizontal: false,
-    }
+    },
   ],
-  data: SampleDistData3
-}
+  data: SampleDistData3,
+};
 
 export const ExtremeBoxAndViolin = Template.bind({});
 ExtremeBoxAndViolin.args = {
   title: "Box and Violin Plots with Synthetic Extreme Data",
   xAxis: {
     scaleType: "band",
-    position: "bottom"
+    position: "bottom",
   },
   //@ts-ignore
-  xExtent: SampleDistData4.map(d => d.boxPlot.x),
+  xExtent: SampleDistData4.map((d) => d.boxPlot.x),
   yAxis: {
     scaleType: "sqrt",
-    position: "left"
+    position: "left",
   },
-  yExtent: [
-    -100000,
-    10000000
-  ],
+  yExtent: [-100000, 10000000],
   layers: [
     {
       type: "dist",
@@ -235,27 +232,24 @@ ExtremeBoxAndViolin.args = {
       boxPlotStroke: "green",
       violinPlotStroke: "red",
       horizontal: false,
-    }
+    },
   ],
-  data: SampleDistData4
-}
+  data: SampleDistData4,
+};
 
 export const VerticalRealDataBoxAndViolin = Template.bind({});
 VerticalRealDataBoxAndViolin.args = {
   title: "Box and Violin Plots with Real Data",
   xAxis: {
     scaleType: "band",
-    position: "bottom"
+    position: "bottom",
   },
-  xExtent: SampleDistData5.map(d => d.boxPlot.x),
+  xExtent: SampleDistData5.map((d) => d.boxPlot.x),
   yAxis: {
     scaleType: "linear",
-    position: "left"
+    position: "left",
   },
-  yExtent: [
-    -1,
-    750
-  ],
+  yExtent: [-1, 750],
   horizontal: false,
   layers: [
     {
@@ -264,27 +258,24 @@ VerticalRealDataBoxAndViolin.args = {
       showViolinPlot: true,
       boxPlotStroke: "green",
       violinPlotStroke: "red",
-    }
+    },
   ],
-  data: SampleDistData5
-}
+  data: SampleDistData5,
+};
 
 export const HorizontalRealDataBoxAndViolin = Template.bind({});
 HorizontalRealDataBoxAndViolin.args = {
   title: "Box and Violin Plots with Real Data",
   yAxis: {
     scaleType: "band",
-    position: "left"
+    position: "left",
   },
-  yExtent: SampleDistData5.map(d => d.boxPlot.x),
+  yExtent: SampleDistData5.map((d) => d.boxPlot.x),
   xAxis: {
     scaleType: "linear",
-    position: "bottom"
+    position: "bottom",
   },
-  xExtent: [
-    -1,
-    750
-  ],
+  xExtent: [-1, 750],
   horizontal: true,
   layers: [
     {
@@ -293,55 +284,59 @@ HorizontalRealDataBoxAndViolin.args = {
       showViolinPlot: true,
       boxPlotStroke: "green",
       violinPlotStroke: "red",
-      tooltip: false
-    }
+      tooltip: false,
+    },
   ],
-  data: SampleDistData5
-}
+  data: SampleDistData5,
+};
 
 export const LineComponentDataExample = Template.bind({});
 LineComponentDataExample.args = {
   title: "Line Component Data Example",
   xAxis: {
     scaleType: "linear",
-    position: "bottom"
+    position: "bottom",
   },
   yExtent: [
-    Math.min(...SampleLineData.map(x => Math.min(x.value))),
-    Math.max(...SampleLineData.map(x => Math.max(x.value)))
+    Math.min(...SampleLineData.map((x) => Math.min(x.value))),
+    Math.max(...SampleLineData.map((x) => Math.max(x.value))),
   ],
   yAxis: {
     scaleType: "linear",
-    position: "left"
+    position: "left",
   },
-  xCol: "date",           
+  xCol: "date",
   yCol: "value",
-  lineFunction: null, 
-  layers: [{
-    type: "line",
-  }],
+  lineFunction: null,
+  layers: [
+    {
+      type: "line",
+    },
+  ],
   data: SampleLineData,
-}
+};
 
 export const LineComponentFunctionExample = Template.bind({});
 LineComponentFunctionExample.args = {
   title: "Line Component Function Example",
   xAxis: {
     scaleType: "linear",
-    position: "bottom"
+    position: "bottom",
   },
   yAxis: {
     scaleType: "linear",
-    position: "left"
+    position: "left",
   },
-  xExtent: [-5,20],
-  yExtent: [-1,1],
+  xExtent: [-5, 20],
+  yExtent: [-1, 1],
   xCol: "date",
-  yCol: "value", 
-  layers: [{
-    type: "line",
-    lineFunction: (x) => Math.sin(x),
-    xBounds: [-5,20],
-  }],
+  yCol: "value",
+  layers: [
+    {
+      type: "line",
+      lineFunction: (x) => Math.sin(x),
+      xBounds: [-5, 20],
+    },
+  ],
   data: SampleLineData,
-}
+};

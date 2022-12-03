@@ -1,5 +1,5 @@
-import { ContinuousDomain } from '@visx/scale';
-import { BinData, BoxPlot } from '@visx/mock-data/lib/generators/genStats';
+import { ContinuousDomain } from "@visx/scale";
+import { BinData, BoxPlot } from "@visx/mock-data/lib/generators/genStats";
 //layout
 export type MarginSpec = {
   top: number;
@@ -59,7 +59,7 @@ export interface ErrorSpec {
 
 // layers
 export interface BaseLayerSpec {
-  type: 'scatter' | 'line' | 'bar' | 'pie' | 'dist';
+  type: "scatter" | "line" | "bar" | "pie" | "dist";
   data?: DataCollection | BoxPlotStats[];
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
@@ -124,24 +124,24 @@ export interface PieSpec extends BaseLayerSpec {
 }
 
 export interface HeatmapSpec extends BaseLayerSpec {
-  data: DataCollection,
-  xBins: number,
-  yBins: number,
-  binnedData?: DataCollection[]
+  data: DataCollection;
+  xBins: number;
+  yBins: number;
+  binnedData?: DataCollection[];
 }
 
 export interface DistributionSpec extends BaseLayerSpec {
-  data: BoxPlotStats[],
-  showBoxPlot?: boolean,
-  boxPlotStroke?: ColorOutput,
-  boxPlotFill?: ColorOutput,
-  showViolinPlot?: boolean,
-  violinPlotStroke?: ColorOutput,
-  violinPlotFill?: ColorOutput,
-  horizontal?: boolean,
-  tooltipOn?: boolean, //TooltipSpec
-  tooltipShouldDetectBounds?: boolean,
-  renderTooltipInPortal?: boolean,
+  data: BoxPlotStats[];
+  showBoxPlot?: boolean;
+  boxPlotStroke?: ColorOutput;
+  boxPlotFill?: ColorOutput;
+  showViolinPlot?: boolean;
+  violinPlotStroke?: ColorOutput;
+  violinPlotFill?: ColorOutput;
+  horizontal?: boolean;
+  tooltipOn?: boolean; //TooltipSpec
+  tooltipShouldDetectBounds?: boolean;
+  renderTooltipInPortal?: boolean;
 }
 
 export interface BoxPlotStats {
@@ -149,7 +149,13 @@ export interface BoxPlotStats {
   binData?: BinData[];
 }
 
-export type LayerSpec = ScatterSpec | LineSpec | BarSpec | PieSpec | HeatmapSpec | DistributionSpec;
+export type LayerSpec =
+  | ScatterSpec
+  | LineSpec
+  | BarSpec
+  | PieSpec
+  | HeatmapSpec
+  | DistributionSpec;
 
 // layouts
 export type OverwriteProperty = { [property: string]: any };

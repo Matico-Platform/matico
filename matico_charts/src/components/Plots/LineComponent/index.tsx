@@ -1,25 +1,25 @@
-import * as React from 'react';
-import { LineSpec, PlotLayersProperties } from '../../types';
-import { LinePath } from '@visx/shape';
-import { curveMonotoneX } from '@visx/curve';
+import * as React from "react";
+import { LineSpec, PlotLayersProperties } from "../../types";
+import { LinePath } from "@visx/shape";
+import { curveMonotoneX } from "@visx/curve";
 
 // Divides an interval [a, b] into 100 subintervals
 export const intervalPartitioner = (interval: number[]) => {
-  const intervalLength = interval[1]-interval[0];
+  const intervalLength = interval[1] - interval[0];
   const meshLength = intervalLength / 100;
   const partitionValues: number[] = [];
 
   for (let i = 0; i < 100; i++) {
-    partitionValues.push(interval[0] + i * meshLength)
+    partitionValues.push(interval[0] + i * meshLength);
   }
 
-  return partitionValues
-}
+  return partitionValues;
+};
 
 export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   const {
     data = [],
-    xScale = () => 0,  
+    xScale = () => 0,
     yScale = () => 0,
     xAccessor = () => 0,
     yAccessor = () => 0,
@@ -39,19 +39,19 @@ export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   const tickMarks = intervalPartitioner(xBounds);
   const lineFunctionPoints: any = [];
 
-  lineFunction 
-    ? tickMarks.forEach(element => lineFunctionPoints.push([element, lineFunction(element)]))
-    : lineFunctionPoints.push(0)
+  lineFunction
+    ? tickMarks.forEach((element) =>
+        lineFunctionPoints.push([element, lineFunction(element)])
+      )
+    : lineFunctionPoints.push(0);
 
-  const chartData = lineFunction
-    ? lineFunctionPoints
-    : data;
+  const chartData = lineFunction ? lineFunctionPoints : data;
 
-  if (!chartData) return null; 
+  if (!chartData) return null;
   if (lineFunction) {
-    return (                                          
-      <LinePath                                    
-        stroke={lineColor || 'gray'}
+    return (
+      <LinePath
+        stroke={lineColor || "gray"}
         strokeWidth={lineWidth || 2}
         data={lineFunctionPoints}
         curve={curveMonotoneX}
@@ -64,7 +64,7 @@ export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   } else {
     return (
       <LinePath
-        stroke={lineColor || 'gray'}
+        stroke={lineColor || "gray"}
         strokeWidth={2}
         data={chartData}
         //@ts-ignore
@@ -76,6 +76,6 @@ export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   }
 };
 
-// strokeDashArray -- see how visx handles this 
+// strokeDashArray -- see how visx handles this
 // For the data example to work, we need the keys in each of object (inside the array)
-// to be numbers. Might need to expand on this so that they can also be strings. 
+// to be numbers. Might need to expand on this so that they can also be strings.

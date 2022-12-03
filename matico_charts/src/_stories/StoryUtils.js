@@ -1,7 +1,7 @@
-import { linearRegression, linearRegressionLine } from 'simple-statistics';
-import genStats, { Stats } from '@visx/mock-data/lib/generators/genStats';
-import { getSeededRandom, getRandomNormal } from '@visx/mock-data';
-import * as d3 from 'd3';
+import { linearRegression, linearRegressionLine } from "simple-statistics";
+import genStats, { Stats } from "@visx/mock-data/lib/generators/genStats";
+import { getSeededRandom, getRandomNormal } from "@visx/mock-data";
+import * as d3 from "d3";
 
 // samplepoly2 has the coordinates drawn counterclockwise and
 // samplepoly3 has coordinates drawn clockwise
@@ -50,7 +50,7 @@ export const getCategoricalData = (n) => {
 };
 
 export const getDistributionData = (n) => {
-const seededRandom = getSeededRandom(0.1);
-const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
- return genStats(n, randomNormal, () => 10 * seededRandom());
-}
+  const seededRandom = getSeededRandom(0.1);
+  const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
+  return genStats(n, randomNormal, () => 10 * seededRandom());
+};
