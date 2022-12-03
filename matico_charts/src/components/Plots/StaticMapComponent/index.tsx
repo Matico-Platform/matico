@@ -104,7 +104,7 @@ export const StaticMapComponent: React.FC<
 
   if (filteredData && proj in basicProjections) {
     const projection = basicProjections[proj]()
-    .rotate([rotation !== undefined ? rotation : (left + right) / 2, 0, 0])
+      .rotate([rotation !== undefined ? rotation : (left + right) / 2, 0, 0])
       //@ts-ignore
       .fitExtent(
         [
