@@ -1,5 +1,4 @@
-
 export interface Page {
-    limit: number;
-    offset: number;
+  limit: number;
+  offset: number;
 }

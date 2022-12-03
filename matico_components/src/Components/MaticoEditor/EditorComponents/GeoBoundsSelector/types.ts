@@ -8,5 +8,5 @@ export type MapView = {
 
 export type GeoBoundsSelectorProps = {
     updateView: (mapview: MapView) => void;
-    mapView: MapView
-}
+    mapView: MapView;
+};

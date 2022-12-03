@@ -30,7 +30,10 @@ export function mapCoords(array: Array<{ x: number; y: number }>) {
 }
 
 export function convertPoint(wkbGeom: any) {
-    return parseSync(wkbGeom, WKBLoader).positions.value;
+    if (!wkbGeom) return null;
+    let wkxVal = wkx.Geometry.parse(Buffer.from(wkbGeom));
+    //@ts-ignore
+    return [wkxVal.x, wkxVal.y];
 }
 
 export function convertPoly(poly: Polygon) {
@@ -41,7 +44,7 @@ export function expandMultiAndConvertPoly(data: Array<Record<string, any>>) {
     const result = data.map(
         (d: Record<string, any> & { geom: Uint8Array }) => ({
             ...d,
-            geom: wkx.Geometry.parse(Buffer.from(d.geom))
+            geom: d.geom ? wkx.Geometry.parse(Buffer.from(d.geom)) : null
         })
     );
     const expanded = result.reduce(
@@ -103,7 +106,7 @@ export const chromaColorFromColorSpecification = (
             color.rgba[2],
             color.rgba[3] / 255.0,
             "rgb"
-        )
+        );
     } else if ("rgb" in color) {
         return chroma(
             color.rgb[0],
@@ -111,7 +114,7 @@ export const chromaColorFromColorSpecification = (
             color.rgb[2],
             alpha ? 0.7 : 1,
             "rgb"
-        )
+        );
     } else if ("hex" in color) {
         return chroma.hex(color.hex);
     } else if ("named" in color) {
@@ -138,12 +141,10 @@ const constructRampFunctionNum = (
 const constructRampFunctionCol = (range: Range<number>, domain: Array<any>) => {
     if (typeof domain[0] === "string") {
         return (val: string) => {
-            // console.log("domain ",domain ,val)
             const index = domain.indexOf(`${val}`);
 
             if (index >= 0) {
                 const r = range[index];
-                // console.log("r is ",r, index, range )
                 return chroma(r);
             } else {
                 return chroma(211, 211, 211);
@@ -186,22 +187,30 @@ export const generateColorVar = (
             if (!Array.isArray(brewer)) {
                 brewer = brewer[3];
             }
-            const ramp = constructRampFunctionCol(
-                brewer.map((c: string) =>
-                    chromaColorFromColorSpecification({ hex: c }, true)
-                ),
-                domain
+
+            const mappedRange = brewer.map((c: string | Array[number]) =>
+                chromaColorFromColorSpecification(
+                    typeof c === "string" ? { hex: c } : { rgb: c },
+                    true
+                )
             );
 
+            const ramp = constructRampFunctionCol(mappedRange, domain);
+
             return (d: any) => {
-                const val = d.hasOwnProperty("properties")
-                    ? d.properties[variable]
-                    : d[variable];
+                let val;
+                if (typeof d === "number") {
+                    val = d;
+                } else {
+                    val = d.hasOwnProperty("properties")
+                        ? d.properties[variable]
+                        : d[variable];
+                }
                 if (!val) {
                     return [0, 0, 0, 0];
                 }
                 let c = ramp(val).rgba();
-                c[3] = c[3] * 255;
+
                 return c;
             };
         } else {
@@ -210,7 +219,6 @@ export const generateColorVar = (
     }
 
     let c = chromaColorFromColorSpecification(colorVar, alpha).rgba();
-    // console.log("color is ", c);
     c[3] = c[3] * 255;
     return () => c;
 };
@@ -225,4 +233,17 @@ export const getColorScale = (range: any) => {
     } else {
         return range;
     }
+};
+
+export const parentContainsClassName = (
+    el: HTMLElement,
+    className: string
+): boolean => {
+    if (el?.classList?.contains(className)) {
+        return true;
+    }
+    if (el?.parentElement) {
+        return parentContainsClassName(el.parentElement, className);
+    }
+    return false;
 };

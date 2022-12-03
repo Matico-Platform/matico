@@ -1,39 +1,53 @@
 import { useEffect, useState } from "react";
-import {ParameterOptions, ParameterValue, SpecParameter} from "@maticoapp/matico_types/spec"
+import {
+    ParameterOptions,
+    ParameterValue,
+    SpecParameter
+} from "@maticoapp/matico_types/spec";
 
 const analysisCache: Record<string, any> = {};
 
 export const loadAnalysis = async (url: string) => {
-    const wasm = await import(/* webpackIgnore: true */ url);
+    //This is nasty as F but only way I can figure out to make next happy
+    const wasm = await new Function(
+        "url",
+        " let get_url = async () => await import(url); return get_url()"
+    )(url);
     await wasm.default();
     let key = Object.keys(wasm).find((k) => k.includes("Interface"));
     return wasm[key].new();
 };
 
-
-export const populateDefaults = (options: Record<string,ParameterOptions>)=>{
-  let defaults: Array<SpecParameter> = [] 
-  console.log("options", options)
-  Object.entries(options).map(([key,option])=>{
-    if (option.type === "optionGroup"){
-      let value = populateDefaults(option.options)
-      defaults.push ({name:key, parameter:{type:option.type, value: value}})
-    } 
-    else if (option.type === "repeatedOption"){
-      console.log("REPEATED OPTION")
-      let values = []
-      for(let i = 0; i< option.min_times; i++){
-        values.push({type:option.type, value: populateDefaults({ [key] : option.options})}) 
-      } 
-      defaults.push({name: key, parameter:{type: option.type, value: values}})
-    }
-    else{
-      defaults.push({name:key, parameter:{type:option.type, value: option.default}})
-    }
-  }) 
-  console.log("defaults", defaults)
-  return defaults
-}
+export const populateDefaults = (options: Record<string, ParameterOptions>) => {
+    let defaults: Array<SpecParameter> = [];
+    Object.entries(options).map(([key, option]) => {
+        if (option.type === "optionGroup") {
+            let value = populateDefaults(option.options);
+            defaults.push({
+                name: key,
+                parameter: { type: option.type, value: value }
+            });
+        } else if (option.type === "repeatedOption") {
+            let values = [];
+            for (let i = 0; i < option.min_times; i++) {
+                values.push({
+                    type: option.type,
+                    value: populateDefaults({ [key]: option.options })
+                });
+            }
+            defaults.push({
+                name: key,
+                parameter: { type: option.type, value: values }
+            });
+        } else {
+            defaults.push({
+                name: key,
+                parameter: { type: option.type, value: option.default }
+            });
+        }
+    });
+    return defaults;
+};
 
 export const useAnalysis = (url: string | null) => {
     const [analysis, setAnalysis] = useState<any>(null);
@@ -46,30 +60,33 @@ export const useAnalysis = (url: string | null) => {
         // simply return it.
 
         if (url in analysisCache) {
-            setAnalysis(analysisCache[url]);
-            return;
+            let cachedAnalysis = analysisCache[url];
+            setAnalysis(cachedAnalysis);
+            let options = cachedAnalysis.options();
+            setOptions(options);
+            let defaults = populateDefaults(options);
+            setDefaults(defaults);
         }
 
         // Or fetch it and cache it
-        if (url) {
+        else if (url) {
             loadAnalysis(url)
                 .then((module) => {
                     setAnalysis(module);
                     analysisCache[url] = module;
                     let options = module.options();
-                    setOptions(options)
-                    let defaults = populateDefaults(options)               
-                    console.log("full defaults ", defaults)
-                    setDefaults(defaults)
+                    setOptions(options);
+                    let defaults = populateDefaults(options);
+                    setDefaults(defaults);
                     setError(null);
                 })
                 .catch((e) => {
-                    console.log("Error is ", e);
+                    debugger;
                     setAnalysis(null);
                     setError(e.to_string());
                 });
         }
     }, [url]);
 
-    return { analysis, error, defaults,options};
+    return { analysis, error, defaults, options };
 };

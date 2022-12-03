@@ -78,7 +78,7 @@ const PositionUnitEditor: React.FC<PositionUnitEditorProps> = ({
     );
 };
 
-const PositionPresets = [
+export const PositionPresets = [
     {
         id: "full",
         label: "▣ Full",
@@ -114,7 +114,7 @@ const PositionPresets = [
         label: "◰ Snap Top Left",
         position: {
             x: 0,
-            y: 50,
+            y: 0,
             width: 50,
             height: 50
         }
@@ -124,7 +124,7 @@ const PositionPresets = [
         label: "◳ Snap Top Right",
         position: {
             x: 50,
-            y: 50,
+            y: 0,
             width: 50,
             height: 50
         }
@@ -134,7 +134,7 @@ const PositionPresets = [
         label: "◱ Snap Bottom Left",
         position: {
             x: 0,
-            y: 0,
+            y: 50,
             width: 50,
             height: 50
         }
@@ -144,22 +144,23 @@ const PositionPresets = [
         label: "◲ Snap Bottom Right",
         position: {
             x: 50,
-            y: 0,
+            y: 50,
             width: 50,
             height: 50
         }
     }
 ];
 
-const SnapPaneMenu: React.FC<{ updatePosition: (change: any) => void }> = ({
-    updatePosition
-}) => {
+export const SnapPaneMenu: React.FC<{
+    updatePosition: (change: any) => void;
+}> = ({ updatePosition }) => {
     return (
         <ActionGroup
             overflowMode="collapse"
             marginTop={"size-150"}
             summaryIcon={<TextStyle />}
             aria-label="Text style"
+            maxWidth="20vw"
             isEmphasized
             onAction={(key) => {
                 const position = PositionPresets.find(
@@ -225,7 +226,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
             )}
             <TwoUpCollapsableGrid>
                 <PositionUnitEditor
-                    label="width"
+                    label="Width"
                     value={position.width}
                     units={position.widthUnits}
                     onValueChange={(width) => updatePosition({ width })}
@@ -234,7 +235,7 @@ export const PaneEditor: React.FC<PaneEditorProps> = ({
                     }
                 />
                 <PositionUnitEditor
-                    label="height"
+                    label="Height"
                     value={position.height}
                     units={position.heightUnits}
                     onValueChange={(height) => updatePosition({ height })}

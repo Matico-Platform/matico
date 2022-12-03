@@ -1,0 +1,17 @@
+{
+  "name": "@maticoapp/matico_spec",
+  "packageManager": "yarn@3.2.1",
+  "version": "0.1.1",
+  "main": "./dist/index.js",
+  "files": [
+    "./dist"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "watch": "node scripts/watch.js"
+  },
+  "devDependencies": {
+    "esbuild-plugin-wasm": "^1.0.0",
+    "esbuild-plugin-wasm-pack": "^1.1.0"
+  }
+}

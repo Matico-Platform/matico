@@ -11,9 +11,7 @@ import { useDropzone } from "react-dropzone";
 export interface NewUploadDatasetFormProps {}
 
 export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = () => {
-  const onDrop = useCallback((accptedFiles: any) => {
-    
-  }, []);
+  const onDrop = useCallback((accptedFiles: any) => {}, []);
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
       onDrop,

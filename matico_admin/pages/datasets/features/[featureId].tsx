@@ -4,4 +4,4 @@ const FeaturePage: React.FC = () => {
   return <div>FeaturePage</div>;
 };
 
-export default FeaturePage
+export default FeaturePage;

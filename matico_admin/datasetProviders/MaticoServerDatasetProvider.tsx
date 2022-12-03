@@ -20,7 +20,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
   onSubmit,
 }) => {
   const { datasets, datasetError } = useDatasets();
-  console.log("matico datasets ", datasets)
+  console.log("matico datasets ", datasets);
 
   const [selectedDatasetID, setSelectedDatasetID] = useState<any | null>(null);
   const [remote, setRemote] = useState<boolean>(false);
@@ -43,14 +43,12 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
       : {
           url: `${window.location.origin}/api/data/dataset/${selectedDatasetID}?format=geojson`,
           name: selectedDataset.name,
-          type: "geoJSON", 
+          type: "geoJSON",
           lat_col: "",
-          lng_col: ""
+          lng_col: "",
         };
     onSubmit(spec);
   };
-
-  
 
   return (
     <View>
@@ -60,7 +58,7 @@ export const MaticoDatasetExplorer: React.FC<DatasetProviderComponent> = ({
           items={datasets}
           selectedKey={selectedDatasetID}
           onSelectionChange={setSelectedDatasetID}
-          disabledKeys={datasets.filter(d=>!d.public).map(d=>d.id)}
+          disabledKeys={datasets.filter((d) => !d.public).map((d) => d.id)}
         >
           {(dataset: any) => <Item key={dataset.id}>{dataset.name}</Item>}
         </Picker>

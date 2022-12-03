@@ -5,7 +5,6 @@ import { useValidator } from "Hooks/useValidator";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-github";
-import { useAppSpec } from "Hooks/useAppSpec";
 import { useMaticoDispatch } from "Hooks/redux";
 import { setSpec } from "Stores/MaticoSpecSlice";
 import { json_error_to_annotation } from "../Utils/Utils";
@@ -21,23 +20,24 @@ import {
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-tomorrow_night";
 import "ace-builds/src-noconflict/ext-language_tools";
+import { useApp } from "Hooks/useApp";
 
 export const MaticoRawSpecEditor: React.FC = () => {
     const [code, setCode] = useState<string>();
     const [isValid, setIsValid] = useState<boolean>(true);
     const [jsonError, setJsonError] = useState<any | null>(null);
-    const [validationResult, setValidationResult] =
-        useState<any[] | null>(null);
+    const [validationResult, setValidationResult] = useState<any[] | null>(
+        null
+    );
 
     const { validator, validatorReady, error: validatorError } = useValidator();
 
-    const spec = useAppSpec();
+    const { app } = useApp();
     const dispatch = useMaticoDispatch();
-    console.log("Got app spec as ", spec);
 
     //Need to figure out how to make sure this updates with other spec changes
     useEffect(() => {
-        setCode(JSON.stringify(spec, null, 2));
+        setCode(JSON.stringify(app, null, 2));
     }, []);
 
     const annotations: Ace.Annotation[] = jsonError
@@ -45,7 +45,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
         : [];
 
     useEffect(() => {
-        if (validatorReady) {
+        if (validatorReady && validator.App) {
             try {
                 const dash = validator.App.from_json(code);
                 const { is_valid: specValid, errors } = dash.is_valid();
@@ -65,8 +65,6 @@ export const MaticoRawSpecEditor: React.FC = () => {
         }
     }, [JSON.stringify(code), validator, validatorReady]);
 
-    if (validatorError) return <h1>Failed to load validator wasm </h1>;
-
     const combinedErrors = useMemo(() => {
         let combinedErrors = [];
         if (jsonError) {
@@ -77,6 +75,8 @@ export const MaticoRawSpecEditor: React.FC = () => {
         }
         return combinedErrors.filter((a) => a);
     }, [jsonError, validationResult]);
+
+    if (validatorError) return <h1>Failed to load validator wasm </h1>;
 
     if (!validatorReady)
         return <ProgressCircle aria-label="Loading…" isIndeterminate />;

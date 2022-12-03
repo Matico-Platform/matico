@@ -9,22 +9,36 @@ interface ColorPaletteSelectorInterface {
 
 export type ColorGroup = Array<{ name: string; colors: Array<string> }>;
 
+function MapColorsToGroup(tag: string, propertyType: string) {
+    return Object.entries(colors)
+        .filter(
+            ([name, values]) =>
+                values.tags?.includes(tag) ||
+                values.properties?.type === propertyType
+        )
+        .map(([name, values]) => ({ name, colors: values[7] }));
+}
+
 export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
     selectedPalette,
     onSelectPalette
 }) => {
-    const colorOptions: Array<{ groupName: string; colors: ColorGroup }> =
-        Object.entries(colors.schemeGroups).map((group) => {
-            const colorGroup = group[1].map((colName: string) => ({
-                name: colName,
-                //@ts-ignore
-                colors: colors[colName][7]
-            }));
-            return { groupName: group[0], colors: colorGroup };
-        });
+    const colorOptions: Array<{ groupName: string; colors: ColorGroup }> = [
+        {
+            groupName: "sequential",
+            colors: MapColorsToGroup("quantitative", "seq")
+        },
+        {
+            groupName: "diverging",
+            colors: MapColorsToGroup("diverging", "div")
+        },
+        {
+            groupName: "qualitative",
+            colors: MapColorsToGroup("qualitative", "qual")
+        }
+    ];
 
     const updatePalette = (paletteName: string) => {
-        console.log("PALETTE NAME", paletteName);
         //@ts-ignore
         onSelectPalette({ name: paletteName, colors: colors[paletteName] });
     };
@@ -45,20 +59,29 @@ export const ColorPaletteSelector: React.FC<ColorPaletteSelectorInterface> = ({
                     title={section.groupName}
                 >
                     {(item) => (
-                        <Item key={item.name}>
-                            <Text>{item.name}</Text>
-                            <Flex direction="row">
-                                {item.colors.map((color) => (
-                                    <View
-                                        key={color}
-                                        UNSAFE_style={{
-                                            width: "10px",
-                                            height: "10px",
-                                            backgroundColor: `rgba(${color[0]},${color[1]},${color[2]})`
-                                        }}
-                                    />
-                                ))}
-                            </Flex>
+                        <Item key={item.name} textValue={item.name}>
+                            <Text>
+                                <Text>{item.name}</Text>
+                                <Flex
+                                    direction="row"
+                                    width="100%"
+                                    height="100%"
+                                >
+                                    {item.colors.map((color) => (
+                                        <View
+                                            key={color}
+                                            UNSAFE_style={{
+                                                width: "10px",
+                                                height: "10px",
+                                                backgroundColor:
+                                                    typeof color === "string"
+                                                        ? color
+                                                        : `rgba(${color[0]},${color[1]},${color[2]})`
+                                            }}
+                                        />
+                                    ))}
+                                </Flex>
+                            </Text>
                         </Item>
                     )}
                 </Section>

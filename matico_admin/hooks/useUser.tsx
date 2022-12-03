@@ -25,14 +25,13 @@ export const useUser = () => {
   };
 
   useEffect(() => {
-    if(user){
+    if (user) {
       LogRocket.identify(user.id, {
         name: user.username,
         email: user.email,
       });
-    }
-    else{
-      LogRocket.identify("Annon")
+    } else {
+      LogRocket.identify("Annon");
     }
   }, [user]);
 

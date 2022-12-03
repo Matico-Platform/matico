@@ -1,12 +1,10 @@
-import React from 'react';
-import ParentSize from '@visx/responsive/lib/components/ParentSize';
-import ChartSpace from './ChartSpace';
-import { ChartSpaceSpec } from './types';
+import React from "react";
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
+import ChartSpace from "./ChartSpace";
+import { ChartSpaceSpec } from "./types";
 
 export default function MaticoChart(props: ChartSpaceSpec) {
   const { data, dimensions } = props;
-
-  if (!data) return null;
 
   return (
     <ParentSize>

@@ -6,14 +6,14 @@ export type MarginSpec = {
   right: number;
   bottom: number;
   left: number;
-}
+};
 
 export type Domain2D = {
   x0: number;
   x1: number;
   y0: number;
   y1: number;
-}
+};
 // data
 export type DataRow = { [property: string]: any };
 export type DataCollection = Array<DataRow>;
@@ -24,10 +24,10 @@ export type StringColor = string;
 export type RgbColor = [number, number, number];
 export type RgbaColor = [number, number, number, number];
 export type ColorOutput = HexColor | StringColor | RgbColor | RgbaColor;
-export type ShapeOutput = 'circle' | 'rectangle' | 'polygon' | 'text';
-export type ScaleType = 'linear' | 'log' | 'power' | 'sqrt';
-export type YAxisPosition = 'left' | 'right';
-export type XAxisPosition = 'bottom' | 'top';
+export type ShapeOutput = "circle" | "rectangle" | "polygon" | "text";
+export type ScaleType = "linear" | "log" | "power" | "sqrt";
+export type YAxisPosition = "left" | "right";
+export type XAxisPosition = "bottom" | "top";
 
 //scales
 interface ScaleSpec {
@@ -79,6 +79,19 @@ export interface BaseLayerSpec {
   onHover?: InteractiveFunction;
   xOffset?: number;
   yOffset?: number;
+}
+
+export interface StaticMapSpec extends BaseLayerSpec {
+  proj: string;
+  rotation?: number;
+  fill?: ColorFunction | ColorOutput;
+  //background?: ColorOutput;
+  gratOn?: boolean;
+  gratColor?: ColorOutput;
+  strokeWidth?: number;
+  strokeColor?: ColorOutput;
+  pointRadius?: number;
+  events?: boolean;
 }
 
 export interface ScatterSpec extends BaseLayerSpec {
@@ -145,6 +158,7 @@ export interface AxisSpec {
   scaleType: ScaleType;
   display?: boolean;
   scaleParams?: OverwriteProperty;
+  tickFormatFunc?: (d: number) => string;
 }
 
 export interface GridSpec {

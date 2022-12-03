@@ -1,7 +1,4 @@
-import { GatedActionProps } from './types';
-import { GatedAction } from './GatedAction';
+import { GatedActionProps } from "./types";
+import { GatedAction } from "./GatedAction";
 
-export {
-    GatedAction,
-    GatedActionProps
-}
+export { GatedAction, GatedActionProps };

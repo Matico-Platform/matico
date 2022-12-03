@@ -8,14 +8,11 @@ export const useValidator = () => {
     useEffect(() => {
         let f = async () => {
             try {
-                const wasm = await import(
-                    /*webpackChunkName:"spec"*/ "@maticoapp/matico_spec"
-                );
+                const wasm = await import("@maticoapp/matico_spec");
                 setValidator(wasm);
                 setValidatorReady(true);
             } catch (err) {
                 setError(`failed to load wasm: ${err}`);
-                console.log("unexpected error in load wasm ", err);
             }
         };
         f();

@@ -234,26 +234,3 @@ pub async fn load_csv_dataset_to_db(
     println!("Uploaded geo file {:?} ", output);
     Ok(())
 }
-
-//IGNORE THESE TESTS FOR NOW
-#[cfg(test)]
-mod tests {
-    use gdal::Dataset;
-    use std::path::PathBuf;
-
-    #[test]
-    fn get_correct_file_info_shp() {
-        let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("resources/test/ne_10m_admin_0_countries.zip");
-        let dataset = Dataset::open(d.as_path());
-        println!("Dataset {:#?}", dataset);
-    }
-
-    #[test]
-    fn get_correct_file_info_geojson() {
-        let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("resources/test/squirrel.geojson");
-        let dataset = Dataset::open(d.as_path());
-        println!("Dataset {:#?}", dataset);
-    }
-}

@@ -1,12 +1,12 @@
 //@ts-ignore
-import React from 'react';
-import { Circle } from '@visx/shape';
-import { HeatmapSpec } from '../../types';
-import { HeatmapCircle, HeatmapRect } from '@visx/heatmap';
-import { isFunc, sanitizeColor } from '../../../Utils';
-import { scaleLinear } from '@visx/scale';
+import React from "react";
+import { Circle } from "@visx/shape";
+import { HeatmapSpec, PlotLayersProperties } from "../../types";
+import { HeatmapCircle, HeatmapRect } from "@visx/heatmap";
+import { isFunc, sanitizeColor } from "../../../Utils";
+import { scaleLinear } from "@visx/scale";
 
-export const HeatmapComponent = (props: HeatmapSpec) => {
+export const HeatmapComponent = (props: HeatmapSpec & PlotLayersProperties) => {
   const {
     data = [],
     binnedData = [],
@@ -14,9 +14,9 @@ export const HeatmapComponent = (props: HeatmapSpec) => {
     // yScale = () => 0,
     xAccessor = () => 0,
     yAccessor = () => 0,
-    color = 'gray',
+    color = "gray",
     scale = () => 1,
-    shape = () => 'circle',
+    shape = () => "circle",
     xBounds,
     yBounds,
     xBins,
@@ -33,9 +33,9 @@ export const HeatmapComponent = (props: HeatmapSpec) => {
 
   if (!data || !xAccessor || !yAccessor) return null;
 
-  const lxStep = xStep || (xBounds[1] - xBounds[0]) / (xBins);
-  const lyStep = yStep || (yBounds[1] - yBounds[0]) / (yBins);
-  
+  const lxStep = xStep || (xBounds[1] - xBounds[0]) / xBins;
+  const lyStep = yStep || (yBounds[1] - yBounds[0]) / yBins;
+
   const processedResults =
     !binnedData.length &&
     !maxCount &&
@@ -59,7 +59,7 @@ export const HeatmapComponent = (props: HeatmapSpec) => {
 
   const colorScale = scaleLinear({
     domain: [0, lMaxCount],
-    range: ['white', 'red'],
+    range: ["white", "red"],
   });
   const xScale = scaleLinear({
     domain: [0, xBins],
@@ -117,17 +117,18 @@ function processData({
   xStep,
   yStep,
 }) {
-  const rowBins = () => Array(yBins)
-    .fill(null)
-    .map((_, i) => ({ bin: i, count: 0 }));
+  const rowBins = () =>
+    Array(yBins)
+      .fill(null)
+      .map((_, i) => ({ bin: i, count: 0 }));
 
   let returnData = Array(xBins)
     .fill(null)
     .map((_, i) => ({ bin: i * yStep, bins: rowBins() }));
   for (let i = 0; i < data.length; i++) {
-    const xCoord = Math.min(Math.floor(xAccessor(data[i]) / xStep), xBins-1)
-    const yCoord = Math.min(Math.floor(yAccessor(data[i]) / yStep), yBins-1)    
-    returnData[xCoord].bins[yBins-1-yCoord].count += 1;
+    const xCoord = Math.min(Math.floor(xAccessor(data[i]) / xStep), xBins - 1);
+    const yCoord = Math.min(Math.floor(yAccessor(data[i]) / yStep), yBins - 1);
+    returnData[xCoord].bins[yBins - 1 - yCoord].count += 1;
   }
   let maxCount = 0;
   for (let i = 0; i < yBins; i++) {

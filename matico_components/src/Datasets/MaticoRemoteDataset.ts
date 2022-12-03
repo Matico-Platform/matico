@@ -1,8 +1,11 @@
-import { Dataset, DatasetState } from "./Dataset";
-
-import { Filter } from "@maticoapp/matico_types/spec";
-import { Column } from "@maticoapp/matico_types/api";
-
+import {
+    Column,
+    Dataset,
+    DatasetState,
+    Filter,
+    GeomType,
+    HistogramBin
+} from "./Dataset";
 import axios from "axios";
 
 export class MaticoRemoteDataset implements Dataset {
@@ -32,7 +35,7 @@ export class MaticoRemoteDataset implements Dataset {
         }
 
         this._axiosInstance = axios.create({
-            baseURL: serverUrl + `/data/dataset/${datasetId}`,
+            baseURL: serverUrl + `/datasets/${datasetId}`,
             headers
         });
     }
@@ -46,15 +49,17 @@ export class MaticoRemoteDataset implements Dataset {
         const serverColumns = await this._queryServer("/columns");
         const typeMappings: { [postgisType: string]: any } = {
             INT4: "number",
+            INT8: "number",
+            FLOAT: "number",
             VARCHAR: "string"
         };
-        return serverColumns.map((sc: Column) => ({
+        return serverColumns.map((sc) => ({
             name: sc.name,
-            type: typeMappings[sc.colType] ?? sc.colType
+            type: typeMappings[sc.col_type] ?? sc.col_type
         }));
     }
 
-    getData(filters?: Filter[], columns?: string[], limit?: number) {
+    getData(filters?: Filter[], columns?: string[]) {
         return this._queryServer("/data");
     }
 
@@ -71,9 +76,6 @@ export class MaticoRemoteDataset implements Dataset {
     tiled() {
         return true;
     }
-    raster() {
-        return false;
-    }
     mvtUrl() {
         return `${this.serverUrl}/tiler/dataset/${this.datasetId}/{z}/{x}/{y}`;
     }
@@ -82,7 +84,7 @@ export class MaticoRemoteDataset implements Dataset {
     }
     async geometryType() {
         let columns = await this.columns();
-        return columns.find((c: Column) => c.colType === "geometry")?.type;
+        return columns.find((c: Column) => c.type === "geometry")?.type;
     }
 
     async getColumnMax(column: string) {
@@ -97,15 +99,6 @@ export class MaticoRemoteDataset implements Dataset {
             statParams
         );
         return stats.max;
-    }
-
-    async getCategories(
-        columns: string,
-        noCategories: number,
-        filters?: Filter[]
-    ) {
-        throw Error("not yet implmented");
-        return Promise.resolve([]);
     }
 
     async getColumnMin(column: string) {
@@ -153,7 +146,6 @@ export class MaticoRemoteDataset implements Dataset {
         noBins: number,
         filters?: Filter[]
     ) {
-        console.log(`No bins is ${noBins} `);
         const statParams = {
             stat: JSON.stringify({
                 Histogram: { no_bins: noBins, treat_null_as_zero: false }

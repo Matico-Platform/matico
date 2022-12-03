@@ -12,10 +12,12 @@ import {
     findParent,
     setPaneOrder,
     setCurrentEditElement,
-    removePaneRef
+    removePaneRef,
+    setPaneRefIndex
 } from "Stores/MaticoSpecSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
+import { useNormalizedSpecSelector } from "./useNormalizedSpecSelector";
 
 export const usePane = (paneRef: PaneRef) => {
     const dispatch = useMaticoDispatch();
@@ -24,11 +26,19 @@ export const usePane = (paneRef: PaneRef) => {
         selector.spec.spec.panes.find((p: Pane) => p.id == paneRef.paneId)
     );
 
+    const normalizedPane = useNormalizedSpecSelector((selector) =>
+        selector?.panes.find((p: Pane) => p.id === paneRef.paneId)
+    );
+
     const parent = useMaticoSelector((selector) =>
         findParent(selector.spec.spec, paneRef.id)
     ) as Page | ContainerPane;
 
-    const currentIndex = _.indexOf(parent.panes, paneRef);
+    // after spec update, may have a race condition
+    // and no parent is present
+    if (!parent) return {};
+
+    const currentIndex = parent.panes.findIndex(({ id }) => id === paneRef.id);
 
     const updatePane = (update: Partial<Pane>) => {
         dispatch(updatePaneDetails({ id: paneRef.paneId, update }));
@@ -43,22 +53,31 @@ export const usePane = (paneRef: PaneRef) => {
     };
 
     const removePaneFromParent = () => {
-        dispatch(removePaneRef({ paneRefId: paneRef.paneId}))
-    }
+        dispatch(removePaneRef({ paneRefId: paneRef.paneId }));
+    };
 
     const reparentPane = (newParentId: string, position?: any) => {
         // dispatch
         // ...
         //
-    }
+    };
 
     const raisePane = () => {
         if (currentIndex < parent.panes.length) {
             dispatch(
-                setPaneOrder({
-                    parentId: parent.id,
-                    paneRef: paneRef,
+                setPaneRefIndex({
+                    paneRefId: pane.id,
                     newIndex: currentIndex + 1
+                })
+            );
+        }
+    };
+    const raisePaneToFront = () => {
+        if (currentIndex < parent.panes.length) {
+            dispatch(
+                setPaneRefIndex({
+                    paneRefId: pane.id,
+                    newIndex: parent.panes.length
                 })
             );
         }
@@ -67,10 +86,20 @@ export const usePane = (paneRef: PaneRef) => {
     const lowerPane = () => {
         if (currentIndex > 0) {
             dispatch(
-                setPaneOrder({
-                    parentId: parent.id,
-                    paneRef: paneRef,
+                setPaneRefIndex({
+                    paneRefId: pane.id,
                     newIndex: currentIndex - 1
+                })
+            );
+        }
+    };
+
+    const lowerPaneToBack = () => {
+        if (currentIndex > 0) {
+            dispatch(
+                setPaneRefIndex({
+                    paneRefId: pane.id,
+                    newIndex: 0
                 })
             );
         }
@@ -87,28 +116,29 @@ export const usePane = (paneRef: PaneRef) => {
             })
         );
     };
-    
+
     const selectPane = () => {
         dispatch(
-            setCurrentEditElement(
-                { 
-                    type: "pane", 
-                    id: paneRef.id,
-                    parentId: !('path' in parent) && parent.id
-                }
-            )
+            setCurrentEditElement({
+                type: "pane",
+                id: paneRef.id,
+                parentId: !("path" in parent) && parent.id
+            })
         );
     };
 
     return {
         pane,
+        normalizedPane,
         updatePane,
         removePane: deletePane,
         removePaneFromParent,
         updatePanePosition: _updatePanePosition,
         parent,
         raisePane,
+        raisePaneToFront,
         lowerPane,
+        lowerPaneToBack,
         setPaneOrder: _setPaneOrder,
         selectPane
     };

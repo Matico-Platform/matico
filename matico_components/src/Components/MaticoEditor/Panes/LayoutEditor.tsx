@@ -8,7 +8,16 @@ import {
     Flex
 } from "@adobe/react-spectrum";
 import { availableLayouts } from "Utils/layoutEngine";
-import { Layout, LinearLayout, FreeLayout, LinearLayoutDirection, Alignment,Justification} from "@maticoapp/matico_types/spec";
+import {
+    Layout,
+    LinearLayout,
+    TabLayout,
+    TabBarPosition,
+    FreeLayout,
+    LinearLayoutDirection,
+    Alignment,
+    Justification
+} from "@maticoapp/matico_types/spec";
 
 export interface LinearLayoutEditorProps {
     layout: LinearLayout;
@@ -20,45 +29,110 @@ export const LinearLayoutEditor: React.FC<LinearLayoutEditorProps> = ({
     onChange
 }) => {
     return (
-        <Flex direction='column' rowGap='size-300' marginTop="size-300">
+        <Flex direction="column" rowGap="size-300" marginTop="size-300">
             <RadioGroup
                 label="Flow direction"
                 value={layout.direction}
-                onChange={(val) => onChange({ direction: val as LinearLayoutDirection })}
+                onChange={(val) =>
+                    onChange({ direction: val as LinearLayoutDirection })
+                }
             >
-                <Flex direction='row'>
-                <Radio value="row">Horizontal</Radio>
-                <Radio value="column">Vertical</Radio>
-              </Flex>
+                <Flex direction="row">
+                    <Radio value="row">Horizontal</Radio>
+                    <Radio value="column">Vertical</Radio>
+                </Flex>
+            </RadioGroup>
+            <RadioGroup
+                label="Fit content to container"
+                value={layout.allowOverflow ? "allow" : "noAllow"}
+                onChange={(stringVal) =>
+                    onChange({
+                        allowOverflow: stringVal === "allow" ? true : false
+                    })
+                }
+            >
+                <Flex direction="row">
+                    <Radio value={"allow"}>Overflow content</Radio>
+                    <Radio value={"noAllow"}>Fit to container</Radio>
+                </Flex>
             </RadioGroup>
 
+            <Picker
+                label="Gap"
+                width={"100%"}
+                selectedKey={layout?.gap ?? "none"}
+                onSelectionChange={(gap) => onChange({ gap })}
+                items={[
+                    { id: "none", label: "None" },
+                    { id: "small", label: "Small" },
+                    { id: "medium", label: "Medium" },
+                    { id: "large", label: "Large" }
+                ]}
+            >
+                {(item) => <Item key={item.id}>{item.label}</Item>}
+            </Picker>
+            {!layout.allowOverflow && (
+                <>
+                    <RadioGroup
+                        label="Flow Alignment"
+                        value={layout.align}
+                        onChange={(val) =>
+                            onChange({ align: val as Alignment })
+                        }
+                    >
+                        <Flex direction="row" wrap={"wrap"}>
+                            <Radio value="start">Start</Radio>
+                            <Radio value="center">Center</Radio>
+                            <Radio value="end">End</Radio>
+                            <Radio value="stretch">Stretch</Radio>
+                            <Radio value="baseline">Baseline</Radio>
+                        </Flex>
+                    </RadioGroup>
+
+                    <RadioGroup
+                        label="Flow Justification"
+                        value={layout.justify}
+                        onChange={(val) =>
+                            onChange({ justify: val as Justification })
+                        }
+                    >
+                        <Flex direction="row" wrap={"wrap"}>
+                            <Radio value="start">Start</Radio>
+                            <Radio value="center">Center</Radio>
+                            <Radio value="end">End</Radio>
+                            <Radio value="space-between">Space Between</Radio>
+                            <Radio value="space-around">Space Around</Radio>
+                            <Radio value="space-evenly">Space Evenly</Radio>
+                        </Flex>
+                    </RadioGroup>
+                </>
+            )}
+        </Flex>
+    );
+};
+
+export interface TabLayoutEditorProps {
+    layout: TabLayout;
+    onChange: (update: Partial<TabLayout>) => void;
+}
+
+export const TabLayoutEditor: React.FC<TabLayoutEditorProps> = ({
+    layout,
+    onChange
+}) => {
+    return (
+        <Flex direction="column" width="100%">
             <RadioGroup
-                label="Flow Alignment"
-                value={layout.align}
-                onChange={(val) => onChange({ align: val  as Alignment})}
+                label="Tab bar location"
+                value={layout.tabBarPosition}
+                onChange={(val) =>
+                    onChange({ tabBarPosition: val as TabBarPosition })
+                }
             >
                 <Flex direction="row" wrap={"wrap"}>
-                <Radio value="flex-start">Start</Radio>
-                <Radio value="center">Center</Radio>
-                <Radio value="flex-end">End</Radio>
-                <Radio value="stretch">Stretch</Radio>
-                <Radio value="baseline">Baseline</Radio>
-              </Flex>
-            </RadioGroup>
-
-            <RadioGroup
-                label="Flow Justification"
-                value={layout.justify}
-                onChange={(val) => onChange({ justify: val as Justification})}
-            >
-                <Flex direction='row' wrap={"wrap"}>
-                <Radio value="flex-start">Start</Radio>
-                <Radio value="center">Center</Radio>
-                <Radio value="flex-end">End</Radio>
-                <Radio value="space-between">Space Between</Radio>
-                <Radio value="space-around">Space Around</Radio>
-                <Radio value="space-evenly">Space Evenly</Radio>
-              </Flex>
+                    <Radio value="horizontal">Horizontal</Radio>
+                    <Radio value="vertical">Vertical</Radio>
+                </Flex>
             </RadioGroup>
         </Flex>
     );
@@ -78,7 +152,8 @@ export const FreeLayoutEditor: React.FC<FreeLayoutEditorProps> = ({
 
 const LayoutEditorMap = {
     linear: LinearLayoutEditor,
-    free: FreeLayoutEditor
+    free: FreeLayoutEditor,
+    tabs: TabLayoutEditor
 };
 
 interface LayoutEditorProps {
@@ -92,22 +167,19 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
     layout,
     updateLayout
 }) => {
-
     const Editor = LayoutEditorMap[layout.type as keyof typeof LayoutEditorMap];
-    console.log("layout " , layout, layout.type,  Editor)
     return (
-        <View>
+        <View width="100%">
             <Picker
                 width="100%"
                 selectedKey={layout.type}
                 label="Layout"
                 onSelectionChange={(layout) =>
                     updateLayout({
-                            type: layout,
-                            ...availableLayouts.find((l) => l.name === layout)
-                                .default
-                        }
-                    )
+                        type: layout,
+                        ...availableLayouts.find((l) => l.name === layout)
+                            .default
+                    })
                 }
             >
                 {availableLayouts.map(({ name, label }) => (

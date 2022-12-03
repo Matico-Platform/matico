@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import ErrorBoundary from "./ErrorBoundary";
 import { MaticoApp } from "@maticoapp/matico_components";
 
 const isEditActive = () => {
@@ -28,6 +27,7 @@ function App() {
     spec = {
       pages: [],
       datasets: [],
+      datasetTransforms:[],
       panes:[],
       metadata:{
         name:"Test App",

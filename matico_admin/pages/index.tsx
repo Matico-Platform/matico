@@ -24,15 +24,15 @@ const Home: NextPage = () => {
         direction="column"
         justifyContent="center"
         alignItems="center"
-      gap={"size-400"}
+        gap={"size-400"}
       >
         <Heading level={1}>Welcome to Matico</Heading>
         <View width="50vw">
-          <img alt="splash" src={"/main_bg.png"}  width={"100%"}/>
+          <img alt="splash" src={"/main_bg.png"} width={"100%"} />
         </View>
         <Text>
           Matico is a tool to help you easily curate, share and analyse datasets
-          and build apis and apps. 
+          and build apis and apps.
         </Text>
 
         {!user && (

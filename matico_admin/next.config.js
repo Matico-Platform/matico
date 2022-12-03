@@ -62,44 +62,45 @@ module.exports = withPlugins([withTM, optomizedImages], {
   typescript: {
     ignoreBuildErrors: true,
   },
-   experimental: {
-     urlImports: ['http://localhost:8000/'],
+  experimental: {
+    urlImports: ["http://localhost:8000/"],
   },
   webpack: (config, options) => {
     config.experiments.asyncWebAssembly = true;
+    config.experiments.syncWebAssembly = true;
+    config.experiments.topLevelAwait = true;
+
     config.module.rules.push(
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
           {
-            test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-            use: [
-              {
-
-                loader: 'file-loader',
-                options:{
-                  outputPath: 'static/webfonts/',
-                  publicPath: '../webfonts/',
-                  // optional, just to prettify file names
-                  name: '[name].[ext]',
-                }
-              },
-            ],
+            loader: "file-loader",
+            options: {
+              outputPath: "static/webfonts/",
+              publicPath: "../webfonts/",
+              // optional, just to prettify file names
+              name: "[name].[ext]",
+            },
           },
+        ],
+      },
 
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
           {
-            test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-            use: [
-              {
-
-                loader: 'file-loader',
-                options:{
-                  outputPath: 'static/media/',
-                  publicPath: '../media/',
-                  // optional, just to prettify file names
-                  name: '[name].[ext]',
-                }
-              },
-            ],
-          }
-        );
+            loader: "file-loader",
+            options: {
+              outputPath: "static/media/",
+              publicPath: "../media/",
+              // optional, just to prettify file names
+              name: "[name].[ext]",
+            },
+          },
+        ],
+      }
+    );
 
     return config;
   },

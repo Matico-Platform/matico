@@ -1,5 +1,5 @@
-import {expose}from "comlink"
+import { expose } from "comlink";
 
-import {DatasetService} from 'Datasets/DatasetService'
+import { DatasetService } from "Datasets/DatasetService";
 
-expose(DatasetService)
+expose(DatasetService);

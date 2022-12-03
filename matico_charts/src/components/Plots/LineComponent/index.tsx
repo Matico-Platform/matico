@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { LineSpec } from '../../types';
+import { LineSpec, PlotLayersProperties } from '../../types';
 import { LinePath } from '@visx/shape';
-import { curveLinear, curveMonotoneX } from '@visx/curve';
+import { curveMonotoneX } from '@visx/curve';
 
 // Divides an interval [a, b] into 100 subintervals
 export const intervalPartitioner = (interval: number[]) => {
@@ -16,7 +16,7 @@ export const intervalPartitioner = (interval: number[]) => {
   return partitionValues
 }
 
-export const LineComponent = (props: LineSpec) => {
+export const LineComponent = (props: LineSpec & PlotLayersProperties) => {
   const {
     data = [],
     xScale = () => 0,  
@@ -25,7 +25,7 @@ export const LineComponent = (props: LineSpec) => {
     yAccessor = () => 0,
     xBounds = [0, 0],
     yBounds = [0, 0],
-    lineColor = 'gray',
+    lineColor = "gray",
     lineWidth = 1,
     lineFunction = undefined,
   } = {

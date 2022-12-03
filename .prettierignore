@@ -1,0 +1,8 @@
+# Ignore artifacts:
+build
+coverage
+
+# Ignore these file directories
+node_modules/*
+.yarn/
+editor/

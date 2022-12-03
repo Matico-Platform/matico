@@ -3,13 +3,13 @@ import { useMaticoDispatch, useMaticoSelector } from "./redux";
 
 import {
     setAutoVariable,
-    unregisterAutoVariable
+    unregisterAutoVariable,
+    updateAutoVariable
 } from "../Stores/MaticoVariableSlice";
+import { MaticoStateVariable, VariableValue } from "Stores/VariableTypes";
 
 export type AutoVariableInterface = {
-    name: string;
-    type?: string;
-    initialValue?: any;
+    variable: MaticoStateVariable;
     bind?: boolean;
 };
 
@@ -21,39 +21,24 @@ export const useAutoVariables = (variables: Array<AutoVariableInterface>) => {
 
     useEffect(() => {
         variables.forEach((v) => {
-            const { name, type, initialValue, bind } = v;
-            if (type !== undefined && initialValue !== undefined) {
-                dispatch(
-                    setAutoVariable({
-                        type,
-                        name,
-                        value: initialValue
-                    })
-                );
+            const { variable, bind } = v;
+            if (!autoVariables[variable.id]) {
+                dispatch(setAutoVariable(variable));
             }
         });
-
-        return () => {
-            variables.forEach((v) => {
-                dispatch(unregisterAutoVariable(v.name));
-            });
-        };
     }, [JSON.stringify(variables)]);
 
     const currentState = variables.reduce<
-        Record<string, { value: any; update: (value: any) => void }>
+        Record<
+            string,
+            { value: VariableValue; update: (value: VariableValue) => void }
+        >
     >((agg, variable) => {
-        const { type, name, bind } = variable;
-        const currentValue = autoVariables[name]?.value;
-        const updateFunc = (value: unknown) => {
-            if (bind) {
-                dispatch(
-                    setAutoVariable({
-                        type,
-                        name,
-                        value
-                    })
-                );
+        const { id, name, value, paneId } = variable.variable;
+        const currentValue = autoVariables[id]?.value;
+        const updateFunc = (value: VariableValue) => {
+            if (variable.bind) {
+                dispatch(updateAutoVariable({ id, value }));
             } else {
                 console.info(
                     `Not updating variable ${name} because bind is not set`
@@ -69,43 +54,33 @@ export const useAutoVariables = (variables: Array<AutoVariableInterface>) => {
 
 // Just name if existing variable, otherwise type and value (MaticoVariable type) to register and return update function
 export const useAutoVariable = ({
-    name,
-    type,
-    initialValue,
+    variable,
     bind
-}: AutoVariableInterface) => {
+}: AutoVariableInterface): [VariableValue, (update: VariableValue) => void] => {
     const dispatch = useMaticoDispatch();
-    const autoVariables = useMaticoSelector(
-        (state) => state.variables.autoVariables
+
+    const currentValue = useMaticoSelector(
+        (state) => state.variables.autoVariables?.[variable.id]?.value
     );
-    const currentValue = autoVariables[name]?.value;
 
     useEffect(() => {
-        if (type !== undefined && initialValue !== undefined) {
-            dispatch(
-                setAutoVariable({
-                    type,
-                    name,
-                    value: initialValue
-                })
-            );
+        if (variable) {
+            if (!currentValue && bind) {
+                dispatch(setAutoVariable(variable));
+            }
         }
+        //return () => {
+        //    //@ts-ignore
+        //    dispatch(unregisterAutoVariable(name));
+        //};
+    }, [variable, currentValue]);
 
-        return () => {
-            //@ts-ignore
-            dispatch(unregisterAutoVariable(name));
-        };
-    }, [type, name, JSON.stringify(initialValue)]);
-
-    const updateVariable = (value: any) => {
+    const updateVariable = (value: VariableValue) => {
+        if (value.type !== variable.value.type) {
+            throw new Error("Update does not match type of variable");
+        }
         if (bind) {
-            dispatch(
-                setAutoVariable({
-                    type,
-                    name,
-                    value
-                })
-            );
+            dispatch(updateAutoVariable({ id: variable.id, value }));
         } else {
             console.info(
                 `Not updating variable ${name} because bind is not set`

@@ -14,17 +14,17 @@ import {
 import { Page, useTableData } from "../hooks/useTableData";
 import { ColumnDetails } from "./ColumnDetails";
 import MapView from "@spectrum-icons/workflow/MapView";
-import {Source} from '../utils/api'
+import { Source } from "../utils/api";
 
 export interface DataTableProps {
   source: Source;
   filters: Array<any>;
   onError?: (error: string) => void;
-  selection?:string | number | null | undefined;
-  onSelectionChange?: (featureId : string | number | null) => void;
+  selection?: string | number | null | undefined;
+  onSelectionChange?: (featureId: string | number | null) => void;
   onVizualizeCol?: (col: string | null) => void;
-  visCol? : string | null,
-  idCol : string  | null
+  visCol?: string | null;
+  idCol: string | null;
 }
 
 export const DataTable: React.FC<DataTableProps> = ({
@@ -35,51 +35,49 @@ export const DataTable: React.FC<DataTableProps> = ({
   visCol,
   selection,
   onSelectionChange,
-  idCol
+  idCol,
 }) => {
   const [sort, setSort] = useState<null | any>(null);
-  const [page, setPage] = useState<Page>({limit:15, offset:0})
+  const [page, setPage] = useState<Page>({ limit: 15, offset: 0 });
 
   const {
     data: tableData,
     error,
     mutate: updateTableData,
-  } = useTableData(source, filters, sort,page);
+  } = useTableData(source, filters, sort, page);
 
-  const tData = tableData && tableData.data ? tableData.data : tableData
+  const tData = tableData && tableData.data ? tableData.data : tableData;
 
   // This insures we update the table whenever the various options change
-  useEffect(()=>{
-    updateTableData()
-  },[source,filters,sort])
+  useEffect(() => {
+    updateTableData();
+  }, [source, filters, sort]);
 
   const columns = tData
     ? Object.keys(tData[0]).map((item) => ({ id: item, name: item }))
     : [];
 
-  const updateSelection = (selection : "all" | Set<Key>)=>{
-    if(onSelectionChange){
-      onSelectionChange(Array.from(selection)[0] as string)
+  const updateSelection = (selection: "all" | Set<Key>) => {
+    if (onSelectionChange) {
+      onSelectionChange(Array.from(selection)[0] as string);
     }
-  }
+  };
 
-  const setVisCol = (column: string)=>{
-    if(onVizualizeCol){
-      if(visCol === column){
-        onVizualizeCol(null)
-      }
-      else{
-        onVizualizeCol(column)
+  const setVisCol = (column: string) => {
+    if (onVizualizeCol) {
+      if (visCol === column) {
+        onVizualizeCol(null);
+      } else {
+        onVizualizeCol(column);
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (onError) {
       onError(error);
     }
   });
-
 
   if (!tData) {
     return <div>Loading</div>;
@@ -101,13 +99,18 @@ export const DataTable: React.FC<DataTableProps> = ({
             <Flex direction="row" alignItems="center">
               {col.name}
               <TooltipTrigger delay={0}>
-                <ColumnDetails  source={source} colName={col.name} />
+                <ColumnDetails source={source} colName={col.name} />
                 <Tooltip>Column stats and controls</Tooltip>
               </TooltipTrigger>
               <TooltipTrigger delay={0}>
-              <ToggleButton isEmphasized isSelected={visCol === col.name} onChange={()=> setVisCol(col.name)} isQuiet>
-                <MapView size="XXS" />
-              </ToggleButton>
+                <ToggleButton
+                  isEmphasized
+                  isSelected={visCol === col.name}
+                  onChange={() => setVisCol(col.name)}
+                  isQuiet
+                >
+                  <MapView size="XXS" />
+                </ToggleButton>
                 <Tooltip>Visualize on map</Tooltip>
               </TooltipTrigger>
             </Flex>
@@ -116,7 +119,9 @@ export const DataTable: React.FC<DataTableProps> = ({
       </TableHeader>
       <TableBody items={tData}>
         {(param: { [key: string]: any }) => (
-          <Row key={ idCol && param[idCol] ? param[idCol] : JSON.stringify(param)}>
+          <Row
+            key={idCol && param[idCol] ? param[idCol] : JSON.stringify(param)}
+          >
             {(columnKey) => (
               <Cell>
                 {typeof param[columnKey] === "object"
@@ -130,4 +135,3 @@ export const DataTable: React.FC<DataTableProps> = ({
     </TableView>
   );
 };
-

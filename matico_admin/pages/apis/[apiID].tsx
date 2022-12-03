@@ -8,19 +8,19 @@ import {
   Heading,
   View,
   Well,
-  Text
+  Text,
 } from "@adobe/react-spectrum";
 
 import { GetServerSideProps } from "next";
 import { useApi } from "../../hooks/useApis";
-import { SourceType} from '../../utils/api' 
+import { SourceType } from "../../utils/api";
 import dynamic from "next/dynamic";
 import { QueryEditorProps } from "../../components/QueryEditor";
 import { VariableEditor } from "../../components/VariableEditor";
 import { MapView } from "../../components/MapView";
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { DataTable } from "../../components/DataTable";
-import {useExtent} from "../../hooks/useExtent";
+import { useExtent } from "../../hooks/useExtent";
 
 const parameterRegEx = /\$\{([A-Za-z0-9]*)\}/g;
 
@@ -63,8 +63,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
     parameters: valuesForQuery,
   };
 
-  const {extent, extentError} = useExtent(source)
-
+  const { extent, extentError } = useExtent(source);
 
   const urlParams: string = Object.keys(valuesForQuery)
     .map(
@@ -73,9 +72,7 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
     )
     .join("&");
 
-  const mapUrl = api
-    ? `/api/tiler/api/${api.id}/{z}/{x}/{y}?${urlParams}`
-    : "";
+  const mapUrl = api ? `/api/tiler/api/${api.id}/{z}/{x}/{y}?${urlParams}` : "";
 
   useEffect(() => {
     if (api) {
@@ -167,7 +164,11 @@ const Api: NextPage<{ apiId: string }> = ({ apiId }) => {
               </Button>
             </Flex>
             <View gridArea="map">
-              <MapView extent={extent?.extent} visCol={visCol} source={source} />
+              <MapView
+                extent={extent?.extent}
+                visCol={visCol}
+                source={source}
+              />
             </View>
             {api && (
               <DataTable

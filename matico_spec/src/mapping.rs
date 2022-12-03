@@ -1,6 +1,4 @@
-use crate::{
-    AutoComplete, ColorSpecification, Filter, MappingVarOr, PanePosition, ScreenUnits, VarOr,
-};
+use crate::{AutoComplete, ColorSpecification, Filter, Labels, MappingVarOr, VarOr};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -89,7 +87,16 @@ pub struct LayerStyle {
     radius_scale: Option<f32>,
     elevation: Option<MappingVarOr<f32>>,
     elevation_scale: Option<f32>,
-    beforeId: Option<String>,
+    before_id: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct TooltipColumnSpec {
+    column: String,
+    label: String,
+    formatter: Option<String>,
 }
 
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, Default, AutoCompleteMe, TS)]
@@ -108,6 +115,7 @@ pub struct Layer {
     id: String,
     source: DatasetRef,
     style: LayerStyle,
+    tooltip_columns: Option<Vec<TooltipColumnSpec>>,
 }
 
 #[wasm_bindgen]
@@ -183,12 +191,60 @@ impl Default for SelectionMode {
 }
 
 #[wasm_bindgen]
+#[derive(Serialize, Clone, Deserialize, Debug, AutoCompleteMe, TS, Copy)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum MapProjection {
+    GeoConicConformal,
+    GeoTransverseMercator,
+    GeoNaturalEarth1,
+    GeoConicEquidistant,
+    GeoOrthographic,
+    GeoStereographic,
+    GeoMercator,
+    GeoEquirectangular,
+}
+
+impl Default for MapProjection {
+    fn default() -> Self {
+        MapProjection::GeoConicConformal
+    }
+}
+
+#[wasm_bindgen]
 #[derive(Serialize, Clone, Deserialize, Validate, Debug, AutoCompleteMe, TS, Default, Copy)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct SelectionOptions {
     pub selection_enabled: bool,
     pub selection_mode: SelectionMode,
+}
+
+#[wasm_bindgen]
+#[derive(Default, Serialize, Deserialize, Validate, Debug, Clone, AutoCompleteMe, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct StaticMapPane {
+    #[wasm_bindgen(skip)]
+    pub labels: Option<Labels>,
+
+    #[wasm_bindgen(skip)]
+    pub name: String,
+
+    #[wasm_bindgen(skip)]
+    pub id: String,
+
+    #[wasm_bindgen(skip)]
+    pub layers: Vec<Layer>,
+
+    #[wasm_bindgen(skip)]
+    pub projection: Option<MapProjection>,
+
+    #[wasm_bindgen(skip)]
+    pub show_graticule: Option<bool>,
+
+    #[wasm_bindgen(skip)]
+    pub rotation: Option<f32>,
 }
 
 #[wasm_bindgen]
@@ -295,7 +351,7 @@ mod tests {
             radius_scale: Some(1.0),
             elevation: None,
             elevation_scale: Some(1.0),
-            beforeId: None,
+            before_id: None,
         };
         println!("{}", serde_json::to_string_pretty(&style).unwrap());
     }

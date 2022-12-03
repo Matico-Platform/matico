@@ -21,8 +21,6 @@ export const findPaneParents = (spec: App, paneId: string) => {
     return { pages, containers: containersWithPane };
 };
 
-
-
 export const findPagesForPane = (spec: App, paneRef: PaneRef) => {
     let { pages, containers } = findPaneParents(spec, paneRef.id);
     while (containers.length > 0) {
@@ -39,14 +37,18 @@ export const findPagesForPane = (spec: App, paneRef: PaneRef) => {
 
 export const findPaneOrPage = (spec: App, id: string) => {
     const pages = spec.pages;
-    const pageMatch = pages.find((page: Page) => page.id === id)
-    if (pageMatch){
-        return pageMatch
+    const pageMatch = pages.find((page: Page) => page.id === id);
+    if (pageMatch) {
+        return pageMatch;
     }
-    const containers = spec.panes.filter((pane: Pane) => pane.type === "container") as ContainerPane[]
-    const containerMatch = containers.find((container: ContainerPane) => container.id === id)
-    if (containerMatch){
-        return containerMatch
+    const containers = spec.panes.filter(
+        (pane: Pane) => pane.type === "container"
+    ) as ContainerPane[];
+    const containerMatch = containers.find(
+        (container: ContainerPane) => container.id === id
+    );
+    if (containerMatch) {
+        return containerMatch;
     }
-    return null
-}
+    return null;
+};

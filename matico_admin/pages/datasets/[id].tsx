@@ -52,8 +52,9 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 };
 
 const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
-  const [selectedFeatureId, setSelectedFeatureId] =
-    useState<string | number | null>(null);
+  const [selectedFeatureId, setSelectedFeatureId] = useState<
+    string | number | null
+  >(null);
 
   const { dataset, datasetError, updateDataset } = useDataset(datasetId);
 
@@ -71,15 +72,13 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
     [datasetId]
   );
 
-  const querySource = useMemo(
-    () => {
-      console.log("RE MEMO source query")
-      return {
+  const querySource = useMemo(() => {
+    console.log("RE MEMO source query");
+    return {
       type: SourceType.Query,
       query: activeQuery,
-    }},
-    [activeQuery]
-    );
+    };
+  }, [activeQuery]);
 
   const source: Source = activeQuery ? querySource : datasetSource;
 
@@ -99,7 +98,7 @@ const Dataset: NextPage<{ datasetId: string }> = ({ datasetId }) => {
   };
 
   const runQuery = () => {
-    console.log("running query ")
+    console.log("running query ");
     setActiveQuery(query);
   };
 

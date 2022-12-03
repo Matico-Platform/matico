@@ -4,12 +4,12 @@ import {
     Item,
     TabPanels,
     TabList,
-    Button
+    Button,
+    Flex
 } from "@adobe/react-spectrum";
 import React, { useState } from "react";
 import { NavigatorBarProps } from "./types";
 import Breakdown from "@spectrum-icons/workflow/Breakdown";
-import Curate from "@spectrum-icons/workflow/Curate";
 import Data from "@spectrum-icons/workflow/Data";
 import Channel from "@spectrum-icons/workflow/Channel";
 import Alert from "@spectrum-icons/workflow/Alert";
@@ -18,8 +18,8 @@ import { MaticoRawSpecEditor } from "Components/MaticoEditor/Panes/MaticoRawSpec
 import { MaticoStateViewer } from "Components/MaticoEditor/Panes/MaticoStateViewer";
 import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
-import {useErrors} from "Hooks/useErrors";
-import {ErrorPanel} from "../ErrorPanel/ErrorPanel";
+import { useErrors } from "Hooks/useErrors";
+import { ErrorPanel } from "../ErrorPanel/ErrorPanel";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -27,15 +27,18 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     const [showPanel, setShowPanel] = useState<boolean>(false);
     const handleShowPanel = () => setShowPanel(true);
     const handleHidePanel = () => setShowPanel(false);
-    const {errors} = useErrors()
+    const { errors } = useErrors();
 
     return (
-        <div>
+        <Flex direction="column" height="100%">
             <View
                 position="relative"
-                maxHeight="100vh"
+                height="calc(100% - 3em)"
                 overflow="visible"
                 paddingTop="3em"
+                UNSAFE_style={{
+                    boxSizing: "border-box"
+                }}
             >
                 <Tabs
                     aria-labelledby="label-3"
@@ -49,14 +52,16 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                         <Item key="datasets">
                             <Data size="L" />
                         </Item>
-                        <Item key="dataviews">
-                            <Curate size="L" />
-                        </Item>
                         <Item key="state">
                             <Channel size="L" />
                         </Item>
                         <Item key="errors">
-                          <Alert color={errors.length > 0 ? 'notice' : 'positive'} size="L" />
+                            <Alert
+                                color={
+                                    errors.length > 0 ? "notice" : "positive"
+                                }
+                                size="L"
+                            />
                         </Item>
                         <Item key="spec">
                             <DocumentOutline size="L" />
@@ -65,8 +70,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                     <View
                         position="absolute"
                         left="100%"
-                        top="3em"
-                        height="calc(100vh - 3em)"
+                        height="100%"
                         overflow="hidden"
                         minWidth={`20em`}
                         zIndex={500}
@@ -106,11 +110,8 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                     <Item key="state">
                                         <MaticoStateViewer />
                                     </Item>
-                                    <Item key="dataviews">
-                                        <p>Data views, coming soon...</p>
-                                    </Item>
                                     <Item key="errors">
-                                      <ErrorPanel />
+                                        <ErrorPanel />
                                     </Item>
                                 </TabPanels>
                                 <Button
@@ -133,6 +134,6 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                     </View>
                 </Tabs>
             </View>
-        </div>
+        </Flex>
     );
 };

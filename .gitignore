@@ -2,6 +2,7 @@ target
 node_modules
 dist/
 .cache
+.DS_Store
 
 .yarn/*
 !.yarn/cache
@@ -15,5 +16,7 @@ dist/
 .netlify
 matico_charts/package-lock.json
 .vscode/settings.json
+.idea/
 matico_spec/bindings
-matico_common
+
+bindings

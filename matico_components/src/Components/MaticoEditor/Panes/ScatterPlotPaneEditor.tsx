@@ -40,7 +40,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
     };
 
     const dataset: DatasetSummary = useMaticoSelector(
-        (state) => state.datasets.datasets[scatterplotPane?.dataset.name]
+        (state) => state.datasets.datasets[scatterplotPane?.dataset?.name]
     );
 
     if (!scatterplotPane) {
@@ -73,7 +73,7 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
             </CollapsibleSection>
             <CollapsibleSection title="Data Source" isOpen={true}>
                 <DatasetSelector
-                    selectedDataset={scatterplotPane?.dataset.name}
+                    selectedDataset={scatterplotPane?.dataset?.name}
                     onDatasetSelected={updateDataset}
                 />
                 {dataset ? (
@@ -99,53 +99,61 @@ export const ScatterplotPaneEditor: React.FC<PaneEditorProps> = ({
                     <Text>Select a dataset to see column options.</Text>
                 )}
             </CollapsibleSection>
-            <CollapsibleSection title="Chart Styles" isOpen={true}>
-                <SliderVariableEditor
-                    label="Point Radius"
-                    style={scatterplotPane?.dotSize}
-                    datasetName={dataset.name}
-                    columns={dataset.columns}
-                    onUpdateValue={(dotSize) => updatePane({ dotSize })}
-                    sliderMin={0}
-                    sliderMax={2000}
-                />
+            {dataset && (
+                <>
+                    <CollapsibleSection title="Chart Styles" isOpen={true}>
+                        <SliderVariableEditor
+                            label="Point Radius"
+                            style={scatterplotPane?.dotSize}
+                            datasetName={dataset?.name}
+                            columns={dataset?.columns}
+                            onUpdateValue={(dotSize) => updatePane({ dotSize })}
+                            sliderMin={0}
+                            sliderMax={10}
+                        />
 
-                <ColorVariableEditor
-                    label="Dot Color"
-                    datasetName={scatterplotPane?.dataset.name}
-                    style={scatterplotPane?.dotColor}
-                    onUpdateStyle={(dotColor) => updatePane({ dotColor })}
-                    columns={dataset.columns}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Interaction" isOpen={true}>
-                {dataset ? (
-                    <>
-                        <DatasetColumnSelector
-                            label="X Column"
-                            datasetName={scatterplotPane.dataset.name}
-                            selectedColumn={scatterplotPane.xColumn}
-                            onColumnSelected={(xColumn) =>
-                                updatePane({ xColumn: xColumn.name })
+                        <ColorVariableEditor
+                            label="Dot Color"
+                            datasetName={scatterplotPane?.dataset?.name}
+                            style={scatterplotPane?.dotColor}
+                            onUpdateStyle={(dotColor) =>
+                                updatePane({ dotColor })
                             }
+                            columns={dataset.columns}
                         />
-                        <DatasetColumnSelector
-                            label="Y Column"
-                            datasetName={scatterplotPane.dataset.name}
-                            selectedColumn={scatterplotPane.yColumn}
-                            onColumnSelected={(yColumn) =>
-                                updatePane({ yColumn: yColumn.name })
-                            }
-                        />
-                    </>
-                ) : (
-                    <Text>Select a dataset to see interaction options.</Text>
-                )}
-            </CollapsibleSection>
-            <LabelEditor
-                labels={scatterplotPane?.labels}
-                onUpdateLabels={updateLabels}
-            />
+                    </CollapsibleSection>
+                    <CollapsibleSection title="Interaction" isOpen={true}>
+                        {dataset ? (
+                            <>
+                                <DatasetColumnSelector
+                                    label="X Column"
+                                    datasetName={scatterplotPane.dataset?.name}
+                                    selectedColumn={scatterplotPane.xColumn}
+                                    onColumnSelected={(xColumn) =>
+                                        updatePane({ xColumn: xColumn.name })
+                                    }
+                                />
+                                <DatasetColumnSelector
+                                    label="Y Column"
+                                    datasetName={scatterplotPane.dataset?.name}
+                                    selectedColumn={scatterplotPane.yColumn}
+                                    onColumnSelected={(yColumn) =>
+                                        updatePane({ yColumn: yColumn.name })
+                                    }
+                                />
+                            </>
+                        ) : (
+                            <Text>
+                                Select a dataset to see interaction options.
+                            </Text>
+                        )}
+                    </CollapsibleSection>
+                    <LabelEditor
+                        labels={scatterplotPane?.labels}
+                        onUpdateLabels={updateLabels}
+                    />
+                </>
+            )}
         </View>
     );
 };

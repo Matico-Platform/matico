@@ -9,7 +9,6 @@ import {
 import { Page } from "../types/Pagination";
 import useSWR from "swr";
 
-
 export enum SourceType {
   API = "api",
   Dataset = "dataset",
@@ -32,11 +31,14 @@ export const tileUrlForSource = (source: Source | undefined) => {
     case SourceType.Dataset:
       return `${baseURL}/data/dataset/${source.id}/tiles/{z}/{x}/{y}`;
     case SourceType.API:
-      return `${baseURL}/data/api/${
-        source.id
-      }/tiles/{z}/{x}/{y}?${Object.keys(source.parameters!)
-        .map((key: string) =>
-          `${encodeURIComponent(key)}=${encodeURIComponent(source.parameters![key])}`
+      return `${baseURL}/data/api/${source.id}/tiles/{z}/{x}/{y}?${Object.keys(
+        source.parameters!
+      )
+        .map(
+          (key: string) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(
+              source.parameters![key]
+            )}`
         )
         .join("&")}`;
     case SourceType.Query:
@@ -46,19 +48,18 @@ export const tileUrlForSource = (source: Source | undefined) => {
   }
 };
 
-export const urlForSource = (source: Source | null, extension: String ="") => {
-  if(!source) return ""
+export const urlForSource = (source: Source | null, extension: String = "") => {
+  if (!source) return "";
   switch (source?.type) {
     case SourceType.Dataset:
       return `/data/dataset/${source?.id}${extension}`;
     case SourceType.API:
       return `/data/api/${source?.id}${extension}`;
     case SourceType.Query:
-      if(source.query){
+      if (source.query) {
         return `/data/query${extension}?q=${source.query}`;
-      }
-      else{
-        return null
+      } else {
+        return null;
       }
     default:
       return null;
@@ -66,7 +67,7 @@ export const urlForSource = (source: Source | null, extension: String ="") => {
 };
 
 const a = axios.create({
-  baseURL:  process.env.NEXT_PUBLIC_SERVER_URL,
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -192,7 +193,6 @@ export async function updateFeature(
   feature_id: string | number,
   update: any
 ) {
-
   return a.put(`/data/dataset/${dataset_id}/feature/${feature_id}`, update);
 }
 
@@ -201,9 +201,11 @@ export async function getUniqueColumnValues(
   column_name: string
 ) {
   return a.get(
-    `/datasets/${dataset_id}/columns/${column_name}/stats?stat=${JSON.stringify({
-      ValueCounts: {},
-    })}`
+    `/datasets/${dataset_id}/columns/${column_name}/stats?stat=${JSON.stringify(
+      {
+        ValueCounts: {},
+      }
+    )}`
   );
 }
 
@@ -222,7 +224,6 @@ export async function getApis() {
   return a.get("/apis");
 }
 
-
 // not sure if run is the right verb here, but
 // this endpoint isn't restful anyway
 export async function runQuery(
@@ -234,7 +235,7 @@ export async function runQuery(
 
 export const useSWRAPI = (endpoint: string | null, opts?: any) => {
   const { params, ...swrOpts } = opts;
-  console.log('redoing this')
+  console.log("redoing this");
   return useSWR(
     endpoint ? [endpoint, params] : null,
     (url: string) => a.get(url, { params }).then((res) => res.data),

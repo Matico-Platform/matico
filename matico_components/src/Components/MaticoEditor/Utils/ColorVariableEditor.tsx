@@ -27,7 +27,7 @@ export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
     const isDataDriven = style.hasOwnProperty("variable");
     const toggleDataDriven = () => {
         if (isDataDriven) {
-            onUpdateStyle({rgb:[255, 255, 0]});
+            onUpdateStyle({ rgb: [255, 255, 0] });
         } else {
             onUpdateStyle({
                 variable: defaultColumn.name,

@@ -1,6 +1,8 @@
 import DeckGL from "@deck.gl/react";
 import { MVTLayer } from "@deck.gl/geo-layers";
-import { StaticMap, ViewportProps, WebMercatorViewport } from "react-map-gl"; import { useDatasetColumn } from "../hooks/useDatasetColumns"; import { Source, SourceType, tileUrlForSource } from "../utils/api";
+import { StaticMap, ViewportProps, WebMercatorViewport } from "react-map-gl";
+import { useDatasetColumn } from "../hooks/useDatasetColumns";
+import { Source, SourceType, tileUrlForSource } from "../utils/api";
 import { useColumnStat } from "../hooks/useColumnStat";
 import chroma from "chroma-js";
 import { useEffect, useState } from "react";
@@ -22,14 +24,11 @@ const INITIAL_VIEW_STATE = {
 };
 
 const binsForColType = (type: string | undefined | null) => {
-
-  const categories = 
-    {type:"valueCounts"}
-  ;
+  const categories = { type: "valueCounts" };
   const quantiles = {
-    type:"quantiles",
-      noBins: 8,
-      treat_null_as_zero: true,
+    type: "quantiles",
+    noBins: 8,
+    treat_null_as_zero: true,
   };
 
   switch (type) {
@@ -58,7 +57,7 @@ const styleForCol = (
     getFillColor: [226, 125, 96, 200],
     getBorderColor: [200, 200, 200],
     getPointRadius: 10,
-    pointRadiusUnits:'pixels',
+    pointRadiusUnits: "pixels",
     stroked: true,
     pickable: true,
     autoHighlight: true,

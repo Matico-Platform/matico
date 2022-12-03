@@ -3,11 +3,9 @@ import { Story, Meta } from "@storybook/react";
 
 import MaticoChart from "../components/MaticoChart";
 import { ChartSpaceSpec } from "../components/types";
-import { Stats } from '@visx/mock-data/lib/generators/genStats';
 import { BoxPlotStats } from "../components/types";
 
 import {
-  Sample2dData,
   SampleCategoricalData,
   SampleHistogramData,
   SampleDistData,
@@ -16,9 +14,13 @@ import {
   SampleDistData4,
   SampleDistData5,
   SampleLineData,
+  Sample2dData,
 } from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
+
+import * as scale from "@visx/scale";
+import { nicelyFormatNumber } from "../Utils";
 
 export default {
   title: "Matico/Ordinal Charts",
@@ -39,6 +41,43 @@ const Template: Story<ChartSpaceSpec> = (args) => (
   </div>
 );
 
+export const LineChart = Template.bind({});
+LineChart.args = {
+  layers: [
+    {
+      type: "line",
+      lineColor: "steelblue",
+      lineWidth: 0.25,
+    },
+  ],
+  xCol: "date",
+  xAxis: {
+    scaleType: "linear",
+    display: true,
+    position: "bottom",
+    tickFormatFunc: (d) => {
+      const date = new Date(d);
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const year = date.getFullYear().toString().slice(-2);
+      return `${month}/${day}/${year}`;
+    },
+  },
+  xLabel: "x Label here",
+  yAxis: {
+    scaleType: "linear",
+    display: true,
+    position: "left",
+  },
+  yCol: "value",
+  yLabel: "y Label here",
+  title: "My  Scatterplot",
+  grid: {
+    rows: true,
+    columns: false,
+  },
+  data: SampleLineData,
+};
 
 export const HorizontalHistogram = Template.bind({});
 HorizontalHistogram.args = {
@@ -54,13 +93,13 @@ HorizontalHistogram.args = {
   title: "My Histogram",
   grid: {
     rows: true,
-    columns: false
+    columns: false,
   },
   layers: [
     {
       type: "bar",
       color: "steelblue",
-      horizontal: true
+      horizontal: true,
     },
   ],
   data: SampleHistogramData.binned,
@@ -69,25 +108,25 @@ HorizontalHistogram.args = {
 export const HorizontalOrdinal = Template.bind({});
 HorizontalOrdinal.args = {
   yCol: "label",
-  yExtent: SampleCategoricalData.map(f => f.label), // aka keys
+  yExtent: SampleCategoricalData.map((f) => f.label), // aka keys
   yAxis: {
     scaleType: "band",
-    position: "left"
+    position: "left",
   },
   xAxis: {
     scaleType: "linear",
     position: "bottom",
   },
-  xExtent: [0, Math.max(...SampleCategoricalData.map(f => f.count))],
+  xExtent: [0, Math.max(...SampleCategoricalData.map((f) => f.count))],
   xCol: "count",
-  xLabel: "Votes for Emoji to Win Best Actor", 
+  xLabel: "Votes for Emoji to Win Best Actor",
   title: "Emojis per Capita",
   layers: [
     {
       type: "bar",
       color: "teal",
-      padding: .5,
-      horizontal: true
+      padding: 0.5,
+      horizontal: true,
     },
   ],
   data: SampleCategoricalData,

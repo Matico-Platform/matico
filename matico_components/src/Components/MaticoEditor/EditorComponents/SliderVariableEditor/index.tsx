@@ -1,7 +1,4 @@
-import { SliderVariableEditorProps } from './types';
-import { SliderVariableEditor } from './SliderVariableEditor';
+import { SliderVariableEditorProps } from "./types";
+import { SliderVariableEditor } from "./SliderVariableEditor";
 
-export {
-    SliderVariableEditor,
-    SliderVariableEditorProps
-}
+export { SliderVariableEditor, SliderVariableEditorProps };

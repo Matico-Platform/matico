@@ -171,7 +171,6 @@ export class MaticoRemoteApi implements Dataset {
         noBins: number,
         filters?: Filter[]
     ) {
-        console.log(`No bins is ${noBins} `);
         const statParams = {
             stat: JSON.stringify({
                 Histogram: { no_bins: noBins, treat_null_as_zero: false }

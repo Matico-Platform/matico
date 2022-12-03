@@ -5,19 +5,22 @@ import {outDir,pkg,options} from './options';
 esbuild
   .build({
     ...options,
+    sourcemap:false,
     outfile: `${outDir}/index.js`,
-    minify: false,
+    format:"esm",
+    minify: true,
     external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)]
   })
   .catch(() => process.exit(1));
 
 // minified with bundled dependencies for direct use in the browser
 // expected to be used via <script type="module">
-esbuild
-  .build({
-    ...options,
-    outfile: `${outDir}/bundle.js`,
-    minify: true,
-    external: ["styled-components"]
-  })
-  .catch(() => process.exit(1));
+// esbuild
+//   .build({
+//     ...options,
+//     outfile: `${outDir}/bundle.js`,
+//     minify: true,
+//     format:'cjs',
+//     external: ["styled-components"]
+//   })
+//   .catch(() => process.exit(1));

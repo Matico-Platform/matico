@@ -1,13 +1,16 @@
-use crate::{AutoComplete, Control, HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane};
+use crate::{
+    AutoComplete, Control, DateTimeSliderPane, HistogramPane, Layout, MapPane, PieChartPane,
+    ScatterplotPane, StaticMapPane,
+};
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use uuid::Uuid;
 use validator::{Validate, ValidationErrors};
 use wasm_bindgen::prelude::*;
-use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct PaneDetails {
     pub id: String,
@@ -15,12 +18,12 @@ pub struct PaneDetails {
     pub position: PanePosition,
 }
 
-impl Default for PaneDetails{
-    fn default()->Self{
-        Self{
-            id:Uuid::new_v4().to_string(),
-            pane_id:"".into(),
-            position: Default::default()
+impl Default for PaneDetails {
+    fn default() -> Self {
+        Self {
+            id: Uuid::new_v4().to_string(),
+            pane_id: "".into(),
+            position: Default::default(),
         }
     }
 }
@@ -36,6 +39,8 @@ pub enum PaneRef {
     Scatterplot(PaneDetails),
     PieChart(PaneDetails),
     Controls(PaneDetails),
+    StaticMap(PaneDetails),
+    DateTimeSlider(PaneDetails),
 }
 
 impl PaneRef {
@@ -48,6 +53,8 @@ impl PaneRef {
             PaneRef::Scatterplot(s) => &s.id,
             PaneRef::PieChart(s) => &s.id,
             PaneRef::Controls(s) => &s.id,
+            PaneRef::StaticMap(s) => &s.id,
+            PaneRef::DateTimeSlider(s) => &s.id,
         }
     }
 }
@@ -59,6 +66,10 @@ impl TryFrom<(&str, &str)> for PaneRef {
         let pane_id: String = params.1.into();
         match params.0 {
             "map" => Ok(PaneRef::Map(PaneDetails {
+                pane_id,
+                ..Default::default()
+            })),
+            "staticMap" => Ok(PaneRef::StaticMap(PaneDetails {
                 pane_id,
                 ..Default::default()
             })),
@@ -82,6 +93,10 @@ impl TryFrom<(&str, &str)> for PaneRef {
                 pane_id,
                 ..Default::default()
             })),
+            "dateTimeSlider" => Ok(PaneRef::DateTimeSlider(PaneDetails {
+                pane_id,
+                ..Default::default()
+            })),
             "controls" => Ok(PaneRef::Controls(PaneDetails {
                 pane_id,
                 ..Default::default()
@@ -94,6 +109,10 @@ impl From<Pane> for PaneRef {
     fn from(pane: Pane) -> Self {
         match pane {
             Pane::Map(map) => PaneRef::Map(PaneDetails {
+                pane_id: map.id,
+                ..Default::default()
+            }),
+            Pane::StaticMap(map) => PaneRef::StaticMap(PaneDetails {
                 pane_id: map.id,
                 ..Default::default()
             }),
@@ -121,6 +140,10 @@ impl From<Pane> for PaneRef {
                 pane_id: controls.id,
                 ..Default::default()
             }),
+            Pane::DateTimeSlider(slider) => PaneRef::DateTimeSlider(PaneDetails {
+                pane_id: slider.id,
+                ..Default::default()
+            }),
         }
     }
 }
@@ -130,12 +153,14 @@ impl From<Pane> for PaneRef {
 #[ts(export)]
 pub enum Pane {
     Map(MapPane),
+    StaticMap(StaticMapPane),
     Text(TextPane),
     Container(ContainerPane),
     Histogram(HistogramPane),
     Scatterplot(ScatterplotPane),
     PieChart(PieChartPane),
     Controls(ControlsPane),
+    DateTimeSlider(DateTimeSliderPane),
 }
 
 impl Default for Pane {
@@ -155,6 +180,9 @@ impl Validate for Pane {
         };
         match self {
             Self::Map(map) => ValidationErrors::merge(result, "MapPane", map.validate()),
+            Self::StaticMap(map) => {
+                ValidationErrors::merge(result, "StaticMapPane", map.validate())
+            }
             Self::Text(text) => ValidationErrors::merge(result, "TextPane", text.validate()),
             Self::Container(container) => {
                 ValidationErrors::merge(result, "ContainerPane", container.validate())
@@ -170,6 +198,9 @@ impl Validate for Pane {
             }
             Self::Controls(controls) => {
                 ValidationErrors::merge(result, "ScatterplotPane", controls.validate())
+            }
+            Self::DateTimeSlider(slider) => {
+                ValidationErrors::merge(result, "DateTimeSlider", slider.validate())
             }
         }
     }

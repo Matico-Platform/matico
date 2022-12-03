@@ -9,6 +9,7 @@
     "noImplicitAny": true,
     "outDir": "./dist",
     "preserveConstEnums": true,
+    "removeComments": false,
     "baseUrl": "./src/",
     "allowSyntheticDefaultImports":true,
     "target": "es6",

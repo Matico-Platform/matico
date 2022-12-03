@@ -12,11 +12,8 @@ fi
 
 (cd matico_common && cargo test export_bindings)
 
-(cd matico_compute/matico_analysis && cargo test)
-
 cp -r matico_spec/bindings matico_types/spec
 cp  matico_common/bindings/* matico_types/spec/
-cp  matico_compute/matico_analysis/bindings/* matico_types/spec/
 
 FILES="matico_types/spec/*"
 

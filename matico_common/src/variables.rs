@@ -7,7 +7,8 @@ use validator::{Validate, ValidationErrors};
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Variable {
-    var: String,
+    var_id: String,
+    property: Option<String>,
     bind: Option<bool>,
 }
 

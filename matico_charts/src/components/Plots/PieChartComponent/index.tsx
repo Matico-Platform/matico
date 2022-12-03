@@ -1,20 +1,20 @@
 //@ts-ignore
-import React from 'react';
-import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
-import { PieSpec } from '../../types';
+import React from "react";
+import Pie, { ProvidedProps, PieArcDatum } from "@visx/shape/lib/shapes/Pie";
+import { PieSpec, PlotLayersProperties } from "../../types";
 
-export const PieChartComponent = (props: PieSpec) => {
+export const PieChartComponent = (props: PieSpec & PlotLayersProperties) => {
   const {
-    data=[],
-    valueAccessor=()=>0,
-    reverseSort=false,
-    labelAccessor=()=>'',
-    color=()=>'gray',
+    data = [],
+    valueAccessor = () => 0,
+    reverseSort = false,
+    labelAccessor = () => "",
+    color = () => "gray",
     padding = 0,
     innerRadius = 0,
     onClick = () => {},
-    yMax=0,
-    xMax=0,
+    yMax = 0,
+    xMax = 0,
   } = {
     ...props,
     ...props.layer,
@@ -23,7 +23,7 @@ export const PieChartComponent = (props: PieSpec) => {
     <Pie
       data={data}
       pieValue={valueAccessor}
-      pieSortValues={reverseSort ? ()=>-1 : ()=>1}
+      pieSortValues={reverseSort ? () => -1 : () => 1}
       outerRadius={(Math.min(xMax, yMax) / 2) * (1 - padding)}
       innerRadius={(Math.min(xMax, yMax) / 2) * (1 - padding) * innerRadius}
     >

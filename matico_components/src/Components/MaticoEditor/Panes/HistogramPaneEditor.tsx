@@ -45,8 +45,6 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         (state) => state.datasets.datasets[histogramPane.dataset.name]
     );
 
-    const { columns } = dataset;
-
     if (!histogramPane) {
         return (
             <View>
@@ -55,6 +53,7 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         );
     }
 
+    const columns = dataset?.columns;
     return (
         <Flex direction="column">
             <CollapsibleSection title="Basic" isOpen={true}>
@@ -80,12 +79,14 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     selectedDataset={histogramPane.dataset.name}
                     onDatasetSelected={updateDataset}
                 />
-                <DatasetColumnSelector
-                    datasetName={histogramPane.dataset.name}
-                    selectedColumn={histogramPane.column}
-                    label="Column"
-                    onColumnSelected={(column) => updateColumn(column.name)}
-                />
+                {dataset && (
+                    <DatasetColumnSelector
+                        datasetName={histogramPane.dataset.name}
+                        selectedColumn={histogramPane.column}
+                        label="Column"
+                        onColumnSelected={(column) => updateColumn(column.name)}
+                    />
+                )}
             </CollapsibleSection>
             {dataset && (
                 <>
@@ -107,7 +108,6 @@ export const HistogramPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             columns={columns}
                             onUpdateStyle={(color) => updatePane({ color })}
                         />
-                        <Divider />
                     </CollapsibleSection>
                     <LabelEditor
                         labels={histogramPane.labels}

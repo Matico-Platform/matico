@@ -9,12 +9,19 @@ import {
   scaleLog,
   scalePower,
   scaleSqrt,
+  scaleTime,
 } from "@visx/scale";
 import { AxisTop, AxisRight, AxisBottom, AxisLeft } from "@visx/axis";
 import debounce from "lodash/debounce";
 import { localPoint } from "@visx/event";
 import PlotLayers from "./PlotLayers";
-import { isBool, isFunc, isObj, getBoolOrProperty, nicelyFormatNumber } from "../../Utils";
+import {
+  isBool,
+  isFunc,
+  isObj,
+  getBoolOrProperty,
+  nicelyFormatNumber,
+} from "../../Utils";
 
 // types
 import { EventType } from "@visx/event/lib/types";
@@ -29,6 +36,7 @@ const scaleMapping = {
   power: scalePower,
   sqrt: scaleSqrt,
   band: scaleBand,
+  time: scaleTime,
 };
 
 const brushInteractionMapping = {
@@ -85,15 +93,39 @@ export default function ContinuousChartspace({
     ? (yCol as AccessorFunction)
     : (d: DataRow) => d[yCol as string];
 
-  const xBounds = xExtent
-    ? xExtent
-    : //@ts-ignore
-      [Math.min(...data.map(xAccessor)), Math.max(...data.map(xAccessor))];
+  let xBounds: number[];
+  if (xExtent) {
+    xBounds = xExtent;
+  } else if (data) {
+    const xData = data.map(xAccessor);
+    xBounds = [Math.min(...xData), Math.max(...xData)];
+  } else {
+    const layerExtents = layers.map((l) => {
+      const xData = l.data?.map(xAccessor);
+      return [Math.min(...xData!), Math.max(...xData!)];
+    });
+    xBounds = [
+      Math.min(...layerExtents.map((le) => le[0])),
+      Math.max(...layerExtents.map((le) => le[1])),
+    ];
+  }
 
-  const yBounds = yExtent
-    ? yExtent
-    : //@ts-ignore
-      [Math.min(...data.map(yAccessor)), Math.max(...data.map(yAccessor))];
+  let yBounds: number[];
+  if (yExtent) {
+    yBounds = yExtent;
+  } else if (data) {
+    const yData = data.map(yAccessor);
+    yBounds = [Math.min(...yData), Math.max(...yData)];
+  } else {
+    const layerExtents = layers.map((l) => {
+      const yData = l.data?.map(yAccessor);
+      return [Math.min(...yData!), Math.max(...yData!)];
+    });
+    yBounds = [
+      Math.min(...layerExtents.map((le) => le[0])),
+      Math.max(...layerExtents.map((le) => le[1])),
+    ];
+  }
 
   // Axis and grid definition
   const XAxis = xAxisPos === "bottom" ? AxisBottom : AxisTop;
@@ -235,7 +267,7 @@ export default function ContinuousChartspace({
     if (val < margin.top) return margin.top;
     return val;
   };
-  
+
   return (
     <svg width={width} height={height} ref={svgRef}>
       <rect
@@ -288,11 +320,10 @@ export default function ContinuousChartspace({
         )}
 
         <PlotLayers
-        
-        data={data}
-        layers={layers}
-        xMax={xMax}
-        yMax={yMax}
+          data={data}
+          layers={layers}
+          xMax={xMax}
+          yMax={yMax}
           {...{
             xScale,
             yScale,
@@ -309,7 +340,7 @@ export default function ContinuousChartspace({
             left={yAxisPos === "right" ? width - margin.left - margin.right : 0}
             scale={yScale}
             //@ts-ignore
-            tickFormat={tickFormatFunc}
+            tickFormat={yAxis?.tickFormatFunc || tickFormatFunc}
             label={yLabel || ""}
           />
         )}
@@ -318,8 +349,8 @@ export default function ContinuousChartspace({
             // orientation="bottom"
             top={
               xAxisPos === "bottom" ? height - margin.top - margin.bottom : 0
-            }//@ts-ignore
-            tickFormat={tickFormatFunc}
+            } //@ts-ignore
+            tickFormat={xAxis?.tickFormatFunc || tickFormatFunc}
             scale={xScale}
             label={xLabel || ""}
           />

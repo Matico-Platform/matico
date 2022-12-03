@@ -68,7 +68,6 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                                     );
                                 break;
                             case "duplicate":
-                                console.log("NOT IMPLEMENTED YER");
                                 break;
                             case "reorder-forward":
                                 raisePane();
@@ -77,7 +76,6 @@ export const ControlActionBar: React.FC<ControlActionBarProps> = ({
                                 lowerPane();
                                 break;
                             case "move":
-                                console.log("MOVING NOT YET IMPLEMENTED");
                                 break;
                             default:
                                 return;
