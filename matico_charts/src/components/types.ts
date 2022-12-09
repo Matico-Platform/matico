@@ -1,5 +1,5 @@
-import { Scale } from "@visx/brush/lib/types";
 import { ContinuousDomain } from "@visx/scale";
+import { BinData, BoxPlot } from "@visx/mock-data/lib/generators/genStats";
 //layout
 export type MarginSpec = {
   top: number;
@@ -59,8 +59,8 @@ export interface ErrorSpec {
 
 // layers
 export interface BaseLayerSpec {
-  type: "scatter" | "line" | "bar" | "pie" | "map";
-  data?: DataCollection;
+  type: "scatter" | "line" | "bar" | "pie" | "dist";
+  data?: DataCollection | BoxPlotStats[];
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
   yError?: ErrorSpec;
@@ -95,6 +95,7 @@ export interface StaticMapSpec extends BaseLayerSpec {
 }
 
 export interface ScatterSpec extends BaseLayerSpec {
+  data: DataCollection;
   color?: ColorFunction | ColorOutput;
   scale?: number | SizeFunction;
   shape?: string | ShapeFunction;
@@ -104,25 +105,48 @@ export interface ScatterSpec extends BaseLayerSpec {
 }
 
 export interface LineSpec extends BaseLayerSpec {
+  data: DataCollection;
   lineFunction?: LineFunction;
   lineColor?: string;
   lineWidth?: number;
 }
 
 export interface BarSpec extends BaseLayerSpec {
+  data: DataCollection;
   padding?: number;
 }
 
 export interface PieSpec extends BaseLayerSpec {
+  data: DataCollection;
   reverseSort?: boolean;
   innerRadius?: number;
   padding?: number;
 }
 
 export interface HeatmapSpec extends BaseLayerSpec {
+  data: DataCollection;
   xBins: number;
   yBins: number;
   binnedData?: DataCollection[];
+}
+
+export interface DistributionSpec extends BaseLayerSpec {
+  data: BoxPlotStats[];
+  showBoxPlot?: boolean;
+  boxPlotStroke?: ColorOutput;
+  boxPlotFill?: ColorOutput;
+  showViolinPlot?: boolean;
+  violinPlotStroke?: ColorOutput;
+  violinPlotFill?: ColorOutput;
+  horizontal?: boolean;
+  tooltipOn?: boolean; //TooltipSpec
+  tooltipShouldDetectBounds?: boolean;
+  renderTooltipInPortal?: boolean;
+}
+
+export interface BoxPlotStats {
+  boxPlot: BoxPlot;
+  binData?: BinData[];
 }
 
 export type LayerSpec =
@@ -131,7 +155,7 @@ export type LayerSpec =
   | BarSpec
   | PieSpec
   | HeatmapSpec
-  | StaticMapSpec;
+  | DistributionSpec;
 
 // layouts
 export type OverwriteProperty = { [property: string]: any };

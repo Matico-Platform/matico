@@ -2,7 +2,7 @@ import { ScatterplotComponent } from "./ScatterplotComponent";
 import { BarComponent } from "./BarComponent";
 import { LineComponent } from "./LineComponent";
 import { PieChartComponent } from "./PieChartComponent";
-import { StaticMapComponent } from "./StaticMapComponent";
+import { DistributionPlotComponent } from "./DistributionPlotComponent";
 // import { HeatmapComponent } from './HeatmapComponent';
 
 const PlotComponentMapping = {
@@ -10,7 +10,7 @@ const PlotComponentMapping = {
   line: LineComponent,
   bar: BarComponent,
   pie: PieChartComponent,
-  map: StaticMapComponent,
+  dist: DistributionPlotComponent,
   // 'heatmap': HeatmapComponent,
 };
 
@@ -19,7 +19,7 @@ export {
   ScatterplotComponent,
   LineComponent,
   PieChartComponent,
-  StaticMapComponent,
+  DistributionPlotComponent,
   // HeatmapComponent,
   PlotComponentMapping,
 };

@@ -1,11 +1,7 @@
 import { linearRegression, linearRegressionLine } from "simple-statistics";
+import genStats, { Stats } from "@visx/mock-data/lib/generators/genStats";
+import { getSeededRandom, getRandomNormal } from "@visx/mock-data";
 import * as d3 from "d3";
-import mapdata from "./sample_data/Counties_In_California.json";
-import mapdata2 from "./sample_data/ILcounty_medinc.json";
-import mapdata3 from "./sample_data/samplepoint.json";
-import mapdata4 from "./sample_data/sampleline.json";
-import mapdata5 from "./sample_data/samplerectangle-c.json";
-import mapdata6 from "./sample_data/samplelinepolymix.json";
 
 // samplepoly2 has the coordinates drawn counterclockwise and
 // samplepoly3 has coordinates drawn clockwise
@@ -53,37 +49,8 @@ export const getCategoricalData = (n) => {
   return returnObj;
 };
 
-export const getMapData = (i) => {
-  if (i === 1) {
-    console.log("mapdata:", mapdata); // California counties
-    return mapdata.features;
-  } else if (i === 2) {
-    console.log("mapdata2:", mapdata2); // Illinois counties
-    return mapdata2.features;
-  } else if (i === 3) {
-    console.log("mapdata3:", mapdata3); // Geojson with only points
-    return mapdata3.features;
-  } else if (i === 4) {
-    console.log("mapdata4:", mapdata4); // Geojson with line strings
-    return mapdata4.features;
-  } else if (i === 5) {
-    console.log("mapdata5:", mapdata5); // Geojson with a rectangle (clockwise coordinates work)
-    return mapdata5.features;
-  } else if (i === 6) {
-    console.log("mapdata6:", mapdata6);
-    return mapdata6.features;
-  }
-};
-
-export const getLineChartData = (n) => {
-  let date = new Date("1970-01-01");
-  let returnObj = [];
-  for (let i = 0; i < n; i++) {
-    returnObj.push({
-      date: new Date(date),
-      value: i + Math.random() * 50,
-    });
-    date.setDate(date.getDate() + 1);
-  }
-  return returnObj;
+export const getDistributionData = (n) => {
+  const seededRandom = getSeededRandom(0.1);
+  const randomNormal = getRandomNormal.source(getSeededRandom(0.789))(4, 3);
+  return genStats(n, randomNormal, () => 10 * seededRandom());
 };

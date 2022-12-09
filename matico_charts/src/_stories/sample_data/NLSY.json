@@ -1,0 +1,56 @@
+[
+    {"boxPlot": {
+        "x": "Male Income 2005",
+        "min": 0.063,
+        "max": 147.000,
+        "median": 50.000,
+        "firstQuartile": 32.000,
+        "thirdQuartile": 78.000,
+        "outliers": [
+            150.432,186.135,150,348.204,261.763,
+            154.541,164.307,180.733,388.725,196.424,
+            163.172,169.541,176.354,183.306,170.247,
+            150,183.467,394.058,180.124,248.713,
+            268.384,209.138,257.286,171.551,368.302,
+            153.334,155.867,192.896,157.117,162.919,
+            185.95,220.904,167.252,357.31,194.031,
+            162.733,180.621,359.118,150,282.588,
+            183.223,268.323,152.84,150,150.49,
+            703.637,171.428,150,159.168,189.21,
+            263.445,167.803,169.884,157.957,176.431,
+            519.34,150,155.485,444.624,206.869,
+            222.924,150,162.66,185.662,211.052,
+            202.617,194.757,355.767,209.4,197.062,
+            163.271,344.856,188.255,410.008,215.765,
+            200.977,196.68,150,198.032,338.101,
+            150,158.73
+        ]
+    },
+    "binData": [{"value":5,"count":64},{"value":15,"count":92},{"value":25,"count":151},{"value":35,"count":199},{"value":45,"count":172},{"value":55,"count":148},{"value":65,"count":98},{"value":75,"count":88},{"value":85,"count":63},{"value":95,"count":54},{"value":105,"count":21},{"value":115,"count":28},{"value":125,"count":26},{"value":135,"count":14},{"value":145,"count":15},{"value":155,"count":11},{"value":165,"count":10},{"value":175,"count":5},{"value":185,"count":11},{"value":195,"count":7},{"value":205,"count":5},{"value":215,"count":2},{"value":225,"count":2},{"value":235,"count":0},{"value":245,"count":1},{"value":255,"count":1},{"value":265,"count":4},{"value":275,"count":0},{"value":285,"count":1},{"value":295,"count":0},{"value":305,"count":0},{"value":315,"count":0},{"value":325,"count":0},{"value":335,"count":1},{"value":345,"count":2},{"value":355,"count":3},{"value":365,"count":1},{"value":375,"count":0},{"value":385,"count":1},{"value":395,"count":1},{"value":405,"count":0},{"value":415,"count":1},{"value":425,"count":0},{"value":435,"count":0},{"value":445,"count":1},{"value":455,"count":0},{"value":465,"count":0},{"value":475,"count":0},{"value":485,"count":0},{"value":495,"count":0},{"value":505,"count":0},{"value":515,"count":1},{"value":525,"count":0},{"value":535,"count":0},{"value":545,"count":0},{"value":555,"count":0},{"value":565,"count":0},{"value":575,"count":0},{"value":585,"count":0},{"value":595,"count":0},{"value":605,"count":0},{"value":615,"count":0},{"value":625,"count":0},{"value":635,"count":0},{"value":645,"count":0},{"value":655,"count":0},{"value":665,"count":0},{"value":675,"count":0},{"value":685,"count":0},{"value":695,"count":0},{"value":705,"count":1}]
+    },
+    {"boxPlot": {
+        "x": "Female Income 2005",
+        "min": 0.1470,
+        "max": 88.0000,
+        "median": 29.811,
+        "firstQuartile": 16.000,
+        "thirdQuartile": 45.000,
+        "outliers": [
+            253.043,175.829,95,92,102,
+            105,125,120,115,90,
+            90,150,95,120,157.28,
+            245.549,100,100,115,108.888,
+            125,188.404,110,115,104,
+            102,235.236,125,98,90,
+            166.924,110,105,138,151.083,
+            90,89,105,96,100,
+            100,110,90,99,90,
+            120,102.5,92,93,95,
+            108,98,130,90,159.193,
+            94,228.453,153.447,152.683,89,
+            100,114,102.831,161.182
+        ]
+    },
+    "binData": [{"value":2.5,"count":88},{"value":7.5,"count":100},{"value":12.5,"count":117},{"value":17.5,"count":110},{"value":22.5,"count":130},{"value":27.5,"count":140},{"value":32.5,"count":109},{"value":37.5,"count":103},{"value":42.5,"count":65},{"value":47.5,"count":55},{"value":52.5,"count":49},{"value":57.5,"count":39},{"value":62.5,"count":39},{"value":67.5,"count":23},{"value":72.5,"count":12},{"value":77.5,"count":16},{"value":82.5,"count":14},{"value":87.5,"count":14},{"value":92.5,"count":7},{"value":97.5,"count":9},{"value":102.5,"count":8},{"value":107.5,"count":5},{"value":112.5,"count":4},{"value":117.5,"count":3},{"value":122.5,"count":3},{"value":127.5,"count":1},{"value":132.5,"count":0},{"value":137.5,"count":1},{"value":142.5,"count":0},{"value":147.5,"count":1},{"value":152.5,"count":3},{"value":157.5,"count":2},{"value":162.5,"count":1},{"value":167.5,"count":1},{"value":172.5,"count":0},{"value":177.5,"count":1},{"value":182.5,"count":0},{"value":187.5,"count":1},{"value":192.5,"count":0},{"value":197.5,"count":0},{"value":202.5,"count":0},{"value":207.5,"count":0},{"value":212.5,"count":0},{"value":217.5,"count":0},{"value":222.5,"count":0},{"value":227.5,"count":1},{"value":232.5,"count":0},{"value":237.5,"count":1},{"value":242.5,"count":0},{"value":247.5,"count":1},{"value":252.5,"count":1}]
+    }
+]

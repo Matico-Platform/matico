@@ -122,7 +122,7 @@ export const getTitleOffset = (
 
 export function nicelyFormatNumber(x: number | string) {
   const val = +x;
-  if (!x || isNaN(val)) return x;
+  if (!x || isNaN(val)) return `${x}`;
   if (val < 0.0001) return val.toExponential();
   if (val < 0.01) return val.toFixed(4);
   if (val < 1) return val.toFixed(3);

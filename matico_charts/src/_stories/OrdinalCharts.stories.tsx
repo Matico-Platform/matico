@@ -3,18 +3,18 @@ import { Story, Meta } from "@storybook/react";
 
 import MaticoChart from "../components/MaticoChart";
 import { ChartSpaceSpec } from "../components/types";
+import { BoxPlotStats } from "../components/types";
 
 import {
-  SampleMapData,
-  SampleMapData2,
-  SampleMapData3,
-  SampleMapData4,
-  SampleMapData5,
-  SampleMapData6,
   SampleCategoricalData,
   SampleHistogramData,
+  SampleDistData,
+  SampleDistData2,
+  SampleDistData3,
+  SampleDistData4,
+  SampleDistData5,
+  SampleLineData,
   Sample2dData,
-  SampleLineChartData,
 } from "./SampleData";
 
 import { PieChartColors } from "./SampleStyling";
@@ -76,7 +76,7 @@ LineChart.args = {
     rows: true,
     columns: false,
   },
-  data: SampleLineChartData,
+  data: SampleLineData,
 };
 
 export const HorizontalHistogram = Template.bind({});
@@ -132,170 +132,211 @@ HorizontalOrdinal.args = {
   data: SampleCategoricalData,
 };
 
-// Static Map Example 1:
-// Filling with a single color, graticules on
-export const StaticMapChart = Template.bind({});
-StaticMapChart.args = {
-  title: "Counties In California",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
+export const VerticalBoxAndViolin = Template.bind({});
+VerticalBoxAndViolin.args = {
+  title: "My Boxplot/Violinplot",
+  xAxis: {
+    scaleType: "band",
+    position: "bottom",
+  },
+  xExtent: SampleDistData.map((d) => d.boxPlot.x),
+  yAxis: {
+    scaleType: "linear",
+    position: "left",
+  },
+  yExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
   layers: [
     {
-      type: "map",
-      fill: "red",
-      proj: "geoTransverseMercator",
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      horizontal: false,
     },
   ],
-  data: SampleMapData,
+  data: SampleDistData,
 };
 
-// Static Map Example 2:
-// Filling with a single color, graticules off
-export const StaticMapChartNoGrid = Template.bind({});
-StaticMapChartNoGrid.args = {
-  title: "Counties In California",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
+export const HorizontalBoxAndViolin = Template.bind({});
+HorizontalBoxAndViolin.args = {
+  title: "My Boxplot/Violinplot",
+  yAxis: {
+    scaleType: "band",
+    position: "bottom",
+  },
+  yExtent: SampleDistData2.map((d) => d.boxPlot.x),
+  xAxis: {
+    scaleType: "linear",
+    position: "left",
+  },
+  xExtent: [-10, 25], //Math.min(...SampleDistData.map(x => Math.min(x.boxPlot.min, ...x.boxPlot.outliers)))
   layers: [
     {
-      type: "map",
-      fill: "red",
-      proj: "geoConicConformal",
-      gratOn: false,
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      horizontal: true,
     },
   ],
-  data: SampleMapData,
+  data: SampleDistData2,
 };
 
-// Static Map Example 3:
-// Filling with a boolean-based scheme
-export const StaticMapChartFillFunc = Template.bind({});
-StaticMapChartFillFunc.args = {
-  title: "Counties In California",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
+export const IrisBoxAndViolin = Template.bind({});
+IrisBoxAndViolin.args = {
+  title: "Box and Violin Plots with Iris Data from R",
+  xAxis: {
+    scaleType: "band",
+    position: "bottom",
+  },
+  xExtent: SampleDistData3.map((d) => d.boxPlot.x),
+  yAxis: {
+    scaleType: "linear",
+    position: "left",
+  },
+  yExtent: [-1, 8],
   layers: [
     {
-      type: "map",
-      fill: (datum) => {
-        return datum["Shape__Area"] < 3082164727 ? "red" : "green";
-      },
-      proj: "geoConicConformal",
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      horizontal: false,
     },
   ],
-  data: SampleMapData,
+  data: SampleDistData3,
 };
 
-// Static Map Example 4:
-// Testing error message for proj
-export const StaticMapChartProjError = Template.bind({});
-StaticMapChartProjError.args = {
-  title: "Median Income in Illinois Counties",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
+export const ExtremeBoxAndViolin = Template.bind({});
+ExtremeBoxAndViolin.args = {
+  title: "Box and Violin Plots with Synthetic Extreme Data",
+  xAxis: {
+    scaleType: "band",
+    position: "bottom",
+  },
+  //@ts-ignore
+  xExtent: SampleDistData4.map((d) => d.boxPlot.x),
+  yAxis: {
+    scaleType: "sqrt",
+    position: "left",
+  },
+  yExtent: [-100000, 10000000],
   layers: [
     {
-      type: "map",
-      fill: "red",
-      proj: "geoMercato",
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      horizontal: false,
     },
   ],
-  data: SampleMapData2,
+  data: SampleDistData4,
 };
 
-// Sample coloring function for the next example
-var colorArea = scale.scaleLinear({
-  domain: [
-    Math.min(...SampleMapData2.map((f) => f.properties["estimate"])),
-    Math.max(...SampleMapData2.map((f) => f.properties["estimate"])),
-  ],
-  range: ["Purple", "Orange"],
-});
-
-// Static Map Example 5:
-// Passing in a custom area-coloring function
-export const StaticMapChartScale = Template.bind({});
-StaticMapChartScale.args = {
-  title: "Median Income in Illinois Counties",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
-  proj: "geoEquirectangular",
+export const VerticalRealDataBoxAndViolin = Template.bind({});
+VerticalRealDataBoxAndViolin.args = {
+  title: "Box and Violin Plots with Real Data",
+  xAxis: {
+    scaleType: "band",
+    position: "bottom",
+  },
+  xExtent: SampleDistData5.map((d) => d.boxPlot.x),
+  yAxis: {
+    scaleType: "linear",
+    position: "left",
+  },
+  yExtent: [-1, 750],
+  horizontal: false,
   layers: [
     {
-      type: "map",
-      fill: (datum) => colorArea(datum["estimate"]),
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
     },
   ],
-  data: SampleMapData2,
+  data: SampleDistData5,
 };
 
-// Static Map Example 6:
-// Displaying point data
-export const StaticMapChartPoint = Template.bind({});
-StaticMapChartPoint.args = {
-  title: "Testing point data",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
-  proj: "geoEquirectangular",
-  pointRadius: 4,
-  fill: "green",
+export const HorizontalRealDataBoxAndViolin = Template.bind({});
+HorizontalRealDataBoxAndViolin.args = {
+  title: "Box and Violin Plots with Real Data",
+  yAxis: {
+    scaleType: "band",
+    position: "left",
+  },
+  yExtent: SampleDistData5.map((d) => d.boxPlot.x),
+  xAxis: {
+    scaleType: "linear",
+    position: "bottom",
+  },
+  xExtent: [-1, 750],
+  horizontal: true,
   layers: [
     {
-      type: "map",
+      type: "dist",
+      showBoxPlot: true,
+      showViolinPlot: true,
+      boxPlotStroke: "green",
+      violinPlotStroke: "red",
+      tooltip: false,
     },
   ],
-  data: SampleMapData3,
+  data: SampleDistData5,
 };
 
-// Static Map Example 7:
-// Displaying lines only
-export const StaticMapChartLine = Template.bind({});
-StaticMapChartLine.args = {
-  title: "Testing line data",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
-  proj: "geoEquirectangular",
-  strokeWidth: 2,
-  strokeColor: "red",
+export const LineComponentDataExample = Template.bind({});
+LineComponentDataExample.args = {
+  title: "Line Component Data Example",
+  xAxis: {
+    scaleType: "linear",
+    position: "bottom",
+  },
+  yExtent: [
+    Math.min(...SampleLineData.map((x) => Math.min(x.value))),
+    Math.max(...SampleLineData.map((x) => Math.max(x.value))),
+  ],
+  yAxis: {
+    scaleType: "linear",
+    position: "left",
+  },
+  xCol: "date",
+  yCol: "value",
+  lineFunction: null,
   layers: [
     {
-      type: "map",
-      fill: "black",
+      type: "line",
     },
   ],
-  data: SampleMapData4,
+  data: SampleLineData,
 };
 
-// Static Map Example 8:
-// Displaying polygons (e.g. rectangle)
-export const StaticMapChartPoly = Template.bind({});
-StaticMapChartPoly.args = {
-  title: "Testing polygon data",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
-  proj: "geoEquirectangular",
+export const LineComponentFunctionExample = Template.bind({});
+LineComponentFunctionExample.args = {
+  title: "Line Component Function Example",
+  xAxis: {
+    scaleType: "linear",
+    position: "bottom",
+  },
+  yAxis: {
+    scaleType: "linear",
+    position: "left",
+  },
+  xExtent: [-5, 20],
+  yExtent: [-1, 1],
+  xCol: "date",
+  yCol: "value",
   layers: [
     {
-      type: "map",
-      fill: "white",
+      type: "line",
+      lineFunction: (x) => Math.sin(x),
+      xBounds: [-5, 20],
     },
   ],
-  data: SampleMapData5,
-};
-
-// Static Map Example 9:
-// Displaying both polygons and lines
-export const StaticMapChartLinePolyMix = Template.bind({});
-StaticMapChartLinePolyMix.args = {
-  title: "Testing a mix of polygon and line data",
-  yExtent: [0, 100],
-  xExtent: [0, 100],
-  proj: "geoEquirectangular",
-  layers: [
-    {
-      type: "map",
-      fill: "red",
-    },
-  ],
-  data: SampleMapData6,
+  data: SampleLineData,
 };
