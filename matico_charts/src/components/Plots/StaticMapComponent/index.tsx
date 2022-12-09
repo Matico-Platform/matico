@@ -18,6 +18,7 @@ import {
   DataRow,
   PlotLayersProperties,
 } from "../../types";
+import { sanitizeColor } from "../../../Utils";
 import { GridRows } from "@visx/grid";
 
 declare module "react" {
@@ -51,14 +52,15 @@ const basicProjections: { [projection: string]: () => d3.GeoProjection } = {
   geoEquirectangular,
 };
 
-function formatColor(color: ColorOutput) {
-  if (typeof color == "string") {
-    return color;
-  } else if (Array.isArray(color)) {
-    let prefix = color.length === 3 ? "rgb" : "rgba";
-    return `${prefix}(${color.join(",")})`;
-  }
-}
+// Alternate function to sanitizeColor
+// function formatColor(color: ColorOutput) {
+//   if (typeof color == "string") {
+//     return color;
+//   } else if (Array.isArray(color)) {
+//     let prefix = color.length === 3 ? "rgb" : "rgba";
+//     return `${prefix}(${color.join(",")})`;
+//   }
+// }
 
 export const StaticMapComponent: React.FC<
   StaticMapSpec & PlotLayersProperties
@@ -88,6 +90,12 @@ export const StaticMapComponent: React.FC<
 
   // console.log("Data is ",data)
 
+  //@ts-ignore
+  let [[left, bottom], [right, top]] = d3.geoBounds({
+    type: "FeatureCollection",
+    features: data,
+  });
+
   const filteredData = React.useMemo(() => {
     return data?.filter((row: any) => {
       return row.hasOwnProperty("geometry") && row.hasOwnProperty("properties");
@@ -96,6 +104,7 @@ export const StaticMapComponent: React.FC<
 
   if (filteredData && proj in basicProjections) {
     const projection = basicProjections[proj]()
+      .rotate([rotation !== undefined ? rotation : (left + right) / 2, 0, 0])
       //@ts-ignore
       .fitExtent(
         [
@@ -141,12 +150,6 @@ export const StaticMapComponent: React.FC<
           number
         ][];
 
-        //@ts-ignore
-        let [[left, bottom], [right, top]] = d3.geoBounds({
-          type: "FeatureCollection",
-          features: data,
-        });
-
         const longs = corners.map((x: [number, number]) => x[0]);
         const lats = corners.map((x: [number, number]) => x[1]);
 
@@ -185,7 +188,7 @@ export const StaticMapComponent: React.FC<
             data={data as FeatureShape[]}
             scale={projection.scale()}
             translate={projection.translate()}
-            rotate={rotation ? [rotation, 0, 0] : projection.rotate()}
+            rotate={projection.rotate()}
             pointRadius={pointRadius}
           >
             {(customProjection: any) => (
@@ -193,7 +196,7 @@ export const StaticMapComponent: React.FC<
                 {gratOn ? (
                   <Graticule
                     graticule={(g) => customProjection.path(g) || ""}
-                    stroke={formatColor(gratColor)}
+                    stroke={sanitizeColor(gratColor)}
                     extentMinor={[
                       [extMinLong, minorMinLat],
                       [extMaxLong, minorMaxLat],
@@ -215,10 +218,10 @@ export const StaticMapComponent: React.FC<
                         ("LineString" || "MultiLineString")
                           ? "transparent"
                           : typeof fill == "function"
-                          ? formatColor(fill(feature.properties))
-                          : formatColor(fill)
+                          ? sanitizeColor(fill(feature.properties))
+                          : sanitizeColor(fill)
                       }
-                      stroke={formatColor(strokeColor)}
+                      stroke={sanitizeColor(strokeColor)}
                       strokeWidth={strokeWidth}
                       onClick={() => {
                         if (events)
@@ -245,6 +248,3 @@ export const StaticMapComponent: React.FC<
   // }
   return null;
 };
-
-// every for arrays
-// check if array exists, then check if given entry in array has properties and geometry
