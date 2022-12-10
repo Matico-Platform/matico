@@ -17,6 +17,7 @@
     "./editor"
   ],
   "devDependencies": {
+    "@types/d3-scale-chromatic": "^3.0.0",
     "concurrently": "^7.3.0",
     "next": "12.2.0"
   },
@@ -32,8 +33,9 @@
     "deploy": "yarn predeploy && yarn run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps"
   },
-  "packageManager": "yarn@3.2.2",
+  "packageManager": "yarn@3.3.0",
   "dependencies": {
-    "concurrently": "^7.3.0"
+    "concurrently": "^7.3.0",
+    "d3-scale-chromatic": "^3.0.0"
   }
 }
