@@ -31,6 +31,7 @@ export type Layer = {
     data?: Data
     onClick?: (event: any) => void
     onHover?: (event: any) => void
+    scales?: RequiredScalesSpec
 }
 
 export type ScaleSpec = {
@@ -42,6 +43,9 @@ export type ScaleSpec = {
     zero?: boolean
     clamp?: boolean
 }
+
+
+export type RequiredScalesSpec =  { [K in ScaleTypes]?: ScaleSpec | null }
 
 export type LabelSpec = {
     text: string
@@ -94,7 +98,7 @@ export type ExternalDataStore = {
 }
 
 export type ScaleTypes = "x" | "y" | "color" | "size" | "shape" | "projection"
-export type RequiredScales =  { [K in ScaleTypes]: ScaleHash | null }
+export type RequiredScalesState =  { [K in ScaleTypes]?: ScaleHash | null }
 
 export type ChartState = {
     parent: string
@@ -103,7 +107,7 @@ export type ChartState = {
     height: number
     top: number
     left: number
-    scales: RequiredScales
+    scales: RequiredScalesState
     layers: Array<LayerState>
     data?: string | null
 }
