@@ -17,22 +17,10 @@ import { FilePreviewer } from "./FilePreviewer";
 import { Dataset } from "@prisma/client";
 
 export interface NewUploadDatasetFormProps {
-  onSubmit: (dataset: Dataset & { dataUrl: string }) => void;
+  onSubmit: (dataset: Dataset & { dataUrl: string }) => void
 }
 
-const VALID_MIME_TYPES = [
-  "application/vnd.ms-excel",
-  "application/geo+json",
-  "application/json",
-  "application/csv",
-  "text/csv",
-  "text/plain",
-];
-const VALID_EXTENSIONS = ["csv", "geojson", "json", "zip"];
-
-export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = ({
-  onSubmit,
-}) => {
+export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = ({ onSubmit }) => {
   const [acceptedFiles, setAcceptedFiles] = useState<Array<File> | null>(null);
   const [fileRejectionError, setFileRejectionError] = useState<string | null>(
     null
@@ -45,17 +33,12 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = ({
 
   const validator = (file: any) => {
     const fileType = file.type;
-    const extension = file.name.split(".").slice(-1)[0].toLowerCase();
+    const extension = file.name.split('.').slice(-1)[0].toLowerCase()
 
-    if (
-      VALID_MIME_TYPES.includes(fileType) ||
-      VALID_EXTENSIONS.includes(extension)
-    ) {
+    if (VALID_MIME_TYPES.includes(fileType) || VALID_EXTENSIONS.includes(extension)) {
       return;
     }
-    setFileRejectionError(
-      "CSV, GeoJson, Json and zipped shapefiles are supported at this time."
-    );
+    setFileRejectionError("CSV, GeoJson, Json and zipped shapefiles are supported at this time.")
     return {
       code: "File type error",
       message: "Use a csv, geojson, json or zipped shapefile.",
@@ -87,13 +70,12 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = ({
                 <Heading>{message}</Heading>
                 <Content>
                   Select a File from your computer
-                  {!!fileRejectionError && (
+                  {!!fileRejectionError &&
                     <StatusLight variant="negative">
                       {fileRejectionError}
                       <br />
                       Please upload a different file.
-                    </StatusLight>
-                  )}
+                    </StatusLight>}
                 </Content>
               </IllustratedMessage>
             </View>
@@ -110,10 +92,7 @@ export const NewUploadDatasetForm: React.FC<NewUploadDatasetFormProps> = ({
           <TabPanels>
             {acceptedFiles.map((file: File) => (
               <Item key={file.name}>
-                <FilePreviewer
-                  file={file}
-                  onSubmit={(dataset) => onSubmit(dataset)}
-                />
+                <FilePreviewer file={file} onSubmit={(dataset) => onSubmit(dataset)} />
               </Item>
             ))}
           </TabPanels>

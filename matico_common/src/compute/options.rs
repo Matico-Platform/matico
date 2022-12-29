@@ -169,6 +169,7 @@ impl Default for NumericCategoryOptions {
 pub struct TextCategoryOptions {
     pub allow_multi: bool,
     pub options: Vec<String>,
+    pub default: Option<String>,
     pub display_details: ParameterOptionDisplayDetails,
 }
 
@@ -177,6 +178,7 @@ impl Default for TextCategoryOptions {
         Self {
             allow_multi: false,
             options: vec![],
+            default: None,
             display_details: Default::default(),
         }
     }

@@ -109,6 +109,18 @@ pub enum VarOr<T> {
     DVal(DatasetVal),
 }
 
+impl<T> VarOr<T> {
+    pub fn try_val(&self) -> Result<&T, String> {
+        if let VarOr::Value(v) = self {
+            return Ok(v);
+        } else {
+            return Err(
+                "VarOr has not been normalized. Normalize spec before trying this. {:#?}".into(),
+            );
+        }
+    }
+}
+
 impl<T> Validate for VarOr<T>
 where
     T: Validate,

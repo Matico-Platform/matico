@@ -28,6 +28,8 @@ import {
     SpecParameter,
     SpecParameterValue
 } from "@maticoapp/matico_types/spec";
+import { TextCategoryInput } from "Components/MaticoEditor/Utils/TextCategoryInput";
+import { CollapsibleSection } from "Components/MaticoEditor/EditorComponents/CollapsibleSection";
 
 export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
     spec,
@@ -132,6 +134,19 @@ const ParameterInput: React.FC<{
                     }
                 />
             );
+        case "textCategory":
+            return (
+                <TextCategoryInput
+                    label={displayName}
+                    description={description}
+                    value={value ? value : defaultVal}
+                    options={options.options}
+                    allowMulti={options.allowMulti}
+                    onChange={(newVal) =>
+                        onChange({ name, parameter: { type, value: newVal } })
+                    }
+                />
+            );
         case "table":
             return (
                 <DatasetSelector
@@ -227,27 +242,24 @@ const ParameterInput: React.FC<{
             );
         case "optionGroup":
             return (
-                <Well>
-                    <Heading> {displayName}</Heading>
-                    <Content>
-                        <ParameterGroup
-                            parameters={options.options}
-                            values={value}
-                            onChange={(update) =>
-                                onChange({
-                                    name,
-                                    parameter: {
-                                        type,
-                                        value: value.map((v: SpecParameter) =>
-                                            v.name === update.name ? update : v
-                                        )
-                                    }
-                                })
-                            }
-                        />
-                        <Footer>{description} </Footer>
-                    </Content>
-                </Well>
+                <CollapsibleSection title={displayName} isOpen={true}>
+                    <Well>{description}</Well>
+                    <ParameterGroup
+                        parameters={options.options}
+                        values={value}
+                        onChange={(update) =>
+                            onChange({
+                                name,
+                                parameter: {
+                                    type,
+                                    value: value.map((v: SpecParameter) =>
+                                        v.name === update.name ? update : v
+                                    )
+                                }
+                            })
+                        }
+                    />
+                </CollapsibleSection>
             );
 
         default:

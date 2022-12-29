@@ -3,8 +3,9 @@ use geopolars::geoseries::GeoSeries;
 use matico_analysis::*;
 use matico_common::{ArgError, ProcessError};
 use polars::io::{SerReader, SerWriter};
-use polars::prelude::NamedFromOwned;
-use rand::Rng;
+use polars::prelude::*;
+use rand::{Rng, seq::SliceRandom};
+use rand_distr::num_traits::ToPrimitive;
 use rand_distr::{Binomial, Distribution, Normal, Poisson};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
@@ -12,10 +13,126 @@ use std::convert::TryInto;
 use wasm_bindgen::prelude::*;
 
 #[matico_spec_derive::matico_compute]
-pub struct SyntheticData {}
+pub struct Simulation{}
 
-impl MaticoAnalysisRunner for SyntheticData {
+impl Simulation{ 
+
+    fn calc_objective_function(&mut self, data_frame: DataFrame){
+        let bees = data_frame.column("bees");
+        let bees_control = data_frame.column("bee_control"); 
+
+        let flowers_control = data_frame.column("flowers_control");
+
+        let trees_within_distance = data_frame.column("trees_in_distance");
+
+        // let mean = data_frame.lazy( 
+        //     select([col("bees") * lit(bees_factor)  + col("trees_within_distance") * lit(within_distance_factor)])
+        // );
+    }
+
+    fn generate_random_tree_distribution(ranges:&[[f32;2];2], no_points: usize)->std::result::Result<Vec<Geometry<f64>>,ProcessError>{
+        let mut rng = rand::thread_rng();
+
+        let points: Vec<Geometry<f64>> = (0..no_points)
+            .map(|_| {
+                let y: f32 = rng.gen_range(ranges[1][0]..ranges[1][1]);
+                let x: f32 = rng.gen_range(ranges[0][0]..ranges[0][1]);
+                Geometry::Point(Point::<f64>::new(x as f64, y as f64))
+            })
+            .collect();
+            
+        Ok(points)
+    }
+
+
+    fn generate_grid_tree_distribution(ranges: &[[f32;2];2], no_trees: usize, no_control: usize, bee_fly_distance: f64)->std::result::Result<Vec<Geometry<f64>>,ProcessError>{
+
+        let mut rng = rand::thread_rng();
+        let x_extent = ranges[0][1]- ranges[0][1];
+        let y_extent = ranges[1][1]- ranges[1][1];
+
+        let no_not_control = no_trees - no_control/2;
+
+        let nx : f32= (( x_extent /y_extent)*(no_not_control as f32) 
+             +(x_extent-y_extent).powi(2)/(4.0*y_extent.powi(2))).sqrt()
+             - (x_extent-y_extent)/(2.0*y_extent).floor();
+
+        let nx : usize = nx.floor() as usize;
+
+        let ny: usize = no_control/nx;
+
+        let x_spacing : f32= (x_extent )/(nx as f32);
+        let y_spacing : f32= (x_extent)/(ny as f32);
+
+        let mut points : Vec<Geometry<f64>>= vec![];
+        let mut partner_points : Vec<Geometry<f64>>= vec![];
+
+        for i in 0..nx{
+            for j in 0..ny{
+                let x : f32 = ranges[0][0] + (i as f32)*x_spacing ;
+                let y : f32 = ranges[1][0] + (j as f32)*y_spacing ;
+                points.push(Geometry::Point(Point::<f64>::new(x as f64, y as f64)))
+            }
+        }
+
+        for partner in points.choose_multiple(&mut rng,no_control/2){
+            let angle: f64= rng.gen_range(0.1..2.0*std::f64::consts::PI);
+            let dist  : f64= rng.gen_range(0.1..1.0)*bee_fly_distance;
+
+            if let Geometry::Point(p) = partner{
+                let x  = p.x() * angle.sin()*dist;
+                let y  = p.y() * angle.cos()*dist;
+                partner_points.push(
+                    Geometry::Point(Point::<f64>::new(x as f64, y as f64))
+                );
+            }
+        }
+        points.extend(partner_points);
+        Ok(points)
+       
+    }
+
+    fn generate_tree_locations(&mut self)->std::result::Result<DataFrame, ProcessError>{
+        let tree_location_type: Vec<String> = self.get_parameter("tree_location_type")?.try_into()?;
+
+        let bee_fly_distance: f32  = self.get_parameter("bee_fly_distance")?.try_into()?;
+        let outcome: OptionGroupVals = self.get_parameter("outcome")?.try_into()?;
+        let no_trees: u32 = outcome.get("no_points")?.try_into()?;
+        let no_proximity_control: u32 = outcome.get("no_proximity_control")?.try_into()?;
+
+
+        let region: OptionGroupVals = self.get_parameter("region")?.try_into()?;
+        let min_lat: f32 = region.get("min_lat")?.try_into()?;
+        let max_lat: f32 = region.get("max_lat")?.try_into()?;
+        let min_lng: f32 = region.get("min_lng")?.try_into()?;
+        let max_lng: f32 = region.get("max_lng")?.try_into()?;
+        let ranges = [[min_lng,max_lng], [min_lat, max_lat]];
+
+        let trees: Vec<Geometry<f64>>= match tree_location_type[0].as_ref(){
+             "grid"=>  Self::generate_grid_tree_distribution(&ranges, no_trees as usize, no_proximity_control as usize, bee_fly_distance as f64 ),
+             "random"=> Self::generate_random_tree_distribution(&ranges, no_trees as usize),
+            _ => Err(ProcessError { error:"Unsupported tree layout".into() })
+          }?;
+
+        let geo_series = Series::from_geom_vec(&trees).map_err(|e| ProcessError {
+            error: format!("Failed to construct geo series {:#?}", e),
+        })?;
+
+        let df  = DataFrame::new(vec![geo_series]).unwrap();
+
+        Ok(df) 
+    }
+}
+
+
+
+
+impl MaticoAnalysisRunner for Simulation{
     fn run(&mut self) -> std::result::Result<DataFrame, ProcessError> {
+
+        let tree_locations = self.generate_tree_locations();
+
+
         // Get region variables
         let region: OptionGroupVals = self.get_parameter("region")?.try_into()?;
         let min_lat: f32 = region.get("min_lat")?.try_into()?;
@@ -132,7 +249,6 @@ impl MaticoAnalysisRunner for SyntheticData {
             let variable: Series = Series::from_vec(&variable_name, variable);
             result_series.push(variable);
         }
-
         result_series.push(geo_series);
         // Generate the result
         let result = DataFrame::new(result_series).map_err(|e| ProcessError {
@@ -220,19 +336,6 @@ impl MaticoAnalysisRunner for SyntheticData {
         );
 
         outcome_options.insert(
-            "control_fraction".into(),
-            ParameterOptions::NumericFloat(NumericFloatOptions {
-                default: Some(0.3),
-                range: None,
-                display_details: ParameterOptionDisplayDetails {
-                    description: Some(
-                        "What fraction of the points should be in the control group".into(),
-                    ),
-                    display_name: Some("Control Fraction".into()),
-                },
-            }),
-        );
-        outcome_options.insert(
             "intercept".into(),
             ParameterOptions::NumericFloat(NumericFloatOptions {
                 default: Some(20.),
@@ -252,6 +355,19 @@ impl MaticoAnalysisRunner for SyntheticData {
                 display_details: ParameterOptionDisplayDetails {
                     description: Some("Outcome std".into()),
                     display_name: Some("Error term on the outcome ".into()),
+                },
+            }),
+        );
+
+        outcome_options.insert(
+            "tree_distribution_type".into(),
+            ParameterOptions::TextCategory(TextCategoryOptions{
+                options: vec!["random".into(), "grid".into()],
+                allow_multi: false,
+                default: Some("random".into()),
+                display_details: ParameterOptionDisplayDetails {
+                    description: Some("How should we arrange the trees".into()),
+                    display_name: Some("Tree Distribution".into()),
                 },
             }),
         );

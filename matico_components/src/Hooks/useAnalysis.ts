@@ -9,13 +9,22 @@ const analysisCache: Record<string, any> = {};
 
 export const loadAnalysis = async (url: string) => {
     //This is nasty as F but only way I can figure out to make next happy
-    const wasm = await new Function(
-        "url",
-        " let get_url = async () => await import(url); return get_url()"
-    )(url);
-    await wasm.default();
-    let key = Object.keys(wasm).find((k) => k.includes("Interface"));
-    return wasm[key].new();
+    try{
+      const wasm = await new Function(
+          "url",
+          " let get_url = async () => await import(url); return get_url()"
+      )(url);
+      console.log("have wasm object")
+      await wasm.default();
+      console.log("instanciated wasm object")
+      let key = Object.keys(wasm).find((k) => k.includes("Interface"));
+      console.log("got key ", key)
+      return wasm[key].new();
+    }
+    catch(e){
+       debugger
+       return null
+    }
 };
 
 export const populateDefaults = (options: Record<string, ParameterOptions>) => {
@@ -83,7 +92,7 @@ export const useAnalysis = (url: string | null) => {
                 .catch((e) => {
                     debugger;
                     setAnalysis(null);
-                    setError(e.to_string());
+                    setError(e.message);
                 });
         }
     }, [url]);

@@ -5,11 +5,12 @@ import { useApi } from "../utils/api";
 export interface UseAppsArgs {
   ownerId?: string;
   public?: boolean;
-  includeCollaborators?: boolean;
-  order?: string;
-  orderDir?: "asc" | "desc";
-  take?: number;
-  skip?: number;
+  includeCollaborators?: boolean,
+  order?:string,
+  orderDir?: "asc"| "desc",
+  take?:number,
+  skip?:number,
+  search?:string
 }
 
 export const useApps = (params: UseAppsArgs, initalData?: App[]) => {
