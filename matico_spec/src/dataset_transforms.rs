@@ -13,6 +13,7 @@ pub enum DatasetTransformStep {
     Aggregate(AggregateStep),
     Join(JoinStep),
     Compute(WASMCompute),
+    Sql(SQLStep),
     ColumnTransformStep(ColumnTransformStep),
 }
 
@@ -57,6 +58,18 @@ pub struct AggregateStep {
 pub struct FilterStep {
     #[wasm_bindgen(skip)]
     pub filters: Vec<Filter>,
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Validate, AutoCompleteMe, Default, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SQLStep {
+    #[wasm_bindgen(skip)]
+    pub sql: String,
+
+    #[wasm_bindgen(skip)]
+    pub input_table_name: Option<String>,
 }
 
 // #[wasm_bindgen]

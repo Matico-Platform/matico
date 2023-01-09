@@ -4,7 +4,7 @@ use std::{
     path::PathBuf,
 };
 
-pub fn load_dataset(file_path: &str) -> Result<Vec<u8>, String> {
+pub fn load_resource(file_path: &str) -> Result<Vec<u8>, String> {
     let mut test_file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     test_file_path.push(format!("test_data/{}", file_path));
 

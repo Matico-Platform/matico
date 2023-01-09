@@ -109,6 +109,22 @@ pub enum VarOr<T> {
     DVal(DatasetVal),
 }
 
+impl<T> From<T> for VarOr<T> {
+    fn from(val: T) -> Self {
+        VarOr::Value(val.into())
+    }
+}
+
+impl<T> VarOr<T> {
+    pub fn try_val(&self) -> Result<&T, String> {
+        if let Self::Value(val) = self {
+            Ok(val)
+        } else {
+            Err("This VarOr has not been denormalized yet".into())
+        }
+    }
+}
+
 impl<T> Validate for VarOr<T>
 where
     T: Validate,

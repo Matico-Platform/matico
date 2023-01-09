@@ -3,10 +3,14 @@ use matico_spec::AggregateStep;
 use matico_spec::DatasetTransform;
 use matico_spec::DatasetTransformStep;
 use matico_spec::FilterStep;
+use matico_spec::JoinStep;
+use matico_spec::SQLStep;
 use polars::prelude::*;
 use polars::sql::SQLContext;
 use std::{collections::HashMap, io::Cursor, marker::PhantomData};
 use uuid::Uuid;
+use wasmer::imports;
+use wasmer::{Instance, Module, Store, Value};
 
 #[derive(Debug)]
 pub enum DataSourceStatus {
@@ -96,6 +100,7 @@ where
     datasets: HashMap<Uuid, Dataset>,
     transforms: HashMap<Uuid, Transform>,
     fetcher_type: PhantomData<Fetcher>,
+    wasm_store: Store,
 }
 
 fn data_to_frame(
@@ -151,6 +156,7 @@ fn apply_aggregate_step(df: LazyFrame, details: &AggregateStep) -> LazyFrame {
         })
         .collect();
 
+    println!("perfroming aggregate step");
     df.groupby(group_by_cols).agg(aggregates)
 }
 
@@ -227,7 +233,25 @@ where
             datasets: HashMap::new(),
             transforms: HashMap::new(),
             fetcher_type: PhantomData,
+            wasm_store: Store::default(),
         }
+    }
+
+    pub fn load_wasm(&mut self, wasm_binary: &[u8]) -> Result<(), String> {
+        println!("Loading wasm");
+        let module = Module::new(&self.wasm_store, &wasm_binary)
+            .map_err(|e| format!("Failed to generate module"))?;
+        println!("generated module");
+        let import_object = imports! {};
+        println!("generated imports");
+        let instance = Instance::new(&mut self.wasm_store, &module, &import_object).unwrap();
+        println!("generated instance");
+        let set_variable = instance
+            .exports
+            .get_function("set_variable")
+            .map_err(|e| format!("Failed to get set_variable function"))?;
+
+        Ok(())
     }
 
     async fn load_dataset(spec: &RemoteSpecification) -> std::result::Result<Vec<u8>, String> {
@@ -238,25 +262,72 @@ where
         self.datasets.get(&id)
     }
 
-    pub fn run_transform(
+    fn apply_join_step(&self, df: LazyFrame, join_step: &JoinStep) -> Result<LazyFrame, String> {
+        let id = Uuid::try_parse(&join_step.other_source_id)
+            .map_err(|e| String::from("other source appears not to be a Uuid"))?;
+
+        let other_dataset = self
+            .get_dataset(&id)
+            .ok_or_else(|| String::from("Failed to find dataset"))?;
+
+        let other_data = other_dataset
+            .data
+            .clone()
+            .ok_or_else(|| String::from("Data not loaded for dataset"))?;
+
+        let left_join_cols: Vec<Expr> =
+            join_step.join_columns_left.iter().map(|c| col(c)).collect();
+
+        let right_join_cols: Vec<Expr> = join_step
+            .join_columns_right
+            .iter()
+            .map(|c| col(c))
+            .collect();
+
+        Ok(df
+            .join_builder()
+            .how(match join_step.join_type {
+                matico_spec::JoinType::Inner => JoinType::Inner,
+                matico_spec::JoinType::Outer => JoinType::Outer,
+                matico_spec::JoinType::Left => JoinType::Left,
+                matico_spec::JoinType::Right => JoinType::Left,
+            })
+            .with(other_data.lazy())
+            .left_on(left_join_cols)
+            .right_on(right_join_cols)
+            .suffix(&join_step.right_prefix)
+            .finish())
+    }
+
+    pub fn generate_plan_for_transform(
         &self,
         base_dataset_id: &Uuid,
         steps: &[DatasetTransformStep],
-    ) -> Result<DataFrame, String> {
+    ) -> Result<LazyFrame, String> {
         let lazy: LazyFrame = self
             .get_dataset(base_dataset_id)
             .ok_or_else(|| format!("Failed to find dataset"))?
             .into();
 
-        let plan = steps.iter().try_fold(lazy, |result, step| match step {
+        steps.iter().try_fold(lazy, |result, step| match step {
             DatasetTransformStep::Filter(filter) => apply_filter_step(result, &filter),
             DatasetTransformStep::Aggregate(agg_spec) => {
                 Ok(apply_aggregate_step(result, &agg_spec))
             }
-            DatasetTransformStep::Join(_) => Ok(result),
+            DatasetTransformStep::Join(join) => self.apply_join_step(result, &join),
             DatasetTransformStep::Compute(_) => Ok(result),
+            DatasetTransformStep::Sql(sql) => self.run_sql_step(result, &sql),
             DatasetTransformStep::ColumnTransformStep(_) => Ok(result),
-        })?;
+        })
+    }
+
+    pub fn run_transform(
+        &self,
+        base_dataset_id: &Uuid,
+        steps: &[DatasetTransformStep],
+    ) -> Result<DataFrame, String> {
+        let plan = self.generate_plan_for_transform(base_dataset_id, steps)?;
+
         plan.collect()
             .map_err(|e| format!("Something went wrong in the transformation {:#?}", e))
     }
@@ -264,6 +335,7 @@ where
     pub fn run_sql(&self, id: &Uuid, sql: &str) -> std::result::Result<DataFrame, String> {
         let mut context =
             SQLContext::try_new().map_err(|e| format!("Failed to get an sql context"))?;
+
         context.register(
             "dataset",
             self.get_dataset(id).unwrap().data.clone().unwrap().lazy(),
@@ -271,6 +343,24 @@ where
 
         let result: LazyFrame = context.execute(sql).map_err(|e| format!("error"))?;
         let result = result.collect().map_err(|e| format!("error 2"))?;
+        Ok(result)
+        // Err("Temporalially disabled".into())
+    }
+
+    pub fn run_sql_step(&self, df: LazyFrame, sql: &SQLStep) -> Result<LazyFrame, String> {
+        let mut context =
+            SQLContext::try_new().map_err(|e| format!("Failed to get an sql context: {:#?}", e))?;
+
+        context.register(
+            &sql.input_table_name
+                .clone()
+                .unwrap_or_else(|| "dataset".into()),
+            df,
+        );
+
+        let result: LazyFrame = context
+            .execute(&sql.sql)
+            .map_err(|e| format!("SQL error {:#?}", e))?;
         Ok(result)
     }
 
