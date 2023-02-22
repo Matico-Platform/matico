@@ -305,7 +305,8 @@ async fn should_be_able_to_load_and_run_wasm_module() {
     println!("Got resource");
 
     let mut dataset_service: DataService<RequestFetcher> = DataService::new();
+    println!("created dataset service");
     dataset_service
-        .load_wasm(&wasm)
+        .register_plugin("wasm", &wasm)
         .expect("Should have been able to load wasm");
 }

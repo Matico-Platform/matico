@@ -1,19 +1,34 @@
-use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-};
 use matico_dataservice::dataservice::{DataService, RequestFetcher};
-use std::sync::mpsc;
-use std::{io, thread, time::Duration};
-use tui::{
-    backend::CrosstermBackend,
-    layout::{Constraint, Direction, Layout},
-    widgets::{Block, Borders, Widget},
-    Terminal,
+use std::{
+    fs::File,
+    io::{self, BufReader, Read},
+    path::PathBuf,
 };
 
+pub fn load_resource(file_path: &str) -> Result<Vec<u8>, String> {
+    let mut test_file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    test_file_path.push(format!("test_data/{}", file_path));
+
+    let file = File::open(test_file_path).expect("Failed to find example datafile");
+    let mut buffer = BufReader::new(&file);
+
+    let mut data: Vec<u8> = vec![];
+    match buffer.read_to_end(&mut data) {
+        Ok(_) => Ok(data),
+        Err(e) => Err(format!("Failed to read file {} : {}", file_path, e)),
+    }
+}
+
 fn main() -> Result<(), io::Error> {
+    let wasm = load_resource("wasm_module.wasm").expect("Failed to load wasm module");
+    println!("Got resource");
+
+    let mut dataset_service: DataService<RequestFetcher> = DataService::new();
+    println!("created dataset service");
+    dataset_service
+        .register_plugin("wasm", &wasm)
+        .expect("Should have been able to load wasm");
+
     // let (tx, rx) = mpsc::channel();
     //
     // let dataservice: Arc<Mutex<DataService<RequestFetcher>> = Arc::new(Mutex::new(DataService::new()));

@@ -1,3 +1,6 @@
+use crate::plugin;
+use crate::plugin::Plugin;
+use anyhow::Context;
 use async_trait::async_trait;
 use matico_spec::AggregateStep;
 use matico_spec::DatasetTransform;
@@ -9,8 +12,7 @@ use polars::prelude::*;
 use polars::sql::SQLContext;
 use std::{collections::HashMap, io::Cursor, marker::PhantomData};
 use uuid::Uuid;
-use wasmer::imports;
-use wasmer::{Instance, Module, Store, Value};
+use wasmer::Module;
 
 #[derive(Debug)]
 pub enum DataSourceStatus {
@@ -98,9 +100,10 @@ where
     Fetcher: DataFetcher,
 {
     datasets: HashMap<Uuid, Dataset>,
+    wasm_modules: HashMap<String, Module>,
     transforms: HashMap<Uuid, Transform>,
     fetcher_type: PhantomData<Fetcher>,
-    wasm_store: Store,
+    plugin_instances: HashMap<Uuid, Plugin>,
 }
 
 fn data_to_frame(
@@ -233,23 +236,41 @@ where
             datasets: HashMap::new(),
             transforms: HashMap::new(),
             fetcher_type: PhantomData,
-            wasm_store: Store::default(),
+            plugin_instances: HashMap::new(),
+            wasm_modules: HashMap::new(),
         }
     }
 
-    pub fn load_wasm(&mut self, wasm_binary: &[u8]) -> Result<(), String> {
-        println!("Loading wasm");
-        let module = Module::new(&self.wasm_store, &wasm_binary)
+    pub fn run_plugin<S>(&mut self, name: S) -> anyhow::Result<()> {
+        Ok(())
+    }
+
+    pub fn create_plugin_instance<S>(&mut self, name: S) -> anyhow::Result<()>
+    where
+        S: Into<String>,
+    {
+        let module = self
+            .wasm_modules
+            .get(&name.into())
+            .context("No plugin registered by that name")?;
+
+        let plugin = Plugin::new(&module)?;
+        let id = Uuid::new_v4();
+        self.plugin_instances.insert(id, plugin);
+        Ok(())
+    }
+
+    pub fn register_plugin<S>(&mut self, name: S, wasm_binary: &[u8]) -> Result<(), String>
+    where
+        S: Into<String>,
+    {
+        println!("Creating store");
+        let mut store = wasmer::Store::default();
+        println!("Creating module");
+        let module = Module::new(&mut store, &wasm_binary)
             .map_err(|e| format!("Failed to generate module"))?;
-        println!("generated module");
-        let import_object = imports! {};
-        println!("generated imports");
-        let instance = Instance::new(&mut self.wasm_store, &module, &import_object).unwrap();
-        println!("generated instance");
-        let set_variable = instance
-            .exports
-            .get_function("set_variable")
-            .map_err(|e| format!("Failed to get set_variable function"))?;
+        println!("inserting module");
+        self.wasm_modules.insert(name.into(), module);
 
         Ok(())
     }

@@ -7,17 +7,23 @@ edition = "2021"
 
 [dependencies]
 matico_spec = {path="../matico_spec"}
-tokio = { version = "1", features = ["full"] }
+prokio = "0.1.0"
+# tokio = { version = "1", features = ["full"] }
 uuid = {version = "1.2.2", features=['v4']}
 async-trait = "0.1.59"
 reqwest = "0.11.13"
 polars =  { version = "0.26.1", features = ["lazy","sql", "csv-file", "json","ipc","is_in", "strings", "temporal", "dtype-duration", "dtype-categorical", "concat_str",  "rank", "lazy_regex"]}
-wasmer={version="3.1.0"}
+wasmer={ version="3.1.0", default-features= false}
+wai-bindgen-wasmer = {version = "0.2.2", path="/home/stuart/tmp/wai/crates/wasmer"}
+anyhow ="1.0" 
 
-tui = {version= "0.19", optional=true}
-crossterm ={version = "0.25", optional=true}
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1.19", features = ["full"] }
 
 [features]
-default = ["tui"]
-tui = ["dep:tui", "dep:crossterm"]
-js = ["wasmer/js"]
+default=['sys']
+js = ['wasmer/js-default', 'wai-bindgen-wasmer/js']
+sys= ['wasmer/sys-default', "wai-bindgen-wasmer/sys"]
+
+
+
