@@ -42,7 +42,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@adobe/react-spectrum@npm:^3.20.0, @adobe/react-spectrum@npm:^3.25.0":
+"@adobe/react-spectrum@npm:^3.20.0":
   version: 3.25.1
   resolution: "@adobe/react-spectrum@npm:3.25.1"
   dependencies:
@@ -5536,7 +5536,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@maticoapp/matico_components@workspace:matico_components"
   dependencies:
-    "@adobe/react-spectrum": ^3.25.0
+    "@adobe/react-spectrum": ^3.20.0
     "@apache-arrow/es5-cjs": ^8.0.0
     "@danmarshall/deckgl-typings": ^4.9.24
     "@deck.gl/core": ^8.8.5
@@ -5563,11 +5563,12 @@ __metadata:
     "@nebula.gl/editor": ^1.0.2
     "@nebula.gl/layers": ^1.0.2
     "@nebula.gl/overlays": ^1.0.2
-    "@react-spectrum/color": ^3.0.0-beta.20
+    "@react-spectrum/color": 3.0.0-beta.14
+    "@react-spectrum/list": ^3.0.0-rc.0
     "@react-types/shared": ^3.13.1
     "@reduxjs/toolkit": ^1.6.2
-    "@spectrum-icons/illustrations": ^3.6.0
-    "@spectrum-icons/workflow": ^4.1.0
+    "@spectrum-icons/illustrations": ^3.2.2
+    "@spectrum-icons/workflow": ^4.0.1
     "@turf/centroid": ^6.5.0
     "@types/chroma-js": ^2.1.3
     "@types/d3-format": ^3.0.1
@@ -5621,7 +5622,6 @@ __metadata:
     react-router: ^6
     react-router-dom: ^5.3.0
     rehype: ^12.0.0
-    styled-components: ^5.3.1
     traverse: ^0.6.6
     typescript: ^4.5.3
     uuid: ^8.3.2
@@ -6486,29 +6486,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/color@npm:3.0.0-nightly.3804+83677f944":
-  version: 3.0.0-nightly.3804
-  resolution: "@react-aria/color@npm:3.0.0-nightly.3804"
-  dependencies:
-    "@react-aria/i18n": 3.0.0-nightly.2104+83677f944
-    "@react-aria/interactions": 3.0.0-nightly.2104+83677f944
-    "@react-aria/slider": 3.3.1-nightly.3804+83677f944
-    "@react-aria/spinbutton": 3.0.0-nightly.2104+83677f944
-    "@react-aria/textfield": 3.0.0-nightly.2104+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-aria/visually-hidden": 3.0.0-nightly.2104+83677f944
-    "@react-stately/color": 3.3.1-nightly.3804+83677f944
-    "@react-types/color": 3.0.0-nightly.3804+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@react-types/slider": 3.4.1-nightly.3804+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 0b64e82b18d9730190e8ee20c462e57c9c6a5029d4c5390eb4390d734c1423e41d354c2699cc2c2b52029d4241ed473763368d4aa63527cd75bd3112cad4df24
-  languageName: node
-  linkType: hard
-
 "@react-aria/combobox@npm:^3.5.1":
   version: 3.5.1
   resolution: "@react-aria/combobox@npm:3.5.1"
@@ -7084,27 +7061,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/slider@npm:3.3.1-nightly.3804+83677f944":
-  version: 3.3.1-nightly.3804
-  resolution: "@react-aria/slider@npm:3.3.1-nightly.3804"
-  dependencies:
-    "@react-aria/focus": 3.0.0-nightly.2104+83677f944
-    "@react-aria/i18n": 3.0.0-nightly.2104+83677f944
-    "@react-aria/interactions": 3.0.0-nightly.2104+83677f944
-    "@react-aria/label": 3.0.0-nightly.2104+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-stately/radio": 3.0.0-nightly.2104+83677f944
-    "@react-stately/slider": 3.3.1-nightly.3804+83677f944
-    "@react-types/radio": 3.0.0-nightly.2104+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@react-types/slider": 3.4.1-nightly.3804+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 94dd974f1326b079c0f0e56185aac9ef961d4dbb2fb866b135d5856acd4bb3ff1877b6916d2a20776e618e9773e8f18da37aaa0f8e0df956ff2a14d198301e83
-  languageName: node
-  linkType: hard
-
 "@react-aria/slider@npm:^3.2.0, @react-aria/slider@npm:^3.3.0":
   version: 3.3.0
   resolution: "@react-aria/slider@npm:3.3.0"
@@ -7123,23 +7079,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 136493430c64f38f1147a6f94c4f3560f8b58adc0efce168190064c1c1ceb2b9a560194552b8315390183a33523b858589feb46a9e59424255df8d332ea78fa4
-  languageName: node
-  linkType: hard
-
-"@react-aria/spinbutton@npm:3.0.0-nightly.2104+83677f944":
-  version: 3.0.0-nightly.2104
-  resolution: "@react-aria/spinbutton@npm:3.0.0-nightly.2104"
-  dependencies:
-    "@react-aria/i18n": 3.0.0-nightly.2104+83677f944
-    "@react-aria/live-announcer": 3.0.0-nightly.2104+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/button": 3.7.2-nightly.3804+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 39a48393760b20b06d391ecb8a80311988b1f5d484320ba0925d1e199536c0d20801baffbcf3be58a56d2fa204c925f01c56c4193cb6d709a9bef1024bb323d9
   languageName: node
   linkType: hard
 
@@ -7238,22 +7177,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 330ad19e74d4b150985512bb5061466fa8aeca48121ccb42eaf4a3b9c31c7d40b9434583d2403320ce93516cba1be7efd48f0d8943099fdda16b4aa6af9789d3
-  languageName: node
-  linkType: hard
-
-"@react-aria/textfield@npm:3.0.0-nightly.2104+83677f944":
-  version: 3.0.0-nightly.2104
-  resolution: "@react-aria/textfield@npm:3.0.0-nightly.2104"
-  dependencies:
-    "@react-aria/focus": 3.0.0-nightly.2104+83677f944
-    "@react-aria/label": 3.0.0-nightly.2104+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@react-types/textfield": 3.0.0-nightly.2104+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 748be4217dbe9ed8c02e6350e626cf95f2bf100ab191c5c85d8b0b260ca46aa7efecd948566b00229e8fee27fa31c80ea953a4ddad48f17d4454758915369674
   languageName: node
   linkType: hard
 
@@ -7389,21 +7312,6 @@ __metadata:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 064733ede478d80a6d110fa7a97f472d321ab8ca68599b14f3983610353ee0dd731aaf07ab2f11fd445222c2a159a601aab7e6d13abbc23489447171c39ade53
-  languageName: node
-  linkType: hard
-
-"@react-aria/visually-hidden@npm:3.0.0-nightly.2104+83677f944":
-  version: 3.0.0-nightly.2104
-  resolution: "@react-aria/visually-hidden@npm:3.0.0-nightly.2104"
-  dependencies:
-    "@react-aria/interactions": 3.0.0-nightly.2104+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@swc/helpers": ^0.4.14
-    clsx: ^1.1.1
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 24b3c4c908a7db6250ed2d27df9c84e766722f18bad07cb8b067bfdd55c00e7da0695ae16f581f3652c88a72cc8ae3dd971b696458f2bd23b8d0956f53b0d8c0
   languageName: node
   linkType: hard
 
@@ -7668,36 +7576,6 @@ __metadata:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 9b66988ffc0d10432f55f993d33565ae222c66f276d2a31b0b50a0fe2d6b2deaa7becd8d2f44a20284521f69d4629aacd0adf81133ae12c6ead395387e91f6d3
-  languageName: node
-  linkType: hard
-
-"@react-spectrum/color@npm:^3.0.0-beta.20":
-  version: 3.0.0-nightly.3804
-  resolution: "@react-spectrum/color@npm:3.0.0-nightly.3804"
-  dependencies:
-    "@react-aria/color": 3.0.0-nightly.3804+83677f944
-    "@react-aria/focus": 3.0.0-nightly.2104+83677f944
-    "@react-aria/i18n": 3.0.0-nightly.2104+83677f944
-    "@react-aria/interactions": 3.0.0-nightly.2104+83677f944
-    "@react-aria/slider": 3.3.1-nightly.3804+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-spectrum/label": 3.11.1-nightly.3804+83677f944
-    "@react-spectrum/layout": 3.5.1-nightly.3804+83677f944
-    "@react-spectrum/textfield": 3.0.0-nightly.2104+83677f944
-    "@react-spectrum/utils": 3.0.0-nightly.2104+83677f944
-    "@react-stately/color": 3.3.1-nightly.3804+83677f944
-    "@react-stately/slider": 3.3.1-nightly.3804+83677f944
-    "@react-stately/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/color": 3.0.0-nightly.3804+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@react-types/slider": 3.4.1-nightly.3804+83677f944
-    "@react-types/textfield": 3.0.0-nightly.2104+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    "@react-spectrum/provider": ^3.0.0
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 536fe9635008cb49cfb3ef0918e1228aa971d4d3c56e34cdbb2d5bf2dd4e915b0e71c0d95545a534bcd6b62fea66914cec278d221348cbe61b26c021738d0953
   languageName: node
   linkType: hard
 
@@ -8078,7 +7956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-spectrum/list@npm:^3.3.1":
+"@react-spectrum/list@npm:^3.0.0-rc.0, @react-spectrum/list@npm:^3.3.1":
   version: 3.3.1
   resolution: "@react-spectrum/list@npm:3.3.1"
   dependencies:
@@ -8516,29 +8394,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-spectrum/textfield@npm:3.0.0-nightly.2104+83677f944":
-  version: 3.0.0-nightly.2104
-  resolution: "@react-spectrum/textfield@npm:3.0.0-nightly.2104"
-  dependencies:
-    "@react-aria/focus": 3.0.0-nightly.2104+83677f944
-    "@react-aria/i18n": 3.0.0-nightly.2104+83677f944
-    "@react-aria/interactions": 3.0.0-nightly.2104+83677f944
-    "@react-aria/textfield": 3.0.0-nightly.2104+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-spectrum/label": 3.11.1-nightly.3804+83677f944
-    "@react-spectrum/utils": 3.0.0-nightly.2104+83677f944
-    "@react-stately/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@react-types/textfield": 3.0.0-nightly.2104+83677f944
-    "@spectrum-icons/ui": 3.0.0-nightly.2104+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    "@react-spectrum/provider": ^3.0.0
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: d22ecafc3d508b5629e626b0fe7829521b9c9645f4d11eab677ef4d2d10c6aaa8ea7a30d6ad445cb612147ce002bc8dd43d8a409c823c663498879665f946bae
-  languageName: node
-  linkType: hard
-
 "@react-spectrum/textfield@npm:^3.10.0, @react-spectrum/textfield@npm:^3.6.0":
   version: 3.10.0
   resolution: "@react-spectrum/textfield@npm:3.10.0"
@@ -8758,24 +8613,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-stately/color@npm:3.3.1-nightly.3804+83677f944":
-  version: 3.3.1-nightly.3804
-  resolution: "@react-stately/color@npm:3.3.1-nightly.3804"
-  dependencies:
-    "@internationalized/number": 3.2.1-nightly.3804+83677f944
-    "@internationalized/string": 3.1.1-nightly.3804+83677f944
-    "@react-stately/slider": 3.3.1-nightly.3804+83677f944
-    "@react-stately/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/color": 3.0.0-nightly.3804+83677f944
-    "@react-types/numberfield": 3.4.1-nightly.3804+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 3b3f0265e63f90771b2ca24c31c20be3a029f54447059bd73350d7b25fd9f9f8622aae9d642e75c721c56a77ab2a004946f8fc5cb0db2807acde3947cefb60e7
-  languageName: node
-  linkType: hard
-
 "@react-stately/color@npm:^3.1.0":
   version: 3.3.0
   resolution: "@react-stately/color@npm:3.3.0"
@@ -8971,20 +8808,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-stately/radio@npm:3.0.0-nightly.2104+83677f944":
-  version: 3.0.0-nightly.2104
-  resolution: "@react-stately/radio@npm:3.0.0-nightly.2104"
-  dependencies:
-    "@react-stately/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/radio": 3.0.0-nightly.2104+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: a7a546c028d5a81f8fb0d97dd44d9029f4a65fc88ac4355022a75177e64e922c3ff386099b5e841e9d7d5b7d7847781be41a9ee2eab5b3b8c148afa285161587
-  languageName: node
-  linkType: hard
-
 "@react-stately/radio@npm:^3.7.0":
   version: 3.7.0
   resolution: "@react-stately/radio@npm:3.7.0"
@@ -9056,22 +8879,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 9a71f78b4f5e105602120e6682b3cf3aad467a3d85010bafa08cbfc7d0ba34bc7d77cff8e1f165f46083aecfb897308b130a4dad7512fb8c83823283813b80c7
-  languageName: node
-  linkType: hard
-
-"@react-stately/slider@npm:3.3.1-nightly.3804+83677f944":
-  version: 3.3.1-nightly.3804
-  resolution: "@react-stately/slider@npm:3.3.1-nightly.3804"
-  dependencies:
-    "@react-aria/i18n": 3.0.0-nightly.2104+83677f944
-    "@react-aria/utils": 3.0.0-nightly.2104+83677f944
-    "@react-stately/utils": 3.0.0-nightly.2104+83677f944
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@react-types/slider": 3.4.1-nightly.3804+83677f944
-    "@swc/helpers": ^0.4.14
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 70dee708c5c3a56100d36d764565137ed75817d4b1326566310d9f769c8ea54828ca08ea20c68a5f9795e762b17abc4486c7f1717fd3b47f26d67e9811c9035d
   languageName: node
   linkType: hard
 
@@ -9262,17 +9069,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-types/button@npm:3.7.2-nightly.3804+83677f944":
-  version: 3.7.2-nightly.3804
-  resolution: "@react-types/button@npm:3.7.2-nightly.3804"
-  dependencies:
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 087872a8bbb2d77aafbf68c9970a3abad9d5d5061fcd63c310445e51b759634291686f62d67b4daa0df9fe9426feb4fdc0a285974ce11cf318f8960295778967
-  languageName: node
-  linkType: hard
-
 "@react-types/button@npm:^3.7.1":
   version: 3.7.1
   resolution: "@react-types/button@npm:3.7.1"
@@ -9363,18 +9159,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 495d4333ccd9de0854a95d0c54bbe0a03b200ab5bcae7f4810cacb539b8b64bb1677c09779bfda6f360222f124c9ce8a90c68f9185134693d204033422e3c1d9
-  languageName: node
-  linkType: hard
-
-"@react-types/color@npm:3.0.0-nightly.3804+83677f944":
-  version: 3.0.0-nightly.3804
-  resolution: "@react-types/color@npm:3.0.0-nightly.3804"
-  dependencies:
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-    "@react-types/slider": 3.4.1-nightly.3804+83677f944
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 68c7bd2dec5923d45caab70e1754b342dec2b1ecc6c135cd9f7d3087d956a80799a9f4e8d366c7cd96a0a25bf693825def7ec5848aa396f804b500dbcf44de08
   languageName: node
   linkType: hard
 
@@ -9605,17 +9389,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-types/numberfield@npm:3.4.1-nightly.3804+83677f944":
-  version: 3.4.1-nightly.3804
-  resolution: "@react-types/numberfield@npm:3.4.1-nightly.3804"
-  dependencies:
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: a828c1d1d74971de24841d51a062a309f000fbb0f2a1caaa54a3dfc8c1dac391b8aee3401bbf7d0babe6acf1061e59dda5185a618174a7d645dd6da0dce54897
-  languageName: node
-  linkType: hard
-
 "@react-types/numberfield@npm:^3.4.0":
   version: 3.4.0
   resolution: "@react-types/numberfield@npm:3.4.0"
@@ -9682,17 +9455,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-types/radio@npm:3.0.0-nightly.2104+83677f944":
-  version: 3.0.0-nightly.2104
-  resolution: "@react-types/radio@npm:3.0.0-nightly.2104"
-  dependencies:
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 8f24483cace3e64b7fa0ddf64438730c725849d496178fb35c516118dfd794535c24a852157c332ded07b591b8953fbb00561bbc26d780a78ee38c955032dced
-  languageName: node
-  linkType: hard
-
 "@react-types/radio@npm:^3.4.0":
   version: 3.4.0
   resolution: "@react-types/radio@npm:3.4.0"
@@ -9742,17 +9504,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 004fc58ab0d3d64a84ce5a98e7e201b88bbb64f8b4a8309d50be30fe6172d0f172f00c666074aa96f13bbbfbced8b986901ad6b35b6d2d32d8dc25e251fcdb31
-  languageName: node
-  linkType: hard
-
-"@react-types/slider@npm:3.4.1-nightly.3804+83677f944":
-  version: 3.4.1-nightly.3804
-  resolution: "@react-types/slider@npm:3.4.1-nightly.3804"
-  dependencies:
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: f8aa4cc27ff577b08a80194d0c0af9b4900a4e32da8e02ded91e0702bd134b1c87cb20c282b33f6c9e85b647ae5bc9eb858f5893628e7eb261efe81e4c85e978
   languageName: node
   linkType: hard
 
@@ -9833,17 +9584,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 18c9255ca8fcf6e316a335f5109b5d1fafa460af00e7b92247597bb565647715e718d66351254b23337e53465334431d0f1edd7db3b4c92c4cbf480c5b509d75
-  languageName: node
-  linkType: hard
-
-"@react-types/textfield@npm:3.0.0-nightly.2104+83677f944":
-  version: 3.0.0-nightly.2104
-  resolution: "@react-types/textfield@npm:3.0.0-nightly.2104"
-  dependencies:
-    "@react-types/shared": 3.0.0-nightly.2104+83677f944
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 82ffd09a445a37d5d1fbc378d46fcbc345ceb246dbc42a082990cdbf812f076d9ff817839233a98aab7b63720b9d14bf714622b01ea48a40b55c0ab3c34a5476
   languageName: node
   linkType: hard
 
@@ -10080,7 +9820,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spectrum-icons/illustrations@npm:^3.2.2, @spectrum-icons/illustrations@npm:^3.6.0":
+"@spectrum-icons/illustrations@npm:^3.2.2":
   version: 3.6.0
   resolution: "@spectrum-icons/illustrations@npm:3.6.0"
   dependencies:
@@ -10134,7 +9874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spectrum-icons/workflow@npm:^4.1.0":
+"@spectrum-icons/workflow@npm:^4.0.1, @spectrum-icons/workflow@npm:^4.1.0":
   version: 4.1.0
   resolution: "@spectrum-icons/workflow@npm:4.1.0"
   dependencies:
