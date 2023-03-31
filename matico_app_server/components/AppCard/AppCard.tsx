@@ -40,48 +40,42 @@ export const AppCard: React.FC<AppCardInterface> = ({
           alignItems="center"
         >
           {includeView && (
-            <Link href={`/apps/${app.id}`}>
-              <a style={{ textDecoration: "none" }}>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  gap="size-100"
-                  UNSAFE_style={{ color: "white" }}
-                >
-                  <Preview size="S" />
-                  <p>View</p>
-                </Flex>
-              </a>
+            <Link href={`/apps/${app.id}`} style={{ textDecoration: "none" }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                gap="size-100"
+                UNSAFE_style={{ color: "white" }}
+              >
+                <Preview size="S" />
+                <p>View</p>
+              </Flex>
             </Link>
           )}
           {includeFork && (
-            <Link href={`/apps/${app.id}`}>
-              <a style={{ textDecoration: "none" }}>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  gap="size-100"
-                  UNSAFE_style={{ color: "white" }}
-                >
-                  <Branch2 size="S" />
-                  <p>Fork</p>
-                </Flex>
-              </a>
+            <Link href={`/apps/${app.id}`} style={{ textDecoration: "none" }} >
+              <Flex
+                direction="row"
+                alignItems="center"
+                gap="size-100"
+                UNSAFE_style={{ color: "white" }}
+              >
+                <Branch2 size="S" />
+                <p>Fork</p>
+              </Flex>
             </Link>
           )}
           {includeEdit && (
-            <Link href={`/apps/edit/${app.id}`}>
-              <a style={{ textDecoration: "none" }}>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  gap="size-100"
-                  UNSAFE_style={{ color: "white" }}
-                >
-                  <EdinIn size="S" />
-                  <p>Edit</p>
-                </Flex>
-              </a>
+            <Link href={`/apps/edit/${app.id}`} style={{ textDecoration: "none" }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                gap="size-100"
+                UNSAFE_style={{ color: "white" }}
+              >
+                <EdinIn size="S" />
+                <p>Edit</p>
+              </Flex>
             </Link>
           )}
           {includeDelete && <DeleteAppDialog appId={app.id} />}

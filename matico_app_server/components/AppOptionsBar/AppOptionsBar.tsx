@@ -40,10 +40,8 @@ export const AppOptionsBar: React.FC<AppOptionsBarInterface> = ({
     >
       <Flex width="100%" direction="row" alignItems="center">
         <View flex={1}>
-          <Link href="/">
-            <a style={{ fontWeight: "bold", color: "white" }}>
-              <Text>Matico</Text>
-            </a>
+          <Link href="/" style={{ fontWeight: "bold", color: "white" }}>
+            <Text>Matico</Text>
           </Link>
         </View>
 

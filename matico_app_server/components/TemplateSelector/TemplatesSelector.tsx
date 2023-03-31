@@ -81,7 +81,7 @@ const TemplatesPopulation = styled.div`
   }
 `;
 
-const InlineLink = styled.a`
+const InlineLink = styled.span`
   display: flex;
   flex-direction: row;
   align-items: center;
