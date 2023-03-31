@@ -62,6 +62,7 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                         [
                             "controls",
                             "histogram",
+                            "categorySelector",
                             "scatterplot",
                             "lineChart",
                             "dateTimeSlider",

@@ -6,11 +6,4 @@ import type { Page } from "./Page";
 import type { Pane } from "./Pane";
 import type { Theme } from "./Theme";
 
-export interface App {
-  pages: Array<Page>;
-  panes: Array<Pane>;
-  datasets: Array<Dataset>;
-  datasetTransforms: Array<DatasetTransform>;
-  theme: Theme | null;
-  metadata: Metadata;
-}
+export interface App { pages: Array<Page>, panes: Array<Pane>, datasets: Array<Dataset>, datasetTransforms: Array<DatasetTransform>, theme: Theme | null, metadata: Metadata, }

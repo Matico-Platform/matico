@@ -4,13 +4,4 @@ import type { DatasetRef } from "./DatasetRef";
 import type { Labels } from "./Labels";
 import type { MappingVarOr } from "./MappingVarOr";
 
-export interface LineChartPane {
-  name: string;
-  id: string;
-  dataset: DatasetRef;
-  xColumn: string;
-  yColumn: string;
-  lineColor: MappingVarOr<ColorSpecification> | null;
-  lineWidth: MappingVarOr<number> | null;
-  labels: Labels | null;
-}
+export interface LineChartPane { name: string, id: string, dataset: DatasetRef, xColumn: string, yColumn: string, lineColor: MappingVarOr<ColorSpecification> | null, lineWidth: MappingVarOr<number> | null, labels: Labels | null, }

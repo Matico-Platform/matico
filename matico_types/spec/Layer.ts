@@ -3,10 +3,4 @@ import type { DatasetRef } from "./DatasetRef";
 import type { LayerStyle } from "./LayerStyle";
 import type { TooltipColumnSpec } from "./TooltipColumnSpec";
 
-export interface Layer {
-  name: string;
-  id: string;
-  source: DatasetRef;
-  style: LayerStyle;
-  tooltipColumns: Array<TooltipColumnSpec> | null;
-}
+export interface Layer { name: string, id: string, source: DatasetRef, style: LayerStyle, tooltipColumns: Array<TooltipColumnSpec> | null, }

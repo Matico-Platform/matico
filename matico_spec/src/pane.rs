@@ -1,6 +1,6 @@
 use crate::{
-    AutoComplete, Control, DateTimeSliderPane, HistogramPane, Layout, MapPane, PieChartPane,
-    ScatterplotPane, StaticMapPane,
+    AutoComplete, CategorySelectorPane, Control, DateTimeSliderPane, HistogramPane, Layout,
+    MapPane, PieChartPane, ScatterplotPane, StaticMapPane,
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -40,6 +40,7 @@ pub enum PaneRef {
     PieChart(PaneDetails),
     Controls(PaneDetails),
     StaticMap(PaneDetails),
+    CategorySelector(PaneDetails),
     DateTimeSlider(PaneDetails),
 }
 
@@ -54,6 +55,7 @@ impl PaneRef {
             PaneRef::PieChart(s) => &s.id,
             PaneRef::Controls(s) => &s.id,
             PaneRef::StaticMap(s) => &s.id,
+            PaneRef::CategorySelector(s) => &s.id,
             PaneRef::DateTimeSlider(s) => &s.id,
         }
     }
@@ -94,6 +96,10 @@ impl TryFrom<(&str, &str)> for PaneRef {
                 ..Default::default()
             })),
             "dateTimeSlider" => Ok(PaneRef::DateTimeSlider(PaneDetails {
+                pane_id,
+                ..Default::default()
+            })),
+            "categorySelector" => Ok(PaneRef::CategorySelector(PaneDetails {
                 pane_id,
                 ..Default::default()
             })),
@@ -144,6 +150,10 @@ impl From<Pane> for PaneRef {
                 pane_id: slider.id,
                 ..Default::default()
             }),
+            Pane::CategorySelector(selector) => PaneRef::CategorySelector(PaneDetails {
+                pane_id: selector.id,
+                ..Default::default()
+            }),
         }
     }
 }
@@ -160,6 +170,7 @@ pub enum Pane {
     Scatterplot(ScatterplotPane),
     PieChart(PieChartPane),
     Controls(ControlsPane),
+    CategorySelector(CategorySelectorPane),
     DateTimeSlider(DateTimeSliderPane),
 }
 
@@ -201,6 +212,9 @@ impl Validate for Pane {
             }
             Self::DateTimeSlider(slider) => {
                 ValidationErrors::merge(result, "DateTimeSlider", slider.validate())
+            }
+            Self::CategorySelector(selector) => {
+                ValidationErrors::merge(result, "CategorySelector", selector.validate())
             }
         }
     }

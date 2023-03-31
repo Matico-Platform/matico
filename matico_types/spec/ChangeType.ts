@@ -4,8 +4,4 @@ import type { FloatOpts } from "./FloatOpts";
 import type { IntOpts } from "./IntOpts";
 import type { StringOpts } from "./StringOpts";
 
-export type ChangeType =
-  | ({ type: "date" } & DateOpts)
-  | ({ type: "string" } & StringOpts)
-  | ({ type: "int" } & IntOpts)
-  | ({ type: "float" } & FloatOpts);
+export type ChangeType = { type: "date" } & DateOpts | { type: "string" } & StringOpts | { type: "int" } & IntOpts | { type: "float" } & FloatOpts;

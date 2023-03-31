@@ -8,12 +8,4 @@ import type { MaticoRemoteDataset } from "./MaticoRemoteDataset";
 import type { SignedS3ArrowDataset } from "./SignedS3ArrowDataset";
 import type { WASMCompute } from "./WASMCompute";
 
-export type Dataset =
-  | ({ type: "geoJSON" } & GeoJSONDataset)
-  | ({ type: "csv" } & CSVDataset)
-  | ({ type: "maticoRemote" } & MaticoRemoteDataset)
-  | ({ type: "maticoApi" } & MaticoApiDataset)
-  | ({ type: "cog" } & COGDataset)
-  | ({ type: "wasmCompute" } & WASMCompute)
-  | ({ type: "arrow" } & ArrowDataset)
-  | ({ type: "signedS3Arrow" } & SignedS3ArrowDataset);
+export type Dataset = { type: "geoJSON" } & GeoJSONDataset | { type: "csv" } & CSVDataset | { type: "maticoRemote" } & MaticoRemoteDataset | { type: "maticoApi" } & MaticoApiDataset | { type: "cog" } & COGDataset | { type: "wasmCompute" } & WASMCompute | { type: "arrow" } & ArrowDataset | { type: "signedS3Arrow" } & SignedS3ArrowDataset;

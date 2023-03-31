@@ -10,6 +10,7 @@ import { DateTimeSliderEditor } from "./Panes/DateTimeSliderEditor";
 // new file schema
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 import { LineChartPaneEditor } from "./Panes/LineChartPaneEditor";
+import { MaticoCategorySelectorPaneComponents } from "Components/Panes/MaticoCategorySelectorPane";
 
 export const Editors = {
     container: ContainerPaneEditor,
@@ -18,6 +19,7 @@ export const Editors = {
     map: MapPaneEditor,
     text: MaticoTextPaneComponents.sidebarPane,
     histogram: HistogramPaneEditor,
+    categorySelector: MaticoCategorySelectorPaneComponents.sidebarPane,
     pieChart: PieChartPaneEditor,
     layer: LayerEditor,
     controls: ControlsPaneEditor,

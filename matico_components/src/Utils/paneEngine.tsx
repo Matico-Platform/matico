@@ -16,6 +16,7 @@ import { useMaticoSelector } from "Hooks/redux";
 import { PaneParts } from "Components/Panes/PaneParts";
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 import { MaticoDateTimeSlider } from "Components/Panes/MaticoDateTimeSlider/MaticoDateTimeSlider";
+import { MaticoCategorySelectorPaneComponents } from "Components/Panes/MaticoCategorySelectorPane";
 
 export const fallbackPanes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
@@ -27,6 +28,7 @@ export const fallbackPanes: { [paneType: string]: Pane } = {
     pieChart: MaticoPieChartPane,
     controls: MaticoControlsPane,
     container: MaticoContainerPane,
+    categorySelector: MaticoCategorySelectorPaneComponents.pane,
     dateTimeSlider: MaticoDateTimeSlider
 };
 export const panes: { [paneType: string]: PaneParts } = {

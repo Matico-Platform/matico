@@ -2,12 +2,4 @@
 import type { DatasetRef } from "./DatasetRef";
 import type { VarOr } from "./VarOr";
 
-export interface DateTimeSliderPane {
-  column: string;
-  dataset: DatasetRef;
-  id: string;
-  label: string | null;
-  max: VarOr<string>;
-  min: VarOr<string>;
-  name: string;
-}
+export interface DateTimeSliderPane { column: string, dataset: DatasetRef, id: string, label: string | null, max: VarOr<string>, min: VarOr<string>, name: string, }

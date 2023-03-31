@@ -6,10 +6,4 @@ import type { LogorithmicParams } from "./LogorithmicParams";
 import type { QuantileResults } from "./QuantileResults";
 import type { ValueCountsResults } from "./ValueCountsResults";
 
-export type StatResults =
-  | { quantiles: QuantileResults }
-  | { jenks: JenksResults }
-  | { logotithmic: LogorithmicParams }
-  | { basicStats: BasicStatsResults }
-  | { valueCounts: ValueCountsResults }
-  | { histogram: HistogramResults };
+export type StatResults = { quantiles: QuantileResults } | { jenks: JenksResults } | { logotithmic: LogorithmicParams } | { basicStats: BasicStatsResults } | { valueCounts: ValueCountsResults } | { histogram: HistogramResults };
