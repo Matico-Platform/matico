@@ -17,6 +17,7 @@ import {
 } from "@maticoapp/matico_types/spec";
 import { v4 as uuid } from "uuid";
 import { MaticoTextPaneComponents as text } from "Components/Panes/MaticoTextPane";
+import { MaticoCategorySelectorPaneComponents as categorySelector } from "Components/Panes/MaticoCategorySelectorPane";
 
 export const IconForPaneType = (PaneType: string, props?: any) => {
     switch (PaneType) {
@@ -25,9 +26,13 @@ export const IconForPaneType = (PaneType: string, props?: any) => {
         case "pieChart":
             return <PieChartIcon {...props} />;
         case "text":
-            const El = text.icon;
+            const TextEl = text.icon;
             // @ts-ignore
-            return <El {...props} />;
+            return <TextEl {...props} />;
+        case "categorySelector":
+            const CategorySelectorEl = categorySelector.icon;
+            // @ts-ignore
+            return <CategorySelectorEl {...props} />;
         case "map":
             return <MapIcon {...props} />;
         case "scatterplot":
@@ -49,16 +54,17 @@ type AvaliablePanesSection = {
     sectionTitle: string;
     panes: Array<{
         name:
-            | "map"
-            | "histogram"
-            | "pieChart"
-            | "text"
-            | "scatterplot"
-            | "lineChart"
-            | "controls"
-            | "staticMap"
-            | "dateTimeSlider"
-            | "container";
+        | "map"
+        | "histogram"
+        | "pieChart"
+        | "text"
+        | "scatterplot"
+        | "lineChart"
+        | "controls"
+        | "staticMap"
+        | "categorySelector"
+        | "dateTimeSlider"
+        | "container";
         label: string;
     }>;
 };
@@ -71,6 +77,7 @@ export const AvaliablePanes: Array<AvaliablePanesSection> = [
             { name: "histogram", label: "Histogram" },
             { name: "pieChart", label: "Pie Chart" },
             { name: "text", label: "Text" },
+            { name: "categorySelector", label: "Category Selector" },
             { name: "scatterplot", label: "Scatter Plot" },
             { name: "lineChart", label: "Line Chart" },
             { name: "controls", label: "Controls" },
@@ -201,6 +208,7 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         dataset: { name: "unknown", filters: [] }
     },
     text: text.defaults,
+    categorySelector: categorySelector.defaults,
     controls: {
         name: "Controls",
         title: "Controls",

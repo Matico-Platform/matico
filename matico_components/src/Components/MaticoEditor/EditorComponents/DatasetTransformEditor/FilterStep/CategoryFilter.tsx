@@ -146,9 +146,8 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
             >
                 {!!selectedColumn?.name && (
                     <Text id="filter-category-selector">
-                        {`${selectedColumn.name} is ${
-                            filterMode === "exclude" ? "not " : ""
-                        } one of the following`}
+                        {`${selectedColumn.name} is ${filterMode === "exclude" ? "not " : ""
+                            } one of the following`}
                     </Text>
                 )}
                 {!values?.hasOwnProperty("var") && (
@@ -186,7 +185,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                         <VariableSelector
                             // @ts-ignore
                             variable={values.var}
-                            allowedTypes={["selection"]}
+                            allowedTypes={["selection", "category"]}
                             onSelectVariable={(newVar) =>
                                 onUpdateFilter({
                                     isOneOf: { var: newVar },

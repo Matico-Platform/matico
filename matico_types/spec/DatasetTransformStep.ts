@@ -5,9 +5,4 @@ import type { FilterStep } from "./FilterStep";
 import type { JoinStep } from "./JoinStep";
 import type { WASMCompute } from "./WASMCompute";
 
-export type DatasetTransformStep =
-  | ({ type: "filter" } & FilterStep)
-  | ({ type: "aggregate" } & AggregateStep)
-  | ({ type: "join" } & JoinStep)
-  | ({ type: "compute" } & WASMCompute)
-  | ({ type: "columnTransformStep" } & ColumnTransformStep);
+export type DatasetTransformStep = { type: "filter" } & FilterStep | { type: "aggregate" } & AggregateStep | { type: "join" } & JoinStep | { type: "compute" } & WASMCompute | { type: "columnTransformStep" } & ColumnTransformStep;

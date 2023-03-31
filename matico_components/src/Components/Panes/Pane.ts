@@ -8,6 +8,7 @@ import { MaticoTextPane } from "Components/Panes/MaticoTextPane/MaticoTextPane";
 import { MaticoMapPane } from "Components/Panes/MaticoMapPane/MaticoMapPane";
 import { MaticoStaticMapPane } from "./MaticoStaticMapPane/MaticoStaticMapPane";
 import { MaticoDateTimeSlider } from "./MaticoDateTimeSlider/MaticoDateTimeSlider";
+import { MaticoCategorySelector } from "./MaticoCategorySelectorPane/MaticoCategorySelectorPane";
 
 export interface MaticoPaneInterface {
     position: PanePosition;
@@ -25,4 +26,5 @@ export type Pane =
     | typeof MaticoContainerPane
     | typeof MaticoTextPane
     | typeof MaticoStaticMapPane
+    | typeof MaticoCategorySelector
     | typeof MaticoDateTimeSlider;

@@ -56,3 +56,20 @@ pub struct DateTimeSliderPane {
     #[wasm_bindgen(skip)]
     pub name: String,
 }
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Debug, Clone, Validate, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct CategorySelectorPane {
+    #[wasm_bindgen(skip)]
+    pub column: String,
+    #[wasm_bindgen(skip)]
+    pub dataset: DatasetRef,
+    #[wasm_bindgen(skip)]
+    pub id: String,
+    #[wasm_bindgen(skip)]
+    pub label: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub name: String,
+}

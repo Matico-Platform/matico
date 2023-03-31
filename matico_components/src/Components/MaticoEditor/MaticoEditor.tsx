@@ -37,8 +37,8 @@ const EditPane: React.FC<{ element: EditElement | null }> = ({ element }) => {
         const parent = parentId
             ? (panes.find((p: Pane) => p.id === parentId) as ContainerPane)
             : pages.find((p: Page) =>
-                  p.panes.find((pane: PaneRef) => pane.id === id)
-              );
+                p.panes.find((pane: PaneRef) => pane.id === id)
+            );
 
         const paneRef = parent?.panes.find((p: PaneRef) => p.id === id);
 
@@ -70,9 +70,6 @@ export const MaticoEditor: React.FC<MaticoEditorProps> = ({
     const [tabKey, setTabKey] = useState<string>("Components");
 
     useEffect(() => {
-        if (spec) {
-            localStorage.setItem("code", JSON.stringify(spec));
-        }
         if (onSpecChange) {
             onSpecChange(spec);
         }
