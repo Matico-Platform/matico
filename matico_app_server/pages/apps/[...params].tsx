@@ -1,4 +1,4 @@
-import { Flex, ProgressCircle, View } from "@adobe/react-spectrum";
+import { Flex, ProgressCircle } from "@adobe/react-spectrum";
 import { App } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
