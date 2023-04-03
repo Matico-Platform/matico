@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import React, { useEffect, useRef } from "react";
 import { MaticoPage } from "../MaticoPage/MaticoPage";
 import { MaticoDataState } from "../../Contexts/MaticoDataContext/MaticoDataContext";
@@ -126,7 +126,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                         <MaticoNavBar />
                     </View>
                     <Content gridArea="main">
-                        <Switch>
+                        <Routes>
                             {pages.map(
                                 (page: Page, index: number) =>
                                     !!page?.id && (
@@ -138,29 +138,30 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
                                             }
                                             key={page.path}
                                             exact={true}
-                                        >
-                                            <DndContext
-                                                // @ts-ignore
-                                                onDragStart={handleDragStart}
-                                                onDragEnd={handleDragEnd}
-                                                // onDragOver={handleDragOver}
-                                                collisionDetection={
-                                                    layoutCollisionDetection
-                                                }
-                                                sensors={sensors}
-                                                modifiers={[
-                                                    restrictToWindowEdges
-                                                ]}
-                                            >
-                                                <MaticoPage
-                                                    key={page.path}
-                                                    pageId={page.id}
-                                                />
-                                            </DndContext>
-                                        </Route>
+                                            element={
+                                                <DndContext
+                                                    // @ts-ignore
+                                                    onDragStart={handleDragStart}
+                                                    onDragEnd={handleDragEnd}
+                                                    // onDragOver={handleDragOver}
+                                                    collisionDetection={
+                                                        layoutCollisionDetection
+                                                    }
+                                                    sensors={sensors}
+                                                    modifiers={[
+                                                        restrictToWindowEdges
+                                                    ]}
+                                                >
+                                                    <MaticoPage
+                                                        key={page.path}
+                                                        pageId={page.id}
+                                                    />
+                                                </DndContext>
+                                            }
+                                        />
                                     )
                             )}
-                        </Switch>
+                        </Routes>
                     </Content>
                 </Grid>
             )}
