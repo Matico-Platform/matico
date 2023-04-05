@@ -47,15 +47,15 @@ To fully run the app individually you can do the following
 
 // In a separate terminal or tmux pane 
 
-(cd matico_charts; yarn build)
+(cd matico_charts; pnpmcbuild)
 
 // In a separate terminal or tmux pane 
 
-(cd matico_components; yarn build-dev)
+(cd matico_components; pnpm build-dev)
 
 // In a separate terminal or tmux pane 
 
-(cd matico_admin; yarn dev)
+(cd matico_admin; pnpm dev)
 
 // In a separate terminal or tmux pane 
 

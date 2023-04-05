@@ -13,7 +13,7 @@
     "build-dev": "node --es-module-specifier-resolution=node scripts/dev.mjs",
     "build-prod": "node --es-module-specifier-resolution=node scripts/build.mjs",
     "build-types": "tsc --emitDeclarationOnly --outDir dist",
-    "start": "yarn build-dev"
+    "start": "pnpm build-dev"
   },
   "dependencies": {
     "@adobe/react-spectrum": "^3.25.1",
