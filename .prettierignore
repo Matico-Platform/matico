@@ -3,7 +3,10 @@ build
 coverage
 
 # Ignore next build paths
-**/.next 
+**/.next/* 
+
+**/dist/*
+matico_spec/*
 
 # Ignore these file directories
 node_modules/*
