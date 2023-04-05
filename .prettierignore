@@ -2,6 +2,9 @@
 build
 coverage
 
+# Ignore next build paths
+**/.next 
+
 # Ignore these file directories
 node_modules/*
 .yarn/
