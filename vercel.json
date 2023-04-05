@@ -1,4 +1,4 @@
 {
-  "buildCommand": "pmpn build",
+  "buildCommand": "pnpm build",
   "installCommand":"pnpm install"
 }
