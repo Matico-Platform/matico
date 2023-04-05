@@ -8,7 +8,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     children = null,
     icon = null,
     isOpen = false,
-    onToggle = (isOpen: boolean) => {},
+    onToggle = (isOpen: boolean) => { },
     titleStyle = {},
     viewStyle = {},
     outerStyle = {}
@@ -39,6 +39,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     color: "var(--spectrum-global-color-gray-900)",
                     textAlign: "left",
                     justifyContent: "flex-start",
+                    border: "0px",
                     ...titleStyle
                 }}
             >
@@ -74,9 +75,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     alignItems="start"
                     marginY="size-50"
                     marginX="size-25"
-                    // UNSAFE_style={{
-                    // ...viewStyle,
-                    // }}
+                // UNSAFE_style={{
+                // ...viewStyle,
+                // }}
                 >
                     {children}
                 </Flex>

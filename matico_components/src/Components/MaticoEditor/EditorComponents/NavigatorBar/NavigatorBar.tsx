@@ -47,24 +47,24 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                 >
                     <TabList>
                         <Item key="outline">
-                            <Breakdown size="XL" />
+                            <Breakdown size="S" />
                         </Item>
                         <Item key="datasets">
-                            <Data size="L" />
+                            <Data size="S" />
                         </Item>
                         <Item key="state">
-                            <Channel size="L" />
+                            <Channel size="S" />
                         </Item>
                         <Item key="errors">
                             <Alert
                                 color={
                                     errors.length > 0 ? "notice" : "positive"
                                 }
-                                size="L"
+                                size="S"
                             />
                         </Item>
                         <Item key="spec">
-                            <DocumentOutline size="L" />
+                            <DocumentOutline size="S" />
                         </Item>
                     </TabList>
                     <View
@@ -124,7 +124,8 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                     aria-label="Close panel"
                                     UNSAFE_style={{
                                         minWidth: 0,
-                                        fontSize: "2em"
+                                        fontSize: "2em",
+                                        border: "0px"
                                     }}
                                 >
                                     &times;

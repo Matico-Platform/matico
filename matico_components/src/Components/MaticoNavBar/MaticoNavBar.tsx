@@ -6,7 +6,7 @@ import { useApp } from "Hooks/useApp";
 import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
 import { chromaColorFromColorSpecification } from "Components/Panes/MaticoMapPane/LayerUtils";
 
-interface MaticoNavBarProps {}
+interface MaticoNavBarProps { }
 
 const NamedButton: React.FC<{
     name: string;
@@ -112,7 +112,8 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
                         onPress={() => onAddPage()}
                         UNSAFE_style={{
                             fontSize: "0.75rem",
-                            cursor: "pointer"
+                            cursor: "pointer",
+                            border: "0px"
                         }}
                         isQuiet
                         variant="overBackground"

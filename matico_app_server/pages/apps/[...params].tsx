@@ -100,6 +100,7 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({ app, error }) => {
           </p>
         </Flex>
       </div>
+
       <Flex width="100vw" height="100vh">
         {app && (
           <MaticoApp
