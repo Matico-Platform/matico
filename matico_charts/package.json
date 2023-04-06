@@ -53,10 +53,13 @@
     "@visx/shape": "^2.4.0",
     "@visx/stats": "^2.10.0",
     "@visx/tooltip": "^2.10.0",
+    "@visx/scale":"2.18.0",
+    "@visx/curve": "2.17.0",
     "d3-geo": "^3.0.1",
     "simple-statistics": "^7.7.3"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "lodash":"^4.17.21"
   }
 }
