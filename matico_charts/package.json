@@ -35,6 +35,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "storybook": "^6.5.10",
     "styled-components": "^5.3.3",
+    "node-stdlib-browser": "^1.2.0",
     "typescript": "^4.5.5"
   },
   "dependencies": {
