@@ -124,29 +124,19 @@ export const Header: React.FC<{
             <Login />
             <Link
               href="https://matico.app"
-              target={"_blank"}
               rel="noopener noreferrer"
+              target={"_blank"}
+              style={{ color: "white" }}
             >
-              <a
-                target={"_blank"}
-                rel="noopener noreferrer"
-                style={{ color: "white" }}
-              >
-                Docs
-              </a>
+              Docs
             </Link>
             <Link
               href="https://github.com/matico-Platform/matico"
               target={"_blank"}
               rel="noopener noreferrer"
+              style={{ color: "white" }}
             >
-              <a
-                target={"_blank"}
-                rel="noopener noreferrer"
-                style={{ color: "white" }}
-              >
-                Github
-              </a>
+              Github
             </Link>
           </Flex>
         </Wrapper>

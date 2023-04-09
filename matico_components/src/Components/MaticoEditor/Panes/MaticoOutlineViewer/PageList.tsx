@@ -23,14 +23,13 @@ import {
 import { PaneList } from "./PaneList";
 import { useSortable } from "@dnd-kit/sortable";
 import DragHandle from "@spectrum-icons/workflow/DragHandle";
-import { RouteComponentProps } from "react-router-dom";
 import { PageProvider } from "./PageContext";
 import { ContainerDropTarget } from "./ContainerDropTarget";
 import { useMaticoSelector } from "Hooks/redux";
+import { useLocation, useNavigate } from "react-router-dom";
 interface PageListProps {
     page: Page;
     children?: React.ReactNode;
-    route?: RouteComponentProps;
     showPanes?: boolean;
 }
 
@@ -45,9 +44,11 @@ interface PageListProps {
 
 export const PageList: React.FC<PageListProps> = ({
     page,
-    route,
     showPanes = true
 }) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const { panes, id, name: pageName } = page;
     const { addPaneToPage, selectPage, removePage } = usePage(id);
     const activeItem = useMaticoSelector(
@@ -79,17 +80,17 @@ export const PageList: React.FC<PageListProps> = ({
 
     const style = transform
         ? {
-              transform: `translate(${transform?.x}px, ${transform?.y}px)`,
-              transition
-          }
+            transform: `translate(${transform?.x}px, ${transform?.y}px)`,
+            transition
+        }
         : {};
 
     const showDropZone = // @ts-ignore
         !!activeItem && activeItem?.data?.current?.type !== "page";
 
     const navigateToPage = () => {
-        const onPage = route?.location?.path === page.path;
-        !onPage && route?.history.push(page.path);
+        const onPage = location?.key === page.path;
+        !onPage && navigate(page.path);
     };
     const handlePageButtonClick = () => {
         navigateToPage();
@@ -148,7 +149,7 @@ export const PageList: React.FC<PageListProps> = ({
                                         {(close) => (
                                             <Dialog width="auto">
                                                 <Heading>
-                                                    Delete {name}?
+                                                    <span>Delete {pageName}?</span>
                                                 </Heading>
                                                 <Content marginTop="size-100">
                                                     <Button

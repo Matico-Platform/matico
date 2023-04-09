@@ -1,4 +1,4 @@
-import { Flex, ProgressCircle, View } from "@adobe/react-spectrum";
+import { Flex, ProgressCircle } from "@adobe/react-spectrum";
 import { App } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
@@ -100,6 +100,7 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({ app, error }) => {
           </p>
         </Flex>
       </div>
+
       <Flex width="100vw" height="100vh">
         {app && (
           <MaticoApp

@@ -8,7 +8,6 @@ import {
 } from "@adobe/react-spectrum";
 import { useApp } from "Hooks/useApp";
 import { Page, PaneRef } from "@maticoapp/matico_types/spec";
-import { withRouter, RouteComponentProps } from "react-router-dom";
 import {
     closestCenter,
     CollisionDetection,
@@ -41,10 +40,8 @@ type MaticoOutlineViewerProps = RouteComponentProps & {
     panes?: PaneRef[];
 };
 
-export const MaticoOutlineViewer: React.FC = withRouter(
+export const MaticoOutlineViewer: React.FC =
     ({
-        history,
-        location,
         showPanes = true,
         showTitle = true,
         panes
@@ -57,6 +54,8 @@ export const MaticoOutlineViewer: React.FC = withRouter(
             addPage,
             updatePageIndex
         } = useApp();
+
+
         const dispatch = useMaticoDispatch();
         const activeItem = useMaticoSelector(
             (state) => state.editor.activeDragItem
@@ -129,7 +128,6 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                                     <PageList
                                         key={page.id}
                                         page={page}
-                                        route={{ history, location }}
                                         showPanes={showPanes}
                                     />
                                 ))}
@@ -146,5 +144,4 @@ export const MaticoOutlineViewer: React.FC = withRouter(
                     )}
             </View>
         );
-    }
-);
+    };

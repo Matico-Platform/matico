@@ -29,18 +29,19 @@
     "**/babel-loader**"
   ],
   "scripts": {
-    "predeploy": "yarn run build",
-    "start": "concurrently \"cd matico_components && yarn start\" \"cd editor && yarn start\" ",
-    "dev-editor": "concurrently \"cd matico_components && yarn build-dev\" \"cd editor && yarn start\" ",
-    "build": "yarn workspace @maticoapp/matico_charts build-prod && yarn workspace @maticoapp/matico_components build-prod &&  (cd matico_app_server && yarn run prisma generate && yarn build )",
-    "deploy": "yarn predeploy && yarn run netlify deploy --prod",
+    "preinstall": "npx only-allow pnpm", 
+    "predeploy": "pnpm run build",
+    "start": "concurrently \"cd matico_components && pnpm start\" \"cd editor && pnpm start\" ",
+    "dev-editor": "concurrently \"cd matico_components && pnpm build-dev\" \"cd editor && pnpm start\" ",
+    "build": "pnpm --filter @maticoapp/matico_charts run build-prod  && pnpm --filter @maticoapp/matico_components build-prod  &&  (cd matico_app_server && pnpm prisma generate && pnpm build )",
+    "deploy": "pnpm predeploy &&  pnpm run netlify deploy --prod",
     "build_rust_docs": "cargo doc --open --document-private-items --no-deps",
     "postinstall": "husky install",
-    "prettier-check": "yarn prettier --check '**/*.{js,ts,jsx,tsx}'",
-    "prettier-write": "yarn prettier --write '**/*.{js,ts,jsx,tsx}'",
+    "prettier-check": "pnpm prettier --check '**/*.{js,ts,jsx,tsx}'",
+    "prettier-write": "pnpm prettier --write '**/*.{js,ts,jsx,tsx}'",
     "rust-format": "cargo fmt"
   },
-  "packageManager": "yarn@3.2.2",
+  "packageManager": "^pnpm@8.1.0",
   "dependencies": {
     "concurrently": "^7.3.0"
   }
