@@ -28,8 +28,6 @@
     "@react-stately/data": "^3.6.0",
     "@spectrum-icons/illustrations": "^3.6.0",
     "@spectrum-icons/workflow": "^4.0.1",
-    "@spectrum-icons/illustrations": "^3.6.0",
-    "@spectrum-icons/workflow": "^4.0.1",
     "@zip.js/zip.js": "^2.6.16",
     "arquero": "^5.1.0",
     "aws-sdk": "^2.1198.0",
@@ -38,6 +36,7 @@
     "imagemin-mozjpeg": "^9.0.0",
     "imagemin-optipng": "^8.0.0",
     "imagemin-svgo": "^9.0.0",
+    "lodash.debounce": "^4.0.8",
     "logrocket": "^3.0.1",
     "logrocket-react": "^5.0.1",
     "next": "latest",
@@ -48,6 +47,7 @@
     "react-cookie-consent": "^8.0.1",
     "react-dom": "latest",
     "react-dropzone": "^11.4.2",
+    "@maticoapp/matico_spec": "workspace:matico_spec",
     "react-responsive": "^9.0.0-beta.10",
     "react-stately": "^3.16.0",
     "styled-components": "^5.3.1",
@@ -55,6 +55,7 @@
     "wkx": "^0.5.0"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.7",
     "@types/logrocket-react": "^3.0.0",
     "@types/node": "16.11.13",
     "@types/react": "17.0.37",
