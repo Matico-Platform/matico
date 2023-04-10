@@ -12,3 +12,6 @@ matico_spec/*
 node_modules/*
 .yarn/
 editor/
+
+#Lockfile 
+pnpm-lock.yaml

@@ -149,7 +149,9 @@ export const PageList: React.FC<PageListProps> = ({
                                         {(close) => (
                                             <Dialog width="auto">
                                                 <Heading>
-                                                    <span>Delete {pageName}?</span>
+                                                    <span>
+                                                        Delete {pageName}?
+                                                    </span>
                                                 </Heading>
                                                 <Content marginTop="size-100">
                                                     <Button

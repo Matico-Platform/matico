@@ -61,54 +61,73 @@ export const MaticoOutlineViewer: React.FC =
             (state) => state.editor.activeDragItem
         );
 
-        //@ts-ignore
-        const handleDragStart = ({ active }) =>
-            dispatch(setActiveDragItem(active));
-        // const handleDragOver = (event: DragOverEvent) => {
-        //     handleDrag(event, false, updatePageIndex, reparentPane, changePaneIndex)
-        // }
-        const handleDragEnd = (event: DragEndEvent) => {
-            handleDrag(
-                event,
-                true,
-                updatePageIndex,
-                reparentPane,
-                changePaneIndex
-            );
-            dispatch(setActiveDragItem(null));
-        };
+    const dispatch = useMaticoDispatch();
+    const activeItem = useMaticoSelector(
+        (state) => state.editor.activeDragItem
+    );
 
-        const collisionDetectionStrategy: CollisionDetection = useCallback(
-            outlineCollisionDetection,
-            [activeItem?.id, JSON.stringify(pages)]
-        );
+    //@ts-ignore
+    const handleDragStart = ({ active }) => dispatch(setActiveDragItem(active));
+    // const handleDragOver = (event: DragOverEvent) => {
+    //     handleDrag(event, false, updatePageIndex, reparentPane, changePaneIndex)
+    // }
+    const handleDragEnd = (event: DragEndEvent) => {
+        handleDrag(event, true, updatePageIndex, reparentPane, changePaneIndex);
+        dispatch(setActiveDragItem(null));
+    };
 
-        const sensors = useSensors(
-            useSensor(MouseSensor),
-            useSensor(TouchSensor),
-            useSensor(KeyboardSensor, {
-                coordinateGetter
-            })
-        );
-        return (
-            <View width="100%" height="auto">
-                <Flex direction="column">
-                    {showTitle && (
-                        <HoverableRow hideBorder>
-                            <Flex direction="row" alignItems="center">
-                                <Heading marginY="size-0" marginX="size-150">
-                                    Page Outline
-                                </Heading>
-                                <HoverableItem>
-                                    <ActionButton
-                                        onPress={() => addPage({})}
-                                        isQuiet
-                                    >
-                                        Add Page
-                                    </ActionButton>
-                                </HoverableItem>
-                            </Flex>
-                        </HoverableRow>
+    const collisionDetectionStrategy: CollisionDetection = useCallback(
+        outlineCollisionDetection,
+        [activeItem?.id, JSON.stringify(pages)]
+    );
+
+    const sensors = useSensors(
+        useSensor(MouseSensor),
+        useSensor(TouchSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter
+        })
+    );
+    return (
+        <View width="100%" height="auto">
+            <Flex direction="column">
+                {showTitle && (
+                    <HoverableRow hideBorder>
+                        <Flex direction="row" alignItems="center">
+                            <Heading marginY="size-0" marginX="size-150">
+                                Page Outline
+                            </Heading>
+                            <HoverableItem>
+                                <ActionButton
+                                    onPress={() => addPage({})}
+                                    isQuiet
+                                >
+                                    Add Page
+                                </ActionButton>
+                            </HoverableItem>
+                        </Flex>
+                    </HoverableRow>
+                )}
+                <DndContext
+                    modifiers={[restrictToVerticalAxis]}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    // onDragOver={handleDragOver}
+                    collisionDetection={collisionDetectionStrategy}
+                    sensors={sensors}
+                >
+                    {!!panes ? (
+                        <PaneList panes={panes} />
+                    ) : (
+                        <SortableContext items={pages.map((page) => page.id)}>
+                            {pages.map((page) => (
+                                <PageList
+                                    key={page.id}
+                                    page={page}
+                                    showPanes={showPanes}
+                                />
+                            ))}
+                        </SortableContext>
                     )}
                     <DndContext
                         modifiers={[restrictToVerticalAxis]}

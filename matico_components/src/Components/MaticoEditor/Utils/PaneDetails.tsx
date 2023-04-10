@@ -54,17 +54,17 @@ type AvaliablePanesSection = {
     sectionTitle: string;
     panes: Array<{
         name:
-        | "map"
-        | "histogram"
-        | "pieChart"
-        | "text"
-        | "scatterplot"
-        | "lineChart"
-        | "controls"
-        | "staticMap"
-        | "categorySelector"
-        | "dateTimeSlider"
-        | "container";
+            | "map"
+            | "histogram"
+            | "pieChart"
+            | "text"
+            | "scatterplot"
+            | "lineChart"
+            | "controls"
+            | "staticMap"
+            | "categorySelector"
+            | "dateTimeSlider"
+            | "container";
         label: string;
     }>;
 };

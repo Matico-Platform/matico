@@ -1,7 +1,24 @@
 import React, { useMemo } from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { Content, View } from "@adobe/react-spectrum";
-import { EditorComposer, Editor } from "verbum";
+import {
+    EditorComposer,
+    Editor,
+    BackgroundColorPicker,
+    FontFamilyDropdown,
+    FontSizeDropdown,
+    Divider,
+    BoldButton,
+    ItalicButton,
+    UnderlineButton,
+    CodeFormatButton,
+    InsertLinkButton,
+    TextColorPicker,
+    TextFormatDropdown,
+    InsertDropdown,
+    AlignDropdown,
+    ToolbarPlugin
+} from "verbum";
 import styled from "styled-components";
 export interface MaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
@@ -64,7 +81,26 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
                         initialEditorState={parsedContent}
                         isReadOnly={isReadOnly}
                     >
-                        {children}
+                        <>
+                            <ToolbarPlugin defaultFontSize="20px">
+                                <FontFamilyDropdown />
+                                <FontSizeDropdown />
+                                <Divider />
+                                <BoldButton />
+                                <ItalicButton />
+                                <UnderlineButton />
+                                <CodeFormatButton />
+                                <InsertLinkButton />
+                                <TextColorPicker />
+                                <BackgroundColorPicker />
+                                <TextFormatDropdown />
+                                <Divider />
+                                <InsertDropdown enablePoll={true} />
+                                <Divider />
+                                <AlignDropdown />
+                            </ToolbarPlugin>
+                            {children}
+                        </>
                     </Editor>
                 </EditorComposer>
             </TextPaneContainer>
