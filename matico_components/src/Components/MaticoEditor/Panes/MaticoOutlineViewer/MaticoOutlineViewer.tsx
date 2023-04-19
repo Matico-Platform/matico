@@ -40,26 +40,14 @@ type MaticoOutlineViewerProps = RouteComponentProps & {
     panes?: PaneRef[];
 };
 
-export const MaticoOutlineViewer: React.FC =
-    ({
-        showPanes = true,
-        showTitle = true,
-        panes
-    }: MaticoOutlineViewerProps) => {
-        // list pages
-        const {
-            pages,
-            reparentPane,
-            changePaneIndex,
-            addPage,
-            updatePageIndex
-        } = useApp();
-
-
-        const dispatch = useMaticoDispatch();
-        const activeItem = useMaticoSelector(
-            (state) => state.editor.activeDragItem
-        );
+export const MaticoOutlineViewer: React.FC = ({
+    showPanes = true,
+    showTitle = true,
+    panes
+}: MaticoOutlineViewerProps) => {
+    // list pages
+    const { pages, reparentPane, changePaneIndex, addPage, updatePageIndex } =
+        useApp();
 
     const dispatch = useMaticoDispatch();
     const activeItem = useMaticoSelector(
@@ -129,38 +117,15 @@ export const MaticoOutlineViewer: React.FC =
                             ))}
                         </SortableContext>
                     )}
-                    <DndContext
-                        modifiers={[restrictToVerticalAxis]}
-                        onDragStart={handleDragStart}
-                        onDragEnd={handleDragEnd}
-                        // onDragOver={handleDragOver}
-                        collisionDetection={collisionDetectionStrategy}
-                        sensors={sensors}
-                    >
-                        {!!panes ? (
-                            <PaneList panes={panes} />
-                        ) : (
-                            <SortableContext
-                                items={pages.map((page) => page.id)}
-                            >
-                                {pages.map((page) => (
-                                    <PageList
-                                        key={page.id}
-                                        page={page}
-                                        showPanes={showPanes}
-                                    />
-                                ))}
-                            </SortableContext>
-                        )}
-                    </DndContext>
-                </Flex>
-                {!!activeItem &&
-                    createPortal(
-                        <DragOverlay adjustScale={false}>
-                            <DraggablePane activeItem={activeItem} />
-                        </DragOverlay>,
-                        document.body
-                    )}
-            </View>
-        );
-    };
+                </DndContext>
+            </Flex>
+            {!!activeItem &&
+                createPortal(
+                    <DragOverlay adjustScale={false}>
+                        <DraggablePane activeItem={activeItem} />
+                    </DragOverlay>,
+                    document.body
+                )}
+        </View>
+    );
+};

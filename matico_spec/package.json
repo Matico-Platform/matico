@@ -11,6 +11,7 @@
     "watch": "node scripts/watch.js"
   },
   "devDependencies": {
+   "esbuild": "^0.17.1",
     "esbuild-plugin-wasm": "^1.0.0",
     "esbuild-plugin-wasm-pack": "^1.1.0"
   }

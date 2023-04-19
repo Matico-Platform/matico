@@ -61,8 +61,7 @@ export const FilePreviewer: React.FC<FilePreviewerInterface> = ({
                     return <Cell>{val}</Cell>;
                   })}
                 </Row>
-              ))
-            }
+              ))}
           </TableBody>
         </TableView>
       )}
@@ -79,21 +78,54 @@ export const FilePreviewer: React.FC<FilePreviewerInterface> = ({
           value={description}
           onChange={setDescription}
         />
-        <Switch isDisabled={upload} isSelected={isPublic} onChange={(val) => setIsPublic(val)}>
+        <Switch
+          isDisabled={upload}
+          isSelected={isPublic}
+          onChange={(val) => setIsPublic(val)}
+        >
           Public
         </Switch>
 
-        {fileType === 'csv' &&
-          <Switch aria-label="Add geometry" isSelected={showGeomMaker} onChange={setGeomMaker}>Add geometry</Switch>
-        }
+        {fileType === "csv" && (
+          <Switch
+            aria-label="Add geometry"
+            isSelected={showGeomMaker}
+            onChange={setGeomMaker}
+          >
+            Add geometry
+          </Switch>
+        )}
 
-        {showGeomMaker &&
-          <Flex direction='row' width="100%" justifyContent='space-evenly' gap={"size-400"}>
-            <Picker flex={1} label={"Latitude"} items={data._names.map((column) => ({ id: column, name: column }))} selectedKey={latColumn} onSelectionChange={(column) => setLatColumn(column as string)}>
-              {(item) => <Item key={item.id} >{item.name} </Item>}
+        {showGeomMaker && (
+          <Flex
+            direction="row"
+            width="100%"
+            justifyContent="space-evenly"
+            gap={"size-400"}
+          >
+            <Picker
+              flex={1}
+              label={"Latitude"}
+              items={data._names.map((column) => ({
+                id: column,
+                name: column,
+              }))}
+              selectedKey={latColumn}
+              onSelectionChange={(column) => setLatColumn(column as string)}
+            >
+              {(item) => <Item key={item.id}>{item.name} </Item>}
             </Picker>
-            <Picker flex={1} label={"Longitude"} items={data._names.map((column) => ({ id: column, name: column }))} selectedKey={lngColumn} onSelectionChange={(column) => setLngColumn(column as string)}>
-              {(item) => <Item key={item.id} >{item.name} </Item>}
+            <Picker
+              flex={1}
+              label={"Longitude"}
+              items={data._names.map((column) => ({
+                id: column,
+                name: column,
+              }))}
+              selectedKey={lngColumn}
+              onSelectionChange={(column) => setLngColumn(column as string)}
+            >
+              {(item) => <Item key={item.id}>{item.name} </Item>}
             </Picker>
           </Flex>
         )}
@@ -102,10 +134,20 @@ export const FilePreviewer: React.FC<FilePreviewerInterface> = ({
           <Uploader
             table={data}
             metadata={{ name, description, public: isPublic }}
-            onDone={(dataset) => { if (onSubmit) { onSubmit(dataset) } }}
+            onDone={(dataset) => {
+              if (onSubmit) {
+                onSubmit(dataset);
+              }
+            }}
           />
         ) : (
-          <Button variant="cta" onPress={() => setUpload(true)} isDisabled={!(!showGeomMaker || (showGeomMaker && latColumn && lngColumn))}>
+          <Button
+            variant="cta"
+            onPress={() => setUpload(true)}
+            isDisabled={
+              !(!showGeomMaker || (showGeomMaker && latColumn && lngColumn))
+            }
+          >
             Upload
           </Button>
         )}
