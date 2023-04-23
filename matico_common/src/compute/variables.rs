@@ -3,11 +3,16 @@ use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use ts_rs::TS;
 
+//Todo
+//- Change the types use by Parameter value to be 64 bit version
+//and have conversions downcase.
+//- Make macro to automatically generate To / From traits
+
 use crate::{ArgError, ProcessError};
 
 #[derive(Serialize, Deserialize, Debug, Clone, TS)]
 #[ts(export)]
-pub struct OptionGroupVals(Vec<OptionGroupVal>);
+pub struct OptionGroupVals(pub Vec<OptionGroupVal>);
 
 #[derive(Serialize, Deserialize, Debug, Clone, TS)]
 #[serde(rename_all = "camelCase")]
@@ -76,12 +81,54 @@ impl TryFrom<&ParameterValue> for OptionGroupVals {
     }
 }
 
+impl From<f32> for ParameterValue {
+    fn from(value: f32) -> Self {
+        ParameterValue::NumericFloat(value)
+    }
+}
+
+impl From<f64> for ParameterValue {
+    fn from(value: f64) -> Self {
+        ParameterValue::NumericFloat(value as f32)
+    }
+}
+
+impl From<i32> for ParameterValue {
+    fn from(value: i32) -> Self {
+        ParameterValue::NumericInt(value)
+    }
+}
+
+impl From<u32> for ParameterValue {
+    fn from(value: u32) -> Self {
+        ParameterValue::NumericInt(value as i32)
+    }
+}
+
+impl From<bool> for ParameterValue {
+    fn from(value: bool) -> Self {
+        ParameterValue::Boolean(value)
+    }
+}
+
 impl TryFrom<&ParameterValue> for f32 {
     type Error = ArgError;
 
     fn try_from(parameter_value: &ParameterValue) -> Result<f32, Self::Error> {
         if let ParameterValue::NumericFloat(val) = parameter_value {
             return Ok(*val);
+        } else {
+            Err(ArgError::new("", "Failed to convert ParameterValue to f64"))
+        }
+    }
+}
+
+impl TryFrom<&ParameterValue> for f64 {
+    type Error = ArgError;
+
+    fn try_from(parameter_value: &ParameterValue) -> Result<f64, Self::Error> {
+        if let ParameterValue::NumericFloat(val) = parameter_value {
+            return Ok(*val as f64);
         } else {
             Err(ArgError::new("", "Failed to convert ParameterValue to f64"))
         }

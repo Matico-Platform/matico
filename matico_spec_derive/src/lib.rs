@@ -83,11 +83,14 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                         .ok_or(::matico_analysis::ArgError::new(parameter_name, "Does not exist"))
                 }
 
-                fn set_parameter(
+                fn set_parameter<T: std::convert::TryInto<::matico_analysis::ParameterValue>>(
                     &mut self,
                     parameter_name: &str,
-                    value: ::matico_analysis::ParameterValue,
+                    value: T,
                 ) -> std::result::Result<(), ::matico_analysis::ArgError> {
+                    let value : ParameterValue = value.try_into().map_err(|_|
+                                            ::matico_analysis::ArgError::new(parameter_name,"Passed the wrong type")
+                                            )?;
                     let parameter_options = self
                         .options
                         .get(parameter_name)

@@ -34,7 +34,7 @@ impl From<ArgError> for ProcessError {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ProcessError {
     pub error: String,
 }

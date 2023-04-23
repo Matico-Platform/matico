@@ -101,13 +101,13 @@ impl ValidateParameter for NumericIntOptions {
     fn validate_parameter(&self, value: &ParameterValue) -> Result<(), String> {
         if let ParameterValue::NumericInt(int_val) = value {
             if let Some(allowed_range) = self.range {
-                if int_val > &allowed_range[0] && int_val < &allowed_range[1] {
-                    Err(format!(
-                        "Value is outside of allowed range {} - {}",
-                        allowed_range[0], allowed_range[1]
-                    ))
-                } else {
+                if int_val >= &allowed_range[0] && int_val <= &allowed_range[1] {
                     Ok(())
+                } else {
+                    Err(format!(
+                        "Value {} is outside of allowed range {} - {}",
+                        int_val, allowed_range[0], allowed_range[1]
+                    ))
                 }
             } else {
                 Ok(())
