@@ -134,6 +134,17 @@ const ParameterInput: React.FC<{
                     }
                 />
             );
+        case "boolean":
+            return (
+                <ValueOrVariableInput
+                    value={value ? value : defaultVal}
+                    label={displayName}
+                    defaultValue={defaultVal}
+                    onChange={(newVal) =>
+                        onChange({ name, parameter: { type, value: newVal } })
+                    }
+                />
+            );
         case "textCategory":
             return (
                 <TextCategoryInput
@@ -247,6 +258,7 @@ const ParameterInput: React.FC<{
                     <ParameterGroup
                         parameters={options.options}
                         values={value}
+                        layout="column"
                         onChange={(update) =>
                             onChange({
                                 name,

@@ -2,7 +2,8 @@ import {
     NumberField,
     TextField,
     ToggleButton,
-    Flex
+    Flex,
+    Checkbox
 } from "@adobe/react-spectrum";
 import React from "react";
 import { VariableSelector } from "./VariableSelector";
@@ -14,7 +15,9 @@ interface ValueOrVariableInputProps {
     value: number | string | StateVariableReference;
     defaultValue: number | string;
     label?: string;
-    onChange: (newVal: number | string | StateVariableReference) => void;
+    onChange: (
+        newVal: number | string | StateVariableReference | boolean
+    ) => void;
 }
 export const ValueOrVariableInput: React.FC<ValueOrVariableInputProps> = ({
     value,
@@ -46,6 +49,15 @@ export const ValueOrVariableInput: React.FC<ValueOrVariableInputProps> = ({
                         onChange({ var: variableName })
                     }
                 />
+            )}
+
+            {value !== null && typeof value === "boolean" && (
+                <Checkbox
+                    isSelected={value}
+                    onChange={(newVal: boolean) => onChange(newVal)}
+                >
+                    {label}
+                </Checkbox>
             )}
             {value && typeof value === "string" && (
                 <TextField
