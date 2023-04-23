@@ -5,6 +5,8 @@ import { useIsEditable } from "../../Hooks/useIsEditable";
 import { useApp } from "Hooks/useApp";
 import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
 import { chromaColorFromColorSpecification } from "Components/Panes/MaticoMapPane/LayerUtils";
+import { useRecoilValue } from "recoil";
+import { pageListAtom, themeAtom, useAddPage } from "Stores/SpecAtoms";
 
 interface MaticoNavBarProps { }
 
@@ -37,12 +39,17 @@ const HoverLink = styled(Link)`
 
 export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
     const editable = useIsEditable();
-    const { pages, addPage, removePage, theme, setEditPage } = useApp();
+
+    const { removePage, setEditPage } = useApp();
+    const pages = useRecoilValue(pageListAtom)
+    const addPage = useAddPage();
+
+    const theme = useRecoilValue(themeAtom)
 
     const logo = theme?.logoUrl;
 
     const onAddPage = () => {
-        addPage({});
+        addPage();
     };
 
     const setEditorPath = (pageId: string) => {
@@ -88,7 +95,7 @@ export const MaticoNavBar: React.FC<MaticoNavBarProps> = () => {
                         }
                     />
                 </Link>
-                {pages.map((page, index) => (
+                {pages.map((page) => (
                     <View
                         position="relative"
                         key={page.path}

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import _ from "lodash";
-// import "react-mde/lib/styles/css/react-mde-all.css";
 import {
     ComboBox,
     Flex,
@@ -14,26 +13,27 @@ import { useIconList } from "Hooks/useIconList";
 import { usePage } from "Hooks/usePage";
 import { GatedAction } from "../EditorComponents/GatedAction";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
-import { Pane, PaneRef } from "@maticoapp/matico_types/spec";
-import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { IconForPaneType } from "../Utils/PaneDetails";
-import { NewPaneDialog } from "../EditorComponents/NewPaneDialog/NewPaneDialog";
 import { PaneCollectionEditor } from "../EditorComponents/PaneCollectionEditor/PaneCollectionEditor";
+import { pageAtomFamily } from "Stores/SpecAtoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { editTargetAtom } from "Stores/StateAtoms";
 
 export interface PageEditorProps {
     id: string;
 }
-export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
-    const { page, updatePage, removePage, panes, addPaneToPage } = usePage(id);
+export const PageEditor: React.FC = () => {
+    const { id } = useRecoilValue(editTargetAtom)
+    const { removePage } = usePage(id);
 
-    const { iconList, filterText, setFilterText, loadMoreIcons } =
-        useIconList();
+    const [page, setPage] = useRecoilState(pageAtomFamily(id))
+
+    const { iconList, filterText, setFilterText, loadMoreIcons } = useIconList();
 
     useEffect(() => {
         if (page) {
             setFilterText(
                 page?.icon?.split(" fa-")?.slice(-1)?.[0]?.replace(/-/g, " ") ||
-                    ""
+                ""
             );
         }
     }, [page?.icon]);
@@ -54,7 +54,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
                     width="100%"
                     marginTop="size-50"
                     value={page.name}
-                    onChange={(name: string) => updatePage({ name })}
+                    onChange={(name: string) => setPage({ ...page, name })}
                 />
                 <TextField
                     label="Path"
@@ -62,12 +62,12 @@ export const PageEditor: React.FC<PageEditorProps> = ({ id }) => {
                     width="100%"
                     marginTop="size-50"
                     value={page.path}
-                    onChange={(path: string) => updatePage({ path })}
+                    onChange={(path: string) => setPage({ ...page, path })}
                 />
                 <ComboBox
                     label="Icon"
                     selectedKey={page.icon}
-                    onSelectionChange={(icon: string) => updatePage({ icon })}
+                    onSelectionChange={(icon: string) => setPage({ ...page, icon })}
                     labelPosition="side"
                     width="100%"
                     marginTop="size-50"

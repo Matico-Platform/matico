@@ -17,6 +17,7 @@ import { PaneParts } from "Components/Panes/PaneParts";
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 import { MaticoDateTimeSlider } from "Components/Panes/MaticoDateTimeSlider/MaticoDateTimeSlider";
 import { MaticoCategorySelectorPaneComponents } from "Components/Panes/MaticoCategorySelectorPane";
+import { ErrorBoundary } from "react-error-boundary";
 
 export const fallbackPanes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
@@ -74,13 +75,17 @@ export const PaneSelector: React.FC<{
                 className="grid content"
                 style={{ width: "100%", height: "100%" }}
             >
-                <PaneComponent
-                    key={normalizedPane.id}
-                    position={paneRef.position}
-                    {...normalizedPane}
-                    paneRef={paneRef}
-                    updatePane={updatePane}
-                />
+                <ErrorBoundary fallback={<div>Something went wrong</div>} >
+                    <React.Suspense fallback={() => <h1>Loading...</h1>}>
+                        <PaneComponent
+                            key={normalizedPane.id}
+                            position={paneRef.position}
+                            {...normalizedPane}
+                            paneRef={paneRef}
+                            updatePane={updatePane}
+                        />
+                    </React.Suspense>
+                </ErrorBoundary>
             </div>
         </>
     );

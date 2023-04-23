@@ -1,0 +1,5 @@
+- Refactor each editor to use recoil
+- Remove the code for the layout editing from each editor
+- Write Veriables Atom store 
+- Write Selecotr for normalized pane spec
+- Write DataSet based Store that interacts with the DataStore

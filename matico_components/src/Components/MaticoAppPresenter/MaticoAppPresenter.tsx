@@ -30,6 +30,8 @@ import { layoutCollisionDetection } from "Components/MaticoEditor/Panes/MaticoOu
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { DragEndEvent } from "@react-types/shared";
 import { setActiveDragItem } from "Stores/editorSlice";
+import { pageListAtom, useSpecAtomsSetup } from "Stores/SpecAtoms";
+import { useRecoilSnapshot, useRecoilValue } from "recoil";
 
 interface MaticoAppPresenterProps {
     spec?: App;
@@ -42,6 +44,8 @@ interface MaticoAppPresenterProps {
     };
 }
 
+
+
 export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     spec,
     basename,
@@ -51,14 +55,18 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
         width: null
     }
 }) => {
-    const dispatch = useMaticoDispatch();
+    const setInitalSpec = useSpecAtomsSetup();
 
+    const dispatch = useMaticoDispatch();
     const firstLoad = useRef(true);
+
 
     // If the external spec changes, we want to update here
     // This will also set up the inital spec
+
     useEffect(() => {
         if (firstLoad.current) {
+            setInitalSpec(spec)
             dispatch(setSpec(spec));
         } else {
             firstLoad.current = false;
@@ -70,15 +78,7 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     // Register the datasets in the spec and keep in sync as changes are made
     useRegisterDatasets();
 
-    const pages = useNormalizedSpecSelector((spec) => spec?.pages);
-
-    // const appState = useMaticoSelector((state) => state.variables);
-
-    //  useEffect(() => {
-    //      if (onStateChange) {
-    //          onStateChange(appState);
-    //      }
-    //  }, [onStateChange, JSON.stringify(appState)]);
+    let pages = useRecoilValue(pageListAtom)
 
     const { reparentPane, changePaneIndex, updatePageIndex } = useApp();
 
@@ -99,73 +99,70 @@ export const MaticoAppPresenter: React.FC<MaticoAppPresenterProps> = ({
     );
     return (
         <>
-            {pages && (
-                <Grid
-                    areas={["nav main"]}
-                    columns={[
-                        "static-size-900",
-                        "calc(100% - static-size-900)"
-                    ]}
-                    rows={["flex"]}
-                    gridArea={"viewer"}
-                    height="100%"
-                    maxWidth={
-                        maxDimensions.width
-                            ? `${maxDimensions.width}px`
-                            : "100%"
-                    }
-                    maxHeight={
-                        maxDimensions.height
-                            ? `${maxDimensions.height}px`
-                            : "100%"
-                    }
-                    margin="0 auto"
-                    width="100%"
-                >
-                    <View gridArea="nav">
-                        <MaticoNavBar />
-                    </View>
-                    <Content gridArea="main">
-                        <Routes>
-                            {pages.map(
-                                (page: Page, index: number) =>
-                                    !!page?.id && (
-                                        <Route
-                                            path={
-                                                page.path
-                                                    ? page.path
-                                                    : page.name
+            <Grid
+                areas={["nav main"]}
+                columns={[
+                    "static-size-900",
+                    "calc(100% - static-size-900)"
+                ]}
+                rows={["flex"]}
+                gridArea={"viewer"}
+                height="100%"
+                maxWidth={
+                    maxDimensions.width
+                        ? `${maxDimensions.width}px`
+                        : "100%"
+                }
+                maxHeight={
+                    maxDimensions.height
+                        ? `${maxDimensions.height}px`
+                        : "100%"
+                }
+                margin="0 auto"
+                width="100%"
+            >
+                <View gridArea="nav">
+                    <MaticoNavBar />
+                </View>
+                <Content gridArea="main">
+                    <Routes>
+                        {pages.map(
+                            (page, index: number) =>
+                            (
+                                <Route
+                                    path={
+                                        page.path
+                                            ? page.path
+                                            : page.name
+                                    }
+                                    key={page.path}
+                                    exact={true}
+                                    element={
+                                        <DndContext
+                                            // @ts-ignore
+                                            onDragStart={handleDragStart}
+                                            onDragEnd={handleDragEnd}
+                                            // onDragOver={handleDragOver}
+                                            collisionDetection={
+                                                layoutCollisionDetection
                                             }
-                                            key={page.path}
-                                            exact={true}
-                                            element={
-                                                <DndContext
-                                                    // @ts-ignore
-                                                    onDragStart={handleDragStart}
-                                                    onDragEnd={handleDragEnd}
-                                                    // onDragOver={handleDragOver}
-                                                    collisionDetection={
-                                                        layoutCollisionDetection
-                                                    }
-                                                    sensors={sensors}
-                                                    modifiers={[
-                                                        restrictToWindowEdges
-                                                    ]}
-                                                >
-                                                    <MaticoPage
-                                                        key={page.path}
-                                                        pageId={page.id}
-                                                    />
-                                                </DndContext>
-                                            }
-                                        />
-                                    )
-                            )}
-                        </Routes>
-                    </Content>
-                </Grid>
-            )}
-            {/* </Router> */}
+                                            sensors={sensors}
+                                            modifiers={[
+                                                restrictToWindowEdges
+                                            ]}
+                                        >
+                                            <MaticoPage
+                                                key={page.path}
+                                                pageId={page.id}
+                                            />
+                                        </DndContext>
+                                    }
+                                />
+                            )
+                        )}
+                    </Routes>
+                </Content>
+            </Grid>
         </>
     );
 };

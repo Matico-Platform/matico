@@ -8,6 +8,8 @@ import { ParentProvider } from "Hooks/useParentContext";
 import styled from "styled-components";
 import { ContainerDropTarget } from "Components/MaticoEditor/Panes/MaticoOutlineViewer/ContainerDropTarget";
 import { useMaticoSelector } from "Hooks/redux";
+import { pageAtomFamily } from "Stores/SpecAtoms";
+import { useRecoilValue } from "recoil";
 interface MaticoPageInterface {
     pageId: string;
 }
@@ -19,7 +21,8 @@ const PageParent = styled.div`
 `;
 
 export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
-    let { page } = usePage(pageId);
+    let page = useRecoilValue(pageAtomFamily(pageId));
+
     let layout: Layout = page?.layout;
     let LayoutEngine = selectLayout(layout);
 
@@ -32,6 +35,8 @@ export const MaticoPage: React.FC<MaticoPageInterface> = ({ pageId }) => {
             depth: 0
         }
     });
+
+
     const activeItem = useMaticoSelector(
         (state) => state.editor.activeDragItem
     );

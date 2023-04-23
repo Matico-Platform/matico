@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { MaticoApp } from "@maticoapp/matico_components";
+import { MapWithSidebar } from "./test_spec"
 
 const isEditActive = () => {
   const params = window.location.search
@@ -27,40 +28,45 @@ function App() {
     spec = {
       pages: [],
       datasets: [],
-      datasetTransforms:[],
-      panes:[],
-      metadata:{
-        name:"Test App",
-        description:"A Test app",
-        id:"stauarts test app",
+      datasetTransforms: [],
+      panes: [],
+      metadata: {
+        name: "Test App",
+        description: "A Test app",
+        id: "stauarts test app",
         createdAt: new Date(),
+      },
+      theme: {
+        primaryColor: { hex: "#000ff0" },
+        secondaryColor: { hex: "#00ff00" },
+        logoUrl: null
       }
     };
   }
 
   useEffect(() => {
     setEdit(isEditActive());
-    window.addEventListener("locationchange", function () {
+    window.addEventListener("locationchange", function() {
       setEdit(isEditActive());
     });
   }, []);
 
   return (
-      <div
-        className="App"
-        style={{
-          position: "relative",
-          height: "100%",
-          width: "100%",
-        }}
-      >
-        <MaticoApp
-          basename={process.env.PUBLIC_URL}
-          spec={spec}
-          //@ts-ignore
-          editActive={edit}
-        />
-      </div>
+    <div
+      className="App"
+      style={{
+        position: "relative",
+        height: "100%",
+        width: "100%",
+      }}
+    >
+      <MaticoApp
+        basename={process.env.PUBLIC_URL}
+        spec={MapWithSidebar}
+        //@ts-ignore
+        editActive={edit}
+      />
+    </div>
   );
 }
 

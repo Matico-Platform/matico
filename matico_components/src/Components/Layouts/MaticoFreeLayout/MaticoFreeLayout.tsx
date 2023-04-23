@@ -61,15 +61,15 @@ const FreeContainer: React.FC<{
         xUnits === widthUnits
             ? styleWidth
             : xUnits === "pixels"
-            ? (styleWidth / 100) * parentDimensions.width
-            : (styleWidth / parentDimensions.width) * 100;
+                ? (styleWidth / 100) * parentDimensions.width
+                : (styleWidth / parentDimensions.width) * 100;
 
     let normalizedHeight =
         yUnits === heightUnits
             ? styleHeight
             : yUnits === "pixels"
-            ? (styleHeight / 100) * parentDimensions.height
-            : (styleHeight / parentDimensions.height) * 100;
+                ? (styleHeight / 100) * parentDimensions.height
+                : (styleHeight / parentDimensions.height) * 100;
 
     const styleLeft = Math.max(
         0,
@@ -193,6 +193,6 @@ export const MaticoFreeLayout: React.FC<MaticoFreeLayoutInterface> = ({
                             )
                     )}
             </ParentProvider>
-        </FreeArea>
+        </FreeArea >
     );
 };

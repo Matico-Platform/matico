@@ -8,38 +8,38 @@ import {
     DialogTrigger,
     Dialog,
     Content,
-    repeat
+    repeat,
+    Tabs,
+    TabPanels,
+    TabList,
+    Item
 } from "@adobe/react-spectrum";
 import { DefaultGrid } from "Components/MaticoEditor/Utils/DefaultGrid";
-import { Pane } from "@maticoapp/matico_types/spec";
 import { v4 as uuidv4 } from "uuid";
-import {
-    PaneDefaults,
-    IconForPaneType,
-    AvaliablePanes,
-    ContainerPresetTypes,
-    containerPreset
-} from "Components/MaticoEditor/Utils/PaneDetails";
+
+import { PaneDefs } from "Panes"
 
 import RailRightIcon from "@spectrum-icons/workflow/RailRight";
 import ViewSingle from "@spectrum-icons/workflow/ViewSingle";
 import ViewRow from "@spectrum-icons/workflow/ViewRow";
 import ViewColumn from "@spectrum-icons/workflow/ViewColumn";
 import WebPages from "@spectrum-icons/workflow/WebPages";
-import { useApp } from "Hooks/useApp";
+import { useAddPaneToContainer } from "Stores/SpecAtoms";
+import { containerPresetForType, ContainerPresetTypes } from "Panes/MaticoContainerPane";
+import { PaneParts } from "Panes/PaneParts";
 
 interface NewPaneDialogProps {
-    validatePaneName?: (name: string) => boolean;
-    onAddPane: (pane: Pane) => void;
+    containerId: string
 }
 
 export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
-    validatePaneName,
-    onAddPane
+    containerId
 }) => {
-    const { addPane } = useApp();
+    const addPane = useAddPaneToContainer(containerId)
+
     const [newPaneName, setNewPaneName] = useState("New Pane");
     const [errorText, setErrorText] = useState<string | null>(null);
+
     const [showContainerPresets, setShowContainerPresets] =
         useState<boolean>(false);
 
@@ -47,18 +47,18 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
         type: ContainerPresetTypes,
         close: () => void
     ) => {
-        const { container, additionalPanes } = containerPreset(
+        const { container, additionalPanes } = containerPresetForType(
             newPaneName,
             type
         );
         additionalPanes.forEach((p) => {
             addPane(p);
         });
-        onAddPane(container);
+        addPane(container);
         close();
     };
 
-    const attemptToAddPane = (paneType: string, close: () => void) => {
+    const attemptToAddPane = (paneType: string, paneDetails: PaneParts, close: () => void) => {
         if (newPaneName.length === 0) {
             setErrorText("Please provide a name");
         }
@@ -66,24 +66,16 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
             setShowContainerPresets(true);
             return;
         }
-        if (validatePaneName) {
-            if (validatePaneName(newPaneName)) {
-            } else {
-                setErrorText(
-                    "Another pane with the same name exists, pick something else"
-                );
-            }
-        } else {
-            onAddPane({
-                ...PaneDefaults[paneType],
-                id: uuidv4(),
-                name: newPaneName,
-                //@ts-ignore
-                type: paneType
-            });
-            close();
-        }
+        addPane({
+            ...paneDetails.defaults,
+            id: uuidv4(),
+            name: newPaneName,
+            //@ts-ignore
+            type: paneType
+        });
+        close();
     };
+
 
     return (
         <DialogTrigger type="popover" isDismissable>
@@ -100,116 +92,136 @@ export const NewPaneDialog: React.FC<NewPaneDialogProps> = ({
                                 errorMessage={errorText}
                                 width="100%"
                             ></TextField>
-                            {showContainerPresets ? (
-                                <>
-                                    <DefaultGrid
-                                        columns={repeat(2, "1fr")}
-                                        columnGap={"size-150"}
-                                        rowGap={"size-150"}
-                                        autoRows="fit-content"
-                                        marginBottom="size-200"
-                                    >
-                                        <ActionButton
-                                            key={"sidebarHorizontal"}
-                                            onPress={() =>
-                                                addContainerPaneType(
-                                                    "mainSideBar",
-                                                    close
-                                                )
-                                            }
+                            <Tabs>
+                                <TabList>
+                                    <Item key="vis">Vis</Item>
+                                    <Item key="controls">Controls</Item>
+                                    <Item key="layout">Layout</Item>
+                                </TabList>
+                                <TabPanels>
+                                    <Item key="vis">
+                                        <DefaultGrid
+                                            columns={repeat(2, "1fr")}
+                                            columnGap={"size-150"}
+                                            rowGap={"size-150"}
+                                            autoRows="fit-content"
+                                            marginBottom="size-200"
                                         >
-                                            <RailRightIcon />
-                                            <Text>Main Sidebar</Text>
-                                        </ActionButton>
-                                        <ActionButton
-                                            key={"free"}
-                                            onPress={() =>
-                                                addContainerPaneType(
-                                                    "full",
-                                                    close
-                                                )
-                                            }
-                                        >
-                                            <ViewSingle />{" "}
-                                            <Text>Free Layout</Text>{" "}
-                                        </ActionButton>
-                                        <ActionButton
-                                            key={"linearHorizontal"}
-                                            onPress={() =>
-                                                addContainerPaneType(
-                                                    "row",
-                                                    close
-                                                )
-                                            }
-                                        >
-                                            <ViewRow />
-                                            <Text>Row</Text>
-                                        </ActionButton>
-                                        <ActionButton
-                                            key={"linearVertical"}
-                                            onPress={() =>
-                                                addContainerPaneType(
-                                                    "column",
-                                                    close
-                                                )
-                                            }
-                                        >
-                                            <ViewColumn />
-                                            <Text>Column</Text>
-                                        </ActionButton>
-                                        <ActionButton
-                                            key={"tabs"}
-                                            onPress={() =>
-                                                addContainerPaneType(
-                                                    "tabs",
-                                                    close
-                                                )
-                                            }
-                                        >
-                                            <WebPages />
-                                            <Text>Tabs</Text>
-                                        </ActionButton>
-                                    </DefaultGrid>
-                                    <ActionButton
-                                        onPress={() =>
-                                            setShowContainerPresets(false)
-                                        }
-                                    >
-                                        Back to panes
-                                    </ActionButton>
-                                </>
-                            ) : (
-                                AvaliablePanes.map((section) => (
-                                    <DefaultGrid
-                                        columns={repeat(2, "1fr")}
-                                        columnGap={"size-150"}
-                                        rowGap={"size-150"}
-                                        autoRows="fit-content"
-                                        marginBottom="size-200"
-                                        key={section.sectionTitle}
-                                    >
-                                        {section.panes.map(
-                                            (pane: {
-                                                name: string;
-                                                label: string;
-                                            }) => (
+                                            {Object.entries(PaneDefs).filter(([, details]) => details.section === "Vis").map(([paneType, details]) =>
                                                 <ActionButton
-                                                    key={pane.name}
-                                                    onPress={() => {
+                                                    key={paneType}
+                                                    onPress={() =>
                                                         attemptToAddPane(
-                                                            pane.name,
+                                                            paneType,
+                                                            details,
                                                             close
-                                                        );
-                                                    }}
+                                                        )
+                                                    }
                                                 >
-                                                    {IconForPaneType(pane.name)}
-                                                    <Text>{pane.label}</Text>
+                                                    {details.icon}
+                                                    <Text>{details.label}</Text>
                                                 </ActionButton>
-                                            )
-                                        )}
-                                    </DefaultGrid>
-                                ))
-                            )}
+                                            )}
+                                        </DefaultGrid>
+                                    </Item>
+                                    <Item key="controls">
+                                        <DefaultGrid
+                                            columns={repeat(2, "1fr")}
+                                            columnGap={"size-150"}
+                                            rowGap={"size-150"}
+                                            autoRows="fit-content"
+                                            marginBottom="size-200"
+                                        >
+                                            {Object.entries(PaneDefs).filter(([, details]) => details.section === "Control").map(([paneType, details]) =>
+                                                <ActionButton
+                                                    key={paneType}
+                                                    onPress={() =>
+                                                        attemptToAddPane(
+                                                            paneType,
+                                                            details,
+                                                            close
+                                                        )
+                                                    }
+                                                >
+                                                    {details.icon}
+                                                    <Text>{details.label}</Text>
+                                                </ActionButton>
+                                            )}
+                                        </DefaultGrid>
+                                    </Item>
+                                    <Item key="layout">
+                                        <DefaultGrid
+                                            columns={repeat(2, "1fr")}
+                                            columnGap={"size-150"}
+                                            rowGap={"size-150"}
+                                            autoRows="fit-content"
+                                            marginBottom="size-200"
+                                        >
+                                            <ActionButton
+                                                key={"sidebarHorizontal"}
+                                                onPress={() =>
+                                                    addContainerPaneType(
+                                                        "mainSideBar",
+                                                        close
+                                                    )
+                                                }
+                                            >
+                                                <RailRightIcon />
+                                                <Text>Main Sidebar</Text>
+                                            </ActionButton>
+                                            <ActionButton
+                                                key={"free"}
+                                                onPress={() =>
+                                                    addContainerPaneType(
+                                                        "full",
+                                                        close
+                                                    )
+                                                }
+                                            >
+                                                <ViewSingle />{" "}
+                                                <Text>Free Layout</Text>{" "}
+                                            </ActionButton>
+                                            <ActionButton
+                                                key={"linearHorizontal"}
+                                                onPress={() =>
+                                                    addContainerPaneType(
+                                                        "row",
+                                                        close
+                                                    )
+                                                }
+                                            >
+                                                <ViewRow />
+                                                <Text>Row</Text>
+                                            </ActionButton>
+                                            <ActionButton
+                                                key={"linearVertical"}
+                                                onPress={() =>
+                                                    addContainerPaneType(
+                                                        "column",
+                                                        close
+                                                    )
+                                                }
+                                            >
+                                                <ViewColumn />
+                                                <Text>Column</Text>
+                                            </ActionButton>
+                                            <ActionButton
+                                                key={"tabs"}
+                                                onPress={() =>
+                                                    addContainerPaneType(
+                                                        "tabs",
+                                                        close
+                                                    )
+                                                }
+                                            >
+                                                <WebPages />
+                                                <Text>Tabs</Text>
+                                            </ActionButton>
+                                        </DefaultGrid>
+
+                                    </Item>
+                                </TabPanels>
+                            </Tabs>
                         </Flex>
                     </Content>
                 </Dialog>

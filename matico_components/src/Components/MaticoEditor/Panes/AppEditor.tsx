@@ -3,7 +3,6 @@ import {
     Flex,
     TextField,
     Text,
-    Well,
     Heading,
     ActionButton,
     Content,
@@ -11,12 +10,12 @@ import {
     DialogTrigger,
     TextArea
 } from "@adobe/react-spectrum";
-import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { Page } from "@maticoapp/matico_types/spec";
 import { useApp } from "Hooks/useApp";
 import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
 import { ColorPickerDialog } from "../Utils/ColorPickerDialog";
 import { MaticoOutlineViewer } from "./MaticoOutlineViewer";
+import { useRecoilState } from "recoil";
+import { metadataAtom, themeAtom } from "Stores/SpecAtoms";
 
 interface AddPageModalProps {
     onAddPage: (pageName: string) => void;
@@ -85,19 +84,15 @@ const AddPageModal: React.FC<AddPageModalProps> = ({
     );
 };
 
-interface AppEditorProps {}
+interface AppEditorProps { }
 
 export const AppEditor: React.FC<AppEditorProps> = () => {
     const {
-        theme,
-        pages,
         addPage,
-        removePage,
-        setEditPage,
-        updateTheme,
-        metadata,
-        updateMetadata
     } = useApp();
+
+    const [theme, setTheme] = useRecoilState(themeAtom)
+    const [metadata, setMetadata] = useRecoilState(metadataAtom)
 
     const addNewPage = (pageName: string) => {
         addPage({
@@ -105,13 +100,6 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
             layout: { type: "free" },
             path: `/${pageName}`
         });
-    };
-
-    const validatePageName = (name: string) => {
-        if (pages.find((p: Page) => p.name === name)) {
-            return false;
-        }
-        return true;
     };
 
     return (
@@ -122,7 +110,7 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                     // @ts-ignore
                     color={theme?.primaryColor ?? { rgb: [113, 48, 102] }}
                     onColorChange={(color) =>
-                        updateTheme({ primaryColor: color })
+                        setTheme({ ...theme, primaryColor: color })
                     }
                 />
                 <Text>Secondary Color</Text>
@@ -130,14 +118,14 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                     // @ts-ignore
                     color={theme?.secondaryColor ?? { rgb: [48, 113, 59] }}
                     onColorChange={(color) =>
-                        updateTheme({ secondaryColor: color })
+                        setTheme({ ...theme, secondaryColor: color })
                     }
                 />
 
                 <TextField
                     label="App Image URL"
                     value={theme?.logoUrl}
-                    onChange={(logoUrl) => updateTheme({ logoUrl })}
+                    onChange={(logoUrl) => setTheme({ ...theme, logoUrl })}
                     width="100%"
                 />
             </CollapsibleSection>
@@ -146,13 +134,13 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                     label="Name"
                     width="100%"
                     value={metadata.name}
-                    onChange={(name) => updateMetadata({ name })}
+                    onChange={(name) => setMetadata({ ...metadata, name })}
                 />
                 <TextArea
                     label="description"
                     width="100%"
                     value={metadata.description}
-                    onChange={(description) => updateMetadata({ description })}
+                    onChange={(description) => setMetadata({ ...metadata, description })}
                 />
             </CollapsibleSection>
             {/*
@@ -169,9 +157,10 @@ export const AppEditor: React.FC<AppEditorProps> = () => {
                 />
             </CollapsibleSection>
             */}
-            <CollapsibleSection title="Pages" isOpen={true}>
+            {/*<CollapsibleSection title="Pages" isOpen={true}>
                 <MaticoOutlineViewer showPanes={false} />
             </CollapsibleSection>
+            */}
         </Flex>
     );
 };

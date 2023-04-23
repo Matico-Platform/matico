@@ -20,6 +20,7 @@ import { DatasetsEditor } from "Components/MaticoEditor/Panes/DatasetsEditor";
 import { MaticoOutlineViewer } from "Components/MaticoEditor/Panes/MaticoOutlineViewer";
 import { useErrors } from "Hooks/useErrors";
 import { ErrorPanel } from "../ErrorPanel/ErrorPanel";
+import { MaticoOverviewTree } from "Components/MaticoEditor/Panes/MaticoOverviewTree";
 
 export const NavigatorBar: React.FC<NavigatorBarProps> = ({
     datasetProviders
@@ -102,7 +103,7 @@ export const NavigatorBar: React.FC<NavigatorBarProps> = ({
                                         />
                                     </Item>
                                     <Item key="outline">
-                                        <MaticoOutlineViewer />
+                                        <MaticoOverviewTree baseId={null} />
                                     </Item>
                                     <Item key="spec">
                                         <MaticoRawSpecEditor />
