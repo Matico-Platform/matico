@@ -150,8 +150,6 @@ export const MaticoScatterplotPane: React.FC<
             });
         }
 
-        console.log("width  height ", width, height);
-
         return (
             <MaticoChart
                 xExtent={xExtent}
