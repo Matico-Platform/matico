@@ -8,7 +8,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (process.env.NODE_ENV === "production") {
-    return compute;
+    res.status(200).json(compute);
   }
 
   let compute_modules = path.join(
