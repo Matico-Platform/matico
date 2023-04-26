@@ -1,11 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { glob } from "glob";
 import path from "path";
+import { compute } from "./list";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (process.env.NODE_ENV === "production") {
+    return compute;
+  }
+
   let compute_modules = path.join(
     __dirname,
     "../../../../public/compute/*/pkg/*.js"
