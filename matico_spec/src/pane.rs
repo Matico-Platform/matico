@@ -1,6 +1,6 @@
 use crate::{
-    AutoComplete, CategorySelectorPane, Control, DateTimeSliderPane, HistogramPane, Layout,
-    MapPane, PieChartPane, ScatterplotPane, StaticMapPane,
+    AutoComplete, CategorySelectorPane, ColorSpecification, Control, DateTimeSliderPane,
+    HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane,
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -324,7 +324,7 @@ pub struct TextPane {
     pub font: Option<String>,
 
     #[wasm_bindgen(skip)]
-    pub background: Option<String>,
+    pub background: Option<ColorSpecification>,
 }
 
 #[wasm_bindgen]
@@ -358,15 +358,15 @@ impl TextPane {
         self.font = Some(font);
     }
 
-    #[wasm_bindgen(getter = background)]
-    pub fn get_background(&self) -> Option<String> {
-        self.background.clone()
-    }
-
-    #[wasm_bindgen(setter = background)]
-    pub fn set_background(&mut self, background: String) {
-        self.background = Some(background);
-    }
+    // #[wasm_bindgen(getter = background)]
+    // pub fn get_background(&self) -> Option<ColorSpecification> {
+    //     self.background.clone()
+    // }
+    //
+    // #[wasm_bindgen(setter = background)]
+    // pub fn set_background(&mut self, background: ColorSpecification) {
+    //     self.background = Some(background);
+    // }
 }
 
 #[wasm_bindgen]

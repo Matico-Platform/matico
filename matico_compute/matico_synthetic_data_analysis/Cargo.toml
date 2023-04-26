@@ -21,6 +21,5 @@ rand = { version = "0.8.5" }
 web-sys = { version = "0.3.57", features = ["console"] }
 rand_distr = "0.4.3"
 
-polars = { git = "https://github.com/stuartlynn/polars.git", branch = 'wasm_rebase', default-features = false, features = ["ipc"] }
+polars = { git = "https://github.com/stuartlynn/polars.git", branch = 'wasm_rebase', default-features = false, features = ["ipc","lazy"] }
 geopolars = { git = "https://github.com/stuartlynn/geopolars.git", branch = "wasm_test" }
-# arrow2 = { version = "0.9.1", features = ["io_ipc", "compute"] }

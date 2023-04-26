@@ -83,11 +83,14 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
                         .ok_or(::matico_analysis::ArgError::new(parameter_name, "Does not exist"))
                 }
 
-                fn set_parameter(
+                fn set_parameter<T: std::convert::TryInto<::matico_analysis::ParameterValue>>(
                     &mut self,
                     parameter_name: &str,
-                    value: ::matico_analysis::ParameterValue,
+                    value: T,
                 ) -> std::result::Result<(), ::matico_analysis::ArgError> {
+                    let value : ParameterValue = value.try_into().map_err(|_|
+                                            ::matico_analysis::ArgError::new(parameter_name,"Passed the wrong type")
+                                            )?;
                     let parameter_options = self
                         .options
                         .get(parameter_name)
@@ -102,13 +105,21 @@ pub fn matico_compute(_attr: TokenStream, input: TokenStream) -> TokenStream {
 
                 fn register_table(&mut self, table_name: &str, data: &[u8]) -> std::result::Result<(), ::matico_analysis::ArgError> {
 
+                    web_sys::console::log_1(&format!("got data as {:#?}",data).into());
                     let mut reader = ::std::io::Cursor::new(data);
-                    let table = polars::prelude::IpcReader::new(reader)
-                        .finish()
-                        .map_err(|e|
-                                 ::matico_analysis::ArgError::new(table_name,"Failed to register table. Is it an actualy dataframe?".into()))?;
+                    web_sys::console::log_1(&format!("created reader").into());
 
+                    let table = polars::io::ipc::IpcReader::new(reader)
+                        .finish()
+                        .map_err(|e|{
+                                  web_sys::console::log_1(&format!("got error here {:#?}",e).into());
+
+                                 ::matico_analysis::ArgError::new(table_name,&format!("Failed to register table. Is it an actualy dataframe in IPC format?"))
+                    })?;
+
+                    web_sys::console::log_1(&format!("table created").into());
                     self.tables.insert(table_name.into(),table);
+                    web_sys::console::log_1(&format!("All good boyo").into());
                     Ok(())
                 }
         }

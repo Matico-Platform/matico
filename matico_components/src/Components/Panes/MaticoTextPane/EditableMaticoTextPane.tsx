@@ -2,6 +2,7 @@ import React from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { useIsEditable } from "../../../Hooks/useIsEditable";
 import { ActionButton } from "@adobe/react-spectrum";
+import { debounce } from "lodash";
 import {
     ToolbarPlugin,
     AlignDropdown,
@@ -64,11 +65,14 @@ export const EditableMaticoTextPane: React.FC<
 > = ({ content, updatePane, ...rest }) => {
     const edit = useIsEditable();
     const [formattedText] = useFormattedText(content);
+    console.log("edit ", edit, " contnet ", content, " ", formattedText);
 
     const [toolbarExpanded, setToolbarExpanded] = React.useState(false);
     const displayContent = edit ? content : formattedText;
 
-    const handleContent = (content: string) => updatePane({ content });
+    const handleContent = debounce((content: string) => {
+        updatePane({ content });
+    }, 500);
     const handleToggleExpanded = () => setToolbarExpanded((prev) => !prev);
 
     return (

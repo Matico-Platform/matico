@@ -114,6 +114,7 @@ export interface LineSpec extends BaseLayerSpec {
 export interface BarSpec extends BaseLayerSpec {
   data: DataCollection;
   padding?: number;
+  barWidth?: number;
 }
 
 export interface PieSpec extends BaseLayerSpec {

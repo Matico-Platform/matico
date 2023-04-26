@@ -5,6 +5,7 @@ import { RemovePaneDialog } from "Components/MaticoEditor//Utils/RemovePaneDialo
 import { PaneRef } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
 import { CollapsibleSection } from "Components/MaticoEditor/EditorComponents/CollapsibleSection";
+import { ColorPickerDialog } from "Components/MaticoEditor/Utils/ColorPickerDialog";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
@@ -15,8 +16,6 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         usePane(paneRef);
 
     const textPane = pane.type === "text" ? pane : null;
-
-    const handleContent = (content: string) => updatePane({ content });
 
     if (!textPane) {
         return (
@@ -34,6 +33,13 @@ export const TextPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     label="name"
                     value={textPane.name}
                     onChange={(name) => updatePane({ name })}
+                />
+                <Text>Background Color</Text>
+                <ColorPickerDialog
+                    color={textPane.background || { hex: "#FFFFFF" }}
+                    onColorChange={(newColor) =>
+                        updatePane({ background: newColor })
+                    }
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Layout" isOpen={true}>

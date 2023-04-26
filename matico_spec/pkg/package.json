@@ -12,5 +12,8 @@
   ],
   "module": "matico_spec.js",
   "types": "matico_spec.d.ts",
-  "sideEffects": false
+  "sideEffects": [
+    "./matico_spec.js",
+    "./snippets/*"
+  ]
 }

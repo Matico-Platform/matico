@@ -9,6 +9,7 @@ import { MaticoProvider } from "../../../components/DatasetCreation/S3Provider";
 import { useApp } from "../../../hooks/useApp";
 import { prisma } from "../../../db";
 import { userFromSession, userHasEdit } from "../../../utils/db";
+import debounce from "lodash.debounce";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
@@ -66,7 +67,7 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({
 
   const { app, updateApp, setPublic } = useApp(initialApp?.id, initialApp);
 
-  const onUpdateSpec = (spec: App) => {
+  const onUpdateSpec = debounce((spec: App) => {
     if (!spec) {
       return;
     }
@@ -80,7 +81,7 @@ const AppPresentPage: React.FC<AppPresentPageProps> = ({
     updateApp(update).catch((e) => {
       console.log("Failed to udpate app", e.error);
     });
-  };
+  }, 500);
 
   const editor = useMemo(() => {
     if (initialApp) {

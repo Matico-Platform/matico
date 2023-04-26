@@ -10,16 +10,16 @@ import GoogleProvider from "next-auth/providers/google";
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientId: process.env.GOOGLE_ID!,
+      clientSecret: process.env.GOOGLE_SECRET!,
     }),
     GitHubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!
     }),
     FacebookProvider({
-      clientId: process.env.FB_ID,
-      clientSecret: process.env.FB_SECRET,
+      clientId: process.env.FB_ID!,
+      clientSecret: process.env.FB_SECRET!
     }),
     // GitLabProvider({
     //   clientId: process.env.GITLAB_CLIENT_ID,

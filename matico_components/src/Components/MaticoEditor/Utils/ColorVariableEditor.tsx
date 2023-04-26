@@ -2,8 +2,8 @@ import { Flex, ToggleButton, View, Header, Text } from "@adobe/react-spectrum";
 import { useMaticoSelector } from "Hooks/redux";
 import React from "react";
 import { ColorPickerDialog } from "./ColorPickerDialog";
-import { DataDrivenModal } from "./DataDrivenModal";
 import FunctionIcon from "@spectrum-icons/workflow/Function";
+import { DataDrivenModal } from "./DataDrivenModel";
 
 interface ColorVariableEditorProps {
     style: any;
@@ -50,7 +50,6 @@ export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
             <Flex direction="row" justifyContent="space-between">
                 {style.hasOwnProperty("variable") ? (
                     <DataDrivenModal
-                        rangeType="color"
                         datasetName={datasetName}
                         spec={style}
                         label={`Styling using ${style.variable}`}

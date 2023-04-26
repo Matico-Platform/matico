@@ -215,7 +215,10 @@ export class LocalDataset implements Dataset {
         filters?: Array<Filter>
     ) {
         let result = applyFilters(this._data, filters)
-            .groupby({ bin: bin(column, { maxbins: noBins }) })
+            .groupby({
+                bin: bin(column, { maxbins: noBins }),
+                group: (d) => d["group"]
+            })
             .count()
             .impute(
                 { count: () => 0 }, // set imputed counts to zero
@@ -229,7 +232,8 @@ export class LocalDataset implements Dataset {
             binStart: r.bin,
             binEnd: r.bin + binSize,
             binMid: r.bin + 0.5 * binSize,
-            freq: r.count
+            freq: r.count,
+            group: r.group
         }));
 
         return Promise.resolve(mappedResult);

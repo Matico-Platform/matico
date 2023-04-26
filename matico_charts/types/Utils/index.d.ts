@@ -10,7 +10,7 @@ export declare const getBoolOrProperty: (
   defaultValue: boolean | string,
   prop: string
 ) => any;
-export declare const sanitizeColor: (color: ColorOutput) => ColorOutput | null;
+export declare const sanitizeColor: (color: ColorOutput) => string | undefined;
 export declare const generateMargins: ({
   xAxis,
   yAxis,
@@ -31,4 +31,4 @@ export declare const getTitleOffset: (
   subtitle: string | boolean | undefined,
   xAxisPos: string | boolean | undefined
 ) => number;
-export declare function nicelyFormatNumber(x: number | string): string | number;
+export declare function nicelyFormatNumber(x: number | string): string;

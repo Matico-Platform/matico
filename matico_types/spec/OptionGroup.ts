@@ -2,4 +2,7 @@
 import type { ParameterOptionDisplayDetails } from "./ParameterOptionDisplayDetails";
 import type { ParameterOptions } from "./ParameterOptions";
 
-export interface OptionGroup { options: Record<string, ParameterOptions>, displayDetails: ParameterOptionDisplayDetails, }
+export interface OptionGroup {
+  options: Record<string, ParameterOptions>;
+  displayDetails: ParameterOptionDisplayDetails;
+}

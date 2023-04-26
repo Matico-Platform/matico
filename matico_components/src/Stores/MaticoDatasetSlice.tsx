@@ -77,11 +77,23 @@ export const datasetsSlice = createSlice({
             state,
             action: PayloadAction<DatasetSpec>
         ) => {
-            state.datasets[action.payload.name] = {
-                name: action.payload.name,
-                state: DatasetState.LOADING,
-                spec: action.payload
-            };
+            let oldState = state.datasets[action.payload.name];
+            if (oldState) {
+                let oldSpec = oldState.spec;
+                let newSpec = action.payload;
+                if (oldSpec) {
+                    newSpec = { ...newSpec, ...oldSpec };
+                }
+                oldState.state = DatasetState.LOADING;
+                oldState.spec = newSpec;
+                oldState.name = action.payload.name;
+            } else {
+                state.datasets[action.payload.name] = {
+                    name: action.payload.name,
+                    state: DatasetState.LOADING,
+                    spec: action.payload
+                };
+            }
         },
         registerOrUpdateTransform: (
             state,
@@ -94,19 +106,19 @@ export const datasetsSlice = createSlice({
                 state.datasets[action.payload.name] = {
                     name: action.payload.name,
                     state: DatasetState.LOADING,
-                    spec: action.payload,
+                    spec: action.payload.spec,
                     transform: true
                 };
             }
         },
         datasetReady: (state, action: PayloadAction<DatasetSummary>) => {
+            console.log("dataset read action ", action.payload);
             state.datasets[action.payload.name] = action.payload;
         },
         datasetFailedToLoad: (state, action: PayloadAction<DatasetSummary>) => {
-            state.datasets[action.payload.name] = {
-                state: DatasetState.ERROR,
-                ...action.payload
-            };
+            let oldState = state.datasets[action.payload.name];
+            oldState.state = DatasetState.ERROR;
+            oldState.error = action.payload.error;
         },
         // Also triggers middleware
         requestTransform: (state, action: PayloadAction<DatasetTransform>) => {

@@ -1,6 +1,6 @@
 import { fromCSV, escape, fromJSON, fromArrow } from "arquero";
 import ColumnTable from "arquero/dist/types/table/column-table";
-import { makeBuilder, Binary, Table, tableToIPC } from "@apache-arrow/es5-cjs";
+import { makeBuilder, Binary, Table, tableToIPC } from "apache-arrow";
 import { useEffect, useState } from "react";
 import wkx from "wkx";
 
@@ -56,11 +56,12 @@ export const useLoadDataset = (
 
   useEffect(() => {
     if (fType === "csv" && latCol && lngCol && rawData) {
-      setData(assignGeomColsFromLatLng(rawData, latCol, lngCol));
-    } else {
-      setData(rawData);
+      setData(assignGeomColsFromLatLng(rawData, latCol, lngCol))
     }
-  }, [rawData, latCol, lngCol, fType]);
+    else {
+      setData(rawData)
+    }
+  }, [rawData, latCol, lngCol, fType])
 
   return {
     data,

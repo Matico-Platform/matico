@@ -58,9 +58,26 @@ pub enum DatasetMetric {
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase", untagged)]
 #[ts(export)]
-pub enum Range<T> {
+pub enum RangeVals<T> {
     Range(Vec<T>),
     Named(String),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum MappingType {
+    Continuious,
+    Discrete,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct Range<T> {
+    #[serde(rename = "type")]
+    pub range_type: MappingType,
+    pub values: VarOr<RangeVals<T>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
@@ -74,10 +91,19 @@ pub enum DomainVal {
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
+pub struct Domain<D> {
+    #[serde(rename = "type")]
+    pub domain_type: MappingType,
+    pub values: VarOr<Vec<D>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Mapping<D, R> {
     pub variable: String,
-    pub domain: VarOr<Vec<D>>,
-    pub range: VarOr<Range<R>>,
+    pub domain: Domain<D>,
+    pub range: Range<R>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
@@ -107,6 +133,18 @@ pub enum VarOr<T> {
     Var(Variable),
     Value(T),
     DVal(DatasetVal),
+}
+
+impl<T> VarOr<T> {
+    pub fn try_val(&self) -> Result<&T, String> {
+        if let VarOr::Value(v) = self {
+            return Ok(v);
+        } else {
+            return Err(
+                "VarOr has not been normalized. Normalize spec before trying this. {:#?}".into(),
+            );
+        }
+    }
 }
 
 impl<T> Validate for VarOr<T>

@@ -6,7 +6,11 @@ use std::collections::BTreeMap;
 
 pub trait MaticoAnalysis {
     fn get_parameter(&self, param_name: &str) -> Result<&ParameterValue, ArgError>;
-    fn set_parameter(&mut self, param_name: &str, value: ParameterValue) -> Result<(), ArgError>;
+    fn set_parameter<T: TryInto<ParameterValue>>(
+        &mut self,
+        param_name: &str,
+        value: T,
+    ) -> Result<(), ArgError>;
     fn register_table(&mut self, name: &str, data: &[u8]) -> Result<(), ArgError>;
 }
 

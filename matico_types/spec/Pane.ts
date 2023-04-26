@@ -10,4 +10,14 @@ import type { ScatterplotPane } from "./ScatterplotPane";
 import type { StaticMapPane } from "./StaticMapPane";
 import type { TextPane } from "./TextPane";
 
-export type Pane = { type: "map" } & MapPane | { type: "staticMap" } & StaticMapPane | { type: "text" } & TextPane | { type: "container" } & ContainerPane | { type: "histogram" } & HistogramPane | { type: "scatterplot" } & ScatterplotPane | { type: "pieChart" } & PieChartPane | { type: "controls" } & ControlsPane | { type: "categorySelector" } & CategorySelectorPane | { type: "dateTimeSlider" } & DateTimeSliderPane;
+export type Pane =
+  | ({ type: "map" } & MapPane)
+  | ({ type: "staticMap" } & StaticMapPane)
+  | ({ type: "text" } & TextPane)
+  | ({ type: "container" } & ContainerPane)
+  | ({ type: "histogram" } & HistogramPane)
+  | ({ type: "scatterplot" } & ScatterplotPane)
+  | ({ type: "pieChart" } & PieChartPane)
+  | ({ type: "controls" } & ControlsPane)
+  | ({ type: "categorySelector" } & CategorySelectorPane)
+  | ({ type: "dateTimeSlider" } & DateTimeSliderPane);

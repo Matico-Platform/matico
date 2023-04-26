@@ -1,24 +1,25 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { MaticoPaneInterface } from "../Pane";
-import { DatasetState, Filter } from "Datasets/Dataset";
+import { DatasetState } from "Datasets/Dataset";
 import _ from "lodash";
 import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { useMaticoSelector } from "Hooks/redux";
 import { useRequestData } from "Hooks/useRequestData";
 import { useAutoVariable } from "Hooks/useAutoVariable";
-import { MaticoChart } from "@maticoapp/matico_charts";
+import { MaticoChart, LayerSpec } from "@maticoapp/matico_charts";
 import {
     generateColorVar,
     generateNumericVar
 } from "../MaticoMapPane/LayerUtils";
-import { Text, Flex, View } from "@adobe/react-spectrum";
+import { View } from "@adobe/react-spectrum";
 import {
     ColorSpecification,
     DatasetRef,
     Labels
 } from "@maticoapp/matico_types/spec";
 import { MissingParamsPlaceholder } from "../MissingParamsPlaceholder/MissingParamsPlaceholder";
+import { useRegression } from "Hooks/useRegression";
 
 export interface MaticoScatterplotPaneInterface extends MaticoPaneInterface {
     dataset: DatasetRef;
@@ -42,10 +43,12 @@ export const MaticoScatterplotPane: React.FC<
     labels
 }) => {
     const edit = useIsEditable();
+    console.log("DATASET ", dataset);
 
     const foundDataset = useMaticoSelector(
         (state) => state.datasets.datasets[dataset.name]
     );
+
     const datasetReady =
         foundDataset && foundDataset.state === DatasetState.READY;
 
@@ -63,6 +66,12 @@ export const MaticoScatterplotPane: React.FC<
         filters: dataset.filters,
         columns
     });
+
+    const regression = useRegression(
+        chartData?.state === "Done" ? chartData.result : null,
+        xColumn,
+        yColumn
+    );
 
     const [
         xFilter,
@@ -98,6 +107,7 @@ export const MaticoScatterplotPane: React.FC<
         bind: true
     });
 
+    console.log("CHART DATA ", chartData);
     const Chart = useMemo(() => {
         if (paramsAreNull) return null;
         const data = chartData?.state === "Done" ? chartData.result : [];
@@ -113,6 +123,34 @@ export const MaticoScatterplotPane: React.FC<
         const xExtent = [Math.min(...xVals), Math.max(...xVals)];
 
         const yExtent = [Math.min(...yVals), Math.max(...yVals)];
+        let layers: Array<LayerSpec> = [
+            {
+                type: "scatter",
+                color: dotColorFunc,
+                scale: dotSizeFunc
+            }
+        ];
+
+        if (regression) {
+            let data = [
+                {
+                    [xColumn]: xExtent[0],
+                    [yColumn]: regression.predict(xExtent[0])[1]
+                },
+                {
+                    [xColumn]: xExtent[1],
+                    [yColumn]: regression.predict(xExtent[1])[1]
+                }
+            ];
+            console.log("line data ", data);
+            layers.push({
+                type: "line",
+                lineColor: "#FF0000",
+                data
+            });
+        }
+
+        console.log("width  height ", width, height);
 
         return (
             <MaticoChart
@@ -123,7 +161,11 @@ export const MaticoScatterplotPane: React.FC<
                 xCol={xColumn}
                 yCol={yColumn}
                 title={labels?.title ?? `${xColumn} vs ${yColumn}`}
-                subtitle={labels?.subTitle}
+                subtitle={
+                    regression
+                        ? `Slope: ${regression.equation[1]}, r2: ${regression.r2}`
+                        : ""
+                }
                 attribution={labels?.attribution}
                 data={data}
                 xAxis={{
@@ -134,14 +176,9 @@ export const MaticoScatterplotPane: React.FC<
                     scaleType: "linear",
                     position: "left"
                 }}
+                categorical={false}
                 grid={{ rows: true, columns: false }}
-                layers={[
-                    {
-                        type: "scatter",
-                        color: dotColorFunc,
-                        scale: dotSizeFunc
-                    }
-                ]}
+                layers={layers}
                 useBrush={{
                     horizontal: true,
                     vertical: true
@@ -179,10 +216,10 @@ export const MaticoScatterplotPane: React.FC<
                 }}
             />
         );
-    }, [chartData, dotColor, dotSize]);
+    }, [chartData, dotColor, dotSize, regression]);
 
     return (
-        <View position="relative" width="100%" height="100%">
+        <View position={"relative"} width={"100%"} height={"100%"}>
             {!!paramsAreNull && (
                 <MissingParamsPlaceholder paneName="Scatterplot" />
             )}

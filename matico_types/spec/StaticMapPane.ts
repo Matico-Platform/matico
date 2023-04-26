@@ -3,4 +3,12 @@ import type { Labels } from "./Labels";
 import type { Layer } from "./Layer";
 import type { MapProjection } from "./MapProjection";
 
-export interface StaticMapPane { labels: Labels | null, name: string, id: string, layers: Array<Layer>, projection: MapProjection | null, showGraticule: boolean | null, rotation: number | null, }
+export interface StaticMapPane {
+  labels: Labels | null;
+  name: string;
+  id: string;
+  layers: Array<Layer>;
+  projection: MapProjection | null;
+  showGraticule: boolean | null;
+  rotation: number | null;
+}

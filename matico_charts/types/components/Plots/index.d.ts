@@ -1,9 +1,8 @@
-/// <reference types="react" />
 import { ScatterplotComponent } from "./ScatterplotComponent";
 import { BarComponent } from "./BarComponent";
 import { LineComponent } from "./LineComponent";
 import { PieChartComponent } from "./PieChartComponent";
-import { StaticMapComponent } from "./StaticMapComponent";
+import { DistributionPlotComponent } from "./DistributionPlotComponent";
 declare const PlotComponentMapping: {
   scatter: ({
     data,
@@ -27,15 +26,16 @@ declare const PlotComponentMapping: {
   pie: (
     props: import("../types").PieSpec & import("../types").PlotLayersProperties
   ) => JSX.Element;
-  map: import("react").FC<
-    import("../types").StaticMapSpec & import("../types").PlotLayersProperties
-  >;
+  dist: (
+    props: import("../types").DistributionSpec &
+      import("../types").PlotLayersProperties
+  ) => JSX.Element;
 };
 export {
   BarComponent,
   ScatterplotComponent,
   LineComponent,
   PieChartComponent,
-  StaticMapComponent,
+  DistributionPlotComponent,
   PlotComponentMapping,
 };

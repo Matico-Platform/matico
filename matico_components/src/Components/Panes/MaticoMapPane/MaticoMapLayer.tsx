@@ -19,7 +19,7 @@ import {
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
 import { MVTLayer, TileLayer } from "deck.gl";
-import { Filter } from "@maticoapp/matico_types/spec";
+import { Filter, LayerStyle } from "@maticoapp/matico_types/spec";
 import { MaticoMapTooltip } from "./MaticoMapTooltip";
 import { TooltipColumnSpec } from "./MaticoMapTooltip";
 import { v4 as uuid } from "uuid";
@@ -27,7 +27,7 @@ import { v4 as uuid } from "uuid";
 interface MaticoLayerInterface {
     name: string;
     source: { name: string; filters?: Array<Filter> };
-    style: any;
+    style: LayerStyle;
     onUpdate: (layerState: any) => void;
     mapPaneId: string;
     tooltipColumns?: TooltipColumnSpec[];
@@ -50,6 +50,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     const hoverFeatureId = useMemo(() => mapPaneId + "_hover", []);
 
     const clickFeatureId = useMemo(() => mapPaneId + "_click", []);
+
     const [hoverVariable, updateHoverVariable] = useAutoVariable({
         variable: {
             name: `${name}_hover_feature`,
@@ -158,6 +159,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
         const lineColor = generateColorVar(style.lineColor, true) ?? [
             0, 255, 0, 100
         ];
+
         const lineWidth = generateNumericVar(style.lineWidth);
         const lineWidthUnits = style.lineUnits ?? "pixels";
         const lineWidthScale = style.lineWidthScale ?? 1;
