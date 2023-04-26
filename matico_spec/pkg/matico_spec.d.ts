@@ -497,9 +497,6 @@ export class TextPane {
   free(): void;
 /**
 */
-  background: string;
-/**
-*/
   content: string;
 /**
 */

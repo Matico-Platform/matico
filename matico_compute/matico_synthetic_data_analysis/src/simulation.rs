@@ -1,11 +1,12 @@
 use core::fmt;
 
+use geo::algorithm::EuclideanDistance;
 use geo::{Geometry, Point};
 use geopolars::geoseries::GeoSeries;
 use matico_analysis::{DataFrame, ProcessError, Series};
 use polars::prelude::*;
 use rand::Rng;
-use rand_distr::{Distribution, Poisson};
+use rand_distr::{num_traits::ToPrimitive, Distribution, Poisson};
 
 #[derive(Debug, PartialEq)]
 pub enum Experiment {
@@ -32,6 +33,7 @@ impl fmt::Display for Experiment {
 pub enum Layout {
     Random,
     Gridded,
+    Clustered,
 }
 #[derive(Debug)]
 pub struct Group {
@@ -64,15 +66,32 @@ pub struct Simulation {
     groups: Vec<Group>,
     bees_mean: u32,
     fruits_base: u32,
+    cluster_size: f64,
 }
 
 impl Simulation {
-    pub fn new(groups: Vec<Group>, bees_mean: u32, fruits_base: u32) -> Self {
+    pub fn new(groups: Vec<Group>, bees_mean: u32, fruits_base: u32, cluster_size: f64) -> Self {
         Self {
             groups,
             bees_mean,
             fruits_base,
+            cluster_size,
         }
+    }
+    pub fn no_within(&self, points: &Vec<Point<f64>>, threshold: f64) -> Series {
+        let mut counts: Vec<u32> = Vec::with_capacity(points.len());
+        for p1 in points.iter() {
+            let mut count_within = 0;
+            for p2 in points.iter() {
+                let distance = p1.euclidean_distance(p2);
+                if distance < threshold {
+                    count_within = count_within + 1
+                }
+            }
+            counts.push(count_within);
+        }
+
+        Series::new("within_distance", counts)
     }
 
     pub fn generate_group_setup(&self, group: &Group, group_no: u32) -> DataFrame {
@@ -100,16 +119,27 @@ impl Simulation {
 
         let locations = self.generate_tree_locations(group).unwrap();
 
-        println!("No observations in bees control{:#?}", bees_control);
+        println!(
+            "no_observations {} locations length {}",
+            no_observations,
+            locations.len()
+        );
+
+        let counts_within = self.no_within(&locations, 0.001);
+
+        let locations: Vec<Geometry<f64>> = locations.iter().map(|l| Geometry::Point(*l)).collect();
+
+        let locations = Series::from_geom_vec(&locations).unwrap();
 
         DataFrame::new(vec![
             Series::new("group", group_no),
-            Series::new("group_name", group_name),
+            // Series::new("group_name", group_name),
             Series::new("bees_control", bees_control),
             Series::new("fruit_control", fruit_control),
             Series::new("proximity_control", proximity_control),
             Series::new("wind_control", wind_control),
             Series::new("soil_control", soil_control),
+            counts_within,
             Series::new("geom", locations),
         ])
         .unwrap()
@@ -197,16 +227,47 @@ impl Simulation {
         &self,
         no_points: u32,
         ranges: &[f64; 4],
-    ) -> std::result::Result<Vec<Geometry<f64>>, ProcessError> {
+    ) -> std::result::Result<Vec<Point<f64>>, ProcessError> {
         let mut rng = rand::thread_rng();
 
-        let points: Vec<Geometry<f64>> = (0..no_points)
+        let points: Vec<Point<f64>> = (0..no_points)
             .map(|_| {
                 let y: f64 = rng.gen_range(ranges[0]..ranges[2]);
                 let x: f64 = rng.gen_range(ranges[1]..ranges[3]);
-                Geometry::Point(Point::<f64>::new(x as f64, y as f64))
+                Point::<f64>::new(x, y)
             })
             .collect();
+
+        Ok(points)
+    }
+
+    fn generate_clustered_tree_distribution(
+        &self,
+        no_trees: u32,
+        region: &[f64; 4],
+        cluster_size: f64,
+    ) -> std::result::Result<Vec<Point<f64>>, ProcessError> {
+        let mut rng = rand::thread_rng();
+        let mut points: Vec<Point<f64>> = vec![];
+        let poisson = Poisson::new(6.0).unwrap();
+
+        while (points.len() as u32) < no_trees {
+            println!("points length {} {}", points.len(), no_trees);
+            let no_in_cluster = std::cmp::min(
+                poisson.sample(&mut rng).to_u32().unwrap(),
+                no_trees - points.len() as u32,
+            );
+            let cluster_center_y: f64 = rng.gen_range(region[0]..region[2]);
+            let cluster_center_x: f64 = rng.gen_range(region[1]..region[3]);
+
+            for _ in 0..no_in_cluster {
+                let theta = rng.gen_range(0.0..(2.0 * std::f64::consts::PI));
+                let r = rng.gen_range(0.0..cluster_size);
+                let x = cluster_center_x + theta.sin() * r;
+                let y = cluster_center_y + theta.cos() * r;
+                points.push(Point::<f64>::new(x, y));
+            }
+        }
 
         Ok(points)
     }
@@ -215,71 +276,58 @@ impl Simulation {
         &self,
         no_trees: u32,
         region: &[f64; 4],
-    ) -> std::result::Result<Vec<Geometry<f64>>, ProcessError> {
-        // let mut rng = rand::thread_rng();
-        // let x_extent = region[0][1] - region[0][1];
-        // let y_extent = region[1][1] - region[1][1];
-        //
-        // // let no_not_control = no_trees - no_control / 2;
-        //
-        // let nx: f32 = ((x_extent / y_extent) * (no_not_control as f32)
-        //     + (x_extent - y_extent).powi(2) / (4.0 * y_extent.powi(2)))
-        // .sqrt()
-        //     - (x_extent - y_extent) / (2.0 * y_extent).floor();
-        //
-        // let nx: usize = nx.floor() as usize;
-        //
-        // let ny: usize = no_control / nx;
-        //
-        // let x_spacing: f32 = (x_extent) / (nx as f32);
-        // let y_spacing: f32 = (x_extent) / (ny as f32);
-        //
-        // let mut points: Vec<Geometry<f64>> = vec![];
-        // let mut partner_points: Vec<Geometry<f64>> = vec![];
-        //
-        // for i in 0..nx {
-        //     for j in 0..ny {
-        //         let x: f32 = self.region[0][0] + (i as f32) * x_spacing;
-        //         let y: f32 = self.region[1][0] + (j as f32) * y_spacing;
-        //         points.push(Geometry::Point(Point::<f64>::new(x as f64, y as f64)))
-        //     }
-        // }
-        //
-        // for partner in points.choose_multiple(&mut rng, no_control / 2) {
-        //     let angle: f64 = rng.gen_range(0.1..2.0 * std::f64::consts::PI);
-        //     let dist: f64 = rng.gen_range(0.1..1.0) * bee_fly_distance;
-        //
-        //     if let Geometry::Point(p) = partner {
-        //         let x = p.x() * angle.sin() * dist;
-        //         let y = p.y() * angle.cos() * dist;
-        //         partner_points.push(Geometry::Point(Point::<f64>::new(x as f64, y as f64)));
-        //     }
-        // }
-        // points.extend(partner_points);
-        // Ok(points)
-        Ok(vec![])
+    ) -> std::result::Result<Vec<Point<f64>>, ProcessError> {
+        let root_trees: f64 = (no_trees as f64).sqrt().ceil();
+        let root_trees_int: u32 = root_trees.to_u32().unwrap();
+
+        let region_height = region[2] - region[0];
+        let region_width = region[3] - region[1];
+        let mut points: Vec<Point<f64>> = vec![];
+
+        for x_int in 0..root_trees_int {
+            for y_int in 0..root_trees_int {
+                if (points.len() as u32) < no_trees {
+                    let x = region[1] + x_int as f64 * region_width / root_trees;
+                    let y = region[0] + y_int as f64 * region_height / root_trees;
+                    println!(
+                        "x {} y {} width :{} height:{} root-trees int {}",
+                        x, y, region_width, region_height, root_trees_int
+                    );
+                    points.push(Point::<f64>::new(x, y));
+                }
+            }
+        }
+
+        println!("points {:#?}", points);
+
+        Ok(points)
     }
 
-    fn generate_tree_locations(&self, group: &Group) -> std::result::Result<Series, ProcessError> {
+    fn generate_tree_locations(
+        &self,
+        group: &Group,
+    ) -> std::result::Result<Vec<Point<f64>>, ProcessError> {
         let bee_fly_distance = 20.0;
         let no_proximity_control = 0;
 
-        let trees: Vec<Geometry<f64>> = match group.layout {
+        let trees: Vec<Point<f64>> = match group.layout {
             Layout::Gridded => {
                 self.generate_grid_tree_distribution(group.no_observations, &group.region)
             }
             Layout::Random => {
                 self.generate_random_tree_distribution(group.no_observations, &group.region)
             }
+            Layout::Clustered => self.generate_clustered_tree_distribution(
+                group.no_observations,
+                &group.region,
+                self.cluster_size,
+            ),
+
             _ => Err(ProcessError {
                 error: "Unsupported tree layout".into(),
             }),
         }?;
 
-        let geo_series = Series::from_geom_vec(&trees).map_err(|e| ProcessError {
-            error: format!("Failed to construct geo series {:#?}", e),
-        })?;
-
-        Ok(geo_series)
+        Ok(trees)
     }
 }

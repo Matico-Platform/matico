@@ -303,6 +303,8 @@ impl Default for MapPane {
 
 #[cfg(test)]
 mod tests {
+    use matico_common::{Domain, MappingType, RangeVals};
+
     use crate::{DatasetMetric, DatasetVal, EqualIntervalParams, Mapping, Range, VarOr};
 
     use super::*;
@@ -324,19 +326,25 @@ mod tests {
     fn style_with_domain_from_dataset() {
         let fill_color = Some(MappingVarOr::Mapping(Mapping {
             variable: "Test".to_string(),
-            domain: VarOr::DVal(DatasetVal {
-                dataset: "test".to_string(),
-                column: Some("test_col".to_string()),
-                filters: None,
-                feature_id: None,
-                metric: Some(DatasetMetric::EqualInterval(EqualIntervalParams {
-                    bins: 20,
-                })),
-            }),
-            range: VarOr::Value(Range::Range(vec![
-                ColorSpecification::Rgba([0.0, 0.0, 0.0, 0.0]),
-                ColorSpecification::Rgba([0.0, 0.0, 0.0, 0.0]),
-            ])),
+            domain: Domain {
+                domain_type: MappingType::Discrete,
+                values: VarOr::DVal(DatasetVal {
+                    dataset: "test".to_string(),
+                    column: Some("test_col".to_string()),
+                    filters: None,
+                    feature_id: None,
+                    metric: Some(DatasetMetric::EqualInterval(EqualIntervalParams {
+                        bins: 20,
+                    })),
+                }),
+            },
+            range: Range {
+                range_type: MappingType::Discrete,
+                values: VarOr::Value(RangeVals::Range(vec![
+                    ColorSpecification::Rgba([0.0, 0.0, 0.0, 0.0]),
+                    ColorSpecification::Rgba([0.0, 0.0, 0.0, 0.0]),
+                ])),
+            },
         }));
         let style = LayerStyle {
             size: None,

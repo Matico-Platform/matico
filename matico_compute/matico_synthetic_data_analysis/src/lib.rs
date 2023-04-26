@@ -27,6 +27,7 @@ impl MaticoAnalysisRunner for BeesSimulation {
     fn run(&mut self) -> std::result::Result<DataFrame, ProcessError> {
         let bees_mean: u32 = self.get_parameter("bees_mean")?.try_into()?;
         let fruit_mean: u32 = self.get_parameter("fruits_mean")?.try_into()?;
+        let cluster_radius: f64 = self.get_parameter("cluster_radius")?.try_into()?;
 
         let groups: Vec<ParameterValue> = self.get_parameter("groups")?.try_into()?;
 
@@ -62,6 +63,18 @@ impl MaticoAnalysisRunner for BeesSimulation {
                 let no_observations: u32 = group_params.get("no_observations")?.try_into()?;
                 let name: String = group_params.get("name")?.try_into()?;
 
+                let layout_val: Vec<String> = group_params.get("layout")?.try_into()?;
+                let layout_val = layout_val[0].clone();
+
+                let layout: Layout = match layout_val.as_str() {
+                    "random" => Ok(Layout::Random),
+                    "gridded" => Ok(Layout::Gridded),
+                    "clustered" => Ok(Layout::Clustered),
+                    _ => Err(ProcessError {
+                        error: format!("Layout if not of known type"),
+                    }),
+                }?;
+
                 let experiment_options: OptionGroupVals =
                     group_params.get("experiments")?.try_into()?;
 
@@ -69,7 +82,7 @@ impl MaticoAnalysisRunner for BeesSimulation {
 
                 for experiment in EXPERIMENTS {
                     let is_active: bool = experiment_options
-                        .get(&format!("{}", experiment))?
+                        .get(&format!("{}_control", experiment))?
                         .try_into()?;
 
                     if is_active {
@@ -79,15 +92,15 @@ impl MaticoAnalysisRunner for BeesSimulation {
 
                 Ok(Group::new(
                     &name,
-                    [min_lat, min_lng, max_lng, max_lng],
+                    [min_lat, min_lng, max_lat, max_lng],
                     no_observations,
                     experiments,
-                    Layout::Random,
+                    layout,
                 ))
             })
             .collect::<std::result::Result<Vec<Group>, ProcessError>>()?;
 
-        let sim = Simulation::new(sim_groups, bees_mean, fruit_mean);
+        let sim = Simulation::new(sim_groups, bees_mean, fruit_mean, cluster_radius);
         let results = sim.run();
 
         #[cfg(target_arch = "wasm32")]
@@ -110,7 +123,7 @@ impl MaticoAnalysisRunner for BeesSimulation {
         region_options.insert(
             "min_lat".into(),
             ParameterOptions::NumericFloat(NumericFloatOptions {
-                default: Some(20.),
+                default: Some(32.416),
                 range: None,
                 display_details: ParameterOptionDisplayDetails {
                     description: None,
@@ -122,7 +135,7 @@ impl MaticoAnalysisRunner for BeesSimulation {
         region_options.insert(
             "max_lat".into(),
             ParameterOptions::NumericFloat(NumericFloatOptions {
-                default: Some(20.),
+                default: Some(32.42),
                 range: None,
                 display_details: ParameterOptionDisplayDetails {
                     description: None,
@@ -130,10 +143,11 @@ impl MaticoAnalysisRunner for BeesSimulation {
                 },
             }),
         );
+
         region_options.insert(
             "min_lng".into(),
             ParameterOptions::NumericFloat(NumericFloatOptions {
-                default: Some(20.),
+                default: Some(-85.707),
                 range: None,
                 display_details: ParameterOptionDisplayDetails {
                     description: None,
@@ -141,10 +155,11 @@ impl MaticoAnalysisRunner for BeesSimulation {
                 },
             }),
         );
+
         region_options.insert(
             "max_lng".into(),
             ParameterOptions::NumericFloat(NumericFloatOptions {
-                default: Some(20.),
+                default: Some(-85.701),
                 range: None,
                 display_details: ParameterOptionDisplayDetails {
                     description: None,
@@ -183,6 +198,19 @@ impl MaticoAnalysisRunner for BeesSimulation {
                 description: None,
             },
         };
+
+        group_options.insert(
+            "layout".into(),
+            ParameterOptions::TextCategory(TextCategoryOptions {
+                allow_multi: false,
+                options: vec!["gridded".into(), "clustered".into(), "random".into()],
+                default: Some(vec!["random".into()]),
+                display_details: ParameterOptionDisplayDetails {
+                    description: None,
+                    display_name: Some("Layout".into()),
+                },
+            }),
+        );
 
         group_options.insert(
             "region".into(),
@@ -244,7 +272,19 @@ impl MaticoAnalysisRunner for BeesSimulation {
                 range: Some([0, 100]),
                 default: Some(10),
                 display_details: ParameterOptionDisplayDetails {
-                    display_name: Some("Bees mean".into()),
+                    display_name: Some("Fruits mean".into()),
+                    description: None,
+                },
+            }),
+        );
+
+        options.insert(
+            "cluster_radius".into(),
+            ParameterOptions::NumericFloat(NumericFloatOptions {
+                range: Some([0.0, 0.01]),
+                default: Some(0.003),
+                display_details: ParameterOptionDisplayDetails {
+                    display_name: Some("Cluster radius".into()),
                     description: None,
                 },
             }),
@@ -282,6 +322,7 @@ mod tests {
         wind: bool,
         soil: bool,
         proximity: bool,
+        layout: &str,
     ) -> OptionGroupVals {
         let region = OptionGroupVals(vec![
             OptionGroupVal {
@@ -304,23 +345,23 @@ mod tests {
 
         let experiments = OptionGroupVals(vec![
             OptionGroupVal {
-                name: "bees".into(),
+                name: "bees_control".into(),
                 parameter: bees.into(),
             },
             OptionGroupVal {
-                name: "fruits".into(),
+                name: "fruits_control".into(),
                 parameter: fruits.into(),
             },
             OptionGroupVal {
-                name: "wind".into(),
+                name: "wind_control".into(),
                 parameter: wind.into(),
             },
             OptionGroupVal {
-                name: "soil".into(),
+                name: "soil_control".into(),
                 parameter: soil.into(),
             },
             OptionGroupVal {
-                name: "proximity".into(),
+                name: "proximity_control".into(),
                 parameter: proximity.into(),
             },
         ]);
@@ -342,6 +383,10 @@ mod tests {
                 name: "name".into(),
                 parameter: ParameterValue::Text(String::from(name)),
             },
+            OptionGroupVal {
+                name: "layout".into(),
+                parameter: ParameterValue::TextCategory(vec![layout.into()]),
+            },
         ]);
         group
     }
@@ -353,15 +398,35 @@ mod tests {
         sim.set_parameter("bees_mean".into(), 2)
             .expect("Bees parameter to be set");
 
+        sim.set_parameter("cluster_radius".into(), 0.001)
+            .expect("cluster parameter to be set");
+
         sim.set_parameter("fruits_mean", 1)
             .expect("Fruits parameter to be set");
 
-        let region = [0.0, 0.0, 10.0, 10.0];
-        let group1 = experiment_group("bees", region, 20, true, false, false, false, false);
-        let group2 = experiment_group("control", region, 40, false, false, false, false, false);
+        let region = [32.416, -85.707, 32.42, -85.701];
+
+        let group1 = experiment_group(
+            "bees", region, 20, true, false, false, false, false, "gridded",
+        );
+        let group2 = experiment_group(
+            "control", region, 20, false, false, false, false, false, "random",
+        );
+        let group3 = experiment_group(
+            "cluster",
+            region,
+            20,
+            false,
+            false,
+            false,
+            false,
+            false,
+            "clustered",
+        );
         let groups = ParameterValue::RepeatedOption(vec![
             ParameterValue::OptionGroup(group1),
             ParameterValue::OptionGroup(group2),
+            ParameterValue::OptionGroup(group3),
         ]);
 
         sim.set_parameter("groups", groups)

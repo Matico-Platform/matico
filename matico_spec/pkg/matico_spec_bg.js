@@ -2007,33 +2007,6 @@ export class TextPane {
         const len0 = WASM_VECTOR_LEN;
         wasm.textpane_set_font(this.ptr, ptr0, len0);
     }
-    /**
-    * @returns {string | undefined}
-    */
-    get background() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.textpane_get_background(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            let v0;
-            if (r0 !== 0) {
-                v0 = getStringFromWasm0(r0, r1).slice();
-                wasm.__wbindgen_free(r0, r1 * 1);
-            }
-            return v0;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-        }
-    }
-    /**
-    * @param {string} background
-    */
-    set background(background) {
-        const ptr0 = passStringToWasm0(background, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.textpane_set_background(this.ptr, ptr0, len0);
-    }
 }
 /**
 */
