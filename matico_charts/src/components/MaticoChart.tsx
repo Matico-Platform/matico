@@ -8,23 +8,26 @@ export default function MaticoChart(props: ChartSpaceSpec) {
 
   return (
     <ParentSize>
-      {({ width, height }) => (
-        <ChartSpace
-          {...props}
-          data={data}
-          dimensions={
-            dimensions
-              ? {
-                  width: dimensions.width || width,
-                  height: dimensions.height || height,
-                }
-              : {
-                  width,
-                  height,
-                }
-          }
-        />
-      )}
+      {({ width, height }) => {
+        console.log("Parent Width and height ", width, height);
+        return (
+          <ChartSpace
+            {...props}
+            data={data}
+            dimensions={
+              dimensions
+                ? {
+                    width: dimensions.width || width,
+                    height: dimensions.height || height,
+                  }
+                : {
+                    width,
+                    height,
+                  }
+            }
+          />
+        );
+      }}
     </ParentSize>
   );
 }

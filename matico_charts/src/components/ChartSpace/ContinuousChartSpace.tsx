@@ -255,7 +255,7 @@ export default function ContinuousChartspace({
     if (horizontal) return "horizontal";
   }, [JSON.stringify(useBrush || null)]);
 
-  if (!data || width < 10) return null;
+  if (!data) return null;
 
   const sanitizeX = (val: number) => {
     if (val > xMax) return xMax;

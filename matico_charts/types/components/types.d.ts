@@ -1,5 +1,6 @@
 /// <reference types="react" />
 import { ContinuousDomain } from "@visx/scale";
+import { BinData, BoxPlot } from "@visx/mock-data/lib/generators/genStats";
 export declare type MarginSpec = {
   top: number;
   right: number;
@@ -49,8 +50,8 @@ export interface ErrorSpec {
   yMax?: AccessorFunction;
 }
 export interface BaseLayerSpec {
-  type: "scatter" | "line" | "bar" | "pie" | "map";
-  data?: DataCollection;
+  type: "scatter" | "line" | "bar" | "pie" | "dist";
+  data?: DataCollection | BoxPlotStats[];
   layer?: OverwriteProperty;
   xError?: ErrorSpec;
   yError?: ErrorSpec;
@@ -81,6 +82,7 @@ export interface StaticMapSpec extends BaseLayerSpec {
   events?: boolean;
 }
 export interface ScatterSpec extends BaseLayerSpec {
+  data: DataCollection;
   color?: ColorFunction | ColorOutput;
   scale?: number | SizeFunction;
   shape?: string | ShapeFunction;
@@ -89,22 +91,44 @@ export interface ScatterSpec extends BaseLayerSpec {
   tooltip?: boolean;
 }
 export interface LineSpec extends BaseLayerSpec {
+  data: DataCollection;
   lineFunction?: LineFunction;
   lineColor?: string;
   lineWidth?: number;
 }
 export interface BarSpec extends BaseLayerSpec {
+  data: DataCollection;
   padding?: number;
+  barWidth?: number;
 }
 export interface PieSpec extends BaseLayerSpec {
+  data: DataCollection;
   reverseSort?: boolean;
   innerRadius?: number;
   padding?: number;
 }
 export interface HeatmapSpec extends BaseLayerSpec {
+  data: DataCollection;
   xBins: number;
   yBins: number;
   binnedData?: DataCollection[];
+}
+export interface DistributionSpec extends BaseLayerSpec {
+  data: BoxPlotStats[];
+  showBoxPlot?: boolean;
+  boxPlotStroke?: ColorOutput;
+  boxPlotFill?: ColorOutput;
+  showViolinPlot?: boolean;
+  violinPlotStroke?: ColorOutput;
+  violinPlotFill?: ColorOutput;
+  horizontal?: boolean;
+  tooltipOn?: boolean;
+  tooltipShouldDetectBounds?: boolean;
+  renderTooltipInPortal?: boolean;
+}
+export interface BoxPlotStats {
+  boxPlot: BoxPlot;
+  binData?: BinData[];
 }
 export declare type LayerSpec =
   | ScatterSpec
@@ -112,7 +136,7 @@ export declare type LayerSpec =
   | BarSpec
   | PieSpec
   | HeatmapSpec
-  | StaticMapSpec;
+  | DistributionSpec;
 export declare type OverwriteProperty = {
   [property: string]: any;
 };
