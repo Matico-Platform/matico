@@ -22,14 +22,18 @@ export const TextCategoryInput: React.FC<TextCategoryInputProps> = ({
         () => options.map((o: string) => ({ name: o, id: o })),
         [options]
     );
+    console.log("TextCategoryInput ", value);
 
     return (
         <ComboBox
             label={label}
-            description={description} 
+            description={description}
             selectedKey={value[0]}
             items={mappedOptions}
-            onSelectionChange={(newVal) => { console.log("new val is ", newVal); onChange([newVal as string])}}
+            onSelectionChange={(newVal) => {
+                console.log("new val is ", newVal);
+                onChange([newVal as string]);
+            }}
         >
             {(item) => <Item key={item.id}>{item.name}</Item>}
         </ComboBox>

@@ -2,10 +2,10 @@ import React from "react";
 import { ColorVariableEditorProps } from "./types";
 import _ from "lodash";
 import { TwoUpCollapsableGrid } from "Components/MaticoEditor/Utils/TwoUpCollapsableGrid";
-import { DataDrivenModal } from "Components/MaticoEditor/Utils/DataDrivenModal";
 import { ColorPickerDialog } from "Components/MaticoEditor/Utils/ColorPickerDialog";
 import { ManualVariableComboBox } from "../ManualVariableComboBox";
 import ColorFill from "@spectrum-icons/workflow/ColorFill";
+import { DataDrivenModal } from "Components/MaticoEditor/Utils/DataDrivenModel";
 
 export const ColorVariableEditor: React.FC<ColorVariableEditorProps> = ({
     label,

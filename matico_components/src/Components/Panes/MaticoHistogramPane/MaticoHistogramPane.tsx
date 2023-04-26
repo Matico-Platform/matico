@@ -2,12 +2,21 @@ import React from "react";
 import { useState, useMemo } from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { useAutoVariable } from "../../../Hooks/useAutoVariable";
-import { Filter } from "@maticoapp/matico_types/spec";
+import {
+    ColorSpecification,
+    Filter,
+    MappingVarOr
+} from "@maticoapp/matico_types/spec";
 import { useMaticoSelector } from "../../../Hooks/redux";
 import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
-import { generateColorVar } from "../MaticoMapPane/LayerUtils";
+import {
+    chromaColorFromColorSpecification,
+    generateColorVar,
+    getColorPallet,
+    getColorPalletChroma
+} from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
 import { useErrorsFor } from "Hooks/useErrors";
 import { MaticoErrorType } from "Stores/MaticoErrorSlice";
@@ -15,11 +24,12 @@ import { HistogramEntry } from "@maticoapp/matico_types/api";
 import { LoadingSpinner } from "Components/MaticoEditor/EditorComponents/LoadingSpinner/LoadingSpinner";
 import { v4 as uuid } from "uuid";
 import { MissingParamsPlaceholder } from "../MissingParamsPlaceholder/MissingParamsPlaceholder";
+import { uniq } from "lodash";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
     dataset: { name: string; filters: Array<Filter> };
     column: string;
-    color?: string;
+    color?: MappingVarOr<ColorSpecification>;
     maxbins?: number;
     labels?: { [name: string]: string };
 }
@@ -68,7 +78,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
               column,
               metric: "histogram",
               filters: dataset.filters,
-              parameters: { bins: maxbins }
+              parameters: { bins: maxbins, groupByColumn: "group" }
           }
         : null;
 
@@ -82,12 +92,43 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
             (c: HistogramEntry) => c.freq
         );
 
-        const extent = [
-            data[0].binStart - (data[0].binEnd - data[0].binStart),
-            data[data.length - 1].binEnd
-        ];
+        let minExtent = Math.min(...data.map((d) => d.binStart));
+        let maxExtent = Math.max(...data.map((d) => d.binEnd));
+        const extent = [minExtent, maxExtent];
+        // const extent = [
+        //     data[0].binStart - (data[0].binEnd - data[0].binStart),
+        //     data[data.length - 1].binEnd
+        // ];
+        console.log("Data is ", data);
 
         const colorMap = generateColorVar(color);
+        const pallet = getColorPalletChroma("Antique");
+
+        const groups = uniq(data.map((d) => d.group));
+
+        const layers = groups.map((group, index) => ({
+            type: "bar",
+            data: data.filter((d) => d.group === group),
+            //@ts-ignore
+            color: (d) => {
+                // return [255, 0, 0, 0.7]
+                if (colorMap) {
+                    console.log("using color map");
+                    let c = colorMap(d.group);
+                    return [c[0], c[1], c[2]];
+                } else {
+                    console.log("using color pallet");
+                    let color = [...pallet[index].rgb(), 0.7];
+                    console.log("color is ", color);
+                    return color;
+                }
+            },
+            scale: 11,
+            xAccessor: (d: any) => d.binMid,
+            barWidth: data[0].binEnd - data[0].binStart
+        }));
+
+        console.log("layers ", layers);
 
         return (
             <MaticoChart
@@ -126,18 +167,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
                               }
                     )
                 }
-                layers={[
-                    {
-                        type: "bar",
-                        //@ts-ignore
-                        color: (d) => {
-                            let c = colorMap(d.binMid);
-                            return [c[0], c[1], c[2]];
-                        },
-                        scale: 11,
-                        xAccessor: (d: any) => d.binEnd
-                    }
-                ]}
+                layers={layers}
             />
         );
     }, [JSON.stringify({ labels, color, backgroundColor }), chartData]);

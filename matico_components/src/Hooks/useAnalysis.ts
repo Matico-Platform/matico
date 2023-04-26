@@ -9,26 +9,29 @@ const analysisCache: Record<string, any> = {};
 
 export const loadAnalysis = async (url: string) => {
     //This is nasty as F but only way I can figure out to make next happy
-    try{
-      const wasm = await new Function(
-          "url",
-          " let get_url = async () => await import(url); return get_url()"
-      )(url);
-      console.log("have wasm object")
-      await wasm.default();
-      console.log("instanciated wasm object")
-      let key = Object.keys(wasm).find((k) => k.includes("Interface"));
-      console.log("got key ", key)
-      return wasm[key].new();
-    }
-    catch(e){
-       debugger
-       return null
+
+    let fullUrl = url.includes("http") ? url : `http://localhost:3000${url}`;
+
+    try {
+        const wasm = await new Function(
+            "url",
+            " let get_url = async () => await import(url); return get_url()"
+        )(fullUrl);
+        console.log("have wasm object");
+        await wasm.default();
+        console.log("instanciated wasm object");
+        let key = Object.keys(wasm).find((k) => k.includes("Interface"));
+        console.log("got key ", key);
+        return wasm[key].new();
+    } catch (e) {
+        debugger;
+        return null;
     }
 };
 
 export const populateDefaults = (options: Record<string, ParameterOptions>) => {
     let defaults: Array<SpecParameter> = [];
+    console.log("Options are", options);
     Object.entries(options).map(([key, option]) => {
         if (option.type === "optionGroup") {
             let value = populateDefaults(option.options);

@@ -47,6 +47,8 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
         });
     };
 
+    console.log("values are ", values);
+
     return (
         <ParameterGroup
             layout="column"
@@ -146,11 +148,12 @@ const ParameterInput: React.FC<{
                 />
             );
         case "textCategory":
+            console.log("value for text textCategory", value, defaultVal);
             return (
                 <TextCategoryInput
                     label={displayName}
                     description={description}
-                    value={value ? value : defaultVal}
+                    value={value ? value : [defaultVal]}
                     options={options.options}
                     allowMulti={options.allowMulti}
                     onChange={(newVal) =>

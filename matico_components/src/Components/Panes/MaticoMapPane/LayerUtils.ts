@@ -1,18 +1,13 @@
 import { parseSync } from "@loaders.gl/core";
 import { WKBLoader } from "@loaders.gl/wkt";
 import wkx from "wkx";
-import chroma from "chroma-js";
+import chroma, { Color } from "chroma-js";
+import { at } from "lodash";
 import { RGBAColor } from "@deck.gl/core";
 import * as d3 from "d3-scale";
 import { colors } from "../../../Utils/colors";
-import {
-    ColorSpecification,
-    MappingVarOr,
-    VarOr,
-    Range,
-    DomainVal
-} from "@maticoapp/matico_types/spec";
-import { Geometry, Polygon, Point, MultiPolygon } from "wkx";
+import { ColorSpecification, MappingVarOr } from "@maticoapp/matico_types/spec";
+import { Polygon, MultiPolygon } from "wkx";
 
 export function chunkCoords(coords: Array<Number>) {
     return coords.reduce((result, coord, index) => {
@@ -71,29 +66,11 @@ export function convertLine(wkbGeom: any) {
     return chunkCoords(parseSync(wkbGeom, WKBLoader).positions.value);
 }
 
-type ColorReturn = RGBAColor | ((d: Record<string, unknown>) => RGBAColor);
+type ColorReturn =
+    | ColorSpecification
+    | RGBAColor
+    | ((d: Record<string, unknown>) => RGBAColor);
 type NumberReturn = number | ((d: Record<string, unknown>) => number);
-
-export const generateNumericVar = (
-    numericVar: MappingVarOr<number>
-): NumberReturn => {
-    if (!numericVar) return null;
-    if (typeof numericVar === "number") return numericVar;
-    if ("variable" in numericVar) {
-        const { variable, domain, range } = numericVar;
-        const ramp = constructRampFunctionNum(
-            range as Range<number>,
-            domain as DomainVal[]
-        );
-        return (d: Record<string, unknown>) => {
-            const val =
-                //@ts-ignore
-                "properties" in d ? d.properties[variable] : d[variable];
-            return ramp(val) as number;
-        };
-    }
-    return null;
-};
 
 export const chromaColorFromColorSpecification = (
     color: ColorSpecification,
@@ -123,36 +100,97 @@ export const chromaColorFromColorSpecification = (
     return null;
 };
 
-const constructRampFunctionNum = (
-    range: Range<number>,
-    domain: DomainVal[]
-) => {
-    if (typeof domain[0] === "string") {
-        return (val: string) => {
-            return range[domain.indexOf(val)] ?? 20;
-        };
-    } else {
-        return d3
-            .scaleLinear()
-            .domain(domain as number[])
-            .range(range as number[]);
-    }
-};
-const constructRampFunctionCol = (range: Range<number>, domain: Array<any>) => {
-    if (typeof domain[0] === "string") {
-        return (val: string) => {
-            const index = domain.indexOf(`${val}`);
+export const generateNumericVar = (
+    numericVar: MappingVarOr<number>
+): NumberReturn => {
+    if (!numericVar) return null;
+    if (typeof numericVar === "number") return numericVar;
+    if ("variable" in numericVar) {
+        const { variable, domain, range } = numericVar;
 
-            if (index >= 0) {
-                const r = range[index];
-                return chroma(r);
-            } else {
-                return chroma(211, 211, 211);
-            }
+        if ("varId" in domain.values || "dataset" in domain.values) {
+            return null;
+        }
+
+        const ramp =
+            domain.type === "continuious" &&
+            typeof domain.values[0] === "number"
+                ? constructRampFunctionNum(
+                      range.values as Array<number>,
+                      domain.values
+                  )
+                : constructCageoryFuncNum(range.values, domain.values, 0);
+
+        return (d: Record<string, unknown>) => {
+            const val =
+                //@ts-ignore
+                "properties" in d ? d.properties[variable] : d[variable];
+            return ramp(val) as number;
         };
-    } else {
-        return chroma.scale(range).domain(domain);
     }
+    return null;
+};
+
+const constructCageoryFuncNum = <T>(
+    range: Array<number>,
+    domain: Array<T>,
+    defaultVal: number
+) => {
+    return (d: T) => {
+        let index = domain.indexOf(d);
+        if (index >= 0 && index < range.length) {
+            return range[index];
+        }
+        return defaultVal;
+    };
+};
+
+const constructRampFunctionNum = (
+    range: Array<number>,
+    domain: Array<number>
+) => {
+    return d3.scaleLinear().domain(domain).range(range);
+};
+
+const constructRampFunctionCol = (
+    range: Array<Color>,
+    domain: Array<number>
+): ((d: number) => Color) => {
+    return chroma.scale(range).domain(domain);
+};
+
+const constructCategoryFunctionCol = <T>(
+    range: Array<Color>,
+    domain: Array<T>
+): ((d: T) => Color) => {
+    return (d: T) => {
+        let defaultColor = chroma.css("lightgrey");
+        let index = domain.indexOf(d);
+        if (index >= 0 && index < range.length) {
+            return range[index];
+        }
+        return defaultColor;
+    };
+};
+
+export const getColorPallet = (name: string) => {
+    let pallet: Array<any> | Record<string | number, any> = at(colors, name)[0];
+    if (!Array.isArray(pallet)) {
+        pallet = pallet[3];
+    }
+    return pallet.map((c: string | Array<number>) => {
+        if (typeof c === "string") {
+            return { hex: c };
+        } else if (Array.isArray(c)) {
+            return c.length === 3 ? { rgb: c } : { rgba: c };
+        }
+    });
+};
+export const getColorPalletChroma = (name: string) => {
+    let pallet = getColorPallet(name);
+    return pallet.map((c: ColorSpecification) =>
+        chromaColorFromColorSpecification(c, true)
+    );
 };
 export const generateColorVar = (
     colorVar: MappingVarOr<ColorSpecification>,
@@ -166,72 +204,33 @@ export const generateColorVar = (
     if ("variable" in colorVar) {
         const { variable, domain, range } = colorVar;
 
-        if (Array.isArray(range)) {
-            const mappedRange = range.map((c) =>
+        let colorBuckets: Array<Color> | undefined = undefined;
+
+        let rangeAssignType = range.type;
+
+        if (Array.isArray(range.values)) {
+            colorBuckets = range.values.map((c) =>
                 chromaColorFromColorSpecification(c, true)
             );
+        } else if (typeof range.values === "string") {
+            colorBuckets = getColorPalletChroma(range.values);
+        }
 
-            const ramp = constructRampFunctionCol(mappedRange, domain);
-
-            return (d) => {
-                let c = ramp(d[variable]).rgba();
-                c[3] = c[3] * 255;
-                return c;
-            };
-        } else if (typeof range === "string" && _.at(colors, range)[0]) {
-            let brewer = _.at(colors, range)[0];
-            if (!brewer) {
-                return null;
-            }
-
-            if (!Array.isArray(brewer)) {
-                brewer = brewer[3];
-            }
-
-            const mappedRange = brewer.map((c: string | Array[number]) =>
-                chromaColorFromColorSpecification(
-                    typeof c === "string" ? { hex: c } : { rgb: c },
-                    true
-                )
-            );
-
-            const ramp = constructRampFunctionCol(mappedRange, domain);
-
-            return (d: any) => {
-                let val;
-                if (typeof d === "number") {
-                    val = d;
-                } else {
-                    val = d.hasOwnProperty("properties")
-                        ? d.properties[variable]
-                        : d[variable];
-                }
-                if (!val) {
-                    return [0, 0, 0, 0];
-                }
-                let c = ramp(val).rgba();
-
-                return c;
-            };
-        } else {
+        if (!Array.isArray(domain.values)) {
             return null;
         }
-    }
 
-    let c = chromaColorFromColorSpecification(colorVar, alpha).rgba();
-    c[3] = c[3] * 255;
-    return () => c;
-};
+        //@ts-ignore
+        const ramp =
+            domain.type === "continuious"
+                ? constructRampFunctionCol(colorBuckets, domain.values)
+                : constructCategoryFunctionCol(colorBuckets, domain.values);
 
-export const getColorScale = (range: any) => {
-    if (typeof range === "string") {
-        let brewer = _.at(colors, [range]);
-        if (!brewer) {
-            return null;
-        }
-        return brewer;
-    } else {
-        return range;
+        return (d: Record<string, any>) => {
+            let c = ramp(d[variable]).rgba();
+            c[3] = c[3] * 255;
+            return c;
+        };
     }
 };
 

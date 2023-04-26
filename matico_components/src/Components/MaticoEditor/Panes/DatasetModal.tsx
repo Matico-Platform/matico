@@ -6,14 +6,6 @@ import {
     Flex,
     Text,
     Heading,
-    TableView,
-    TableHeader,
-    TableBody,
-    Column,
-    Row,
-    Cell,
-    TooltipTrigger,
-    Tooltip,
     View
 } from "@adobe/react-spectrum";
 import { DatasetSummary } from "Datasets/Dataset";
@@ -41,6 +33,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
     });
 
     const { updateDataset } = useDatasetActions(dataset.name);
+    console.log("dataset Spec is ", dataset.spec);
 
     return (
         <DialogTrigger isDismissable>
@@ -55,6 +48,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
                         {dataset.spec?.type === "wasmCompute" && (
                             <View flex={1}>
                                 <h1>Compute!</h1>
+                                {dataset.error && <Text>{dataset.error}</Text>}
                                 <ComputeParameterEditor
                                     onChange={(update: any) => {
                                         updateDataset(dataset.name, update);
@@ -63,7 +57,6 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
                                 />
                             </View>
                         )}
-                        {dataset.error && <Text>{dataset.error}</Text>}
                         {dataRequest && dataRequest.state === "Done" && (
                             <DataTable data={dataRequest.result} />
                         )}

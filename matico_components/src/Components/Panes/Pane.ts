@@ -1,4 +1,4 @@
-import { PanePosition } from "@maticoapp/matico_types/spec";
+import { ColorSpecification, PanePosition } from "@maticoapp/matico_types/spec";
 import { MaticoControlsPane } from "Components/Panes/MaticoControlsPane/MaticoControlsPane";
 import { MaticoContainerPane } from "Components/Panes/MaticoContainerPane/MaticoContainerPane";
 import { MaticoHistogramPane } from "Components/Panes/MaticoHistogramPane/MaticoHistogramPane";
@@ -14,7 +14,7 @@ export interface MaticoPaneInterface {
     position: PanePosition;
     id: string;
     name: string;
-    background: string;
+    background: ColorSpecification;
 }
 
 export type Pane =

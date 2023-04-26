@@ -20,6 +20,9 @@ import {
     ToolbarPlugin
 } from "verbum";
 import styled from "styled-components";
+import { ColorSpecification } from "@maticoapp/matico_types/spec";
+import { chromaColorFromColorSpecification } from "../MaticoMapPane/LayerUtils";
+import chroma from "chroma-js";
 export interface MaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
     handleContent?: (content: string) => void;
@@ -51,6 +54,7 @@ const TextPaneContainer = styled.section<{ isReadOnly?: boolean }>`
 
 export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
     content,
+    background,
     handleContent = () => {},
     isReadOnly = true,
     children
@@ -63,7 +67,18 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
             const parsedContent = `{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"${content}\",\"type\":\"text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}`;
             return parsedContent;
         }
-    }, []);
+    }, [content]);
+
+    let background_color = background
+        ? chromaColorFromColorSpecification(background, false)
+        : chroma(255.0, 255.0, 255.0, 1.0);
+
+    let StyleWrapper = styled.div<{ color: string }>`
+        .editor-shell .editor-container {
+            height: 100%;
+            background-color: ${({ color }) => color};
+        }
+    `;
 
     return (
         <View
@@ -71,39 +86,22 @@ export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
             overflow="hidden auto"
             width="100%"
             height="100%"
-            backgroundColor={isReadOnly ? "transparent" : "default"}
+            UNSAFE_style={{ backgroundColor: background_color.css() }}
         >
-            <TextPaneContainer isReadOnly={isReadOnly}>
-                <EditorComposer>
-                    <Editor
-                        hashtagsEnabled={true}
-                        onChange={handleContent}
-                        initialEditorState={parsedContent}
-                        isReadOnly={isReadOnly}
-                    >
-                        <>
-                            <ToolbarPlugin defaultFontSize="20px">
-                                <FontFamilyDropdown />
-                                <FontSizeDropdown />
-                                <Divider />
-                                <BoldButton />
-                                <ItalicButton />
-                                <UnderlineButton />
-                                <CodeFormatButton />
-                                <InsertLinkButton />
-                                <TextColorPicker />
-                                <BackgroundColorPicker />
-                                <TextFormatDropdown />
-                                <Divider />
-                                <InsertDropdown enablePoll={true} />
-                                <Divider />
-                                <AlignDropdown />
-                            </ToolbarPlugin>
+            <StyleWrapper color={background_color.css()}>
+                <TextPaneContainer isReadOnly={isReadOnly}>
+                    <EditorComposer>
+                        <Editor
+                            hashtagsEnabled={true}
+                            onChange={handleContent}
+                            initialEditorState={parsedContent}
+                            isReadOnly={isReadOnly}
+                        >
                             {children}
-                        </>
-                    </Editor>
-                </EditorComposer>
-            </TextPaneContainer>
+                        </Editor>
+                    </EditorComposer>
+                </TextPaneContainer>
+            </StyleWrapper>
         </View>
     );
 };

@@ -18,6 +18,7 @@ interface ColorPickerDialogInterface {
     // label: string;
     color: ColorSpecification;
     onColorChange: (color: ColorSpecification) => void;
+    label?: string;
     height?: string;
     width?: string;
 }
@@ -26,8 +27,11 @@ export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
     color,
     onColorChange,
     height = "size-400",
+    label = "Select Color",
     width = "size-600"
 }) => {
+    if (!color) return null;
+    console.log("color is ", color);
     const hasAlpha = "rgba" in color;
     let chromaColor = chromaColorFromColorSpecification(color, hasAlpha);
     let rgba = hasAlpha ? chromaColor.rgba() : chromaColor.rgb();
@@ -54,7 +58,7 @@ export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
             >
                 <ActionButton width="100%" height="100%" staticColor="white">
                     <ColorFill size="S" />
-                    <Text>Select Color</Text>
+                    <Text>{label}</Text>
                 </ActionButton>
             </View>
             {(close) => (

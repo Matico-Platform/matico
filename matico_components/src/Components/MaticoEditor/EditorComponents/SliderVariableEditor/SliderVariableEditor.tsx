@@ -2,10 +2,10 @@ import React from "react";
 import { SliderVariableEditorProps } from "./types";
 import _ from "lodash";
 import { TwoUpCollapsableGrid } from "Components/MaticoEditor/Utils/TwoUpCollapsableGrid";
-import { DataDrivenModal } from "Components/MaticoEditor/Utils/DataDrivenModal";
 import { ManualVariableComboBox } from "../ManualVariableComboBox";
 import ColorFill from "@spectrum-icons/workflow/ColorFill";
 import { SliderUnitSelector } from "../SliderUnitSelector";
+import { DataDrivenModal } from "Components/MaticoEditor/Utils/DataDrivenModel";
 
 export const SliderVariableEditor: React.FC<SliderVariableEditorProps> = ({
     label = "",

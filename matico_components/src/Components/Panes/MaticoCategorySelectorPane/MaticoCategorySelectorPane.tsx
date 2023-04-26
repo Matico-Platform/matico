@@ -59,6 +59,7 @@ export const MaticoCategorySelector: React.FC<
         metric: "categoryCounts"
     };
     const uniqueValueRequest = useRequestColumnStat(uniqueRequest);
+
     const filteredOptions = uniqueValueRequest?.result?.filter((c: any) =>
         search && search.length ? c.name.includes(search) : true
     );
@@ -143,9 +144,10 @@ export const MaticoCategorySelector: React.FC<
                                             {filteredOptions.map((c: any) => (
                                                 <Checkbox
                                                     key={c.name}
-                                                    value={`${c.name}`}
+                                                    value={c.name}
                                                 >
-                                                    {c.name} ({c.count})
+                                                    {JSON.stringify(c.name)} (
+                                                    {c.count})
                                                 </Checkbox>
                                             ))}
                                         </Grid>

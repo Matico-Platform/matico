@@ -62,6 +62,10 @@ export const MaticoRawSpecEditor: React.FC = () => {
                 setIsValid(false);
                 setJsonError(e);
             }
+        } else {
+            if (code) {
+                dispatch(setSpec(JSON.parse(code)));
+            }
         }
     }, [JSON.stringify(code), validator, validatorReady]);
 
@@ -76,10 +80,10 @@ export const MaticoRawSpecEditor: React.FC = () => {
         return combinedErrors.filter((a) => a);
     }, [jsonError, validationResult]);
 
-    if (validatorError) return <h1>Failed to load validator wasm </h1>;
+    // if (validatorError) return <h1>Failed to load validator wasm </h1>;
 
-    if (!validatorReady)
-        return <ProgressCircle aria-label="Loading…" isIndeterminate />;
+    // if (!validatorReady)
+    //     return <ProgressCircle aria-label="Loading…" isIndeterminate />;
     return (
         <Flex
             direction="column"
