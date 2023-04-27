@@ -28,6 +28,7 @@ impl MaticoAnalysisRunner for BeesSimulation {
         let bees_mean: u32 = self.get_parameter("bees_mean")?.try_into()?;
         let fruit_mean: u32 = self.get_parameter("fruits_mean")?.try_into()?;
         let cluster_radius: f64 = self.get_parameter("cluster_radius")?.try_into()?;
+        let proximity_factor: f64 = self.get_parameter("proximity_factor")?.try_into()?;
 
         let groups: Vec<ParameterValue> = self.get_parameter("groups")?.try_into()?;
 
@@ -100,7 +101,13 @@ impl MaticoAnalysisRunner for BeesSimulation {
             })
             .collect::<std::result::Result<Vec<Group>, ProcessError>>()?;
 
-        let sim = Simulation::new(sim_groups, bees_mean, fruit_mean, cluster_radius);
+        let sim = Simulation::new(
+            sim_groups,
+            bees_mean,
+            fruit_mean,
+            cluster_radius,
+            proximity_factor,
+        );
         let results = sim.run();
 
         #[cfg(target_arch = "wasm32")]
@@ -291,6 +298,18 @@ impl MaticoAnalysisRunner for BeesSimulation {
         );
 
         options.insert(
+            "proximity_factor".into(),
+            ParameterOptions::NumericFloat(NumericFloatOptions {
+                range: Some([0.0, 10.0]),
+                default: Some(2.0),
+                display_details: ParameterOptionDisplayDetails {
+                    display_name: Some("Proxmity factor".into()),
+                    description: None,
+                },
+            }),
+        );
+
+        options.insert(
             "groups".into(),
             ParameterOptions::RepeatedOption(RepeatedOption {
                 options: Box::new(ParameterOptions::OptionGroup(group_options)),
@@ -403,6 +422,9 @@ mod tests {
 
         sim.set_parameter("fruits_mean", 1)
             .expect("Fruits parameter to be set");
+
+        sim.set_parameter("proximity_factor", 0.4)
+            .expect("proximity factor to be set");
 
         let region = [32.416, -85.707, 32.42, -85.701];
 

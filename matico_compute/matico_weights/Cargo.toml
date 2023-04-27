@@ -1,0 +1,24 @@
+[package]
+name = "matico_weights"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "^1.0.130", features = ["derive"] }
+wasm-bindgen = { version = "0.2.77", features = ['serde-serialize'] }
+matico_analysis = { path = "../matico_analysis" }
+matico_common = { path = "../../matico_common" }
+matico_spec_derive = { path = "../../matico_spec_derive" }
+serde_json = "1.0.59"
+geozero = { version = "0.9.4", features = ["with-wkb"], default-features = false }
+geo = { git = "https://github.com/georust/geo.git", rev = '578e213875915e1f895892487b5a36ca0d91fac3' }
+web-sys = { version = "0.3.57", features = ["console"] }
+rand_distr = "0.4.3"
+polars = { git = "https://github.com/stuartlynn/polars.git", branch = 'wasm_rebase', default-features = false, features = ["ipc","dtype-categorical", "dtype-u16"] }
+geopolars = { git = "https://github.com/stuartlynn/geopolars.git", branch = "wasm_test" }
+geo-weights={version="0.1.5"}

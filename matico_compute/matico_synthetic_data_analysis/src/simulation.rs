@@ -67,15 +67,23 @@ pub struct Simulation {
     bees_mean: u32,
     fruits_base: u32,
     cluster_size: f64,
+    proximity_factor: f64,
 }
 
 impl Simulation {
-    pub fn new(groups: Vec<Group>, bees_mean: u32, fruits_base: u32, cluster_size: f64) -> Self {
+    pub fn new(
+        groups: Vec<Group>,
+        bees_mean: u32,
+        fruits_base: u32,
+        cluster_size: f64,
+        proximity_factor: f64,
+    ) -> Self {
         Self {
             groups,
             bees_mean,
             fruits_base,
             cluster_size,
+            proximity_factor,
         }
     }
     pub fn no_within(&self, points: &Vec<Point<f64>>, threshold: f64) -> Series {
@@ -197,14 +205,17 @@ impl Simulation {
         let mean = data_frame
             .clone()
             .lazy()
-            .select([(col("bees") * lit(bees_factor) + lit(self.fruits_base)).alias("fruits")])
+            .select([(col("bees") * lit(bees_factor)
+                + lit(self.fruits_base)
+                + col("within_distance") * lit(self.proximity_factor))
+            .alias("fruits")])
             .collect()
             .expect("To be able to calculate the objective function ok");
 
         let fruits: Vec<f64> = mean
             .column("fruits")
             .unwrap()
-            .f32()
+            .f64()
             .unwrap()
             .into_iter()
             .zip(data_frame.column("fruit_control").unwrap().bool().unwrap())
