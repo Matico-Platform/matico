@@ -177,6 +177,7 @@ const useLegend = (
 };
 
 const Legend: React.FC<{ layer: any }> = ({ layer = {} }) => {
+    return null;
     const { name, legendEl, scale, getLegendItemProps } = useLegend(layer);
 
     if (!scale) {

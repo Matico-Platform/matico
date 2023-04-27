@@ -135,20 +135,17 @@ const ParameterInput: React.FC<{
                 />
             );
         case "boolean":
-            console.log("value for boolean component ", value, defaultVal);
             return (
                 <ValueOrVariableInput
                     value={value ? value : defaultVal}
                     label={displayName}
                     defaultValue={defaultVal}
                     onChange={(newVal) => {
-                        console.log("new val ", newVal);
                         onChange({ name, parameter: { type, value: newVal } });
                     }}
                 />
             );
         case "textCategory":
-            console.log("value for text textCategory", value, defaultVal);
             return (
                 <TextCategoryInput
                     label={displayName}

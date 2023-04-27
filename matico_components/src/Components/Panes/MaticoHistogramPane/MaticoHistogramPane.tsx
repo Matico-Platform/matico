@@ -114,13 +114,10 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
             color: (d) => {
                 // return [255, 0, 0, 0.7]
                 if (colorMap) {
-                    console.log("using color map");
                     let c = colorMap(d.group);
                     return [c[0], c[1], c[2]];
                 } else {
-                    console.log("using color pallet");
                     let color = [...pallet[index].rgb(), 0.7];
-                    console.log("color is ", color);
                     return color;
                 }
             },
@@ -128,8 +125,6 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
             xAccessor: (d: any) => d.binMid,
             barWidth: data[0].binEnd - data[0].binStart
         }));
-
-        console.log("layers ", layers);
 
         return (
             <div ref={ref} style={{ width: "100%", height: "100%" }}>

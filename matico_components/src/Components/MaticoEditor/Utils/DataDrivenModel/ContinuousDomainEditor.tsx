@@ -148,7 +148,6 @@ export const ContinuousDomain: React.FC<DomainEditorProps> = ({
     };
 
     const updateBins = (bins: number) => {
-        console.log("updating bins", bins);
         let newRangeValues;
         if (Array.isArray(range)) {
             newRangeValues = _.range(bins).map((index) =>
@@ -238,10 +237,6 @@ export const ContinuousDomain: React.FC<DomainEditorProps> = ({
                   .domain([...quantiles.result.slice(1), Math.pow(10, 10)])
                   .range(rangeValues)
             : () => "gray";
-
-    console.log("domain values ", domainValues);
-    console.log("range values ", rangeValues);
-    console.log("range type", rangeType);
 
     return (
         <View overflow="hidden auto" marginTop="size-200">

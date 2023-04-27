@@ -80,8 +80,6 @@ export const DiscreteDomain: React.FC<DomainEditorProps> = ({
         );
         onUpdateMapping({ ...mapping, range: { ...range, values: newRange } });
     };
-    console.log("named pallet ", selectedPalette, rangeValues, categoryCounts);
-    console.log("categories ", categories);
     return (
         <View overflow="hidden auto" marginTop="size-200">
             <h1>Discreate</h1>

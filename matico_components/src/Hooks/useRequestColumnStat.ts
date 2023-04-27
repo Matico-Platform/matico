@@ -7,6 +7,7 @@ import {
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 //@ts-ignore
 import { v4 as uuid } from "uuid";
+import { debounce } from "lodash";
 
 /**
  * Get a single column stat for a given dataset
@@ -20,12 +21,19 @@ export const useRequestColumnStat = (args: ColumnStatRequest) => {
         (state) => state.datasets.queries[requestHash]
     );
     const notifierId = useMemo(() => uuid(), []);
+    console.log("notifier id is ", notifierId);
+
+    const dispatchRequest = debounce(
+        () =>
+            dispatch(
+                registerColumnStatUpdates({ requestHash, args, notifierId })
+            ),
+        1000
+    );
 
     useEffect(() => {
         if (!result && args) {
-            dispatch(
-                registerColumnStatUpdates({ requestHash, args, notifierId })
-            );
+            dispatchRequest();
         }
     }, [requestHash, result]);
 

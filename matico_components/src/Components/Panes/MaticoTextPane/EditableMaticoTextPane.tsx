@@ -73,7 +73,6 @@ export const EditableMaticoTextPane: React.FC<
     // const displayContent = edit ? content : formattedText;
     //
     const handleContent = debounce((content: string) => {
-        console.log("content is ", content);
         updatePane({ content });
     }, 500);
     // const handleToggleExpanded = () => setToolbarExpanded((prev) => !prev);

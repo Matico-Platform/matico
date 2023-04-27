@@ -36,7 +36,6 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
     const spec = useMaticoSelector((s) =>
         s.spec.spec.datasets.find((d: Dataset) => d.name === dataset.name)
     );
-    console.log("Spec is ", spec);
 
     const { updateDataset } = useDatasetActions(dataset.name);
     console.log("dataset Spec is ", dataset.spec);
@@ -57,7 +56,6 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
                                 {dataset.error && <Text>{dataset.error}</Text>}
                                 <ComputeParameterEditor
                                     onChange={(update: any) => {
-                                        console.log("Update is ", update);
                                         updateDataset(dataset.name, update);
                                     }}
                                     spec={spec}

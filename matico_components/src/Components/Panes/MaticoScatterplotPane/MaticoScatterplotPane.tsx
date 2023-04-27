@@ -45,7 +45,6 @@ export const MaticoScatterplotPane: React.FC<
     labels
 }) => {
     const edit = useIsEditable();
-    console.log("DATASET ", dataset);
 
     const foundDataset = useMaticoSelector(
         (state) => state.datasets.datasets[dataset.name]
@@ -110,7 +109,6 @@ export const MaticoScatterplotPane: React.FC<
         bind: true
     });
 
-    console.log("CHART DATA ", chartData);
     const Chart = useMemo(() => {
         if (paramsAreNull) return null;
         const data = chartData?.state === "Done" ? chartData.result : [];
@@ -145,7 +143,6 @@ export const MaticoScatterplotPane: React.FC<
                     [yColumn]: regression.predict(xExtent[1])[1]
                 }
             ];
-            console.log("line data ", data);
             layers.push({
                 type: "line",
                 lineColor: "#FF0000",

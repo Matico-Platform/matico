@@ -38,8 +38,6 @@ export const CategorySelectorEditor: React.FC<PaneEditorProps> = ({
         (state) => state.datasets.datasets[categorySelectorPane.dataset?.name]
     );
 
-    console.log("dataset is ", dataset);
-
     if (!categorySelectorPane) {
         return (
             <View>

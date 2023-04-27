@@ -28,7 +28,6 @@ export const WasmComputeBuilder = async (
     datasets: Array<Dataset>
 ) => {
     const { name, url, params } = details;
-    console.log("Starting compute for ", name, url, params);
     try {
         let analysis = await loadAnalysis(url);
 
@@ -44,8 +43,6 @@ export const WasmComputeBuilder = async (
                             name: f.name,
                             type: f.type
                         }));
-
-                    console.log("cols ", cols);
 
                     const table = dataset._data.toArrow();
 
@@ -75,7 +72,6 @@ export const WasmComputeBuilder = async (
             // }
             else {
                 try {
-                    console.log("setting parameter ", name, parameter);
                     analysis.set_parameter(name, parameter);
                 } catch {
                     console.log("FAILED TO REGISTER ", name, parameter);
@@ -83,15 +79,10 @@ export const WasmComputeBuilder = async (
             }
         });
 
-        console.log("parameters registered");
-
-        console.log("runing analyisis");
         const run_result = analysis.run();
-        console.log("analyisis run");
         let dataFrame = fromArrow(run_result);
 
         let geomType = getGeomType(dataFrame.column("geom"));
-        console.log("GEom type from result is ", geomType);
 
         const fields = dataFrame.toArrow().schema.fields.map((f) => ({
             name: f.name,

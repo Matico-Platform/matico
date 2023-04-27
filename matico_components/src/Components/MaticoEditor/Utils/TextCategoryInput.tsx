@@ -22,7 +22,6 @@ export const TextCategoryInput: React.FC<TextCategoryInputProps> = ({
         () => options.map((o: string) => ({ name: o, id: o })),
         [options]
     );
-    console.log("TextCategoryInput ", value);
 
     return (
         <ComboBox

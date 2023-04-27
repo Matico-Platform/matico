@@ -17,11 +17,8 @@ export const loadAnalysis = async (url: string) => {
             "url",
             " let get_url = async () => await import(url); return get_url()"
         )(fullUrl);
-        console.log("have wasm object");
         await wasm.default();
-        console.log("instanciated wasm object");
         let key = Object.keys(wasm).find((k) => k.includes("Interface"));
-        console.log("got key ", key);
         return wasm[key].new();
     } catch (e) {
         debugger;
@@ -31,7 +28,6 @@ export const loadAnalysis = async (url: string) => {
 
 export const populateDefaults = (options: Record<string, ParameterOptions>) => {
     let defaults: Array<SpecParameter> = [];
-    console.log("Options are", options);
     Object.entries(options).map(([key, option]) => {
         if (option.type === "optionGroup") {
             let value = populateDefaults(option.options);
