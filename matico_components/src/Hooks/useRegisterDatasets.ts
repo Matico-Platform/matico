@@ -66,6 +66,8 @@ export const useRegisterDatasets = () => {
                 return;
             }
 
+            debugger;
+
             dispatch(
                 registerOrUpdateDataset({
                     ...datasetDetails

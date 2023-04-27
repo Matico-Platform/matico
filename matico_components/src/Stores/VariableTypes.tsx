@@ -10,6 +10,7 @@ export type VariableValue =
     | FeaturesVar
     | GeoFeatureVar
     | GeoFeaturesVar
+    | BooleansVar
     | DateRangeVar;
 
 export type MaticoStateVariable = {
@@ -22,6 +23,11 @@ export type MaticoStateVariable = {
 export type StringVar = {
     type: "string";
     value: string;
+};
+
+export type BooleansVar = {
+    type: "booleans";
+    value: Record<string, boolean>;
 };
 
 export type DateRangeVar = {

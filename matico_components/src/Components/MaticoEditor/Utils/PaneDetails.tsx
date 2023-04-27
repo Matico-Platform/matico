@@ -18,6 +18,7 @@ import {
 import { v4 as uuid } from "uuid";
 import { MaticoTextPaneComponents as text } from "Components/Panes/MaticoTextPane";
 import { MaticoCategorySelectorPaneComponents as categorySelector } from "Components/Panes/MaticoCategorySelectorPane";
+import { MaticoSwitchesPaneComponents } from "Components/Panes/MaticoSwitchesPane";
 
 export const IconForPaneType = (PaneType: string, props?: any) => {
     switch (PaneType) {
@@ -43,6 +44,9 @@ export const IconForPaneType = (PaneType: string, props?: any) => {
             return <PropertiesIcon {...props} />;
         case "container":
             return <Border {...props} />;
+        case "switches":
+            const SwitchesIcon = MaticoSwitchesPaneComponents.icon;
+            return <SwitchesIcon {...props} />;
         case "staticMap":
             return <MapIcon {...props} />;
         case "dateTimeSlider":
@@ -64,6 +68,7 @@ type AvaliablePanesSection = {
             | "staticMap"
             | "categorySelector"
             | "dateTimeSlider"
+            | "switches"
             | "container";
         label: string;
     }>;
@@ -83,7 +88,8 @@ export const AvaliablePanes: Array<AvaliablePanesSection> = [
             { name: "controls", label: "Controls" },
             { name: "container", label: "Container" },
             { name: "staticMap", label: "Simple Map" },
-            { name: "dateTimeSlider", label: "Date / Time Slider" }
+            { name: "dateTimeSlider", label: "Date / Time Slider" },
+            { name: "switches", label: "Switches" }
         ]
     }
 ];
@@ -187,6 +193,7 @@ export const PaneDefaults: Record<string, Partial<Pane>> = {
         dotSize: 14,
         dataset: { name: "uknown", filters: [] }
     },
+    switches: MaticoSwitchesPaneComponents.defaults,
     lineChart: {
         name: "New Line Chart",
         xColumn: null,

@@ -8,6 +8,7 @@ import type { MapPane } from "./MapPane";
 import type { PieChartPane } from "./PieChartPane";
 import type { ScatterplotPane } from "./ScatterplotPane";
 import type { StaticMapPane } from "./StaticMapPane";
+import type { SwitchesPane } from "./SwitchesPane";
 import type { TextPane } from "./TextPane";
 
 export type Pane =
@@ -20,4 +21,5 @@ export type Pane =
   | ({ type: "pieChart" } & PieChartPane)
   | ({ type: "controls" } & ControlsPane)
   | ({ type: "categorySelector" } & CategorySelectorPane)
+  | ({ type: "switches" } & SwitchesPane)
   | ({ type: "dateTimeSlider" } & DateTimeSliderPane);

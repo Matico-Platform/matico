@@ -255,6 +255,7 @@ export default function ContinuousChartspace({
     if (horizontal) return "horizontal";
   }, [JSON.stringify(useBrush || null)]);
 
+  console.log("width height ", width, height);
   if (!data) return null;
 
   const sanitizeX = (val: number) => {

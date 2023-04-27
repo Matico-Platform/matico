@@ -20,6 +20,7 @@ export const DatasetServiceMiddleWare = () => {
                 worker.unregisterDataset(action.payload);
                 return next(action);
             case "datasets/registerOrUpdateDataset":
+                debugger;
                 worker
                     .registerOrUpdateDataset(action.payload)
                     .then((datasetSummary: DatasetSummary) => {
@@ -50,7 +51,8 @@ export const DatasetServiceMiddleWare = () => {
                     ...action,
                     payload: {
                         name: action.payload.name,
-                        state: DatasetState.LOADING
+                        state: DatasetState.LOADING,
+                        params: action.payload.params
                     }
                 });
                 break;

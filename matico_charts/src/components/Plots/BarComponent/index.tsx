@@ -19,26 +19,20 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
     color = "black",
     padding = 0,
     horizontal = false,
-    barWidth = null,
   } = {
     ...props,
     ...props.layer,
   };
 
-  let barWidthCalced: number = 0;
-  if (barWidth) {
-    barWidthCalced = xScale(barWidth) / 2.0; // horizontal ? yScale(barWidth) : xScale(barWidth)
-  } else {
-    barWidthCalced = horizontal
-      ? "bandwidth" in yScale
-        ? //@ts-ignore
-          yScale.bandwidth()
-        : yMax / data.length
-      : "bandwidth" in xScale
+  const barWidth = horizontal
+    ? "bandwidth" in yScale
       ? //@ts-ignore
-        xScale.bandwidth()
-      : xMax / data.length;
-  }
+        yScale.bandwidth()
+      : yMax / data.length
+    : "bandwidth" in xScale
+    ? //@ts-ignore
+      xScale.bandwidth()
+    : xMax / data.length;
 
   const translationPx = barTranslation * barWidth;
 
@@ -49,6 +43,7 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
       (d) => sanitizeColor(color(d)) //@ts-ignore
     : () => sanitizeColor(color);
 
+  console.log("Data in component is ", data);
   return horizontal
     ? data.map((entry, i) => (
         <Bar
@@ -58,11 +53,11 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
           y={
             yScale(yAccessor(entry)) -
             translationPx +
-            (barWidthCalced * (padding || 0)) / 2
+            (barWidth * (padding || 0)) / 2
           }
           //@ts-ignore
           width={xScale(xAccessor(entry))}
-          height={barWidthCalced * (1 - (padding || 0))}
+          height={barWidth * (1 - (padding || 0))}
           fill={colorScale(entry)}
         />
       ))
@@ -73,11 +68,11 @@ export const BarComponent = (props: BarSpec & PlotLayersProperties) => {
           x={
             xScale(xAccessor(entry)) -
             translationPx +
-            (barWidthCalced * (padding || 0)) / 2
+            (barWidth * (padding || 0)) / 2
           }
           //@ts-ignore
           y={yScale(yAccessor(entry))}
-          width={barWidthCalced * (1 - (padding || 0))}
+          width={barWidth * (1 - (padding || 0))}
           //@ts-ignore
           height={yMax - yScale(yAccessor(entry))}
           fill={colorScale(entry)}

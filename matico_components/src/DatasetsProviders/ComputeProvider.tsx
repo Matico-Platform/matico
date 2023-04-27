@@ -47,8 +47,6 @@ export const ComputeParameterEditor: React.FC<DatasetParameterComponent> = ({
         });
     };
 
-    console.log("values are ", values);
-
     return (
         <ParameterGroup
             layout="column"
@@ -137,14 +135,16 @@ const ParameterInput: React.FC<{
                 />
             );
         case "boolean":
+            console.log("value for boolean component ", value, defaultVal);
             return (
                 <ValueOrVariableInput
                     value={value ? value : defaultVal}
                     label={displayName}
                     defaultValue={defaultVal}
-                    onChange={(newVal) =>
-                        onChange({ name, parameter: { type, value: newVal } })
-                    }
+                    onChange={(newVal) => {
+                        console.log("new val ", newVal);
+                        onChange({ name, parameter: { type, value: newVal } });
+                    }}
                 />
             );
         case "textCategory":

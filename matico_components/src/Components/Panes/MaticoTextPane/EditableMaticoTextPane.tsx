@@ -24,6 +24,8 @@ import MoreCircle from "@spectrum-icons/workflow/MoreCircle";
 import { useFormattedText } from "Hooks/useFormattedText";
 import { MaticoTextPane } from "./MaticoTextPane";
 import { useMaticoSelector } from "Hooks/redux";
+import "react-quill/dist/quill.snow.css";
+
 export interface EditableMaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
     updatePane: (e: any) => void;
@@ -64,64 +66,29 @@ export const EditableMaticoTextPane: React.FC<
     EditableMaticoTextPaneInterface
 > = ({ content, updatePane, ...rest }) => {
     const edit = useIsEditable();
-    const [formattedText] = useFormattedText(content);
-    console.log("edit ", edit, " contnet ", content, " ", formattedText);
-
-    const [toolbarExpanded, setToolbarExpanded] = React.useState(false);
-    const displayContent = edit ? content : formattedText;
-
+    // const [formattedText] = useFormattedText(content);
+    // console.log("edit ", edit, " contnet ", content, " ", formattedText);
+    //
+    // const [toolbarExpanded, setToolbarExpanded] = React.useState(false);
+    // const displayContent = edit ? content : formattedText;
+    //
     const handleContent = debounce((content: string) => {
+        console.log("content is ", content);
         updatePane({ content });
     }, 500);
-    const handleToggleExpanded = () => setToolbarExpanded((prev) => !prev);
+    // const handleToggleExpanded = () => setToolbarExpanded((prev) => !prev);
+    console.log("Loaded content is ", content);
 
     return (
         <MaticoTextPane
-            content={displayContent}
+            key={`matico_edit_text_pane_${rest.id}`}
+            content={content}
             handleContent={handleContent}
             isReadOnly={!edit}
-            {...rest}
-        >
-            <ToolbarWrapper expanded={toolbarExpanded}>
-                <ActionButton
-                    isQuiet
-                    aria-label={
-                        toolbarExpanded ? "Minimize toolbar" : "Expand toolbar"
-                    }
-                    onPress={handleToggleExpanded}
-                    UNSAFE_style={{
-                        position: "absolute",
-                        top: "0",
-                        right: "0"
-                    }}
-                >
-                    <MoreCircle />
-                </ActionButton>
-                <ToolbarPlugin defaultFontSize="20px">
-                    <FontSizeDropdown fontSizeOptions={fontSizeOptions} />
-                    <AlignDropdown />
-                    <Divider />
-                    <InsertDropdown
-                        enableEquations
-                        enableHorizontalRule
-                        enableYoutube
-                        enableImage
-                        // enableTwitter
-                    />
-                    <Divider />
-                    <BoldButton />
-                    <ItalicButton />
-                    <UnderlineButton />
-                    <Divider />
-                    <TextColorPicker />
-                    <BackgroundColorPicker />
-                    <TextFormatDropdown />
-                    <FontFamilyDropdown />
-                    <Divider />
-                    <InsertLinkButton />
-                    <CodeFormatButton />
-                </ToolbarPlugin>
-            </ToolbarWrapper>
-        </MaticoTextPane>
+            id={rest.id}
+            position={rest.position}
+            name={rest.name}
+            background={{ rgb: [0, 0, 0] }}
+        />
     );
 };

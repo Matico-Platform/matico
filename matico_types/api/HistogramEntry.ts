@@ -5,5 +5,4 @@ export interface HistogramEntry {
   binEnd: number;
   binMid: number;
   freq: number;
-  group: number;
 }

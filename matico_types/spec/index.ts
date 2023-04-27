@@ -106,6 +106,7 @@ export * from "./StyleJSONBaseMap";
 export * from "./SummaryItem";
 export * from "./SummaryPane";
 export * from "./SummaryStyle";
+export * from "./SwitchesPane";
 export * from "./TabBarPosition";
 export * from "./TabLayout";
 export * from "./TableOptions";

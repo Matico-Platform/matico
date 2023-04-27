@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, current } from "@reduxjs/toolkit";
 import { DatasetState, DatasetSummary } from "Datasets/Dataset";
 import {
     Filter,
@@ -82,7 +82,7 @@ export const datasetsSlice = createSlice({
                 let oldSpec = oldState.spec;
                 let newSpec = action.payload;
                 if (oldSpec) {
-                    newSpec = { ...newSpec, ...oldSpec };
+                    newSpec = { ...oldSpec, params: action.payload.params };
                 }
                 oldState.state = DatasetState.LOADING;
                 oldState.spec = newSpec;
@@ -91,7 +91,7 @@ export const datasetsSlice = createSlice({
                 state.datasets[action.payload.name] = {
                     name: action.payload.name,
                     state: DatasetState.LOADING,
-                    spec: action.payload
+                    spec: action.payload.spec
                 };
             }
         },

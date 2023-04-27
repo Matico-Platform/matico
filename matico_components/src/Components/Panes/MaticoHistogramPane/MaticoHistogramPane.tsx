@@ -25,6 +25,7 @@ import { LoadingSpinner } from "Components/MaticoEditor/EditorComponents/Loading
 import { v4 as uuid } from "uuid";
 import { MissingParamsPlaceholder } from "../MissingParamsPlaceholder/MissingParamsPlaceholder";
 import { uniq } from "lodash";
+import { useElementSize } from "usehooks-ts";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
     dataset: { name: string; filters: Array<Filter> };
@@ -52,6 +53,7 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         MaticoErrorType.PaneError
     );
     const paramsAreNull = !dataset?.name || !column?.length;
+    const [ref, { width, height }] = useElementSize();
 
     const [columnFilter, updateFilter] = useAutoVariable({
         variable: {
@@ -99,7 +101,6 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         //     data[0].binStart - (data[0].binEnd - data[0].binStart),
         //     data[data.length - 1].binEnd
         // ];
-        console.log("Data is ", data);
 
         const colorMap = generateColorVar(color);
         const pallet = getColorPalletChroma("Antique");
@@ -131,46 +132,54 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
         console.log("layers ", layers);
 
         return (
-            <MaticoChart
-                xExtent={extent}
-                xCol="binStart"
-                xLabel={labels?.x_label ?? column}
-                yLabel={labels?.y_label ?? "counts"}
-                yCol="freq"
-                title={labels?.title}
-                subtitle={labels?.sub_title}
-                attribution={labels?.attribution}
-                data={data}
-                xAxis={{
-                    scaleType: "linear",
-                    position: "bottom"
-                }}
-                grid={{ rows: true, columns: false }}
-                useBrush={{
-                    vertical: false,
-                    horizontal: true
-                }}
-                //@ts-ignore
-                onBrush={({ x0, x1 }) =>
-                    updateFilter(
-                        x0 === x1
-                            ? {
-                                  type: "range",
-                                  value: "NoSelection"
-                              }
-                            : {
-                                  type: "range",
-                                  value: {
-                                      min: x0,
-                                      max: x1
+            <div ref={ref} style={{ width: "100%", height: "100%" }}>
+                <MaticoChart
+                    xExtent={extent}
+                    xCol="binStart"
+                    xLabel={labels?.x_label ?? column}
+                    yLabel={labels?.y_label ?? "counts"}
+                    yCol="freq"
+                    dimensions={{ width, height }}
+                    title={labels?.title}
+                    subtitle={labels?.sub_title}
+                    attribution={labels?.attribution}
+                    data={data}
+                    xAxis={{
+                        scaleType: "linear",
+                        position: "bottom"
+                    }}
+                    grid={{ rows: true, columns: false }}
+                    useBrush={{
+                        vertical: false,
+                        horizontal: true
+                    }}
+                    //@ts-ignore
+                    onBrush={({ x0, x1 }) =>
+                        updateFilter(
+                            x0 === x1
+                                ? {
+                                      type: "range",
+                                      value: "NoSelection"
                                   }
-                              }
-                    )
-                }
-                layers={layers}
-            />
+                                : {
+                                      type: "range",
+                                      value: {
+                                          min: x0,
+                                          max: x1
+                                      }
+                                  }
+                        )
+                    }
+                    layers={layers}
+                />
+            </div>
         );
-    }, [JSON.stringify({ labels, color, backgroundColor }), chartData]);
+    }, [
+        JSON.stringify({ labels, color, backgroundColor }),
+        chartData,
+        width,
+        height
+    ]);
 
     return (
         <View width="100%" height="100%" position="relative">

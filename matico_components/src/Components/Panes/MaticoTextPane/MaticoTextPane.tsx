@@ -1,5 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { MaticoPaneInterface } from "../Pane";
+import ReactQuill, { Quill } from "react-quill";
+import ResizeModule from "@ssumo/quill-resize-module";
+
+Quill.register("modules/resize", ResizeModule);
+
 import { Content, View } from "@adobe/react-spectrum";
 import {
     EditorComposer,
@@ -27,7 +32,6 @@ export interface MaticoTextPaneInterface extends MaticoPaneInterface {
     content: string;
     handleContent?: (content: string) => void;
     isReadOnly?: boolean;
-    children?: React.ReactNode;
 }
 
 const TextPaneContainer = styled.section<{ isReadOnly?: boolean }>`
@@ -52,56 +56,85 @@ const TextPaneContainer = styled.section<{ isReadOnly?: boolean }>`
     }
 `;
 
+const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image"
+];
+
 export const MaticoTextPane: React.FC<MaticoTextPaneInterface> = ({
     content,
-    background,
     handleContent = () => {},
     isReadOnly = true,
-    children
+    id
 }) => {
-    const parsedContent = useMemo(() => {
-        try {
-            JSON.parse(content);
-            return content;
-        } catch {
-            const parsedContent = `{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"${content}\",\"type\":\"text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}`;
-            return parsedContent;
-        }
-    }, [content]);
+    const quillRef = useRef(null);
 
-    let background_color = background
-        ? chromaColorFromColorSpecification(background, false)
-        : chroma(255.0, 255.0, 255.0, 1.0);
+    const imageHandler = () => {
+        if (!quillRef.current) return;
+        const editor = quillRef.current.getEditor();
+        const range = editor.getSelection();
+        const value = prompt("Please enter the image URL");
 
-    let StyleWrapper = styled.div<{ color: string }>`
-        .editor-shell .editor-container {
-            height: 100%;
-            background-color: ${({ color }) => color};
+        if (value && range) {
+            editor.insertEmbed(range.index, "image", value, "user");
         }
-    `;
+    };
+
+    const modules = useMemo(
+        () => ({
+            toolbar: {
+                container: [
+                    [{ header: [1, 2, false] }],
+                    ["bold", "italic", "underline", "strike", "blockquote"],
+                    [
+                        { list: "ordered" },
+                        { list: "bullet" },
+                        { indent: "-1" },
+                        { indent: "+1" }
+                    ],
+                    [
+                        { align: "left" },
+                        { align: "center" },
+                        { align: "right" }
+                    ],
+                    ["link", "image"],
+                    ["clean"]
+                ],
+                handlers: {
+                    image: imageHandler,
+                    resize: {}
+                }
+            }
+        }),
+        []
+    );
 
     return (
-        <View
-            position="relative"
-            overflow="hidden auto"
-            width="100%"
-            height="100%"
-            UNSAFE_style={{ backgroundColor: background_color.css() }}
+        <div
+            id={`text_container_${id}`}
+            style={{ width: "100%", height: "100%", overflowY: "auto" }}
         >
-            <StyleWrapper color={background_color.css()}>
-                <TextPaneContainer isReadOnly={isReadOnly}>
-                    <EditorComposer>
-                        <Editor
-                            hashtagsEnabled={true}
-                            onChange={handleContent}
-                            initialEditorState={parsedContent}
-                            isReadOnly={isReadOnly}
-                        >
-                            {children}
-                        </Editor>
-                    </EditorComposer>
-                </TextPaneContainer>
-            </StyleWrapper>
-        </View>
+            <ReactQuill
+                ref={quillRef}
+                formats={formats}
+                key={`text_pane_${id}`}
+                theme={"snow"}
+                modules={modules}
+                bounds={`text_container_${id}`}
+                id={`text_pane_${id}`}
+                defaultValue={content}
+                readOnly={isReadOnly}
+                onChange={handleContent}
+            />
+        </div>
     );
 };

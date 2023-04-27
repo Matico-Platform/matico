@@ -10,5 +10,6 @@ export type PaneRef =
   | ({ type: "pieChart" } & PaneDetails)
   | ({ type: "controls" } & PaneDetails)
   | ({ type: "staticMap" } & PaneDetails)
+  | ({ type: "switches" } & PaneDetails)
   | ({ type: "categorySelector" } & PaneDetails)
   | ({ type: "dateTimeSlider" } & PaneDetails);

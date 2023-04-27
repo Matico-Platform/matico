@@ -17,6 +17,7 @@ import { PaneParts } from "Components/Panes/PaneParts";
 import { MaticoTextPaneComponents } from "Components/Panes/MaticoTextPane";
 import { MaticoDateTimeSlider } from "Components/Panes/MaticoDateTimeSlider/MaticoDateTimeSlider";
 import { MaticoCategorySelectorPaneComponents } from "Components/Panes/MaticoCategorySelectorPane";
+import { MaticoSwitchesPaneComponents } from "Components/Panes/MaticoSwitchesPane";
 
 export const fallbackPanes: { [paneType: string]: Pane } = {
     map: MaticoMapPane,
@@ -29,7 +30,8 @@ export const fallbackPanes: { [paneType: string]: Pane } = {
     controls: MaticoControlsPane,
     container: MaticoContainerPane,
     categorySelector: MaticoCategorySelectorPaneComponents.pane,
-    dateTimeSlider: MaticoDateTimeSlider
+    dateTimeSlider: MaticoDateTimeSlider,
+    switches: MaticoSwitchesPaneComponents.pane
 };
 export const panes: { [paneType: string]: PaneParts } = {
     text: MaticoTextPaneComponents

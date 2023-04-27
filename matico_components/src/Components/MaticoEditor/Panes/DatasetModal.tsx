@@ -8,12 +8,13 @@ import {
     Heading,
     View
 } from "@adobe/react-spectrum";
-import { DatasetSummary } from "Datasets/Dataset";
+import { Dataset, DatasetSummary } from "Datasets/Dataset";
 import { useRequestData } from "Hooks/useRequestData";
 import React from "react";
 import { ComputeParameterEditor } from "DatasetsProviders/ComputeProvider";
 import { useDatasetActions } from "Hooks/useDatasetActions";
 import { DataTable } from "../EditorComponents/DataTable/DataTable";
+import { useMaticoSelector } from "../../../Hooks/redux";
 
 interface DatasetModalProps {
     dataset: DatasetSummary;
@@ -31,6 +32,11 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
             .map((c) => c.name),
         limit: 10
     });
+
+    const spec = useMaticoSelector((s) =>
+        s.spec.spec.datasets.find((d: Dataset) => d.name === dataset.name)
+    );
+    console.log("Spec is ", spec);
 
     const { updateDataset } = useDatasetActions(dataset.name);
     console.log("dataset Spec is ", dataset.spec);
@@ -51,9 +57,10 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({
                                 {dataset.error && <Text>{dataset.error}</Text>}
                                 <ComputeParameterEditor
                                     onChange={(update: any) => {
+                                        console.log("Update is ", update);
                                         updateDataset(dataset.name, update);
                                     }}
-                                    spec={dataset.spec}
+                                    spec={spec}
                                 />
                             </View>
                         )}

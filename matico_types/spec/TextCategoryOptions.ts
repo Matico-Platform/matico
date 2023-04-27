@@ -4,6 +4,6 @@ import type { ParameterOptionDisplayDetails } from "./ParameterOptionDisplayDeta
 export interface TextCategoryOptions {
   allowMulti: boolean;
   options: Array<string>;
-  default: string | null;
+  default: Array<string> | null;
   displayDetails: ParameterOptionDisplayDetails;
 }

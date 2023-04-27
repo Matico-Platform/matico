@@ -57,6 +57,18 @@ pub struct DateTimeSliderPane {
     pub name: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+pub enum InitalSelection {
+    All,
+    Mone,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+pub enum Orientation {
+    Row,
+    Column,
+}
+
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone, Validate, TS)]
 #[serde(rename_all = "camelCase")]
@@ -70,6 +82,33 @@ pub struct CategorySelectorPane {
     pub id: String,
     #[wasm_bindgen(skip)]
     pub label: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub show_search: bool,
+    #[wasm_bindgen(skip)]
+    pub show_toggle_buttons: bool,
+    #[wasm_bindgen(skip)]
+    pub inital_selection: InitalSelection,
+    #[wasm_bindgen(skip)]
+    pub name: String,
+}
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize, Debug, Clone, Validate, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SwitchesPane {
+    #[wasm_bindgen(skip)]
+    pub id: String,
+    #[wasm_bindgen(skip)]
+    pub label: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub options: Vec<String>,
+    #[wasm_bindgen(skip)]
+    pub description: Option<String>,
+    #[wasm_bindgen(skip)]
+    pub inital_selection: InitalSelection,
+    #[wasm_bindgen(skip)]
+    pub orientation: Orientation,
     #[wasm_bindgen(skip)]
     pub name: String,
 }
