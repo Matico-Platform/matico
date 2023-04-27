@@ -8,6 +8,8 @@ import { useMaticoSelector } from "Hooks/redux";
 import { useRequestData } from "Hooks/useRequestData";
 import { useAutoVariable } from "Hooks/useAutoVariable";
 import { MaticoChart, LayerSpec } from "@maticoapp/matico_charts";
+import { useElementSize } from "usehooks-ts";
+
 import {
     generateColorVar,
     generateNumericVar
@@ -67,6 +69,7 @@ export const MaticoScatterplotPane: React.FC<
         columns
     });
 
+    const [ref, { width, height }] = useElementSize();
     const regression = useRegression(
         chartData?.state === "Done" ? chartData.result : null,
         xColumn,
@@ -155,6 +158,7 @@ export const MaticoScatterplotPane: React.FC<
                 xExtent={xExtent}
                 yExtent={yExtent}
                 xLabel={labels?.xLabel ?? xColumn}
+                dimensions={{ width, height }}
                 yLabel={labels?.yLabel ?? yColumn}
                 xCol={xColumn}
                 yCol={yColumn}
@@ -214,14 +218,17 @@ export const MaticoScatterplotPane: React.FC<
                 }}
             />
         );
-    }, [chartData, dotColor, dotSize, regression]);
+    }, [chartData, dotColor, dotSize, regression, width, height]);
 
     return (
-        <View position={"relative"} width={"100%"} height={"100%"}>
+        <div
+            ref={ref}
+            style={{ position: "relative", width: "100%", height: "100%" }}
+        >
             {!!paramsAreNull && (
                 <MissingParamsPlaceholder paneName="Scatterplot" />
             )}
             {Chart}
-        </View>
+        </div>
     );
 };

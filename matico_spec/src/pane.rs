@@ -1,6 +1,6 @@
 use crate::{
     AutoComplete, CategorySelectorPane, ColorSpecification, Control, DateTimeSliderPane,
-    HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane,
+    HistogramPane, Layout, MapPane, PieChartPane, ScatterplotPane, StaticMapPane, SwitchesPane,
 };
 use matico_spec_derive::AutoCompleteMe;
 use serde::{Deserialize, Serialize};
@@ -40,6 +40,7 @@ pub enum PaneRef {
     PieChart(PaneDetails),
     Controls(PaneDetails),
     StaticMap(PaneDetails),
+    Switches(PaneDetails),
     CategorySelector(PaneDetails),
     DateTimeSlider(PaneDetails),
 }
@@ -57,6 +58,7 @@ impl PaneRef {
             PaneRef::StaticMap(s) => &s.id,
             PaneRef::CategorySelector(s) => &s.id,
             PaneRef::DateTimeSlider(s) => &s.id,
+            PaneRef::Switches(s) => &s.id,
         }
     }
 }
@@ -107,6 +109,10 @@ impl TryFrom<(&str, &str)> for PaneRef {
                 pane_id,
                 ..Default::default()
             })),
+            "switches" => Ok(PaneRef::Switches(PaneDetails {
+                pane_id,
+                ..Default::default()
+            })),
             _ => Err("Unrecognized pane type".into()),
         }
     }
@@ -154,6 +160,10 @@ impl From<Pane> for PaneRef {
                 pane_id: selector.id,
                 ..Default::default()
             }),
+            Pane::Switches(switches) => PaneRef::Switches(PaneDetails {
+                pane_id: switches.id,
+                ..Default::default()
+            }),
         }
     }
 }
@@ -171,6 +181,7 @@ pub enum Pane {
     PieChart(PieChartPane),
     Controls(ControlsPane),
     CategorySelector(CategorySelectorPane),
+    Switches(SwitchesPane),
     DateTimeSlider(DateTimeSliderPane),
 }
 
@@ -215,6 +226,9 @@ impl Validate for Pane {
             }
             Self::CategorySelector(selector) => {
                 ValidationErrors::merge(result, "CategorySelector", selector.validate())
+            }
+            Self::Switches(switches) => {
+                ValidationErrors::merge(result, "Switches", switches.validate())
             }
         }
     }

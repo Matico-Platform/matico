@@ -28,6 +28,11 @@ function suboptionsForVariableType(variable: MaticoStateVariable) {
                 { id: "min", name: "Min" },
                 { id: "max", name: "Max" }
             ];
+        case "booleans":
+            return Object.keys(variable.value.value).map((o) => ({
+                id: o,
+                name: o
+            }));
         case "mapview":
             return [
                 { id: "lat", name: "Latitude" },
@@ -63,6 +68,7 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
                             "controls",
                             "histogram",
                             "categorySelector",
+                            "switches",
                             "scatterplot",
                             "lineChart",
                             "dateTimeSlider",
@@ -89,6 +95,8 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({
     // const suboptions = selectedVar? Object.keys(selectedVar.value.value).map(so => ({name:so, id:so})): null
 
     const suboptions = suboptionsForVariableType(selectedVar);
+
+    console.log("Selected Var ", options, selectedVar, variable, suboptions);
 
     return (
         <>
