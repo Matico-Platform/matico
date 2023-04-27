@@ -55,6 +55,7 @@ export const MaticoRawSpecEditor: React.FC = () => {
                     setJsonError(null);
                     setValidationResult([]);
                 } else {
+                    dispatch(setSpec(dash.to_js()));
                     setIsValid(false);
                     setValidationResult(errors);
                 }

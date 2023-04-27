@@ -31,7 +31,6 @@ export const ColorPickerDialog: React.FC<ColorPickerDialogInterface> = ({
     width = "size-600"
 }) => {
     if (!color) return null;
-    console.log("color is ", color);
     const hasAlpha = "rgba" in color;
     let chromaColor = chromaColorFromColorSpecification(color, hasAlpha);
     let rgba = hasAlpha ? chromaColor.rgba() : chromaColor.rgb();

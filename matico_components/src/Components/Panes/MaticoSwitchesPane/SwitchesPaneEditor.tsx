@@ -21,8 +21,6 @@ export const SwitchesPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
 
     const switches = pane as SwitchesPane;
 
-    console.log("Switches are ", switches);
-
     return (
         <Flex direction="column">
             <CollapsibleSection title="Basic" isOpen={true}>

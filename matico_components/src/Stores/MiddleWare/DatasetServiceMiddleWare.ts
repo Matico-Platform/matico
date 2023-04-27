@@ -15,12 +15,12 @@ export const DatasetServiceMiddleWare = () => {
 
     return (store: any) => (next: any) => (action: any) => {
         const state = store.getState();
+        console.log("Doing Middle ware action ", action.type, action);
         switch (action.type) {
             case "datasets/unregisterDataset":
                 worker.unregisterDataset(action.payload);
                 return next(action);
             case "datasets/registerOrUpdateDataset":
-                debugger;
                 worker
                     .registerOrUpdateDataset(action.payload)
                     .then((datasetSummary: DatasetSummary) => {
