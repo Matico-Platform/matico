@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useIsEditable } from "../../Hooks/useIsEditable";
 import { useApp } from "Hooks/useApp";
 import { Button, ButtonGroup, Image, Text, View } from "@adobe/react-spectrum";
-import { chromaColorFromColorSpecification } from "Components/Panes/MaticoMapPane/LayerUtils";
+import { chromaColorFromColorSpecification } from "Panes/MaticoMapPane/LayerUtils";
 import { useRecoilValue } from "recoil";
 import { pageListAtom, themeAtom, useAddPage } from "Stores/SpecAtoms";
 

@@ -1,12 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useState, useRef, useMemo } from "react";
-import { MaticoPaneInterface } from "../Pane";
-import { useAutoVariable } from "../../../Hooks/useAutoVariable";
-import { Filter } from "../../../Datasets/Dataset";
-import { useMaticoSelector } from "../../../Hooks/redux";
-import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
+import { MaticoPaneInterface } from "Panes";
+import { Filter } from "@maticoapp/matico_types/spec";
+import { useMaticoSelector } from "Hooks/redux";
 import { MaticoChart } from "@maticoapp/matico_charts";
-import { useIsEditable } from "../../../Hooks/useIsEditable";
+import { useIsEditable } from "Hooks/useIsEditable";
 import { View } from "@adobe/react-spectrum";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 
@@ -29,30 +27,20 @@ export const MaticoPieChartPane: React.FC<MaticoPieChartPaneInterface> = ({
     editPath,
     labels
 }) => {
-    const [view, setView] = useState({});
-    const chartRef = useRef();
-    const containerRef = useRef();
-    const edit = useIsEditable();
     const paramsAreNull = !dataset?.name || !column?.length;
     const foundDataset = useMaticoSelector(
         (state) => state.datasets.datasets[dataset.name]
     );
 
-    const padding = {
-        top: 25,
-        left: 40,
-        bottom: 10,
-        right: 10
-    };
 
     const dataRequest = foundDataset
         ? {
-              datasetName: dataset.name,
-              column,
-              metric: "categoryCounts",
-              filters: dataset.filters,
-              parameters: { no_categories: 10 }
-          }
+            datasetName: dataset.name,
+            column,
+            metric: "categoryCounts",
+            filters: dataset.filters,
+            parameters: { no_categories: 10 }
+        }
         : null;
 
     const chartData = useRequestColumnStat(dataRequest);

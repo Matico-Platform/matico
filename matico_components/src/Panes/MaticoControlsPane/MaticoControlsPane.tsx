@@ -2,7 +2,7 @@ import React from "react";
 import { MaticoPaneInterface } from "../Pane";
 import { MaticoRangeControl } from "./MaticoRangeControl";
 import { MaticoSelectControl } from "./MaticoSelectControl";
-import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
+import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import {
     View,
     Flex,

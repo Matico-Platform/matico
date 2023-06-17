@@ -1,5 +1,5 @@
-import { atomFamily, atom, useRecoilState, useSetRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue, useRecoilCallback, selectorFamily, GetRecoilValue, selector, DefaultValue } from 'recoil'
-import { Page as SpecPage, Pane as SpecPane, Theme, Metadata, Dataset, App, PaneRef as SpecPaneRef, ContainerPane } from "@maticoapp/matico_types/spec"
+import { atomFamily, atom, useRecoilTransaction_UNSTABLE, useRecoilValue, useRecoilCallback, selectorFamily, GetRecoilValue, selector, DefaultValue } from 'recoil'
+import { Page as SpecPage, Pane as SpecPane, Theme, Metadata, Dataset, App, PaneRef as SpecPaneRef, ContainerPane, Layout } from "@maticoapp/matico_types/spec"
 import { v4 as uuid } from "uuid"
 
 export type PaneRef = SpecPaneRef & { order: number, parentId: string }
@@ -50,6 +50,41 @@ export const datasetsAtomFamily = atomFamily<Dataset, string>({
     lngCol: null,
     idColumn: null
   })
+})
+
+export const paneNames = selectorFamily<string, string>({
+  key: "paneNamesFromRef",
+  get: (paneId) => ({ get }) => {
+    let pane = get(panesAtomFamily(paneId))
+    return pane.name
+  }
+})
+
+export const paneName = selectorFamily<string, string>({
+  key: "paneNamesFromRef",
+  get: (paneId) => ({ get }) => {
+    let pane = get(panesAtomFamily(paneId))
+    return pane.name
+  }
+})
+
+export const layoutForContainer = selectorFamily<Layout, { containerId: string, containerType: 'page' | 'pane' }>({
+  key: "layoutForContainer",
+  get: ({ containerId, containerType }) => ({ get }) => {
+    let container = containerType === 'pane' ? get(panesAtomFamily(containerId)) : get(pageAtomFamily(containerId))
+    //@ts-ignore
+    return container.layout
+  },
+  set: ({ containerId, containerType }) => ({ set, get }, layout: Layout) => {
+    if (containerType === 'page') {
+      let page = get(pageAtomFamily(containerId))
+      set(pageAtomFamily(containerId), { ...page, layout })
+    }
+    else {
+      let pane = get(panesAtomFamily(containerId))
+      set(panesAtomFamily(containerId), { ...pane, layout })
+    }
+  }
 })
 
 export const panesAtomFamily = atomFamily<Pane, string>({
@@ -147,22 +182,30 @@ export const useAddPaneToContainer = (containerId: string) => {
   }, [containerId, paneRefs])
 }
 
-export const paneRefsForParent = selectorFamily({
-  key: "paneRefsForPage",
-  get: (pageId) => ({ get }) => {
-    let paneRefIds = useRecoilValue(paneRefListAtom)
-    let paneRefs = paneRefIds.map((id) => get(paneRefAtomFamily(id)))
-      .filter(pr => pr.parentId === pageId);
-    return paneRefs
+
+
+export const parentSelector = selectorFamily<ContainerPane | Page, string>({
+  key: "parentSelector",
+  get: (paneRefId) => ({ get }) => {
+    let paneRef = get(paneRefAtomFamily(paneRefId))
+    let parentPane = get(panesAtomFamily(paneRef.parentId))
+    let parentPage = get(pageAtomFamily(paneRef.parentId))
+    if (parentPane) {
+      if (parentPane.type === "container") {
+        return parentPane
+      }
+      else {
+        throw new Error("Somehow the parent pane is not a Container")
+      }
+    }
+    return parentPage
   }
 })
 
-export const parentSelector = selectorFamily<Pane, string>({
-  key: "parentSelector",
-  get: (paneRefId: string) => ({ get }) => {
-    let paneRef = get(paneRefAtomFamily(paneRefId))
-    let parent = get(panesAtomFamily(paneRef.parentId))
-    return parent
+export const paneRefsForParent = selectorFamily<Array<PaneRef>, string>({
+  key: "paneRefsForParent",
+  get: (paneId) => ({ get }) => {
+    return get(paneRefListAtom).map(pr => get(paneRefAtomFamily(pr))).filter(pr => pr.parentId === paneId)
   }
 })
 

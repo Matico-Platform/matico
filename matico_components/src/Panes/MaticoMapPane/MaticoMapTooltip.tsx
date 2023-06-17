@@ -6,7 +6,6 @@ import { Flex, ProgressCircle, Text, View } from "@adobe/react-spectrum";
 import Pin from "@spectrum-icons/workflow/PinOff";
 import Target from "@spectrum-icons/workflow/Target";
 import { useGetFeatures } from "Hooks/useGetFeatures";
-import { convertPoly } from "./LayerUtils";
 import wkx from "wkx";
 
 export interface TooltipColumnSpec {
@@ -66,7 +65,7 @@ export const MaticoMapTooltip: React.FC<TooltipSpec> = ({
         let formattedValue = rawValue;
         try {
             formattedValue = formatter ? format(formatter)(rawValue) : rawValue;
-        } catch {}
+        } catch { }
         return { label: [text], value: formattedValue };
     });
     // ,[JSON.stringify({columns, result})])

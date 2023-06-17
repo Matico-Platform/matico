@@ -2,18 +2,14 @@ import React from "react";
 import _ from "lodash";
 import { useMaticoSelector } from "Hooks/redux";
 import { Text, TextField, View } from "@adobe/react-spectrum";
-import { DatasetSelector } from "../Utils/DatasetSelector";
-import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
-import { PaneEditor } from "./PaneEditor";
-import { NumericVariableEditor } from "../Utils/NumericVariableEditor";
-import { ColorVariableEditor } from "../EditorComponents/ColorVariableEditor";
+import { DatasetSelector } from "Components/DatasetSelector/DatasetSelector";
+import { DatasetColumnSelector } from "Components/DatasetColumnSelector/DatasetColumnSelector";
 import { DatasetSummary } from "Datasets/Dataset";
-import { LabelEditor } from "../Utils/LabelEditor";
-import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
+import { LabelEditor } from "Components/LabelEditor/LabelEditor";
 import { usePane } from "Hooks/usePane";
 import { Labels, PaneRef, LineChartPane } from "@maticoapp/matico_types/spec";
-import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
-import { SliderVariableEditor } from "../EditorComponents/SliderVariableEditor";
+import { CollapsibleSection } from "Components/CollapsibleSection";
+import { PaneEditor } from "Components/Editors";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;

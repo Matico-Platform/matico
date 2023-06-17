@@ -20,7 +20,7 @@ import {
     Layer,
     MapProjection
 } from "@maticoapp/matico_types/spec";
-import { LoadingSpinner } from "Components/MaticoEditor/EditorComponents/LoadingSpinner/LoadingSpinner";
+import { LoadingSpinner } from "Components/MaticoEditor/LoadingSpinner/LoadingSpinner";
 
 export interface MaticoStaticMapPaneInterface extends MaticoPaneInterface {
     dataset: DatasetRef;

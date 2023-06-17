@@ -62,6 +62,7 @@ function App() {
     >
       <MaticoApp
         basename={process.env.PUBLIC_URL}
+        //@ts-ignore
         spec={MapWithSidebar}
         //@ts-ignore
         editActive={edit}

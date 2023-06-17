@@ -1,4 +1,5 @@
-import { atom } from "recoil";
+import { atom, atomFamily, selectorFamily } from "recoil";
+import { MaticoStateVariable } from "./VariableTypes";
 
 export type EditElement = {
   id?: string;
@@ -8,10 +9,28 @@ export type EditElement = {
 
 export const editTargetAtom = atom<EditElement | null>({
   key: "selectedEditAtom",
-  default: null
+  default: { type: "metadata" }
 })
 
 export const isEditingAtom = atom<boolean>({
   key: "isEditing",
   default: false
 })
+
+export const variableIdListAtom = atom<Array<string>>({
+  key: "variableIds",
+  default: []
+})
+
+export const variableAtomFamily = atomFamily<MaticoStateVariable, string>({
+  key: "variables",
+  default: {
+    id: "",
+    paneId: "",
+    name: "",
+    type: 'string',
+    value: ""
+  }
+})
+
+

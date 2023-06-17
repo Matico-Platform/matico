@@ -1,17 +1,16 @@
 import React from "react";
 import _ from "lodash";
 import { useMaticoSelector } from "Hooks/redux";
-import { Text, Flex, View, Divider, TextField } from "@adobe/react-spectrum";
-import { DatasetSelector } from "../Utils/DatasetSelector";
-import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
-import { PaneEditor } from "./PaneEditor";
+import { Text, Flex, View, TextField } from "@adobe/react-spectrum";
+import { DatasetSelector } from "Components/DatasetSelector/DatasetSelector";
+import { DatasetColumnSelector } from "Components/DatasetColumnSelector/DatasetColumnSelector";
 import { usePane } from "Hooks/usePane";
 import {
     DateTimeSliderPane,
-    Labels,
     PaneRef
 } from "@maticoapp/matico_types/spec";
-import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
+import { CollapsibleSection } from "Components/CollapsibleSection";
+import { PaneEditor } from "Components/Editors";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;

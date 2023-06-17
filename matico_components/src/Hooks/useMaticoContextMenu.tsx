@@ -11,15 +11,15 @@ import {
 import "react-contexify/dist/ReactContexify.css";
 import { createPortal } from "react-dom";
 import { usePane } from "Hooks/usePane";
-import { Flex, TextField } from "@adobe/react-spectrum";
+import { Flex } from "@adobe/react-spectrum";
 import {
     AvaliablePanes,
     IconForPaneType,
     PaneDefaults
-} from "Components/MaticoEditor/Utils/PaneDetails";
+} from "Components/PaneDetails/PaneDetails";
 import { v4 as uuidv4 } from "uuid";
 import { usePaneContainer } from "./usePaneContainer";
-import { PositionPresets } from "Components/MaticoEditor/Panes/PaneEditor";
+import { PositionPresets } from "Components/PaneRefEditor";
 import LayersBackward from "@spectrum-icons/workflow/LayersBackward";
 import LayersBringToFront from "@spectrum-icons/workflow/LayersBringToFront";
 import LayersForward from "@spectrum-icons/workflow/LayersForward";

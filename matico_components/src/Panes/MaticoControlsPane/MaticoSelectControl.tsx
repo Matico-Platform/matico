@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Item, Picker } from "@adobe/react-spectrum";
-import { useAutoVariable } from "../../../Hooks/useAutoVariable";
+import { useAutoVariable } from "Hooks/useAutoVariable";
 import { v4 as uuid } from "uuid";
 
 interface MaticoSelectControlInterface {

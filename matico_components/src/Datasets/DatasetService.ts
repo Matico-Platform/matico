@@ -1,29 +1,28 @@
 import {
   Dataset,
-  Column,
-  GeomType,
   DatasetSummary,
   DatasetState,
-  Filter
 } from "Datasets/Dataset";
 import { ColumnStatRequest, FeatureRequest } from "Stores/MaticoDatasetSlice";
-import { CSVBuilder } from "./CSVBuilder";
-import { GeoJSONBuilder } from "./GeoJSONBuilder";
-import { COGBuilder } from "./COGBuilder";
-import { MaticoRemoteBuilder } from "./MaticoRemoteBuilder";
-import { MaticoRemoteApiBuilder } from "./MaticoRemoteApiBuilder";
-import { WasmComputeBuilder } from "./WasmComputeBuilder";
+import { CSVBuilder } from "./Builders/CSVBuilder";
+import { GeoJSONBuilder } from "./Builders/GeoJSONBuilder";
+import { COGBuilder } from "./Builders/COGBuilder";
+import { MaticoRemoteBuilder } from "./Builders/MaticoRemoteBuilder";
+import { MaticoRemoteApiBuilder } from "./Builders/MaticoRemoteApiBuilder";
+import { WasmComputeBuilder } from "./Builders/WasmComputeBuilder";
 import {
   Dataset as DatasetSpec,
-  DatasetTransform
+  DatasetTransform,
+  Filter
 } from "@maticoapp/matico_types/spec";
-import { ArrowBuilder, getGeomType } from "./ArrowBuilder";
+import { ArrowBuilder, getGeomType } from "./Builders/ArrowBuilder";
 import { DatasetTransformRunner } from "./DatasetTransformRunner";
 import { LocalDataset } from "./LocalDataset";
 import { constructColumnListFromTable } from "./utils";
 type Loader = (params: any) => Dataset;
 
 type Notifier = (datasetName: string) => void;
+
 
 export interface DatasetServiceInterface {
   datasets: { [datasetName: string]: Dataset };

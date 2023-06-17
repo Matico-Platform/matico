@@ -1,19 +1,15 @@
 import React from "react";
-import { useState, useMemo } from "react";
-import { MaticoPaneInterface } from "../Pane";
-import { useAutoVariable } from "../../../Hooks/useAutoVariable";
+import { useMemo } from "react";
+import { MaticoPaneInterface } from "Panes";
+import { useAutoVariable } from "Hooks/useAutoVariable";
 import { Filter } from "@maticoapp/matico_types/spec";
-import { useMaticoSelector } from "../../../Hooks/redux";
-import { useNormalizeSpec } from "../../../Hooks/useNormalizeSpec";
+import { useMaticoSelector } from "Hooks/redux";
 import { MaticoChart } from "@maticoapp/matico_charts";
 import { useRequestColumnStat } from "Hooks/useRequestColumnStat";
 import { generateColorVar } from "../MaticoMapPane/LayerUtils";
 import { View } from "@adobe/react-spectrum";
-import { useErrorsFor } from "Hooks/useErrors";
-import { MaticoErrorType } from "Stores/MaticoErrorSlice";
 import { HistogramEntry } from "@maticoapp/matico_types/api";
-import { LoadingSpinner } from "Components/MaticoEditor/EditorComponents/LoadingSpinner/LoadingSpinner";
-import { v4 as uuid } from "uuid";
+import { LoadingSpinner } from "Components/LoadingSpinner/LoadingSpinner";
 import { MissingParamsPlaceholder } from "../MissingParamsPlaceholder/MissingParamsPlaceholder";
 
 export interface MaticoHistogramPaneInterface extends MaticoPaneInterface {
@@ -34,16 +30,9 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
     labels,
     id
 }) => {
-    const [view, setView] = useState({});
-    const rangeVariableId = useMemo(() => uuid(), []);
-
-    const { errors, throwError, clearErrors } = useErrorsFor(
-        id,
-        MaticoErrorType.PaneError
-    );
     const paramsAreNull = !dataset?.name || !column?.length;
 
-    const [columnFilter, updateFilter] = useAutoVariable({
+    const [, updateFilter] = useAutoVariable({
         variable: {
             id: id + "_range",
             paneId: id,
@@ -64,12 +53,12 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
 
     const dataRequest = foundDataset
         ? {
-              datasetName: dataset.name,
-              column,
-              metric: "histogram",
-              filters: dataset.filters,
-              parameters: { bins: maxbins }
-          }
+            datasetName: dataset.name,
+            column,
+            metric: "histogram",
+            filters: dataset.filters,
+            parameters: { bins: maxbins }
+        }
         : null;
 
     const chartData = useRequestColumnStat(dataRequest);
@@ -114,16 +103,16 @@ export const MaticoHistogramPane: React.FC<MaticoHistogramPaneInterface> = ({
                     updateFilter(
                         x0 === x1
                             ? {
-                                  type: "range",
-                                  value: "NoSelection"
-                              }
+                                type: "range",
+                                value: "NoSelection"
+                            }
                             : {
-                                  type: "range",
-                                  value: {
-                                      min: x0,
-                                      max: x1
-                                  }
-                              }
+                                type: "range",
+                                value: {
+                                    min: x0,
+                                    max: x1
+                                }
+                            }
                     )
                 }
                 layers={[

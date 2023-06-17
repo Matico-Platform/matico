@@ -5,12 +5,15 @@ import { ContainerPaneEditor } from "./ContainerPaneEditor";
 import { defaults } from "./defaults";
 import Border from "@spectrum-icons/workflow/Border";
 import { v4 as uuid } from 'uuid'
+import { withContainerPaneSelector } from './ContainerPaneWrapper';
+import { FullPosition } from 'Components/PaneDetails/PaneDetails';
 
 const details: PaneParts = {
   label: "Container",
   section: "Layout",
   pane: MaticoContainerPane,
   sidebarPane: ContainerPaneEditor,
+  wrapper: withContainerPaneSelector,
   icon: <Border />,
   defaults,
   docs: "https://www.matico.app/docs/panes/container_pane"

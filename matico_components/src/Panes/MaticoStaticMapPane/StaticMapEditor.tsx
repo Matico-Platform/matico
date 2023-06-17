@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
+import { useMaticoDispatch } from "Hooks/redux";
 
-import { DatasetSelector } from "../Utils/DatasetSelector";
-import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
-import { PaneEditor } from "./PaneEditor";
-import { BaseMapSelector } from "../Utils/BaseMapSelector";
-import { DefaultLayer } from "Components/MaticoEditor/Utils/PaneDetails";
+import { RowEntryMultiButton } from "Components/RowEntryMultiButton/RowEntryMultiButton";
+import { DefaultLayer } from "Components/PaneDetails/PaneDetails";
 
 import {
     Checkbox,
@@ -17,22 +13,22 @@ import {
     Slider,
     TextField,
     View
-    // repeat,
 } from "@adobe/react-spectrum";
 
-import { StaticMapPane, PaneRef, Layer } from "@maticoapp/matico_types/spec";
+import { StaticMapPane, PaneRef, Layer, MapProjection } from "@maticoapp/matico_types/spec";
 import { usePane } from "Hooks/usePane";
 import { setCurrentEditElement } from "Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
-import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
-import { AddLayerModal } from "../EditorComponents/AddLayerModal/AddLayerModal";
+import { CollapsibleSection } from "Components/CollapsibleSection";
+import { AddLayerModal } from "Components/AddLayerModal/AddLayerModal";
+import { PaneEditor } from "Components/Editors";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
 }
 
 export const StaticMapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
-    const { pane, updatePane, updatePanePosition, removePane, parent } =
+    const { pane, updatePane, updatePanePosition, parent } =
         usePane(paneRef);
 
     const mapPane = pane as StaticMapPane;
@@ -94,7 +90,7 @@ export const StaticMapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                     selectedKey={mapPane.projection}
                     width={"100%"}
                     onSelectionChange={(projection) =>
-                        updatePane({ projection })
+                        updatePane({ projection: projection as MapProjection })
                     }
                     items={[
                         { id: "geoConicConformal", name: "Conic Conformal" },
@@ -140,10 +136,10 @@ export const StaticMapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             key={layer.name}
                             entryName={layer.name}
                             onSelect={() => setLayerEdit(layer.id)}
-                            onRemove={() => {}}
-                            onDuplicate={() => {}}
-                            onRaise={() => {}}
-                            onLower={() => {}}
+                            onRemove={() => { }}
+                            onDuplicate={() => { }}
+                            onRaise={() => { }}
+                            onLower={() => { }}
                         />
                     ))}
                 </Flex>

@@ -12,7 +12,7 @@ import {
 } from "Stores/MaticoSpecSlice";
 import { useMaticoDispatch, useMaticoSelector } from "./redux";
 import _ from "lodash";
-import { DefaultPosition } from "Components/MaticoEditor/Utils/PaneDetails";
+import { DefaultPosition } from "Components/PaneDetails/PaneDetails";
 import { v4 as uuidv4 } from "uuid";
 
 export const usePaneContainer = (containerId: string) => {

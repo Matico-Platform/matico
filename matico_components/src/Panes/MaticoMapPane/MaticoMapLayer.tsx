@@ -1,28 +1,26 @@
-import React, { useContext, useEffect, useMemo } from "react";
-import { GeomType } from "../../../Datasets/Dataset";
-import { AutoVariableInterface, useAutoVariable } from "Hooks/useAutoVariable";
+import React, { useEffect, useMemo } from "react";
+import { GeomType } from "Datasets/Dataset";
+import { useAutoVariable } from "Hooks/useAutoVariable";
 import traverse from "traverse";
 import {
     ScatterplotLayer,
     PathLayer,
     PolygonLayer,
     BitmapLayer
-} from "@deck.gl/layers";
+} from "@deck.gl/layers/typed";
 import {
     convertPoint,
     convertLine,
     expandMultiAndConvertPoly,
     generateColorVar,
     generateNumericVar,
-    parentContainsClassName
 } from "./LayerUtils";
 import { useRequestData } from "Hooks/useRequestData";
 import { useMaticoSelector } from "Hooks/redux";
-import { MVTLayer, TileLayer } from "deck.gl";
+import { MVTLayer, TileLayer } from "deck.gl/typed";
 import { Filter } from "@maticoapp/matico_types/spec";
 import { MaticoMapTooltip } from "./MaticoMapTooltip";
 import { TooltipColumnSpec } from "./MaticoMapTooltip";
-import { v4 as uuid } from "uuid";
 
 interface MaticoLayerInterface {
     name: string;
@@ -77,7 +75,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     });
 
     let requiredCols: Array<string> = [];
-    traverse(style).forEach(function (node: any) {
+    traverse(style).forEach(function(node: any) {
         if (this && this.key === "variable") {
             requiredCols.push(node);
         }
@@ -86,10 +84,10 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
     const dataResult = useRequestData(
         dataset
             ? {
-                  datasetName: dataset.tiled === false ? source.name : null,
-                  filters: source.filters,
-                  columns: [...requiredCols, "geom"]
-              }
+                datasetName: dataset.tiled === false ? source.name : null,
+                filters: source.filters,
+                columns: [...requiredCols, "geom"]
+            }
             : null
     );
 
@@ -346,7 +344,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                 // @ts-ignore
                 id={
                     hoverVariable?.value &&
-                    !(hoverVariable?.value === "NoSelection")
+                        !(hoverVariable?.value === "NoSelection")
                         ? hoverVariable.value[0]
                         : null
                 }
@@ -357,7 +355,7 @@ export const MaticoMapLayer: React.FC<MaticoLayerInterface> = ({
                 // @ts-ignore
                 id={
                     clickVariable?.value &&
-                    !(clickVariable?.value === "NoSelection")
+                        !(clickVariable?.value === "NoSelection")
                         ? clickVariable.value[0]
                         : null
                 }

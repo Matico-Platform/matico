@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
-import { MaticoPaneInterface } from "../Pane";
+import { MaticoPaneInterface } from "Panes";
 import { DatasetState } from "Datasets/Dataset";
 import _ from "lodash";
-import { useNormalizeSpec } from "Hooks/useNormalizeSpec";
 import { useIsEditable } from "Hooks/useIsEditable";
 import { useMaticoSelector } from "Hooks/redux";
 import { useRequestData } from "Hooks/useRequestData";
@@ -155,30 +154,30 @@ export const MaticoLineChartPane: React.FC<MaticoLineChartPaneInterface> = ({
                     updateXFilter(
                         x0 === x1
                             ? {
-                                  type: "dateRange",
-                                  value: "NoSelection"
-                              }
+                                type: "dateRange",
+                                value: "NoSelection"
+                            }
                             : {
-                                  type: "dateRange",
-                                  value: {
-                                      min: new Date(x0),
-                                      max: new Date(x1)
-                                  }
-                              }
+                                type: "dateRange",
+                                value: {
+                                    min: new Date(x0),
+                                    max: new Date(x1)
+                                }
+                            }
                     );
                     updateYFilter(
                         y0 === y1
                             ? {
-                                  type: "range",
-                                  value: "NoSelection"
-                              }
+                                type: "range",
+                                value: "NoSelection"
+                            }
                             : {
-                                  type: "range",
-                                  value: {
-                                      min: y0,
-                                      max: y1
-                                  }
-                              }
+                                type: "range",
+                                value: {
+                                    min: y0,
+                                    max: y1
+                                }
+                            }
                     );
                 }}
             />

@@ -1,13 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import _ from "lodash";
 import { useMaticoDispatch, useMaticoSelector } from "Hooks/redux";
-
-import { DatasetSelector } from "../Utils/DatasetSelector";
-import { RowEntryMultiButton } from "../Utils/RowEntryMultiButton";
-import { TwoUpCollapsableGrid } from "../Utils/TwoUpCollapsableGrid";
-import { PaneEditor } from "./PaneEditor";
-import { BaseMapSelector } from "../Utils/BaseMapSelector";
-import { DefaultLayer } from "Components/MaticoEditor/Utils/PaneDetails";
 
 import {
     Flex,
@@ -16,13 +9,9 @@ import {
     Item,
     Picker,
     Checkbox,
-    DialogTrigger,
     TextField,
     View,
-    ButtonGroup,
-    Divider,
     CheckboxGroup
-    // repeat,
 } from "@adobe/react-spectrum";
 
 import {
@@ -38,13 +27,15 @@ import {
 import { usePane } from "Hooks/usePane";
 import { setCurrentEditElement } from "Stores/MaticoSpecSlice";
 import { v4 as uuidv4 } from "uuid";
-import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
-import { DetailsEditor } from "./DetailsEditor";
-import { GeoBoundsSelector } from "../EditorComponents/GeoBoundsSelector";
-import { OptionsPopper } from "../EditorComponents/OptionsPopper";
-import { NumericEditor } from "../EditorComponents/NumericEditor";
-import { ParentSize } from "@visx/responsive";
-import { AddLayerModal } from "../EditorComponents/AddLayerModal/AddLayerModal";
+import { CollapsibleSection } from "Components/CollapsibleSection";
+import { PaneEditor } from "Components/Editors";
+import { GeoBoundsSelector } from "Components/GeoBoundsSelector";
+import { OptionsPopper } from "Components/OptionsPopper";
+import { TwoUpCollapsableGrid } from "Components/TwoUpCollapsableGrid/TwoUpCollapsableGrid";
+import { NumericEditor } from "Components/NumericEditor";
+import { AddLayerModal } from "Components/AddLayerModal/AddLayerModal";
+import { RowEntryMultiButton } from "Components/RowEntryMultiButton/RowEntryMultiButton";
+import { BaseMapSelector } from "Components/BaseMapSelector/BaseMapSelector";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;
@@ -104,7 +95,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
         //@ts-ignore
         mapPane.view.varId
             ? //@ts-ignore
-              state.variables.autoVariables?.[mapPane.view.varId]
+            state.variables.autoVariables?.[mapPane.view.varId]
             : null
     );
 
@@ -310,7 +301,7 @@ export const MapPaneEditor: React.FC<PaneEditorProps> = ({ paneRef }) => {
                             onRemove={() => {
                                 removeLayer(layer.id);
                             }}
-                            onDuplicate={() => {}}
+                            onDuplicate={() => { }}
                             onRaise={() => {
                                 handleChangeOrder(index, "up");
                             }}

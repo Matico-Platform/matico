@@ -2,17 +2,16 @@ import { parseSync } from "@loaders.gl/core";
 import { WKBLoader } from "@loaders.gl/wkt";
 import wkx from "wkx";
 import chroma from "chroma-js";
-import { RGBAColor } from "@deck.gl/core";
 import * as d3 from "d3-scale";
-import { colors } from "../../../Utils/colors";
+import { Color as DeckColor } from "@deck.gl/core/typed"
 import {
     ColorSpecification,
     MappingVarOr,
-    VarOr,
     Range,
     DomainVal
 } from "@maticoapp/matico_types/spec";
-import { Geometry, Polygon, Point, MultiPolygon } from "wkx";
+import { Polygon, MultiPolygon } from "wkx";
+import { colors } from "Utils/colors";
 
 export function chunkCoords(coords: Array<Number>) {
     return coords.reduce((result, coord, index) => {
@@ -71,7 +70,7 @@ export function convertLine(wkbGeom: any) {
     return chunkCoords(parseSync(wkbGeom, WKBLoader).positions.value);
 }
 
-type ColorReturn = RGBAColor | ((d: Record<string, unknown>) => RGBAColor);
+type ColorReturn = DeckColor | ((d: Record<string, unknown>) => DeckColor);
 type NumberReturn = number | ((d: Record<string, unknown>) => number);
 
 export const generateNumericVar = (

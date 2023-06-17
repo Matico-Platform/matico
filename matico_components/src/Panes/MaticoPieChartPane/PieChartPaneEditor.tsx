@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import _ from "lodash";
-import { DatasetSelector } from "../Utils/DatasetSelector";
-import { DatasetColumnSelector } from "../Utils/DatasetColumnSelector";
-import { PaneEditor } from "./PaneEditor";
+import { DatasetSelector } from "Components/DatasetSelector/DatasetSelector";
+import { DatasetColumnSelector } from "Components/DatasetColumnSelector/DatasetColumnSelector";
 import { Text, TextField, View } from "@adobe/react-spectrum";
 import { usePane } from "Hooks/usePane";
 import { PaneRef, PieChartPane, Labels } from "@maticoapp/matico_types/spec";
-import { CollapsibleSection } from "../EditorComponents/CollapsibleSection";
-import { LabelEditor } from "../Utils/LabelEditor";
+import { CollapsibleSection } from "Components/CollapsibleSection";
+import { LabelEditor } from "Components/LabelEditor/LabelEditor";
+import { PaneEditor } from "Components/Editors";
 
 export interface PaneEditorProps {
     paneRef: PaneRef;

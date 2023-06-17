@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { RangeSlider } from "@adobe/react-spectrum";
-import { useAutoVariable } from "../../../Hooks/useAutoVariable";
-import { v4 as uuid } from "uuid";
+import { useAutoVariable } from "Hooks/useAutoVariable";
 
 interface MaticoRangeControlInterface {
     controlPaneId: string;

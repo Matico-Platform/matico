@@ -1,6 +1,6 @@
 import React from "react";
 import { MaticoPaneInterface } from "../Pane";
-import { useIsEditable } from "../../../Hooks/useIsEditable";
+import { useIsEditable } from "Hooks/useIsEditable";
 import { ActionButton } from "@adobe/react-spectrum";
 import {
     ToolbarPlugin,
