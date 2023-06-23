@@ -1,0 +1,39 @@
+
+record display-details{
+  name: string,
+  description: option<string>
+}
+
+record numeric-int-option{
+  max: option<u32>,
+  min: option<u32>,
+  default: option<u32>,
+  display: display-details
+}
+
+record text-option{
+  default: option<string>,
+  max-length: option<u32>,
+  desplay: display-details
+}
+
+variant input{
+  numeric-int(numeric-int-option),
+  text(text-option)
+}
+
+variant variable{
+  numeric-int(u32),
+  text(string)
+}
+
+resource plugin{
+   register-table: func(name:string, data: list<u8>)
+   set-input: func(name:string, value: variable)
+   run: func()-> list<u8>
+}
+
+options: func() -> list<input>
+new-plugin: func()-> plugin 
+
+

@@ -1,0 +1,3 @@
+log: func(test: string) 
+set-cache-value: func(key: string, value: list<u8> )
+get-cache-value: func(key: string) -> option<list<u8>>
