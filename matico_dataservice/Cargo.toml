@@ -12,13 +12,13 @@ prokio = "0.1.0"
 uuid = {version = "1.2.2", features=['v4']}
 async-trait = "0.1.59"
 reqwest = "0.11.13"
-polars =  { version = "0.26.1", features = ["lazy","sql", "csv-file", "json","ipc","is_in", "strings", "temporal", "dtype-duration", "dtype-categorical", "concat_str",  "rank", "lazy_regex"]}
-wasmer={ version="3.1.0", default-features= false}
-wai-bindgen-wasmer = {version = "0.2.2", path="/home/stuart/tmp/wai/crates/wasmer"}
+polars =  { version = "0.35.2", features = ["lazy","sql", "json","ipc","is_in", "strings", "temporal", "dtype-duration", "dtype-categorical", "concat_str",  "rank", "lazy_regex"]}
+wasmer={ version="4.2.3", default-features= false}
+wai-bindgen-wasmer = {version = "0.16.0"}
 anyhow ="1.0" 
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { version = "1.19", features = ["full"] }
+tokio = { version = "1.34", features = ["full"] }
 
 [features]
 default=['sys']

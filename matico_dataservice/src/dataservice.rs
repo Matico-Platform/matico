@@ -1,4 +1,3 @@
-use crate::plugin;
 use crate::plugin::Plugin;
 use anyhow::Context;
 use async_trait::async_trait;
@@ -143,7 +142,7 @@ fn apply_aggregate_step(df: LazyFrame, details: &AggregateStep) -> LazyFrame {
                 .sum()
                 .alias(&agg.rename.clone().unwrap_or(format!("{}_sum", agg.column))),
             matico_spec::AggregationType::CumulativeSum => col(&agg.column)
-                .cumsum(true)
+                .cum_sum(true)
                 .alias(&agg.rename.clone().unwrap_or(format!("{}_sum", agg.column))),
             matico_spec::AggregationType::Mean => col(&agg.column)
                 .mean()
@@ -160,7 +159,7 @@ fn apply_aggregate_step(df: LazyFrame, details: &AggregateStep) -> LazyFrame {
         .collect();
 
     println!("perfroming aggregate step");
-    df.groupby(group_by_cols).agg(aggregates)
+    df.group_by(group_by_cols).agg(aggregates)
 }
 
 fn apply_filter_step(df: LazyFrame, filter_step: &FilterStep) -> Result<LazyFrame, String> {
@@ -208,7 +207,7 @@ fn apply_filter_step(df: LazyFrame, filter_step: &FilterStep) -> Result<LazyFram
             matico_spec::Filter::RegEx(reg_ex_filter) => Ok(result.filter(
                 col(&reg_ex_filter.variable)
                     .str()
-                    .contains(&reg_ex_filter.regex),
+                    .contains(lit(reg_ex_filter.regex), true),
             )),
         }
     })
@@ -354,8 +353,7 @@ where
     }
 
     pub fn run_sql(&self, id: &Uuid, sql: &str) -> std::result::Result<DataFrame, String> {
-        let mut context =
-            SQLContext::try_new().map_err(|e| format!("Failed to get an sql context"))?;
+        let mut context = SQLContext::new();
 
         context.register(
             "dataset",
@@ -369,8 +367,7 @@ where
     }
 
     pub fn run_sql_step(&self, df: LazyFrame, sql: &SQLStep) -> Result<LazyFrame, String> {
-        let mut context =
-            SQLContext::try_new().map_err(|e| format!("Failed to get an sql context: {:#?}", e))?;
+        let mut context = SQLContext::new();
 
         context.register(
             &sql.input_table_name

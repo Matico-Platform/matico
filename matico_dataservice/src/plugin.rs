@@ -4,6 +4,7 @@ use wasmer::imports;
 use wasmer::{Instance, Module, Store, Value};
 
 use wai_bindgen_wasmer::{export, import};
+
 wai_bindgen_wasmer::export!("plugin_interface/plugin_imports.wai");
 wai_bindgen_wasmer::import!("plugin_interface/plugin_exports.wai");
 
